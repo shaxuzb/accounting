@@ -12,5 +12,6 @@ export interface MenuItem {
 
 export const menuPermissions: MenuItem[] = [
   { key: "dashboard", label: "Dashboard", path: "/main", icon: <LayoutDashboard size={18} />, permission: "dashboard.view" },
+  { key: "auth", label: "Auth", path: "/main/auth", permission: "auth.view" },
   /* modux:menu */
 ];
