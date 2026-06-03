@@ -3,7 +3,6 @@ import { Outlet, useLocation, useNavigate } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import toast from "react-hot-toast";
-import { authService } from "@/services/authService";
 import Error from "@/components/Error";
 import { logout } from "@/store/actions";
 import type { AuthToken } from "@/shared/types";
