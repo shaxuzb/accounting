@@ -1,0 +1,11 @@
+{
+  "common": {
+    "add": "Qo'shish",
+    "save": "Saqlash",
+    "search": "Qidirish",
+    "view": "Ko'rish",
+    "name": "Nomi",
+    "actions": "Amallar",
+    "created": "Yaratildi"
+  }
+}
