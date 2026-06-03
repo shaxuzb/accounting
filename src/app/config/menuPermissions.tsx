@@ -6,6 +6,7 @@ interface MainMenu {
   BOTTOM: MenuRole[];
   SETTINGS: MenuRole[];
 }
+
 export const menuPermissions: MainMenu = {
   TOP: [
     {
@@ -66,3 +67,4 @@ export const menuPermissions: MainMenu = {
     },
   ],
 };
+

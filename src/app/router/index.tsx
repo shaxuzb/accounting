@@ -1,30 +1,12 @@
-import { createBrowserRouter, Navigate } from "react-router";
-import { MainLayout, ProtectAuthLayout } from "@/app/layouts";
-import NotFound from "@/shared/components/NotFound";
-/* modux:module-imports */
+import { createBrowserRouter } from "react-router";
+import { ProtectAuthLayout } from "@/app/layouts";
+import { authRoutes } from "@/modules/auth";
 
 export const router = createBrowserRouter([
   {
+    path: "/",
     element: <ProtectAuthLayout />,
-    children: [
-      { index: true, element: <Navigate to="/main" replace /> },
-      {
-        path: "main",
-        element: <MainLayout />,
-        children: [
-          {
-            index: true,
-            element: (
-              <div className="p-6 text-gray-500">
-                Welcome. Generate a feature with{" "}
-                <code>modux gen module &lt;name&gt;</code>.
-              </div>
-            ),
-          },
-          /* modux:module-routes */
-        ],
-      },
-      { path: "*", element: <NotFound /> },
-    ],
+
+    children: [authRoutes],
   },
 ]);
