@@ -10,7 +10,7 @@ interface MainMenu {
 export const menuPermissions: MainMenu = {
   TOP: [
     {
-      code: "DROPDOWN",
+      code: "SETTINGS",
       linkData: {
         path: "dashboard/finance",
         title: "Pages.dashboard",
@@ -18,7 +18,7 @@ export const menuPermissions: MainMenu = {
       iconName: <LayoutDashboard className="size-5" />,
     },
     {
-      code: "DROPDOWN",
+      code: "SETTINGS",
       dropdown: true,
       iconName: <Warehouse className="size-5" />,
       dropdownName: "Pages.stock",
@@ -27,14 +27,14 @@ export const menuPermissions: MainMenu = {
       },
       items: [
         {
-          code: "DROPDOWN",
+          code: "SETTINGS",
           linkData: {
             path: "warehouse",
             title: "Pages.productStock",
           },
         },
         {
-          code: "DROPDOWN",
+          code: "SETTINGS",
           linkData: {
             path: "products",
             title: "Pages.products",
@@ -67,4 +67,3 @@ export const menuPermissions: MainMenu = {
     },
   ],
 };
-

@@ -1,12 +1,11 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import type { Action } from "@reduxjs/toolkit";
-import authReducer from "./features/authSlice";
+import authReducer, { logout } from "./features/authSlice";
 import langReducer from "./features/langSlice";
 import modeReducer from "./features/modeSlice";
 import organizationReducer from "./features/organizationSlice";
 import sidebarReducer from "./features/sidebarCloseSlice";
 import tabListReducer from "./features/tabListSlice";
-import { logout } from "./actions";
 
 const combined = combineReducers({
   lang: langReducer,

@@ -1,20 +1,28 @@
 import { Outlet } from "react-router";
-import { Layout } from "antd";
-import Sidebar from "@/components/sidebar/Sidebar";
-import Navbar from "@/components/navbar/Navbar";
-
-const { Content } = Layout;
-
-export default function MainLayout() {
+import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
+// import SettingSystem from "@/components/navbar/settings";
+import { useRef } from "react";
+import { motion } from "motion/react";
+const MainLayout = () => {
+  const containerRef = useRef(null);
   return (
-    <Layout className="min-h-screen">
-      <Sidebar />
-      <Layout>
-        <Navbar />
-        <Content className="p-4">
-          <Outlet />
-        </Content>
-      </Layout>
-    </Layout>
+    <motion.div ref={containerRef} className="relative">
+      <div className="flex relative box-border! z-10!">
+        <Sidebar />
+        <div className="w-full relative overflow-auto h-screen">
+          <Navbar />
+
+          <div className="py-2 px-4 w-full relative">
+            <div className="">
+              <Outlet />
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* <SettingSystem ref={containerRef} /> */}
+    </motion.div>
   );
-}
+};
+
+export default MainLayout;

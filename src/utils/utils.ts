@@ -5,6 +5,14 @@ export const formatDate = (
   format = "DD.MM.YYYY",
 ) => (value ? dayjs(value).format(format) : "-");
 
+export const hexToRgb = (hex: string) => {
+  const cleanHex = hex.replace(/^#/, "");
+  const r = parseInt(cleanHex.substring(0, 2), 16);
+  const g = parseInt(cleanHex.substring(2, 4), 16);
+  const b = parseInt(cleanHex.substring(4, 6), 16);
+  return `${r}, ${g}, ${b}`;
+};
+
 export const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(" ");
 
@@ -26,4 +34,14 @@ export const clearLocalStorageExcept = (keysToKeep: string[] = []) => {
   Object.entries(savedValues).forEach(([key, value]) => {
     localStorage.setItem(key, value as string);
   });
+};
+
+export const getEffectiveTheme = (themeMode: string | null) => {
+  if (themeMode === "light") return "light";
+  if (themeMode === "dark") return "dark";
+
+  const systemPrefersDark = window.matchMedia(
+    "(prefers-color-scheme: dark)",
+  ).matches;
+  return systemPrefersDark ? "dark" : "light";
 };

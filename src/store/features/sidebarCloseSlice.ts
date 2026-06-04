@@ -1,24 +1,21 @@
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-interface SidebarState {
-  collapsed: boolean;
-}
-
-const initialState: SidebarState = { collapsed: false };
+const initialState = {
+  sidebar: false as boolean,
+  responseSidebar: false as boolean,
+};
 
 const sidebarCloseSlice = createSlice({
-  name: "sidebar",
+  name: "sideBarSlice",
   initialState,
   reducers: {
-    toggleSidebar(state) {
-      state.collapsed = !state.collapsed;
+    setClose: (state, action: PayloadAction<boolean>) => {
+      state.sidebar = action.payload;
     },
-    setCollapsed(state, action: PayloadAction<boolean>) {
-      state.collapsed = action.payload;
+    setResponseOpen: (state, action: PayloadAction<boolean>) => {
+      state.responseSidebar = action.payload;
     },
   },
 });
-
-export const { toggleSidebar, setCollapsed } = sidebarCloseSlice.actions;
+export const { setClose, setResponseOpen } = sidebarCloseSlice.actions;
 export default sidebarCloseSlice.reducer;

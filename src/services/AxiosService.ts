@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { store } from "@/store/store";
-import { logout } from "@/store/actions";
+import { logout } from "@/store/features/authSlice";
 
 const baseURL = `${import.meta.env.VITE_API_BASE_URL_PATH ?? ""}/api`;
 

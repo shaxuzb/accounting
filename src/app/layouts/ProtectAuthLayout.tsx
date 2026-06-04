@@ -1,14 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import toast from "react-hot-toast";
 import Error from "@/components/Error";
-import { logout } from "@/store/actions";
 import type { AuthToken } from "@/shared/types";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { menuPermissions } from "../config/menuPermissions";
-import { isLoading } from "@/store/features/authSlice";
+// import { menuPermissions } from "../config/menuPermissions";
+import { isLoading, logout } from "@/store/features/authSlice";
 import LoadingScreen from "@/components/LoadingScreen";
 
 const ProtectAuthLayout = () => {
@@ -16,7 +15,7 @@ const ProtectAuthLayout = () => {
   const [load, setLoad] = useState(true);
   const user = useAppSelector((state) => state.auth.user) as AuthToken | null;
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
   const dispatch = useAppDispatch();
 
   const redirectToLogin = useCallback(() => {
@@ -35,37 +34,38 @@ const ProtectAuthLayout = () => {
   }, [redirectToLogin]);
 
   const initAuth = useCallback(async () => {
-    if (location.pathname === "/") return navigate("/login", { replace: true });
-    if (!user) {
-      navigate("/login", { replace: true });
-      return;
-    }
+    navigate("/main", { replace: true });
+    // if (location.pathname === "/") return navigate("/login", { replace: true });
+    // if (!user) {
+    //   navigate("/login", { replace: true });
+    //   return;
+    // }
 
-    if (!location.pathname.includes("/login")) {
-      const ok = await checkState();
-      if (!ok) return;
-    }
+    // if (!location.pathname.includes("/login")) {
+    //   const ok = await checkState();
+    //   if (!ok) return;
+    // }
 
-    if (!location.pathname.includes("/main")) {
-      const filterItem = menuPermissions.TOP.filter((item) => {
-        if (item.dropdown && item.items) {
-          return item.items.some(
-            (subItem) =>
-              subItem.code && user.user?.permissions.includes(subItem.code),
-          );
-        }
-        return user.user?.permissions.includes(item.code);
-      });
-      if (filterItem.length > 0) {
-        if (filterItem[0].items?.length) {
-          return navigate(
-            `main/${filterItem[0].linkData?.path}/${filterItem[0].items[0]?.linkData?.path}`,
-            { replace: true },
-          );
-        }
-        navigate(`main/${filterItem[0]?.linkData?.path}`, { replace: true });
-      }
-    }
+    // if (!location.pathname.includes("/main")) {
+    //   const filterItem = menuPermissions.TOP.filter((item) => {
+    //     if (item.dropdown && item.items) {
+    //       return item.items.some(
+    //         (subItem) =>
+    //           subItem.code && user.user?.permissions.includes(subItem.code),
+    //       );
+    //     }
+    //     return user.user?.permissions.includes(item.code);
+    //   });
+    //   if (filterItem.length > 0) {
+    //     if (filterItem[0].items?.length) {
+    //       return navigate(
+    //         `main/${filterItem[0].linkData?.path}/${filterItem[0].items[0]?.linkData?.path}`,
+    //         { replace: true },
+    //       );
+    //     }
+    //     navigate(`main/${filterItem[0]?.linkData?.path}`, { replace: true });
+    //   }
+    // }
   }, [user, checkState, navigate]);
 
   useEffect(() => {

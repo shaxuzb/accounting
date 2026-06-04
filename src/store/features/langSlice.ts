@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-export type Lang = "uz" | "ru";
+export type Lang = "uz" | "ru"| "en";
 
 const initialState = { lang: (localStorage.getItem("lang") as Lang) || "uz" };
 

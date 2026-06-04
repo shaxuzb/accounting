@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-export type Mode = "light" | "dark";
+export type Mode = "light" | "dark" | "system";
 
 const initialState = { mode: (localStorage.getItem("mode") as Mode) || "light" };
 
