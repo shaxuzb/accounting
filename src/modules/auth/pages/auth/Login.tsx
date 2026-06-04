@@ -1,65 +1,58 @@
-//
-import InputPasword from "@/components/fields/InputPassword";
+import InputPassword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
 import type { LoginProps } from "@/interface/Interface";
 import { Button, Checkbox, Form } from "antd";
 import { useFormik } from "formik";
 import login from "@/assets/login.png";
-import GoogleIcon from "@/components/widget/customicons/GoogleIcon";
 import { authSchema } from "../../types/auth";
 
 function Login() {
-  const formikLogin = useFormik<LoginProps>({
+  const formik = useFormik<LoginProps>({
     initialValues: { username: "", password: "" },
     validationSchema: authSchema,
     onSubmit: async () => {},
   });
 
   return (
-    <div className="min-h-screen w-full bg-[#e5e9ed] flex items-center justify-center p-4">
-      <div className="w-full  bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-10 min-h-600px">
-        <div className="lg:col-span-3 p-8 sm:p-10 flex flex-col justify-between bg-white h-full">
-          <div>
+    <div
+      className="h-screen w-screen overflow-hidden bg-[#e8edf3] flex items-center justify-center"
+      style={{ padding: "clamp( 1vw)" }}
+    >
+      <div className="w-full h-full flex rounded-2xl shadow-2xl overflow-hidden shadow-blue-200">
+        <div className="w-[38%] min-w-85 h-full bg-white flex flex-col px-10 py-8">
+          <div className="flex flex-col flex-1 justify-center max-w-90 mx-auto w-full">
             <div className="flex items-center gap-3 mb-10">
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-100">
+              <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-200">
                 HK
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900 leading-none">
                   HisobKitob
                 </h1>
-                <p className="text-[10px] text-blue-600 font-semibold mt-1 uppercase tracking-wider">
+                <p className="text-[10px] text-blue-600 font-semibold mt-0.5 uppercase tracking-wider">
                   Buxgalteriya tizimi
                 </p>
               </div>
             </div>
 
-            <div className="mb-8">
+            <div className="mb-7">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
                 Xush kelibsiz!
               </h2>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-400 leading-relaxed">
                 Hisobingizga kiring va jarayonlarni oson boshqaring.
               </p>
             </div>
 
-            <Form
-              layout="vertical"
-              onFinish={formikLogin.handleSubmit}
-              className="space-y-4"
-            >
-              <InputText
-                fieldName="username"
-                formik={formikLogin}
-                label="User"
-              />
-              <InputPasword
-                formik={formikLogin}
+            <Form layout="vertical" onFinish={formik.handleSubmit}>
+              <InputText fieldName="username" formik={formik} label="Email" />
+              <InputPassword
+                formik={formik}
                 fieldName="password"
                 label="Parol"
               />
 
-              <div className="flex items-center justify-between pb-2">
+              <div className="flex items-center justify-between py-3">
                 <Checkbox className="text-xs font-medium text-gray-500">
                   Eslab qolish
                 </Checkbox>
@@ -67,7 +60,7 @@ function Login() {
                   href="#"
                   className="text-xs font-semibold text-blue-600 hover:underline"
                 >
-                  Unutdingizmi?
+                  Parolni unutdingizmi?
                 </a>
               </div>
 
@@ -76,51 +69,128 @@ function Login() {
                 htmlType="submit"
                 block
                 size="large"
-                className="h-12 rounded-xl bg-blue-600 hover:bg-blue-700 font-semibold"
+                className="h-12 rounded-xl bg-blue-600! hover:!bg-blue-700! font-semibold text-base"
               >
-                Kirish
+                Kirish →
               </Button>
             </Form>
+          </div>
 
-            <div className="mt-8 text-center">
-              <div className="relative flex py-2 items-center">
-                <div className="grow border-t border-gray-100"></div>
-                <span className="shrink mx-4 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                  Yoki
-                </span>
-                <div className="grow border-t border-gray-100"></div>
+          <div className="border-t border-gray-100 pt-5 max-w-90 mx-auto w-full">
+            <p className="text-center text-[11px] text-gray-400 mb-3">
+              © 2024 HisobKitob. Barcha huquqlar himoyalangan.
+            </p>
+            <div className="flex justify-center gap-5 items-center text-[11px] font-semibold text-gray-400">
+              <span className="hover:text-blue-600 cursor-pointer transition-all">
+                O'zbekcha
+              </span>
+              <span className="hover:text-blue-600 cursor-pointer transition-all">
+                Русский
+              </span>
+              <span className="hover:text-blue-600 cursor-pointer transition-all">
+                English
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 h-full relative overflow-hidden">
+          <img
+            src={login}
+            alt="Accounting illustration"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+
+          <div className="absolute inset-0 bg-linear-to-br from-[#cfe2f5cc] via-[#ddeafaaa] to-[#c8d9f080]" />
+
+          <div className="absolute bottom-0 left-0 right-0 z-10 px-10 pb-10">
+            <div className="grid grid-cols-3 gap-5">
+              <div className="flex flex-col gap-2">
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
+                  <svg
+                    width="20"
+                    height="20"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-800 text-[13px] mb-1">
+                    Buxgalterlar uchun qulay
+                  </h4>
+                  <p className="text-[11px] text-gray-600 leading-relaxed">
+                    Intuitiv interfeys va avtomatlashtirilgan jarayonlar bilan
+                    vaqtni tejang.
+                  </p>
+                </div>
               </div>
-              <div className="flex justify-center gap-4 mt-2">
-                <Button className="p-0! w-8! h-8! border border-gray-100 rounded-lg hover:bg-gray-50 transition-all flex items-center justify-center">
-                  <div className="w-5 h-5">
-                    <GoogleIcon />
-                  </div>
-                </Button>
+
+              <div className="flex flex-col gap-2">
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
+                  <svg
+                    width="20"
+                    height="20"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-800 text-[13px] mb-1">
+                    Xavfsiz va ishonchli
+                  </h4>
+                  <p className="text-[11px] text-gray-600 leading-relaxed">
+                    Ma'lumotlaringiz yuqori darajadagi xavfsizlik bilan
+                    himoyalangan.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
+                  <svg
+                    width="20"
+                    height="20"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-800 text-[13px] mb-1">
+                    Barchasi bitta tizimda
+                  </h4>
+                  <p className="text-[11px] text-gray-600 leading-relaxed">
+                    Barcha buxgalteriya jarayonlarini yagona platformada
+                    boshqaring.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-
-          <div className="mt-6 pt-6 border-t border-gray-50 flex justify-center gap-5 items-center text-[11px] font-bold text-gray-400">
-            <span className="hover:text-blue-600 cursor-pointer transition-all">
-              O'zbekcha
-            </span>
-            <span className="hover:text-blue-600 cursor-pointer transition-all">
-              Русский
-            </span>
-            <span className="hover:text-blue-600 cursor-pointer transition-all">
-              English
-            </span>
-          </div>
         </div>
-        <div
-          className="hidden lg:block lg:col-span-7 h-full"
-          style={{
-            backgroundImage: `url(${login})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
       </div>
     </div>
   );
