@@ -6,6 +6,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <ProtectAuthLayout />,
+
     children: [authRoutes],
   },
 ]);
