@@ -60,7 +60,7 @@ const Root = () => {
       }}
       locale={customLocale}
     >
-      <div className={`theme-${effectiveTheme} `}>        
+      <div className={`theme-${effectiveTheme} `} >        
         <App>
           <Toaster />
           <QueryClientProvider client={queryClient}>

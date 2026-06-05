@@ -42,7 +42,7 @@ const SettingDetail: FC<SettingDetailProps> = ({ open, setOpen }) => {
       }}
     >
       <div>
-        <div className="flex items-center justify-between p-3 px-6 border-b border-b-border">
+        <div className="flex items-center justify-between p-3 px-6 border-b border-b-border ">
           <h1 className="text-base font-medium uppercase">
             {t("ThemeSettings.themeMode.title")}
           </h1>
@@ -55,7 +55,7 @@ const SettingDetail: FC<SettingDetailProps> = ({ open, setOpen }) => {
               <Sun className="size-6" />
             </Button>
             <Button
-              className="p-0! w-10! h-10! shadow-none!"
+              className="p-0! w-10! h-10! shadow-none! "
               type={themeMode === "dark" ? "primary" : "default"}
               onClick={() => handleChangeTheme("dark")}
             >

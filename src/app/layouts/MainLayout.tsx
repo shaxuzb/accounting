@@ -7,7 +7,7 @@ import { motion } from "motion/react";
 const MainLayout = () => {
   const containerRef = useRef(null);
   return (
-    <motion.div ref={containerRef} className="relative">
+    <motion.div ref={containerRef} className="relative bg-primary-bg">
       <div className="flex relative box-border! z-10!">
         <Sidebar />
         <div className="w-full relative overflow-auto h-screen">

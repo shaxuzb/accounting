@@ -43,7 +43,7 @@ const MenuCard = ({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-transparent py-1 bg-primary-bg transition-all hover:border-secondary"
+      className="flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-transparent py-1 bg-primary-bg transition-all hover:border-gray-100 hover:bg-gray-100"
     >
       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary text-muted-second">
         {icon}
@@ -123,8 +123,8 @@ const LanguagePopoverContent = ({ onSelect }: { onSelect?: () => void }) => {
           onClick={() => handleChangeLanguage(item.key)}
           className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition ${
             lang === item.key
-              ? "bg-secondary text-foreground"
-              : "hover:bg-secondary/60"
+              ? "bg-secondary text-foreground font-semibold"
+              : "hover:bg-gray-100"
           }`}
         >
           {item.icon}
@@ -154,10 +154,10 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
 
   return (
     <div className="rounded-lg bg-primary-bg p-3">
-      <div className="rounded-lg border border-secondary p-2">
+      <div className="rounded-lg border border-secondary p-2 border-[#e0e0e0] ">
         <div
           onClick={onProfileClick}
-          className="flex cursor-pointer items-center justify-between rounded-lg border border-secondary bg-primary-bg p-2"
+          className="flex cursor-pointer items-center justify-between rounded-lg border border-secondary bg-primary-bg p-2 border-[#e0e0e0] hover:bg-gray-100"
         >
           <div className="flex items-center gap-3">
             <Avatar src={ProfileIcon} size={30} />
@@ -169,11 +169,11 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
             </div>
           </div>
 
-          <ChevronRight className="h-5 w-5 text-muted-second" />
+          <ChevronRight className="h-5 w-5 text-muted-second " />
         </div>
 
-        <div className="mt-3 rounded-lg bg-primary-bg">
-          <div className="grid grid-cols-4 gap-3">
+        <div className="mt-3 rounded-lg bg-primary-bg ">
+          <div className="grid grid-cols-4 gap-3 ">
             <MenuCard
               icon={<Moon className="size-5" />}
               label="Mavzu"
@@ -253,13 +253,12 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
         </div>
       </div> */}
 
-      <div className="mt-3 rounded-lg border border-secondary bg-primary-bg p-2">
+      <div className="mt-3 rounded-lg border border-secondary bg-primary-bg p-2 border-[#e0e0e0] ">
         <Button
-          danger
           size="middle"
           block
           onClick={onLogout}
-          className="font-semibold!"
+          className="font-semibold! "
           icon={<LogOut className="h-4 w-4" />}
         >
           Chiqish

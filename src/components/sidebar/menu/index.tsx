@@ -1,7 +1,7 @@
 // import LineClampAnimation from "@/components/widget/text/LineClampAnimation";
 import type { AuthToken, MenuRole } from "@/shared/types";
 import { useAppSelector } from "@/store/hooks";
-import { Badge, Menu } from "antd";
+import { Badge, ConfigProvider, Menu } from "antd";
 import type { MenuProps } from "antd/lib/menu";
 import dayjs from "dayjs";
 import { useState, type FC } from "react";
@@ -163,6 +163,20 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
     }
   };
   return (
+    <>
+    <ConfigProvider
+      theme={{
+        components: {
+          Menu: {         
+            itemHoverBg: "#e7f0ff",        
+            itemHoverColor: "#005cf3",     
+            subMenuItemBg: "e7f0ff",
+            // itemSelectedBg: "#effff",     
+            // itemSelectedColor: "#2563eb",  
+          },
+        },
+      }}
+    >
     <Menu
       className="sidebar-menu px-0!"
       forceSubMenuRender={true}
@@ -170,10 +184,15 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
       inlineCollapsed={sidebarInline.sidebar}
       openKeys={stateOpenKeys}
       onOpenChange={onOpenChange}
-      style={{ padding: 10 }}
+      style={
+        sidebarInline.sidebar ? { padding: 0, width: 60 } : { padding: 10 }
+      }
       selectedKeys={[getSelectedKey(location.pathname.slice(1))]} // Aktiv menyu yo‘nalishi
       items={items}
+    
     />
+    </ConfigProvider>
+    </>
   );
 };
 

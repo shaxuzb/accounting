@@ -1,5 +1,5 @@
 import type { MenuRole } from "@/shared/types";
-import { LayoutDashboard, Settings, Warehouse } from "lucide-react";
+import { Banknote, Box, Building2, ChartColumnBig, House, Landmark, Settings, ShoppingBag, ShoppingCart, Users } from "lucide-react";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -15,12 +15,12 @@ export const menuPermissions: MainMenu = {
         path: "dashboard/finance",
         title: "Bosh sahifa",
       },
-      iconName: <LayoutDashboard className="size-5" />,
+      iconName: <House className="size-5" />,
     },
     {
       code: "PURCHASE",
       dropdown: true,
-      iconName: <Warehouse className="size-5" />,
+      iconName: <ShoppingCart className="size-5" />,
       dropdownName: "Sotib olish",
       linkData: {
         path: "sotib-olish",
@@ -48,7 +48,7 @@ export const menuPermissions: MainMenu = {
         path: "dashboard/finances",
         title: "Sotuv",
       },
-      iconName: <LayoutDashboard className="size-5" />,
+      iconName: <ShoppingBag className="size-5" />,
     },
     {
       code: "SETT",
@@ -56,7 +56,7 @@ export const menuPermissions: MainMenu = {
         path: "dashboard/financess",
         title: "Bank",
       },
-      iconName: <LayoutDashboard className="size-5" />,
+      iconName: <Landmark className="size-5" />,
     },
     {
       code: "SET",
@@ -64,7 +64,7 @@ export const menuPermissions: MainMenu = {
         path: "dashboard/financesss",
         title: "Kassa",
       },
-      iconName: <LayoutDashboard className="size-5" />,
+      iconName: <Banknote className="size-5" />,
     },
     {
       code: "SE",
@@ -72,7 +72,7 @@ export const menuPermissions: MainMenu = {
         path: "dashboard/financessss",
         title: "Ombor",
       },
-      iconName: <LayoutDashboard className="size-5" />,
+      iconName: <Box className="size-5" />,
     },
     {
       code: "S",
@@ -80,7 +80,7 @@ export const menuPermissions: MainMenu = {
         path: "dashboard/financ",
         title: "Ish haqi",
       },
-      iconName: <LayoutDashboard className="size-5" />,
+      iconName: <Users className="size-5" />,
     },
      {
       code: "Ss",
@@ -88,7 +88,7 @@ export const menuPermissions: MainMenu = {
         path: "dashboard/finan",
         title: "Hisobotlar",
       },
-      iconName: <LayoutDashboard className="size-5" />,
+      iconName: <ChartColumnBig className="size-5" />,
     },
      {
       code: "Sss",
@@ -96,7 +96,7 @@ export const menuPermissions: MainMenu = {
         path: "dashboard/fina",
         title: "Sozlamalar",
       },
-      iconName: <LayoutDashboard className="size-5" />,
+      iconName: <Settings className="size-5" />,
     },
   ],
   BOTTOM: [
@@ -106,7 +106,7 @@ export const menuPermissions: MainMenu = {
         path: "settings",
         title: "HisobKitob MCHJ",
       },
-      iconName: <Settings className="size-5" />,
+      iconName: <Building2 className="size-5" />,
     },
   ],
   SETTINGS: [

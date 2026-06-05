@@ -1,5 +1,5 @@
 import { Badge, Button, Popover } from "antd";
-import { ChevronRight, Mail } from "lucide-react";
+import { Bell, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 const Messages = () => {
@@ -8,7 +8,7 @@ const Messages = () => {
     setOpen(newOpen);
   };
   return (
-    <div>
+    <div className=" border-gray-200 rounded-xl transition-all hover:border-gray-500 hover:bg-gray-100">
       <Button type="link" className="w-10" variant="text">
         <Badge count={0} offset={[1, -3]} size="small" className="text-xs!">
           <Popover
@@ -52,7 +52,7 @@ const Messages = () => {
             open={open}
             onOpenChange={handleOpenChange}
           >
-            <Mail className="text-primary-text size-5" />
+            <Bell className="text-primary-text size-5" />
           </Popover>
         </Badge>
       </Button>
