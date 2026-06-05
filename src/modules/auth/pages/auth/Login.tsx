@@ -16,9 +16,10 @@ function Login() {
   return (
     <div
       className="h-screen w-screen overflow-hidden bg-[#f5f5f5] flex items-center justify-center"
-      style={{ padding: "clamp(15px, 2vw,15px)" }}
+      style={{ padding: "15px" }}
     >
       <div className="w-full h-full flex rounded-2xl shadow-2xl overflow-hidden shadow-[#828487]">
+        {/* LEFT */}
         <div className="w-[38%] min-w-85 h-full bg-white flex flex-col px-10 py-8">
           <div className="flex flex-col flex-1 justify-center max-w-90 mx-auto w-full">
             <div className="flex items-center gap-3 mb-10">
@@ -69,7 +70,7 @@ function Login() {
                 htmlType="submit"
                 block
                 size="large"
-                className="h-12 rounded-xl bg-blue-600! hover:!bg-blue-700! font-semibold text-base"
+                className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
               >
                 Kirish →
               </Button>
@@ -93,7 +94,6 @@ function Login() {
             </div>
           </div>
         </div>
-
         <div className="flex-1 h-full relative overflow-hidden">
           <img
             src={login}
@@ -101,9 +101,14 @@ function Login() {
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
 
-          <div className="absolute inset-0 bg-linear-to-br from-[#cfe2f5cc] via-[#ddeafaaa] to-[#c8d9f080]" />
-
-          <div className="absolute bottom-0 left-0 right-0 z-10 px-10 pb-10">
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(219,234,254,0.25) 0%, rgba(191,219,254,0.15) 100%)",
+            }}
+          />
+          <div className="absolute bottom-0 left-0 right-0 z-10 px-10 pb-7">
             <div className="grid grid-cols-3 gap-5">
               <div className="flex flex-col gap-2">
                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
