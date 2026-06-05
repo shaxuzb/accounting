@@ -52,7 +52,6 @@ const LoadingScreen = () => {
       }`}
     >
       <div className="relative" style={{ width: SIZE, height: SIZE }}>
-        {/* Ambient glow */}
         <div
           className="absolute inset-0 rounded-full pointer-events-none"
           style={{
@@ -61,7 +60,6 @@ const LoadingScreen = () => {
           }}
         />
 
-        {/* Concentric rings */}
         {[140, RADIUS + 20, RADIUS + 60].map((r, idx) => (
           <div
             key={r}
@@ -78,7 +76,6 @@ const LoadingScreen = () => {
           />
         ))}
 
-        {/* Center ERP core */}
         <motion.div
           initial={{ scale: 0.85, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -100,7 +97,6 @@ const LoadingScreen = () => {
                   : "bg-white/80 ring-slate-300"
               }`}
             >
-              {/* animated sweep ring */}
               <motion.div
                 className="absolute -inset-1 rounded-full"
                 style={{
@@ -132,7 +128,6 @@ const LoadingScreen = () => {
           </div>
         </motion.div>
 
-        {/* Radial items */}
         {modules.map((m, i) => {
           const angle = (i / modules.length) * Math.PI * 2 - Math.PI / 2;
           const x = CENTER + RADIUS * Math.cos(angle);
@@ -150,7 +145,6 @@ const LoadingScreen = () => {
               animate={{ opacity: 1 }}
               transition={{ delay }}
             >
-              {/* connector line */}
               <div
                 className={`absolute ${
                   isDark ? "bg-slate-700/60" : "bg-slate-300"
@@ -166,8 +160,6 @@ const LoadingScreen = () => {
                   borderRadius: 2,
                 }}
               />
-
-              {/* icon badge */}
               <motion.div
                 className="absolute -translate-x-1/2 -translate-y-1/2"
                 style={{ left: x, top: y }}

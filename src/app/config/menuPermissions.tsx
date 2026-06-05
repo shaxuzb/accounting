@@ -13,34 +13,90 @@ export const menuPermissions: MainMenu = {
       code: "SETTINGS",
       linkData: {
         path: "dashboard/finance",
-        title: "Pages.dashboard",
+        title: "Bosh sahifa",
       },
       iconName: <LayoutDashboard className="size-5" />,
     },
     {
-      code: "SETTINGS",
+      code: "PURCHASE",
       dropdown: true,
       iconName: <Warehouse className="size-5" />,
-      dropdownName: "Pages.stock",
+      dropdownName: "Sotib olish",
       linkData: {
-        path: "warehouses",
+        path: "sotib-olish",
       },
       items: [
         {
-          code: "SETTINGS",
+          code: "SETTING",
           linkData: {
             path: "warehouse",
-            title: "Pages.productStock",
+            title: "Buyurtmalar",
           },
         },
         {
-          code: "SETTINGS",
+          code: "SETTIN",
           linkData: {
             path: "products",
-            title: "Pages.products",
+            title: "Kirim hujjatlari",
           },
         },
       ],
+    },
+    {
+      code: "SETTI",
+      linkData: {
+        path: "dashboard/finances",
+        title: "Sotuv",
+      },
+      iconName: <LayoutDashboard className="size-5" />,
+    },
+    {
+      code: "SETT",
+      linkData: {
+        path: "dashboard/financess",
+        title: "Bank",
+      },
+      iconName: <LayoutDashboard className="size-5" />,
+    },
+    {
+      code: "SET",
+      linkData: {
+        path: "dashboard/financesss",
+        title: "Kassa",
+      },
+      iconName: <LayoutDashboard className="size-5" />,
+    },
+    {
+      code: "SE",
+      linkData: {
+        path: "dashboard/financessss",
+        title: "Ombor",
+      },
+      iconName: <LayoutDashboard className="size-5" />,
+    },
+    {
+      code: "S",
+      linkData: {
+        path: "dashboard/financ",
+        title: "Ish haqi",
+      },
+      iconName: <LayoutDashboard className="size-5" />,
+    },
+     {
+      code: "Ss",
+      linkData: {
+        path: "dashboard/finan",
+        title: "Hisobotlar",
+      },
+      iconName: <LayoutDashboard className="size-5" />,
+    },
+     {
+      code: "Sss",
+      linkData: {
+        path: "dashboard/fina",
+        title: "Sozlamalar",
+      },
+      iconName: <LayoutDashboard className="size-5" />,
     },
   ],
   BOTTOM: [
@@ -48,7 +104,7 @@ export const menuPermissions: MainMenu = {
       code: "SETTINGS",
       linkData: {
         path: "settings",
-        title: "Settings.title",
+        title: "HisobKitob MCHJ",
       },
       iconName: <Settings className="size-5" />,
     },

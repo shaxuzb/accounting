@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { menuPermissions } from "../config/menuPermissions";
 // import { logout } from "@/store/features/authSlice";
 import { getEffectiveTheme } from "@/utils/utils";
-import CustomScroller from "react-custom-scroller";
+// import CustomScroller from "react-custom-scroller";
 const Sidebar = () => {
   const themeMode = useAppSelector((state) => state.mode.mode);
   const sidebarInline = useAppSelector((state) => state.sidebar);
@@ -69,13 +69,13 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`${sidebarInline.sidebar ? "w-16" : "w-70"} h-screen sticky overflow-hidden top-0  ${getEffectiveTheme(themeMode) === "light" ? "bg-white" : "bg-secondary"} flex flex-col`}
+      className={`${sidebarInline.sidebar ? "w-16" : "w-70"} h-screen sticky overflow-hidden top-0 border-r border-[#e5e7eb] ${getEffectiveTheme(themeMode) === "light" ? "bg-white" : "bg-secondary"} flex flex-col`}
     >
       <LogoSide />
-      <CustomScroller className={`duration-300 flex-1 overflow-auto`}>
+      {/* <CustomScroller className={`duration-300 flex-1 overflow-auto`}> */}
         {/* {!sidebarInline.sidebar && <ProfileSide />} */}
         <MenuCustom route={memoizedMenus.TOP} />
-      </CustomScroller>
+      {/* </CustomScroller> */}
       <MenuCustom route={memoizedMenus.BOTTOM} />
     </div>
   );

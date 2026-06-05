@@ -3,7 +3,13 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 export type Mode = "light" | "dark" | "system";
 
-const initialState = { mode: (localStorage.getItem("mode") as Mode) || "light" };
+const storedMode = localStorage.getItem("mode");
+const initialState = {
+  mode:
+    storedMode === "light" || storedMode === "dark" || storedMode === "system"
+      ? (storedMode as Mode)
+      : "light",
+};
 
 const modeSlice = createSlice({
   name: "mode",

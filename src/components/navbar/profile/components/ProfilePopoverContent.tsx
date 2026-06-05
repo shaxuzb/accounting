@@ -144,8 +144,8 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
   onThemeClick,
   onSecurityClick,
   onWallpaperClick,
-  onDesktopDownload,
-  onMobileDownload,
+  // onDesktopDownload,
+  // onMobileDownload,
   onLogout,
 }) => {
   const lang = useAppSelector((state) => state.lang.lang);
@@ -238,7 +238,7 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
         </div>
       </div>
 
-      <div className="mt-3 rounded-lg border border-secondary bg-primary-bg p-2">
+      {/* <div className="mt-3 rounded-lg border border-secondary bg-primary-bg p-2">
         <div className="space-y-2">
           <DownloadRow
             icon={<Monitor className="size-4 fill-muted-second" />}
@@ -251,7 +251,7 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
             onClick={onMobileDownload}
           />
         </div>
-      </div>
+      </div> */}
 
       <div className="mt-3 rounded-lg border border-secondary bg-primary-bg p-2">
         <Button

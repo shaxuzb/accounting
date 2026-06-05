@@ -20,7 +20,7 @@ const SettingSystem = ({ ref }: { ref: React.RefObject<HTMLDivElement> }) => {
     >
       <Button
         type="primary"
-        className="!p-0 w-12 !h-12  !rounded-l-4xl !rounded-t-4xl !rounded-br-sm"
+        className="p-0! w-12 h-12! rounded-l-4xl! rounded-t-4xl! rounded-br-sm!"
         onClick={(e) => {
           if (dragging) return e.preventDefault();
           setOpen(true);

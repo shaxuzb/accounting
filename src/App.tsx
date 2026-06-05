@@ -1,4 +1,5 @@
 import { RouterProvider } from "react-router";
+import { useEffect, useState } from "react";
 import { App, ConfigProvider, theme } from "antd";
 import uzUz from "antd/es/locale/uz_UZ";
 import "dayjs/locale/uz";
@@ -16,6 +17,9 @@ dayjs.extend(isoWeek);
 dayjs.locale("uz");
 const Root = () => {
   const themeMode = useAppSelector((state) => state.mode.mode);
+  const [effectiveTheme, setEffectiveTheme] = useState(() =>
+    getEffectiveTheme(themeMode),
+  );
   // const dispatch = useAppDispatch();
   const customLocale = {
     ...uzUz,
@@ -29,28 +33,41 @@ const Root = () => {
       },
     },
   });
-  // useEffect(() => {
-  //   dispatch(sinchronius(themeMode));
-  // }, [dispatch, themeMode]);
+  useEffect(() => {
+    setEffectiveTheme(getEffectiveTheme(themeMode));
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleSystemThemeChange = () => {
+      if (themeMode === "system") {
+        setEffectiveTheme(getEffectiveTheme(themeMode));
+      }
+    };
+
+    mediaQuery.addEventListener?.("change", handleSystemThemeChange);
+    return () => mediaQuery.removeEventListener?.("change", handleSystemThemeChange);
+  }, [themeMode]);
+
   return (
     <ConfigProvider
       theme={{
         algorithm:
-          getEffectiveTheme(themeMode) === "light"
+          effectiveTheme === "light"
             ? theme.defaultAlgorithm
             : theme.darkAlgorithm,
-        ...(getEffectiveTheme(themeMode) === "light"
+        ...(effectiveTheme === "light"
           ? customTheme.customTheme
           : customTheme.darkCustomTheme),
       }}
       locale={customLocale}
     >
-      <App>
-        <Toaster />
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-        </QueryClientProvider>
-      </App>
+      <div className={`theme-${effectiveTheme} `}>        
+        <App>
+          <Toaster />
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </App>
+      </div>
     </ConfigProvider>
   );
 };

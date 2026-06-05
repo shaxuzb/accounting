@@ -1,4 +1,4 @@
-import LineClampAnimation from "@/components/widget/text/LineClampAnimation";
+// import LineClampAnimation from "@/components/widget/text/LineClampAnimation";
 import type { AuthToken, MenuRole } from "@/shared/types";
 import { useAppSelector } from "@/store/hooks";
 import { Badge, Menu } from "antd";
@@ -27,7 +27,7 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const [stateOpenKeys, setStateOpenKeys] = useState([""]);
+  const [stateOpenKeys, setStateOpenKeys] = useState<string[]>([]);
   const sidebarInline = useAppSelector((state) => state.sidebar);
   const getSelectedKey = (pathname: string) => {
     for (const item of route) {
@@ -65,7 +65,7 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
       key: "main/" + itemParent.linkData?.path,
       // className: `${itemParent.code === "SETTINGS" ? "!mt-10" : ""}`,
       label: isDropdown ? (
-        <div className="flex items-center justify-between w-[85%]">
+        <div className="flex items-center justify-between w-full text-sm font-medium">
           {t(String(itemParent.dropdownName ?? ""))}
         </div>
       ) : (
@@ -95,71 +95,16 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
       ...(isDropdown
         ? {
             children: itemParent.items
-              ?.filter((item) =>
-                user?.user?.permissions?.some((perm) => perm === item.code),
+              ?.filter(
+                (item) =>
+                  !user?.user?.permissions?.length ||
+                  user.user?.permissions?.some((perm) => perm === item.code),
               )
               ?.map((item) => ({
                 key: `main/${itemParent.linkData.path}/${item.linkData?.path}`,
                 className:
                   "!pl-[25px] !pr-0 !flex !items-center text-animation-trick-parent",
-
-                label: (
-                  <div className="flex! w-full! relative">
-                    {/* {!sidebarInline.sidebar && (
-                      <div className="w-4 flex justify-center items-center relative mr-3">
-                        <div className="w-2 h-2 bg-muted-second rounded-full"></div>
-                        <div
-                          className={`absolute left-1/2 -translate-x-1/2 bg-muted-second w-[0.5px] top-0 ${
-                            (itemParent.items?.length ?? 0) - 1 === index
-                              ? "h-1/2"
-                              : "h-full"
-                          }`}
-                        ></div>
-                      </div>
-                    )} */}
-                    <div className="flex items-center relative justify-between w-full pr-5">
-                      <div className="w-35">
-                        <LineClampAnimation
-                          text={t(item.linkData?.title || "")}
-                        />
-                      </div>
-                    </div>
-                    <div className="absolute -top-2.5 left-0">
-                      <Badge
-                        size="small"
-                        classNames={{
-                          indicator: "!text-[10px] !shadow-none",
-                        }}
-                        // count={
-                        //   item.linkData?.path === "sale" ? data?.count : null
-                        // }
-                        offset={[sidebarInline.sidebar ? -15 : 11, -3]}
-                      ></Badge>
-                    </div>
-                    {/* <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // handleAddTabItem(
-                        //   `${itemParent.linkData.path}/${item.linkData?.path}`,
-                        //   item,
-                        // );
-                      }}
-                      type="text"
-                      className="w-5! h-5! z-20! absolute! right-0 top-1/2 -translate-y-1/2 menu-pin-button"
-                      icon={
-                        tabList.find(
-                          (tabItem) =>
-                            tabItem.path ===
-                            `main/${itemParent.linkData.path}/${item.linkData?.path}`,
-                        ) ? (
-                          <Pin className="size-2.5 fill-white" />
-                        ) : (
-                          <Pin className="size-2.5" />
-                        )
-                      }
-                    /> */}
-                  </div>
-                ),
+                label: t(item.linkData?.title || ""),
                 onClick: () => {
                   //   if (responseSidebar) {
                   //     dispatch(setResponseOpen(!responseSidebar));
@@ -200,7 +145,7 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
     const currentOpenKey = openKeys.find(
       (key) => stateOpenKeys.indexOf(key) === -1,
     );
-    // open
+
     if (currentOpenKey !== undefined) {
       const repeatIndex = openKeys
         .filter((key) => key !== currentOpenKey)
@@ -208,19 +153,18 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
 
       setStateOpenKeys(
         openKeys
-          // remove repeat key
+
           .filter((_, index) => index !== repeatIndex)
-          // remove current level all child
+
           .filter((key) => levelKeys[key] <= levelKeys[currentOpenKey]),
       );
     } else {
-      // close
       setStateOpenKeys(openKeys);
     }
   };
   return (
     <Menu
-      className="px-0!"
+      className="sidebar-menu px-0!"
       forceSubMenuRender={true}
       mode="inline"
       inlineCollapsed={sidebarInline.sidebar}

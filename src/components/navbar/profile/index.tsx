@@ -5,7 +5,7 @@ import ProfileIcon from "@/assets/images/profile/profile.svg";
 import { useNavigate } from "react-router";
 import { ProfilePopoverContent } from "./components/ProfilePopoverContent";
 import { logout } from "@/store/features/authSlice";
-
+import { toggleMode } from "@/store/features/modeSlice";
 const ProfileNav: React.FC = () => {
   const navigate = useNavigate();
   // const loading = useAppSelector((state) => state.auth.loading);
@@ -22,7 +22,7 @@ const ProfileNav: React.FC = () => {
       fullName={user?.user?.fullName}
       phone={user?.user?.phoneNumber || "+998 -- --- -- --"}
       onProfileClick={() => navigate("/profile")}
-      onThemeClick={() => navigate("/settings/theme")}
+      onThemeClick={() => dispatch(toggleMode())}
       onSecurityClick={() => navigate("/settings/security")}
       onLanguageClick={() => {}}
       onWallpaperClick={() => navigate("/settings/wallpaper")}
@@ -50,9 +50,20 @@ const ProfileNav: React.FC = () => {
     >
       <div className="cursor-pointer" onClick={(e) => e.preventDefault()}>
         <Space>
-          <Avatar src={ProfileIcon} size="default" />
-          {/* <span className="text-sm text-text">{user?.user?.fullName}</span>
-          <ChevronDown className="size-4 text-text" /> */}
+          <Avatar
+            src={ProfileIcon}
+            size={40}
+            className="border border-teal-500"
+          />
+          <div className="flex flex-col justify-center">
+            <h2 className="text-[14px] text-[#1a202c] font-bold leading-tight m-0 flex items-center">
+              {user?.user?.fullName || "Amonov Mahmudjon"}
+            </h2>
+            <p className="text-[12px] text-gray-400 font-medium m-0 mt-0.5 leading-none">
+              {user?.user?.role || "Administrator"}
+            </p>
+          </div>
+          {/* <ChevronDown className="size-4 text-text" /> */}
         </Space>
       </div>
     </Popover>
@@ -60,3 +71,7 @@ const ProfileNav: React.FC = () => {
 };
 
 export default ProfileNav;
+
+
+
+

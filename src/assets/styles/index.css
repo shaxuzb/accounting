@@ -1,12 +1,51 @@
 @import "tailwindcss";
 
-:root {
-  color-scheme: light dark;
+.sidebar-menu .ant-menu-item,
+.sidebar-menu .ant-menu-submenu-title {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
 }
 
-html,
-body,
-#root {
-  height: 100%;
-  margin: 0;
+.sidebar-menu .ant-menu-submenu-inline .ant-menu-item {
+  padding-left: 44px !important;
 }
+
+.sidebar-menu .ant-menu-submenu-inline .ant-menu-item .ant-menu-title-content {
+  position: relative;
+  padding-left: 18px !important;
+}
+
+.sidebar-menu .ant-menu-submenu-inline .ant-menu-item .ant-menu-title-content::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: #94a3b8;
+}
+
+.sidebar-menu .ant-menu-submenu-inline .ant-menu-item:hover .ant-menu-title-content::before,
+.sidebar-menu .ant-menu-item-selected .ant-menu-title-content::before,
+.sidebar-menu .ant-menu-item-active .ant-menu-title-content::before {
+  background-color: #2563eb;
+}
+
+.sidebar-menu .ant-menu-item-selected > .ant-menu-item-content,
+.sidebar-menu .ant-menu-item-active > .ant-menu-item-content {
+  color: #2563eb !important;
+}
+
+.sidebar-menu .ant-menu-item:hover .menu-item-dot {
+  background-color: #2563eb;
+}
+
+.sidebar-menu .ant-menu-submenu-open > .ant-menu-submenu-title,
+.sidebar-menu .ant-menu-item-selected,
+.sidebar-menu .ant-menu-item-active {
+  background-color: transparent !important;
+}
+
+

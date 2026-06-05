@@ -15,10 +15,10 @@ function Login() {
 
   return (
     <div
-      className="h-screen w-screen overflow-hidden bg-[#e8edf3] flex items-center justify-center"
-      style={{ padding: "clamp( 1vw)" }}
+      className="h-screen w-screen overflow-hidden bg-[#f5f5f5] flex items-center justify-center"
+      style={{ padding: "clamp(15px, 2vw,15px)" }}
     >
-      <div className="w-full h-full flex rounded-2xl shadow-2xl overflow-hidden shadow-blue-200">
+      <div className="w-full h-full flex rounded-2xl shadow-2xl overflow-hidden shadow-[#828487]">
         <div className="w-[38%] min-w-85 h-full bg-white flex flex-col px-10 py-8">
           <div className="flex flex-col flex-1 justify-center max-w-90 mx-auto w-full">
             <div className="flex items-center gap-3 mb-10">
@@ -29,7 +29,7 @@ function Login() {
                 <h1 className="text-xl font-bold text-gray-900 leading-none">
                   HisobKitob
                 </h1>
-                <p className="text-[10px] text-blue-600 font-semibold mt-0.5 uppercase tracking-wider">
+                <p className="text-[11px] text-blue-600 font-semibold mt-0.5 tracking-wider">
                   Buxgalteriya tizimi
                 </p>
               </div>

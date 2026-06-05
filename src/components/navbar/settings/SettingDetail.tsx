@@ -49,24 +49,21 @@ const SettingDetail: FC<SettingDetailProps> = ({ open, setOpen }) => {
           <div className="flex gap-1">
             <Button
               className="p-0! w-10! h-10! shadow-none!"
-              color={themeMode === "light" ? "primary" : "default"}
-              variant="outlined"
+              type={themeMode === "light" ? "primary" : "default"}
               onClick={() => handleChangeTheme("light")}
             >
               <Sun className="size-6" />
             </Button>
             <Button
               className="p-0! w-10! h-10! shadow-none!"
-              color={themeMode === "dark" ? "primary" : "default"}
-              variant="outlined"
+              type={themeMode === "dark" ? "primary" : "default"}
               onClick={() => handleChangeTheme("dark")}
             >
               <Moon className="size-6" />
             </Button>
             <Button
               className="p-0! w-10! h-10! shadow-none!"
-              color={themeMode === "system" ? "primary" : "default"}
-              variant="outlined"
+              type={themeMode === "system" ? "primary" : "default"}
               onClick={() => handleChangeTheme("system")}
             >
               <Cpu className="size-6" />
