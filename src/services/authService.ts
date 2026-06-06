@@ -7,11 +7,24 @@ export interface LoginPayload {
 
 export interface LoginResponse {
   token: string;
-  user: { id: string | number; organizationId?: string | number; [key: string]: unknown };
+  user: {
+    id: string | number;
+    userName: string;
+    firstName: string;
+    lastName: string;
+  };
+  // ;organizationId?: string | number;
+  // [key: string]: unknown
 }
 
 export const authService = {
-  login: (payload: LoginPayload) =>
-    $axiosPrivate.post<LoginResponse>("/auth/login", payload).then((res) => res.data),
-  me: () => $axiosPrivate.get("/auth/me").then((res) => res.data),
+  login: async (payload: LoginPayload) => {
+    const data = await $axiosPrivate.post<LoginResponse>(
+      "/auth/login",
+      payload,
+    );
+    return data;
+  },
+
+  authCheck: async () => await $axiosPrivate.get("/auth/auth-check"),
 };

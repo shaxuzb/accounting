@@ -1,16 +1,54 @@
 import InputPassword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
-import type { LoginProps } from "@/interface/Interface";
 import { Button, Checkbox, Form } from "antd";
 import { useFormik } from "formik";
-import login from "@/assets/login.png";
+import loginP from "@/assets/loginP.png";
 import { authSchema } from "../../types/auth";
+import { authService, type LoginPayload } from "@/services/authService";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { login, isLoading as setIsLoading } from "@/store/features/authSlice";
+import { useNavigate } from "react-router";
+import { notifyError, notifySuccess } from "@/utils/notification";
+
 
 function Login() {
-  const formik = useFormik<LoginProps>({
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const loading = useAppSelector((s) => s.auth.loading);
+
+
+  const formik = useFormik<LoginPayload>({
     initialValues: { username: "", password: "" },
     validationSchema: authSchema,
-    onSubmit: async () => {},
+    onSubmit: async (values, { setErrors }) => {
+      dispatch(setIsLoading(true));
+      try {
+        const response = await authService.login({
+          username: values.username,
+          password: values.password,
+        });
+        dispatch(login(response.data));
+           
+        navigate("/main");
+        notifySuccess("Muvaffaqiyatli kirdingiz!");
+      } catch (error) {
+        const serverErrors = error?.response?.data?.errors;
+        const generalMessage =
+          error?.response?.data?.message || error?.response?.data?.detail;
+        if (serverErrors && typeof serverErrors === "object") {
+          // Agar backend har bir input uchun alohida xato bergan bo'lsa (Formik inputlariga tarqatadi)
+          setErrors(serverErrors);
+        } else if (generalMessage) {
+          // Agar backend umumiy bitta xato matni qaytargan bo'lsa (Toast orqali chiqadi)
+          notifyError(generalMessage);
+        } else {
+          // Agar kutilmagan xato bo'lsa yoki server umuman javob bermasa (Tarmoq xatosi)
+          notifyError("Tizimga kirishda kutilmagan xatolik yuz berdi");
+        }
+      } finally {
+        dispatch(setIsLoading(false));
+      }
+    },
   });
 
   return (
@@ -19,7 +57,6 @@ function Login() {
       style={{ padding: "15px" }}
     >
       <div className="w-full h-full flex rounded-2xl shadow-2xl overflow-hidden shadow-[#828487]">
-        {/* LEFT */}
         <div className="w-[38%] min-w-85 h-full bg-white flex flex-col px-10 py-8">
           <div className="flex flex-col flex-1 justify-center max-w-90 mx-auto w-full">
             <div className="flex items-center gap-3 mb-10">
@@ -70,6 +107,7 @@ function Login() {
                 htmlType="submit"
                 block
                 size="large"
+                loading={loading}
                 className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
               >
                 Kirish →
@@ -96,7 +134,7 @@ function Login() {
         </div>
         <div className="flex-1 h-full relative overflow-hidden">
           <img
-            src={login}
+            src={loginP}
             alt="Accounting illustration"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />

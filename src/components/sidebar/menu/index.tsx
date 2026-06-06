@@ -72,11 +72,11 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
         t(String(itemParent.linkData.title ?? ""))
       ),
       onClick: () => {
-        if (
-          !isDropdown &&
-          location.pathname.slice(1) !== itemParent.linkData.path
-        ) {
-          navigate(itemParent.linkData.path);
+        if (!isDropdown) {
+          const targetPath = itemParent.linkData.path === "settings" ? "main/settings" : itemParent.linkData.path;
+          if (location.pathname.slice(1) !== targetPath) {
+            navigate(`/${targetPath}`);
+          }
         }
       },
       icon: (
@@ -106,16 +106,11 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
                   "!pl-[25px] !pr-0 !flex !items-center text-animation-trick-parent",
                 label: t(item.linkData?.title || ""),
                 onClick: () => {
-                  //   if (responseSidebar) {
-                  //     dispatch(setResponseOpen(!responseSidebar));
-                  //   }
                   if (
                     location.pathname.slice(1) !==
                     `${itemParent.linkData.path}/${item.linkData?.path}`
                   ) {
-                    navigate(
-                      `${itemParent.linkData.path}/${item.linkData?.path}`,
-                    );
+                    navigate(`/${itemParent.linkData.path}/${item.linkData?.path}`);
                   }
                 },
                 icon: item.iconName,

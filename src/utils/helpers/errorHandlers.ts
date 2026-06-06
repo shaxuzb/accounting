@@ -8,6 +8,7 @@ export const errorHandlers = (err: unknown): void => {
     );
   } else if (err instanceof Error) {
     toast.error(err.message);
+    
   } else {
     toast.error("Unknown error occurred");
   }

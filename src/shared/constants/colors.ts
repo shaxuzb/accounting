@@ -21,7 +21,6 @@ const palette = [
   {
     text: "text-blue-500",
     bg: "bg-blue-500/10",
-    border: "border-blue-500/20",
     line: "#3B82F6",
   },
   {

@@ -12,7 +12,7 @@ export const menuPermissions: MainMenu = {
     {
       code: "SETTINGS",
       linkData: {
-        path: "dashboard/finance",
+        path: "setti",
         title: "Bosh sahifa",
       },
       iconName: <House className="size-5" />,
@@ -93,7 +93,7 @@ export const menuPermissions: MainMenu = {
      {
       code: "Sss",
       linkData: {
-        path: "dashboard/fina",
+        path: "settings",
         title: "Sozlamalar",
       },
       iconName: <Settings className="size-5" />,
@@ -103,7 +103,7 @@ export const menuPermissions: MainMenu = {
     {
       code: "SETTINGS",
       linkData: {
-        path: "settings",
+        path: "settingss",
         title: "HisobKitob MCHJ",
       },
       iconName: <Building2 className="size-5" />,
@@ -115,10 +115,10 @@ export const menuPermissions: MainMenu = {
       filterCode: "default",
       linkData: {
         path: "role",
-        title: "Settings.role.title",
+        title: "Tashkilot ma'lumotlari",
         // img: role,
         description:
-          "Foydalanuvchilarning huquqlari va tizimdagi rollarini boshqarish.",
+          "Kompaniya rekvizitlari va sozlamalar",
       },
     },
   ],

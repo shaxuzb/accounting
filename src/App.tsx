@@ -15,6 +15,7 @@ import { getEffectiveTheme } from "./utils/utils";
 // import { sinchronius } from "./store/features/modeSlice";
 dayjs.extend(isoWeek);
 dayjs.locale("uz");
+
 const Root = () => {
   const themeMode = useAppSelector((state) => state.mode.mode);
   const [effectiveTheme, setEffectiveTheme] = useState(() =>
