@@ -8,19 +8,18 @@ import { authService, type LoginPayload } from "@/services/authService";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { login, isLoading as setIsLoading } from "@/store/features/authSlice";
 import { useNavigate } from "react-router";
-import { notifyError, notifySuccess } from "@/utils/notification";
-
+import toast from "react-hot-toast";
+import { errorHandlers } from "@/utils/helpers/errorHandlers";
 
 function Login() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const loading = useAppSelector((s) => s.auth.loading);
 
-
   const formik = useFormik<LoginPayload>({
     initialValues: { userName: "", password: "" },
     validationSchema: authSchema,
-    onSubmit: async (values, { setErrors }) => {
+    onSubmit: async (values) => {
       dispatch(setIsLoading(true));
       try {
         const response = await authService.login({
@@ -28,25 +27,11 @@ function Login() {
           password: values.password,
         });
         dispatch(login(response.data));
-           
+
         navigate("/main");
-        notifySuccess("Muvaffaqiyatli kirdingiz!");
+        toast.success("Muvaffaqiyatli kirdingiz!");
       } catch (error) {
-        const serverErrors = error?.response?.data?.errors;
-        const generalMessage =
-          error?.response?.data?.message || error?.response?.data?.detail;
-        if (serverErrors && typeof serverErrors === "object") {
-          // Agar backend har bir input uchun alohida xato bergan bo'lsa (Formik inputlariga tarqatadi)
-          setErrors(serverErrors);
-        } else if (generalMessage) {
-          // Agar backend umumiy bitta xato matni qaytargan bo'lsa (Toast orqali chiqadi)
-          notifyError(generalMessage);
-        } else {
-          // Agar kutilmagan xato bo'lsa yoki server umuman javob bermasa (Tarmoq xatosi)
-          notifyError("Tizimga kirishda kutilmagan xatolik yuz berdi");
-        }
-      } finally {
-        dispatch(setIsLoading(false));
+        errorHandlers(error);
       }
     },
   });
