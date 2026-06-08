@@ -6,6 +6,7 @@ import { logout } from "@/store/features/authSlice";
 const baseURL = `${import.meta.env.VITE_API_BASE_URL_PATH ?? ""}/api`;
 
 export const $axiosPrivate = axios.create({ baseURL, timeout: 50000 });
+export const $axiosPublic = axios.create({ baseURL, timeout: 50000 });
 
 $axiosPrivate.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const login = JSON.parse(localStorage.getItem("login") || "null");
@@ -30,8 +31,3 @@ $axiosPrivate.interceptors.response.use(
 );
 
 export default $axiosPrivate;
-
-
-
-
-

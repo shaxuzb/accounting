@@ -1,5 +1,5 @@
 import type { User } from "@/shared/types";
-import { $axiosPrivate } from "./AxiosService";
+import { $axiosPrivate, $axiosPublic } from "./AxiosService";
 
 export interface LoginPayload {
   userName: string;
@@ -15,10 +15,7 @@ export interface LoginResponse {
 
 export const authService = {
   login: async (payload: LoginPayload) => {
-    const data = await $axiosPrivate.post<LoginResponse>(
-      "/auth/login",
-      payload,
-    );
+    const data = await $axiosPublic.post<LoginResponse>("/auth/login", payload);
     return data;
   },
 

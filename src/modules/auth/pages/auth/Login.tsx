@@ -20,14 +20,13 @@ function Login() {
     initialValues: { userName: "", password: "" },
     validationSchema: authSchema,
     onSubmit: async (values) => {
-      dispatch(setIsLoading(true));
+      // dispatch(setIsLoading(true));
       try {
         const response = await authService.login({
           userName: values.userName,
           password: values.password,
         });
         dispatch(login(response.data));
-
         navigate("/main");
         toast.success("Muvaffaqiyatli kirdingiz!");
       } catch (error) {
@@ -94,8 +93,6 @@ function Login() {
                 size="large"
                 loading={loading}
                 className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-                onClick={() => console.log(formik)
-                }
               >
                 Kirish →
               </Button>

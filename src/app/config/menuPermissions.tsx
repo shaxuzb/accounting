@@ -1,5 +1,16 @@
 import type { MenuRole } from "@/shared/types";
-import { Banknote, Box, Building2, ChartColumnBig, House, Landmark, Settings, ShoppingBag, ShoppingCart, Users } from "lucide-react";
+import {
+  Banknote,
+  Box,
+  Building2,
+  ChartColumnBig,
+  House,
+  Landmark,
+  Settings,
+  ShoppingBag,
+  ShoppingCart,
+  Users,
+} from "lucide-react";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -82,7 +93,7 @@ export const menuPermissions: MainMenu = {
       },
       iconName: <Users className="size-5" />,
     },
-     {
+    {
       code: "Ss",
       linkData: {
         path: "dashboard/finan",
@@ -90,7 +101,7 @@ export const menuPermissions: MainMenu = {
       },
       iconName: <ChartColumnBig className="size-5" />,
     },
-     {
+    {
       code: "Sss",
       linkData: {
         path: "settings",
@@ -112,13 +123,21 @@ export const menuPermissions: MainMenu = {
   SETTINGS: [
     {
       code: "DROPDOWN",
-      filterCode: "default",
       linkData: {
         path: "role",
         title: "Tashkilot ma'lumotlari",
         // img: role,
+        description: "Kompaniya rekvizitlari va sozlamalar",
+      },
+    },
+    {
+      code: "sdasda",
+      linkData: {
+        path: "user",
+        title: "Settings.user.title",
+        // img: role,
         description:
-          "Kompaniya rekvizitlari va sozlamalar",
+          "Foydalanuvchilarning huquqlari va tizimdagi rollarini boshqarish.",
       },
     },
   ],
