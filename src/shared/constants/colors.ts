@@ -2,9 +2,11 @@ const color = {
   baseColor: "#6366f1",
   sidebarBgColor: "#ffffff",
   textColorBlack: "#1a202c",
+  textColor: "#5D697E",
   mutedColor: "#909090",
   textColorBlackSecondary: "#8f9bba",
   bgColor: "#ffffff",
+  borderColor: "#e0e7f0",
   menuSelectedBg: "#bab8b80d",
 };
 const colorDark = {
@@ -14,6 +16,7 @@ const colorDark = {
   mutedColor: "#ffffffbf",
   textColorBlackSecondary: "#8f9bba",
   bgColor: "#ffffff",
+  borderColor: "#e0e7f0",
   menuSelectedBg: "#bab8b80d",
 };
 

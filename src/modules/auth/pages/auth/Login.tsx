@@ -6,7 +6,7 @@ import loginP from "@/assets/loginP.png";
 import { authSchema } from "../../types/auth";
 import { authService, type LoginPayload } from "@/services/authService";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { login, isLoading as setIsLoading } from "@/store/features/authSlice";
+import { login } from "@/store/features/authSlice";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";

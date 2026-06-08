@@ -1,53 +1,78 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import { Button, Card, Input, Table } from "antd";
-import type { TableColumnsType } from "antd";
-import { Plus } from "lucide-react";
+import { Table } from "antd";
+import type { TableColumnsType, TableColumnType } from "antd";
 import { useTranslation } from "react-i18next";
-import { useDebounce } from "@/shared/hooks/useDebounce";
 import type { Role } from "../../types/settings";
 import { useGetListRole } from "../../hooks/role/useGetListRole";
+import { generateKeyTable } from "@/utils/utils";
+import ActionColumn from "@/components/ui/table/actions/ActionColumns";
+import { useAppSelector } from "@/store/hooks";
+import { rolePermissions } from "../../constants/permissions";
+import { stateStatus } from "@/utils/helpers/statusHelper";
+import Card from "@/components/ui/card/Card";
 
 export default function RoleListPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const debounced = useDebounce(search, 400);
-  const { data, isLoading } = useGetListRole({ search: debounced });
+  const { user } = useAppSelector((state) => state.auth);
+  const { data, refetch, isLoading } = useGetListRole();
 
-  const columns: TableColumnsType<Role> = [
-    { title: "ID", dataIndex: "id", key: "id", width: 80 },
-    { title: t("common.name", "Name"), dataIndex: "name", key: "name" },
+  const tableColumns: TableColumnsType<Role> = [
     {
-      title: t("common.actions", "Actions"),
-      key: "actions",
-      width: 120,
-      render: (_, record) => <Link to={`${record.id}`}>{t("common.view", "View")}</Link>,
+      dataIndex: "indexId",
+      title: t("T/r"),
+      align: "center",
+      width: 70,
+    },
+    {
+      title: "Nomi",
+      dataIndex: "fullName",
+    },
+    {
+      title: "Holati",
+      dataIndex: "state",
+      align: "center",
+      render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
   ];
+  const hasActions =
+    user?.user.permissions.includes(rolePermissions.update) ||
+    user?.user.permissions.includes(rolePermissions.delete);
 
+  const columns: TableColumnType<Role>[] = hasActions
+    ? [
+        ...tableColumns,
+        {
+          dataIndex: "actions",
+          title: t("Amallar"),
+          align: "center",
+          width: 100,
+          fixed: "right",
+          render: (_, record) => (
+            <ActionColumn
+              deletePath="roles"
+              customPatn={`/main/role/edit/${record.id}`}
+              record={record}
+              permissions={user?.user.permissions || []}
+              permissionsCode={{
+                deleteCode: rolePermissions.delete,
+                editCode: rolePermissions.update,
+              }}
+              refetch={refetch}
+            />
+          ),
+        },
+      ]
+    : tableColumns;
   return (
-    <Card
-      title="Role"
-      extra={
-        <Button type="primary" icon={<Plus size={16} />} onClick={() => navigate("add")}>
-          {t("common.add", "Add")}
-        </Button>
-      }
-    >
-      <Input.Search
-        className="mb-4 max-w-xs"
-        placeholder={t("common.search", "Search")}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        allowClear
-      />
+    <Card className="border overflow-hidden border-border">
       <Table<Role>
-        rowKey="id"
         loading={isLoading}
         columns={columns}
-        dataSource={data?.items ?? []}
-        pagination={{ total: data?.total ?? 0, showSizeChanger: true }}
+        scroll={{
+          x: "max-content",
+          y: "calc(100vh - 350px)",
+        }}
+        dataSource={generateKeyTable(data?.items ?? [])}
+        pagination={false}
       />
     </Card>
   );

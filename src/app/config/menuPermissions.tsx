@@ -9,6 +9,7 @@ import {
   Settings,
   ShoppingBag,
   ShoppingCart,
+  User2,
   Users,
 } from "lucide-react";
 
@@ -123,18 +124,20 @@ export const menuPermissions: MainMenu = {
   SETTINGS: [
     {
       code: "DROPDOWN",
+      iconName: <User2 className="size-5" />,
       linkData: {
         path: "role",
-        title: "Tashkilot ma'lumotlari",
+        title: "Rollar",
         // img: role,
-        description: "Kompaniya rekvizitlari va sozlamalar",
+        description: "Tizimdagi rollarni va ularning huquqlarini boshqarish.",
       },
     },
     {
       code: "sdasda",
+      iconName: <Users className="size-5" />,
       linkData: {
-        path: "user",
-        title: "Settings.user.title",
+        path: "users",
+        title: "Foydalanuvchilar",
         // img: role,
         description:
           "Foydalanuvchilarning huquqlari va tizimdagi rollarini boshqarish.",

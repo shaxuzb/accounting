@@ -4,3 +4,11 @@ export const settingsPermissions = {
   update: "settings.update",
   delete: "settings.delete",
 } as const;
+
+export const rolePermissions = {
+  view: "ROLE_VIEW",
+  detail: "ROLE_VIEW_DETAIL",
+  create: "ROLE_CREATE",
+  update: "ROLE_UPDATE",
+  delete: "ROLE_DELETE`",
+} as const;

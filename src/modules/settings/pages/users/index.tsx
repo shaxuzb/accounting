@@ -4,7 +4,6 @@ import {
   Button,
   Dropdown,
   Spin,
-  Table,
   Tag,
   type MenuProps,
   type TableColumnsType,
@@ -202,7 +201,6 @@ function Users() {
               dataSource={UserData}
               pagination={{
                 defaultPageSize: 50,
-              
               }}
               rowKey="id"
               scroll={{ y: "calc(100vh - 280px)", x: "max-content" }}

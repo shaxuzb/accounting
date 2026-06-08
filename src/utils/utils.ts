@@ -13,6 +13,18 @@ export const hexToRgb = (hex: string) => {
   return `${r}, ${g}, ${b}`;
 };
 
+//generate table keys
+export const generateKeyTable = <T extends object>(
+  data?: T[],
+  key?: string | null,
+) => {
+  return data?.map((item, index) => ({
+    ...item,
+    key: key ? item?.[key] : index + 1,
+    indexId: index + 1,
+  }));
+};
+
 export const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(" ");
 

@@ -15,9 +15,12 @@ export const settingsSchema = Yup.object({
 });
 
 export interface Role {
-  id: string | number;
-  name: string;
-  createdAt?: string;
+  createdDate: string;
+  fullName: string;
+  id: number;
+  shortName: string;
+  stateId: number;
+  stateName: string;
 }
 export interface RoleForm {
   name: string;

@@ -1,12 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Avatar, Button, Popover } from "antd";
-import {
-  ChevronRight,
-  Moon,
-  ShieldCheck,
-  Palette,
-  LogOut,
-} from "lucide-react";
+import { ChevronRight, Moon, ShieldCheck, Palette, LogOut } from "lucide-react";
 import ProfileIcon from "@/assets/images/profile/profile.svg";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useTranslation } from "react-i18next";
@@ -51,37 +45,37 @@ const MenuCard = ({
   );
 };
 
-const DownloadRow = ({
-  icon,
-  title,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  onClick?: () => void;
-}) => {
-  return (
-    <div className="flex items-center justify-between rounded-lg border border-secondary bg-primary-bg p-2">
-      <div className="flex items-center gap-3">
-        <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-secondary-foreground text-muted-second">
-          {icon}
-        </div>
-        <span className="mr-3 text-xs font-medium text-muted-second">
-          {title}
-        </span>
-      </div>
+// const DownloadRow = ({
+//   icon,
+//   title,
+//   onClick,
+// }: {
+//   icon: React.ReactNode;
+//   title: string;
+//   onClick?: () => void;
+// }) => {
+//   return (
+//     <div className="flex items-center justify-between rounded-lg border border-secondary bg-primary-bg p-2">
+//       <div className="flex items-center gap-3">
+//         <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-secondary-foreground text-muted-second">
+//           {icon}
+//         </div>
+//         <span className="mr-3 text-xs font-medium text-muted-second">
+//           {title}
+//         </span>
+//       </div>
 
-      <Button
-        type="primary"
-        onClick={onClick}
-        size="small"
-        className="text-xs! font-medium!"
-      >
-        Yuklab olish
-      </Button>
-    </div>
-  );
-};
+//       <Button
+//         type="primary"
+//         onClick={onClick}
+//         size="small"
+//         className="text-xs! font-medium!"
+//       >
+//         Yuklab olish
+//       </Button>
+//     </div>
+//   );
+// };
 
 const LanguagePopoverContent = ({ onSelect }: { onSelect?: () => void }) => {
   const dispatch = useAppDispatch();
@@ -152,10 +146,10 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
 
   return (
     <div className="rounded-lg bg-primary-bg p-3">
-      <div className="rounded-lg border border-secondary p-2 border-[#e0e0e0] ">
+      <div className="rounded-lg border border-secondary p-2 ">
         <div
           onClick={onProfileClick}
-          className="flex cursor-pointer items-center justify-between rounded-lg border border-secondary bg-primary-bg p-2 border-[#e0e0e0] hover:bg-gray-100"
+          className="flex cursor-pointer items-center justify-between rounded-lg border border-secondary bg-primary-bg p-2  hover:bg-gray-100"
         >
           <div className="flex items-center gap-3">
             <Avatar src={ProfileIcon} size={30} />
@@ -251,7 +245,7 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
         </div>
       </div> */}
 
-      <div className="mt-3 rounded-lg border border-secondary bg-primary-bg p-2 border-[#e0e0e0] ">
+      <div className="mt-3 rounded-lg border border-secondary bg-primary-bg p-2  ">
         <Button
           size="middle"
           block
