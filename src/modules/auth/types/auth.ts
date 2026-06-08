@@ -11,7 +11,7 @@ export interface AuthForm {
 }
 
 export const authSchema = Yup.object({
-  username: Yup.string().required("Userni kiriting"),
+  userName: Yup.string().required("Userni kiriting"),
   password: Yup.string().required("Parolni kiriting")
 });
 

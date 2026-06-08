@@ -1,4 +1,4 @@
-import { type LoginProps } from "@/interface/Interface";
+import { type LoginPayload } from "@/services/authService";
 import { Form, type FormProps, Input } from "antd";
 import { type FormikProps } from "formik";
 import React from "react";
@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 interface inputProps {
   label?: string;
-  formik: FormikProps<LoginProps>
+  formik: FormikProps<LoginPayload>
   fieldName: string;
   disabled?: boolean;
 }

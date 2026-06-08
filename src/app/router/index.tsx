@@ -1,24 +1,24 @@
-import { createBrowserRouter, Navigate } from "react-router";
+import { createBrowserRouter } from "react-router";
 import { MainLayout, ProtectAuthLayout } from "@/app/layouts";
 import { authRoutes } from "@/modules/auth";
-import { settingsRoutes } from "@/modules/settings/routes";
+import SettingsListPage from "@/modules/settings/pages";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/login" replace />,
-  },
-  authRoutes,
-  {
-    path: "/",
     element: <ProtectAuthLayout />,
+
     children: [
+      authRoutes,
       {
         path: "main",
         element: <MainLayout />,
-        children: [
-          settingsRoutes,
-        ],
+        children:[
+          {
+            path:"settings",
+            element: <SettingsListPage/>
+          }
+        ]
       },
     ],
   },

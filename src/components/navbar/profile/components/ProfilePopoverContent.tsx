@@ -5,8 +5,6 @@ import {
   Moon,
   ShieldCheck,
   Palette,
-  Monitor,
-  Smartphone,
   LogOut,
 } from "lucide-react";
 import ProfileIcon from "@/assets/images/profile/profile.svg";

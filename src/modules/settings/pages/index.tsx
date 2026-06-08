@@ -36,7 +36,7 @@ function SettingsCard({
           <Icon size={20} />
         </div>
         <div>
-          <div className="text-sm font-semibold">{item.title}</div>
+          <div className="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{item.title}</div>
           {item.description && (
             <div className="text-xs text-gray-500">{item.description}</div>
           )}

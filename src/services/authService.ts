@@ -1,18 +1,14 @@
+import type { User } from "@/shared/types";
 import { $axiosPrivate } from "./AxiosService";
 
 export interface LoginPayload {
-  username: string;
+  userName: string;
   password: string;
 }
 
 export interface LoginResponse {
   token: string;
-  user: {
-    id: string | number;
-    userName: string;
-    firstName: string;
-    lastName: string;
-  };
+  user: User | null;
   // ;organizationId?: string | number;
   // [key: string]: unknown
 }

@@ -8,28 +8,26 @@ export interface OrgListItem {
   useContractAccounting?: boolean;
 }
 
+
+
+export interface AuthToken {
+  token: string;
+  user: User | null
+}
 export interface User {
   id: number;
   userName: string;
   phoneNumber: string;
-  useContractAccounting?: boolean;
-  organizationId: number;
-  organizationTypeCode: string;
-  organizationName: string;
-  fullName: string;
-  role: string;
+  email: string;
+  firstName: string;
+  lastName: string;
   roleId: number;
-  state: string;
+  lastAccessTime: string;
   stateId: number;
-  isParent: boolean;
-  modules: number[];
-  permissions: string[];
-  organizations?: OrgListItem[];
-}
-
-export interface AuthToken {
-  token: string;
-  user: User;
+  createdDate: string;
+  roleName: string;
+  stateName: string;
+  permissions: string[]
 }
 
 export interface Paginated<T> {

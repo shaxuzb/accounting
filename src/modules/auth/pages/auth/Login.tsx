@@ -18,13 +18,13 @@ function Login() {
 
 
   const formik = useFormik<LoginPayload>({
-    initialValues: { username: "", password: "" },
+    initialValues: { userName: "", password: "" },
     validationSchema: authSchema,
     onSubmit: async (values, { setErrors }) => {
       dispatch(setIsLoading(true));
       try {
         const response = await authService.login({
-          username: values.username,
+          userName: values.userName,
           password: values.password,
         });
         dispatch(login(response.data));
@@ -83,7 +83,7 @@ function Login() {
             </div>
 
             <Form layout="vertical" onFinish={formik.handleSubmit}>
-              <InputText fieldName="username" formik={formik} label="Email" />
+              <InputText fieldName="userName" formik={formik} label="Email" />
               <InputPassword
                 formik={formik}
                 fieldName="password"
@@ -109,6 +109,8 @@ function Login() {
                 size="large"
                 loading={loading}
                 className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
+                onClick={() => console.log(formik)
+                }
               >
                 Kirish →
               </Button>

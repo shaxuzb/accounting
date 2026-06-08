@@ -19,7 +19,7 @@ const ProfileNav: React.FC = () => {
 
   const content = (
     <ProfilePopoverContent
-      fullName={user?.user?.fullName}
+      fullName={user?.user?.userName}
       phone={user?.user?.phoneNumber || "+998 -- --- -- --"}
       onProfileClick={() => navigate("/profile")}
       onThemeClick={() => dispatch(toggleMode())}
@@ -57,10 +57,10 @@ const ProfileNav: React.FC = () => {
           />
           <div className="flex flex-col justify-center">
             <h2 className="text-[14px] text-[#1a202c] font-bold leading-tight m-0 flex items-center">
-              {user?.user?.fullName || "Amonov Mahmudjon"}
+              {user?.user?.userName}
             </h2>
             <p className="text-[12px] text-gray-400 font-medium m-0 mt-0.5 leading-none">
-              {user?.user?.role || "Administrator"}
+              {user?.user?.roleName}
             </p>
           </div>
           {/* <ChevronDown className="size-4 text-text" /> */}
