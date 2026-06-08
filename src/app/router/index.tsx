@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import { MainLayout, ProtectAuthLayout } from "@/app/layouts";
 import { authRoutes } from "@/modules/auth";
-import SettingsListPage from "@/modules/settings/pages";
+import { settingsRoutes } from "@/modules/settings";
 
 export const router = createBrowserRouter([
   {
@@ -13,12 +13,7 @@ export const router = createBrowserRouter([
       {
         path: "main",
         element: <MainLayout />,
-        children:[
-          {
-            path:"settings",
-            element: <SettingsListPage/>
-          }
-        ]
+        children: [settingsRoutes],
       },
     ],
   },

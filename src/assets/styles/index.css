@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 /* :root {
   --background-color: white;
@@ -20,3 +20,70 @@
     --button-text: white;
   }
 } */
+
+* {
+  font-family: "Google Sans Flex", sans-serif;
+}
+@layer components {
+  /* 1. Sarlavha (Header) qismi: Shrift o'lchami, rangi va fonini pikselma-piksel sozlash */
+  .hisob-kitob-custom-table .ant-table-thead > tr > th {
+    background-color: #f7f8fa !important;
+    color: #4e5969 !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    padding: 14px 20px !important;
+    border-radius: 0 !important; /* Antd burchaklarini o'chiramiz, qobiq o'zi rounded */
+  }
+
+  /* 2. Jadval tanasi (Body): Qatorlar shrifti va chiziqlari */
+  .custom-table .ant-table-tbody > tr > td {
+    color: #1d2129 !important;
+    font-size: 14px !important;
+    border-bottom: 1px solid #f2f3f5 !important;
+    background-color: #ffffff !important;
+  }
+
+  /* 3. Hover effekti: Qator ustiga kelganda skrinshotdagi juda mayin ko'k rang */
+  .custom-table .ant-table-tbody > tr:hover > td {
+    background-color: #f4f7ff !important; /* Juda och havo rang */
+  }
+
+  /* 4. Pagination qismi: Faol (active) raqamni ko'k qilish va Select box dizayni */
+  .custom-table .ant-pagination-item-active {
+    background-color: #2f54eb !important; /* Figma/Skrinshot ko'k rangi */
+    border-color: #2f54eb !important;
+    border-radius: 6px !important;
+  }
+  
+  .custom-table .ant-pagination-item-active a {
+    color: #ffffff !important;
+  }
+
+  .custom-table .ant-pagination-item {
+    border-color: #e5e6eb !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+  }
+  
+  .custom-table .ant-pagination-item a {
+    color: #4e5969 !important;
+  }
+
+  /* Pagination oldinga/orqaga tugmalari */
+  .custom-table .ant-pagination-prev .ant-pagination-item-link,
+  .custom-table .ant-pagination-next .ant-pagination-item-link {
+    border-color: #e5e6eb !important;
+    border-radius: 6px !important;
+    color: #4e5969 !important;
+  }
+
+  /* "10 tadan" degan select o'lchami va dizayni */
+  .custom-table .ant-select-selector {
+    border-color: #e5e6eb !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    color: #1d2129 !important;
+    height: 32px !important;
+  }
+}

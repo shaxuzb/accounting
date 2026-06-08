@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { ListParams } from "@/shared/types";
-import { settingsKeys } from "../constants/queryKeys";
-import { roleService } from "../services/roleService";
+import { settingsKeys } from "../../constants/queryKeys";
+import { roleService } from "../../services/roleService";
 
 export const useGetListRole = (params?: ListParams) =>
   useQuery({

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { settingsKeys } from "../constants/queryKeys";
-import { roleService } from "../services/roleService";
+import { roleService } from "../../services/roleService";
+import { settingsKeys } from "../../constants/queryKeys";
 
 export const useGetDetailRole = (id: string | number) =>
   useQuery({

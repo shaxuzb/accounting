@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { settingsKeys } from "../constants/queryKeys";
-import { roleService } from "../services/roleService";
-import type { RoleForm } from "../types/settings";
+import { roleService } from "../../services/roleService";
+import type { RoleForm } from "../../types/settings";
+import { settingsKeys } from "../../constants/queryKeys";
 
 export const useCreateRole = () => {
   const queryClient = useQueryClient();

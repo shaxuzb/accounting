@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { settingsKeys } from "../constants/queryKeys";
-import { roleService } from "../services/roleService";
-import type { RoleForm } from "../types/settings";
-
+import type { RoleForm } from "../../types/settings";
+import { roleService } from "../../services/roleService";
+import { settingsKeys } from "../../constants/queryKeys";
 interface UpdateArgs {
   id: string | number;
   payload: Partial<RoleForm>;
@@ -11,10 +10,13 @@ interface UpdateArgs {
 export const useUpdateRole = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: UpdateArgs) => roleService.update(id, payload),
+    mutationFn: ({ id, payload }: UpdateArgs) =>
+      roleService.update(id, payload),
     onSuccess: (_data, variables) => {
       void queryClient.invalidateQueries({ queryKey: settingsKeys.role.all });
-      void queryClient.invalidateQueries({ queryKey: settingsKeys.role.detail(variables.id) });
+      void queryClient.invalidateQueries({
+        queryKey: settingsKeys.role.detail(variables.id),
+      });
     },
   });
 };

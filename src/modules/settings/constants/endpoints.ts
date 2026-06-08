@@ -10,6 +10,12 @@ export const settingsEndpoints = {
     detail: (id: string | number) => `/role/${id}`,
     create: "/role",
     update: (id: string | number) => `/role/${id}`,
+    users: {
+      list: "/users",
+      detail: (id: string | number) => `/users/${id}`,
+      create: "/users",
+      update: (id: string | number) => `/users/${id}`,
+    },
+    /* modux:endpoints */
   },
-  /* modux:endpoints */
 };
