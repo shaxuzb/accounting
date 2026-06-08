@@ -22,5 +22,5 @@ export const authService = {
     return data;
   },
 
-  authCheck: async () => await $axiosPrivate.get("/auth/auth-check"),
+  authCheck: async () => await $axiosPrivate.get("/auth/check-token"),
 };
