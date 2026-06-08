@@ -118,7 +118,7 @@ export const menuPermissions: MainMenu = {
         title: "Tashkilot ma'lumotlari",
         // img: role,
         description:
-          "Kompaniya rekvizitlari va sozlamalar",
+          "Kompaniya rekvizitlari va sozlamalari",
       },
     },
   ],

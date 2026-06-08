@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 interface inputProps {
   label?: string;
-  formik: FormikProps<LoginPayload>
+  formik: FormikProps<LoginPayload> | any;
   fieldName: string;
   disabled?: boolean;
 }

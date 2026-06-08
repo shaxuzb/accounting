@@ -9,7 +9,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-
 type Item = {
   key: string;
   title: string;
@@ -29,14 +28,16 @@ function SettingsCard({
   return (
     <div
       onClick={() => onClick(item.path)}
-      className="flex items-center justify-between p-5 bg-white rounded-lg shadow-sm hover:shadow-md cursor-pointer "
+      className="flex items-center justify-between p-5 bg-white rounded-lg shadow-sm hover:shadow-blue-400 cursor-pointer"
     >
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
           <Icon size={20} />
         </div>
         <div>
-          <div className="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{item.title}</div>
+          <div className="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+            {item.title}
+          </div>
           {item.description && (
             <div className="text-xs text-gray-500">{item.description}</div>
           )}
@@ -103,15 +104,15 @@ export default function SettingsListPage() {
 
   return (
     <div className="p-2">
-    <h1 className="pt-5 font-bold text-4xl">Sozlamalar</h1>
-    <p  className="pt-1 text-gray-500">Tizim parametrlari</p>
-    <div >
-      <div className="grid grid-cols-3 gap-4">
-        {items.map((item) => (
-          <SettingsCard key={item.key} item={item} onClick={handleClick} />
-        ))}
+      <h1 className="pt-5 font-bold text-4xl">Sozlamalar</h1>
+      <p className="pt-1 text-gray-500">Tizim parametrlari</p>
+      <div>
+        <div className="grid grid-cols-3 gap-4">
+          {items.map((item) => (
+            <SettingsCard key={item.key} item={item} onClick={handleClick} />
+          ))}
+        </div>
       </div>
     </div>
-   </div>
   );
 }

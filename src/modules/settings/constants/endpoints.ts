@@ -5,5 +5,11 @@ export const settingsEndpoints = {
     create: "/settings",
     update: (id: string | number) => `/settings/${id}`,
   },
+  users: {
+    list: "/users",
+    detail: (id: string | number) => `/users/${id}`,
+    create: "/users",
+    update: (id: string | number) => `/users/${id}`,
+  },
   /* modux:endpoints */
 };

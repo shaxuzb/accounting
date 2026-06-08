@@ -1,22 +1,22 @@
-import { type LoginPayload } from "@/services/authService";
+import type { LoginPayload } from "@/services/authService";
 import { Form, type FormProps, Input } from "antd";
 import { type FormikProps } from "formik";
 import React from "react";
 import { useTranslation } from "react-i18next";
-
-interface inputProps {
+import { PatternFormat } from "react-number-format";
+interface InputPhoneNumberProps {
   label?: string;
   formik: FormikProps<LoginPayload> | any;
   fieldName: string;
   disabled?: boolean;
 }
 
-const InputText: React.FC<inputProps> = (props) => {
+const InputPhoneNumber: React.FC<InputPhoneNumberProps> = (props) => {
   const { t } = useTranslation();
   const { label = "", formik, fieldName = "", disabled = false } = props;
   return (
     <Form.Item<FormProps>
-      className="flex flex-col"
+      className="flex! flex-col!"
       label={label === "" ? false : t(label)}
       validateStatus={
         formik.touched[fieldName] && formik.errors[fieldName] ? "error" : ""
@@ -24,15 +24,18 @@ const InputText: React.FC<inputProps> = (props) => {
       help={formik.touched[fieldName] && formik.errors[fieldName]}
       rules={[{ required: true, message: "Please input your password!" }]}
     >
-      <Input
+      <PatternFormat
+        format="+998 ## ###-##-##"
+        customInput={Input}
         value={formik.values[fieldName]}
         onChange={(event) => {
           let value = event.target.value;
           formik.setFieldValue(fieldName, value, true);
         }}
+        
         name={fieldName}
-        placeholder={t(label)}
-        className={`${disabled ? "disabled" : ""}`}
+        placeholder={"+998 ## ###-##-##"}
+        className={`${disabled ? "disabled" : ""} mono`}
         style={{
           backgroundColor: "transparent",
           padding: "0px 10px",
@@ -43,4 +46,4 @@ const InputText: React.FC<inputProps> = (props) => {
   );
 };
 
-export default InputText;
+export default InputPhoneNumber;
