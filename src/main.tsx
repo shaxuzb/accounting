@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import StoreProvider from "@/StoreProvider";
 import ErrorBoundary from "@/ErrorBoundary";
@@ -8,11 +7,9 @@ import "@/config/dayjs";
 import "@/assets/styles/index.css";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <StoreProvider>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
-    </StoreProvider>
-  </StrictMode>,
+  <StoreProvider>
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  </StoreProvider>,
 );
