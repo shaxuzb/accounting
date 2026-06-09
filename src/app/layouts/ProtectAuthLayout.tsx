@@ -35,7 +35,7 @@ const ProtectAuthLayout = () => {
   }, [redirectToLogin]);
 
   const initAuth = useCallback(async () => {
-    navigate("/main", { replace: true });
+    // navigate("/main", { replace: true });
     if (location.pathname === "/") return navigate("/login", { replace: true });
     if (!user) {
       navigate("/login", { replace: true });

@@ -1,5 +1,7 @@
-import { Table } from "antd";
-import type { TableColumnsType, TableColumnType } from "antd";
+import { Button, Space, Table } from "antd";
+import type { TableColumnType, TableColumnsType } from "antd";
+import { Plus, RefreshCw } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Role } from "../../types/settings";
 import { useGetListRole } from "../../hooks/role/useGetListRole";
@@ -9,11 +11,17 @@ import { useAppSelector } from "@/store/hooks";
 import { rolePermissions } from "../../constants/permissions";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import Card from "@/components/ui/card/Card";
+import PermissionCard from "@/components/ui/card/PermissionCard";
+import SearchFilter from "@/components/ui/filters/SearchFilter";
+
+
 
 export default function RoleListPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
-  const { data, refetch, isLoading } = useGetListRole();
+  const [searchParams] = useSearchParams();
+  const { data, refetch, isLoading, isFetching } = useGetListRole(searchParams);
 
   const tableColumns: TableColumnsType<Role> = [
     {
@@ -23,19 +31,27 @@ export default function RoleListPage() {
       width: 70,
     },
     {
-      title: "Nomi",
+      title: "To'liq nomi",
       dataIndex: "fullName",
+      minWidth: 180,
+    },
+    {
+      title: "Qisqacha nomi",
+      dataIndex: "shortName",
+      minWidth: 160,
     },
     {
       title: "Holati",
-      dataIndex: "state",
+      dataIndex: "stateName",
       align: "center",
+      width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
   ];
+  const permissions = user?.user.permissions ?? [];
   const hasActions =
-    user?.user.permissions.includes(rolePermissions.update) ||
-    user?.user.permissions.includes(rolePermissions.delete);
+    permissions.includes(rolePermissions.update) ||
+    permissions.includes(rolePermissions.delete);
 
   const columns: TableColumnType<Role>[] = hasActions
     ? [
@@ -49,9 +65,9 @@ export default function RoleListPage() {
           render: (_, record) => (
             <ActionColumn
               deletePath="roles"
-              customPatn={`/main/role/edit/${record.id}`}
+              customPatn={`/main/settings/role/edit/${record.id}`}
               record={record}
-              permissions={user?.user.permissions || []}
+              permissions={permissions}
               permissionsCode={{
                 deleteCode: rolePermissions.delete,
                 editCode: rolePermissions.update,
@@ -62,18 +78,41 @@ export default function RoleListPage() {
         },
       ]
     : tableColumns;
+
   return (
-    <Card className="border overflow-hidden border-border">
-      <Table<Role>
-        loading={isLoading}
-        columns={columns}
-        scroll={{
-          x: "max-content",
-          y: "calc(100vh - 350px)",
-        }}
-        dataSource={generateKeyTable(data?.items ?? [])}
-        pagination={false}
-      />
-    </Card>
+    <div className="w-full">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <SearchFilter />
+        </div>
+        <Space>
+          <Button
+            icon={<RefreshCw className="size-4" />}
+            onClick={() => void refetch()}
+          />
+          <PermissionCard permission={rolePermissions.create}>
+            <Button
+              type="primary"
+              icon={<Plus className="size-4" />}
+              onClick={() => navigate("/main/settings/role/add")}
+            >
+              Qo'shish
+            </Button>
+          </PermissionCard>
+        </Space>
+      </div>
+      <Card className="overflow-hidden border border-border">
+        <Table<Role>
+          loading={isLoading || isFetching}
+          columns={columns}
+          scroll={{
+            x: "max-content",
+            y: "calc(100vh - 350px)",
+          }}
+          dataSource={generateKeyTable(data?.items ?? [], "id")}
+          pagination={false}
+        />
+      </Card>
+    </div>
   );
 }

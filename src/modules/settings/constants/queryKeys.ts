@@ -11,6 +11,8 @@ export const settingsKeys = {
     list: (params?: unknown) => ["settings", "role", "list", params] as const,
     detail: (id: string | number) =>
       ["settings", "role", "detail", id] as const,
+    modules: (organizationId?: string | number) =>
+      ["settings", "role", "modules", organizationId] as const,
 
     /* modux:querykeys */
   },

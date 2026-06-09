@@ -28,6 +28,11 @@ export const settingsRoutes: RouteObject = {
           element: <RoleAddPage />,
           handle: { title: "Add Role", showBack: true, backTo: ".." },
         },
+        {
+          path: "edit/:id",
+          element: <RoleAddPage />,
+          handle: { title: "Edit Role", showBack: true, backTo: ".." },
+        },
       ],
     },
     /* modux:routes */

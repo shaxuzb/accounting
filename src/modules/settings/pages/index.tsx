@@ -4,6 +4,7 @@ import { menuPermissions } from "@/app/config/menuPermissions";
 import { useAppSelector } from "@/store/hooks";
 import { useMemo } from "react";
 import type { MenuRole } from "@/shared/types";
+import Card from "@/components/ui/card/Card";
 
 function SettingsCard({
   item,
@@ -15,27 +16,30 @@ function SettingsCard({
   onClick: (to: string) => void;
 }) {
   return (
-    <div
+    <Card
       onClick={() => onClick(item.path)}
-      className="flex items-center justify-between p-5 bg-white rounded-lg shadow-sm hover:shadow-blue-400 cursor-pointer"
+      hoverable
+      className="items-center justify-between p-4 border border-border  cursor-pointer"
     >
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-          {icon}
+      <div className="flex items-start">
+        <div className="flex items-center gap-4">
+          <div className="w-12! h-12! rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+            {icon}
+          </div>
+          <div>
+            <div className="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+              {item.title}
+            </div>
+            {item.description && (
+              <div className="text-xs text-gray-500">{item.description}</div>
+            )}
+          </div>
         </div>
         <div>
-          <div className="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-            {item.title}
-          </div>
-          {item.description && (
-            <div className="text-xs text-gray-500">{item.description}</div>
-          )}
+          <ChevronRight className="text-muted-second size-4" />
         </div>
       </div>
-      <div className="text-gray-300">
-        <ChevronRight />
-      </div>
-    </div>
+    </Card>
   );
 }
 
@@ -59,7 +63,7 @@ export default function SettingsListPage() {
       <h1 className="pt-5 font-bold text-4xl">Sozlamalar</h1>
       <p className="pt-1 text-gray-500">Tizim parametrlari</p>
       <div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-[1fr_minmax(300px,1fr)] gap-4">
           {settingsRoute.map((item) => (
             <SettingsCard
               key={item.code}

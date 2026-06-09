@@ -12,7 +12,7 @@ export interface OrgListItem {
 
 export interface AuthToken {
   token: string;
-  user: User | null
+  user: User | null;
 }
 export interface User {
   id: number;
@@ -27,7 +27,14 @@ export interface User {
   createdDate: string;
   roleName: string;
   stateName: string;
-  permissions: string[]
+  organizationId?: number;
+  organizationTypeCode?: string;
+  organizationName?: string;
+  fullName?: string;
+  isParent?: boolean;
+  modules?: number[];
+  organizations?: OrgListItem[];
+  permissions: string[];
 }
 
 export interface Paginated<T> {
