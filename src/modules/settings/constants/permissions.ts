@@ -12,3 +12,11 @@ export const rolePermissions = {
   update: "ROLE_UPDATE",
   delete: "ROLE_DELETE",
 } as const;
+
+export const organizationsPermissions = {
+  view: "ROLE_VIEW",
+  detail: "ROLE_VIEW_DETAIL",
+  create: "ROLE_CREATE",
+  update: "ROLE_UPDATE",
+  delete: "ROLE_DELETE",
+} as const;

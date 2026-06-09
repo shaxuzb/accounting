@@ -13,13 +13,31 @@ export const settingsKeys = {
       ["settings", "role", "detail", id] as const,
     modules: (organizationId?: string | number) =>
       ["settings", "role", "modules", organizationId] as const,
-
-    /* modux:querykeys */
   },
   users: {
     all: ["settings", "users"] as const,
     list: (params?: unknown) => ["settings", "users", "list", params] as const,
     detail: (id: string | number) =>
       ["settings", "users", "detail", id] as const,
+    modules: (organizationId?: string | number) =>
+      ["settings", "role", "modules", organizationId] as const,
+  },
+  organizations: {
+    all: ["settings", "organizations"] as const,
+    list: (params?: unknown) =>
+      ["settings", "organizations", "list", params] as const,
+    detail: (id: string | number) =>
+      ["settings", "organizations", "detail", id] as const,
+    modules: (organizationId?: string | number) =>
+      ["settings", "organizations", "modules", organizationId] as const,
+  },
+  counterparty: {
+    all: ["settings", "counterparty"] as const,
+    list: (params?: unknown) =>
+      ["settings", "counterparty", "list", params] as const,
+    detail: (id: string | number) =>
+      ["settings", "counterparty", "detail", id] as const,
+    modules: (organizationId?: string | number) =>
+      ["settings", "counterparty", "modules", organizationId] as const,
   },
 };

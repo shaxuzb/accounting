@@ -16,11 +16,8 @@ const customTheme: ThemeConfig = {
       algorithm: true,
       colorPrimary: color.baseColor,
       colorPrimaryBg: color.baseColor,
-      boxShadow: "",
-      primaryShadow: "",
       colorPrimaryText: "#fff",
       colorPrimaryBgHover: `rgba(${hexToRgb(color.baseColor)}, 0.9)`,
-      colorPrimaryActive: "",
     },
     Select: {},
     Table: {

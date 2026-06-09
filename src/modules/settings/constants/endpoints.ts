@@ -18,4 +18,17 @@ export const settingsEndpoints = {
     create: "/users",
     update: (id: string | number) => `/users/${id}`,
   },
+  organizations: {
+    list: "/organizations",
+    detail: (id: string | number) => `/organizations/${id}`,
+    create: "/organizations",
+    update: (id: string | number) => `/organizations/${id}`,
+  },
+  counterparty: {
+    list: "/counterpartycard",
+    detail: (id: string | number) => `/counterpartycard/${id}`,
+    modules: "/manual/module-sub-groups",
+    create: "/counterpartycard",
+    update: (id: string | number) => `/counterpartycard/${id}`,
+  },
 };

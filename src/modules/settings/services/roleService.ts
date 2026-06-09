@@ -3,11 +3,11 @@ import { settingsEndpoints } from "../constants/endpoints";
 import type {
   Role,
   RoleDetail,
-  RoleForm,
   RoleModuleGroup,
 } from "../types/settings";
 import type { QueryParams } from "@/shared/types/api";
 import type { Paginated } from "@/shared/types";
+import type { RoleForm } from "../types/form";
 
 const endpoints = settingsEndpoints.role;
 

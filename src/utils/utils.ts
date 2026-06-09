@@ -57,3 +57,12 @@ export const getEffectiveTheme = (themeMode: string | null) => {
   ).matches;
   return systemPrefersDark ? "dark" : "light";
 };
+
+export function customPhoneNumber(number: string) {
+  if (!number) return "";
+  const digits = number.replace(/\D/g, "");
+  return digits.replace(
+    /^(\d{3})(\d{2})(\d{3})(\d{2})(\d{2}).*$/,
+    "+$1 $2 $3 $4 $5"
+  );
+}

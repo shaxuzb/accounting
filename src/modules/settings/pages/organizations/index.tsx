@@ -1,29 +1,30 @@
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { Role } from "../../types/settings";
-import { useGetListRole } from "../../hooks/role/useGetListRole";
+import type { Organizations } from "../../types/settings";
 import { generateKeyTable } from "@/utils/utils";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import { useAppSelector } from "@/store/hooks";
-import { rolePermissions } from "../../constants/permissions";
+import { organizationsPermissions } from "../../constants/permissions";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
+import { useGetListOrganizations } from "../../hooks/organizations/useGetListOrganizations";
+import OrganizationsAddPage from "./add";
+import { useState } from "react";
 
 
 
-export default function RoleListPage() {
+export default function OrganizationListPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
-  const { data, refetch, isLoading, isFetching } = useGetListRole(searchParams);
+  const { data, refetch, isLoading, isFetching } = useGetListOrganizations(searchParams);
 
-  const tableColumns: TableColumnsType<Role> = [
+  const tableColumns: TableColumnsType<Organizations> = [
     {
       dataIndex: "indexId",
       title: t("T/r"),
@@ -50,10 +51,10 @@ export default function RoleListPage() {
   ];
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(rolePermissions.update) ||
-    permissions.includes(rolePermissions.delete);
+    permissions.includes(organizationsPermissions.update) ||
+    permissions.includes(organizationsPermissions.delete);
 
-  const columns: TableColumnType<Role>[] = hasActions
+  const columns: TableColumnType<Organizations>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -64,20 +65,25 @@ export default function RoleListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="roles"
-              customPath={`/main/settings/role/edit/${record.id}`}
+              deletePath="organizations"
+              customPath={`/main/settings/organizations/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: rolePermissions.delete,
-                editCode: rolePermissions.update,
+                deleteCode: organizationsPermissions.delete,
+                editCode: organizationsPermissions.update,
               }}
               refetch={refetch}
+              editModal={{ isModal: true, setOpenEditModal: setIsEditOpen, setEditData: (d) => setEditId((d as any)?.id ?? null) }}
             />
           ),
         },
       ]
     : tableColumns;
+
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
 
   return (
     <div className="w-full">
@@ -86,25 +92,18 @@ export default function RoleListPage() {
           <SearchFilter />
         </div>
         <Space>
-          <Button
-            icon={<RefreshCw className="size-4" />}
-            onClick={() => void refetch()}
-          />
-          <PermissionCard permission={rolePermissions.create}>
-            <Button
-              type="primary"
-              icon={<Plus className="size-4" />}
-              onClick={() => navigate("/main/settings/role/add")}
-            >
+          <Button icon={<RefreshCw className="size-4" />} onClick={() => void refetch()} />
+          <PermissionCard permission={organizationsPermissions.create}>
+            <Button type="primary" icon={<Plus className="size-4" />} onClick={() => setIsAddOpen(true)}>
               Qo'shish
             </Button>
           </PermissionCard>
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<Role>
+        <Table<Organizations>
           loading={isLoading || isFetching}
-          columns={columns}
+              columns={columns}
           scroll={{
             x: "max-content",
             y: "calc(100vh - 350px)",
@@ -113,6 +112,8 @@ export default function RoleListPage() {
           pagination={false}
         />
       </Card>
+      <OrganizationsAddPage open={isAddOpen} onClose={() => setIsAddOpen(false)} />
+      <OrganizationsAddPage open={isEditOpen} onClose={() => { setIsEditOpen(false); setEditId(null); }} id={editId} />
     </div>
   );
 }

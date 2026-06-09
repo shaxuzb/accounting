@@ -1,3 +1,4 @@
+import OrganizationListPage from "@/modules/settings/pages/organizations";
 import type { MenuRole } from "@/shared/types";
 import {
   Banknote,
@@ -141,6 +142,28 @@ export const menuPermissions: MainMenu = {
         // img: role,
         description:
           "Foydalanuvchilarning huquqlari va tizimdagi rollarini boshqarish.",
+      },
+    },
+    {
+      code: "sdasdas",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "organizations",
+        title: "Organizatsiyalar",
+        // img: role,
+        description:
+          "ddwwrwrwfwfwrwrewewd",
+      },
+    },
+    {
+      code: "sdasdass",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "counterparty",
+        title: "Kontragentlar",
+        // img: role,
+        description:
+          "asasasasasasasasas",
       },
     },
   ],

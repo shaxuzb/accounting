@@ -19,6 +19,8 @@ import UsersAddModal from "./add";
 import { useState } from "react";
 import UsersEditModal from "./edit";
 import CustomTable from "@/utils/CustomTable";
+import { stateStatus } from "@/utils/helpers/statusHelper";
+import { customPhoneNumber } from "@/utils/utils";
 
 interface UsersTableType {
   id: number;
@@ -80,31 +82,13 @@ function Users() {
       dataIndex: "phoneNumber",
       width: 200,
       align: "center",
-      render: (text) => {
-        const phoneNumber = String(text);
-        return phoneNumber.startsWith("+") ? phoneNumber : `+${phoneNumber}`;
-      },
+      render: (text) => customPhoneNumber(text),
     },
     {
       title: "Holati",
-      dataIndex: "stateName",
+      dataIndex: "state",
       align: "center",
-      width: 200,
-      render: (text, record) => {
-        return (
-          <Tag
-            color={record.stateId === 1 ? "green" : "red"}
-            style={{
-              borderRadius: "4px",
-              fontWeight: "500",
-              padding: "2px 10px",
-              fontSize: "15px",
-            }}
-          >
-            {text}
-          </Tag>
-        );
-      },
+      render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
     {
       title: "Amallar",

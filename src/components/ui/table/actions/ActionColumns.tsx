@@ -29,7 +29,7 @@ interface Props {
     permissionCode?: string;
     icon: React.ReactNode;
   }[];
-  customPatn?: string | null;
+  customPath?: string | null;
   editModal?: {
     isModal?: boolean;
     setOpenEditModal?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -43,7 +43,7 @@ const ActionColumn: React.FC<Props> = ({
   refetch,
   permissionsCode,
   deletePath,
-  customPatn,
+  customPath,
   editModal = {
     isModal: false,
   },
@@ -71,7 +71,7 @@ const ActionColumn: React.FC<Props> = ({
       icon: <Pencil className="size-4" />,
       onClick: () => {
         if (!editModal.isModal)
-          return navigate(customPatn ? customPatn : `edit/${record.id}`);
+          return navigate(customPath ? customPath : `edit/${record.id}`);
         editModal.setOpenEditModal?.(true);
         editModal.setEditData?.(record);
       },

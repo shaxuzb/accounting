@@ -1,19 +1,11 @@
-import * as Yup from "yup";
-
+// Settings
 export interface Settings {
   id: string | number;
   name: string;
   createdAt?: string;
 }
 
-export interface SettingsForm {
-  name: string;
-}
-
-export const settingsSchema = Yup.object({
-  name: Yup.string().required("Name is required"),
-});
-
+//Role
 export interface Role {
   createdDate: string;
   fullName: string;
@@ -21,13 +13,6 @@ export interface Role {
   shortName: string;
   stateId: number;
   stateName: string;
-}
-export interface RoleForm {
-  fullName: string;
-  shortName: string;
-  roleModules: number[];
-  id?: number | null;
-  stateId?: number | null;
 }
 
 export interface RoleModule {
@@ -51,31 +36,119 @@ export interface RoleDetail extends Role {
   }>;
 }
 
-export const roleSchema = (isEdit = false) =>
-  Yup.object({
-    fullName: Yup.string().required("To'liq nomini kiriting"),
-    shortName: Yup.string().required("Qisqacha nomini kiriting"),
-    roleModules: Yup.array()
-      .of(Yup.number().required())
-      .min(1, "Kamida bitta modul tanlang")
-      .required("Modullarni tanlang"),
-    stateId: isEdit
-      ? Yup.number().nullable().required("Holatini tanlang")
-      : Yup.number().nullable(),
-  });
-
-// users
+// Users
 
 export interface Users {
   id: string | number;
   name: string;
   createdAt?: string;
 }
-export interface UsersForm {
-  name: string;
-}
-export const usersSchema = Yup.object({
-  name: Yup.string().required("Name is required"),
-});
 
-/* modux:types */
+// organizations
+
+export interface Organizations {
+  id: number;
+  shortName: string;
+  fullName: string;
+  inn: string;
+  phoneNumber: string;
+  regionId: number;
+  regionName: string;
+  districtId: number;
+  districtName: string;
+  director: string;
+  isParent: true;
+  stateId: number;
+  stateName: string;
+  defaultLanguageId: number;
+  defaultLanguageName: string;
+  createdDate: string;
+}
+
+export interface organizationDetail {
+  id: number;
+  shortName: string;
+  fullName: string;
+  inn: string;
+  phoneNumber: string;
+  regionId: number;
+  regionName: string;
+  districtId: number;
+  districtName: string;
+  address: string;
+  director: string;
+  isParent: true;
+  stateId: number;
+  stateName: string;
+  defaultLanguageId: number;
+  defaultLanguageName: string;
+  createdDate: string;
+}
+export interface organizationUpdate {
+  shortName: string;
+  fullName: string;
+  inn: string;
+  phoneNumber: string;
+  regionId: number;
+  districtId: number;
+  address: string;
+  director: string;
+  isParent: boolean;
+  defaultLanguageId: number;
+  stateId?: number;
+}
+
+export interface organizationCreate {
+  shortName: string;
+  fullName: string;
+  inn: string;
+  phoneNumber: string;
+  regionId: number;
+  districtId: number;
+  address: string;
+  director: string;
+  isParent: boolean;
+  defaultLanguageId: number;
+  stateId: number;
+}
+
+// Counterparty
+export interface Counterparty {
+  id: number;
+  organizationId: number;
+  organizationName: string;
+  counterpartyTypeId: number;
+  counterpartyTypeName: string;
+  shortName: string;
+  fullName: string;
+  inn: string;
+  phoneNumber: string;
+  regionId: number;
+  regionName: string;
+  districtId: number;
+  districtName: string;
+  stateId: number;
+  stateName: string;
+  createdDate: string;
+}
+
+export interface CounterpartyModule {
+  id: number;
+  code: string;
+  fullName: string;
+  shortName: string;
+}
+
+export interface CounterpartyModuleGroup {
+  id: number;
+  fullName: string;
+  shortName?: string;
+  modules: CounterpartyModule[];
+}
+
+export interface CounterpartyDetail extends Counterparty {
+  counterpartyModules: Array<{
+    id?: number;
+    moduleId: number;
+  }>;
+}

@@ -1,10 +1,10 @@
 import { $axiosPrivate } from "@/services/AxiosService";
 import type { ListParams, Paginated } from "@/shared/types";
 import { settingsEndpoints } from "../constants/endpoints";
-import type { Settings, SettingsForm } from "../types/settings";
+import type { Settings } from "../types/settings";
+import type { SettingsForm } from "../types/form";
 
 const endpoints = settingsEndpoints.settings;
-
 export const settingsService = {
   list: (params?: ListParams) =>
     $axiosPrivate.get<Paginated<Settings>>(endpoints.list, { params }).then((res) => res.data),

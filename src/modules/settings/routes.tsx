@@ -1,11 +1,11 @@
 import type { RouteObject } from "react-router";
 import SettingsListPage from "./pages";
-
 import RoleListPage from "./pages/role";
 import RoleAddPage from "./pages/role/add";
-
 import Users from "./pages/users";
-/* modux:imports */
+import OrganizationListPage from "./pages/organizations";
+import CounterpartyListPage from "./pages/counterparty";
+
 
 export const settingsRoutes: RouteObject = {
   path: "settings",
@@ -35,6 +35,15 @@ export const settingsRoutes: RouteObject = {
         },
       ],
     },
-    /* modux:routes */
+    {
+      path: "organizations",
+      handle: { title: "Organizations" },
+      element: <OrganizationListPage />,
+    },
+   {
+      path: "counterparty",
+      handle: { title: "Counterparty" },
+      element: <CounterpartyListPage />,
+    },
   ],
 };
