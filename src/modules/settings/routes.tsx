@@ -5,6 +5,7 @@ import RoleAddPage from "./pages/role/add";
 import Users from "./pages/users";
 import OrganizationListPage from "./pages/organizations";
 import CounterpartyListPage from "./pages/counterparty";
+import DepartmentsListPage from "./pages/departments";
 
 
 export const settingsRoutes: RouteObject = {
@@ -44,6 +45,11 @@ export const settingsRoutes: RouteObject = {
       path: "counterparty",
       handle: { title: "Counterparty" },
       element: <CounterpartyListPage />,
+    },
+    {
+      path: "departments",
+      handle: { title: "Departments" },
+      element: <DepartmentsListPage />,
     },
   ],
 };

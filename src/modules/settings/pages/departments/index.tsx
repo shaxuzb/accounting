@@ -3,7 +3,6 @@ import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
 import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { Counterparty } from "../../types/settings";
 import { generateKeyTable } from "@/utils/utils";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import { useAppSelector } from "@/store/hooks";
@@ -12,18 +11,20 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { useState } from "react";
-import CounteryPartyAddPage from "./add";
-import { useGetListCounterparty } from "../../hooks/counterparty/useGetListCounterParty";
-import { counterpartyPermissions } from "../../constants/permissions";
+import DepartmentsAddPage from "./add";
+import type { Departments } from "../../types/settings";
+import { departmentsPermissions } from "../../constants/permissions";
+import { useGetListDepartments } from "../../hooks/departments/useGetListDepartments";
 
-export default function CounteryPartyListPage() {
+
+
+export default function DepartmentsListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
-  const { data, refetch, isLoading, isFetching } =
-    useGetListCounterparty(searchParams);
+  const { data, refetch, isLoading, isFetching } = useGetListDepartments(searchParams);
 
-  const tableColumns: TableColumnsType<Counterparty> = [
+  const tableColumns: TableColumnsType<Departments> = [
     {
       dataIndex: "indexId",
       title: t("T/r"),
@@ -31,13 +32,13 @@ export default function CounteryPartyListPage() {
       width: 70,
     },
     {
-      title: "To'liq nomi",
-      dataIndex: "fullName",
+      title: "organization name",
+      dataIndex: "organizationName",
       minWidth: 180,
     },
     {
-      title: "Qisqacha nomi",
-      dataIndex: "shortName",
+      title: "Branch name",
+      dataIndex: "branchName",
       minWidth: 160,
     },
     {
@@ -50,10 +51,10 @@ export default function CounteryPartyListPage() {
   ];
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(counterpartyPermissions.update) ||
-    permissions.includes(counterpartyPermissions.delete);
+    permissions.includes(departmentsPermissions.update) ||
+    permissions.includes(departmentsPermissions.delete);
 
-  const columns: TableColumnType<Counterparty>[] = hasActions
+  const columns: TableColumnType<Departments>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -64,20 +65,16 @@ export default function CounteryPartyListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="counterparty-cards"
-              customPath={`/main/settings/counterparty/edit/${record.id}`}
+              deletePath="departments"
+              customPath={`/main/settings/departments/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: counterpartyPermissions.delete,
-                editCode: counterpartyPermissions.update,
+                deleteCode: departmentsPermissions.delete,
+                editCode: departmentsPermissions.update,
               }}
               refetch={refetch}
-              editModal={{
-                isModal: true,
-                setOpenEditModal: setIsEditOpen,
-                setEditData: (d) => setEditId((d as any)?.id ?? null),
-              }}
+              editModal={{ isModal: true, setOpenEditModal: setIsEditOpen, setEditData: (d) => setEditId((d as any)?.id ?? null) }}
             />
           ),
         },
@@ -95,25 +92,18 @@ export default function CounteryPartyListPage() {
           <SearchFilter />
         </div>
         <Space>
-          <Button
-            icon={<RefreshCw className="size-4" />}
-            onClick={() => void refetch()}
-          />
-          <PermissionCard permission={counterpartyPermissions.create}>
-            <Button
-              type="primary"
-              icon={<Plus className="size-4" />}
-              onClick={() => setIsAddOpen(true)}
-            >
+          <Button icon={<RefreshCw className="size-4" />} onClick={() => void refetch()} />
+          <PermissionCard permission={departmentsPermissions.create}>
+            <Button type="primary" icon={<Plus className="size-4" />} onClick={() => setIsAddOpen(true)}>
               Qo'shish
             </Button>
           </PermissionCard>
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<Counterparty>
+        <Table<Departments>
           loading={isLoading || isFetching}
-          columns={columns}
+              columns={columns}
           scroll={{
             x: "max-content",
             y: "calc(100vh - 350px)",
@@ -122,20 +112,17 @@ export default function CounteryPartyListPage() {
           pagination={false}
         />
       </Card>
-      <CounteryPartyAddPage
-        open={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
-      />
-      {isEditOpen && editId && (
-        <CounteryPartyAddPage
-          open={isEditOpen}
-          onClose={() => {
-            setIsEditOpen(false);
-            setEditId(null);
-          }}
-          id={editId}
-        />
-      )}
+      <DepartmentsAddPage open={isAddOpen} onClose={() => setIsAddOpen(false)} />
+       {isEditOpen && editId && (
+              <DepartmentsAddPage
+                open={isEditOpen}
+                onClose={() => {
+                  setIsEditOpen(false);
+                  setEditId(null);
+                }}
+                id={editId}
+              />
+            )}
     </div>
   );
 }

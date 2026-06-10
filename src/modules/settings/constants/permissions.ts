@@ -20,3 +20,19 @@ export const organizationsPermissions = {
   update: "ROLE_UPDATE",
   delete: "ROLE_DELETE",
 } as const;
+
+export const counterpartyPermissions = {
+  view: "ROLE_VIEW",
+  detail: "ROLE_VIEW_DETAIL",
+  create: "ROLE_CREATE",
+  update: "ROLE_UPDATE",
+  delete: "ROLE_DELETE",
+} as const;
+
+export const departmentsPermissions = {
+  view: "ROLE_VIEW",
+  detail: "ROLE_VIEW_DETAIL",
+  create: "ROLE_CREATE",
+  update: "ROLE_UPDATE",
+  delete: "ROLE_DELETE",
+} as const;

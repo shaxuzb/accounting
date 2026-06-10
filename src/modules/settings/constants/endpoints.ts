@@ -25,10 +25,15 @@ export const settingsEndpoints = {
     update: (id: string | number) => `/organizations/${id}`,
   },
   counterparty: {
-    list: "/counterpartycard",
-    detail: (id: string | number) => `/counterpartycard/${id}`,
-    modules: "/manual/module-sub-groups",
-    create: "/counterpartycard",
-    update: (id: string | number) => `/counterpartycard/${id}`,
+    list: "counterparty-cards",
+    detail: (id: string | number) => `/counterparty-cards/${id}`,
+    create: "counterparty-cards",
+    update: (id: string | number) => `/counterparty-cards/${id}`,
+  },
+  departments: {
+    list: "departments",
+    detail: (id: string | number) => `/departments/${id}`,
+    create: "departments",
+    update: (id: string | number) => `/departments/${id}`,
   },
 };

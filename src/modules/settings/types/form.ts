@@ -29,4 +29,23 @@ export interface CounterpartyForm {
   districtId: number;
   address: string;
   stateId?: number;
+  email?: string | null;
+}
+
+export interface CounterpartyDetail extends CounterpartyForm {
+  id: number;
+  organizationName: string;
+  counterpartyTypeName: string;
+  regionName: string;
+  districtName: string;
+  createdDate: string;
+}
+
+// Deparments
+export interface DepartmentsForm {
+  organizationId: number;
+  branchId: number;
+  code: string;
+  name: string;
+  stateId?: number
 }

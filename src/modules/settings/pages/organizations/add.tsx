@@ -11,6 +11,7 @@ import { useGetDetailOrganizations } from "@/modules/settings/hooks/organization
 import InputText from "@/components/fields/InputText";
 import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 
 const defaultValues: organizationCreate = {
   shortName: "",
@@ -115,7 +116,7 @@ export default function OrganizationsAddPage({
                 formik={formik}
                 fieldName="regionId"
                 label="Regions"
-                path="manual/regions"
+                path={selectListEndpoints.regionsSelectList}
               />
             </Col>
             <Col span={12}>
@@ -123,7 +124,7 @@ export default function OrganizationsAddPage({
                 formik={formik}
                 fieldName="defaultLanguageId"
                 label="Til"
-                path="manual/languages"
+                path={selectListEndpoints.languagesSelectList}
               />
             </Col>
             <Col span={12}>
@@ -148,7 +149,7 @@ export default function OrganizationsAddPage({
                 formik={formik}
                 fieldName="stateId"
                 label="Holati"
-                path="manual/states"
+                path={selectListEndpoints.statesSelectList}
               />
             </Col>
 

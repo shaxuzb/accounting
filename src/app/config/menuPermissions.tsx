@@ -166,5 +166,16 @@ export const menuPermissions: MainMenu = {
           "asasasasasasasasas",
       },
     },
+     {
+      code: "sdasdassss",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "departments",
+        title: "Departments",
+        // img: role,
+        description:
+          "departments",
+      },
+    },
   ],
 };

@@ -20,7 +20,7 @@ export const settingsKeys = {
     detail: (id: string | number) =>
       ["settings", "users", "detail", id] as const,
     modules: (organizationId?: string | number) =>
-      ["settings", "role", "modules", organizationId] as const,
+      ["settings", "users", "modules", organizationId] as const,
   },
   organizations: {
     all: ["settings", "organizations"] as const,
@@ -32,12 +32,21 @@ export const settingsKeys = {
       ["settings", "organizations", "modules", organizationId] as const,
   },
   counterparty: {
-    all: ["settings", "counterparty"] as const,
+    all: ["settings", "counterparty-cards"] as const,
     list: (params?: unknown) =>
-      ["settings", "counterparty", "list", params] as const,
+      ["settings", "counterparty-cards", "list", params] as const,
     detail: (id: string | number) =>
-      ["settings", "counterparty", "detail", id] as const,
+      ["settings", "counterparty-cards", "detail", id] as const,
     modules: (organizationId?: string | number) =>
-      ["settings", "counterparty", "modules", organizationId] as const,
+      ["settings", "counterparty-cards", "modules", organizationId] as const,
+  },
+   departments: {
+    all: ["settings", "departments"] as const,
+    list: (params?: unknown) =>
+      ["settings", "departments", "list", params] as const,
+    detail: (id: string | number) =>
+      ["settings", "departments", "detail", id] as const,
+    modules: (organizationId?: string | number) =>
+      ["settings", "departments", "modules", organizationId] as const,
   },
 };
