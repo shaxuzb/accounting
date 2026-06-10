@@ -11,6 +11,7 @@ import BranchesListPage from "./pages/branches";
 import CounterpartyBankAccountListPage from "./pages/counterpartybankaccount";
 import OrgBankAccountstListPage from "./pages/orgBankAccounts";
 import PositionstListPage from "./pages/positions";
+import ProductGroupsListPage from "./pages/productGroups";
 
 export const settingsRoutes: RouteObject = {
   path: "settings",
@@ -78,7 +79,12 @@ export const settingsRoutes: RouteObject = {
     {
       path: "positions",
       handle: { title: "Positions" },
-      element: <PositionstListPage   />,
+      element: <PositionstListPage />,
+    },
+    {
+      path: "product-groups",
+      handle: { title: "Product Groups" },
+      element: <ProductGroupsListPage />,
     },
   ],
 };

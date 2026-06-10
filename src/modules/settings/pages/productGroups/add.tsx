@@ -42,7 +42,7 @@ export default function ProductGroupsAddPage({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
-      // parentId: null
+      parentId: null
     },
     enableReinitialize: true,
     validationSchema: productGroupsSchema(isEdit),
@@ -107,13 +107,7 @@ export default function ProductGroupsAddPage({
             fieldName="code"
             label="Code"
           />
-          <SelectCustom
-            formik={formik}
-            fieldName="currencyId"
-            label="currencyId"
-            path={selectListEndpoints.currenciesSelectList}
-          />
-
+    
           {isEdit && (
             <SelectCustom
               formik={formik}

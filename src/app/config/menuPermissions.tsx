@@ -223,5 +223,15 @@ export const menuPermissions: MainMenu = {
         description: "positions",
       },
     },
+    {
+      code: "sdasdassssssssss",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "product-groups",
+        title: "ProductGroups",
+        // img: role,
+        description: "Groups",
+      },
+    },
   ],
 };
