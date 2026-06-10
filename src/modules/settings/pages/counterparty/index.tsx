@@ -19,6 +19,8 @@ import { counterpartyPermissions } from "../../constants/permissions";
 export default function CounteryPartyListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
   const [searchParams] = useSearchParams();
   const { data, refetch, isLoading, isFetching } =
     useGetListCounterparty(searchParams);
@@ -75,7 +77,7 @@ export default function CounteryPartyListPage() {
               refetch={refetch}
               editModal={{
                 isModal: true,
-                setOpenEditModal: setIsEditOpen,
+                setOpenEditModal: setIsAddOpen,
                 setEditData: (d) => setEditId((d as any)?.id ?? null),
               }}
             />
@@ -83,10 +85,6 @@ export default function CounteryPartyListPage() {
         },
       ]
     : tableColumns;
-
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
 
   return (
     <div className="w-full">
@@ -124,18 +122,12 @@ export default function CounteryPartyListPage() {
       </Card>
       <CounteryPartyAddPage
         open={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
+        onClose={() => {
+          setIsAddOpen(false);
+          setEditId(null);
+        }}
+        id={editId}
       />
-      {isEditOpen && editId && (
-        <CounteryPartyAddPage
-          open={isEditOpen}
-          onClose={() => {
-            setIsEditOpen(false);
-            setEditId(null);
-          }}
-          id={editId}
-        />
-      )}
     </div>
   );
 }

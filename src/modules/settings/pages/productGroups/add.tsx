@@ -5,46 +5,47 @@ import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
-import type { DepartmentsForm } from "../../types/form";
-import { departmentsSchema } from "../../types/schema";
-import { useGetDetailDepartments } from "../../hooks/departments/useGetDetailDepartments";
-import { useCreateDepartments } from "../../hooks/departments/useCreateDepartments";
-import { useUpdateDepartments } from "../../hooks/departments/useUpdateDepartments";
-import InputPasword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
+import type { ProductGroupsForm } from "../../types/form";
+import { productGroupsSchema } from "../../types/schema";
+import { useUpdateProductGroups } from "../../hooks/productgroups/useUpdateProductGroups";
+import { useCreateProductGroups } from "../../hooks/productgroups/useCreateProductGroups";
+import { useGetDetailProductGroups } from "../../hooks/productgroups/useGetDetailProductGroups";
 
-const defaultValues: DepartmentsForm = {
+const defaultValues: ProductGroupsForm = {
   organizationId: null,
-  branchId: null,
+  parentId: null,
   code: "",
   name: "",
+  stateId: null,
 };
 
-interface DepartmentsModalProps {
+interface ProductGroupsModalProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function DepartmentsAddPage({
+export default function ProductGroupsAddPage({
   open,
   onClose,
   id,
-}: DepartmentsModalProps) {
+}: ProductGroupsModalProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: Departments, isLoading: isOrgonizationsLoading } =
-    useGetDetailDepartments(editId ?? "");
-  const createMutation = useCreateDepartments();
-  const updateMutation = useUpdateDepartments();
+  const { data: ProductGroups, isLoading: isOrgonizationsLoading } =
+    useGetDetailProductGroups(editId ?? "");
+  const createMutation = useCreateProductGroups();
+  const updateMutation = useUpdateProductGroups();
 
-  const formik = useFormik<DepartmentsForm>({
+  const formik = useFormik<ProductGroupsForm>({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
+      // parentId: null
     },
     enableReinitialize: true,
-    validationSchema: departmentsSchema(isEdit),
+    validationSchema: productGroupsSchema(isEdit),
     onSubmit: async (values, helpers) => {
       try {
         if (isEdit && editId) {
@@ -63,23 +64,26 @@ export default function DepartmentsAddPage({
   });
 
   useEffect(() => {
-    if (Departments && isEdit) {
+    if (ProductGroups && isEdit) {
       formik.setValues({
-        organizationId: Departments.organizationId ?? null,
-        branchId: Departments.branchId ?? null,
-        code: Departments.code ?? "",
-        name: Departments.name ?? "",
-        stateId: Departments.stateId ?? null,
+        organizationId: ProductGroups.organizationId ?? null,
+        parentId: ProductGroups.parentId ?? null,
+        code: ProductGroups.code ?? "",
+        name: ProductGroups.name ?? "",
+        stateId: ProductGroups.stateId ?? null,
       });
     }
-  }, [Departments, isEdit]);
+  }, [ProductGroups, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Modal
       title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
       open={open}
-      onCancel={onClose}
+      onCancel={() => {
+        formik.resetForm();
+        onClose();
+      }}
       footer={null}
       centered
       width={450}
@@ -92,16 +96,23 @@ export default function DepartmentsAddPage({
             label="organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
-          <InputPasword formik={formik} fieldName="code" label="code" />
-       
-          <SelectCustom
+         <InputText
             formik={formik}
-            fieldName="branchId"
-            label="branchName"
-            path={selectListEndpoints.branchesSelectList}
+            fieldName="name"  
+            label="Name"
           />
 
-       <InputText formik={formik} fieldName="name" label="Name"/>
+          <InputText
+            formik={formik}
+            fieldName="code"
+            label="Code"
+          />
+          <SelectCustom
+            formik={formik}
+            fieldName="currencyId"
+            label="currencyId"
+            path={selectListEndpoints.currenciesSelectList}
+          />
 
           {isEdit && (
             <SelectCustom

@@ -5,46 +5,51 @@ import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
-import type { DepartmentsForm } from "../../types/form";
-import { departmentsSchema } from "../../types/schema";
-import { useGetDetailDepartments } from "../../hooks/departments/useGetDetailDepartments";
-import { useCreateDepartments } from "../../hooks/departments/useCreateDepartments";
-import { useUpdateDepartments } from "../../hooks/departments/useUpdateDepartments";
+import type { BranchesForm } from "../../types/form";
 import InputPasword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
+import { useGetDetailBranches } from "../../hooks/branches/useGetDetailBranches";
+import { useUpdateBranches } from "../../hooks/branches/useUpdateBranches";
+import { useCreateBranches } from "../../hooks/branches/useCreateBranches";
+import { branchesSchema } from "../../types/schema";
+import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 
-const defaultValues: DepartmentsForm = {
+const defaultValues: BranchesForm = {
   organizationId: null,
-  branchId: null,
   code: "",
   name: "",
+  regionId: null,
+  districtId: null,
+  phoneNumber: "",
+  stateId: null,
+  // address: null,
 };
 
-interface DepartmentsModalProps {
+interface BranchesModalProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function DepartmentsAddPage({
+export default function BranchesAddPage({
   open,
   onClose,
   id,
-}: DepartmentsModalProps) {
+}: BranchesModalProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: Departments, isLoading: isOrgonizationsLoading } =
-    useGetDetailDepartments(editId ?? "");
-  const createMutation = useCreateDepartments();
-  const updateMutation = useUpdateDepartments();
+  const { data: Branches, isLoading: isOrgonizationsLoading } =
+    useGetDetailBranches(editId ?? "");
+  const createMutation = useCreateBranches();
+  const updateMutation = useUpdateBranches();
 
-  const formik = useFormik<DepartmentsForm>({
+  const formik = useFormik<BranchesForm>({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
     },
     enableReinitialize: true,
-    validationSchema: departmentsSchema(isEdit),
+    validationSchema: branchesSchema(isEdit),
     onSubmit: async (values, helpers) => {
       try {
         if (isEdit && editId) {
@@ -63,29 +68,35 @@ export default function DepartmentsAddPage({
   });
 
   useEffect(() => {
-    if (Departments && isEdit) {
+    if (Branches && isEdit) {
       formik.setValues({
-        organizationId: Departments.organizationId ?? null,
-        branchId: Departments.branchId ?? null,
-        code: Departments.code ?? "",
-        name: Departments.name ?? "",
-        stateId: Departments.stateId ?? null,
+        organizationId: Branches.organizationId ?? null,
+        code: Branches.code ?? "",
+        name: Branches.name ?? "",
+        regionId: Branches.regionId ?? null,
+        districtId: Branches.districtId ?? null,
+        phoneNumber: Branches.phoneNumber ?? "",
+        stateId: Branches.stateId ?? null,
       });
     }
-  }, [Departments, isEdit]);
+  }, [Branches, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Modal
       title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
       open={open}
-      onCancel={onClose}
+      onCancel={() => {
+        formik.resetForm();
+        onClose();
+      }}
       footer={null}
       centered
       width={450}
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
+          <InputText formik={formik} fieldName="name" label="Name" />
           <SelectCustom
             formik={formik}
             fieldName="organizationId"
@@ -93,15 +104,24 @@ export default function DepartmentsAddPage({
             path={selectListEndpoints.operationTypesSelectList}
           />
           <InputPasword formik={formik} fieldName="code" label="code" />
-       
+
           <SelectCustom
             formik={formik}
-            fieldName="branchId"
-            label="branchName"
-            path={selectListEndpoints.branchesSelectList}
+            fieldName="regionId"
+            label="regionName"
+            path={selectListEndpoints.regionsSelectList}
           />
-
-       <InputText formik={formik} fieldName="name" label="Name"/>
+          <SelectCustom
+            formik={formik}
+            fieldName="districtId"
+            label="districtName"
+            path={selectListEndpoints.districtsSelectList}
+          />
+          <InputPhoneNumber
+            formik={formik}
+            fieldName="phoneNumber"
+            label="Tel raqam"
+          />
 
           {isEdit && (
             <SelectCustom

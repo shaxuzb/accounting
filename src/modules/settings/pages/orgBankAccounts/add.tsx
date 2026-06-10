@@ -5,46 +5,48 @@ import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
-import type { DepartmentsForm } from "../../types/form";
-import { departmentsSchema } from "../../types/schema";
-import { useGetDetailDepartments } from "../../hooks/departments/useGetDetailDepartments";
-import { useCreateDepartments } from "../../hooks/departments/useCreateDepartments";
-import { useUpdateDepartments } from "../../hooks/departments/useUpdateDepartments";
-import InputPasword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
+import type { OrgBankAccountsForm } from "../../types/form";
+import { useGetDetailOrgBankAccounts } from "../../hooks/orgbankaccounts/useGetDetailOrgBankAccounts";
+import { useUpdateOrgBankAccounts } from "../../hooks/orgbankaccounts/useUpdateOrgBankAccounts";
+import { useCreateOrgBankAccounts } from "../../hooks/orgbankaccounts/useCreateOrgBankAccounts";
+import { orgBankAccountsSchema } from "../../types/schema";
 
-const defaultValues: DepartmentsForm = {
+const defaultValues: OrgBankAccountsForm = {
   organizationId: null,
-  branchId: null,
-  code: "",
-  name: "",
+  bankId: null,
+  accountNumber: null,
+  currencyId: null,
+  isMain: true,
+  stateId: null,
 };
 
-interface DepartmentsModalProps {
+interface OrgBankAccountsModalProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function DepartmentsAddPage({
+export default function OrgBankAccountsAddPage({
   open,
   onClose,
   id,
-}: DepartmentsModalProps) {
+}: OrgBankAccountsModalProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: Departments, isLoading: isOrgonizationsLoading } =
-    useGetDetailDepartments(editId ?? "");
-  const createMutation = useCreateDepartments();
-  const updateMutation = useUpdateDepartments();
+  const { data: OrgBankAccounts, isLoading: isOrgonizationsLoading } =
+    useGetDetailOrgBankAccounts(editId ?? "");
+  const createMutation = useCreateOrgBankAccounts();
+  const updateMutation = useUpdateOrgBankAccounts();
 
-  const formik = useFormik<DepartmentsForm>({
+  const formik = useFormik<OrgBankAccountsForm>({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
+      isMain: true,
     },
     enableReinitialize: true,
-    validationSchema: departmentsSchema(isEdit),
+    validationSchema: orgBankAccountsSchema(isEdit),
     onSubmit: async (values, helpers) => {
       try {
         if (isEdit && editId) {
@@ -63,23 +65,27 @@ export default function DepartmentsAddPage({
   });
 
   useEffect(() => {
-    if (Departments && isEdit) {
+    if (OrgBankAccounts && isEdit) {
       formik.setValues({
-        organizationId: Departments.organizationId ?? null,
-        branchId: Departments.branchId ?? null,
-        code: Departments.code ?? "",
-        name: Departments.name ?? "",
-        stateId: Departments.stateId ?? null,
+        organizationId: OrgBankAccounts.organizationId ?? null,
+        bankId: OrgBankAccounts.bankId ?? null,
+        accountNumber: OrgBankAccounts.accountNumber ?? null,
+        currencyId: OrgBankAccounts.currencyId ?? null,
+        isMain: OrgBankAccounts.isMain ?? true,
+        stateId: OrgBankAccounts.stateId ?? null,
       });
     }
-  }, [Departments, isEdit]);
+  }, [OrgBankAccounts, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Modal
       title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
       open={open}
-      onCancel={onClose}
+      onCancel={() => {
+        formik.resetForm();
+        onClose();
+      }}
       footer={null}
       centered
       width={450}
@@ -92,16 +98,24 @@ export default function DepartmentsAddPage({
             label="organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
-          <InputPasword formik={formik} fieldName="code" label="code" />
-       
           <SelectCustom
             formik={formik}
-            fieldName="branchId"
-            label="branchName"
-            path={selectListEndpoints.branchesSelectList}
+            fieldName="bankId"
+            label="Bank"
+            path={selectListEndpoints.banksSelectList}
           />
 
-       <InputText formik={formik} fieldName="name" label="Name"/>
+          <InputText
+            formik={formik}
+            fieldName="accountNumber"
+            label="accountNumber"
+          />
+          <SelectCustom
+            formik={formik}
+            fieldName="currencyId"
+            label="currencyId"
+            path={selectListEndpoints.currenciesSelectList}
+          />
 
           {isEdit && (
             <SelectCustom

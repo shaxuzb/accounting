@@ -11,27 +11,27 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { useState } from "react";
-import DepartmentsAddPage from "./add";
-import type { Departments } from "../../types/settings";
-import { departmentsPermissions } from "../../constants/permissions";
-import { useGetListDepartments } from "../../hooks/departments/useGetListDepartments";
+import ChartaccountsAddPage from "./add";
+import type { ChartAccounts } from "../../types/settings";
+import { useGetListChartAccounts } from "../../hooks/chartaccounts/useGetListChartAccounts";
+import { chartAccountsPermissions } from "../../constants/permissions";
 
 
-
-export default function DepartmentsListPage() {
+export default function ChartAccountsListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
-  const { data, refetch, isLoading, isFetching } = useGetListDepartments(searchParams);
+  const { data, refetch, isLoading, isFetching } =
+    useGetListChartAccounts(searchParams);
 
-  const tableColumns: TableColumnsType<Departments> = [
+  const tableColumns: TableColumnsType<ChartAccounts> = [
     {
       dataIndex: "indexId",
       title: t("T/r"),
       align: "center",
       width: 70,
     },
-        {
+    {
       title: " name",
       dataIndex: "name",
       minWidth: 180,
@@ -42,13 +42,13 @@ export default function DepartmentsListPage() {
       minWidth: 180,
     },
     {
-      title: "Branch name",
-      dataIndex: "branchName",
+      title: "district name",
+      dataIndex: "districtName",
       minWidth: 160,
     },
     {
       title: "Holati",
-      dataIndex: "stateName",
+      dataIndex: "stateId",
       align: "center",
       width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
@@ -56,10 +56,10 @@ export default function DepartmentsListPage() {
   ];
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(departmentsPermissions.update) ||
-    permissions.includes(departmentsPermissions.delete);
+    permissions.includes(chartAccountsPermissions.update) ||
+    permissions.includes(chartAccountsPermissions.delete);
 
-  const columns: TableColumnType<Departments>[] = hasActions
+  const columns: TableColumnType<ChartAccounts>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -70,16 +70,20 @@ export default function DepartmentsListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="departments"
-              customPath={`/main/settings/departments/edit/${record.id}`}
+              deletePath="chart-accounts"
+              customPath={`/main/settings/chart-accounts/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: departmentsPermissions.delete,
-                editCode: departmentsPermissions.update,
+                deleteCode: chartAccountsPermissions.delete,
+                editCode: chartAccountsPermissions.update,
               }}
               refetch={refetch}
-              editModal={{ isModal: true, setOpenEditModal: setIsEditOpen, setEditData: (d) => setEditId((d as any)?.id ?? null) }}
+              editModal={{
+                isModal: true,
+                setOpenEditModal: setIsAddOpen,
+                setEditData: (d) => setEditId((d as any)?.id ?? null),
+              }}
             />
           ),
         },
@@ -87,7 +91,6 @@ export default function DepartmentsListPage() {
     : tableColumns;
 
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
 
   return (
@@ -97,18 +100,25 @@ export default function DepartmentsListPage() {
           <SearchFilter />
         </div>
         <Space>
-          <Button icon={<RefreshCw className="size-4" />} onClick={() => void refetch()} />
-          <PermissionCard permission={departmentsPermissions.create}>
-            <Button type="primary" icon={<Plus className="size-4" />} onClick={() => setIsAddOpen(true)}>
+          <Button
+            icon={<RefreshCw className="size-4" />}
+            onClick={() => void refetch()}
+          />
+          <PermissionCard permission={chartAccountsPermissions.create}>
+            <Button
+              type="primary"
+              icon={<Plus className="size-4" />}
+              onClick={() => setIsAddOpen(true)}
+            >
               Qo'shish
             </Button>
           </PermissionCard>
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<Departments>
+        <Table<ChartAccounts>
           loading={isLoading || isFetching}
-              columns={columns}
+          columns={columns}
           scroll={{
             x: "max-content",
             y: "calc(100vh - 350px)",
@@ -117,17 +127,14 @@ export default function DepartmentsListPage() {
           pagination={false}
         />
       </Card>
-      <DepartmentsAddPage open={isAddOpen} onClose={() => setIsAddOpen(false)} />
-       {isEditOpen && editId && (
-              <DepartmentsAddPage
-                open={isEditOpen}
-                onClose={() => {
-                  setIsEditOpen(false);
-                  setEditId(null);
-                }}
-                id={editId}
-              />
-            )}
+       <ChartaccountsAddPage
+         open={isAddOpen}
+         onClose={() => {
+           setIsAddOpen(false);
+           setEditId(null);
+         }}
+         id={editId}
+       />
     </div>
   );
 }

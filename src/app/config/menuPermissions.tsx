@@ -1,4 +1,3 @@
-import OrganizationListPage from "@/modules/settings/pages/organizations";
 import type { MenuRole } from "@/shared/types";
 import {
   Banknote,
@@ -151,8 +150,7 @@ export const menuPermissions: MainMenu = {
         path: "organizations",
         title: "Organizatsiyalar",
         // img: role,
-        description:
-          "ddwwrwrwfwfwrwrewewd",
+        description: "ddwwrwrwfwfwrwrewewd",
       },
     },
     {
@@ -162,19 +160,67 @@ export const menuPermissions: MainMenu = {
         path: "counterparty",
         title: "Kontragentlar",
         // img: role,
-        description:
-          "asasasasasasasasas",
+        description: "asasasasasasasasas",
       },
     },
-     {
+    {
       code: "sdasdassss",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "departments",
         title: "Departments",
         // img: role,
-        description:
-          "departments",
+        description: "departments",
+      },
+    },
+    {
+      code: "sdasdasssss",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "branches",
+        title: "Branches",
+        // img: role,
+        description: "Branches",
+      },
+    },
+    {
+      code: "sdasdassssss",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "chart-accounts",
+        title: "Charts",
+        // img: role,
+        description: "Chartes",
+      },
+    },
+    {
+      code: "sdasdasssssss",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "counterparty-bank-accounts",
+        title: "Bank Account",
+        // img: role,
+        description: "counterparty",
+      },
+    },
+    {
+      code: "sdasdassssssss",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "org-bank-accounts",
+        title: "Org Bank Account",
+        // img: role,
+        description: "Bank",
+      },
+    },
+    {
+      code: "sdasdasssssssss",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "positions",
+        title: "Positions",
+        // img: role,
+        description: "positions",
       },
     },
   ],

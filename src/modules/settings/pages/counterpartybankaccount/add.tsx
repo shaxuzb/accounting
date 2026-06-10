@@ -5,46 +5,49 @@ import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
-import type { DepartmentsForm } from "../../types/form";
-import { departmentsSchema } from "../../types/schema";
-import { useGetDetailDepartments } from "../../hooks/departments/useGetDetailDepartments";
-import { useCreateDepartments } from "../../hooks/departments/useCreateDepartments";
-import { useUpdateDepartments } from "../../hooks/departments/useUpdateDepartments";
-import InputPasword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
+import type { CounterpartybankaccountForm } from "../../types/form";
+import { useGetDetailCounterpartybankaccount } from "../../hooks/counterpartybankaccount/useGetDetailCounterpartybankaccount";
+import { useCreateCounterpartybankaccount } from "../../hooks/counterpartybankaccount/useCreateCounterpartybankaccount";
+import { useUpdateCounterpartybankaccount } from "../../hooks/counterpartybankaccount/useUpdateCounterpartybankaccount";
+import { counterpartybankaccountSchema } from "../../types/schema";
 
-const defaultValues: DepartmentsForm = {
+const defaultValues: CounterpartybankaccountForm = {
   organizationId: null,
-  branchId: null,
-  code: "",
-  name: "",
+  counterpartyId: null,
+  bankId: null,
+  accountNumber: null,
+  currencyId: null,
+  isMain: null,
+  stateId: null,
 };
 
-interface DepartmentsModalProps {
+interface counterpartybankaccountModalProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function DepartmentsAddPage({
+export default function CounterPartyBankAccountAddPage({
   open,
   onClose,
   id,
-}: DepartmentsModalProps) {
+}: counterpartybankaccountModalProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: Departments, isLoading: isOrgonizationsLoading } =
-    useGetDetailDepartments(editId ?? "");
-  const createMutation = useCreateDepartments();
-  const updateMutation = useUpdateDepartments();
+  const { data: counterpartybankaccount, isLoading: isOrgonizationsLoading } =
+    useGetDetailCounterpartybankaccount(editId ?? "");
+  const createMutation = useCreateCounterpartybankaccount();
+  const updateMutation = useUpdateCounterpartybankaccount();
 
-  const formik = useFormik<DepartmentsForm>({
+  const formik = useFormik<CounterpartybankaccountForm>({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
+      isMain: true
     },
     enableReinitialize: true,
-    validationSchema: departmentsSchema(isEdit),
+    validationSchema: counterpartybankaccountSchema(isEdit),
     onSubmit: async (values, helpers) => {
       try {
         if (isEdit && editId) {
@@ -63,23 +66,28 @@ export default function DepartmentsAddPage({
   });
 
   useEffect(() => {
-    if (Departments && isEdit) {
+    if (counterpartybankaccount && isEdit) {
       formik.setValues({
-        organizationId: Departments.organizationId ?? null,
-        branchId: Departments.branchId ?? null,
-        code: Departments.code ?? "",
-        name: Departments.name ?? "",
-        stateId: Departments.stateId ?? null,
+        organizationId: counterpartybankaccount.organizationId ?? null,
+        counterpartyId: counterpartybankaccount.counterpartyId ?? null,
+        bankId: counterpartybankaccount.bankId ?? null,
+        accountNumber: counterpartybankaccount.accountNumber ?? null,
+        currencyId: counterpartybankaccount.currencyId ?? null,
+        isMain: counterpartybankaccount.isMain ?? true,
+        stateId: counterpartybankaccount.stateId ?? null,
       });
     }
-  }, [Departments, isEdit]);
+  }, [counterpartybankaccount, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Modal
       title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
       open={open}
-      onCancel={onClose}
+      onCancel={() => {
+        formik.resetForm();
+        onClose();
+      }}
       footer={null}
       centered
       width={450}
@@ -88,20 +96,35 @@ export default function DepartmentsAddPage({
         <Form layout="vertical" onFinish={formik.handleSubmit}>
           <SelectCustom
             formik={formik}
+            fieldName="counterpartyId"
+            label="counterpartyId"
+            path={selectListEndpoints.counterparty}
+          />
+          <SelectCustom
+            formik={formik}
             fieldName="organizationId"
             label="organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
-          <InputPasword formik={formik} fieldName="code" label="code" />
-       
-          <SelectCustom
+             <SelectCustom
             formik={formik}
-            fieldName="branchId"
-            label="branchName"
-            path={selectListEndpoints.branchesSelectList}
+            fieldName="bankId"
+            label="Bank"
+            path={selectListEndpoints.banksSelectList}
           />
 
-       <InputText formik={formik} fieldName="name" label="Name"/>
+
+          <InputText
+            formik={formik}
+            fieldName="accountNumber"
+            label="accountNumber"
+          />
+          <SelectCustom
+            formik={formik}
+            fieldName="currencyId"
+            label="currencyId"
+            path={selectListEndpoints.currenciesSelectList}
+          />
 
           {isEdit && (
             <SelectCustom

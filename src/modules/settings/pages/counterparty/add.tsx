@@ -48,7 +48,7 @@ export default function CounteryPartyAddPage({
     initialValues: defaultValues,
     enableReinitialize: true,
     validationSchema: counterpartySchema(isEdit),
-    onSubmit: async (values, helpers) => {
+    onSubmit: async (values) => {
       try {
         if (isEdit && editId) {
           await updateMutation.mutateAsync({ id: editId, payload: values });
@@ -57,8 +57,8 @@ export default function CounteryPartyAddPage({
           await createMutation.mutateAsync(values);
           toast.success("Tashkilot muvaffaqiyatli yaratildi");
         }
-        helpers.resetForm();
         onClose();
+        formik.resetForm();
       } catch (err: unknown) {
         errorHandlers(err);
       }
@@ -87,7 +87,10 @@ export default function CounteryPartyAddPage({
     <Modal
       title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
       open={open}
-      onCancel={onClose}
+      onCancel={() => {
+        formik.resetForm();
+        onClose();
+      }}
       footer={null}
       centered
       width={650}
@@ -159,9 +162,6 @@ export default function CounteryPartyAddPage({
                 label="Holati"
                 path={selectListEndpoints.statesSelectList}
               />
-            </Col>
-            <Col span={24}>
-              <InputText formik={formik} fieldName="address" label="Manzil" />
             </Col>
           </Row>
           <Button

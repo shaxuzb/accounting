@@ -6,6 +6,7 @@ export const selectListEndpoints = {
   unitsSelectList: "manuals/units",
   documentStatusesSelectList: "manuals/document-statuses",
   counterpartyTypesSelectList: "manuals/counterparty-types",
+  counterparty:"manuals/counterparties",
   paymentTypesSelectList: "manuals/payment-types",
   banksSelectList: "manuals/banks",
   documentTypesSelectList: "manuals/document-types",

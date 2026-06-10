@@ -166,3 +166,95 @@ export interface Departments {
   stateName: string;
   createdDate: string;
 }
+
+// Branches
+export interface Branches {
+  id: number;
+  organizationId: number;
+  organizationName: string;
+  code: string;
+  name: string;
+  regionId: number;
+  regionName: string;
+  districtId: number;
+  districtName: string;
+  phoneNumber: string;
+  stateId: number;
+  stateName: string;
+  createdDate: string;
+}
+
+// ChartAccounts
+export interface ChartAccounts {
+  id: number;
+  organizationId: number;
+  organizationName: string;
+  parentId: number | null;
+  parentName: string | null;
+  code: string;
+  name: string;
+  isGroup: boolean;
+  stateId: number;
+  stateName: string;
+  createdDate: string;
+}
+
+// CounterypartybankAccount
+export interface Counterpartybankaccount {
+  id: number;
+  organizationId: number;
+  counterpartyId: number;
+  counterpartyName: string;
+  bankId: number;
+  bankName: string;
+  accountNumber: string;
+  currencyId: number;
+  currencyName: string;
+  isMain: boolean;
+  stateId: number;
+  stateName: string;
+  createdDate: string;
+}
+
+// OrgBankAccounts
+
+export interface OrgBankAccounts {
+  id: number;
+  organizationId: number;
+  organizationName: string;
+  bankId: number;
+  bankName: string;
+  accountNumber: string;
+  currencyId: number;
+  currencyName: string;
+  isMain: boolean;
+  stateId: number;
+  stateName: string;
+  createdDate: string;
+}
+
+// Positions
+export interface Positions {
+  id: number;
+  organizationId: number;
+  organizationName: string;
+  code: string;
+  name: string;
+  stateId: number;
+  stateName: string;
+  createdDate: string;
+}
+
+// Product-groups
+export interface ProductGroups {
+  id: number;
+  organizationId: number;
+  organizationName: string;
+  parentId: number | null;
+  parentName: string | null;
+  code: string;
+  name: string;
+  stateId: number;
+  stateName: string;
+  createdDate: string;
+}

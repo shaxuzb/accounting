@@ -11,44 +11,44 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { useState } from "react";
-import DepartmentsAddPage from "./add";
-import type { Departments } from "../../types/settings";
-import { departmentsPermissions } from "../../constants/permissions";
-import { useGetListDepartments } from "../../hooks/departments/useGetListDepartments";
+import type { ProductGroups } from "../../types/settings";
+import { useGetListProductGroups } from "../../hooks/productgroups/useGetListProductGroups";
+import { productGroupsPermissions } from "../../constants/permissions";
+import ProductGroupsAddPage from "./add";
 
 
-
-export default function DepartmentsListPage() {
+export default function ProductGroupsListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
-  const { data, refetch, isLoading, isFetching } = useGetListDepartments(searchParams);
+  const { data, refetch, isLoading, isFetching } =
+    useGetListProductGroups(searchParams);
 
-  const tableColumns: TableColumnsType<Departments> = [
+  const tableColumns: TableColumnsType<ProductGroups> = [
     {
       dataIndex: "indexId",
       title: t("T/r"),
       align: "center",
       width: 70,
     },
-        {
-      title: " name",
+    {
+      title: "name",
       dataIndex: "name",
       minWidth: 180,
     },
     {
-      title: "organization name",
-      dataIndex: "organizationName",
+      title: "code",
+      dataIndex: "code",
       minWidth: 180,
     },
     {
-      title: "Branch name",
-      dataIndex: "branchName",
+      title: "organizationName",
+      dataIndex: "organizationName",
       minWidth: 160,
     },
     {
       title: "Holati",
-      dataIndex: "stateName",
+      dataIndex: "stateId",
       align: "center",
       width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
@@ -56,10 +56,10 @@ export default function DepartmentsListPage() {
   ];
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(departmentsPermissions.update) ||
-    permissions.includes(departmentsPermissions.delete);
+    permissions.includes(productGroupsPermissions.update) ||
+    permissions.includes(productGroupsPermissions.delete);
 
-  const columns: TableColumnType<Departments>[] = hasActions
+  const columns: TableColumnType<ProductGroups>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -70,16 +70,20 @@ export default function DepartmentsListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="departments"
-              customPath={`/main/settings/departments/edit/${record.id}`}
+              deletePath="product-groups"
+              customPath={`/main/settings/product-groups/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: departmentsPermissions.delete,
-                editCode: departmentsPermissions.update,
+                deleteCode: productGroupsPermissions.delete,
+                editCode: productGroupsPermissions.update,
               }}
               refetch={refetch}
-              editModal={{ isModal: true, setOpenEditModal: setIsEditOpen, setEditData: (d) => setEditId((d as any)?.id ?? null) }}
+              editModal={{
+                isModal: true,
+                setOpenEditModal: setIsAddOpen,
+                setEditData: (d) => setEditId((d as any)?.id ?? null),
+              }}
             />
           ),
         },
@@ -87,7 +91,6 @@ export default function DepartmentsListPage() {
     : tableColumns;
 
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
 
   return (
@@ -97,18 +100,27 @@ export default function DepartmentsListPage() {
           <SearchFilter />
         </div>
         <Space>
-          <Button icon={<RefreshCw className="size-4" />} onClick={() => void refetch()} />
-          <PermissionCard permission={departmentsPermissions.create}>
-            <Button type="primary" icon={<Plus className="size-4" />} onClick={() => setIsAddOpen(true)}>
+          <Button
+            icon={<RefreshCw className="size-4" />}
+            onClick={() => refetch()}
+          />
+          <PermissionCard
+            permission={productGroupsPermissions.create}
+          >
+            <Button
+              type="primary"
+              icon={<Plus className="size-4" />}
+              onClick={() => setIsAddOpen(true)}
+            >
               Qo'shish
             </Button>
           </PermissionCard>
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<Departments>
+        <Table<ProductGroups>
           loading={isLoading || isFetching}
-              columns={columns}
+          columns={columns}
           scroll={{
             x: "max-content",
             y: "calc(100vh - 350px)",
@@ -117,17 +129,14 @@ export default function DepartmentsListPage() {
           pagination={false}
         />
       </Card>
-      <DepartmentsAddPage open={isAddOpen} onClose={() => setIsAddOpen(false)} />
-       {isEditOpen && editId && (
-              <DepartmentsAddPage
-                open={isEditOpen}
-                onClose={() => {
-                  setIsEditOpen(false);
-                  setEditId(null);
-                }}
-                id={editId}
-              />
-            )}
+      <ProductGroupsAddPage
+        open={isAddOpen}
+        onClose={() => {
+          setIsAddOpen(false);
+          setEditId(null);
+        }}
+        id={editId}
+      />
     </div>
   );
 }

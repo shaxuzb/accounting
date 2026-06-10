@@ -5,46 +5,50 @@ import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
-import type { DepartmentsForm } from "../../types/form";
-import { departmentsSchema } from "../../types/schema";
-import { useGetDetailDepartments } from "../../hooks/departments/useGetDetailDepartments";
-import { useCreateDepartments } from "../../hooks/departments/useCreateDepartments";
-import { useUpdateDepartments } from "../../hooks/departments/useUpdateDepartments";
+import type { ChartAccountsForm } from "../../types/form";
 import InputPasword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
 
-const defaultValues: DepartmentsForm = {
+import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
+import { useCreateChartAccounts } from "../../hooks/chartaccounts/useCreateChartAccounts";
+import { useUpdateChartAccounts } from "../../hooks/chartaccounts/useUpdateChartAccounts";
+import { useGetDetailChartAccounts } from "../../hooks/chartaccounts/useGetDetailChartAccounts";
+import { chartAccountsSchema } from "../../types/schema";
+
+const defaultValues: ChartAccountsForm = {
   organizationId: null,
-  branchId: null,
+  parentId: null,
   code: "",
   name: "",
+  isGroup: false,
+  stateId: null,
 };
 
-interface DepartmentsModalProps {
+interface ChartaccountsModalProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function DepartmentsAddPage({
+export default function ChartaccountsAddPage({
   open,
   onClose,
   id,
-}: DepartmentsModalProps) {
+}: ChartaccountsModalProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: Departments, isLoading: isOrgonizationsLoading } =
-    useGetDetailDepartments(editId ?? "");
-  const createMutation = useCreateDepartments();
-  const updateMutation = useUpdateDepartments();
+  const { data: Chartaccounts, isLoading: isOrgonizationsLoading } =
+    useGetDetailChartAccounts(editId ?? "");
+  const createMutation = useCreateChartAccounts();
+  const updateMutation = useUpdateChartAccounts();
 
-  const formik = useFormik<DepartmentsForm>({
+  const formik = useFormik<ChartAccountsForm>({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
     },
     enableReinitialize: true,
-    validationSchema: departmentsSchema(isEdit),
+    validationSchema: chartAccountsSchema(isEdit),
     onSubmit: async (values, helpers) => {
       try {
         if (isEdit && editId) {
@@ -63,29 +67,34 @@ export default function DepartmentsAddPage({
   });
 
   useEffect(() => {
-    if (Departments && isEdit) {
+    if (Chartaccounts && isEdit) {
       formik.setValues({
-        organizationId: Departments.organizationId ?? null,
-        branchId: Departments.branchId ?? null,
-        code: Departments.code ?? "",
-        name: Departments.name ?? "",
-        stateId: Departments.stateId ?? null,
+        organizationId: Chartaccounts.organizationId ?? null,
+        parentId: Chartaccounts.parentId ?? null,
+        code: Chartaccounts.code ?? "",
+        name: Chartaccounts.name ?? "",
+        isGroup: Chartaccounts.isGroup ?? false,
+        stateId: Chartaccounts.stateId ?? null,
       });
     }
-  }, [Departments, isEdit]);
+  }, [Chartaccounts, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Modal
       title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
       open={open}
-      onCancel={onClose}
+      onCancel={() => {
+        formik.resetForm();
+        onClose();
+      }}
       footer={null}
       centered
       width={450}
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
+          <InputText formik={formik} fieldName="name" label="Name" />
           <SelectCustom
             formik={formik}
             fieldName="organizationId"
@@ -93,15 +102,12 @@ export default function DepartmentsAddPage({
             path={selectListEndpoints.operationTypesSelectList}
           />
           <InputPasword formik={formik} fieldName="code" label="code" />
-       
-          <SelectCustom
-            formik={formik}
-            fieldName="branchId"
-            label="branchName"
-            path={selectListEndpoints.branchesSelectList}
-          />
 
-       <InputText formik={formik} fieldName="name" label="Name"/>
+          <InputPhoneNumber
+            formik={formik}
+            fieldName="phoneNumber"
+            label="Tel raqam"
+          />
 
           {isEdit && (
             <SelectCustom

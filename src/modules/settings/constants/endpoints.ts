@@ -36,4 +36,40 @@ export const settingsEndpoints = {
     create: "departments",
     update: (id: string | number) => `/departments/${id}`,
   },
+  branches: {
+    list: "branches",
+    detail: (id: string | number) => `/branches/${id}`,
+    create: "branches",
+    update: (id: string | number) => `/branches/${id}`,
+  },
+  chartAccounts: {
+    list: "chart-accounts",
+    detail: (id: string | number) => `/chart-accounts/${id}`,
+    create: "chart-accounts",
+    update: (id: string | number) => `/chart-accounts/${id}`,
+  },
+    counterpartyBankAccount: {
+    list: "counterparty-bank-accounts",
+    detail: (id: string | number) => `/counterparty-bank-accounts/${id}`,
+    create: "counterparty-bank-accounts",
+    update: (id: string | number) => `/counterparty-bank-accounts/${id}`,
+  },
+  orgBankAccounts: {
+    list: "org-bank-accounts",
+    detail: (id: string | number) => `/org-bank-accounts/${id}`,
+    create: "org-bank-accounts",
+    update: (id: string | number) => `/org-bank-accounts/${id}`,
+  },
+    positions: {
+    list: "positions",
+    detail: (id: string | number) => `/positions/${id}`,
+    create: "positions",
+    update: (id: string | number) => `/positions/${id}`,
+  },
+    productGroups: {
+    list: "product-groups",
+    detail: (id: string | number) => `/product-groups/${id}`,
+    create: "product-groups",
+    update: (id: string | number) => `/product-groups/${id}`,
+  },
 };

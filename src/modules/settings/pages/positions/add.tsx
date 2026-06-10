@@ -5,46 +5,46 @@ import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
-import type { DepartmentsForm } from "../../types/form";
-import { departmentsSchema } from "../../types/schema";
-import { useGetDetailDepartments } from "../../hooks/departments/useGetDetailDepartments";
-import { useCreateDepartments } from "../../hooks/departments/useCreateDepartments";
-import { useUpdateDepartments } from "../../hooks/departments/useUpdateDepartments";
-import InputPasword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
+import type { PositionsForm } from "../../types/form";
+import { useGetDetailPositions } from "../../hooks/positions/useGetDetailPositions";
+import { useCreatePositions } from "../../hooks/positions/useCreatePositions";
+import { useUpdatePositions } from "../../hooks/positions/useUpdatePositions";
+import { positionsSchema } from "../../types/schema";
 
-const defaultValues: DepartmentsForm = {
+
+const defaultValues: PositionsForm = {
   organizationId: null,
-  branchId: null,
   code: "",
   name: "",
+  stateId: null,
 };
 
-interface DepartmentsModalProps {
+interface PositionsModalProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function DepartmentsAddPage({
+export default function PositionsAddPage({
   open,
   onClose,
   id,
-}: DepartmentsModalProps) {
+}: PositionsModalProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: Departments, isLoading: isOrgonizationsLoading } =
-    useGetDetailDepartments(editId ?? "");
-  const createMutation = useCreateDepartments();
-  const updateMutation = useUpdateDepartments();
+  const { data: Positions, isLoading: isOrgonizationsLoading } =
+    useGetDetailPositions(editId ?? "");
+  const createMutation = useCreatePositions();
+  const updateMutation = useUpdatePositions();
 
-  const formik = useFormik<DepartmentsForm>({
+  const formik = useFormik<PositionsForm>({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
     },
     enableReinitialize: true,
-    validationSchema: departmentsSchema(isEdit),
+    validationSchema: positionsSchema(isEdit),
     onSubmit: async (values, helpers) => {
       try {
         if (isEdit && editId) {
@@ -63,23 +63,25 @@ export default function DepartmentsAddPage({
   });
 
   useEffect(() => {
-    if (Departments && isEdit) {
+    if (Positions && isEdit) {
       formik.setValues({
-        organizationId: Departments.organizationId ?? null,
-        branchId: Departments.branchId ?? null,
-        code: Departments.code ?? "",
-        name: Departments.name ?? "",
-        stateId: Departments.stateId ?? null,
+        organizationId: Positions.organizationId ?? null,
+        code: Positions.code ?? "",
+        name: Positions.name ?? "",
+        stateId: Positions.stateId ?? null,
       });
     }
-  }, [Departments, isEdit]);
+  }, [Positions, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Modal
       title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
       open={open}
-      onCancel={onClose}
+      onCancel={() => {
+        formik.resetForm();
+        onClose();
+      }}
       footer={null}
       centered
       width={450}
@@ -92,16 +94,9 @@ export default function DepartmentsAddPage({
             label="organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
-          <InputPasword formik={formik} fieldName="code" label="code" />
-       
-          <SelectCustom
-            formik={formik}
-            fieldName="branchId"
-            label="branchName"
-            path={selectListEndpoints.branchesSelectList}
-          />
 
-       <InputText formik={formik} fieldName="name" label="Name"/>
+          <InputText formik={formik} fieldName="code" label="Code" />
+          <InputText formik={formik} fieldName="name" label="Name" />
 
           {isEdit && (
             <SelectCustom
