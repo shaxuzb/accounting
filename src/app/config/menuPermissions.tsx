@@ -2,6 +2,7 @@ import type { MenuRole } from "@/shared/types";
 import {
   Banknote,
   Box,
+  BoxIcon,
   Building2,
   ChartColumnBig,
   Landmark,
@@ -28,6 +29,14 @@ export const menuPermissions: MainMenu = {
         title: "Boshqaruv",
       },
       iconName: <LayoutDashboard className="size-5" />,
+    },
+    {
+      code: "PRODUCTS",
+      linkData: {
+        path: "products",
+        title: "Mahsulotlar",
+      },
+      iconName: <BoxIcon className="size-5" />,
     },
     {
       code: "PURCHASE",
