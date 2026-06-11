@@ -234,5 +234,35 @@ export const menuPermissions: MainMenu = {
         description: "ProductGroup",
       },
     },
+    {
+      code: "sdasdassssssssss",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "cash-boxes",
+        title: "Cash box",
+        // img: role,
+        description: "CashBox",
+      },
+    },
+    {
+      code: "sdasdasssssssssss",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "counterparty-contacts",
+        title: "Counterparty contacts",
+        // img: role,
+        description: "CounterpartyContact",
+      },
+    },
+    {
+      code: "sdasdassssssssssss",
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "warehouses",
+        title: "warehouse",
+        // img: role,
+        description: "Warehouse",
+      },
+    },
   ],
 };

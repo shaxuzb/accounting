@@ -12,6 +12,9 @@ import CounterpartyBankAccountListPage from "./pages/counterpartybankaccount/scr
 import OrgBankAccountstListPage from "./pages/orgBankAccounts/screens";
 import PositionstListPage from "./pages/positions/screens";
 import ProductGroupsListPage from "./pages/productGroups/screens";
+import CashBoxListPage from "./pages/cashbox/screens";
+import CounterpartyContactsListPage from "./pages/counterpartycontact/screens";
+import WarehousesListPage from "./pages/warehouse/screens";
 
 export const settingsRoutes: RouteObject = {
   path: "settings",
@@ -83,6 +86,21 @@ export const settingsRoutes: RouteObject = {
       path: "product-groups",
       handle: { title: "Product Groups" },
       element: <ProductGroupsListPage />,
+    },
+    {
+      path: "cash-boxes",
+      handle: { title: " Cash Box" },
+      element: <CashBoxListPage />,
+    },
+    {
+      path: "counterparty-contacts",
+      handle: { title: " Counterparty contacts" },
+      element: <CounterpartyContactsListPage />,
+    },
+    {
+      path: "warehouses",
+      handle: { title: " Warehouse" },
+      element: <WarehousesListPage />,
     },
   ],
 };
