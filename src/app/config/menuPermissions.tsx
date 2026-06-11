@@ -129,7 +129,8 @@ export const menuPermissions: MainMenu = {
         path: "role",
         title: "Rollar",
         // img: role,
-        description: "Tizimdagi rollarni va ularning huquqlarini boshqarish.",
+        description:
+          "ROLE Tizimdagi rollarni va ularning huquqlarini boshqarish.",
       },
     },
     {
@@ -140,7 +141,7 @@ export const menuPermissions: MainMenu = {
         title: "Foydalanuvchilar",
         // img: role,
         description:
-          "Foydalanuvchilarning huquqlari va tizimdagi rollarini boshqarish.",
+          " User Foydalanuvchilarning huquqlari va tizimdagi rollarini boshqarish.",
       },
     },
     {
@@ -150,7 +151,7 @@ export const menuPermissions: MainMenu = {
         path: "organizations",
         title: "Organizatsiyalar",
         // img: role,
-        description: "ddwwrwrwfwfwrwrewewd",
+        description: "Organization",
       },
     },
     {
@@ -160,7 +161,7 @@ export const menuPermissions: MainMenu = {
         path: "counterparty",
         title: "Kontragentlar",
         // img: role,
-        description: "asasasasasasasasas",
+        description: "CounterpartyCard",
       },
     },
     {
@@ -170,7 +171,7 @@ export const menuPermissions: MainMenu = {
         path: "departments",
         title: "Departments",
         // img: role,
-        description: "departments",
+        description: "Department",
       },
     },
     {
@@ -180,7 +181,7 @@ export const menuPermissions: MainMenu = {
         path: "branches",
         title: "Branches",
         // img: role,
-        description: "Branches",
+        description: "Branch",
       },
     },
     {
@@ -190,7 +191,7 @@ export const menuPermissions: MainMenu = {
         path: "chart-accounts",
         title: "Charts",
         // img: role,
-        description: "Chartes",
+        description: "ChartAccount",
       },
     },
     {
@@ -200,7 +201,7 @@ export const menuPermissions: MainMenu = {
         path: "counterparty-bank-accounts",
         title: "Bank Account",
         // img: role,
-        description: "counterparty",
+        description: "CounterpartyBankAccount",
       },
     },
     {
@@ -210,7 +211,7 @@ export const menuPermissions: MainMenu = {
         path: "org-bank-accounts",
         title: "Org Bank Account",
         // img: role,
-        description: "Bank",
+        description: "OrgBankAccount",
       },
     },
     {
@@ -220,7 +221,7 @@ export const menuPermissions: MainMenu = {
         path: "positions",
         title: "Positions",
         // img: role,
-        description: "positions",
+        description: "Position",
       },
     },
     {
@@ -230,7 +231,7 @@ export const menuPermissions: MainMenu = {
         path: "product-groups",
         title: "ProductGroups",
         // img: role,
-        description: "Groups",
+        description: "ProductGroup",
       },
     },
   ],
