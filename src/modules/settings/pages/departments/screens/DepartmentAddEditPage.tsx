@@ -5,51 +5,46 @@ import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
-import type { BranchesForm } from "../types/form";
+import type { DepartmentsForm } from "../types/form";
+import { departmentsSchema } from "../types/schema";
+import { useGetDetailDepartments } from "../hooks";
+import { useCreateDepartments } from "../hooks";
+import { useUpdateDepartments } from "../hooks";
 import InputPasword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
-import { useGetDetailBranches } from "../hooks";
-import { useUpdateBranches } from "../hooks";
-import { useCreateBranches } from "../hooks";
-import { branchesSchema } from "../types/schema";
-import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 
-const defaultValues: BranchesForm = {
+const defaultValues: DepartmentsForm = {
   organizationId: null,
+  branchId: null,
   code: "",
   name: "",
-  regionId: null,
-  districtId: null,
-  phoneNumber: "",
-  stateId: null,
-  // address: null,
 };
 
-interface BranchesModalProps {
+interface DepartmentAddEditPageProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function BranchesAddPage({
+export default function DepartmentAddEditPage({
   open,
   onClose,
   id,
-}: BranchesModalProps) {
+}: DepartmentAddEditPageProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: Branches, isLoading: isOrgonizationsLoading } =
-    useGetDetailBranches(editId ?? "");
-  const createMutation = useCreateBranches();
-  const updateMutation = useUpdateBranches();
+  const { data: Departments, isLoading: isOrgonizationsLoading } =
+    useGetDetailDepartments(editId ?? "");
+  const createMutation = useCreateDepartments();
+  const updateMutation = useUpdateDepartments();
 
-  const formik = useFormik<BranchesForm>({
+  const formik = useFormik<DepartmentsForm>({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
     },
     enableReinitialize: true,
-    validationSchema: branchesSchema(isEdit),
+    validationSchema: departmentsSchema(isEdit),
     onSubmit: async (values, helpers) => {
       try {
         if (isEdit && editId) {
@@ -68,35 +63,29 @@ export default function BranchesAddPage({
   });
 
   useEffect(() => {
-    if (Branches && isEdit) {
+    if (Departments && isEdit) {
       formik.setValues({
-        organizationId: Branches.organizationId ?? null,
-        code: Branches.code ?? "",
-        name: Branches.name ?? "",
-        regionId: Branches.regionId ?? null,
-        districtId: Branches.districtId ?? null,
-        phoneNumber: Branches.phoneNumber ?? "",
-        stateId: Branches.stateId ?? null,
+        organizationId: Departments.organizationId ?? null,
+        branchId: Departments.branchId ?? null,
+        code: Departments.code ?? "",
+        name: Departments.name ?? "",
+        stateId: Departments.stateId ?? null,
       });
     }
-  }, [Branches, isEdit]);
+  }, [Departments, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Modal
       title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
       open={open}
-      onCancel={() => {
-        formik.resetForm();
-        onClose();
-      }}
+      onCancel={onClose}
       footer={null}
       centered
       width={450}
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <InputText formik={formik} fieldName="name" label="Name" />
           <SelectCustom
             formik={formik}
             fieldName="organizationId"
@@ -104,24 +93,15 @@ export default function BranchesAddPage({
             path={selectListEndpoints.operationTypesSelectList}
           />
           <InputPasword formik={formik} fieldName="code" label="code" />
+       
+          <SelectCustom
+            formik={formik}
+            fieldName="branchId"
+            label="branchName"
+            path={selectListEndpoints.branchesSelectList}
+          />
 
-          <SelectCustom
-            formik={formik}
-            fieldName="regionId"
-            label="regionName"
-            path={selectListEndpoints.regionsSelectList}
-          />
-          <SelectCustom
-            formik={formik}
-            fieldName="districtId"
-            label="districtName"
-            path={selectListEndpoints.districtsSelectList}
-          />
-          <InputPhoneNumber
-            formik={formik}
-            fieldName="phoneNumber"
-            label="Tel raqam"
-          />
+       <InputText formik={formik} fieldName="name" label="Name"/>
 
           {isEdit && (
             <SelectCustom

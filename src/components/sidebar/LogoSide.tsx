@@ -5,7 +5,7 @@ const LogoSide = () => {
 
   return (
     <div
-      className={`h-16 flex ${sidebarInline.sidebar ? "px-2" : "px-4"} items-center border-b border-border border-[#e5e7eb]`}
+      className={`h-16 flex ${sidebarInline.sidebar ? "px-2" : "px-4"} items-center border-b border-border`}
     >
       <div
         className={`flex items-center gap-3 w-full ${

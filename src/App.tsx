@@ -11,6 +11,7 @@ import { router } from "./app/router";
 import customTheme from "./utils/customTheme";
 import { useAppSelector } from "./store/hooks";
 import { getEffectiveTheme } from "./utils/utils";
+import "react-custom-scroller/dist/index.css";
 // import { useEffect } from "react";
 // import { sinchronius } from "./store/features/modeSlice";
 dayjs.extend(isoWeek);
@@ -45,7 +46,8 @@ const Root = () => {
     };
 
     mediaQuery.addEventListener?.("change", handleSystemThemeChange);
-    return () => mediaQuery.removeEventListener?.("change", handleSystemThemeChange);
+    return () =>
+      mediaQuery.removeEventListener?.("change", handleSystemThemeChange);
   }, [themeMode]);
 
   return (
@@ -61,7 +63,7 @@ const Root = () => {
       }}
       locale={customLocale}
     >
-      <div className={`theme-${effectiveTheme} `} >        
+      <div className={`theme-${effectiveTheme} `}>
         <App>
           <Toaster />
           <QueryClientProvider client={queryClient}>

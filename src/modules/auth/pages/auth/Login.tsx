@@ -27,7 +27,7 @@ function Login() {
           password: values.password,
         });
         dispatch(login(response.data));
-        navigate("/main");
+        navigate("/main", { replace: true });
         toast.success("Muvaffaqiyatli kirdingiz!");
       } catch (error) {
         errorHandlers(error);

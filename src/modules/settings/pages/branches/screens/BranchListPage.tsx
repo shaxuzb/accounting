@@ -3,7 +3,6 @@ import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
 import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { Counterparty } from "../types/type";
 import { generateKeyTable } from "@/utils/utils";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import { useAppSelector } from "@/store/hooks";
@@ -12,20 +11,19 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { useState } from "react";
-import CounteryPartyAddPage from "./addedit";
-import { useGetListCounterparty } from "../hooks";
-import { counterpartyPermissions } from "../constants/permissions";
+import BranchAddEditPage from "./BranchAddEditPage";
+import type { Branches } from "../types/type";
+import { useGetListBranches } from "../hooks";
+import { branchesPermissions } from "../constants/permissions";
 
-export default function CounteryPartyListPage() {
+export default function BranchListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
   const [searchParams] = useSearchParams();
   const { data, refetch, isLoading, isFetching } =
-    useGetListCounterparty(searchParams);
+    useGetListBranches(searchParams);
 
-  const tableColumns: TableColumnsType<Counterparty> = [
+  const tableColumns: TableColumnsType<Branches> = [
     {
       dataIndex: "indexId",
       title: t("T/r"),
@@ -33,18 +31,23 @@ export default function CounteryPartyListPage() {
       width: 70,
     },
     {
-      title: "To'liq nomi",
-      dataIndex: "fullName",
+      title: " name",
+      dataIndex: "name",
       minWidth: 180,
     },
     {
-      title: "Qisqacha nomi",
-      dataIndex: "shortName",
+      title: "organization name",
+      dataIndex: "organizationName",
+      minWidth: 180,
+    },
+    {
+      title: "district name",
+      dataIndex: "districtName",
       minWidth: 160,
     },
     {
       title: "Holati",
-      dataIndex: "stateName",
+      dataIndex: "stateId",
       align: "center",
       width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
@@ -52,10 +55,10 @@ export default function CounteryPartyListPage() {
   ];
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(counterpartyPermissions.update) ||
-    permissions.includes(counterpartyPermissions.delete);
+    permissions.includes(branchesPermissions.update) ||
+    permissions.includes(branchesPermissions.delete);
 
-  const columns: TableColumnType<Counterparty>[] = hasActions
+  const columns: TableColumnType<Branches>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -66,26 +69,29 @@ export default function CounteryPartyListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="counterparty-cards"
-              customPath={`/main/settings/counterparty/edit/${record.id}`}
+              deletePath="branches"
+              customPath={`/main/settings/branches/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: counterpartyPermissions.delete,
-                editCode: counterpartyPermissions.update,
+                deleteCode: branchesPermissions.delete,
+                editCode: branchesPermissions.update,
               }}
               refetch={refetch}
               editModal={{
                 isModal: true,
                 setOpenEditModal: setIsAddOpen,
                 setEditData: (value: unknown) =>
-                  setEditId((value as Counterparty)?.id ?? null),
+                  setEditId((value as Branches)?.id ?? null),
               }}
             />
           ),
         },
       ]
     : tableColumns;
+
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
 
   return (
     <div className="w-full">
@@ -98,7 +104,7 @@ export default function CounteryPartyListPage() {
             icon={<RefreshCw className="size-4" />}
             onClick={() => void refetch()}
           />
-          <PermissionCard permission={counterpartyPermissions.create}>
+          <PermissionCard permission={branchesPermissions.create}>
             <Button
               type="primary"
               icon={<Plus className="size-4" />}
@@ -110,7 +116,7 @@ export default function CounteryPartyListPage() {
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<Counterparty>
+        <Table<Branches>
           loading={isLoading || isFetching}
           columns={columns}
           scroll={{
@@ -121,14 +127,14 @@ export default function CounteryPartyListPage() {
           pagination={false}
         />
       </Card>
-      <CounteryPartyAddPage
-        open={isAddOpen}
-        onClose={() => {
-          setIsAddOpen(false);
-          setEditId(null);
-        }}
-        id={editId}
-      />
+       <BranchAddEditPage
+         open={isAddOpen}
+         onClose={() => {
+           setIsAddOpen(false);
+           setEditId(null);
+         }}
+         id={editId}
+       />
     </div>
   );
 }

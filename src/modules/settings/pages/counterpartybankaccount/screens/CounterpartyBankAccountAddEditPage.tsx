@@ -6,47 +6,48 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import InputText from "@/components/fields/InputText";
-import type { OrgBankAccountsForm } from "../types/form";
-import { useGetDetailOrgBankAccounts } from "../hooks";
-import { useUpdateOrgBankAccounts } from "../hooks";
-import { useCreateOrgBankAccounts } from "../hooks";
-import { orgBankAccountsSchema } from "../types/schema";
+import type { CounterpartybankaccountForm } from "../types/form";
+import { useGetDetailCounterpartybankaccount } from "../hooks";
+import { useCreateCounterpartybankaccount } from "../hooks";
+import { useUpdateCounterpartybankaccount } from "../hooks";
+import { counterpartybankaccountSchema } from "../types/schema";
 
-const defaultValues: OrgBankAccountsForm = {
+const defaultValues: CounterpartybankaccountForm = {
   organizationId: null,
+  counterpartyId: null,
   bankId: null,
   accountNumber: null,
   currencyId: null,
-  isMain: true,
+  isMain: null,
   stateId: null,
 };
 
-interface OrgBankAccountsModalProps {
+interface counterpartybankaccountModalProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function OrgBankAccountsAddPage({
+export default function CounterpartyBankAccountAddEditPage({
   open,
   onClose,
   id,
-}: OrgBankAccountsModalProps) {
+}: counterpartybankaccountModalProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: OrgBankAccounts, isLoading: isOrgonizationsLoading } =
-    useGetDetailOrgBankAccounts(editId ?? "");
-  const createMutation = useCreateOrgBankAccounts();
-  const updateMutation = useUpdateOrgBankAccounts();
+  const { data: counterpartybankaccount, isLoading: isOrgonizationsLoading } =
+    useGetDetailCounterpartybankaccount(editId ?? "");
+  const createMutation = useCreateCounterpartybankaccount();
+  const updateMutation = useUpdateCounterpartybankaccount();
 
-  const formik = useFormik<OrgBankAccountsForm>({
+  const formik = useFormik<CounterpartybankaccountForm>({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
-      isMain: true,
+      isMain: true
     },
     enableReinitialize: true,
-    validationSchema: orgBankAccountsSchema(isEdit),
+    validationSchema: counterpartybankaccountSchema(isEdit),
     onSubmit: async (values, helpers) => {
       try {
         if (isEdit && editId) {
@@ -65,17 +66,18 @@ export default function OrgBankAccountsAddPage({
   });
 
   useEffect(() => {
-    if (OrgBankAccounts && isEdit) {
+    if (counterpartybankaccount && isEdit) {
       formik.setValues({
-        organizationId: OrgBankAccounts.organizationId ?? null,
-        bankId: OrgBankAccounts.bankId ?? null,
-        accountNumber: OrgBankAccounts.accountNumber ?? null,
-        currencyId: OrgBankAccounts.currencyId ?? null,
-        isMain: OrgBankAccounts.isMain ?? true,
-        stateId: OrgBankAccounts.stateId ?? null,
+        organizationId: counterpartybankaccount.organizationId ?? null,
+        counterpartyId: counterpartybankaccount.counterpartyId ?? null,
+        bankId: counterpartybankaccount.bankId ?? null,
+        accountNumber: counterpartybankaccount.accountNumber ?? null,
+        currencyId: counterpartybankaccount.currencyId ?? null,
+        isMain: counterpartybankaccount.isMain ?? true,
+        stateId: counterpartybankaccount.stateId ?? null,
       });
     }
-  }, [OrgBankAccounts, isEdit]);
+  }, [counterpartybankaccount, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -94,16 +96,23 @@ export default function OrgBankAccountsAddPage({
         <Form layout="vertical" onFinish={formik.handleSubmit}>
           <SelectCustom
             formik={formik}
+            fieldName="counterpartyId"
+            label="counterpartyId"
+            path={selectListEndpoints.counterparty}
+          />
+          <SelectCustom
+            formik={formik}
             fieldName="organizationId"
             label="organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
-          <SelectCustom
+             <SelectCustom
             formik={formik}
             fieldName="bankId"
             label="Bank"
             path={selectListEndpoints.banksSelectList}
           />
+
 
           <InputText
             formik={formik}

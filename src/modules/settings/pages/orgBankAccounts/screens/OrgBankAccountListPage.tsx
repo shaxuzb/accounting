@@ -11,20 +11,19 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { useState } from "react";
-import type { ProductGroups } from "../types/type";
-import { useGetListProductGroups } from "../hooks";
-import { productGroupsPermissions } from "../constants/permissions";
-import ProductGroupsAddPage from "./addedit";
+import type { OrgBankAccounts } from "../types/type";
+import { useGetListOrgBankAccounts } from "../hooks";
+import { orgBankAccountsPermissions } from "../constants/permissions";
+import OrgBankAccountAddEditPage from "./OrgBankAccountAddEditPage";
 
-
-export default function ProductGroupsListPage() {
+export default function OrgBankAccountListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
   const { data, refetch, isLoading, isFetching } =
-    useGetListProductGroups(searchParams);
+    useGetListOrgBankAccounts(searchParams);
 
-  const tableColumns: TableColumnsType<ProductGroups> = [
+  const tableColumns: TableColumnsType<OrgBankAccounts> = [
     {
       dataIndex: "indexId",
       title: t("T/r"),
@@ -32,13 +31,13 @@ export default function ProductGroupsListPage() {
       width: 70,
     },
     {
-      title: "name",
-      dataIndex: "name",
+      title: "Bank name",
+      dataIndex: "bankName",
       minWidth: 180,
     },
     {
-      title: "code",
-      dataIndex: "code",
+      title: "accountNumber",
+      dataIndex: "accountNumber",
       minWidth: 180,
     },
     {
@@ -56,10 +55,10 @@ export default function ProductGroupsListPage() {
   ];
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(productGroupsPermissions.update) ||
-    permissions.includes(productGroupsPermissions.delete);
+    permissions.includes(orgBankAccountsPermissions.update) ||
+    permissions.includes(orgBankAccountsPermissions.delete);
 
-  const columns: TableColumnType<ProductGroups>[] = hasActions
+  const columns: TableColumnType<OrgBankAccounts>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -70,20 +69,20 @@ export default function ProductGroupsListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="product-groups"
-              customPath={`/main/settings/product-groups/edit/${record.id}`}
+              deletePath="org-bank-accounts"
+              customPath={`/main/settings/org-bank-accounts/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: productGroupsPermissions.delete,
-                editCode: productGroupsPermissions.update,
+                deleteCode: orgBankAccountsPermissions.delete,
+                editCode: orgBankAccountsPermissions.update,
               }}
               refetch={refetch}
               editModal={{
                 isModal: true,
                 setOpenEditModal: setIsAddOpen,
                 setEditData: (value: unknown) =>
-                  setEditId((value as ProductGroups)?.id ?? null),
+                  setEditId((value as OrgBankAccounts)?.id ?? null),
               }}
             />
           ),
@@ -106,7 +105,7 @@ export default function ProductGroupsListPage() {
             onClick={() => refetch()}
           />
           <PermissionCard
-            permission={productGroupsPermissions.create}
+            permission={orgBankAccountsPermissions.create}
           >
             <Button
               type="primary"
@@ -119,7 +118,7 @@ export default function ProductGroupsListPage() {
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<ProductGroups>
+        <Table<OrgBankAccounts>
           loading={isLoading || isFetching}
           columns={columns}
           scroll={{
@@ -130,7 +129,7 @@ export default function ProductGroupsListPage() {
           pagination={false}
         />
       </Card>
-      <ProductGroupsAddPage
+      <OrgBankAccountAddEditPage
         open={isAddOpen}
         onClose={() => {
           setIsAddOpen(false);

@@ -33,7 +33,7 @@ interface OrganizationsModalProps {
   id?: number | null;
 }
 
-export default function OrganizationsAddPage({
+export default function OrganizationAddEditPage({
   open,
   onClose,
   id,

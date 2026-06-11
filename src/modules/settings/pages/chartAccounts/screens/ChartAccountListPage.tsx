@@ -11,19 +11,20 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { useState } from "react";
-import { useGetListCounterpartybankaccount } from "../hooks";
-import type { Counterpartybankaccount } from "../types/type";
-import { counterpartybankaccountPermissions } from "../constants/permissions";
-import CounterPartyBankAccountAddPage from "./addedit";
+import ChartAccountAddEditPage from "./ChartAccountAddEditPage";
+import type { ChartAccounts } from "../types/type";
+import { useGetListChartAccounts } from "../hooks";
+import { chartAccountsPermissions } from "../constants/permissions";
 
-export default function CounterpartyBankAccountListPage() {
+
+export default function ChartAccountListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
   const { data, refetch, isLoading, isFetching } =
-    useGetListCounterpartybankaccount(searchParams);
+    useGetListChartAccounts(searchParams);
 
-  const tableColumns: TableColumnsType<Counterpartybankaccount> = [
+  const tableColumns: TableColumnsType<ChartAccounts> = [
     {
       dataIndex: "indexId",
       title: t("T/r"),
@@ -31,18 +32,18 @@ export default function CounterpartyBankAccountListPage() {
       width: 70,
     },
     {
-      title: "Bank name",
-      dataIndex: "bankName",
+      title: " name",
+      dataIndex: "name",
       minWidth: 180,
     },
     {
-      title: "accountNumber",
-      dataIndex: "accountNumber",
+      title: "organization name",
+      dataIndex: "organizationName",
       minWidth: 180,
     },
     {
-      title: "counterpartyName",
-      dataIndex: "counterpartyName",
+      title: "district name",
+      dataIndex: "districtName",
       minWidth: 160,
     },
     {
@@ -55,10 +56,10 @@ export default function CounterpartyBankAccountListPage() {
   ];
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(counterpartybankaccountPermissions.update) ||
-    permissions.includes(counterpartybankaccountPermissions.delete);
+    permissions.includes(chartAccountsPermissions.update) ||
+    permissions.includes(chartAccountsPermissions.delete);
 
-  const columns: TableColumnType<Counterpartybankaccount>[] = hasActions
+  const columns: TableColumnType<ChartAccounts>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -69,20 +70,20 @@ export default function CounterpartyBankAccountListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="counterparty-bank-accounts"
-              customPath={`/main/settings/counterparty-bank-accounts/edit/${record.id}`}
+              deletePath="chart-accounts"
+              customPath={`/main/settings/chart-accounts/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: counterpartybankaccountPermissions.delete,
-                editCode: counterpartybankaccountPermissions.update,
+                deleteCode: chartAccountsPermissions.delete,
+                editCode: chartAccountsPermissions.update,
               }}
               refetch={refetch}
               editModal={{
                 isModal: true,
                 setOpenEditModal: setIsAddOpen,
                 setEditData: (value: unknown) =>
-                  setEditId((value as Counterpartybankaccount)?.id ?? null),
+                  setEditId((value as ChartAccounts)?.id ?? null),
               }}
             />
           ),
@@ -102,11 +103,9 @@ export default function CounterpartyBankAccountListPage() {
         <Space>
           <Button
             icon={<RefreshCw className="size-4" />}
-            onClick={() => refetch()}
+            onClick={() => void refetch()}
           />
-          <PermissionCard
-            permission={counterpartybankaccountPermissions.create}
-          >
+          <PermissionCard permission={chartAccountsPermissions.create}>
             <Button
               type="primary"
               icon={<Plus className="size-4" />}
@@ -118,7 +117,7 @@ export default function CounterpartyBankAccountListPage() {
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<Counterpartybankaccount>
+        <Table<ChartAccounts>
           loading={isLoading || isFetching}
           columns={columns}
           scroll={{
@@ -129,14 +128,14 @@ export default function CounterpartyBankAccountListPage() {
           pagination={false}
         />
       </Card>
-      <CounterPartyBankAccountAddPage
-        open={isAddOpen}
-        onClose={() => {
-          setIsAddOpen(false);
-          setEditId(null);
-        }}
-        id={editId}
-      />
+       <ChartAccountAddEditPage
+         open={isAddOpen}
+         onClose={() => {
+           setIsAddOpen(false);
+           setEditId(null);
+         }}
+         id={editId}
+       />
     </div>
   );
 }

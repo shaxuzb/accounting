@@ -5,49 +5,50 @@ import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
+import type { ChartAccountsForm } from "../types/form";
+import InputPasword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
-import type { CounterpartybankaccountForm } from "../types/form";
-import { useGetDetailCounterpartybankaccount } from "../hooks";
-import { useCreateCounterpartybankaccount } from "../hooks";
-import { useUpdateCounterpartybankaccount } from "../hooks";
-import { counterpartybankaccountSchema } from "../types/schema";
 
-const defaultValues: CounterpartybankaccountForm = {
+import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
+import { useCreateChartAccounts } from "../hooks";
+import { useUpdateChartAccounts } from "../hooks";
+import { useGetDetailChartAccounts } from "../hooks";
+import { chartAccountsSchema } from "../types/schema";
+
+const defaultValues: ChartAccountsForm = {
   organizationId: null,
-  counterpartyId: null,
-  bankId: null,
-  accountNumber: null,
-  currencyId: null,
-  isMain: null,
+  parentId: null,
+  code: "",
+  name: "",
+  isGroup: false,
   stateId: null,
 };
 
-interface counterpartybankaccountModalProps {
+interface ChartAccountAddEditPageProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function CounterPartyBankAccountAddPage({
+export default function ChartAccountAddEditPage({
   open,
   onClose,
   id,
-}: counterpartybankaccountModalProps) {
+}: ChartAccountAddEditPageProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: counterpartybankaccount, isLoading: isOrgonizationsLoading } =
-    useGetDetailCounterpartybankaccount(editId ?? "");
-  const createMutation = useCreateCounterpartybankaccount();
-  const updateMutation = useUpdateCounterpartybankaccount();
+  const { data: Chartaccounts, isLoading: isOrgonizationsLoading } =
+    useGetDetailChartAccounts(editId ?? "");
+  const createMutation = useCreateChartAccounts();
+  const updateMutation = useUpdateChartAccounts();
 
-  const formik = useFormik<CounterpartybankaccountForm>({
+  const formik = useFormik<ChartAccountsForm>({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
-      isMain: true
     },
     enableReinitialize: true,
-    validationSchema: counterpartybankaccountSchema(isEdit),
+    validationSchema: chartAccountsSchema(isEdit),
     onSubmit: async (values, helpers) => {
       try {
         if (isEdit && editId) {
@@ -66,18 +67,17 @@ export default function CounterPartyBankAccountAddPage({
   });
 
   useEffect(() => {
-    if (counterpartybankaccount && isEdit) {
+    if (Chartaccounts && isEdit) {
       formik.setValues({
-        organizationId: counterpartybankaccount.organizationId ?? null,
-        counterpartyId: counterpartybankaccount.counterpartyId ?? null,
-        bankId: counterpartybankaccount.bankId ?? null,
-        accountNumber: counterpartybankaccount.accountNumber ?? null,
-        currencyId: counterpartybankaccount.currencyId ?? null,
-        isMain: counterpartybankaccount.isMain ?? true,
-        stateId: counterpartybankaccount.stateId ?? null,
+        organizationId: Chartaccounts.organizationId ?? null,
+        parentId: Chartaccounts.parentId ?? null,
+        code: Chartaccounts.code ?? "",
+        name: Chartaccounts.name ?? "",
+        isGroup: Chartaccounts.isGroup ?? false,
+        stateId: Chartaccounts.stateId ?? null,
       });
     }
-  }, [counterpartybankaccount, isEdit]);
+  }, [Chartaccounts, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -94,36 +94,19 @@ export default function CounterPartyBankAccountAddPage({
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <SelectCustom
-            formik={formik}
-            fieldName="counterpartyId"
-            label="counterpartyId"
-            path={selectListEndpoints.counterparty}
-          />
+          <InputText formik={formik} fieldName="name" label="Name" />
           <SelectCustom
             formik={formik}
             fieldName="organizationId"
             label="organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
-             <SelectCustom
-            formik={formik}
-            fieldName="bankId"
-            label="Bank"
-            path={selectListEndpoints.banksSelectList}
-          />
+          <InputPasword formik={formik} fieldName="code" label="code" />
 
-
-          <InputText
+          <InputPhoneNumber
             formik={formik}
-            fieldName="accountNumber"
-            label="accountNumber"
-          />
-          <SelectCustom
-            formik={formik}
-            fieldName="currencyId"
-            label="currencyId"
-            path={selectListEndpoints.currenciesSelectList}
+            fieldName="phoneNumber"
+            label="Tel raqam"
           />
 
           {isEdit && (

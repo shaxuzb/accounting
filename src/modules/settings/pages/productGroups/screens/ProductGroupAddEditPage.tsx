@@ -20,17 +20,17 @@ const defaultValues: ProductGroupsForm = {
   stateId: null,
 };
 
-interface ProductGroupsModalProps {
+interface ProductGroupAddEditPageProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function ProductGroupsAddPage({
+export default function ProductGroupAddEditPage({
   open,
   onClose,
   id,
-}: ProductGroupsModalProps) {
+}: ProductGroupAddEditPageProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
   const { data: ProductGroups, isLoading: isOrgonizationsLoading } =

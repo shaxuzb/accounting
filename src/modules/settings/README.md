@@ -22,16 +22,16 @@ src/modules/settings/pages/
       schema.ts
       type.ts
     screens/
-      index.tsx
-      addedit.tsx
+      UserListPage.tsx
+      UserAddEditPage.tsx
 ```
 
 ## Qoidalar
 
-- List screen: `screens/index.tsx`.
-- Add/edit modal yoki form: `screens/addedit.tsx`.
-- Role kabi maxsus route-based form bo'lsa aniq nom ishlatiladi:
-  `screens/RoleListPage.tsx`, `screens/RoleFormPage.tsx`.
+- List screen: `screens/{Entity}ListPage.tsx`.
+- Add/edit modal yoki form: `screens/{Entity}AddEditPage.tsx`.
+- File nomi va default component nomi bir xil bo'ladi:
+  `UserListPage.tsx` -> `UserListPage`.
 - Screen ichida importlar lokal bo'ladi:
   - `../hooks`
   - `../constants/permissions`
@@ -40,7 +40,3 @@ src/modules/settings/pages/
   - `../types/schema`
 - `constants/endpoints.ts` va `constants/queryKeys.ts` har module uchun local
   alias beradi.
-
-Hozir local fayllar legacy global qatlamlarga facade bo'lib turibdi. Keyingi
-bosqichda hook/service/schema/type kodlarini to'liq shu local papkalarga
-ko'chirish mumkin.

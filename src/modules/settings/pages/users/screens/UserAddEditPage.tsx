@@ -11,13 +11,13 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { useGetDetailUsers } from "../hooks";
 
-interface UsersAddEditModalProps {
+interface UserAddEditPageProps {
   open: boolean;
   onClose: () => void;
   editId: number | null;
 }
 
-function UsersAddEditModal({ open, onClose, editId }: UsersAddEditModalProps) {
+function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
   const isEdit = Boolean(editId);
   const createUser = useCreateUsers();
   const updateUser = useUpdateUsers();
@@ -126,4 +126,4 @@ function UsersAddEditModal({ open, onClose, editId }: UsersAddEditModalProps) {
     </Modal>
   );
 }
-export default UsersAddEditModal;
+export default UserAddEditPage;

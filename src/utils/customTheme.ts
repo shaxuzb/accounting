@@ -22,10 +22,10 @@ const customTheme: ThemeConfig = {
     Select: {},
     Table: {
       cellPaddingBlock: 6,
-      borderColor: "#EFF1F5",
+      borderColor: "#E2E8F0",
       cellPaddingInline: 10,
       fontWeightStrong: 600,
-      headerBg: "#ebeef2",
+      headerBg: "#F1F5F9",
       headerColor: color.textColor,
       colorText: color.textColor,
       fontSize: 16,
@@ -51,6 +51,9 @@ const customTheme: ThemeConfig = {
     Menu: {
       itemColor: color.mutedColor,
       fontWeightStrong: 900,
+      itemHoverBg: color.menuBg,
+      itemHoverColor: color.baseColor,
+      subMenuItemBg: color.menuBg,
     },
   },
 };

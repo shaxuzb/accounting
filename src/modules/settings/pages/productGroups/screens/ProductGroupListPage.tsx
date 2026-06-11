@@ -3,28 +3,28 @@ import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
 import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { Organizations } from "../types/type";
 import { generateKeyTable } from "@/utils/utils";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import { useAppSelector } from "@/store/hooks";
-import { organizationsPermissions } from "../constants/permissions";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
-import { useGetListOrganizations } from "../hooks";
-import OrganizationsAddPage from "./addedit";
 import { useState } from "react";
+import type { ProductGroups } from "../types/type";
+import { useGetListProductGroups } from "../hooks";
+import { productGroupsPermissions } from "../constants/permissions";
+import ProductGroupAddEditPage from "./ProductGroupAddEditPage";
 
 
-
-export default function OrganizationListPage() {
+export default function ProductGroupListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
-  const { data, refetch, isLoading, isFetching } = useGetListOrganizations(searchParams);
+  const { data, refetch, isLoading, isFetching } =
+    useGetListProductGroups(searchParams);
 
-  const tableColumns: TableColumnsType<Organizations> = [
+  const tableColumns: TableColumnsType<ProductGroups> = [
     {
       dataIndex: "indexId",
       title: t("T/r"),
@@ -32,18 +32,23 @@ export default function OrganizationListPage() {
       width: 70,
     },
     {
-      title: "To'liq nomi",
-      dataIndex: "fullName",
+      title: "name",
+      dataIndex: "name",
       minWidth: 180,
     },
     {
-      title: "Qisqacha nomi",
-      dataIndex: "shortName",
+      title: "code",
+      dataIndex: "code",
+      minWidth: 180,
+    },
+    {
+      title: "organizationName",
+      dataIndex: "organizationName",
       minWidth: 160,
     },
     {
       title: "Holati",
-      dataIndex: "stateName",
+      dataIndex: "stateId",
       align: "center",
       width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
@@ -51,10 +56,10 @@ export default function OrganizationListPage() {
   ];
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(organizationsPermissions.update) ||
-    permissions.includes(organizationsPermissions.delete);
+    permissions.includes(productGroupsPermissions.update) ||
+    permissions.includes(productGroupsPermissions.delete);
 
-  const columns: TableColumnType<Organizations>[] = hasActions
+  const columns: TableColumnType<ProductGroups>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -65,20 +70,20 @@ export default function OrganizationListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="organizations"
-              customPath={`/main/settings/organizations/edit/${record.id}`}
+              deletePath="product-groups"
+              customPath={`/main/settings/product-groups/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: organizationsPermissions.delete,
-                editCode: organizationsPermissions.update,
+                deleteCode: productGroupsPermissions.delete,
+                editCode: productGroupsPermissions.update,
               }}
               refetch={refetch}
               editModal={{
                 isModal: true,
-                setOpenEditModal: setIsEditOpen,
+                setOpenEditModal: setIsAddOpen,
                 setEditData: (value: unknown) =>
-                  setEditId((value as Organizations)?.id ?? null),
+                  setEditId((value as ProductGroups)?.id ?? null),
               }}
             />
           ),
@@ -87,7 +92,6 @@ export default function OrganizationListPage() {
     : tableColumns;
 
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
 
   return (
@@ -97,18 +101,27 @@ export default function OrganizationListPage() {
           <SearchFilter />
         </div>
         <Space>
-          <Button icon={<RefreshCw className="size-4" />} onClick={() => void refetch()} />
-          <PermissionCard permission={organizationsPermissions.create}>
-            <Button type="primary" icon={<Plus className="size-4" />} onClick={() => setIsAddOpen(true)}>
+          <Button
+            icon={<RefreshCw className="size-4" />}
+            onClick={() => refetch()}
+          />
+          <PermissionCard
+            permission={productGroupsPermissions.create}
+          >
+            <Button
+              type="primary"
+              icon={<Plus className="size-4" />}
+              onClick={() => setIsAddOpen(true)}
+            >
               Qo'shish
             </Button>
           </PermissionCard>
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<Organizations>
+        <Table<ProductGroups>
           loading={isLoading || isFetching}
-              columns={columns}
+          columns={columns}
           scroll={{
             x: "max-content",
             y: "calc(100vh - 350px)",
@@ -117,8 +130,14 @@ export default function OrganizationListPage() {
           pagination={false}
         />
       </Card>
-      <OrganizationsAddPage open={isAddOpen} onClose={() => setIsAddOpen(false)} />
-      <OrganizationsAddPage open={isEditOpen} onClose={() => { setIsEditOpen(false); setEditId(null); }} id={editId} />
+      <ProductGroupAddEditPage
+        open={isAddOpen}
+        onClose={() => {
+          setIsAddOpen(false);
+          setEditId(null);
+        }}
+        id={editId}
+      />
     </div>
   );
 }

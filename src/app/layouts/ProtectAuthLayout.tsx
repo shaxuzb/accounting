@@ -1,29 +1,78 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import toast from "react-hot-toast";
+
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import Error from "@/components/Error";
+import LoadingScreen from "@/components/LoadingScreen";
+
 import type { AuthToken } from "@/shared/types";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { isLoading, logout } from "@/store/features/authSlice";
-import LoadingScreen from "@/components/LoadingScreen";
 import { authService } from "@/services/authService";
 import { menuPermissions } from "../config/menuPermissions";
 
 const ProtectAuthLayout = () => {
   const [error, setError] = useState(false);
   const [load, setLoad] = useState(true);
+
   const user = useAppSelector((state) => state.auth.user) as AuthToken | null;
+
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
 
-  const redirectToLogin = useCallback(() => {
-    dispatch(logout());
-    navigate("/login", { replace: true });
-    toast.error("Sessiya vaqti tugadi!");
-  }, [dispatch, navigate]);
+  const pathname = location.pathname;
+
+  const isLoginPage = pathname === "/login";
+  const isRootPage = pathname === "/";
+  const isMainPage = pathname === "/main" || pathname.startsWith("/main/");
+
+  const redirectToLogin = useCallback(
+    (showMessage = false) => {
+      dispatch(logout());
+
+      if (pathname !== "/login") {
+        navigate("/login", { replace: true });
+      }
+
+      if (showMessage) {
+        toast.error("Sessiya vaqti tugadi!");
+      }
+    },
+    [dispatch, navigate, pathname],
+  );
+
+  const getFirstAllowedPath = useCallback(() => {
+    if (!user?.user?.permissions?.length) return null;
+
+    const permissions = user.user.permissions;
+
+    const allowedMenu = menuPermissions.TOP.find((item) => {
+      if (item.dropdown && item.items?.length) {
+        return item.items.some(
+          (subItem) => subItem.code && permissions.includes(subItem.code),
+        );
+      }
+
+      return item.code && permissions.includes(item.code);
+    });
+
+    if (!allowedMenu?.linkData?.path) return null;
+
+    if (allowedMenu.items?.length) {
+      const allowedSubItem = allowedMenu.items.find(
+        (subItem) => subItem.code && permissions.includes(subItem.code),
+      );
+
+      if (!allowedSubItem?.linkData?.path) return null;
+
+      return `/main/${allowedMenu.linkData.path}/${allowedSubItem.linkData.path}`;
+    }
+
+    return `/main/${allowedMenu.linkData.path}`;
+  }, [user]);
 
   const checkState = useCallback(async () => {
     try {
@@ -31,51 +80,77 @@ const ProtectAuthLayout = () => {
       return true;
     } catch (err: unknown) {
       errorHandlers(err);
+      return false;
     }
-  }, [redirectToLogin]);
+  }, []);
 
   const initAuth = useCallback(async () => {
-    // navigate("/main", { replace: true });
-    if (location.pathname === "/") return navigate("/login", { replace: true });
+    // 1. Agar user yo'q bo'lsa — faqat login
     if (!user) {
-      navigate("/login", { replace: true });
+      if (!isLoginPage) {
+        navigate("/login", { replace: true });
+      }
+
       return;
     }
 
-    if (!location.pathname.includes("/login")) {
-      const ok = await checkState();
-      if (!ok) return;
+    // 2. User bor bo'lsa, token/session backenddan tekshiriladi
+    const isValidSession = await checkState();
+
+    if (!isValidSession) {
+      redirectToLogin(true);
+      return;
     }
 
-    if (!location.pathname.includes("/main")) {
-      const filterItem = menuPermissions.TOP.filter((item) => {
-        if (item.dropdown && item.items) {
-          return item.items.some(
-            (subItem) =>
-              subItem.code && user.user?.permissions.includes(subItem.code),
-          );
-        }
-        return user.user?.permissions.includes(item.code);
-      });
-      if (filterItem.length > 0) {
-        if (filterItem[0].items?.length) {
-          return navigate(
-            `main/${filterItem[0].linkData?.path}/${filterItem[0].items[0]?.linkData?.path}`,
-            { replace: true },
-          );
-        }
-        navigate(`main/${filterItem[0]?.linkData?.path}`, { replace: true });
+    // 3. User login yoki root page'da turgan bo'lsa — birinchi ruxsat berilgan page'ga yuboramiz
+    if (isLoginPage || isRootPage || pathname === "/main") {
+      const firstAllowedPath = getFirstAllowedPath();
+
+      if (firstAllowedPath) {
+        navigate(firstAllowedPath, { replace: true });
+        return;
       }
+
+      // Permission umuman yo'q bo'lsa
+      redirectToLogin(false);
+      toast.error("Sizda tizimga kirish uchun ruxsat yo'q!");
+      return;
     }
-  }, [user, checkState, navigate]);
+
+    // 4. Agar user allaqachon /main/... ichida bo'lsa — joyida qoladi
+    if (isMainPage) {
+      return;
+    }
+
+    // 5. Boshqa noma'lum protected route bo'lsa — main ichidagi birinchi page'ga yuboramiz
+    const firstAllowedPath = getFirstAllowedPath();
+
+    if (firstAllowedPath) {
+      navigate(firstAllowedPath, { replace: true });
+      return;
+    }
+
+    redirectToLogin(false);
+  }, [
+    user,
+    pathname,
+    isLoginPage,
+    isRootPage,
+    isMainPage,
+    checkState,
+    redirectToLogin,
+    getFirstAllowedPath,
+    navigate,
+  ]);
 
   useEffect(() => {
     let mounted = true;
-    dispatch(isLoading(true));
+
     const loadData = async () => {
       try {
+        dispatch(isLoading(true));
         setError(false);
-        await new Promise((resolve) => setTimeout(resolve, 0));
+
         await initAuth();
       } catch {
         setError(true);
@@ -86,11 +161,13 @@ const ProtectAuthLayout = () => {
         }
       }
     };
+
     loadData();
+
     return () => {
       mounted = false;
     };
-  }, [initAuth, dispatch, user]);
+  }, [initAuth, dispatch]);
 
   return (
     <AnimatePresence mode="wait">

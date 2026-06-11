@@ -11,43 +11,44 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { useState } from "react";
-import type { OrgBankAccounts } from "../types/type";
-import { useGetListOrgBankAccounts } from "../hooks";
-import { orgBankAccountsPermissions } from "../constants/permissions";
-import OrgBankAccountsAddPage from "./addedit";
+import DepartmentAddEditPage from "./DepartmentAddEditPage";
+import type { Departments } from "../types/type";
+import { departmentsPermissions } from "../constants/permissions";
+import { useGetListDepartments } from "../hooks";
 
-export default function OrgBankAccountstListPage() {
+
+
+export default function DepartmentListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
-  const { data, refetch, isLoading, isFetching } =
-    useGetListOrgBankAccounts(searchParams);
+  const { data, refetch, isLoading, isFetching } = useGetListDepartments(searchParams);
 
-  const tableColumns: TableColumnsType<OrgBankAccounts> = [
+  const tableColumns: TableColumnsType<Departments> = [
     {
       dataIndex: "indexId",
       title: t("T/r"),
       align: "center",
       width: 70,
     },
-    {
-      title: "Bank name",
-      dataIndex: "bankName",
+        {
+      title: " name",
+      dataIndex: "name",
       minWidth: 180,
     },
     {
-      title: "accountNumber",
-      dataIndex: "accountNumber",
-      minWidth: 180,
-    },
-    {
-      title: "organizationName",
+      title: "organization name",
       dataIndex: "organizationName",
+      minWidth: 180,
+    },
+    {
+      title: "Branch name",
+      dataIndex: "branchName",
       minWidth: 160,
     },
     {
       title: "Holati",
-      dataIndex: "stateId",
+      dataIndex: "stateName",
       align: "center",
       width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
@@ -55,10 +56,10 @@ export default function OrgBankAccountstListPage() {
   ];
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(orgBankAccountsPermissions.update) ||
-    permissions.includes(orgBankAccountsPermissions.delete);
+    permissions.includes(departmentsPermissions.update) ||
+    permissions.includes(departmentsPermissions.delete);
 
-  const columns: TableColumnType<OrgBankAccounts>[] = hasActions
+  const columns: TableColumnType<Departments>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -69,20 +70,20 @@ export default function OrgBankAccountstListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="org-bank-accounts"
-              customPath={`/main/settings/org-bank-accounts/edit/${record.id}`}
+              deletePath="departments"
+              customPath={`/main/settings/departments/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: orgBankAccountsPermissions.delete,
-                editCode: orgBankAccountsPermissions.update,
+                deleteCode: departmentsPermissions.delete,
+                editCode: departmentsPermissions.update,
               }}
               refetch={refetch}
               editModal={{
                 isModal: true,
-                setOpenEditModal: setIsAddOpen,
+                setOpenEditModal: setIsEditOpen,
                 setEditData: (value: unknown) =>
-                  setEditId((value as OrgBankAccounts)?.id ?? null),
+                  setEditId((value as Departments)?.id ?? null),
               }}
             />
           ),
@@ -91,6 +92,7 @@ export default function OrgBankAccountstListPage() {
     : tableColumns;
 
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
 
   return (
@@ -100,27 +102,18 @@ export default function OrgBankAccountstListPage() {
           <SearchFilter />
         </div>
         <Space>
-          <Button
-            icon={<RefreshCw className="size-4" />}
-            onClick={() => refetch()}
-          />
-          <PermissionCard
-            permission={orgBankAccountsPermissions.create}
-          >
-            <Button
-              type="primary"
-              icon={<Plus className="size-4" />}
-              onClick={() => setIsAddOpen(true)}
-            >
+          <Button icon={<RefreshCw className="size-4" />} onClick={() => void refetch()} />
+          <PermissionCard permission={departmentsPermissions.create}>
+            <Button type="primary" icon={<Plus className="size-4" />} onClick={() => setIsAddOpen(true)}>
               Qo'shish
             </Button>
           </PermissionCard>
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<OrgBankAccounts>
+        <Table<Departments>
           loading={isLoading || isFetching}
-          columns={columns}
+              columns={columns}
           scroll={{
             x: "max-content",
             y: "calc(100vh - 350px)",
@@ -129,14 +122,17 @@ export default function OrgBankAccountstListPage() {
           pagination={false}
         />
       </Card>
-      <OrgBankAccountsAddPage
-        open={isAddOpen}
-        onClose={() => {
-          setIsAddOpen(false);
-          setEditId(null);
-        }}
-        id={editId}
-      />
+      <DepartmentAddEditPage open={isAddOpen} onClose={() => setIsAddOpen(false)} />
+       {isEditOpen && editId && (
+              <DepartmentAddEditPage
+                open={isEditOpen}
+                onClose={() => {
+                  setIsEditOpen(false);
+                  setEditId(null);
+                }}
+                id={editId}
+              />
+            )}
     </div>
   );
 }

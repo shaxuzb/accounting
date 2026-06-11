@@ -3,27 +3,28 @@ import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
 import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
+import type { Organizations } from "../types/type";
 import { generateKeyTable } from "@/utils/utils";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import { useAppSelector } from "@/store/hooks";
+import { organizationsPermissions } from "../constants/permissions";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
+import { useGetListOrganizations } from "../hooks";
+import OrganizationAddEditPage from "./OrganizationAddEditPage";
 import { useState } from "react";
-import { useGetListPositions } from "../hooks";
-import type { Positions } from "../types/type";
-import { positionsPermissions } from "../constants/permissions";
-import PositionsAddPage from "./addedit";
 
-export default function PositionstListPage() {
+
+
+export default function OrganizationListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
-  const { data, refetch, isLoading, isFetching } =
-    useGetListPositions(searchParams);
+  const { data, refetch, isLoading, isFetching } = useGetListOrganizations(searchParams);
 
-  const tableColumns: TableColumnsType<Positions> = [
+  const tableColumns: TableColumnsType<Organizations> = [
     {
       dataIndex: "indexId",
       title: t("T/r"),
@@ -31,23 +32,18 @@ export default function PositionstListPage() {
       width: 70,
     },
     {
-      title: "Name",
-      dataIndex: "name",
+      title: "To'liq nomi",
+      dataIndex: "fullName",
       minWidth: 180,
     },
     {
-      title: "code",
-      dataIndex: "code",
-      minWidth: 180,
-    },
-    {
-      title: "organizationName",
-      dataIndex: "organizationName",
+      title: "Qisqacha nomi",
+      dataIndex: "shortName",
       minWidth: 160,
     },
     {
       title: "Holati",
-      dataIndex: "stateId",
+      dataIndex: "stateName",
       align: "center",
       width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
@@ -55,10 +51,10 @@ export default function PositionstListPage() {
   ];
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(positionsPermissions.update) ||
-    permissions.includes(positionsPermissions.delete);
+    permissions.includes(organizationsPermissions.update) ||
+    permissions.includes(organizationsPermissions.delete);
 
-  const columns: TableColumnType<Positions>[] = hasActions
+  const columns: TableColumnType<Organizations>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -69,20 +65,20 @@ export default function PositionstListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="positions"
-              customPath={`/main/settings/positions/edit/${record.id}`}
+              deletePath="organizations"
+              customPath={`/main/settings/organizations/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: positionsPermissions.delete,
-                editCode: positionsPermissions.update,
+                deleteCode: organizationsPermissions.delete,
+                editCode: organizationsPermissions.update,
               }}
               refetch={refetch}
               editModal={{
                 isModal: true,
-                setOpenEditModal: setIsAddOpen,
+                setOpenEditModal: setIsEditOpen,
                 setEditData: (value: unknown) =>
-                  setEditId((value as Positions)?.id ?? null),
+                  setEditId((value as Organizations)?.id ?? null),
               }}
             />
           ),
@@ -91,6 +87,7 @@ export default function PositionstListPage() {
     : tableColumns;
 
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
 
   return (
@@ -100,25 +97,18 @@ export default function PositionstListPage() {
           <SearchFilter />
         </div>
         <Space>
-          <Button
-            icon={<RefreshCw className="size-4" />}
-            onClick={() => refetch()}
-          />
-          <PermissionCard permission={positionsPermissions.create}>
-            <Button
-              type="primary"
-              icon={<Plus className="size-4" />}
-              onClick={() => setIsAddOpen(true)}
-            >
+          <Button icon={<RefreshCw className="size-4" />} onClick={() => void refetch()} />
+          <PermissionCard permission={organizationsPermissions.create}>
+            <Button type="primary" icon={<Plus className="size-4" />} onClick={() => setIsAddOpen(true)}>
               Qo'shish
             </Button>
           </PermissionCard>
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<Positions>
+        <Table<Organizations>
           loading={isLoading || isFetching}
-          columns={columns}
+              columns={columns}
           scroll={{
             x: "max-content",
             y: "calc(100vh - 350px)",
@@ -127,14 +117,8 @@ export default function PositionstListPage() {
           pagination={false}
         />
       </Card>
-      <PositionsAddPage
-        open={isAddOpen}
-        onClose={() => {
-          setIsAddOpen(false);
-          setEditId(null);
-        }}
-        id={editId}
-      />
+      <OrganizationAddEditPage open={isAddOpen} onClose={() => setIsAddOpen(false)} />
+      <OrganizationAddEditPage open={isEditOpen} onClose={() => { setIsEditOpen(false); setEditId(null); }} id={editId} />
     </div>
   );
 }

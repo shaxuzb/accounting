@@ -26,17 +26,17 @@ const defaultValues: CounterpartyForm = {
   stateId: null,
 };
 
-interface CounteryPartyModalProps {
+interface CounterpartyAddEditPageProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function CounteryPartyAddPage({
+export default function CounterpartyAddEditPage({
   open,
   onClose,
   id,
-}: CounteryPartyModalProps) {
+}: CounterpartyAddEditPageProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
   const { data: counterpartyDetail, isLoading: isOrgonizationsLoading } =

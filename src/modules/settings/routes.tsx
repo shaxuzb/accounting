@@ -1,17 +1,17 @@
 import type { RouteObject } from "react-router";
 import SettingsListPage from "./pages";
 import RoleListPage from "./pages/role/screens/RoleListPage";
-import RoleFormPage from "./pages/role/screens/RoleFormPage";
-import UsersPage from "./pages/users/screens";
-import OrganizationListPage from "./pages/organizations/screens";
-import CounterpartyListPage from "./pages/counterparty/screens";
-import DepartmentsListPage from "./pages/departments/screens";
-import ChartAccountsListPage from "./pages/chartAccounts/screens";
-import BranchesListPage from "./pages/branches/screens";
-import CounterpartyBankAccountListPage from "./pages/counterpartybankaccount/screens";
-import OrgBankAccountstListPage from "./pages/orgBankAccounts/screens";
-import PositionstListPage from "./pages/positions/screens";
-import ProductGroupsListPage from "./pages/productGroups/screens";
+import RoleAddEditPage from "./pages/role/screens/RoleAddEditPage";
+import UserListPage from "./pages/users/screens/UserListPage";
+import OrganizationListPage from "./pages/organizations/screens/OrganizationListPage";
+import CounterpartyListPage from "./pages/counterparty/screens/CounterpartyListPage";
+import DepartmentListPage from "./pages/departments/screens/DepartmentListPage";
+import ChartAccountListPage from "./pages/chartAccounts/screens/ChartAccountListPage";
+import BranchListPage from "./pages/branches/screens/BranchListPage";
+import CounterpartyBankAccountListPage from "./pages/counterpartybankaccount/screens/CounterpartyBankAccountListPage";
+import OrgBankAccountListPage from "./pages/orgBankAccounts/screens/OrgBankAccountListPage";
+import PositionListPage from "./pages/positions/screens/PositionListPage";
+import ProductGroupListPage from "./pages/productGroups/screens/ProductGroupListPage";
 
 export const settingsRoutes: RouteObject = {
   path: "settings",
@@ -20,7 +20,7 @@ export const settingsRoutes: RouteObject = {
     { index: true, element: <SettingsListPage /> },
     {
       path: "users",
-      element: <UsersPage />,
+      element: <UserListPage />,
     },
     {
       path: "role",
@@ -29,12 +29,12 @@ export const settingsRoutes: RouteObject = {
         { index: true, element: <RoleListPage /> },
         {
           path: "add",
-          element: <RoleFormPage />,
+          element: <RoleAddEditPage />,
           handle: { title: "Add Role", showBack: true, backTo: ".." },
         },
         {
           path: "edit/:id",
-          element: <RoleFormPage />,
+          element: <RoleAddEditPage />,
           handle: { title: "Edit Role", showBack: true, backTo: ".." },
         },
       ],
@@ -52,17 +52,17 @@ export const settingsRoutes: RouteObject = {
     {
       path: "departments",
       handle: { title: "Departments" },
-      element: <DepartmentsListPage />,
+      element: <DepartmentListPage />,
     },
     {
       path: "branches",
       handle: { title: "Branches" },
-      element: <BranchesListPage />,
+      element: <BranchListPage />,
     },
     {
       path: "chart-accounts",
       handle: { title: "Chart Accounts" },
-      element: <ChartAccountsListPage />,
+      element: <ChartAccountListPage />,
     },
     {
       path: "counterparty-bank-accounts",
@@ -72,17 +72,17 @@ export const settingsRoutes: RouteObject = {
     {
       path: "org-bank-accounts",
       handle: { title: "Org Bank Accounts" },
-      element: <OrgBankAccountstListPage />,
+      element: <OrgBankAccountListPage />,
     },
     {
       path: "positions",
       handle: { title: "Positions" },
-      element: <PositionstListPage />,
+      element: <PositionListPage />,
     },
     {
       path: "product-groups",
       handle: { title: "Product Groups" },
-      element: <ProductGroupsListPage />,
+      element: <ProductGroupListPage />,
     },
   ],
 };

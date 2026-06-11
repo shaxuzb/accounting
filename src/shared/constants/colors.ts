@@ -1,5 +1,6 @@
 const color = {
-  baseColor: "#6366f1",
+  baseColor: "#005cf3",
+  menuBg: "#e7f0ff",
   sidebarBgColor: "#ffffff",
   textColorBlack: "#1a202c",
   textColor: "#5D697E",

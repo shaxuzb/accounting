@@ -4,8 +4,8 @@ import {
   Box,
   Building2,
   ChartColumnBig,
-  House,
   Landmark,
+  LayoutDashboard,
   Settings,
   ShoppingBag,
   ShoppingCart,
@@ -22,12 +22,12 @@ interface MainMenu {
 export const menuPermissions: MainMenu = {
   TOP: [
     {
-      code: "SETTINGS",
+      code: "ROLE_VIEW",
       linkData: {
-        path: "setti",
-        title: "Bosh sahifa",
+        path: "dashboard",
+        title: "Boshqaruv",
       },
-      iconName: <House className="size-5" />,
+      iconName: <LayoutDashboard className="size-5" />,
     },
     {
       code: "PURCHASE",
@@ -55,7 +55,7 @@ export const menuPermissions: MainMenu = {
       ],
     },
     {
-      code: "SETTI",
+      code: "ROLE_VIEW",
       linkData: {
         path: "dashboard/finances",
         title: "Sotuv",
@@ -63,7 +63,7 @@ export const menuPermissions: MainMenu = {
       iconName: <ShoppingBag className="size-5" />,
     },
     {
-      code: "SETT",
+      code: "ROLE_VIEW",
       linkData: {
         path: "dashboard/financess",
         title: "Bank",
@@ -115,7 +115,7 @@ export const menuPermissions: MainMenu = {
     {
       code: "SETTINGS",
       linkData: {
-        path: "settingss",
+        path: "settings",
         title: "HisobKitob MCHJ",
       },
       iconName: <Building2 className="size-5" />,

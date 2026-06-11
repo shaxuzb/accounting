@@ -1,7 +1,7 @@
 // import LineClampAnimation from "@/components/widget/text/LineClampAnimation";
 import type { AuthToken, MenuRole } from "@/shared/types";
 import { useAppSelector } from "@/store/hooks";
-import { Badge, ConfigProvider, Menu } from "antd";
+import { Badge, Menu } from "antd";
 import type { MenuProps } from "antd/lib/menu";
 import dayjs from "dayjs";
 import { useState, type FC } from "react";
@@ -73,9 +73,12 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
       ),
       onClick: () => {
         if (!isDropdown) {
-          const targetPath = itemParent.linkData.path === "settings" ? "main/settings" : itemParent.linkData.path;
+          const targetPath =
+            itemParent.linkData.path === "settings"
+              ? "settings"
+              : itemParent.linkData.path;
           if (location.pathname.slice(1) !== targetPath) {
-            navigate(`/${targetPath}`);
+            navigate(`/main/${targetPath}`);
           }
         }
       },
@@ -110,7 +113,9 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
                     location.pathname.slice(1) !==
                     `${itemParent.linkData.path}/${item.linkData?.path}`
                   ) {
-                    navigate(`/${itemParent.linkData.path}/${item.linkData?.path}`);
+                    navigate(
+                      `/${itemParent.linkData.path}/${item.linkData?.path}`,
+                    );
                   }
                 },
                 icon: item.iconName,
@@ -159,34 +164,19 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
   };
   return (
     <>
-    <ConfigProvider
-      theme={{
-        components: {
-          Menu: {         
-            itemHoverBg: "#e7f0ff",        
-            itemHoverColor: "#005cf3",     
-            subMenuItemBg: "e7f0ff",
-            // itemSelectedBg: "#effff",     
-            // itemSelectedColor: "#2563eb",  
-          },
-        },
-      }}
-    >
-    <Menu
-      className="sidebar-menu px-0!"
-      forceSubMenuRender={true}
-      mode="inline"
-      inlineCollapsed={sidebarInline.sidebar}
-      openKeys={stateOpenKeys}
-      onOpenChange={onOpenChange}
-      style={
-        sidebarInline.sidebar ? { padding: 0, width: 60 } : { padding: 10 }
-      }
-      selectedKeys={[getSelectedKey(location.pathname.slice(1))]} // Aktiv menyu yo‘nalishi
-      items={items}
-    
-    />
-    </ConfigProvider>
+      <Menu
+        className="sidebar-menu px-0!"
+        forceSubMenuRender={true}
+        mode="inline"
+        inlineCollapsed={sidebarInline.sidebar}
+        openKeys={stateOpenKeys}
+        onOpenChange={onOpenChange}
+        style={
+          sidebarInline.sidebar ? { padding: 0, width: 60 } : { padding: 10 }
+        }
+        selectedKeys={[getSelectedKey(location.pathname.slice(1))]} // Aktiv menyu yo‘nalishi
+        items={items}
+      />
     </>
   );
 };

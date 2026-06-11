@@ -6,7 +6,7 @@ import {
   type TableColumnType,
 } from "antd";
 
-import UsersAddEditModal from "./addedit";
+import UserAddEditPage from "./UserAddEditPage";
 import { useState } from "react";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { customPhoneNumber, generateKeyTable } from "@/utils/utils";
@@ -20,7 +20,7 @@ import { Plus, RefreshCw } from "lucide-react";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import type { Users } from "../types/type";
 
-function UsersPage() {
+function UserListPage() {
   const { user } = useAppSelector((state) => state.auth);
   const [isCrudModalOpen, setIsCrudModalOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
@@ -119,7 +119,7 @@ function UsersPage() {
           pagination={false}
         />
       </Card>
-      <UsersAddEditModal
+      <UserAddEditPage
         open={isCrudModalOpen}
         onClose={() => {
           setIsCrudModalOpen(false);
@@ -130,4 +130,4 @@ function UsersPage() {
     </div>
   );
 }
-export default UsersPage;
+export default UserListPage;

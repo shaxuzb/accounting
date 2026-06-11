@@ -20,17 +20,17 @@ const defaultValues: PositionsForm = {
   stateId: null,
 };
 
-interface PositionsModalProps {
+interface PositionAddEditPageProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function PositionsAddPage({
+export default function PositionAddEditPage({
   open,
   onClose,
   id,
-}: PositionsModalProps) {
+}: PositionAddEditPageProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
   const { data: Positions, isLoading: isOrgonizationsLoading } =

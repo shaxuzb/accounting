@@ -5,50 +5,48 @@ import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
-import type { ChartAccountsForm } from "../types/form";
-import InputPasword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
+import type { OrgBankAccountsForm } from "../types/form";
+import { useGetDetailOrgBankAccounts } from "../hooks";
+import { useUpdateOrgBankAccounts } from "../hooks";
+import { useCreateOrgBankAccounts } from "../hooks";
+import { orgBankAccountsSchema } from "../types/schema";
 
-import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
-import { useCreateChartAccounts } from "../hooks";
-import { useUpdateChartAccounts } from "../hooks";
-import { useGetDetailChartAccounts } from "../hooks";
-import { chartAccountsSchema } from "../types/schema";
-
-const defaultValues: ChartAccountsForm = {
+const defaultValues: OrgBankAccountsForm = {
   organizationId: null,
-  parentId: null,
-  code: "",
-  name: "",
-  isGroup: false,
+  bankId: null,
+  accountNumber: null,
+  currencyId: null,
+  isMain: true,
   stateId: null,
 };
 
-interface ChartaccountsModalProps {
+interface OrgBankAccountAddEditPageProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function ChartaccountsAddPage({
+export default function OrgBankAccountAddEditPage({
   open,
   onClose,
   id,
-}: ChartaccountsModalProps) {
+}: OrgBankAccountAddEditPageProps) {
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: Chartaccounts, isLoading: isOrgonizationsLoading } =
-    useGetDetailChartAccounts(editId ?? "");
-  const createMutation = useCreateChartAccounts();
-  const updateMutation = useUpdateChartAccounts();
+  const { data: OrgBankAccounts, isLoading: isOrgonizationsLoading } =
+    useGetDetailOrgBankAccounts(editId ?? "");
+  const createMutation = useCreateOrgBankAccounts();
+  const updateMutation = useUpdateOrgBankAccounts();
 
-  const formik = useFormik<ChartAccountsForm>({
+  const formik = useFormik<OrgBankAccountsForm>({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
+      isMain: true,
     },
     enableReinitialize: true,
-    validationSchema: chartAccountsSchema(isEdit),
+    validationSchema: orgBankAccountsSchema(isEdit),
     onSubmit: async (values, helpers) => {
       try {
         if (isEdit && editId) {
@@ -67,17 +65,17 @@ export default function ChartaccountsAddPage({
   });
 
   useEffect(() => {
-    if (Chartaccounts && isEdit) {
+    if (OrgBankAccounts && isEdit) {
       formik.setValues({
-        organizationId: Chartaccounts.organizationId ?? null,
-        parentId: Chartaccounts.parentId ?? null,
-        code: Chartaccounts.code ?? "",
-        name: Chartaccounts.name ?? "",
-        isGroup: Chartaccounts.isGroup ?? false,
-        stateId: Chartaccounts.stateId ?? null,
+        organizationId: OrgBankAccounts.organizationId ?? null,
+        bankId: OrgBankAccounts.bankId ?? null,
+        accountNumber: OrgBankAccounts.accountNumber ?? null,
+        currencyId: OrgBankAccounts.currencyId ?? null,
+        isMain: OrgBankAccounts.isMain ?? true,
+        stateId: OrgBankAccounts.stateId ?? null,
       });
     }
-  }, [Chartaccounts, isEdit]);
+  }, [OrgBankAccounts, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -94,19 +92,29 @@ export default function ChartaccountsAddPage({
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <InputText formik={formik} fieldName="name" label="Name" />
           <SelectCustom
             formik={formik}
             fieldName="organizationId"
             label="organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
-          <InputPasword formik={formik} fieldName="code" label="code" />
-
-          <InputPhoneNumber
+          <SelectCustom
             formik={formik}
-            fieldName="phoneNumber"
-            label="Tel raqam"
+            fieldName="bankId"
+            label="Bank"
+            path={selectListEndpoints.banksSelectList}
+          />
+
+          <InputText
+            formik={formik}
+            fieldName="accountNumber"
+            label="accountNumber"
+          />
+          <SelectCustom
+            formik={formik}
+            fieldName="currencyId"
+            label="currencyId"
+            path={selectListEndpoints.currenciesSelectList}
           />
 
           {isEdit && (
