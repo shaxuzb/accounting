@@ -21,7 +21,7 @@ function SettingsCard({
       hoverable
       className="items-center justify-between p-4 border border-border  cursor-pointer"
     >
-      <div className="flex items-start">
+      <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
           <div className="w-12! h-12! rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
             {icon}
@@ -63,7 +63,7 @@ export default function SettingsListPage() {
       <h1 className="pt-5 font-bold text-4xl">Sozlamalar</h1>
       <p className="pt-1 text-gray-500">Tizim parametrlari</p>
       <div>
-        <div className="grid grid-cols-[1fr_minmax(300px,1fr)] gap-4">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(330px,1fr))] gap-4">
           {settingsRoute.map((item) => (
             <SettingsCard
               key={item.code}

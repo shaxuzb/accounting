@@ -25,7 +25,7 @@ const customTheme: ThemeConfig = {
       borderColor: "#EFF1F5",
       cellPaddingInline: 10,
       fontWeightStrong: 600,
-      headerBg: "#FAFBFD",
+      headerBg: "#ebeef2",
       headerColor: color.textColor,
       colorText: color.textColor,
       fontSize: 16,

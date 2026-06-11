@@ -15,9 +15,10 @@ import type { CollapseProps } from "antd";
 import { Check, ChevronRight, Search, X } from "lucide-react";
 import Card from "@/components/ui/card/Card";
 // import { useAppSelector } from "@/store/hooks";
-import type { RoleForm, RoleModuleGroup } from "../../../types/settings";
-import { useGetRoleModules } from "../../../hooks/role/useGetRoleModules";
+import { useGetRoleModules } from "../hooks";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import type { RoleModuleGroup } from "../types/type";
+import type { RoleForm } from "../types/form";
 
 interface RoleModuleSelectorProps {
   formik: FormikProps<RoleForm>;

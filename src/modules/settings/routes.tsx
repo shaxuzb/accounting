@@ -1,17 +1,17 @@
 import type { RouteObject } from "react-router";
 import SettingsListPage from "./pages";
-import RoleListPage from "./pages/role";
-import RoleAddPage from "./pages/role/add";
-import Users from "./pages/users";
-import OrganizationListPage from "./pages/organizations";
-import CounterpartyListPage from "./pages/counterparty";
-import DepartmentsListPage from "./pages/departments";
-import ChartAccountsListPage from "./pages/chartAccounts";
-import BranchesListPage from "./pages/branches";
-import CounterpartyBankAccountListPage from "./pages/counterpartybankaccount";
-import OrgBankAccountstListPage from "./pages/orgBankAccounts";
-import PositionstListPage from "./pages/positions";
-import ProductGroupsListPage from "./pages/productGroups";
+import RoleListPage from "./pages/role/screens/RoleListPage";
+import RoleFormPage from "./pages/role/screens/RoleFormPage";
+import UsersPage from "./pages/users/screens";
+import OrganizationListPage from "./pages/organizations/screens";
+import CounterpartyListPage from "./pages/counterparty/screens";
+import DepartmentsListPage from "./pages/departments/screens";
+import ChartAccountsListPage from "./pages/chartAccounts/screens";
+import BranchesListPage from "./pages/branches/screens";
+import CounterpartyBankAccountListPage from "./pages/counterpartybankaccount/screens";
+import OrgBankAccountstListPage from "./pages/orgBankAccounts/screens";
+import PositionstListPage from "./pages/positions/screens";
+import ProductGroupsListPage from "./pages/productGroups/screens";
 
 export const settingsRoutes: RouteObject = {
   path: "settings",
@@ -20,10 +20,8 @@ export const settingsRoutes: RouteObject = {
     { index: true, element: <SettingsListPage /> },
     {
       path: "users",
-      element: <Users />,
+      element: <UsersPage />,
     },
-    // { path: "add", element: <SettingsAddPage />, handle: { title: "Add Settings", showBack: true, backTo: ".." } },
-    // { path: ":id", element: <SettingsViewPage />, handle: { title: "View Settings", showBack: true, backTo: ".." } },
     {
       path: "role",
       handle: { title: "Role" },
@@ -31,12 +29,12 @@ export const settingsRoutes: RouteObject = {
         { index: true, element: <RoleListPage /> },
         {
           path: "add",
-          element: <RoleAddPage />,
+          element: <RoleFormPage />,
           handle: { title: "Add Role", showBack: true, backTo: ".." },
         },
         {
           path: "edit/:id",
-          element: <RoleAddPage />,
+          element: <RoleFormPage />,
           handle: { title: "Edit Role", showBack: true, backTo: ".." },
         },
       ],
@@ -63,7 +61,7 @@ export const settingsRoutes: RouteObject = {
     },
     {
       path: "chart-accounts",
-      handle: { title: "Chartaccounts" },
+      handle: { title: "Chart Accounts" },
       element: <ChartAccountsListPage />,
     },
     {

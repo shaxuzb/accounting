@@ -14,7 +14,7 @@ const Card: FC<CardProps> = ({
   return (
     <div
       className={clsx(
-        `rounded-2xl backdrop-blur-md bg-primary-bg ${
+        `rounded-xl backdrop-blur-md bg-primary-bg ${
           !!hoverable && "duration-200 hover:shadow-xl"
         }`,
         className,
