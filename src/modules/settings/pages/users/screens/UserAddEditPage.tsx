@@ -11,6 +11,7 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { useGetDetailUsers } from "../hooks";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
 
 interface UserAddEditPageProps {
   open: boolean;
@@ -19,22 +20,22 @@ interface UserAddEditPageProps {
 }
 
 function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
-
+  if (!open) return null;
   const isEdit = Boolean(editId);
   const createUser = useCreateUsers();
   const updateUser = useUpdateUsers();
-  const { data } = useGetDetailUsers(editId ?? "");
+  const { data, isSuccess } = useGetDetailUsers(editId ?? "");
   const formik = useFormik<UsersForm>({
     initialValues: {
-      id: data?.id ?? null,
-      userName: data?.userName ?? "",
-      phoneNumber: data?.phoneNumber ?? "",
-      email: data?.email ?? "",
-      firstName: data?.firstName ?? "",
-      lastName: data?.lastName ?? "",
-      roleId: data?.roleId ?? null,
-      password: "xxxxxxxxxxx",
-      stateId: data?.stateId ?? null,
+      id: null,
+      userName: "",
+      phoneNumber: "",
+      email: "",
+      firstName: "",
+      lastName: "",
+      roleId: null,
+      password: "",
+      stateId: null,
     },
     enableReinitialize: true,
     validationSchema: userSchema,
@@ -50,6 +51,21 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
       onClose();
     },
   });
+  useEffect(() => {
+    if (isSuccess) {
+      formik.setValues({
+        id: data?.id ?? null,
+        userName: data?.userName ?? "",
+        phoneNumber: data?.phoneNumber ?? "",
+        email: data?.email ?? "",
+        firstName: data?.firstName ?? "",
+        lastName: data?.lastName ?? "",
+        roleId: data?.roleId ?? null,
+        password: "xxxxxxxxxxx",
+        stateId: data?.stateId ?? null,
+      });
+    }
+  }, [isSuccess, data]);
   return (
     <Modal
       title={isEdit ? "Foydalanuvchini o'zgartirish" : "Foydalanuvchi qo'shish"}
