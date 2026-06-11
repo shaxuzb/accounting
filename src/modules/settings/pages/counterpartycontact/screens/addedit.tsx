@@ -1,0 +1,177 @@
+import { useEffect } from "react";
+import { useFormik } from "formik";
+import { Button, Col, Form, Modal, Row, Spin } from "antd";
+import toast from "react-hot-toast";
+import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import SelectCustom from "@/components/fields/SelectCustom";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
+import InputText from "@/components/fields/InputText";
+import type { CounterpartyContactForm } from "../types/form";
+import { useGetDetailCounterpartycontact } from "../hooks/useGetDetailCounterpartycontact";
+import { useCreateCounterpartycontact } from "../hooks/useCreateCounterpartycontact";
+import { useUpdateCounterpartycontact } from "../hooks/useUpdateCounterpartycontact";
+import { counterpartyContactSchema } from "../types/schema";
+import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
+
+const defaultValues: CounterpartyContactForm = {
+  organizationId: null,
+  counterpartyId: null,
+  fullName: "",
+  phoneNumber: "",
+  email: "",
+  position: "",
+  comment: "",
+  stateId: null,
+};
+
+interface CounterpartyContactsModalProps {
+  open: boolean;
+  onClose: () => void;
+  id?: number | null;
+}
+
+export default function CounterpartyContactsAddPage({
+  open,
+  onClose,
+  id,
+}: CounterpartyContactsModalProps) {
+  const editId = id ?? null;
+  const isEdit = Boolean(editId);
+  const { data: CounterpartyContacts, isLoading: isOrgonizationsLoading } =
+    useGetDetailCounterpartycontact(editId ?? "");
+  const createMutation = useCreateCounterpartycontact();
+  const updateMutation = useUpdateCounterpartycontact();
+
+  const formik = useFormik<CounterpartyContactForm>({
+    initialValues: {
+      ...defaultValues,
+      stateId: isEdit ? null : 1,
+    },
+    enableReinitialize: true,
+    validationSchema: counterpartyContactSchema(isEdit),
+    onSubmit: async (values, helpers) => {
+      try {
+        if (isEdit && editId) {
+          await updateMutation.mutateAsync({ id: editId, payload: values });
+          toast.success("Tashkilot muvaffaqiyatli o'zgartirildi");
+        } else {
+          await createMutation.mutateAsync(values);
+          toast.success("Tashkilot muvaffaqiyatli yaratildi");
+        }
+        helpers.resetForm();
+        onClose();
+      } catch (err: unknown) {
+        errorHandlers(err);
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (CounterpartyContacts && isEdit) {
+      formik.setValues({
+        organizationId: CounterpartyContacts.organizationId ?? null,
+        counterpartyId: CounterpartyContacts.counterpartyId ?? null,
+        fullName: CounterpartyContacts.fullName ?? "",
+        phoneNumber: CounterpartyContacts.phoneNumber ?? "",
+        email: CounterpartyContacts.email ?? "",
+        position: CounterpartyContacts.position ?? "",
+        comment: CounterpartyContacts.comment ?? "",
+        stateId: CounterpartyContacts.stateId ?? null,
+      });
+    }
+  }, [CounterpartyContacts, isEdit]);
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+
+  return (
+    <Modal
+      title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
+      open={open}
+      onCancel={() => {
+        formik.resetForm();
+        onClose();
+      }}
+      footer={null}
+      centered
+      width={600}
+    >
+      <Spin spinning={isOrgonizationsLoading}>
+        <Form layout="vertical" onFinish={formik.handleSubmit}>
+          <Row gutter={[16, 8]}>
+            <Col span={12}>
+              <InputText
+                formik={formik}
+                fieldName="fullName"
+                label="fullName"
+              />
+            </Col>
+            <Col span={12}>
+              <InputText formik={formik} fieldName="comment" label="comment" />
+            </Col>
+              <Col span={12}>
+              {/* <SelectCustom
+                formik={formik}
+                fieldName="position"
+                label="position"
+                path={selectListEndpoints.positionsSelectList}
+              /> */}
+                <InputText formik={formik} fieldName="position" label="position" />
+            </Col>
+            <Col span={12}>
+              <InputPhoneNumber
+                formik={formik}
+                fieldName="phoneNumber"
+                label="phoneNumber"
+              />
+            </Col>
+            <Col span={12}>
+              <InputText
+                formik={formik}
+                fieldName="email"
+                label="email"
+              />
+            </Col>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="organizationId"
+                label="organizationId"
+                path={selectListEndpoints.operationTypesSelectList}
+              />
+            </Col>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="counterpartyId"
+                label="counterpartyId"
+                path={selectListEndpoints.counterpartiesSelectList}
+              />
+            </Col>
+
+            <Col span={12}>
+              {isEdit && (
+                <SelectCustom
+                  formik={formik}
+                  fieldName="stateId"
+                  label="Holati"
+                  path={selectListEndpoints.statesSelectList}
+                />
+              )}
+            </Col>
+          </Row>
+
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            size="large"
+            className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
+            onClick={() => console.log(formik)}
+            loading={isSubmitting}
+          >
+            Yakunlash
+          </Button>
+        </Form>
+      </Spin>
+    </Modal>
+  );
+}

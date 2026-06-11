@@ -101,7 +101,7 @@ function Login() {
 
           <div className="border-t border-gray-100 pt-5 max-w-90 mx-auto w-full">
             <p className="text-center text-[11px] text-gray-400 mb-3">
-              © 2024 HisobKitob. Barcha huquqlar himoyalangan.
+              © 2026 HisobKitob. Barcha huquqlar himoyalangan.
             </p>
             <div className="flex justify-center gap-5 items-center text-[11px] font-semibold text-gray-400">
               <span className="hover:text-blue-600 cursor-pointer transition-all">
