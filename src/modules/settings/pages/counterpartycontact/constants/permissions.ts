@@ -1,7 +1,7 @@
 export const counterpartyContactPermissions = {
-  view: "ROLE_VIEW",
-  detail: "ROLE_VIEW_DETAIL",
-  create: "ROLE_CREATE",
-  update: "ROLE_UPDATE",
-  delete: "ROLE_DELETE",
+  view: "COUNTERPARTY_CONTACT_VIEW",
+  detail: "COUNTERPARTY_CONTACT_VIEW_DETAIL",
+  create: "COUNTERPARTY_CONTACT_CREATE",
+  update: "COUNTERPARTY_CONTACT_UPDATE",
+  delete: "COUNTERPARTY_CONTACT_DELETE",
 } as const;

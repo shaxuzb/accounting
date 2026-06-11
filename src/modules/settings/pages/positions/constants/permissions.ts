@@ -1,7 +1,7 @@
 export const positionsPermissions = {
-  view: "ROLE_VIEW",
-  detail: "ROLE_VIEW_DETAIL",
-  create: "ROLE_CREATE",
-  update: "ROLE_UPDATE",
-  delete: "ROLE_DELETE",
+  view: "POSITION_VIEW",
+  detail: "POSITION_VIEW_DETAIL",
+  create: "POSITION_CREATE",
+  update: "POSITION_UPDATE",
+  delete: "POSITION_DELETE",
 } as const;

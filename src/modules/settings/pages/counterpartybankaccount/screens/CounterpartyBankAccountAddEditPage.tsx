@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
 import { Button, Form, Modal, Spin } from "antd";
@@ -33,6 +34,7 @@ export default function CounterpartyBankAccountAddEditPage({
   onClose,
   id,
 }: counterpartybankaccountModalProps) {
+  const { t } = useTranslation();
   const editId = id ?? null;
   const isEdit = Boolean(editId);
   const { data: counterpartybankaccount, isLoading: isOrgonizationsLoading } =
@@ -52,10 +54,10 @@ export default function CounterpartyBankAccountAddEditPage({
       try {
         if (isEdit && editId) {
           await updateMutation.mutateAsync({ id: editId, payload: values });
-          toast.success("Tashkilot muvaffaqiyatli o'zgartirildi");
+          toast.success(t("settings.messages.updated"));
         } else {
           await createMutation.mutateAsync(values);
-          toast.success("Tashkilot muvaffaqiyatli yaratildi");
+          toast.success(t("settings.messages.created"));
         }
         helpers.resetForm();
         onClose();
@@ -82,7 +84,7 @@ export default function CounterpartyBankAccountAddEditPage({
 
   return (
     <Modal
-      title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
+      title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
       open={open}
       onCancel={() => {
         formik.resetForm();
@@ -97,19 +99,19 @@ export default function CounterpartyBankAccountAddEditPage({
           <SelectCustom
             formik={formik}
             fieldName="counterpartyId"
-            label="counterpartyId"
+            label="settings.fields.counterparty"
             path={selectListEndpoints.counterparty}
           />
           <SelectCustom
             formik={formik}
             fieldName="organizationId"
-            label="organization"
+            label="settings.fields.organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
              <SelectCustom
             formik={formik}
             fieldName="bankId"
-            label="Bank"
+            label="settings.fields.bank"
             path={selectListEndpoints.banksSelectList}
           />
 
@@ -117,12 +119,12 @@ export default function CounterpartyBankAccountAddEditPage({
           <InputText
             formik={formik}
             fieldName="accountNumber"
-            label="accountNumber"
+            label="settings.fields.accountNumber"
           />
           <SelectCustom
             formik={formik}
             fieldName="currencyId"
-            label="currencyId"
+            label="settings.fields.currency"
             path={selectListEndpoints.currenciesSelectList}
           />
 
@@ -130,7 +132,7 @@ export default function CounterpartyBankAccountAddEditPage({
             <SelectCustom
               formik={formik}
               fieldName="stateId"
-              label="Holati"
+              label="settings.fields.status"
               path={selectListEndpoints.statesSelectList}
             />
           )}
@@ -143,9 +145,7 @@ export default function CounterpartyBankAccountAddEditPage({
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
             onClick={() => console.log(formik)}
             loading={isSubmitting}
-          >
-            Yakunlash
-          </Button>
+          >{t("common.submit")}</Button>
         </Form>
       </Spin>
     </Modal>

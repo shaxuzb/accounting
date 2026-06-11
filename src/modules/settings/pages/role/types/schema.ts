@@ -1,14 +1,17 @@
 import * as Yup from "yup";
+import {
+  editStateSchema,
+  requiredString,
+  validationMessage,
+} from "../../../shared/validation";
 
 export const roleSchema = (isEdit = false) =>
   Yup.object({
-    fullName: Yup.string().required("To'liq nomini kiriting"),
-    shortName: Yup.string().required("Qisqacha nomini kiriting"),
+    fullName: requiredString("settings.fields.fullName"),
+    shortName: requiredString("settings.fields.shortName"),
     roleModules: Yup.array()
       .of(Yup.number().required())
-      .min(1, "Kamida bitta modul tanlang")
-      .required("Modullarni tanlang"),
-    stateId: isEdit
-      ? Yup.number().nullable().required("Holatini tanlang")
-      : Yup.number().nullable(),
+      .min(1, validationMessage.minArray("settings.fields.modules", 1))
+      .required(validationMessage.required("settings.fields.modules")),
+    stateId: editStateSchema(isEdit),
   });

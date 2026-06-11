@@ -1,9 +1,17 @@
 import * as Yup from "yup";
+import {
+  editStateSchema,
+  requiredNumber,
+  requiredString,
+} from "../../../shared/validation";
 
 export const counterpartybankaccountSchema = (isEdit = false) =>
   Yup.object({
-    accountNumber: Yup.string().required("Account number is required"),
-    stateId: isEdit
-      ? Yup.number().nullable().required("Holatini tanlang")
-      : Yup.number().nullable(),
+    organizationId: requiredNumber("settings.fields.organization"),
+    counterpartyId: requiredNumber("settings.fields.counterparty"),
+    bankId: requiredNumber("settings.fields.bank"),
+    accountNumber: requiredString("settings.fields.accountNumber"),
+    currencyId: requiredNumber("settings.fields.currency"),
+    isMain: Yup.boolean(),
+    stateId: editStateSchema(isEdit),
   });

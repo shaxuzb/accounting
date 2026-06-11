@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
 import { Button, Form, Modal, Spin } from "antd";
@@ -35,6 +36,7 @@ export default function ChartAccountAddEditPage({
   onClose,
   id,
 }: ChartAccountAddEditPageProps) {
+  const { t } = useTranslation();
   const editId = id ?? null;
   const isEdit = Boolean(editId);
   const { data: Chartaccounts, isLoading: isOrgonizationsLoading } =
@@ -53,10 +55,10 @@ export default function ChartAccountAddEditPage({
       try {
         if (isEdit && editId) {
           await updateMutation.mutateAsync({ id: editId, payload: values });
-          toast.success("Tashkilot muvaffaqiyatli o'zgartirildi");
+          toast.success(t("settings.messages.updated"));
         } else {
           await createMutation.mutateAsync(values);
-          toast.success("Tashkilot muvaffaqiyatli yaratildi");
+          toast.success(t("settings.messages.created"));
         }
         helpers.resetForm();
         onClose();
@@ -82,7 +84,7 @@ export default function ChartAccountAddEditPage({
 
   return (
     <Modal
-      title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
+      title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
       open={open}
       onCancel={() => {
         formik.resetForm();
@@ -94,26 +96,26 @@ export default function ChartAccountAddEditPage({
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <InputText formik={formik} fieldName="name" label="Name" />
+          <InputText formik={formik} fieldName="name" label="settings.fields.name" />
           <SelectCustom
             formik={formik}
             fieldName="organizationId"
-            label="organization"
+            label="settings.fields.organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
-          <InputPasword formik={formik} fieldName="code" label="code" />
+          <InputPasword formik={formik} fieldName="code" label="settings.fields.code" />
 
           <InputPhoneNumber
             formik={formik}
             fieldName="phoneNumber"
-            label="Tel raqam"
+            label="settings.fields.phoneNumber"
           />
 
           {isEdit && (
             <SelectCustom
               formik={formik}
               fieldName="stateId"
-              label="Holati"
+              label="settings.fields.status"
               path={selectListEndpoints.statesSelectList}
             />
           )}
@@ -126,9 +128,7 @@ export default function ChartAccountAddEditPage({
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
             onClick={() => console.log(formik)}
             loading={isSubmitting}
-          >
-            Yakunlash
-          </Button>
+          >{t("common.submit")}</Button>
         </Form>
       </Spin>
     </Modal>

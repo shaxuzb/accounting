@@ -1,7 +1,7 @@
 export const productGroupsPermissions = {
-  view: "ROLE_VIEW",
-  detail: "ROLE_VIEW_DETAIL",
-  create: "ROLE_CREATE",
-  update: "ROLE_UPDATE",
-  delete: "ROLE_DELETE",
+  view: "PRODUCT_GROUP_VIEW",
+  detail: "PRODUCT_GROUP_VIEW_DETAIL",
+  create: "PRODUCT_GROUP_CREATE",
+  update: "PRODUCT_GROUP_UPDATE",
+  delete: "PRODUCT_GROUP_DELETE",
 } as const;

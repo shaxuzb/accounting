@@ -1,7 +1,7 @@
 export const departmentsPermissions = {
-  view: "ROLE_VIEW",
-  detail: "ROLE_VIEW_DETAIL",
-  create: "ROLE_CREATE",
-  update: "ROLE_UPDATE",
-  delete: "ROLE_DELETE",
+  view: "DEPARTMENT_VIEW",
+  detail: "DEPARTMENT_VIEW_DETAIL",
+  create: "DEPARTMENT_CREATE",
+  update: "DEPARTMENT_UPDATE",
+  delete: "DEPARTMENT_DELETE",
 } as const;

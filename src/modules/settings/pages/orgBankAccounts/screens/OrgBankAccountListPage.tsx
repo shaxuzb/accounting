@@ -26,27 +26,27 @@ export default function OrgBankAccountListPage() {
   const tableColumns: TableColumnsType<OrgBankAccounts> = [
     {
       dataIndex: "indexId",
-      title: t("T/r"),
+      title: t("common.rowNumber"),
       align: "center",
       width: 70,
     },
     {
-      title: "Bank name",
+      title: t("settings.fields.bankName"),
       dataIndex: "bankName",
       minWidth: 180,
     },
     {
-      title: "accountNumber",
+      title: t("settings.fields.accountNumber"),
       dataIndex: "accountNumber",
       minWidth: 180,
     },
     {
-      title: "organizationName",
+      title: t("settings.fields.organizationName"),
       dataIndex: "organizationName",
       minWidth: 160,
     },
     {
-      title: "Holati",
+      title: t("settings.fields.status"),
       dataIndex: "stateId",
       align: "center",
       width: 120,
@@ -63,7 +63,7 @@ export default function OrgBankAccountListPage() {
         ...tableColumns,
         {
           dataIndex: "actions",
-          title: t("Amallar"),
+          title: t("common.actions"),
           align: "center",
           width: 100,
           fixed: "right",
@@ -111,9 +111,7 @@ export default function OrgBankAccountListPage() {
               type="primary"
               icon={<Plus className="size-4" />}
               onClick={() => setIsAddOpen(true)}
-            >
-              Qo'shish
-            </Button>
+            >{t("common.add")}</Button>
           </PermissionCard>
         </Space>
       </div>

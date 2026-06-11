@@ -1,7 +1,7 @@
 export const userPermissions = {
-  view: "ROLE_VIEW",
-  detail: "ROLE_VIEW_DETAIL",
-  create: "ROLE_CREATE",
-  update: "ROLE_UPDATE",
-  delete: "ROLE_DELETE",
+  view: "USER_VIEW",
+  detail: "USER_VIEW_DETAIL",
+  create: "USER_CREATE",
+  update: "USER_UPDATE",
+  delete: "USER_DELETE",
 } as const;

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
 import { Button, Col, Form, Modal, Row, Spin } from "antd";
@@ -38,6 +39,7 @@ export default function OrganizationAddEditPage({
   onClose,
   id,
 }: OrganizationsModalProps) {
+  const { t } = useTranslation();
   const editId = id ?? null;
   const isEdit = Boolean(editId);
   const { data: organizations, isLoading: isOrgonizationsLoading } =
@@ -53,10 +55,10 @@ export default function OrganizationAddEditPage({
       try {
         if (isEdit && editId) {
           await updateMutation.mutateAsync({ id: editId, payload: values });
-          toast.success("Tashkilot muvaffaqiyatli o'zgartirildi");
+          toast.success(t("settings.messages.updated"));
         } else {
           await createMutation.mutateAsync(values);
-          toast.success("Tashkilot muvaffaqiyatli yaratildi");
+          toast.success(t("settings.messages.created"));
         }
         helpers.resetForm();
         onClose();
@@ -87,7 +89,7 @@ export default function OrganizationAddEditPage({
 
   return (
     <Modal
-      title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
+      title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
       open={open}
       onCancel={onClose}
       footer={null}
@@ -101,21 +103,21 @@ export default function OrganizationAddEditPage({
               <InputText
                 formik={formik}
                 fieldName="fullName"
-                label="To'liq nomi"
+                label="settings.fields.fullName"
               />
             </Col>
             <Col span={12}>
               <InputText
                 formik={formik}
                 fieldName="shortName"
-                label="Qisqacha nomi"
+                label="settings.fields.shortName"
               />
             </Col>
             <Col span={12}>
               <SelectCustom
                 formik={formik}
                 fieldName="regionId"
-                label="Regions"
+                label="settings.fields.region"
                 path={selectListEndpoints.regionsSelectList}
                 placeholder="region"
               />
@@ -124,26 +126,26 @@ export default function OrganizationAddEditPage({
               <SelectCustom
                 formik={formik}
                 fieldName="defaultLanguageId"
-                label="Til"
+                label="settings.fields.language"
                 path={selectListEndpoints.languagesSelectList}
                 placeholder="language"
               />
             </Col>
             <Col span={12}>
-              <InputText formik={formik} fieldName="inn" label="INN" />
+              <InputText formik={formik} fieldName="inn" label="settings.fields.inn" />
             </Col>
             <Col span={12}>
               <InputPhoneNumber
                 formik={formik}
                 fieldName="phoneNumber"
-                label="Tel raqam"
+                label="settings.fields.phoneNumber"
               />
             </Col>
             <Col span={12}>
               <InputText
                 formik={formik}
                 fieldName="director"
-                label="Direktor"
+                label="settings.fields.director"
               />
             </Col>
             {isEdit && (
@@ -151,14 +153,14 @@ export default function OrganizationAddEditPage({
                 <SelectCustom
                   formik={formik}
                   fieldName="stateId"
-                  label="Holati"
+                  label="settings.fields.status"
                   path={selectListEndpoints.statesSelectList}
                 />
               </Col>
             )}
 
             <Col span={24}>
-              <InputText formik={formik} fieldName="address" label="Manzil" />
+              <InputText formik={formik} fieldName="address" label="settings.fields.address" />
             </Col>
             
           </Row>
@@ -171,9 +173,7 @@ export default function OrganizationAddEditPage({
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
             onClick={() => console.log(formik)}
             loading={isSubmitting}
-          >
-            Yakunlash
-          </Button>
+          >{t("common.submit")}</Button>
         </Form>
       </Spin>
     </Modal>

@@ -1,7 +1,7 @@
 export const orgBankAccountsPermissions = {
-  view: "ROLE_VIEW",
-  detail: "ROLE_VIEW_DETAIL",
-  create: "ROLE_CREATE",
-  update: "ROLE_UPDATE",
-  delete: "ROLE_DELETE",
+  view: "ORG_BANK_ACCOUNT_VIEW",
+  detail: "ORG_BANK_ACCOUNT_VIEW_DETAIL",
+  create: "ORG_BANK_ACCOUNT_CREATE",
+  update: "ORG_BANK_ACCOUNT_UPDATE",
+  delete: "ORG_BANK_ACCOUNT_DELETE",
 } as const;

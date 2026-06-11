@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
 import type { FormikProps } from "formik";
@@ -32,6 +33,7 @@ const RoleModuleSelector: FC<RoleModuleSelectorProps> = ({
   formik,
   submitting,
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search.trim().toLowerCase(), 250);
   // const organizationId = useAppSelector(
@@ -39,7 +41,7 @@ const RoleModuleSelector: FC<RoleModuleSelectorProps> = ({
   // );
   const { data = [], isLoading, isFetching } = useGetRoleModules();
 
-  const selectedModules = formik.values.roleModules ?? [];
+  const selectedModules = formik.values.moduleIds ?? [];
   const filteredGroups = useMemo(() => {
     if (!debouncedSearch) return data;
 
@@ -64,7 +66,7 @@ const RoleModuleSelector: FC<RoleModuleSelectorProps> = ({
       ? Array.from(new Set([...selectedModules, moduleId]))
       : selectedModules.filter((id) => id !== moduleId);
 
-    void formik.setFieldValue("roleModules", nextModules);
+    void formik.setFieldValue("moduleIds", nextModules);
   };
 
   const toggleGroup = (group: RoleModuleGroup, checked: boolean) => {
@@ -73,7 +75,7 @@ const RoleModuleSelector: FC<RoleModuleSelectorProps> = ({
       ? Array.from(new Set([...selectedModules, ...groupIds]))
       : selectedModules.filter((id) => !groupIds.includes(id));
 
-    void formik.setFieldValue("roleModules", nextModules);
+    void formik.setFieldValue("moduleIds", nextModules);
   };
 
   const items: CollapseProps["items"] = filteredGroups.map((group) => {
@@ -153,7 +155,7 @@ const RoleModuleSelector: FC<RoleModuleSelectorProps> = ({
           className="flex items-center justify-center gap-2"
           onClick={(event) => event.stopPropagation()}
         >
-          <span className="text-xs">Hammasini belgilash</span>
+          <span className="text-xs">{t("settings.role.selectAll")}</span>
           <Checkbox
             checked={allSelected}
             indeterminate={selectedCount > 0 && !allSelected}
@@ -172,7 +174,7 @@ const RoleModuleSelector: FC<RoleModuleSelectorProps> = ({
             allowClear
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Modul nomi bo'yicha qidiring..."
+            placeholder={t("settings.role.searchPlaceholder")}
             prefix={<Search className="size-4 text-muted" />}
           />
           <Button
@@ -181,7 +183,7 @@ const RoleModuleSelector: FC<RoleModuleSelectorProps> = ({
             loading={submitting}
             className="min-w-35"
           >
-            Saqlash
+            {t("common.save")}
           </Button>
         </div>
         {filteredGroups.length > 0 ? (

@@ -1,7 +1,7 @@
 export const organizationsPermissions = {
-  view: "ROLE_VIEW",
-  detail: "ROLE_VIEW_DETAIL",
-  create: "ROLE_CREATE",
-  update: "ROLE_UPDATE",
-  delete: "ROLE_DELETE",
+  view: "ORGANIZATION_VIEW",
+  detail: "ORGANIZATION_VIEW_DETAIL",
+  create: "ORGANIZATION_CREATE",
+  update: "ORGANIZATION_UPDATE",
+  delete: "ORGANIZATION_DELETE",
 } as const;

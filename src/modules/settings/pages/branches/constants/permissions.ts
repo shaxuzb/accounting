@@ -1,7 +1,7 @@
 export const branchesPermissions = {
-  view: "ROLE_VIEW",
-  detail: "ROLE_VIEW_DETAIL",
-  create: "ROLE_CREATE",
-  update: "ROLE_UPDATE",
-  delete: "ROLE_DELETE",
+  view: "BRANCH_VIEW",
+  detail: "BRANCH_VIEW_DETAIL",
+  create: "BRANCH_CREATE",
+  update: "BRANCH_UPDATE",
+  delete: "BRANCH_DELETE",
 } as const;

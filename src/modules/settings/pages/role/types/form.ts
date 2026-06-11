@@ -1,7 +1,7 @@
 export interface RoleForm {
   fullName: string;
   shortName: string;
-  roleModules: number[];
+  moduleIds: number[];
   id?: number | null;
   stateId?: number | null;
 }

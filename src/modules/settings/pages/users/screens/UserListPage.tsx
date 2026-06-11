@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Space,
@@ -21,6 +22,7 @@ import PermissionCard from "@/components/ui/card/PermissionCard";
 import type { Users } from "../types/type";
 
 function UserListPage() {
+  const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [isCrudModalOpen, setIsCrudModalOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
@@ -28,23 +30,23 @@ function UserListPage() {
   const { data, isLoading, isFetching, refetch } = useGetListUsers();
   const tableColumns: TableColumnsType<Users> = [
     {
-      title: "T/r",
+      title: t("common.rowNumber"),
       dataIndex: "indexId",
       width: 50,
       align: "center",
     },
     {
-      title: "Foydalanuvchi",
+      title: t("settings.entities.user"),
       dataIndex: "userName",
     },
     {
-      title: "Tel nomer",
+      title: t("settings.fields.phoneNumber"),
       dataIndex: "phoneNumber",
       align: "center",
       render: (text) => customPhoneNumber(text),
     },
     {
-      title: "Holati",
+      title: t("settings.fields.status"),
       dataIndex: "state",
       align: "center",
       render: (_, record) => stateStatus(record.stateId, record.stateName),
@@ -60,7 +62,7 @@ function UserListPage() {
         ...tableColumns,
         {
           dataIndex: "actions",
-          title: "Amallar",
+          title: t("common.actions"),
           align: "center",
           width: 100,
           fixed: "right",
@@ -101,9 +103,7 @@ function UserListPage() {
               type="primary"
               icon={<Plus className="size-4" />}
               onClick={() => setIsCrudModalOpen(true)}
-            >
-              Qo'shish
-            </Button>
+            >{t("common.add")}</Button>
           </PermissionCard>
         </Space>
       </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
 import { Button, Col, Form, Modal, Row, Spin } from "antd";
@@ -24,17 +25,18 @@ const defaultValues: CounterpartyContactForm = {
   stateId: null,
 };
 
-interface CounterpartyContactsModalProps {
+interface CounterpartyContactAddEditPageProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
 }
 
-export default function CounterpartyContactsAddPage({
+export default function CounterpartyContactAddEditPage({
   open,
   onClose,
   id,
-}: CounterpartyContactsModalProps) {
+}: CounterpartyContactAddEditPageProps) {
+  const { t } = useTranslation();
   const editId = id ?? null;
   const isEdit = Boolean(editId);
   const { data: CounterpartyContacts, isLoading: isOrgonizationsLoading } =
@@ -53,10 +55,10 @@ export default function CounterpartyContactsAddPage({
       try {
         if (isEdit && editId) {
           await updateMutation.mutateAsync({ id: editId, payload: values });
-          toast.success("Tashkilot muvaffaqiyatli o'zgartirildi");
+          toast.success(t("settings.messages.updated"));
         } else {
           await createMutation.mutateAsync(values);
-          toast.success("Tashkilot muvaffaqiyatli yaratildi");
+          toast.success(t("settings.messages.created"));
         }
         helpers.resetForm();
         onClose();
@@ -84,7 +86,7 @@ export default function CounterpartyContactsAddPage({
 
   return (
     <Modal
-      title={isEdit ? "Tashkilotni tahrirlash" : "Yangi tashkilot qo'shish"}
+      title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
       open={open}
       onCancel={() => {
         formik.resetForm();
@@ -101,40 +103,40 @@ export default function CounterpartyContactsAddPage({
               <InputText
                 formik={formik}
                 fieldName="fullName"
-                label="fullName"
+                label="settings.fields.fullName"
               />
             </Col>
             <Col span={12}>
-              <InputText formik={formik} fieldName="comment" label="comment" />
+              <InputText formik={formik} fieldName="comment" label="settings.fields.comment" />
             </Col>
               <Col span={12}>
               {/* <SelectCustom
                 formik={formik}
                 fieldName="position"
-                label="position"
+                label="settings.fields.position"
                 path={selectListEndpoints.positionsSelectList}
               /> */}
-                <InputText formik={formik} fieldName="position" label="position" />
+                <InputText formik={formik} fieldName="position" label="settings.fields.position" />
             </Col>
             <Col span={12}>
               <InputPhoneNumber
                 formik={formik}
                 fieldName="phoneNumber"
-                label="phoneNumber"
+                label="settings.fields.phoneNumber"
               />
             </Col>
             <Col span={12}>
               <InputText
                 formik={formik}
                 fieldName="email"
-                label="email"
+                label="settings.fields.email"
               />
             </Col>
             <Col span={12}>
               <SelectCustom
                 formik={formik}
                 fieldName="organizationId"
-                label="organizationId"
+                label="settings.fields.organization"
                 path={selectListEndpoints.operationTypesSelectList}
               />
             </Col>
@@ -142,7 +144,7 @@ export default function CounterpartyContactsAddPage({
               <SelectCustom
                 formik={formik}
                 fieldName="counterpartyId"
-                label="counterpartyId"
+                label="settings.fields.counterparty"
                 path={selectListEndpoints.counterpartiesSelectList}
               />
             </Col>
@@ -152,7 +154,7 @@ export default function CounterpartyContactsAddPage({
                 <SelectCustom
                   formik={formik}
                   fieldName="stateId"
-                  label="Holati"
+                  label="settings.fields.status"
                   path={selectListEndpoints.statesSelectList}
                 />
               )}
@@ -167,9 +169,7 @@ export default function CounterpartyContactsAddPage({
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
             onClick={() => console.log(formik)}
             loading={isSubmitting}
-          >
-            Yakunlash
-          </Button>
+          >{t("common.submit")}</Button>
         </Form>
       </Spin>
     </Modal>

@@ -27,27 +27,27 @@ export default function ChartAccountListPage() {
   const tableColumns: TableColumnsType<ChartAccounts> = [
     {
       dataIndex: "indexId",
-      title: t("T/r"),
+      title: t("common.rowNumber"),
       align: "center",
       width: 70,
     },
     {
-      title: " name",
+      title: t("settings.fields.name"),
       dataIndex: "name",
       minWidth: 180,
     },
     {
-      title: "organization name",
+      title: t("settings.fields.organizationName"),
       dataIndex: "organizationName",
       minWidth: 180,
     },
     {
-      title: "district name",
+      title: t("settings.fields.district"),
       dataIndex: "districtName",
       minWidth: 160,
     },
     {
-      title: "Holati",
+      title: t("settings.fields.status"),
       dataIndex: "stateId",
       align: "center",
       width: 120,
@@ -64,7 +64,7 @@ export default function ChartAccountListPage() {
         ...tableColumns,
         {
           dataIndex: "actions",
-          title: t("Amallar"),
+          title: t("common.actions"),
           align: "center",
           width: 100,
           fixed: "right",
@@ -110,9 +110,7 @@ export default function ChartAccountListPage() {
               type="primary"
               icon={<Plus className="size-4" />}
               onClick={() => setIsAddOpen(true)}
-            >
-              Qo'shish
-            </Button>
+            >{t("common.add")}</Button>
           </PermissionCard>
         </Space>
       </div>

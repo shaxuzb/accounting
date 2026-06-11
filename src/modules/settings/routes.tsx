@@ -1,5 +1,6 @@
 import type { RouteObject } from "react-router";
-import SettingsListPage from "./pages";
+import PermissionCard from "@/components/ui/card/PermissionCard";
+import SettingsListPage from "./pages/SettingsListPage";
 import RoleListPage from "./pages/role/screens/RoleListPage";
 import RoleAddEditPage from "./pages/role/screens/RoleAddEditPage";
 import UserListPage from "./pages/users/screens/UserListPage";
@@ -12,95 +13,141 @@ import CounterpartyBankAccountListPage from "./pages/counterpartybankaccount/scr
 import OrgBankAccountListPage from "./pages/orgBankAccounts/screens/OrgBankAccountListPage";
 import PositionListPage from "./pages/positions/screens/PositionListPage";
 import ProductGroupListPage from "./pages/productGroups/screens/ProductGroupListPage";
-import CashBoxListPage from "./pages/cashbox/screens";
-import CounterpartyContactsListPage from "./pages/counterpartycontact/screens";
-import WarehousesListPage from "./pages/warehouse/screens";
+import CashBoxListPage from "./pages/cashbox/screens/CashBoxListPage";
+import CounterpartyContactListPage from "./pages/counterpartycontact/screens/CounterpartyContactListPage";
+import WarehouseListPage from "./pages/warehouse/screens/WarehouseListPage";
+import { rolePermissions } from "./pages/role/constants/permissions";
+import { userPermissions } from "./pages/users/constants/permissions";
+import { organizationsPermissions } from "./pages/organizations/constants/permissions";
+import { counterpartyPermissions } from "./pages/counterparty/constants/permissions";
+import { departmentsPermissions } from "./pages/departments/constants/permissions";
+import { branchesPermissions } from "./pages/branches/constants/permissions";
+import { chartAccountsPermissions } from "./pages/chartAccounts/constants/permissions";
+import { counterpartybankaccountPermissions } from "./pages/counterpartybankaccount/constants/permissions";
+import { orgBankAccountsPermissions } from "./pages/orgBankAccounts/constants/permissions";
+import { positionsPermissions } from "./pages/positions/constants/permissions";
+import { productGroupsPermissions } from "./pages/productGroups/constants/permissions";
+import { cashBoxPermissions } from "./pages/cashbox/constants/permissions";
+import { counterpartyContactPermissions } from "./pages/counterpartycontact/constants/permissions";
+import { warehousePermissions } from "./pages/warehouse/constants/permissions";
+
+const settingsPermissions = [
+  rolePermissions.view,
+  userPermissions.view,
+  organizationsPermissions.view,
+  counterpartyPermissions.view,
+  departmentsPermissions.view,
+  branchesPermissions.view,
+  chartAccountsPermissions.view,
+  counterpartybankaccountPermissions.view,
+  orgBankAccountsPermissions.view,
+  positionsPermissions.view,
+  productGroupsPermissions.view,
+  cashBoxPermissions.view,
+  counterpartyContactPermissions.view,
+  warehousePermissions.view,
+];
+
+const withPermission = (
+  element: React.ReactElement,
+  permission: string | string[],
+) => (
+  <PermissionCard permission={permission} mode="redirect">
+    {element}
+  </PermissionCard>
+);
 
 export const settingsRoutes: RouteObject = {
   path: "settings",
-  handle: { title: "Sozlamalar" },
+  handle: { title: "settings.title" },
   children: [
-    { index: true, element: <SettingsListPage /> },
+    { index: true, element: withPermission(<SettingsListPage />, settingsPermissions) },
     {
       path: "users",
-      element: <UserListPage />,
+      element: withPermission(<UserListPage />, userPermissions.view),
     },
     {
       path: "role",
-      handle: { title: "Role" },
+      handle: { title: "settings.entities.role" },
       children: [
-        { index: true, element: <RoleListPage /> },
+        { index: true, element: withPermission(<RoleListPage />, rolePermissions.view) },
         {
           path: "add",
-          element: <RoleAddEditPage />,
-          handle: { title: "Add Role", showBack: true, backTo: ".." },
+          element: withPermission(<RoleAddEditPage />, rolePermissions.create),
+          handle: { title: "settings.form.createRole", showBack: true, backTo: ".." },
         },
         {
           path: "edit/:id",
-          element: <RoleAddEditPage />,
-          handle: { title: "Edit Role", showBack: true, backTo: ".." },
+          element: withPermission(<RoleAddEditPage />, rolePermissions.update),
+          handle: { title: "settings.form.editRole", showBack: true, backTo: ".." },
         },
       ],
     },
     {
       path: "organizations",
-      handle: { title: "Organizations" },
-      element: <OrganizationListPage />,
+      handle: { title: "settings.entities.organizations" },
+      element: withPermission(<OrganizationListPage />, organizationsPermissions.view),
     },
     {
       path: "counterparty",
-      handle: { title: "Counterparty" },
-      element: <CounterpartyListPage />,
+      handle: { title: "settings.entities.counterparty" },
+      element: withPermission(<CounterpartyListPage />, counterpartyPermissions.view),
     },
     {
       path: "departments",
-      handle: { title: "Departments" },
-      element: <DepartmentListPage />,
+      handle: { title: "settings.entities.departments" },
+      element: withPermission(<DepartmentListPage />, departmentsPermissions.view),
     },
     {
       path: "branches",
-      handle: { title: "Branches" },
-      element: <BranchListPage />,
+      handle: { title: "settings.entities.branches" },
+      element: withPermission(<BranchListPage />, branchesPermissions.view),
     },
     {
       path: "chart-accounts",
-      handle: { title: "Chart Accounts" },
-      element: <ChartAccountListPage />,
+      handle: { title: "settings.entities.chartAccounts" },
+      element: withPermission(<ChartAccountListPage />, chartAccountsPermissions.view),
     },
     {
       path: "counterparty-bank-accounts",
-      handle: { title: "Bank Accounts" },
-      element: <CounterpartyBankAccountListPage />,
+      handle: { title: "settings.entities.bankAccounts" },
+      element: withPermission(
+        <CounterpartyBankAccountListPage />,
+        counterpartybankaccountPermissions.view,
+      ),
     },
     {
       path: "org-bank-accounts",
-      handle: { title: "Org Bank Accounts" },
-      element: <OrgBankAccountListPage />,
+      handle: { title: "settings.entities.orgBankAccounts" },
+      element: withPermission(<OrgBankAccountListPage />, orgBankAccountsPermissions.view),
     },
     {
       path: "positions",
-      handle: { title: "Positions" },
-      element: <PositionListPage />,
+      handle: { title: "settings.entities.positions" },
+      element: withPermission(<PositionListPage />, positionsPermissions.view),
     },
     {
       path: "product-groups",
-      handle: { title: "Product Groups" },
-      element: <ProductGroupListPage />,
+      handle: { title: "settings.entities.productGroups" },
+      element: withPermission(<ProductGroupListPage />, productGroupsPermissions.view),
     },
     {
       path: "cash-boxes",
-      handle: { title: " Cash Box" },
-      element: <CashBoxListPage />,
+      handle: { title: "settings.entities.cashBox" },
+      element: withPermission(<CashBoxListPage />, cashBoxPermissions.view),
     },
     {
       path: "counterparty-contacts",
-      handle: { title: " Counterparty contacts" },
-      element: <CounterpartyContactsListPage />,
+      handle: { title: "settings.entities.counterpartyContacts" },
+      element: withPermission(
+        <CounterpartyContactListPage />,
+        counterpartyContactPermissions.view,
+      ),
     },
     {
       path: "warehouses",
-      handle: { title: " Warehouse" },
-      element: <WarehousesListPage />,
+      handle: { title: "settings.entities.warehouse" },
+      element: withPermission(<WarehouseListPage />, warehousePermissions.view),
     },
   ],
 };

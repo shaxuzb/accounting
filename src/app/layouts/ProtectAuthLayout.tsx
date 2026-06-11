@@ -11,7 +11,7 @@ import type { AuthToken } from "@/shared/types";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { isLoading, logout } from "@/store/features/authSlice";
 import { authService } from "@/services/authService";
-import { menuPermissions } from "../config/menuPermissions";
+import { menuPermissions, settingsViewPermissions } from "../config/menuPermissions";
 
 const ProtectAuthLayout = () => {
   const [error, setError] = useState(false);
@@ -48,8 +48,15 @@ const ProtectAuthLayout = () => {
     if (!user?.user?.permissions?.length) return null;
 
     const permissions = user.user.permissions;
+    const hasAnySettingPermission = settingsViewPermissions.some((permission) =>
+      permissions.includes(permission),
+    );
 
     const allowedMenu = menuPermissions.TOP.find((item) => {
+      if (item.linkData.path === "settings") {
+        return hasAnySettingPermission;
+      }
+
       if (item.dropdown && item.items?.length) {
         return item.items.some(
           (subItem) => subItem.code && permissions.includes(subItem.code),

@@ -11,14 +11,14 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { useState } from "react";
-import CounterpartyContactsAddPage from "./addedit";
+import CounterpartyContactAddEditPage from "./CounterpartyContactAddEditPage";
 import { useGetListCounterpartycontact } from "../hooks/useGetListCounterpartycontact";
 import { counterpartyContactPermissions } from "../constants/permissions";
 import type { CounterpartyContact } from "../types/type";
 
 
 
-export default function CounterpartyContactsListPage() {
+export default function CounterpartyContactListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
@@ -28,27 +28,27 @@ export default function CounterpartyContactsListPage() {
   const tableColumns: TableColumnsType<CounterpartyContact> = [
     {
       dataIndex: "indexId",
-      title: t("T/r"),
+      title: t("common.rowNumber"),
       align: "center",
       width: 70,
     },
     {
-      title: "fullname",
+      title: t("settings.fields.fullName"),
       dataIndex: "fullName",
       minWidth: 180,
     },
     {
-      title: "phoneNumber",
+      title: t("settings.fields.phoneNumber"),
       dataIndex: "phoneNumber",
       minWidth: 180,
     },
     {
-      title: "position",
+      title: t("settings.fields.position"),
       dataIndex: "position",
       minWidth: 160,
     },
     {
-      title: "Holati",
+      title: t("settings.fields.status"),
       dataIndex: "stateId",
       align: "center",
       width: 120,
@@ -65,7 +65,7 @@ export default function CounterpartyContactsListPage() {
         ...tableColumns,
         {
           dataIndex: "actions",
-          title: t("Amallar"),
+          title: t("common.actions"),
           align: "center",
           width: 100,
           fixed: "right",
@@ -111,9 +111,7 @@ export default function CounterpartyContactsListPage() {
               type="primary"
               icon={<Plus className="size-4" />}
               onClick={() => setIsAddOpen(true)}
-            >
-              Qo'shish
-            </Button>
+            >{t("common.add")}</Button>
           </PermissionCard>
         </Space>
       </div>
@@ -129,7 +127,7 @@ export default function CounterpartyContactsListPage() {
           pagination={false}
         />
       </Card>
-       <CounterpartyContactsAddPage
+       <CounterpartyContactAddEditPage
          open={isAddOpen}
          onClose={() => {
            setIsAddOpen(false);

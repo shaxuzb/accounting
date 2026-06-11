@@ -26,22 +26,22 @@ export default function RoleListPage() {
   const tableColumns: TableColumnsType<Role> = [
     {
       dataIndex: "indexId",
-      title: t("T/r"),
+      title: t("common.rowNumber"),
       align: "center",
       width: 70,
     },
     {
-      title: "To'liq nomi",
+      title: t("settings.fields.fullName"),
       dataIndex: "fullName",
       minWidth: 180,
     },
     {
-      title: "Qisqacha nomi",
+      title: t("settings.fields.shortName"),
       dataIndex: "shortName",
       minWidth: 160,
     },
     {
-      title: "Holati",
+      title: t("settings.fields.status"),
       dataIndex: "stateName",
       align: "center",
       width: 120,
@@ -58,7 +58,7 @@ export default function RoleListPage() {
         ...tableColumns,
         {
           dataIndex: "actions",
-          title: t("Amallar"),
+          title: t("common.actions"),
           align: "center",
           width: 100,
           fixed: "right",
@@ -95,9 +95,7 @@ export default function RoleListPage() {
               type="primary"
               icon={<Plus className="size-4" />}
               onClick={() => navigate("/main/settings/role/add")}
-            >
-              Qo'shish
-            </Button>
+            >{t("common.add")}</Button>
           </PermissionCard>
         </Space>
       </div>

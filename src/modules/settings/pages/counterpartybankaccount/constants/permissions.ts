@@ -1,7 +1,7 @@
 export const counterpartybankaccountPermissions = {
-  view: "ROLE_VIEW",
-  detail: "ROLE_VIEW_DETAIL",
-  create: "ROLE_CREATE",
-  update: "ROLE_UPDATE",
-  delete: "ROLE_DELETE",
+  view: "COUNTERPARTY_BANK_ACCOUNT_VIEW",
+  detail: "COUNTERPARTY_BANK_ACCOUNT_VIEW_DETAIL",
+  create: "COUNTERPARTY_BANK_ACCOUNT_CREATE",
+  update: "COUNTERPARTY_BANK_ACCOUNT_UPDATE",
+  delete: "COUNTERPARTY_BANK_ACCOUNT_DELETE",
 } as const;

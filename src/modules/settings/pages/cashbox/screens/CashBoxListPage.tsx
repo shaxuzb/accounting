@@ -11,44 +11,43 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { useState } from "react";
-import type { Warehouse } from "../types/type";
-import { useGetListWarehouses } from "../hooks/useGetListWarehouses";
-import { warehousePermissions } from "../constants/permissions";
-import WarehousesAddPage from "./addedit";
+import CashBoxAddEditPage from "./CashBoxAddEditPage";
+import { useGetListCashBox } from "../hooks/useGetListCashBox";
+import type { CashBox } from "../types/type";
+import { cashBoxPermissions } from "../constants/permissions";
 
 
-
-export default function WarehousesListPage() {
+export default function CashBoxListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
   const { data, refetch, isLoading, isFetching } =
-    useGetListWarehouses(searchParams);
+    useGetListCashBox(searchParams);
 
-  const tableColumns: TableColumnsType<Warehouse> = [
+  const tableColumns: TableColumnsType<CashBox> = [
     {
       dataIndex: "indexId",
-      title: t("T/r"),
+      title: t("common.rowNumber"),
       align: "center",
       width: 70,
     },
     {
-      title: "name",
+      title: t("settings.fields.name"),
       dataIndex: "name",
       minWidth: 180,
     },
     {
-      title: "branchName",
+      title: t("settings.fields.branchName"),
       dataIndex: "branchName",
       minWidth: 180,
     },
     {
-      title: "code",
+      title: t("settings.fields.code"),
       dataIndex: "code",
       minWidth: 160,
     },
     {
-      title: "Holati",
+      title: t("settings.fields.status"),
       dataIndex: "stateId",
       align: "center",
       width: 120,
@@ -57,34 +56,34 @@ export default function WarehousesListPage() {
   ];
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(warehousePermissions.update) ||
-    permissions.includes(warehousePermissions.delete);
+    permissions.includes(cashBoxPermissions.update) ||
+    permissions.includes(cashBoxPermissions.delete);
 
-  const columns: TableColumnType<Warehouse>[] = hasActions
+  const columns: TableColumnType<CashBox>[] = hasActions
     ? [
         ...tableColumns,
         {
           dataIndex: "actions",
-          title: t("Amallar"),
+          title: t("common.actions"),
           align: "center",
           width: 100,
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="warehouses"
-              customPath={`/main/settings/warehouses/edit/${record.id}`}
+              deletePath="cash-boxes"
+              customPath={`/main/settings/cash-boxes/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: warehousePermissions.delete,
-                editCode: warehousePermissions.update,
+                deleteCode: cashBoxPermissions.delete,
+                editCode: cashBoxPermissions.update,
               }}
               refetch={refetch}
               editModal={{
                 isModal: true,
                 setOpenEditModal: setIsAddOpen,
                 setEditData: (value: unknown) =>
-                  setEditId((value as Warehouse)?.id ?? null),
+                  setEditId((value as CashBox)?.id ?? null),
               }}
             />
           ),
@@ -104,23 +103,19 @@ export default function WarehousesListPage() {
         <Space>
           <Button
             icon={<RefreshCw className="size-4" />}
-            onClick={() => refetch()}
+            onClick={() => void refetch()}
           />
-          <PermissionCard
-            permission={warehousePermissions.create}
-          >
+          <PermissionCard permission={cashBoxPermissions.create}>
             <Button
               type="primary"
               icon={<Plus className="size-4" />}
               onClick={() => setIsAddOpen(true)}
-            >
-              Qo'shish
-            </Button>
+            >{t("common.add")}</Button>
           </PermissionCard>
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<Warehouse>
+        <Table<CashBox>
           loading={isLoading || isFetching}
           columns={columns}
           scroll={{
@@ -131,14 +126,14 @@ export default function WarehousesListPage() {
           pagination={false}
         />
       </Card>
-      <WarehousesAddPage
-        open={isAddOpen}
-        onClose={() => {
-          setIsAddOpen(false);
-          setEditId(null);
-        }}
-        id={editId}
-      />
+       <CashBoxAddEditPage
+         open={isAddOpen}
+         onClose={() => {
+           setIsAddOpen(false);
+           setEditId(null);
+         }}
+         id={editId}
+       />
     </div>
   );
 }

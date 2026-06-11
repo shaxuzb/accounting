@@ -1,7 +1,7 @@
 export const chartAccountsPermissions = {
-  view: "ROLE_VIEW",
-  detail: "ROLE_VIEW_DETAIL",
-  create: "ROLE_CREATE",
-  update: "ROLE_UPDATE",
-  delete: "ROLE_DELETE",
+  view: "CHART_ACCOUNT_VIEW",
+  detail: "CHART_ACCOUNT_VIEW_DETAIL",
+  create: "CHART_ACCOUNT_CREATE",
+  update: "CHART_ACCOUNT_UPDATE",
+  delete: "CHART_ACCOUNT_DELETE",
 } as const;

@@ -1,7 +1,7 @@
 export const warehousePermissions = {
-  view: "ROLE_VIEW",
-  detail: "ROLE_VIEW_DETAIL",
-  create: "ROLE_CREATE",
-  update: "ROLE_UPDATE",
-  delete: "ROLE_DELETE",
+  view: "WAREHOUSE_VIEW",
+  detail: "WAREHOUSE_VIEW_DETAIL",
+  create: "WAREHOUSE_CREATE",
+  update: "WAREHOUSE_UPDATE",
+  delete: "WAREHOUSE_DELETE",
 } as const;

@@ -19,6 +19,23 @@ interface MainMenu {
   SETTINGS: MenuRole[];
 }
 
+export const settingsViewPermissions = [
+  "ROLE_VIEW",
+  "USER_VIEW",
+  "ORGANIZATION_VIEW",
+  "COUNTERPARTY_CARD_VIEW",
+  "DEPARTMENT_VIEW",
+  "BRANCH_VIEW",
+  "CHART_ACCOUNT_VIEW",
+  "COUNTERPARTY_BANK_ACCOUNT_VIEW",
+  "ORG_BANK_ACCOUNT_VIEW",
+  "POSITION_VIEW",
+  "PRODUCT_GROUP_VIEW",
+  "CASH_BOX_VIEW",
+  "COUNTERPARTY_CONTACT_VIEW",
+  "WAREHOUSE_VIEW",
+] as const;
+
 export const menuPermissions: MainMenu = {
   TOP: [
     {
@@ -54,6 +71,7 @@ export const menuPermissions: MainMenu = {
         },
       ],
     },
+    
     {
       code: "ROLE_VIEW",
       linkData: {
@@ -106,7 +124,7 @@ export const menuPermissions: MainMenu = {
       code: "Sss",
       linkData: {
         path: "settings",
-        title: "Sozlamalar",
+        title: "settings.title",
       },
       iconName: <Settings className="size-5" />,
     },
@@ -123,145 +141,143 @@ export const menuPermissions: MainMenu = {
   ],
   SETTINGS: [
     {
-      code: "DROPDOWN",
+      code: "ROLE_VIEW",
       iconName: <User2 className="size-5" />,
       linkData: {
         path: "role",
-        title: "Rollar",
+        title: "settings.entities.roles",
         // img: role,
-        description:
-          "ROLE Tizimdagi rollarni va ularning huquqlarini boshqarish.",
+        description: "settings.descriptions.roles",
       },
     },
     {
-      code: "sdasda",
+      code: "USER_VIEW",
       iconName: <Users className="size-5" />,
       linkData: {
         path: "users",
-        title: "Foydalanuvchilar",
+        title: "settings.entities.users",
         // img: role,
-        description:
-          " User Foydalanuvchilarning huquqlari va tizimdagi rollarini boshqarish.",
+        description: "settings.descriptions.users",
       },
     },
     {
-      code: "sdasdas",
+      code: "ORGANIZATION_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "organizations",
-        title: "Organizatsiyalar",
+        title: "settings.entities.organizations",
         // img: role,
-        description: "Organization",
+        description: "settings.descriptions.organizations",
       },
     },
     {
-      code: "sdasdass",
+      code: "COUNTERPARTY_CARD_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "counterparty",
-        title: "Kontragentlar",
+        title: "settings.entities.counterparty",
         // img: role,
-        description: "CounterpartyCard",
+        description: "settings.descriptions.counterparty",
       },
     },
     {
-      code: "sdasdassss",
+      code: "DEPARTMENT_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "departments",
-        title: "Departments",
+        title: "settings.entities.departments",
         // img: role,
-        description: "Department",
+        description: "settings.descriptions.departments",
       },
     },
     {
-      code: "sdasdasssss",
+      code: "BRANCH_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "branches",
-        title: "Branches",
+        title: "settings.entities.branches",
         // img: role,
-        description: "Branch",
+        description: "settings.descriptions.branches",
       },
     },
     {
-      code: "sdasdassssss",
+      code: "CHART_ACCOUNT_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "chart-accounts",
-        title: "Charts",
+        title: "settings.entities.chartAccounts",
         // img: role,
-        description: "ChartAccount",
+        description: "settings.descriptions.chartAccounts",
       },
     },
     {
-      code: "sdasdasssssss",
+      code: "COUNTERPARTY_BANK_ACCOUNT_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "counterparty-bank-accounts",
-        title: "Bank Account",
+        title: "settings.entities.bankAccounts",
         // img: role,
-        description: "CounterpartyBankAccount",
+        description: "settings.descriptions.bankAccounts",
       },
     },
     {
-      code: "sdasdassssssss",
+      code: "ORG_BANK_ACCOUNT_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "org-bank-accounts",
-        title: "Org Bank Account",
+        title: "settings.entities.orgBankAccounts",
         // img: role,
-        description: "OrgBankAccount",
+        description: "settings.descriptions.orgBankAccounts",
       },
     },
     {
-      code: "sdasdasssssssss",
+      code: "POSITION_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "positions",
-        title: "Positions",
+        title: "settings.entities.positions",
         // img: role,
-        description: "Position",
+        description: "settings.descriptions.positions",
       },
     },
     {
-      code: "sdasdassssssssss",
+      code: "PRODUCT_GROUP_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "product-groups",
-        title: "ProductGroups",
+        title: "settings.entities.productGroups",
         // img: role,
-        description: "ProductGroup",
+        description: "settings.descriptions.productGroups",
       },
     },
     {
-      code: "sdasdassssssssss",
+      code: "CASH_BOX_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "cash-boxes",
-        title: "Cash box",
+        title: "settings.entities.cashBox",
         // img: role,
-        description: "CashBox",
+        description: "settings.descriptions.cashBox",
       },
     },
     {
-      code: "sdasdasssssssssss",
+      code: "COUNTERPARTY_CONTACT_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "counterparty-contacts",
-        title: "Counterparty contacts",
+        title: "settings.entities.counterpartyContacts",
         // img: role,
-        description: "CounterpartyContact",
+        description: "settings.descriptions.counterpartyContacts",
       },
     },
     {
-      code: "sdasdassssssssssss",
+      code: "WAREHOUSE_VIEW",
       iconName: <Building2 className="size-5" />,
       linkData: {
         path: "warehouses",
-        title: "warehouse",
+        title: "settings.entities.warehouse",
         // img: role,
-        description: "Warehouse",
+        description: "settings.descriptions.warehouse",
       },
     },
   ],

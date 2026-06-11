@@ -26,27 +26,27 @@ export default function CounterpartyBankAccountListPage() {
   const tableColumns: TableColumnsType<Counterpartybankaccount> = [
     {
       dataIndex: "indexId",
-      title: t("T/r"),
+      title: t("common.rowNumber"),
       align: "center",
       width: 70,
     },
     {
-      title: "Bank name",
+      title: t("settings.fields.bankName"),
       dataIndex: "bankName",
       minWidth: 180,
     },
     {
-      title: "accountNumber",
+      title: t("settings.fields.accountNumber"),
       dataIndex: "accountNumber",
       minWidth: 180,
     },
     {
-      title: "counterpartyName",
+      title: t("settings.fields.counterpartyName"),
       dataIndex: "counterpartyName",
       minWidth: 160,
     },
     {
-      title: "Holati",
+      title: t("settings.fields.status"),
       dataIndex: "stateId",
       align: "center",
       width: 120,
@@ -63,7 +63,7 @@ export default function CounterpartyBankAccountListPage() {
         ...tableColumns,
         {
           dataIndex: "actions",
-          title: t("Amallar"),
+          title: t("common.actions"),
           align: "center",
           width: 100,
           fixed: "right",
@@ -111,9 +111,7 @@ export default function CounterpartyBankAccountListPage() {
               type="primary"
               icon={<Plus className="size-4" />}
               onClick={() => setIsAddOpen(true)}
-            >
-              Qo'shish
-            </Button>
+            >{t("common.add")}</Button>
           </PermissionCard>
         </Space>
       </div>

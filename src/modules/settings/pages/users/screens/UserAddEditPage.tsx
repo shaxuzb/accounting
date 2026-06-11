@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import InputPasword from "@/components/fields/InputPassword";
 import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import InputText from "@/components/fields/InputText";
@@ -20,7 +21,7 @@ interface UserAddEditPageProps {
 }
 
 function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
-  if (!open) return null;
+  const { t } = useTranslation();
   const isEdit = Boolean(editId);
   const createUser = useCreateUsers();
   const updateUser = useUpdateUsers();
@@ -42,10 +43,10 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
     onSubmit: (values) => {
       if (editId) {
         updateUser.mutate({ id: editId, payload: values });
-        toast.success("Foydalanuvchi muvaffaqiyatli o'zgartirildi");
+        toast.success(t("settings.messages.userUpdated"));
       } else {
         createUser.mutate(values);
-        toast.success("Foydalanuvchi muvaffaqiyatli yaratildi");
+        toast.success(t("settings.messages.userCreated"));
       }
       formik.resetForm();
       onClose();
@@ -66,9 +67,11 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
       });
     }
   }, [isSuccess, data]);
+  if (!open) return null;
+
   return (
     <Modal
-      title={isEdit ? "Foydalanuvchini o'zgartirish" : "Foydalanuvchi qo'shish"}
+      title={isEdit ? t("settings.form.editUser") : t("settings.form.createUser")}
       centered
       open={open}
       onCancel={() => {
@@ -86,14 +89,14 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
               <InputText
                 fieldName="userName"
                 formik={formik}
-                label="User name"
+                label="settings.fields.userName"
               />
             </Col>
             <Col span={12}>
               <InputPhoneNumber
                 fieldName="phoneNumber"
                 formik={formik}
-                label="Tel raqam"
+                label="settings.fields.phoneNumber"
               />
             </Col>
           </Row>
@@ -102,14 +105,14 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
               <InputText
                 fieldName="firstName"
                 formik={formik}
-                label="First name"
+                label="settings.fields.firstName"
               />
             </Col>
             <Col span={12}>
               <InputText
                 fieldName="lastName"
                 formik={formik}
-                label="Last name"
+                label="settings.fields.lastName"
               />
             </Col>
           </Row>
@@ -118,7 +121,7 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
               <SelectCustom
                 fieldName="roleId"
                 formik={formik}
-                label="Role id"
+                label="settings.fields.role"
                 path={selectListEndpoints.rolesSelectList}
               />
             </Col>
@@ -126,7 +129,7 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
               <InputPasword
                 fieldName="password"
                 formik={formik}
-                label="Password"
+                label="settings.fields.password"
               />
             </Col>
           </Row>
@@ -134,14 +137,14 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
           {isEdit ? (
             <Row gutter={[16, 0]}>
               <Col span={12}>
-                <InputText fieldName="email" formik={formik} label="Email" />
+                <InputText fieldName="email" formik={formik} label="settings.fields.email" />
               </Col>
 
               <Col span={12}>
                 <SelectCustom
                   fieldName="stateId"
                   formik={formik}
-                  label="State"
+                  label="settings.fields.status"
                   path={selectListEndpoints.statesSelectList}
                 />
               </Col>
@@ -149,7 +152,7 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
           ) : (
             <Row gutter={[16, 0]}>
               <Col span={24}>
-                <InputText fieldName="email" formik={formik} label="Email" />
+                <InputText fieldName="email" formik={formik} label="settings.fields.email" />
               </Col>
             </Row>
           )}
@@ -160,9 +163,7 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
             block
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-          >
-            Yakunlash
-          </Button>
+          >{t("common.submit")}</Button>
         </Form>
       </div>
     </Modal>

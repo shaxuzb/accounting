@@ -1,27 +1,20 @@
 import * as Yup from "yup";
+import {
+  editStateSchema,
+  requiredEmail,
+  requiredNumber,
+  requiredPassword,
+  requiredPhone,
+  requiredString,
+} from "../../../shared/validation";
 
 export const userSchema = Yup.object({
-  userName: Yup.string().required("Username majburiy"),
-
-  phoneNumber: Yup.string().required("Telefon raqam majburiy"),
-
-  email: Yup
-    .string()
-    .email("Email noto‘g‘ri formatda")
-    .required("Email majburiy"),
-
-  firstName: Yup.string().required("Ism majburiy"),
-
-  lastName: Yup.string().required("Familiya majburiy"),
-
-  roleId: Yup
-    .number()
-    .typeError("Rol majburiy")
-    .moreThan(0, "Rol tanlang")
-    .required("Rol majburiy"),
-
-  password: Yup
-    .string()
-    .min(6, "Parol kamida 6 ta belgidan iborat bo‘lishi kerak")
-    .required("Parol majburiy"),
+  userName: requiredString("settings.fields.userName"),
+  phoneNumber: requiredPhone(),
+  email: requiredEmail(),
+  firstName: requiredString("settings.fields.firstName"),
+  lastName: requiredString("settings.fields.lastName"),
+  roleId: requiredNumber("settings.fields.role"),
+  password: requiredPassword(),
+  stateId: editStateSchema(false),
 });

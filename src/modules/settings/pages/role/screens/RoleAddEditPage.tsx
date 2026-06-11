@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import { Col, Form, Row, Spin } from "antd";
 import { useNavigate, useParams } from "react-router";
@@ -15,6 +16,7 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 
 export default function RoleAddEditPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
   const roleId = params.id ? Number(params.id) : null;
@@ -27,7 +29,7 @@ export default function RoleAddEditPage() {
     initialValues: {
       fullName: data?.fullName ?? "",
       shortName: data?.shortName ?? "",
-      roleModules: data?.roleModules.map((item) => item.moduleId) ?? [],
+      moduleIds: data?.roleModules.map((item) => item.moduleId) ?? [],
       ...(isEdit
         ? {
             stateId: data?.stateId,
@@ -39,10 +41,10 @@ export default function RoleAddEditPage() {
       try {
         if (isEdit && roleId) {
           await updateRole.mutateAsync({ id: roleId, payload: values });
-          toast.success("Rol muvaffaqiyatli o'zgartirildi");
+          toast.success(t("settings.messages.roleUpdated"));
         } else {
           await createRole.mutateAsync(values);
-          toast.success("Rol muvaffaqiyatli yaratildi");
+          toast.success(t("settings.messages.roleCreated"));
         }
         helpers.resetForm();
         navigate("/main/settings/role");
@@ -62,14 +64,14 @@ export default function RoleAddEditPage() {
                 <InputText
                   formik={formik}
                   fieldName="fullName"
-                  label="To'liq nomi"
+                  label="settings.fields.fullName"
                 />
               </Col>
               <Col span={8}>
                 <InputText
                   formik={formik}
                   fieldName="shortName"
-                  label="Qisqacha nomi"
+                  label="settings.fields.shortName"
                 />
               </Col>
               {isEdit && (
@@ -77,18 +79,18 @@ export default function RoleAddEditPage() {
                   <SelectCustom
                     formik={formik}
                     fieldName="stateId"
-                    label="Holati"
+                    label="settings.fields.status"
                     path={selectListEndpoints.statesSelectList}
                   />
                 </Col>
               )}
             </Row>
           </Card>
+          <RoleModuleSelector
+            formik={formik}
+            submitting={createRole.isPending || updateRole.isPending}
+          />
         </Form>
-        <RoleModuleSelector
-          formik={formik}
-          submitting={createRole.isPending || updateRole.isPending}
-        />
       </div>
     </Spin>
   );
