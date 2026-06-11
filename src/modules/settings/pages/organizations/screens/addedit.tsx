@@ -21,10 +21,10 @@ const defaultValues: organizationCreate = {
   address: "",
   director: "",
   isParent: false,
-  defaultLanguageId: 1,
-  regionId: 1,
-  districtId: 1,
-  stateId:1,
+  defaultLanguageId: null,
+  regionId: null,
+  districtId: null,
+  stateId: null,
 };
 
 interface OrganizationsModalProps {
@@ -46,7 +46,7 @@ export default function OrganizationsAddPage({
   const updateMutation = useUpdateOrganizations();
 
   const formik = useFormik<organizationCreate>({
-    initialValues: defaultValues,
+    initialValues: { ...defaultValues, stateId: isEdit ? null : 1 },
     enableReinitialize: true,
     validationSchema: organizationsSchema(isEdit),
     onSubmit: async (values, helpers) => {
@@ -76,10 +76,10 @@ export default function OrganizationsAddPage({
         address: organizations.address ?? "",
         director: organizations.director ?? "",
         isParent: organizations.isParent ?? false,
-        defaultLanguageId: organizations.defaultLanguageId ?? 1,
-        regionId: organizations.regionId ?? 1,
-        districtId: organizations.districtId ?? 1,
-        stateId: organizations.stateId ?? 1,
+        defaultLanguageId: organizations.defaultLanguageId ?? null,
+        regionId: organizations.regionId ?? null,
+        districtId: organizations.districtId ?? null,
+        stateId: organizations.stateId ?? null,
       });
     }
   }, [organizations, isEdit]);
@@ -117,6 +117,7 @@ export default function OrganizationsAddPage({
                 fieldName="regionId"
                 label="Regions"
                 path={selectListEndpoints.regionsSelectList}
+                placeholder="region"
               />
             </Col>
             <Col span={12}>
@@ -125,6 +126,7 @@ export default function OrganizationsAddPage({
                 fieldName="defaultLanguageId"
                 label="Til"
                 path={selectListEndpoints.languagesSelectList}
+                placeholder="language"
               />
             </Col>
             <Col span={12}>
@@ -144,18 +146,21 @@ export default function OrganizationsAddPage({
                 label="Direktor"
               />
             </Col>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="stateId"
-                label="Holati"
-                path={selectListEndpoints.statesSelectList}
-              />
-            </Col>
+            {isEdit && (
+              <Col span={12}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="stateId"
+                  label="Holati"
+                  path={selectListEndpoints.statesSelectList}
+                />
+              </Col>
+            )}
 
             <Col span={24}>
               <InputText formik={formik} fieldName="address" label="Manzil" />
             </Col>
+            
           </Row>
 
           <Button

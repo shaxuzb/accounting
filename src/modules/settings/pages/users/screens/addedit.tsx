@@ -10,6 +10,7 @@ import { userSchema } from "../types/schema";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { useGetDetailUsers } from "../hooks";
+import toast from "react-hot-toast";
 
 interface UsersAddEditModalProps {
   open: boolean;
@@ -18,6 +19,7 @@ interface UsersAddEditModalProps {
 }
 
 function UsersAddEditModal({ open, onClose, editId }: UsersAddEditModalProps) {
+  if (!open) return null;
   const isEdit = Boolean(editId);
   const createUser = useCreateUsers();
   const updateUser = useUpdateUsers();
@@ -39,18 +41,24 @@ function UsersAddEditModal({ open, onClose, editId }: UsersAddEditModalProps) {
     onSubmit: (values) => {
       if (editId) {
         updateUser.mutate({ id: editId, payload: values });
+        toast.success("Foydalanuvchi muvaffaqiyatli o'zgartirildi");
       } else {
         createUser.mutate(values);
+        toast.success("Foydalanuvchi muvaffaqiyatli yaratildi");
       }
+      formik.resetForm();
+      onClose();
     },
   });
-  if (!open) return null;
   return (
     <Modal
       title={isEdit ? "Foydalanuvchini o'zgartirish" : "Foydalanuvchi qo'shish"}
       centered
       open={open}
-      onCancel={onClose}
+      onCancel={() => {
+        onClose();
+        formik.resetForm();
+      }}
       footer={false}
       destroyOnHidden
       // width={500}
@@ -106,18 +114,36 @@ function UsersAddEditModal({ open, onClose, editId }: UsersAddEditModalProps) {
               />
             </Col>
           </Row>
-          <Row gutter={[16, 0]}>
-            <Col span={24}>
-              <InputText fieldName="email" formik={formik} label="Email" />
-            </Col>
-          </Row>
+
+          {isEdit ? (
+            <Row gutter={[16, 0]}>
+              <Col span={12}>
+                <InputText fieldName="email" formik={formik} label="Email" />
+              </Col>
+
+              <Col span={12}>
+                <SelectCustom
+                  fieldName="stateId"
+                  formik={formik}
+                  label="State"
+                  path={selectListEndpoints.statesSelectList}
+                />
+              </Col>
+            </Row>
+          ) : (
+            <Row gutter={[16, 0]}>
+              <Col span={24}>
+                <InputText fieldName="email" formik={formik} label="Email" />
+              </Col>
+            </Row>
+          )}
+
           <Button
             type="primary"
             htmlType="submit"
             block
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-            onClick={() => console.log(formik)}
           >
             Yakunlash
           </Button>

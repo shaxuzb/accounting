@@ -91,19 +91,25 @@ export default function WarehousesAddPage({
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
-             <InputText formik={formik} fieldName="name" label="Name" />
-              <InputText formik={formik} fieldName="code" label="code" />
+          <InputText formik={formik} fieldName="name" label="Name" />
+          <InputText formik={formik} fieldName="code" label="code" />
           <SelectCustom
             formik={formik}
             fieldName="organizationId"
             label="organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
-             <SelectCustom
+          <SelectCustom
             formik={formik}
             fieldName="branchId"
             label="branchId"
             path={selectListEndpoints.branchesSelectList}
+          />
+          <SelectCustom
+            formik={formik}
+            fieldName="responsibleUserId"
+            label="responsibleUserId"
+            path={selectListEndpoints.usersSelectList}
           />
 
           {isEdit && (

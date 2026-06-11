@@ -71,8 +71,8 @@ export default function WarehousesListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="product-groups"
-              customPath={`/main/settings/product-groups/edit/${record.id}`}
+              deletePath="warehouses"
+              customPath={`/main/settings/warehouses/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
