@@ -86,7 +86,9 @@ export default function CounterpartyContactAddEditPage({
 
   return (
     <Modal
-      title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
+      title={
+        isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
+      }
       open={open}
       onCancel={() => {
         formik.resetForm();
@@ -94,7 +96,7 @@ export default function CounterpartyContactAddEditPage({
       }}
       footer={null}
       centered
-      width={600}
+      width={650}
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
@@ -107,31 +109,21 @@ export default function CounterpartyContactAddEditPage({
               />
             </Col>
             <Col span={12}>
-              <InputText formik={formik} fieldName="comment" label="settings.fields.comment" />
-            </Col>
-              <Col span={12}>
-              {/* <SelectCustom
-                formik={formik}
-                fieldName="position"
-                label="settings.fields.position"
-                path={selectListEndpoints.positionsSelectList}
-              /> */}
-                <InputText formik={formik} fieldName="position" label="settings.fields.position" />
-            </Col>
-            <Col span={12}>
-              <InputPhoneNumber
-                formik={formik}
-                fieldName="phoneNumber"
-                label="settings.fields.phoneNumber"
-              />
-            </Col>
-            <Col span={12}>
               <InputText
                 formik={formik}
-                fieldName="email"
-                label="settings.fields.email"
+                fieldName="comment"
+                label="settings.fields.comment"
               />
             </Col>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="counterpartyId"
+                label="settings.fields.counterparty"
+                path={selectListEndpoints.counterpartiesSelectList}
+              />
+            </Col>
+
             <Col span={12}>
               <SelectCustom
                 formik={formik}
@@ -141,11 +133,25 @@ export default function CounterpartyContactAddEditPage({
               />
             </Col>
             <Col span={12}>
-              <SelectCustom
+              <InputText
                 formik={formik}
-                fieldName="counterpartyId"
-                label="settings.fields.counterparty"
-                path={selectListEndpoints.counterpartiesSelectList}
+                fieldName="position"
+                label="settings.fields.position"
+              />
+            </Col>
+            <Col span={12}>
+              <InputPhoneNumber
+                formik={formik}
+                fieldName="phoneNumber"
+                label="settings.fields.phoneNumber"
+              />
+            </Col>
+
+            <Col span={12}>
+              <InputText
+                formik={formik}
+                fieldName="email"
+                label="settings.fields.email"
               />
             </Col>
 
@@ -169,7 +175,9 @@ export default function CounterpartyContactAddEditPage({
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
             onClick={() => console.log(formik)}
             loading={isSubmitting}
-          >{t("common.submit")}</Button>
+          >
+            {t("common.submit")}
+          </Button>
         </Form>
       </Spin>
     </Modal>

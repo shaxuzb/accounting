@@ -80,7 +80,7 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
       }}
       footer={false}
       destroyOnHidden
-      // width={500}
+      width={650}
     >
       <div className="py-4">
         <Form layout="vertical" onFinish={formik.handleSubmit}>

@@ -67,7 +67,11 @@ function Login() {
             </div>
 
             <Form layout="vertical" onFinish={formik.handleSubmit}>
-              <InputText fieldName="userName" formik={formik} label="Email" />
+              <InputText
+                fieldName="userName"
+                formik={formik}
+                label="Foydalanuvchi nomi"
+              />
               <InputPassword
                 formik={formik}
                 fieldName="password"

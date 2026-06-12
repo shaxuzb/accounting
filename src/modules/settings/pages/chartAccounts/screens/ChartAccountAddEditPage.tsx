@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
-import { Button, Form, Modal, Spin } from "antd";
+import { Button, Col, Form, Modal, Row, Spin } from "antd";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -84,7 +84,9 @@ export default function ChartAccountAddEditPage({
 
   return (
     <Modal
-      title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
+      title={
+        isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
+      }
       open={open}
       onCancel={() => {
         formik.resetForm();
@@ -96,14 +98,24 @@ export default function ChartAccountAddEditPage({
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <InputText formik={formik} fieldName="name" label="settings.fields.name" />
+          <InputText
+            formik={formik}
+            fieldName="name"
+            label="settings.fields.name"
+          />
+
           <SelectCustom
             formik={formik}
             fieldName="organizationId"
             label="settings.fields.organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
-          <InputPasword formik={formik} fieldName="code" label="settings.fields.code" />
+
+          <InputPasword
+            formik={formik}
+            fieldName="code"
+            label="settings.fields.code"
+          />
 
           <InputPhoneNumber
             formik={formik}
@@ -128,7 +140,9 @@ export default function ChartAccountAddEditPage({
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
             onClick={() => console.log(formik)}
             loading={isSubmitting}
-          >{t("common.submit")}</Button>
+          >
+            {t("common.submit")}
+          </Button>
         </Form>
       </Spin>
     </Modal>
