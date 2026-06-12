@@ -22,7 +22,7 @@ export interface RoleModuleGroup {
 }
 
 export interface RoleDetail extends Role {
-  roleModules: Array<{
+  modules: Array<{
     id?: number;
     moduleId: number;
   }>;

@@ -8,7 +8,10 @@
     "name": "Название",
     "actions": "Действия",
     "rowNumber": "№",
-    "created": "Создано"
+    "total": "Итого",
+    "created": "Создано",
+    "back": "Назад",
+    "next": "Далее"
   },
   "validation": {
     "required": "{{field}} обязательно",
@@ -108,6 +111,84 @@
     "role": {
       "selectAll": "Выбрать все",
       "searchPlaceholder": "Искать по названию модуля..."
+    }
+  },
+  "purchase": {
+    "title": "Покупки",
+    "detailTitle": "Документ покупки",
+    "importTitle": "Импорт покупки",
+    "fields": {
+      "amount": "Сумма",
+      "contract": "Договор",
+      "description": "Описание",
+      "discount": "Скидка",
+      "docDate": "Дата",
+      "docNumber": "Номер документа",
+      "price": "Цена",
+      "product": "Товар",
+      "productId": "ID товара",
+      "quantity": "Количество",
+      "sapCode": "SAP код",
+      "serialNumber": "Серийный номер",
+      "markingNumber": "Маркировочный номер",
+      "productType": "Тип товара",
+      "currency": "Валюта",
+      "supplierUom": "Единица закупки",
+      "stockUom": "Единица склада",
+      "clientUom": "Единица клиента",
+      "supplier": "Поставщик",
+      "total": "Итоговая сумма",
+      "uom": "Единица"
+    },
+    "messages": {
+      "imported": "Данные покупки импортированы"
+    },
+    "import": {
+      "nonSerial": "Без серии",
+      "serial": "С серией",
+      "withDiscount": "Со скидкой",
+      "withoutDiscount": "Без скидки",
+      "uploadTitle": "Выберите Excel файл или перетащите его сюда",
+      "uploadHint": "Файл импорта покупки в формате XLS или XLSX",
+      "modalTitle": "Импорт Excel",
+      "sheetStep": "Выбор листа",
+      "previewStep": "Просмотр данных",
+      "mappingStep": "Сопоставление колонок",
+      "selectField": "Выберите поле",
+      "createSelectedProducts": "Создать выбранные товары",
+      "deleteInvalidSapCodes": "Удалить ненайденные SAP коды"
+    }
+  },
+  "products": {
+    "title": "Товары",
+    "createTitle": "Создать группу товаров",
+    "editTitle": "Редактировать группу товаров",
+    "fields": {
+      "name": "Название",
+      "productType": "Тип товара",
+      "sapCode": "SAP код",
+      "supplier": "Поставщик",
+      "description": "Описание",
+      "status": "Статус",
+      "currency": "Валюта",
+      "supplierUom": "Единица закупки",
+      "stockUom": "Единица склада",
+      "clientUom": "Единица клиента",
+      "supplierToStockFactor": "Коэффициент закупка-склад",
+      "stockToClientFactor": "Коэффициент склад-клиент",
+      "unit": "Birlik"
+    },
+    "actions": {
+      "addProduct": "Создать товар"
+    },
+    "status": {
+      "new": "Новый",
+      "active": "Активный",
+      "inactive": "Неактивный"
+    },
+    "messages": {
+      "created": "Товар успешно создан",
+      "updated": "Товар успешно обновлен"
     }
   }
 }

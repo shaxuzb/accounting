@@ -1,6 +1,11 @@
 export const purchasePermissions = {
-  view: "purchase.view",
-  create: "purchase.create",
-  update: "purchase.update",
-  delete: "purchase.delete",
+  view: "PURCHASE_DOC_VIEW",
+  detail: "PURCHASE_DOC_VIEW_DETAIL",
+  create: "PURCHASE_DOC_CREATE",
+  prepare: "GOODSMOVEMENT_PURCHASE_PREPARE",
+  confirm: "GOODSMOVEMENT_PURCHASE_CONFIRM",
+  update: "PURCHASE_DOC_UPDATE",
+  delete: "PURCHASE_DOC_DELETE",
+  serialNumbers: "GOODSMOVEMENT_PURCHASE_SERIALNUMBERS_VIEW",
+  sendReceipt: "GOODSMOVEMENT_PURCHASE_SEND_CHECK",
 } as const;

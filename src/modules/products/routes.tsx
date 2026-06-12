@@ -1,16 +1,32 @@
 import type { RouteObject } from "react-router";
-import ProductsListPage from "./pages/products";
-import ProductsAddPage from "./pages/products/add";
-import ProductsViewPage from "./pages/products/view";
-/* modux:imports */
+import PermissionCard from "@/components/ui/card/PermissionCard";
+import ProductListPage from "./pages/products/screens/ProductListPage";
+import ProductAddEditPage from "./pages/products/screens/ProductAddEditPage";
+import { productPermissions } from "./pages/products/constants/permissions";
+
+const withPermission = (element: React.ReactElement, permission: string) => (
+  <PermissionCard permission={permission} mode="redirect">
+    {element}
+  </PermissionCard>
+);
 
 export const productsRoutes: RouteObject = {
   path: "products",
-  handle: { title: "Products" },
+  handle: { title: "products.title" },
   children: [
-    { index: true, element: <ProductsListPage /> },
-    { path: "add", element: <ProductsAddPage />, handle: { title: "Add Products", showBack: true, backTo: ".." } },
-    { path: ":id", element: <ProductsViewPage />, handle: { title: "View Products", showBack: true, backTo: ".." } },
-    /* modux:routes */
+    {
+      index: true,
+      element: withPermission(<ProductListPage />, productPermissions.view),
+    },
+    {
+      path: "add",
+      element: withPermission(<ProductAddEditPage />, productPermissions.create),
+      handle: { title: "products.createTitle", showBack: true, backTo: ".." },
+    },
+    {
+      path: "edit/:id",
+      element: withPermission(<ProductAddEditPage />, productPermissions.update),
+      handle: { title: "products.editTitle", showBack: true, backTo: ".." },
+    },
   ],
 };

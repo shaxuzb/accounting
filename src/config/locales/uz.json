@@ -8,7 +8,10 @@
     "name": "Nomi",
     "actions": "Amallar",
     "rowNumber": "T/r",
-    "created": "Yaratildi"
+    "total": "Jami",
+    "created": "Yaratildi",
+    "back": "Orqaga",
+    "next": "Keyingisi"
   },
   "validation": {
     "required": "{{field}} majburiy",
@@ -108,6 +111,84 @@
     "role": {
       "selectAll": "Hammasini belgilash",
       "searchPlaceholder": "Modul nomi bo'yicha qidiring..."
+    }
+  },
+  "purchase": {
+    "title": "Sotib olish",
+    "detailTitle": "Sotib olish hujjati",
+    "importTitle": "Sotib olish importi",
+    "fields": {
+      "amount": "Summa",
+      "contract": "Shartnoma",
+      "description": "Tavsif",
+      "discount": "Chegirma",
+      "docDate": "Sana",
+      "docNumber": "Hujjat raqami",
+      "price": "Narxi",
+      "product": "Mahsulot",
+      "productId": "Mahsulot ID",
+      "quantity": "Miqdori",
+      "sapCode": "SAP kod",
+      "serialNumber": "Seriya raqami",
+      "markingNumber": "Markirovka raqami",
+      "productType": "Mahsulot turi",
+      "currency": "Valyuta",
+      "supplierUom": "Xarid birligi",
+      "stockUom": "Ombor birligi",
+      "clientUom": "Mijoz birligi",
+      "supplier": "Yetkazib beruvchi",
+      "total": "Jami narx",
+      "uom": "Birlik"
+    },
+    "messages": {
+      "imported": "Sotib olish ma'lumotlari import qilindi"
+    },
+    "import": {
+      "nonSerial": "Seriyasiz",
+      "serial": "Seriyali",
+      "withDiscount": "Chegirma bilan",
+      "withoutDiscount": "Chegirmasiz",
+      "uploadTitle": "Excel faylni tanlang yoki shu yerga tashlang",
+      "uploadHint": "XLS yoki XLSX formatdagi purchase import fayli",
+      "modalTitle": "Excel import",
+      "sheetStep": "Sheet tanlash",
+      "previewStep": "Ma'lumotlarni ko'rish",
+      "mappingStep": "Ustunlarni moslash",
+      "selectField": "Maydonni tanlang",
+      "createSelectedProducts": "Tanlangan mahsulotlarni yaratish",
+      "deleteInvalidSapCodes": "Topilmagan SAP kodlarni o'chirish"
+    }
+  },
+  "products": {
+    "title": "Mahsulotlar",
+    "createTitle": "Mahsulot guruhini yaratish",
+    "editTitle": "Mahsulot guruhini o'zgartirish",
+    "fields": {
+      "name": "Nomi",
+      "productType": "Mahsulot turi",
+      "sapCode": "SAP kod",
+      "supplier": "Yetkazib beruvchi",
+      "description": "Ma'lumot",
+      "status": "Holati",
+      "currency": "Valyuta",
+      "supplierUom": "Xarid birligi",
+      "stockUom": "Ombor birligi",
+      "clientUom": "Mijoz birligi",
+      "supplierToStockFactor": "Xariddan omborga koeffitsient",
+      "stockToClientFactor": "Ombordan mijozga koeffitsient",
+      "unit": "Birlik"
+    },
+    "actions": {
+      "addProduct": "Mahsulot yaratish"
+    },
+    "status": {
+      "new": "Yangi",
+      "active": "Faol",
+      "inactive": "Deaktiv"
+    },
+    "messages": {
+      "created": "Mahsulot muvaffaqiyatli yaratildi",
+      "updated": "Mahsulot muvaffaqiyatli o'zgartirildi"
     }
   }
 }

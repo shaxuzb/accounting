@@ -1,3 +1,5 @@
+import { purchasePermissions } from "@/modules/purchase";
+import { productPermissions } from "@/modules/products";
 import type { MenuRole } from "@/shared/types";
 import {
   Banknote,
@@ -48,39 +50,22 @@ export const menuPermissions: MainMenu = {
       iconName: <LayoutDashboard className="size-5" />,
     },
     {
-      code: "PRODUCTS",
+      code: productPermissions.view,
       linkData: {
         path: "products",
-        title: "Mahsulotlar",
+        title: "products.title",
       },
       iconName: <BoxIcon className="size-5" />,
     },
     {
-      code: "PURCHASE",
-      dropdown: true,
+      code: purchasePermissions.view,
       iconName: <ShoppingCart className="size-5" />,
-      dropdownName: "Sotib olish",
       linkData: {
-        path: "sotib-olish",
+        path: "purchase",
+        title: "purchase.title",
       },
-      items: [
-        {
-          code: "SETTING",
-          linkData: {
-            path: "warehouse",
-            title: "Buyurtmalar",
-          },
-        },
-        {
-          code: "SETTIN",
-          linkData: {
-            path: "products",
-            title: "Kirim hujjatlari",
-          },
-        },
-      ],
     },
-    
+
     {
       code: "ROLE_VIEW",
       linkData: {

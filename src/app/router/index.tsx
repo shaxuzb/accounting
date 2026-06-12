@@ -4,6 +4,7 @@ import { authRoutes } from "@/modules/auth";
 import { settingsRoutes } from "@/modules/settings";
 import { dashboardRoutes } from "@/modules/dashboard/routes";
 import { productsRoutes } from "@/modules/products";
+import { purchaseRoutes } from "@/modules/purchase";
 
 export const router = createBrowserRouter([
   {
@@ -16,7 +17,7 @@ export const router = createBrowserRouter([
       {
         path: "main",
         element: <MainLayout />,
-        children: [dashboardRoutes,productsRoutes, settingsRoutes],
+        children: [dashboardRoutes, productsRoutes, purchaseRoutes, settingsRoutes],
       },
     ],
   },

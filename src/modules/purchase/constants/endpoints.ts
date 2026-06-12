@@ -1,9 +1,9 @@
 export const purchaseEndpoints = {
   purchase: {
-    list: "/purchase",
-    detail: (id: string | number) => `/purchase/${id}`,
-    create: "/purchase",
-    update: (id: string | number) => `/purchase/${id}`,
+    list: "goods-movements",
+    detail: (id: string | number) => `goods-movements/${id}`,
+    create: "goods-movements",
+    update: (id: string | number) => `goods-movements/${id}`,
+    importTemplate: "goods-movements/purchase-import-template",
   },
-  /* modux:endpoints */
-};
+} as const;
