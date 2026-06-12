@@ -1,3 +1,7 @@
+// import type { organizations } from "./form";
+
+import type { organizations } from "./form";
+
 export interface Users {
   id: number;
   userName: string;
@@ -11,4 +15,5 @@ export interface Users {
   createdDate: string;
   roleName: string;
   stateName: string;
+  organizations: organizations[];
 }

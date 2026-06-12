@@ -19,7 +19,7 @@ import ProductItemsTable from "../components/ProductItemsTable";
 
 const getInitialValues = (isEdit: boolean): ProductTypeForm => ({
   name: "",
-  organizationId: null,
+  organizationId: 1,
   products: [],
   ...(isEdit ? { id: null, stateId: null } : {}),
 });
@@ -46,14 +46,13 @@ export default function ProductAddEditPage() {
         await createMutation.mutateAsync(values);
         toast.success(t("products.messages.created"));
       }
-      navigate("..");
+      navigate(-1);
     },
   });
 
   useEffect(() => {
     if (!data) return;
-    formik.resetForm({
-      values: {
+    formik.setValues({
         id: data.id,
         name: data.name ?? "",
         organizationId: 1,
@@ -72,7 +71,6 @@ export default function ProductAddEditPage() {
           // },
           // characteristics: item.characteristics ?? [],
         })),
-      },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);

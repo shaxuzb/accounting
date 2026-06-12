@@ -22,7 +22,7 @@ function SettingsCard({
     <Card
       onClick={() => onClick(item.path)}
       hoverable
-      className="items-center justify-between p-4 border border-border  cursor-pointer"
+      className="items-center justify-between p-4 border border-border cursor-pointer hover:border-blue-200"
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
@@ -62,7 +62,7 @@ export default function SettingsListPage() {
   };
 
   return (
-    <div className="">
+    <div className="p-1">
       <div className="pb-3">
         <h1 className="pt-1 font-bold text-4xl">{t("settings.title")}</h1>
         <p className="pt-1 text-gray-500">{t("settings.description")}</p>

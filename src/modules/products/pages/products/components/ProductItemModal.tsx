@@ -18,7 +18,7 @@ interface ProductItemModalProps {
 
 const emptyProductItem = () => ({
   name: "",
-  barCode: "",
+  barcode: "",
   description: "",
   // isSerial: false,
   isService: false,
@@ -108,7 +108,7 @@ export default function ProductItemModal({
             <InputText
               label="products.fields.sapCode"
               formik={productFormik}
-              fieldName="barCode"
+              fieldName="barcode"
             />
             <div className="absolute right-2 top-0">
               <span>Servisli: </span>
@@ -183,6 +183,16 @@ export default function ProductItemModal({
               fieldName="description"
             />
           </Col>
+          {editItem && (
+            <Col span={24} md={12}>
+              <SelectCustom
+                label="products.fields.status"
+                path={selectListEndpoints.statesSelectList}
+                formik={productFormik}
+                fieldName="stateId"
+              />
+            </Col>
+          )}
           {/* <Col span={24} md={8}>
             <Form.Item label="Seriyali">
               <Switch

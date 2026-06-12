@@ -8,4 +8,10 @@ export interface UsersForm {
   password: string;
   id?: number | null;
   stateId?: number | null;
+  organizations: organizations[];
+}
+export interface organizations {
+  organizationId: number;
+  roleId: number;
+  isDefault: boolean;
 }

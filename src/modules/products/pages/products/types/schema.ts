@@ -16,7 +16,7 @@ const uomSchema = Yup.object({
 
 export const productItemSchema = Yup.object({
   name: Yup.string().trim().required("validation.required"),
-  barCode: Yup.string().trim().required("validation.required"),
+  barcode: Yup.string().trim().required("validation.required"),
   isService: Yup.boolean().required("validation.required"),
   unitId: Yup.number().nullable().required("validation.required"),
   // supplierId: Yup.number().nullable().required("validation.required"),

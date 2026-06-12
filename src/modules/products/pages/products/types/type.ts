@@ -16,7 +16,7 @@ export interface ProductItem {
   idIndex?: number;
   name: string;
   unitId: number;
-  barCode: string;
+  barcode: string;
   // supplierId: number | null;
   // supplier?: string;
   description: string;

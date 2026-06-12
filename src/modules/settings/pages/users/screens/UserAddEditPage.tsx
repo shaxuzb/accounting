@@ -21,6 +21,7 @@ interface UserAddEditPageProps {
 }
 
 function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
+  if (!open) return null;
   const { t } = useTranslation();
   const isEdit = Boolean(editId);
   const createUser = useCreateUsers();
@@ -37,12 +38,23 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
       roleId: null,
       password: "",
       stateId: null,
+      organizations: null,
     },
     enableReinitialize: true,
     validationSchema: userSchema,
     onSubmit: (values) => {
       if (editId) {
-        updateUser.mutate({ id: editId, payload: values });
+        updateUser.mutate({
+          id: editId,
+          payload: {
+            ...values,
+            organizations: values.organizations.map((item) => ({
+              organizationId: item,
+              roleId: values.roleId,
+              isDefault: false,
+            })),
+          },
+        });
         toast.success(t("settings.messages.userUpdated"));
       } else {
         createUser.mutate(values);
@@ -64,14 +76,17 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
         roleId: data?.roleId ?? null,
         password: "xxxxxxxxxxx",
         stateId: data?.stateId ?? null,
+        organizations: data.organizations.map((item)=> item.organizationId) ?? null,
       });
     }
   }, [isSuccess, data]);
-  if (!open) return null;
+  console.log(formik.values);
 
   return (
     <Modal
-      title={isEdit ? t("settings.form.editUser") : t("settings.form.createUser")}
+      title={
+        isEdit ? t("settings.form.editUser") : t("settings.form.createUser")
+      }
       centered
       open={open}
       onCancel={() => {
@@ -135,26 +150,54 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
           </Row>
 
           {isEdit ? (
-            <Row gutter={[16, 0]}>
-              <Col span={12}>
-                <InputText fieldName="email" formik={formik} label="settings.fields.email" />
-              </Col>
+            <>
+              <Row gutter={[16, 0]}>
+                <Col span={24}>
+                  <SelectCustom
+                    fieldName="organizations"
+                    formik={formik}
+                    label="settings.fields.organization"
+                    path={selectListEndpoints.organizationsSelectList}
+                    mode="multiple"
+                  />
+                </Col>
 
-              <Col span={12}>
+                <Col span={12}>
+                  <InputText
+                    fieldName="email"
+                    formik={formik}
+                    label="settings.fields.email"
+                  />
+                </Col>
+                <Col span={12}>
+                  <SelectCustom
+                    fieldName="stateId"
+                    formik={formik}
+                    label="settings.fields.status"
+                    path={selectListEndpoints.statesSelectList}
+                  />
+                </Col>
+              </Row>
+            </>
+          ) : (
+            <>
+              <Col span={24}>
                 <SelectCustom
-                  fieldName="stateId"
+                  fieldName="organizations"
                   formik={formik}
-                  label="settings.fields.status"
-                  path={selectListEndpoints.statesSelectList}
+                  label="settings.fields.organization"
+                  path={selectListEndpoints.organizationsSelectList}
+                  mode="multiple"
                 />
               </Col>
-            </Row>
-          ) : (
-            <Row gutter={[16, 0]}>
               <Col span={24}>
-                <InputText fieldName="email" formik={formik} label="settings.fields.email" />
+                <InputText
+                  fieldName="email"
+                  formik={formik}
+                  label="settings.fields.email"
+                />
               </Col>
-            </Row>
+            </>
           )}
 
           <Button
@@ -163,7 +206,9 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
             block
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-          >{t("common.submit")}</Button>
+          >
+            {t("common.submit")}
+          </Button>
         </Form>
       </div>
     </Modal>
