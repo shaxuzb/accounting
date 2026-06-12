@@ -15,6 +15,7 @@ export interface Counterparty {
   stateId: number;
   stateName: string;
   createdDate: string;
+  address: string;
 }
 
 export interface CounterpartyModule {

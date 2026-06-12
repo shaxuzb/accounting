@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
-import { Button, Form, Modal, Spin } from "antd";
+import { Button, Col, Form, Modal, Row, Spin } from "antd";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -46,7 +46,7 @@ export default function CounterpartyBankAccountAddEditPage({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
-      isMain: true
+      isMain: true,
     },
     enableReinitialize: true,
     validationSchema: counterpartybankaccountSchema(isEdit),
@@ -84,7 +84,9 @@ export default function CounterpartyBankAccountAddEditPage({
 
   return (
     <Modal
-      title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
+      title={
+        isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
+      }
       open={open}
       onCancel={() => {
         formik.resetForm();
@@ -92,50 +94,63 @@ export default function CounterpartyBankAccountAddEditPage({
       }}
       footer={null}
       centered
-      width={450}
+      width={650}
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <SelectCustom
-            formik={formik}
-            fieldName="counterpartyId"
-            label="settings.fields.counterparty"
-            path={selectListEndpoints.counterparty}
-          />
-          <SelectCustom
-            formik={formik}
-            fieldName="organizationId"
-            label="settings.fields.organization"
-            path={selectListEndpoints.operationTypesSelectList}
-          />
-             <SelectCustom
-            formik={formik}
-            fieldName="bankId"
-            label="settings.fields.bank"
-            path={selectListEndpoints.banksSelectList}
-          />
+          <Row gutter={[16, 0]}>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="counterpartyId"
+                label="settings.fields.counterparty"
+                path={selectListEndpoints.counterparty}
+              />
+            </Col>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="organizationId"
+                label="settings.fields.organization"
+                path={selectListEndpoints.operationTypesSelectList}
+              />
+            </Col>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="bankId"
+                label="settings.fields.bank"
+                path={selectListEndpoints.banksSelectList}
+              />
+            </Col>
 
+            <Col span={12}>
+              <InputText
+                formik={formik}
+                fieldName="accountNumber"
+                label="settings.fields.accountNumber"
+              />
+            </Col>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="currencyId"
+                label="settings.fields.currency"
+                path={selectListEndpoints.currenciesSelectList}
+              />
+            </Col>
 
-          <InputText
-            formik={formik}
-            fieldName="accountNumber"
-            label="settings.fields.accountNumber"
-          />
-          <SelectCustom
-            formik={formik}
-            fieldName="currencyId"
-            label="settings.fields.currency"
-            path={selectListEndpoints.currenciesSelectList}
-          />
-
-          {isEdit && (
-            <SelectCustom
-              formik={formik}
-              fieldName="stateId"
-              label="settings.fields.status"
-              path={selectListEndpoints.statesSelectList}
-            />
-          )}
+            {isEdit && (
+              <Col span={12}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="stateId"
+                  label="settings.fields.status"
+                  path={selectListEndpoints.statesSelectList}
+                />
+              </Col>
+            )}
+          </Row>
 
           <Button
             type="primary"
@@ -145,7 +160,9 @@ export default function CounterpartyBankAccountAddEditPage({
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
             onClick={() => console.log(formik)}
             loading={isSubmitting}
-          >{t("common.submit")}</Button>
+          >
+            {t("common.submit")}
+          </Button>
         </Form>
       </Spin>
     </Modal>

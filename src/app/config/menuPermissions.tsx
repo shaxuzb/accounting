@@ -5,15 +5,24 @@ import {
   Banknote,
   Box,
   BoxIcon,
+  Briefcase,
+  Building,
   Building2,
   ChartColumnBig,
+  ContactRound,
+  CreditCard,
+  GitBranch,
+  Handshake,
   Landmark,
   LayoutDashboard,
+  ReceiptText,
   Settings,
+  ShieldCheck,
   ShoppingBag,
   ShoppingCart,
-  User2,
   Users,
+  Wallet,
+  Warehouse,
 } from "lucide-react";
 
 interface MainMenu {
@@ -136,7 +145,7 @@ export const menuPermissions: MainMenu = {
   SETTINGS: [
     {
       code: "ROLE_VIEW",
-      iconName: <User2 className="size-5" />,
+      iconName: <ShieldCheck className="size-5" />,
       linkData: {
         path: "role",
         title: "settings.entities.roles",
@@ -166,7 +175,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "COUNTERPARTY_CARD_VIEW",
-      iconName: <Building2 className="size-5" />,
+      iconName: <Handshake className="size-5" />,
       linkData: {
         path: "counterparty",
         title: "settings.entities.counterparty",
@@ -176,7 +185,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "DEPARTMENT_VIEW",
-      iconName: <Building2 className="size-5" />,
+      iconName: <Building className="size-5" />,
       linkData: {
         path: "departments",
         title: "settings.entities.departments",
@@ -186,7 +195,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "BRANCH_VIEW",
-      iconName: <Building2 className="size-5" />,
+      iconName: <GitBranch className="size-5" />,
       linkData: {
         path: "branches",
         title: "settings.entities.branches",
@@ -196,7 +205,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "CHART_ACCOUNT_VIEW",
-      iconName: <Building2 className="size-5" />,
+      iconName: <ReceiptText className="size-5" />,
       linkData: {
         path: "chart-accounts",
         title: "settings.entities.chartAccounts",
@@ -206,7 +215,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "COUNTERPARTY_BANK_ACCOUNT_VIEW",
-      iconName: <Building2 className="size-5" />,
+      iconName: <Landmark className="size-5" />,
       linkData: {
         path: "counterparty-bank-accounts",
         title: "settings.entities.bankAccounts",
@@ -216,7 +225,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "ORG_BANK_ACCOUNT_VIEW",
-      iconName: <Building2 className="size-5" />,
+      iconName: <Wallet className="size-5" />,
       linkData: {
         path: "org-bank-accounts",
         title: "settings.entities.orgBankAccounts",
@@ -226,7 +235,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "POSITION_VIEW",
-      iconName: <Building2 className="size-5" />,
+      iconName: <Briefcase className="size-5" />,
       linkData: {
         path: "positions",
         title: "settings.entities.positions",
@@ -246,7 +255,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "CASH_BOX_VIEW",
-      iconName: <Building2 className="size-5" />,
+      iconName: <CreditCard className="size-5" />,
       linkData: {
         path: "cash-boxes",
         title: "settings.entities.cashBox",
@@ -256,7 +265,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "COUNTERPARTY_CONTACT_VIEW",
-      iconName: <Building2 className="size-5" />,
+      iconName: <ContactRound className="size-5" />,
       linkData: {
         path: "counterparty-contacts",
         title: "settings.entities.counterpartyContacts",
@@ -266,7 +275,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "WAREHOUSE_VIEW",
-      iconName: <Building2 className="size-5" />,
+      iconName: <Warehouse className="size-5" />,
       linkData: {
         path: "warehouses",
         title: "settings.entities.warehouse",

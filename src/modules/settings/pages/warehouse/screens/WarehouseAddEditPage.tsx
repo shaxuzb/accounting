@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
-import { Button, Form, Modal, Spin } from "antd";
+import { Button, Col, Form, Modal, Row, Spin } from "antd";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -81,7 +81,9 @@ export default function WarehouseAddEditPage({
 
   return (
     <Modal
-      title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
+      title={
+        isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
+      }
       open={open}
       onCancel={() => {
         formik.resetForm();
@@ -89,39 +91,61 @@ export default function WarehouseAddEditPage({
       }}
       footer={null}
       centered
-      width={450}
+      width={600}
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <InputText formik={formik} fieldName="name" label="settings.fields.name" />
-          <InputText formik={formik} fieldName="code" label="settings.fields.code" />
-          <SelectCustom
-            formik={formik}
-            fieldName="organizationId"
-            label="settings.fields.organization"
-            path={selectListEndpoints.operationTypesSelectList}
-          />
-          <SelectCustom
-            formik={formik}
-            fieldName="branchId"
-            label="settings.fields.branch"
-            path={selectListEndpoints.branchesSelectList}
-          />
-          <SelectCustom
-            formik={formik}
-            fieldName="responsibleUserId"
-            label="settings.fields.responsibleUser"
-            path={selectListEndpoints.usersSelectList}
-          />
+          <Row gutter={[16, 0]}>
+            <Col span={12}>
+              <InputText
+                formik={formik}
+                fieldName="name"
+                label="settings.fields.name"
+              />
+            </Col>
+            <Col span={12}>
+              <InputText
+                formik={formik}
+                fieldName="code"
+                label="settings.fields.code"
+              />
+            </Col>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="organizationId"
+                label="settings.fields.organization"
+                path={selectListEndpoints.operationTypesSelectList}
+              />
+            </Col>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="branchId"
+                label="settings.fields.branch"
+                path={selectListEndpoints.branchesSelectList}
+              />
+            </Col>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="responsibleUserId"
+                label="settings.fields.responsibleUser"
+                path={selectListEndpoints.usersSelectList}
+              />
+            </Col>
 
-          {isEdit && (
-            <SelectCustom
-              formik={formik}
-              fieldName="stateId"
-              label="settings.fields.status"
-              path={selectListEndpoints.statesSelectList}
-            />
-          )}
+            {isEdit && (
+              <Col span={12}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="stateId"
+                  label="settings.fields.status"
+                  path={selectListEndpoints.statesSelectList}
+                />
+              </Col>
+            )}
+          </Row>
 
           <Button
             type="primary"
@@ -131,7 +155,9 @@ export default function WarehouseAddEditPage({
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
             onClick={() => console.log(formik)}
             loading={isSubmitting}
-          >{t("common.submit")}</Button>
+          >
+            {t("common.submit")}
+          </Button>
         </Form>
       </Spin>
     </Modal>

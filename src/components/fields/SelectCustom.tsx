@@ -85,7 +85,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     mode,
   } = props;
 
-//   const [searchValue, setSearchValue] = useState<string>("");
+  //   const [searchValue, setSearchValue] = useState<string>("");
   const { data, isFetching, isLoading, isSuccess } = useQuery<
     SelectOptionItem[]
   >({
@@ -113,8 +113,6 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
       mode !== "tags" &&
       getIn(formik.values, fieldName) === null
     ) {
-      console.log(getFirst);
-
       formik.setFieldValue(fieldName, data[0]?.id, true);
       if (
         getCustomValue &&

@@ -13,6 +13,7 @@ import InputText from "@/components/fields/InputText";
 import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
+import DistrictSelect from "@/components/fields/DistrictSelect";
 
 const defaultValues: organizationCreate = {
   shortName: "",
@@ -89,7 +90,9 @@ export default function OrganizationAddEditPage({
 
   return (
     <Modal
-      title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
+      title={
+        isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
+      }
       open={open}
       onCancel={onClose}
       footer={null}
@@ -123,6 +126,15 @@ export default function OrganizationAddEditPage({
               />
             </Col>
             <Col span={12}>
+              <DistrictSelect
+                regionFieldName="regionId"
+                formik={formik}
+                fieldName="districtId"
+                label="settings.fields.district"
+                path={selectListEndpoints.districtsSelectList}
+              />
+            </Col>
+            <Col span={12}>
               <SelectCustom
                 formik={formik}
                 fieldName="defaultLanguageId"
@@ -131,8 +143,13 @@ export default function OrganizationAddEditPage({
                 placeholder="language"
               />
             </Col>
+
             <Col span={12}>
-              <InputText formik={formik} fieldName="inn" label="settings.fields.inn" />
+              <InputText
+                formik={formik}
+                fieldName="inn"
+                label="settings.fields.inn"
+              />
             </Col>
             <Col span={12}>
               <InputPhoneNumber
@@ -148,21 +165,33 @@ export default function OrganizationAddEditPage({
                 label="settings.fields.director"
               />
             </Col>
-            {isEdit && (
-              <Col span={12}>
-                <SelectCustom
+            {isEdit ? (
+              <>
+                <Col span={12}>
+                  <InputText
+                    formik={formik}
+                    fieldName="address"
+                    label="settings.fields.address"
+                  />
+                </Col>
+                <Col span={12}>
+                  <SelectCustom
+                    formik={formik}
+                    fieldName="stateId"
+                    label="settings.fields.status"
+                    path={selectListEndpoints.statesSelectList}
+                  />
+                </Col>
+              </>
+            ) : (
+              <Col span={24}>
+                <InputText
                   formik={formik}
-                  fieldName="stateId"
-                  label="settings.fields.status"
-                  path={selectListEndpoints.statesSelectList}
+                  fieldName="address"
+                  label="settings.fields.address"
                 />
               </Col>
             )}
-
-            <Col span={24}>
-              <InputText formik={formik} fieldName="address" label="settings.fields.address" />
-            </Col>
-            
           </Row>
 
           <Button
@@ -173,7 +202,9 @@ export default function OrganizationAddEditPage({
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
             onClick={() => console.log(formik)}
             loading={isSubmitting}
-          >{t("common.submit")}</Button>
+          >
+            {t("common.submit")}
+          </Button>
         </Form>
       </Spin>
     </Modal>
