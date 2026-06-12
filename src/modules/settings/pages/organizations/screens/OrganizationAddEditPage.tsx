@@ -13,6 +13,7 @@ import InputText from "@/components/fields/InputText";
 import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
+import DistrictSelect from "@/components/fields/DistrictSelect";
 
 const defaultValues: organizationCreate = {
   shortName: "",
@@ -125,6 +126,15 @@ export default function OrganizationAddEditPage({
               />
             </Col>
             <Col span={12}>
+              <DistrictSelect
+                regionFieldName="regionId"
+                formik={formik}
+                fieldName="districtId"
+                label="settings.fields.district"
+                path={selectListEndpoints.districtsSelectList}
+              />
+            </Col>
+            <Col span={12}>
               <SelectCustom
                 formik={formik}
                 fieldName="defaultLanguageId"
@@ -133,15 +143,7 @@ export default function OrganizationAddEditPage({
                 placeholder="language"
               />
             </Col>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="districtId"
-                label="settings.fields.district"
-                path={selectListEndpoints.districtsSelectList}
-                placeholder="district"
-              />
-            </Col>
+
             <Col span={12}>
               <InputText
                 formik={formik}

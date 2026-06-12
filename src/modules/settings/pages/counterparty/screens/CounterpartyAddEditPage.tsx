@@ -13,6 +13,7 @@ import InputText from "@/components/fields/InputText";
 import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
+import DistrictSelect from "@/components/fields/DistrictSelect";
 
 const defaultValues: CounterpartyForm = {
   organizationId: null,
@@ -70,16 +71,16 @@ export default function CounterpartyAddEditPage({
   useEffect(() => {
     if (counterpartyDetail && isEdit) {
       formik.setValues({
-        organizationId: counterpartyDetail.organizationId ?? 1,
-        counterpartyTypeId: counterpartyDetail.counterpartyTypeId ?? 0,
+        organizationId: counterpartyDetail.organizationId ?? null,
+        counterpartyTypeId: counterpartyDetail.counterpartyTypeId ?? null,
         shortName: counterpartyDetail.shortName ?? "",
         fullName: counterpartyDetail.fullName ?? "",
         inn: counterpartyDetail.inn ?? "",
         phoneNumber: counterpartyDetail.phoneNumber ?? "",
-        regionId: counterpartyDetail.regionId ?? 1,
-        districtId: counterpartyDetail.districtId ?? 1,
-        address: "",
-        stateId: counterpartyDetail.stateId ?? 1,
+        regionId: counterpartyDetail.regionId ?? null,
+        districtId: counterpartyDetail.districtId ?? null,
+        address: counterpartyDetail.address ?? "",
+        stateId: counterpartyDetail.stateId ?? null,
       });
     }
   }, [counterpartyDetail, isEdit]);
@@ -126,8 +127,9 @@ export default function CounterpartyAddEditPage({
               />
             </Col>
             <Col span={12}>
-              <SelectCustom
+              <DistrictSelect
                 formik={formik}
+                regionFieldName="regionId"
                 fieldName="districtId"
                 label="settings.fields.district"
                 path={selectListEndpoints.districtsSelectList}
@@ -163,13 +165,30 @@ export default function CounterpartyAddEditPage({
                 path={selectListEndpoints.counterpartyTypesSelectList}
               />
             </Col>
-            {isEdit && (
-              <Col span={12}>
-                <SelectCustom
+            {isEdit ? (
+              <>
+                <Col span={12}>
+                  <InputText
+                    formik={formik}
+                    fieldName="address"
+                    label="settings.fields.address"
+                  />
+                </Col>
+                <Col span={12}>
+                  <SelectCustom
+                    formik={formik}
+                    fieldName="stateId"
+                    label="settings.fields.status"
+                    path={selectListEndpoints.statesSelectList}
+                  />
+                </Col>
+              </>
+            ) : (
+              <Col span={24}>
+                <InputText
                   formik={formik}
-                  fieldName="stateId"
-                  label="settings.fields.status"
-                  path={selectListEndpoints.statesSelectList}
+                  fieldName="address"
+                  label="settings.fields.address"
                 />
               </Col>
             )}

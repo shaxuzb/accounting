@@ -14,6 +14,7 @@ import { useUpdateBranches } from "../hooks";
 import { useCreateBranches } from "../hooks";
 import { branchesSchema } from "../types/schema";
 import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
+import DistrictSelect from "@/components/fields/DistrictSelect";
 
 const defaultValues: BranchesForm = {
   organizationId: null,
@@ -117,13 +118,6 @@ export default function BranchAddEditPage({
               />
             </Col>
             <Col span={12}>
-              <InputPasword
-                formik={formik}
-                fieldName="code"
-                label="settings.fields.code"
-              />
-            </Col>
-            <Col span={12}>
               <SelectCustom
                 formik={formik}
                 fieldName="regionId"
@@ -132,13 +126,22 @@ export default function BranchAddEditPage({
               />
             </Col>
             <Col span={12}>
-              <SelectCustom
+              <DistrictSelect
+                regionFieldName="regionId"
                 formik={formik}
                 fieldName="districtId"
                 label="settings.fields.district"
                 path={selectListEndpoints.districtsSelectList}
               />
             </Col>
+            <Col span={12}>
+              <InputPasword
+                formik={formik}
+                fieldName="code"
+                label="settings.fields.code"
+              />
+            </Col>
+
             <Col span={12}>
               <InputPhoneNumber
                 formik={formik}

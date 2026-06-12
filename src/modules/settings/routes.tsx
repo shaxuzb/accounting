@@ -61,56 +61,111 @@ export const settingsRoutes: RouteObject = {
   path: "settings",
   handle: { title: "settings.title" },
   children: [
-    { index: true, element: withPermission(<SettingsListPage />, settingsPermissions) },
+    {
+      index: true,
+      element: withPermission(<SettingsListPage />, settingsPermissions),
+    },
     {
       path: "users",
+      handle: {
+        title: "settings.entities.users",
+        showBack: true,
+        backTo: "..",
+      },
       element: withPermission(<UserListPage />, userPermissions.view),
     },
     {
       path: "role",
-      handle: { title: "settings.entities.role" },
+      handle: { title: "settings.entities.role", showBack: true, backTo: ".." },
       children: [
-        { index: true, element: withPermission(<RoleListPage />, rolePermissions.view) },
+        {
+          index: true,
+          element: withPermission(<RoleListPage />, rolePermissions.view),
+        },
         {
           path: "add",
           element: withPermission(<RoleAddEditPage />, rolePermissions.create),
-          handle: { title: "settings.form.createRole", showBack: true, backTo: ".." },
+          handle: {
+            title: "settings.form.createRole",
+            showBack: true,
+            backTo: "..",
+          },
         },
         {
           path: "edit/:id",
           element: withPermission(<RoleAddEditPage />, rolePermissions.update),
-          handle: { title: "settings.form.editRole", showBack: true, backTo: ".." },
+          handle: {
+            title: "settings.form.editRole",
+            showBack: true,
+            backTo: "..",
+          },
         },
       ],
     },
     {
       path: "organizations",
-      handle: { title: "settings.entities.organizations" },
-      element: withPermission(<OrganizationListPage />, organizationsPermissions.view),
+      handle: {
+        title: "settings.entities.organizations",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <OrganizationListPage />,
+        organizationsPermissions.view,
+      ),
     },
     {
       path: "counterparty",
-      handle: { title: "settings.entities.counterparty" },
-      element: withPermission(<CounterpartyListPage />, counterpartyPermissions.view),
+      handle: {
+        title: "settings.entities.counterparty",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <CounterpartyListPage />,
+        counterpartyPermissions.view,
+      ),
     },
     {
       path: "departments",
-      handle: { title: "settings.entities.departments" },
-      element: withPermission(<DepartmentListPage />, departmentsPermissions.view),
+      handle: {
+        title: "settings.entities.departments",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <DepartmentListPage />,
+        departmentsPermissions.view,
+      ),
     },
     {
       path: "branches",
-      handle: { title: "settings.entities.branches" },
+      handle: {
+        title: "settings.entities.branches",
+        showBack: true,
+        backTo: "..",
+      },
       element: withPermission(<BranchListPage />, branchesPermissions.view),
     },
     {
       path: "chart-accounts",
-      handle: { title: "settings.entities.chartAccounts" },
-      element: withPermission(<ChartAccountListPage />, chartAccountsPermissions.view),
+      handle: {
+        title: "settings.entities.chartAccounts",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <ChartAccountListPage />,
+        chartAccountsPermissions.view,
+      ),
     },
     {
       path: "counterparty-bank-accounts",
-      handle: { title: "settings.entities.bankAccounts" },
+      handle: {
+        title: "settings.entities.bankAccounts",
+        showBack: true,
+        backTo: "..",
+      },
       element: withPermission(
         <CounterpartyBankAccountListPage />,
         counterpartybankaccountPermissions.view,
@@ -118,27 +173,53 @@ export const settingsRoutes: RouteObject = {
     },
     {
       path: "org-bank-accounts",
-      handle: { title: "settings.entities.orgBankAccounts" },
-      element: withPermission(<OrgBankAccountListPage />, orgBankAccountsPermissions.view),
+      handle: {
+        title: "settings.entities.orgBankAccounts",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <OrgBankAccountListPage />,
+        orgBankAccountsPermissions.view,
+      ),
     },
     {
       path: "positions",
-      handle: { title: "settings.entities.positions" },
+      handle: {
+        title: "settings.entities.positions",
+        showBack: true,
+        backTo: "..",
+      },
       element: withPermission(<PositionListPage />, positionsPermissions.view),
     },
     {
       path: "product-groups",
-      handle: { title: "settings.entities.productGroups" },
-      element: withPermission(<ProductGroupListPage />, productGroupsPermissions.view),
+      handle: {
+        title: "settings.entities.productGroups",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <ProductGroupListPage />,
+        productGroupsPermissions.view,
+      ),
     },
     {
       path: "cash-boxes",
-      handle: { title: "settings.entities.cashBox" },
+      handle: {
+        title: "settings.entities.cashBox",
+        showBack: true,
+        backTo: "..",
+      },
       element: withPermission(<CashBoxListPage />, cashBoxPermissions.view),
     },
     {
       path: "counterparty-contacts",
-      handle: { title: "settings.entities.counterpartyContacts" },
+      handle: {
+        title: "settings.entities.counterpartyContacts",
+        showBack: true,
+        backTo: "..",
+      },
       element: withPermission(
         <CounterpartyContactListPage />,
         counterpartyContactPermissions.view,
@@ -146,7 +227,11 @@ export const settingsRoutes: RouteObject = {
     },
     {
       path: "warehouses",
-      handle: { title: "settings.entities.warehouse" },
+      handle: {
+        title: "settings.entities.warehouse",
+        showBack: true,
+        backTo: "..",
+      },
       element: withPermission(<WarehouseListPage />, warehousePermissions.view),
     },
   ],
