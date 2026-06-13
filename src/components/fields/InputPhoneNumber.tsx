@@ -1,7 +1,7 @@
 import type { LoginPayload } from "@/services/authService";
 import { Form, type FormProps, Input } from "antd";
 import { type FormikProps } from "formik";
-import React from "react";
+import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { PatternFormat } from "react-number-format";
 interface InputPhoneNumberProps {
@@ -14,6 +14,7 @@ interface InputPhoneNumberProps {
 const InputPhoneNumber: React.FC<InputPhoneNumberProps> = (props) => {
   const { t } = useTranslation();
   const { label = "", formik, fieldName = "", disabled = false } = props;
+
   return (
     <Form.Item<FormProps>
       className="flex! flex-col!"
@@ -32,7 +33,6 @@ const InputPhoneNumber: React.FC<InputPhoneNumberProps> = (props) => {
           let value = event.target.value;
           formik.setFieldValue(fieldName, value, true);
         }}
-        
         name={fieldName}
         placeholder={"+998 ## ###-##-##"}
         className={`${disabled ? "disabled" : ""} mono`}
@@ -46,4 +46,4 @@ const InputPhoneNumber: React.FC<InputPhoneNumberProps> = (props) => {
   );
 };
 
-export default InputPhoneNumber;
+export default memo(InputPhoneNumber);

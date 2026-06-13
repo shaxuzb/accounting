@@ -1,19 +1,5 @@
 import * as Yup from "yup";
 
-const uomSchema = Yup.object({
-  supplierUomId: Yup.number().nullable().required("validation.required"),
-  stockUomId: Yup.number().nullable().required("validation.required"),
-  clientUomId: Yup.number().nullable().required("validation.required"),
-  supplierToStockFactor: Yup.number()
-    .nullable()
-    .min(0)
-    .required("validation.required"),
-  stockToClientFactor: Yup.number()
-    .nullable()
-    .min(0)
-    .required("validation.required"),
-});
-
 export const productItemSchema = Yup.object({
   name: Yup.string().trim().required("validation.required"),
   barcode: Yup.string().trim().required("validation.required"),

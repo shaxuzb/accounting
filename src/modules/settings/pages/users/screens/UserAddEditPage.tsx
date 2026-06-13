@@ -11,7 +11,6 @@ import { userSchema } from "../types/schema";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { useGetDetailUsers } from "../hooks";
-import toast from "react-hot-toast";
 import { useEffect } from "react";
 
 interface UserAddEditPageProps {
@@ -41,24 +40,17 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
       organizations: null,
     },
     enableReinitialize: true,
+    validateOnChange: false,
+    validateOnBlur: true,
     validationSchema: userSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       if (editId) {
-        updateUser.mutate({
+        await updateUser.mutateAsync({
           id: editId,
-          payload: {
-            ...values,
-            organizations: values.organizations.map((item) => ({
-              organizationId: item,
-              roleId: values.roleId,
-              isDefault: false,
-            })),
-          },
+          payload: values,
         });
-        toast.success(t("settings.messages.userUpdated"));
       } else {
-        createUser.mutate(values);
-        toast.success(t("settings.messages.userCreated"));
+        await createUser.mutateAsync(values);
       }
       formik.resetForm();
       onClose();
@@ -76,11 +68,11 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
         roleId: data?.roleId ?? null,
         password: "xxxxxxxxxxx",
         stateId: data?.stateId ?? null,
-        organizations: data.organizations.map((item)=> item.organizationId) ?? null,
+        organizations:
+          data.organizations.map((item) => item.organizationId) ?? null,
       });
     }
   }, [isSuccess, data]);
-  console.log(formik.values);
 
   return (
     <Modal

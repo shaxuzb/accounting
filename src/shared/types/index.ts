@@ -8,8 +8,6 @@ export interface OrgListItem {
   useContractAccounting?: boolean;
 }
 
-
-
 export interface AuthToken {
   token: string;
   user: User | null;
@@ -80,4 +78,12 @@ export interface SideBarItems {
   items?: SideBarItems[];
   iconName?: React.ReactNode;
   order?: number;
+}
+
+export interface SelectData {
+  name: string;
+  code: string;
+  id: number;
+  organizationTypeCode?: string;
+  useContractAccounting?: boolean;
 }

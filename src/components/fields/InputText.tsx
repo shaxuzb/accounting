@@ -1,7 +1,7 @@
 import { type LoginPayload } from "@/services/authService";
 import { Form, type FormProps, Input } from "antd";
 import { type FormikProps } from "formik";
-import React from "react";
+import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 interface inputProps {
@@ -43,4 +43,4 @@ const InputText: React.FC<inputProps> = (props) => {
   );
 };
 
-export default InputText;
+export default memo(InputText);

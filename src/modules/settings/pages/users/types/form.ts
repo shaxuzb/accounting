@@ -8,7 +8,7 @@ export interface UsersForm {
   password: string;
   id?: number | null;
   stateId?: number | null;
-  organizations: organizations[];
+  organizations?: number[];
 }
 export interface organizations {
   organizationId: number;
