@@ -145,7 +145,7 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
   const langTriggerRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <div className="rounded-lg bg-primary-bg p-3">
+    <div className="rounded-lg bg-primary-bg p-0">
       <div className="rounded-lg border border-secondary p-2 ">
         <div
           onClick={onProfileClick}
@@ -199,6 +199,7 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
                   />
                 }
                 styles={{
+                
                   content: {
                     padding: 0,
                   },

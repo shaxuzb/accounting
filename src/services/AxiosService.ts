@@ -18,12 +18,10 @@ const addToken = (config: InternalAxiosRequestConfig) => {
   }
   try {
     const orgData = localStorage.getItem("org");
-    console.log(orgData);
-
     if (orgData) {
       const { id } = JSON.parse(orgData) as { id: number };
       if (id) {
-        config.headers["X-Organization-Id"] = id;
+        config.headers["X-OrganizationId"] = id;
       }
     } else {
       const userData = localStorage.getItem("login");
@@ -31,7 +29,7 @@ const addToken = (config: InternalAxiosRequestConfig) => {
         const parsed = JSON.parse(userData) as AuthToken;
         const orgId = parsed?.user?.organizationId;
         if (orgId) {
-          config.headers["X-Organization-Id"] = orgId;
+          config.headers["X-OrganizationId"] = orgId;
         }
       }
     }

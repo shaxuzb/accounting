@@ -1,9 +1,9 @@
 export const purchaseEndpoints = {
   purchase: {
-    list: "goods-movements",
-    detail: (id: string | number) => `goods-movements/${id}`,
-    create: "goods-movements",
-    update: (id: string | number) => `goods-movements/${id}`,
-    importTemplate: "goods-movements/purchase-import-template",
+    list: "purchase-docs",
+    detail: (id: string | number) => `purchase-docs/${id}`,
+    create: "purchase-docs",
+    update: (id: string | number) => `purchase-docs/${id}`,
+    // importTemplate: "goods-movements/purchase-import-template",
   },
 } as const;

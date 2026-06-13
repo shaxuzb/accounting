@@ -131,11 +131,6 @@
       "sapCode": "SAP код",
       "serialNumber": "Серийный номер",
       "markingNumber": "Маркировочный номер",
-      "productType": "Тип товара",
-      "currency": "Валюта",
-      "supplierUom": "Единица закупки",
-      "stockUom": "Единица склада",
-      "clientUom": "Единица клиента",
       "supplier": "Поставщик",
       "total": "Итоговая сумма",
       "uom": "Единица"
@@ -154,9 +149,7 @@
       "sheetStep": "Выбор листа",
       "previewStep": "Просмотр данных",
       "mappingStep": "Сопоставление колонок",
-      "selectField": "Выберите поле",
-      "createSelectedProducts": "Создать выбранные товары",
-      "deleteInvalidSapCodes": "Удалить ненайденные SAP коды"
+      "selectField": "Выберите поле"
     }
   },
   "products": {

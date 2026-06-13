@@ -1,4 +1,45 @@
 import dayjs from "dayjs";
+import { isString } from "formik";
+
+export function numberSpacing(
+  item: number | null,
+  type?: string,
+  isHaveNumber?: boolean,
+) {
+  return item
+    ? item.toString().includes(".")
+      ? item
+          .toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, type ?? " ")
+      : item.toString().replace(/\B(?=(\d{3})+(?!\d))/g, type ?? " ")
+    : isHaveNumber
+      ? 0
+      : "";
+}
+
+export function customDate(date: string | undefined) {
+  const format = "DD.MM.YYYY HH:mm";
+  return dayjs(date).format(format);
+}
+
+export function numberSpacingWithCurrency(
+  item: number,
+  currency: string | number,
+  type?: string,
+) {
+  return (
+    (item
+      ? item.toString().includes(".")
+        ? item
+            .toFixed(2)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, type ?? " ")
+        : item.toString().replace(/\B(?=(\d{3})+(?!\d))/g, type ?? " ")
+      : 0) +
+    (isString(currency) ? ` ${currency}` : currency === 1 ? " UZS" : " USD")
+  );
+}
 
 export const formatDate = (
   value?: string | number | Date,

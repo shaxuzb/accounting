@@ -71,7 +71,3 @@ const ProfileNav: React.FC = () => {
 };
 
 export default ProfileNav;
-
-
-
-

@@ -19,6 +19,7 @@ interface ProductItemModalProps {
 const emptyProductItem = () => ({
   name: "",
   barcode: "",
+  productGroupId: null,
   description: "",
   // isSerial: false,
   isService: false,
@@ -120,6 +121,14 @@ export default function ProductItemModal({
                 size="small"
               />
             </div>
+          </Col>
+          <Col span={24} md={12}>
+            <SelectCustom
+              label="products.fields.productGroup"
+              path={selectListEndpoints.productGroupsSelectList}
+              formik={productFormik}
+              fieldName="productGroupId"
+            />
           </Col>
           <Col span={24} md={12}>
             <SelectCustom

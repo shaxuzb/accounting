@@ -21,12 +21,15 @@ const getInitialState = (): OrganizationState => {
     if (loginData) {
       const parsed = JSON.parse(loginData);
       const user = parsed?.user;
+
       if (user) {
         const fromOrgs = user.organizations?.[0];
+        console.log(fromOrgs);
+
         if (fromOrgs) {
           return {
-            id: fromOrgs.id,
-            name: fromOrgs.name,
+            id: fromOrgs.organizationId,
+            name: fromOrgs.organizationName,
             code: fromOrgs.organizationTypeCode ?? "",
             // useContractAccounting: fromOrgs.useContractAccounting ?? false,
             selectListType: "selectable",
@@ -59,8 +62,8 @@ const organizationSlice = createSlice({
   reducers: {
     setOrganization: (_, action: PayloadAction<OrgListItem>) => {
       const next: OrganizationState = {
-        id: action.payload.id,
-        name: action.payload.name,
+        id: action.payload.organizationId,
+        name: action.payload.organizationName,
         code: action.payload.code,
         // useContractAccounting: action.payload.useContractAccounting ?? false,
         selectListType: "selectable",
@@ -80,11 +83,11 @@ const organizationSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(login, (_, action) => {
       const user = action.payload.user;
-      const fromOrgs = user.organizations?.[0];
+      const fromOrgs = user.organizations[0];
       const next: OrganizationState = fromOrgs
         ? {
-            id: fromOrgs.id,
-            name: fromOrgs.name,
+            id: fromOrgs.organizationId,
+            name: fromOrgs.organizationName,
             code: fromOrgs.organizationTypeCode,
             // useContractAccounting: fromOrgs.useContractAccounting ?? false,
             selectListType: "selectable",

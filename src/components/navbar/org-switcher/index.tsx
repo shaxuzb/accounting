@@ -36,8 +36,8 @@ const OrgSwitcher: React.FC = () => {
     // 1. localStorage ni sinxron yangilaymiz (axios interceptor shu yerdan o'qiydi)
     dispatch(
       setOrganization({
-        id: selected.id,
-        name: selected.name,
+        organizationId: selected.id,
+        organizationName: selected.name,
         code: selected.organizationTypeCode,
         useContractAccounting: selected.useContractAccounting,
       }),
@@ -61,7 +61,7 @@ const OrgSwitcher: React.FC = () => {
           value: org.id,
           label: org.name,
         }))}
-        variant="borderless"
+        variant="outlined"
         className="min-w-32! max-w-48! border border-border rounded-lg shadow-sm "
         // className="min-w-32 max-w-48 [&_.ant-select-selector]:!px-0 [&_.ant-select-selection-item]:!text-sm [&_.ant-select-selection-item]:!font-medium [&_.ant-select-selection-item]:!text-text"
         popupMatchSelectWidth={false}

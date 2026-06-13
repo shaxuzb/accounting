@@ -1,8 +1,8 @@
 export type ID = string | number;
 
 export interface OrgListItem {
-  id: number;
-  name: string;
+  organizationId: number;
+  organizationName: string;
   code: string;
   organizationTypeCode?: string;
   useContractAccounting?: boolean;

@@ -4,22 +4,32 @@ export interface PurchaseCurrencyTotal {
   currencyName: string;
   totalDiscount: number;
   totalPrice: number;
-  totoalPriceWithDiscount: number;
+  totalPriceWithDiscount: number;
 }
-
+export interface SelectBoxOptions {
+  label: string;
+  code: string;
+  disabled: boolean;
+  new?: boolean;
+}
 export interface PurchaseData {
-  id: number;
-  docNumber: string;
+  counterpartyId: number;
+  counterpartyName: string;
+  createdDate: string;
+  currencyId: number;
+  currencyName: string;
   docDate: string;
-  supplier: string;
-  supplierId: number;
-  contractName?: string | null;
-  status: string;
-  statusId: number;
-  state: string;
+  docNumber: string;
+  finalAmount: number;
+  id: number;
+  organizationId: number;
   stateId: number;
-  prices: PurchaseCurrencyTotal[];
-  isActionAllowed?: boolean;
+  stateName: string;
+  statusId: number;
+  statusName: string;
+  totalAmount: number;
+  warehouseId: number;
+  warehouseName: string;
 }
 
 export interface PurchaseQuery {
@@ -28,22 +38,47 @@ export interface PurchaseQuery {
 }
 
 export interface PurchaseDetailProductData {
+  key: number;
+  indexId: number;
   id: number;
   product: string;
   productId: number;
+  productName: string;
   name?: string;
   sapCode: string;
   qty: number;
   quantity?: number;
-  pricePerUom: number;
-  discountPercent: number;
+  counterpartyId: number | null;
+  price: number;
+  serialNumber: string;
+  markingNumber: string;
   currencyId: number;
   currency?: string;
-  baseUom?: string;
   isSerial?: boolean;
-  goodsMovementProductTables?: unknown[];
+  vatRateId: number | null;
+  vatRates: number | null;
 }
-
+export interface PurchaseImportRow {
+  key: number;
+  id: number;
+  indexId: number;
+  name?: string;
+  counterpartyId: number | null;
+  product: string;
+  productId: number | null;
+  productName: string;
+  sapCode: string;
+  qty: number;
+  serialNumber: string;
+  currencyId: number;
+  currency?: string;
+  markingNumber: string;
+  price: number;
+  vatRateId: number | null;
+  vatRates: number | null;
+  isSerial?: boolean;
+  [key: string]: unknown;
+}
 export interface PurchasePayment {
   id: number;
   amount: number;
@@ -53,21 +88,31 @@ export interface PurchasePayment {
   currencyCode?: string;
 }
 
+export interface PurchaseDetailLine {
+  amount: number;
+  id: number;
+  ownerId: number;
+  price: number;
+  productName: string;
+  productTableId: number;
+  quantity: number;
+  totalAmount: number;
+  vatAmount: number;
+  vatRateId: number;
+  vatRateName: string;
+}
+
 export interface PurchaseDetailData extends PurchaseData {
-  debtReturnDate?: string;
-  description?: string | null;
-  client?: string;
-  clientId?: number;
-  operationType?: string;
-  operationTypeId?: number;
-  movementType?: string;
-  movementTypeId?: number;
-  payments?: PurchasePayment[];
-  goodsMovementProducts: PurchaseDetailProductData[];
+  comment: string;
+  lines: PurchaseDetailLine[];
+  organizationName: string;
+  vatAmount: number;
 }
 
 export interface PurchaseForm {
   docDate: string;
-  supplierId: number | null;
-  movementCode: "PURCHASE";
+  counterpartyId: number | null;
+  warehouseId: number | null;
+  currencyId: number | null;
+  comment: string;
 }

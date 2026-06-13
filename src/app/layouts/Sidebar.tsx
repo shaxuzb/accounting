@@ -6,7 +6,6 @@ import { menuPermissions } from "../config/menuPermissions";
 // import { logout } from "@/store/features/authSlice";
 import { getEffectiveTheme } from "@/utils/utils";
 import CustomScroller from "react-custom-scroller";
-import OrgSwitcher from "@/components/navbar/org-switcher";
 const Sidebar = () => {
   const themeMode = useAppSelector((state) => state.mode.mode);
   const sidebarInline = useAppSelector((state) => state.sidebar);
@@ -78,7 +77,6 @@ const Sidebar = () => {
         <MenuCustom route={memoizedMenus.TOP} />
       </CustomScroller>
       <MenuCustom route={memoizedMenus.BOTTOM} />
-      <OrgSwitcher />
     </div>
   );
 };

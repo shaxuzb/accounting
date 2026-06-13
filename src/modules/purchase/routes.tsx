@@ -1,9 +1,9 @@
 import type { RouteObject } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
-import PurchaseListPage from "./pages/purchase/PurchaseListPage";
-import PurchaseDetailPage from "./pages/purchase/PurchaseDetailPage";
-import PurchaseImportPage from "./pages/purchase/PurchaseImportPage";
+import PurchaseImportPage from "./pages/purchase/screens/PurchaseImportPage";
 import { purchasePermissions } from "./constants/permissions";
+import PurchaseListPage from "./pages/purchase/screens/PurchaseListPage";
+import PurchaseDetailPage from "./pages/purchase/screens/PurchaseDetailPage";
 
 const withPermission = (element: React.ReactElement, permission: string) => (
   <PermissionCard permission={permission} mode="redirect">

@@ -119,6 +119,7 @@
     "importTitle": "Sotib olish importi",
     "fields": {
       "amount": "Summa",
+      "warehouse": "Ombor",
       "contract": "Shartnoma",
       "description": "Tavsif",
       "discount": "Chegirma",
@@ -131,11 +132,6 @@
       "sapCode": "SAP kod",
       "serialNumber": "Seriya raqami",
       "markingNumber": "Markirovka raqami",
-      "productType": "Mahsulot turi",
-      "currency": "Valyuta",
-      "supplierUom": "Xarid birligi",
-      "stockUom": "Ombor birligi",
-      "clientUom": "Mijoz birligi",
       "supplier": "Yetkazib beruvchi",
       "total": "Jami narx",
       "uom": "Birlik"
@@ -154,9 +150,7 @@
       "sheetStep": "Sheet tanlash",
       "previewStep": "Ma'lumotlarni ko'rish",
       "mappingStep": "Ustunlarni moslash",
-      "selectField": "Maydonni tanlang",
-      "createSelectedProducts": "Tanlangan mahsulotlarni yaratish",
-      "deleteInvalidSapCodes": "Topilmagan SAP kodlarni o'chirish"
+      "selectField": "Maydonni tanlang"
     }
   },
   "products": {

@@ -9,7 +9,7 @@ const Messages = () => {
   };
   return (
     <div className=" border-gray-200 rounded-xl transition-all hover:border-gray-500 hover:bg-gray-100">
-      <Button type="link" className="w-10" variant="text">
+      <Button type="link" className="w-10! h-10!" variant="text">
         <Badge count={0} offset={[1, -3]} size="small" className="text-xs!">
           <Popover
             classNames={{
