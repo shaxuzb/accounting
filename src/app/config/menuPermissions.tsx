@@ -2,13 +2,10 @@ import { purchasePermissions } from "@/modules/purchase";
 import { productPermissions } from "@/modules/products";
 import type { MenuRole } from "@/shared/types";
 import {
-  Banknote,
-  Box,
   BoxIcon,
   Briefcase,
   Building,
   Building2,
-  ChartColumnBig,
   ContactRound,
   CreditCard,
   GitBranch,
@@ -18,7 +15,6 @@ import {
   ReceiptText,
   Settings,
   ShieldCheck,
-  ShoppingBag,
   ShoppingCart,
   Users,
   Wallet,

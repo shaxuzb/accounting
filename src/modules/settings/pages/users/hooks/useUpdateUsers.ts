@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usersService } from "../api";
 import { queryKeys } from "../constants/queryKeys";
-import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import type { UsersForm } from "../types/form";
 
 interface UpdateArgs {
