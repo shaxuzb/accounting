@@ -7,6 +7,7 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { productItemSchema } from "../types/schema";
 import type { ProductItem, ProductTypeForm } from "../types/type";
 import type { FormikProps } from "formik";
+import toast from "react-hot-toast";
 
 interface ProductItemModalProps {
   open: boolean;
@@ -55,6 +56,7 @@ export default function ProductItemModal({
           ),
           true,
         );
+        toast.success("Mahsulot o'zgartirildi")
       } else {
         const maxIndex = formik.values.products.reduce(
           (max, item) => Math.max(max, item.idIndex ?? 0),
@@ -68,6 +70,7 @@ export default function ProductItemModal({
           ],
           true,
         );
+         toast.success("Mahsulot yaratildi")
       }
       handleClose();
     },

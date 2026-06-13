@@ -18,8 +18,10 @@ export default function ProductListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
+
   const [searchParams] = useSearchParams();
-  const { data, isLoading, isFetching, refetch } = useGetListProducts(searchParams);
+  const { data, isLoading, isFetching, refetch } =
+    useGetListProducts(searchParams);
   const items = data?.items ?? data?.results ?? [];
   const permissions = user?.user.permissions ?? [];
 
@@ -46,7 +48,8 @@ export default function ProductListPage() {
       title: t("products.fields.status"),
       width: 120,
       align: "center",
-      render: (_, record) => stateStatus(record.stateId, record.state),
+      render: (_, record) =>
+        stateStatus(record.stateId, (record as any).stateName),
     },
   ];
 
@@ -85,7 +88,10 @@ export default function ProductListPage() {
       <div className="mb-3 flex items-center justify-between gap-3">
         <SearchFilter />
         <Space>
-          <Button icon={<RefreshCw className="size-4" />} onClick={() => refetch()} />
+          <Button
+            icon={<RefreshCw className="size-4" />}
+            onClick={() => refetch()}
+          />
           <PermissionCard permission={productPermissions.create}>
             <Button
               type="primary"

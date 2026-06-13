@@ -18,7 +18,6 @@ const addToken = (config: InternalAxiosRequestConfig) => {
   }
   try {
     const orgData = localStorage.getItem("org");
-    console.log(orgData);
 
     if (orgData) {
       const { id } = JSON.parse(orgData) as { id: number };
