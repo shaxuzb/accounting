@@ -20,14 +20,17 @@ import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { Plus, RefreshCw } from "lucide-react";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import type { Users } from "../types/type";
+import { useSearchParams } from "react-router";
 
 function UserListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [isCrudModalOpen, setIsCrudModalOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
-
-  const { data, isLoading, isFetching, refetch } = useGetListUsers();
+  const [searchParams] = useSearchParams();
+ 
+  const { data, isLoading, isFetching, refetch } =
+    useGetListUsers(searchParams);
   const tableColumns: TableColumnsType<Users> = [
     {
       title: t("common.rowNumber"),
@@ -73,8 +76,7 @@ function UserListPage() {
               permissions={permissions}
               editModal={{
                 isModal: true,
-                setEditData: (value: unknown) =>
-                  setEditId((value as Users).id),
+                setEditData: (value: unknown) => setEditId((value as Users).id),
                 setOpenEditModal: setIsCrudModalOpen,
               }}
               permissionsCode={{
@@ -103,7 +105,9 @@ function UserListPage() {
               type="primary"
               icon={<Plus className="size-4" />}
               onClick={() => setIsCrudModalOpen(true)}
-            >{t("common.add")}</Button>
+            >
+              {t("common.add")}
+            </Button>
           </PermissionCard>
         </Space>
       </div>

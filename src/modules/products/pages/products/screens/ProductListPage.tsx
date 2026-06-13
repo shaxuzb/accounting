@@ -68,7 +68,7 @@ export default function ProductListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="product-types"
+              deletePath="product-groups"
               customPath={`/main/products/edit/${record.id}`}
               record={record}
               permissions={permissions}

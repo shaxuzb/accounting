@@ -3,7 +3,6 @@ import { queryKeys } from "../constants/queryKeys";
 import type { CashBoxForm } from "../types/form";
 import { cashBoxService } from "../api";
 
-
 interface UpdateArgs {
   id: string | number;
   payload: Partial<CashBoxForm>;
@@ -14,11 +13,11 @@ export const useUpdateCashBox = () => {
   return useMutation({
     mutationFn: ({ id, payload }: UpdateArgs) =>
       cashBoxService.update(id, payload),
-    onSuccess: (_data, variables) => {
+    onSuccess: (_data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.all });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.detail(variables.id),
-      });
+      // queryClient.invalidateQueries({
+      //   queryKey: queryKeys.detail(variables.id),
+      // });
     },
   });
 };

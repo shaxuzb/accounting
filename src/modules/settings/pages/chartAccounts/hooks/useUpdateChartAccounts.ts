@@ -13,13 +13,13 @@ export const useUpdateChartAccounts = () => {
   return useMutation({
     mutationFn: ({ id, payload }: UpdateArgs) =>
       chartAccountsService.update(id, payload),
-    onSuccess: (_data, variables) => {
+    onSuccess: (_data) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.all,
       });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.detail(variables.id),
-      });
+      // queryClient.invalidateQueries({
+      //   queryKey: queryKeys.detail(variables.id),
+      // });
     },
   });
 };

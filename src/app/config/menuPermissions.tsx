@@ -75,54 +75,54 @@ export const menuPermissions: MainMenu = {
       },
     },
 
-    {
-      code: "ROLE_VIEW",
-      linkData: {
-        path: "dashboard/finances",
-        title: "Sotuv",
-      },
-      iconName: <ShoppingBag className="size-5" />,
-    },
-    {
-      code: "ROLE_VIEW",
-      linkData: {
-        path: "dashboard/financess",
-        title: "Bank",
-      },
-      iconName: <Landmark className="size-5" />,
-    },
-    {
-      code: "SET",
-      linkData: {
-        path: "dashboard/financesss",
-        title: "Kassa",
-      },
-      iconName: <Banknote className="size-5" />,
-    },
-    {
-      code: "SE",
-      linkData: {
-        path: "dashboard/financessss",
-        title: "Ombor",
-      },
-      iconName: <Box className="size-5" />,
-    },
-    {
-      code: "S",
-      linkData: {
-        path: "dashboard/financ",
-        title: "Ish haqi",
-      },
-      iconName: <Users className="size-5" />,
-    },
-    {
-      code: "Ss",
-      linkData: {
-        path: "dashboard/finan",
-        title: "Hisobotlar",
-      },
-      iconName: <ChartColumnBig className="size-5" />,
-    },
+    // {
+    //   code: "ROLE_VIEW",
+    //   linkData: {
+    //     path: "dashboard/finances",
+    //     title: "Sotuv",
+    //   },
+    //   iconName: <ShoppingBag className="size-5" />,
+    // },
+    // {
+    //   code: "ROLE_VIEW",
+    //   linkData: {
+    //     path: "dashboard/financess",
+    //     title: "Bank",
+    //   },
+    //   iconName: <Landmark className="size-5" />,
+    // },
+    // {
+    //   code: "SET",
+    //   linkData: {
+    //     path: "dashboard/financesss",
+    //     title: "Kassa",
+    //   },
+    //   iconName: <Banknote className="size-5" />,
+    // },
+    // {
+    //   code: "SE",
+    //   linkData: {
+    //     path: "dashboard/financessss",
+    //     title: "Ombor",
+    //   },
+    //   iconName: <Box className="size-5" />,
+    // },
+    // {
+    //   code: "S",
+    //   linkData: {
+    //     path: "dashboard/financ",
+    //     title: "Ish haqi",
+    //   },
+    //   iconName: <Users className="size-5" />,
+    // },
+    // {
+    //   code: "Ss",
+    //   linkData: {
+    //     path: "dashboard/finan",
+    //     title: "Hisobotlar",
+    //   },
+    //   iconName: <ChartColumnBig className="size-5" />,
+    // },
     {
       code: "Sss",
       linkData: {

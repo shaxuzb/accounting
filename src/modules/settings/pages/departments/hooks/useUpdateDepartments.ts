@@ -11,10 +11,11 @@ interface UpdateArgs {
 export const useUpdateDepartments = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: UpdateArgs) => departmentsService.update(id, payload),
-    onSuccess: (_data, variables) => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.all });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.detail(variables.id) });
+    mutationFn: ({ id, payload }: UpdateArgs) =>
+      departmentsService.update(id, payload),
+    onSuccess: (_data) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.all });
+      //  queryClient.invalidateQueries({ queryKey: queryKeys.detail(variables.id) });
     },
   });
 };

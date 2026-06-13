@@ -6,9 +6,10 @@ import type { DepartmentsForm } from "../types/form";
 export const useCreateDepartments = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: DepartmentsForm) => departmentsService.create(payload),
+    mutationFn: (payload: DepartmentsForm) =>
+      departmentsService.create(payload),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.all });
     },
   });
 };

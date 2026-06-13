@@ -14,14 +14,14 @@ export const useUpdateUsers = () => {
   return useMutation({
     mutationFn: ({ id, payload }: UpdateArgs) =>
       usersService.update(id, payload),
-    onSuccess: (_data, variables) => {
+    onSuccess: (_data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.all });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.detail(variables.id),
-      });
+      // queryClient.invalidateQueries({
+      //   queryKey: queryKeys.detail(variables.id),
+      // });
     },
-    onError: (err) => {
-      errorHandlers(err);
-    },
+    // onError: (err) => {
+    //   errorHandlers(err);
+    // },
   });
 };

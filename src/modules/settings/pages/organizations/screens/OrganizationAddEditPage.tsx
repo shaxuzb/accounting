@@ -40,10 +40,11 @@ export default function OrganizationAddEditPage({
   onClose,
   id,
 }: OrganizationsModalProps) {
+  if(!open) return null
   const { t } = useTranslation();
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: organizations, isLoading: isOrgonizationsLoading } =
+  const { data: organizations, isLoading: isOrgonizationsLoading,isSuccess } =
     useGetDetailOrganizations(editId ?? "");
   const createMutation = useCreateOrganization();
   const updateMutation = useUpdateOrganizations();
@@ -53,24 +54,19 @@ export default function OrganizationAddEditPage({
     enableReinitialize: true,
     validationSchema: organizationsSchema(isEdit),
     onSubmit: async (values, helpers) => {
-      try {
         if (isEdit && editId) {
           await updateMutation.mutateAsync({ id: editId, payload: values });
-          toast.success(t("settings.messages.updated"));
         } else {
           await createMutation.mutateAsync(values);
-          toast.success(t("settings.messages.created"));
         }
         helpers.resetForm();
         onClose();
-      } catch (err: unknown) {
-        errorHandlers(err);
-      }
+     
     },
   });
 
   useEffect(() => {
-    if (organizations && isEdit) {
+    if (isSuccess) {
       formik.setValues({
         shortName: organizations.shortName ?? "",
         fullName: organizations.fullName ?? "",
@@ -85,7 +81,7 @@ export default function OrganizationAddEditPage({
         stateId: organizations.stateId ?? null,
       });
     }
-  }, [organizations, isEdit]);
+  }, [isSuccess]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (

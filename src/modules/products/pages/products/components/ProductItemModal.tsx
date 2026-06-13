@@ -56,7 +56,7 @@ export default function ProductItemModal({
           ),
           true,
         );
-        toast.success("Mahsulot o'zgartirildi")
+        toast.success("Mahsulot o'zgartirildi");
       } else {
         const maxIndex = formik.values.products.reduce(
           (max, item) => Math.max(max, item.idIndex ?? 0),
@@ -70,7 +70,7 @@ export default function ProductItemModal({
           ],
           true,
         );
-         toast.success("Mahsulot yaratildi")
+        toast.success("Mahsulot yaratildi");
       }
       handleClose();
     },
