@@ -5,7 +5,7 @@ import { chartAccountsService } from "../api";
 
 export const useGetListChartAccounts = (params?: URLSearchParams) =>
   useQuery({
-    queryKey: queryKeys.list(params),
+    queryKey: queryKeys.list(params?.toString?.() ?? params),
     queryFn: () => chartAccountsService.list(params),
     placeholderData: keepPreviousData,
   });

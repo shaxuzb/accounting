@@ -4,7 +4,7 @@ import { departmentsService } from "../api";
 
 export const useGetListDepartments = (params?: URLSearchParams) =>
   useQuery({
-    queryKey: queryKeys.list(params),
+    queryKey: queryKeys.list(params?.toString?.() ?? params),
     queryFn: () => departmentsService.list(params),
     // placeholderData: keepPreviousData,
   });

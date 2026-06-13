@@ -14,6 +14,7 @@ import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import DistrictSelect from "@/components/fields/DistrictSelect";
+import { useSearchParams } from "react-router";
 
 const defaultValues: organizationCreate = {
   shortName: "",
@@ -44,6 +45,7 @@ export default function OrganizationAddEditPage({
   const { t } = useTranslation();
   const editId = id ?? null;
   const isEdit = Boolean(editId);
+  const [searchParams] = useSearchParams()
   const { data: organizations, isLoading: isOrgonizationsLoading,isSuccess } =
     useGetDetailOrganizations(editId ?? "");
   const createMutation = useCreateOrganization();

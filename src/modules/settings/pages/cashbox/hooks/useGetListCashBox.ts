@@ -6,7 +6,7 @@ import { cashBoxService } from "../api";
 
 export const useGetListCashBox = (params?: URLSearchParams) =>
   useQuery({
-    queryKey: queryKeys.list(params),
+    queryKey: queryKeys.list(params?.toString?.() ?? params),
     queryFn: () => cashBoxService.list(params),
     placeholderData: keepPreviousData,
   });
