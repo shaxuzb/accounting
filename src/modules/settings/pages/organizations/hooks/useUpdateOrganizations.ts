@@ -12,15 +12,14 @@ export const useUpdateOrganizations = () => {
   return useMutation({
     mutationFn: ({ id, payload }: UpdateArgs) =>
       organizationService.update(id, payload),
-    onSuccess: (_data, variables) => {
+    onSuccess: (_data) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.all,
       });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.detail(variables.id),
-      });
-      console.log("sdadas");
-      
+      // queryClient.invalidateQueries({
+      //   queryKey: queryKeys.detail(variables.id),
+      // });
+      // console.log("sdadas");
     },
   });
 };

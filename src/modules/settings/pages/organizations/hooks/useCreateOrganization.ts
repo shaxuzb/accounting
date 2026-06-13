@@ -6,9 +6,10 @@ import { queryKeys } from "../constants/queryKeys";
 export const useCreateOrganization = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: organizationCreate) => organizationService.create(payload),
+    mutationFn: (payload: organizationCreate) =>
+      organizationService.create(payload),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.all });
     },
   });
 };

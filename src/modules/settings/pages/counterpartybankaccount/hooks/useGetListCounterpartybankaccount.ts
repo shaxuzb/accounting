@@ -5,7 +5,7 @@ import { counterpartybankaccountService } from "../api";
 
 export const useGetListCounterpartybankaccount = (params?: URLSearchParams) =>
   useQuery({
-    queryKey: queryKeys.list(params),
+    queryKey: queryKeys.list(params?.toString?.() ?? params),
     queryFn: () => counterpartybankaccountService.list(params),
     // placeholderData: keepPreviousData,
   });

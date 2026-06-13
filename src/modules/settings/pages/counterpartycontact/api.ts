@@ -6,7 +6,7 @@ import { endpoints } from "./constants/endpoints";
 
 
 export const counterpartycontactService = {
-  list: (params?: ListParams) =>
+  list: (params?: ListParams | URLSearchParams) =>
     $axiosPrivate.get<Paginated<CounterpartyContact>>(endpoints.list, { params }).then((res) => res.data),
   detail: (id: string | number) =>
     $axiosPrivate.get<CounterpartyContact>(endpoints.detail(id)).then((res) => res.data),

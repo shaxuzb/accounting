@@ -49,7 +49,6 @@ export interface ProductTypeForm {
   name: string;
   // description: string;
   // supplierId: number | null;
-  organizationId: number | null;
   products: ProductItem[];
 }
 

@@ -19,16 +19,24 @@ export const organizationService = {
     );
     return data;
   },
-  detail: (id: string | number) =>
-    $axiosPrivate
-      .get<organizationDetail>(endpoints.detail(id))
-      .then((res) => res.data),
-  create: (payload: organizationCreate) =>
-    $axiosPrivate
-      .post<Organizations>(endpoints.create, payload)
-      .then((res) => res.data),
-  update: (id: string | number, payload: Partial<organizationUpdate>) =>
-    $axiosPrivate
-      .put<Organizations>(endpoints.update(id), payload)
-      .then((res) => res.data),
+  detail: async (id: string | number) => {
+    const { data } = await $axiosPrivate.get<organizationDetail>(
+      endpoints.detail(id),
+    );
+    return data;
+  },
+  create: async (payload: organizationCreate) => {
+    const { data } = await $axiosPrivate.post<Organizations>(
+      endpoints.create,
+      payload,
+    );
+    return data;
+  },
+  update: async (id: string | number, payload: Partial<organizationUpdate>) => {
+    const { data } = await $axiosPrivate.put<Organizations>(
+      endpoints.update(id),
+      payload,
+    );
+    return data;
+  },
 };

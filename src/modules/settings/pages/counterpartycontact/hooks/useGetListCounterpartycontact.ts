@@ -5,7 +5,7 @@ import { counterpartycontactService } from "../api";
 
 export const useGetListCounterpartycontact = (params?:URLSearchParams) =>
   useQuery({
-    queryKey: queryKeys.list(params),
+    queryKey: queryKeys.list(params?.toString?.() ?? params),
     queryFn: () => counterpartycontactService.list(params as any),
     placeholderData: keepPreviousData,
   });

@@ -5,7 +5,7 @@ import { orgBankAccountsService } from "../api";
 
 export const useGetListOrgBankAccounts = (params?: URLSearchParams) =>
   useQuery({
-    queryKey: queryKeys.list(params),
+    queryKey: queryKeys.list(params?.toString?.() ?? params),
     queryFn: () => orgBankAccountsService.list(params),
     placeholderData: keepPreviousData,
   });

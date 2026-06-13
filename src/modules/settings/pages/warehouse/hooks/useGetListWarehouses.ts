@@ -6,7 +6,7 @@ import { queryKeys } from "../constants/queryKey";
 
 export const useGetListWarehouses = (params?: URLSearchParams) =>
   useQuery({
-    queryKey: queryKeys.list(params),
+    queryKey: queryKeys.list(params?.toString?.() ?? params),
     queryFn: () => warehouseService.list(params),
-    placeholderData: keepPreviousData,
+    // placeholderData: keepPreviousData,
   });

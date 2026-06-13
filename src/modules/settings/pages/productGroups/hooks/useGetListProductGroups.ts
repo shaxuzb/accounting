@@ -5,7 +5,7 @@ import { productGroupsService } from "../api";
 
 export const useGetListProductGroups = (params?: URLSearchParams) =>
   useQuery({
-    queryKey: queryKeys.list(params),
+    queryKey: queryKeys.list(params?.toString?.() ?? params),
     queryFn: () => productGroupsService.list(params),
     placeholderData: keepPreviousData,
   });
