@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from "react-router";
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { Eye, FileUp, RefreshCw } from "lucide-react";
+import { Eye, FileUp, ReceiptText, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -32,6 +32,17 @@ export default function PurchaseListPage() {
       title: t("purchase.fields.docNumber"),
       render: (value, record) => (
         <Link to={`${record.id}`}>{value || record.id}</Link>
+      ),
+    },
+    {
+      dataIndex: "accountingEntriesReport",
+      title: "Provodka",
+      align: "center",
+      width: 110,
+      render: (_, record) => (
+        <Link to={`/main/accountingentriesreport?documentId=${record.id}`}>
+          <Button icon={<ReceiptText className="size-4" />} />
+        </Link>
       ),
     },
     {

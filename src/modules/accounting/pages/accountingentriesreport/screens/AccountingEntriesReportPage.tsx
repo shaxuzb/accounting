@@ -1,0 +1,270 @@
+import { useMemo } from "react";
+import { Button, Spin, Table } from "antd";
+import type { TableColumnsType } from "antd";
+import {
+  CalendarDays,
+  ChevronRight,
+  Coins,
+  FileText,
+  ListChecks,
+  // Package,
+  // UserRound,
+  // Warehouse,
+} from "lucide-react";
+import { useSearchParams } from "react-router";
+import Card from "@/components/ui/card/Card";
+import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
+import { useGetAccountingEntriesReport } from "../hooks";
+import type {
+  AccountingEntriesReportPosting,
+  AccountingEntriesReportSubkontoItem,
+} from "../types/type";
+
+const DetailLine = ({
+  item,
+}: {
+  item: AccountingEntriesReportSubkontoItem;
+}) => (
+  <div className="flex gap-3">
+    <span
+      className={
+        item.side === "credit"
+          ? "font-semibold text-red-600"
+          : "font-semibold text-blue-600"
+      }
+    >
+      {item.label}
+    </span>
+    <span>{item.value}</span>
+  </div>
+);
+
+// const SubkontoIcon = ({ index }: { index: number }) => {
+//   const icons = [Package, Warehouse, UserRound];
+//   const Icon = icons[index % icons.length];
+//   return <Icon className="size-4 text-slate-700" />;
+// };
+
+export default function AccountingEntriesReportPage() {
+  const [searchParams] = useSearchParams();
+  const documentIdParam = searchParams.get("documentId") ?? "";
+  // const [documentId, setDocumentId] = useState(documentIdParam);
+  const { data, isFetching, isLoading } =
+    useGetAccountingEntriesReport(documentIdParam);
+
+  const columns = useMemo<TableColumnsType<AccountingEntriesReportPosting>>(
+    () => [
+      {
+        dataIndex: "indexId",
+        title: "№",
+        width: 72,
+        align: "center",
+        render: (_, __, index) => index + 1,
+      },
+      {
+        dataIndex: "date",
+        title: "Sana",
+        width: 150,
+        render: (value) => customDate(value),
+      },
+      {
+        dataIndex: "debitAccountCode",
+        title: "Debet schyot",
+        width: 190,
+        render: (_, record) => (
+          <div>
+            <div className="font-semibold">{record.debitAccountCode}</div>
+            <div className="text-slate-600">{record.debitAccountName}</div>
+          </div>
+        ),
+      },
+      {
+        dataIndex: "creditAccountCode",
+        title: "Kredit schyot",
+        width: 210,
+        render: (_, record) => (
+          <div>
+            <div className="font-semibold">{record.creditAccountCode}</div>
+            <div className="text-slate-600">{record.creditAccountName}</div>
+          </div>
+        ),
+      },
+      {
+        dataIndex: "amount",
+        title: "Summa",
+        width: 130,
+        align: "center",
+        render: (value) => (
+          <span className="font-semibold">{numberSpacing(value)}</span>
+        ),
+      },
+      {
+        dataIndex: "quantity",
+        title: "Miqdori",
+        width: 110,
+        align: "center",
+      },
+      {
+        dataIndex: "currency",
+        title: "Valyuta",
+        width: 110,
+        align: "center",
+      },
+      // {
+      //   dataIndex: "subkonto",
+      //   title: "Subkonto",
+      //   width: 240,
+      //   render: (items: AccountingEntriesReportSubkontoItem[]) => (
+      //     <div className="space-y-1">
+      //       {(items ?? []).map((item, index) => (
+      //         <div key={`${item.value}-${index}`} className="flex items-center gap-2">
+      //           <SubkontoIcon index={index} />
+      //           <span>{item.value}</span>
+      //         </div>
+      //       ))}
+      //     </div>
+      //   ),
+      // },
+      {
+        dataIndex: "documentNumber",
+        title: "Hujjat",
+        width: 190,
+      },
+    ],
+    [],
+  );
+
+  // const showReport = () => {
+  //   const nextParams = new URLSearchParams(searchParams);
+  //   if (documentId) nextParams.set("documentId", documentId);
+  //   else nextParams.delete("documentId");
+  //   setSearchParams(nextParams);
+  // };
+
+  const summary = [
+    {
+      label: "Jami yozuvlar soni:",
+      value: data?.totalCount ?? 0,
+      icon: ListChecks,
+      tone: "bg-blue-50 text-blue-600",
+    },
+    {
+      label: "Jami summa:",
+      value:
+        `${numberSpacing(data?.totalAmount ?? 0)} ${data?.currency ?? ""}`.trim(),
+      icon: Coins,
+      tone: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "Valyuta:",
+      value: data?.currency || "-",
+      icon: Coins,
+      tone: "bg-violet-50 text-violet-600",
+    },
+    {
+      label: "Hujjat:",
+      value: data?.documentNumber || "-",
+      icon: FileText,
+      tone: "bg-blue-50 text-blue-600",
+    },
+  ];
+  console.log(generateKeyTable(data.postings));
+
+  return (
+    <div className="space-y-5 mt-2">
+      {/* <h1 className="text-2xl font-bold">Accounting entries report</h1>
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="flex flex-col gap-1">
+          <span className="font-medium">Document ID</span>
+          <Input
+            value={documentId}
+            onChange={(event) => setDocumentId(event.target.value)}
+            onPressEnter={showReport}
+            className="h-10 w-56"
+          />
+        </label>
+        <Button type="primary" size="large" onClick={showReport}>
+          Hisobotni ko'rsat
+        </Button>
+      </div> */}
+
+      {isLoading && (
+        <div className="flex justify-center p-10">
+          <Spin />
+        </div>
+      )}
+
+      {data && (
+        <>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {summary.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Card key={item.label} className="border border-border p-4">
+                  <div className="flex items-center gap-4">
+                    <div className={`rounded-full p-4 ${item.tone}`}>
+                      <Icon className="size-6" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-slate-500">{item.label}</div>
+                      <div className="text-lg font-bold">{item.value}</div>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center gap-2 text-slate-700">
+            <CalendarDays className="size-4" />
+            <span>Sana:</span>
+            <span>{customDate(data.date)}</span>
+          </div>
+
+          <Card className="overflow-hidden border border-border">
+            <Table<AccountingEntriesReportPosting>
+              loading={isFetching}
+              columns={columns}
+              dataSource={generateKeyTable(data.postings)}
+              pagination={false}
+              scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
+              expandable={{
+                expandIcon: ({ expanded, onExpand, record }) => (
+                  <Button
+                    className={`p-0! w-6! h-6!`}
+                    onClick={(event) => onExpand(record, event)}
+                  >
+                    <ChevronRight
+                      className={`size-4 transition-transform ${expanded ? "rotate-90" : ""}`}
+                    />
+                  </Button>
+                ),
+                defaultExpandedRowKeys: [1, 2, 3, 4, 5, 6],
+                expandedRowRender: (record) => (
+                  <div className="grid gap-4 rounded-md border border-blue-100 bg-slate-50 p-4 md:grid-cols-2">
+                    <div className="space-y-3">
+                      {record.debitDetails.map((item, index) => (
+                        <DetailLine
+                          key={`${item.value}-${index}`}
+                          item={item}
+                        />
+                      ))}
+                    </div>
+                    <div className="space-y-3 border-t border-slate-200 pt-3 md:border-l md:border-t-0 md:pl-6 md:pt-0">
+                      {record.creditDetails.map((item, index) => (
+                        <DetailLine
+                          key={`${item.value}-${index}`}
+                          item={item}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ),
+              }}
+            />
+          </Card>
+        </>
+      )}
+    </div>
+  );
+}

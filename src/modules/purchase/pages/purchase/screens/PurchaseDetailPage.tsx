@@ -144,6 +144,11 @@ const PurchaseDetailPage = () => {
                   {/* {customProductStatus(data?.statusId ?? 0)} */}
                 </p>
               </div>
+              {/* {params.id && (
+                <Link to={`/main/accountingentriesreport?documentId=${params.id}`}>
+                  <Button type="primary">Accounting entries report</Button>
+                </Link>
+              )} */}
               {/* <div
                 className="space-y-1 animate-slide-in"
                 style={{ animationDelay: "0.4s" }}

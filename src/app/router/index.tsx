@@ -5,6 +5,7 @@ import { settingsRoutes } from "@/modules/settings";
 import { dashboardRoutes } from "@/modules/dashboard/routes";
 import { productsRoutes } from "@/modules/products";
 import { purchaseRoutes } from "@/modules/purchase";
+import { accountingRoutes } from "@/modules/accounting";
 
 export const router = createBrowserRouter([
   {
@@ -17,7 +18,13 @@ export const router = createBrowserRouter([
       {
         path: "main",
         element: <MainLayout />,
-        children: [dashboardRoutes, productsRoutes, purchaseRoutes, settingsRoutes],
+        children: [
+          dashboardRoutes,
+          productsRoutes,
+          purchaseRoutes,
+          accountingRoutes,
+          settingsRoutes,
+        ],
       },
     ],
   },
