@@ -4,5 +4,5 @@ import AccountingEntriesReportPage from "./pages/accountingentriesreport/screens
 export const accountingRoutes: RouteObject = {
   path: "accountingentriesreport",
   element: <AccountingEntriesReportPage />,
-  handle: { title: "Accounting entries report" },
+  handle: { title: "Provodka hisobot" },
 };
