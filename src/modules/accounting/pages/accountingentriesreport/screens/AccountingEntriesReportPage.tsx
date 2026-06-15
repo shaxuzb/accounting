@@ -168,7 +168,6 @@ export default function AccountingEntriesReportPage() {
       tone: "bg-blue-50 text-blue-600",
     },
   ];
-  console.log(generateKeyTable(data.postings));
 
   return (
     <div className="space-y-5 mt-2">
@@ -225,7 +224,7 @@ export default function AccountingEntriesReportPage() {
             <Table<AccountingEntriesReportPosting>
               loading={isFetching}
               columns={columns}
-              dataSource={generateKeyTable(data.postings)}
+              dataSource={generateKeyTable(data?.postings)}
               pagination={false}
               scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
               expandable={{
