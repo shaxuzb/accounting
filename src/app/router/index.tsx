@@ -4,7 +4,7 @@ import { authRoutes } from "@/modules/auth";
 import { settingsRoutes } from "@/modules/settings";
 import { dashboardRoutes } from "@/modules/dashboard/routes";
 import { productsRoutes } from "@/modules/products";
-import { purchaseRoutes } from "@/modules/purchase";
+import { purchaseRoutes } from "@/modules/purchase/pages/purchase";
 import { accountingRoutes } from "@/modules/accounting";
 
 export const router = createBrowserRouter([

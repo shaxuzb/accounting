@@ -1,4 +1,4 @@
-import type { SelectBoxOptions } from "@/modules/purchase";
+import type { SelectBoxOptions } from "@/modules/purchase/pages/purchase";
 import {
   Button,
   Divider,

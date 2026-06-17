@@ -5,9 +5,10 @@ import { Calendar, ChartPie, FileText, Package } from "lucide-react";
 import { Table, type TableColumnType } from "antd";
 // import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { PurchaseDetailLine } from "@/modules/purchase/types/type";
+import type { PurchaseDetailLine } from "@/modules/purchase/pages/purchase/types/type";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
-import { useGetDetailPurchase } from "@/modules/purchase/hooks/useGetDetailPurchase";
+import { useGetDetailPurchase } from "../hooks/useGetDetailPurchase";
+
 
 const PurchaseDetailPage = () => {
   const params = useParams();
@@ -40,7 +41,7 @@ const PurchaseDetailPage = () => {
       //     >
       //       <Menu className="size-4" />
       //     </Button>
-      //   );
+      //   ); 
       // },
     },
     {

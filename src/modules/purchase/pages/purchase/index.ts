@@ -1,4 +1,4 @@
-export * from "./routes";
+export * from "../../routes";
 export * from "./types/type";
 export * from "./constants/endpoints";
 export * from "./constants/queryKeys";

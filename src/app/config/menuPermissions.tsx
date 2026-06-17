@@ -1,4 +1,4 @@
-import { purchasePermissions } from "@/modules/purchase";
+import { purchasePermissions } from "@/modules/purchase/pages/purchase";
 import { productPermissions } from "@/modules/products";
 import type { MenuRole } from "@/shared/types";
 import {
@@ -8,6 +8,7 @@ import {
   Building2,
   ContactRound,
   CreditCard,
+  FileSignature,
   GitBranch,
   Handshake,
   Landmark,
@@ -20,6 +21,7 @@ import {
   Wallet,
   Warehouse,
 } from "lucide-react";
+import { contractPermissions } from "@/modules/purchase/pages/contract/constants/permissions";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -65,10 +67,30 @@ export const menuPermissions: MainMenu = {
     {
       code: purchasePermissions.view,
       iconName: <ShoppingCart className="size-5" />,
+      dropdown: true,
+      dropdownName: "purchase.title",
       linkData: {
-        path: "purchase",
+        path: "purchases",
         title: "purchase.title",
       },
+      items: [
+        {
+          code: purchasePermissions.view,
+          iconName: <ShoppingCart className="size-5" />,
+          linkData: {
+            path: "purchase",
+            title: "purchase.title",
+          },
+        },
+        {
+          code: contractPermissions.view,
+          iconName: <FileSignature className="size-5" />,
+          linkData: {
+            path: "contracts",
+            title: "contract.title",
+          },
+        },
+      ],
     },
 
     // {

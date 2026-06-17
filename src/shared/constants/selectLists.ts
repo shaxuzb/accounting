@@ -28,6 +28,7 @@ export const selectListEndpoints = {
   cashBoxesSelectList: "manuals/cash-boxes",
   cashOperationsSelectList: "manuals/cash-operations",
   languagesSelectList: "manuals/languages",
+  contractsSelectList: "manuals/contracts",
 };
 
 export const selectListKeys = {
@@ -59,6 +60,7 @@ export const selectListKeys = {
   cashBox: "selectListCashBoxes",
   cashOperation: "selectListCashOperations",
   language: "selectListLanguages",
+  contractType: "selectListContractTypes",
 };
 
 export const filterIds = {
@@ -89,4 +91,5 @@ export const filterIds = {
   cashBox: "cashBoxId",
   cashOperation: "cashOperationId",
   language: "languageId",
+  contractType: "contractTypeId",
 };

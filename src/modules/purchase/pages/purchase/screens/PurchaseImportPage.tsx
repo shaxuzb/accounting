@@ -27,7 +27,7 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import Card from "@/components/ui/card/Card";
 import { useNavigate } from "react-router";
 import useWindowSize from "@/shared/hooks/useWindowSize";
-import type { PurchaseImportRow, SelectBoxOptions } from "../../../types/type";
+import type { PurchaseImportRow, SelectBoxOptions } from "../types/type";
 import {
   selectListEndpoints,
   selectListKeys,
@@ -35,10 +35,9 @@ import {
 import ExcelImportFile from "@/components/widget/excelimport/ExcelImportFile";
 import ProductsCreateModal from "../components/ProductsCreateModal";
 import ProductCreateModal from "../components/ProductCreateModal";
-import type { PurchaseImportForm } from "@/modules/purchase/types/form";
+import type { PurchaseImportForm } from "@/modules/purchase/pages/purchase/types/form";
 import { formatDate } from "@/utils/helpers";
-import { purchaseValidationSchema } from "@/modules/purchase/types/schema";
-import { useCreatePurchase } from "@/modules/purchase/hooks/useCreatePurchase";
+import { purchaseValidationSchema } from "@/modules/purchase/pages/purchase/types/schema";
 import PurchaseImportEditableCell from "../components/PurchaseImportEditableCell";
 import {
   buildColumnConfig,
@@ -47,6 +46,7 @@ import {
   toSelectBoxOptions,
   type ImportColumnConfig,
 } from "../utils/importColumns";
+import { useCreatePurchase } from "../hooks/useCreatePurchase";
 
 interface ProductSelectOption {
   id: number;

@@ -7,10 +7,10 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { useAppSelector } from "@/store/hooks";
 import { formatDate, generateKeyTable } from "@/utils/utils";
-import type { PurchaseData } from "@/modules/purchase/types/type";
-import { useGetListPurchase } from "@/modules/purchase/hooks/useGetListPurchase";
-import { purchasePermissions } from "@/modules/purchase/constants/permissions";
+import type { PurchaseData } from "@/modules/purchase/pages/purchase/types/type";
+import { purchasePermissions } from "@/modules/purchase/pages/purchase/constants/permissions";
 import { stateStatus } from "@/utils/helpers/statusHelper";
+import { useGetListPurchase } from "../hooks/useGetListPurchase";
 
 export default function PurchaseListPage() {
   const { t } = useTranslation();

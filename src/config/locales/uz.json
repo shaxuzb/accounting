@@ -136,6 +136,7 @@
       "total": "Jami narx",
       "uom": "Birlik"
     },
+
     "messages": {
       "imported": "Sotib olish ma'lumotlari import qilindi"
     },
@@ -151,6 +152,15 @@
       "previewStep": "Ma'lumotlarni ko'rish",
       "mappingStep": "Ustunlarni moslash",
       "selectField": "Maydonni tanlang"
+    }
+  },
+  "contract": {
+    "title": "Shartnoma",
+    "fields": {
+      "counterpartyName": "counterpartyName",
+      "contractType": "contractType",
+      "contractNumber": "contractNumber",
+      "stateName": "Holati"
     }
   },
   "products": {

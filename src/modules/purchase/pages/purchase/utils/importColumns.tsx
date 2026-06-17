@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import LineClampCell from "@/components/widget/text/LineClampCell";
-import type { SelectBoxOptions } from "@/modules/purchase/types/type";
+import type { SelectBoxOptions } from "@/modules/purchase/pages/purchase/types/type";
 
 export interface ImportColumnConfig {
   dataIndex: string;

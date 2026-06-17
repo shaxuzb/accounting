@@ -5,7 +5,7 @@ import SelectableSheetData from "./parts/SelectableSheetData";
 import { UploadIcon, X } from "lucide-react";
 import Card from "@/components/ui/card/Card";
 import type { FormikProps } from "formik";
-import type { SelectBoxOptions } from "@/modules/purchase";
+import type { SelectBoxOptions } from "@/modules/purchase/pages/purchase";
 import { useState, type FC } from "react";
 import LineClampCell from "../text/LineClampCell";
 

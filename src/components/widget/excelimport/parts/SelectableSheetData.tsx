@@ -1,7 +1,7 @@
 import { Button, ConfigProvider, Table, type TableColumnType } from "antd";
 import SelectKeySheet from "./SelectKeySheet";
 import type { FormikProps } from "formik";
-import type { SelectBoxOptions } from "@/modules/purchase";
+import type { SelectBoxOptions } from "@/modules/purchase/pages/purchase";
 import { useState, type FC } from "react";
 import LineClampCell from "../../text/LineClampCell";
 

@@ -1,5 +1,5 @@
 import SelectCustom from "@/components/fields/SelectCustom";
-import type { PurchaseImportRow } from "@/modules/purchase/types/type";
+import type { PurchaseImportRow } from "@/modules/purchase/pages/purchase/types/type";
 import { $axiosPrivate } from "@/services/AxiosService";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import {

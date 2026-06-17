@@ -114,7 +114,7 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
                     `${itemParent.linkData.path}/${item.linkData?.path}`
                   ) {
                     navigate(
-                      `/${itemParent.linkData.path}/${item.linkData?.path}`,
+                      `/main/${itemParent.linkData.path}/${item.linkData?.path}`,
                     );
                   }
                 },
