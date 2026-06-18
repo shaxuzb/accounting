@@ -23,3 +23,6 @@ export const contractService = {
       .put<Contract>(contractEndpoints.contract.update(id), payload)
       .then((res) => res.data),
 };
+
+
+
