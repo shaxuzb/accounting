@@ -4,6 +4,7 @@ export interface PurchaseImportForm {
   docDate: string;
   counterpartyId: number | null;
   currencyId: number | null;
+  contractId: number | null;
   warehouseId: number | null;
   comment: string;
   lines: PurchaseImportRow[];

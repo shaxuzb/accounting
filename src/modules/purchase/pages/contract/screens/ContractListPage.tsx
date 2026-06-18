@@ -3,7 +3,7 @@ import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
 import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { generateKeyTable } from "@/utils/utils";
+import { formatDate, generateKeyTable } from "@/utils/utils";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import { useAppSelector } from "@/store/hooks";
 import { stateStatus } from "@/utils/helpers/statusHelper";
@@ -31,25 +31,29 @@ export default function ContractListPage() {
       width: 70,
     },
     {
+      title: t("contract.fields.contractNumber"),
+      dataIndex: "contractNumber",
+    },
+    {
       title: t("contract.fields.counterpartyName"),
       dataIndex: "counterpartyName",
-      minWidth: 180,
+    },
+    {
+      title: t("contract.fields.contractDate"),
+      dataIndex: "contractDate",
+      align: "center",
+      render: (value) => {
+        return formatDate(value);
+      },
     },
     {
       title: t("contract.fields.contractType"),
-      dataIndex: "contractType",
-      minWidth: 180,
-    },
-    {
-      title: t("contract.fields.contractNumber"),
-      dataIndex: "contractNumber",
-      minWidth: 160,
+      dataIndex: "contractTypeName",
     },
     {
       title: t("contract.fields.stateName"),
       dataIndex: "stateId",
       align: "center",
-      width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
   ];

@@ -29,6 +29,7 @@ import { useNavigate } from "react-router";
 import useWindowSize from "@/shared/hooks/useWindowSize";
 import type { PurchaseImportRow, SelectBoxOptions } from "../types/type";
 import {
+  filterIds,
   selectListEndpoints,
   selectListKeys,
 } from "@/shared/constants/selectLists";
@@ -36,7 +37,7 @@ import ExcelImportFile from "@/components/widget/excelimport/ExcelImportFile";
 import ProductsCreateModal from "../components/ProductsCreateModal";
 import ProductCreateModal from "../components/ProductCreateModal";
 import type { PurchaseImportForm } from "@/modules/purchase/pages/purchase/types/form";
-import { formatDate } from "@/utils/helpers";
+import { formatDate, formatDateWithOutTime } from "@/utils/helpers";
 import { purchaseValidationSchema } from "@/modules/purchase/pages/purchase/types/schema";
 import PurchaseImportEditableCell from "../components/PurchaseImportEditableCell";
 import {
@@ -92,6 +93,7 @@ const PurchaseImportPage = () => {
     initialValues: {
       docDate: dayjs().format(formatDate),
       counterpartyId: null,
+      contractId: null,
       currencyId: 1,
       warehouseId: null,
       comment: "",
@@ -342,7 +344,6 @@ const PurchaseImportPage = () => {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [formik.values.requestCode]);
   // useChangeSelectType("disabled");
-  console.log(formik.values);
 
   return (
     <div>
@@ -362,14 +363,15 @@ const PurchaseImportPage = () => {
           </div>
           <div className="mt-3">
             <Row gutter={20}>
-              <Col span={5}>
+              <Col span={24}>
                 <SelectDate label="Sana" formik={formik} fieldName="docDate" />
               </Col>
-              <Col span={5}>
+              <Col span={24}>
                 <SelectCustom
                   fieldName="counterpartyId"
                   label="Yetkazib beruvchi turi"
                   path={selectListEndpoints.counterpartiesSelectList}
+                  getFirst
                   formik={formik}
                   // addOption={{
                   //   bool: true,
@@ -380,7 +382,7 @@ const PurchaseImportPage = () => {
                   // }}
                 />
               </Col>
-              <Col span={5}>
+              <Col span={24}>
                 <SelectCustom
                   path={selectListEndpoints.warehousesSelectList}
                   label="Ombor"
@@ -388,12 +390,24 @@ const PurchaseImportPage = () => {
                   formik={formik}
                 />
               </Col>
-              <Col span={5}>
+              <Col span={24}>
                 <SelectCustom
                   path={selectListEndpoints.currenciesSelectList}
                   label="Valyuta"
                   fieldName="currencyId"
                   formik={formik}
+                />
+              </Col>
+              <Col span={24}>
+                <SelectCustom
+                  path={
+                    selectListEndpoints.contractsSelectList +
+                    `?choosedDate=${dayjs(formik.values.docDate).format(formatDateWithOutTime)}${formik.values.counterpartyId ? `&${filterIds.counterparty}=${formik.values.counterpartyId}` : ""}`
+                  }
+                  label="Shartnoma"
+                  fieldName="contractId"
+                  formik={formik}
+                  refetchSync={`${formik.values.counterpartyId}${formik.values.docDate}`}
                 />
               </Col>
               {/* {org.useContractAccounting && (

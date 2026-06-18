@@ -160,7 +160,10 @@
       "counterpartyName": "counterpartyName",
       "contractType": "contractType",
       "contractNumber": "contractNumber",
-      "stateName": "Holati"
+      "stateName": "Holati",
+      "startDate": "Boshlanish sanasi",
+      "endDate": "Tugash sanasi",
+      "contractDate": "Shartnoma sanasi"
     }
   },
   "products": {

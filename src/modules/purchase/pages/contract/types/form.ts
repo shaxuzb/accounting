@@ -1,7 +1,7 @@
 export interface ContractForm {
-  organizationId: number;
-  counterpartyId: number;
-  contractType: string;
+  organizationId: number | null;
+  counterpartyId: number | null;
+  contractTypeId: number | null;
   contractDate: string;
   startDate: string;
   endDate: string;

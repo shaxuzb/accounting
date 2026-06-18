@@ -5,6 +5,7 @@ export interface Contract {
   counterpartyId: number;
   counterpartyName: string;
   contractType: string;
+  contractTypeId: number;
   contractNumber: string;
   contractDate: string;
   startDate: string;

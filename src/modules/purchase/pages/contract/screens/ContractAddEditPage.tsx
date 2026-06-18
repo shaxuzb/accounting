@@ -17,7 +17,7 @@ import SelectDate from "@/components/fields/SelectDate";
 const defaultValues: ContractForm = {
   organizationId: null,
   counterpartyId: null,
-  contractType: "",
+  contractTypeId: null,
   contractDate: "",
   startDate: "",
   endDate: "",
@@ -73,7 +73,7 @@ export default function ContractAddEditPage({
       formik.setValues({
         organizationId: Contract.organizationId ?? null,
         counterpartyId: Contract.counterpartyId ?? null,
-        contractType: Contract.contractType ?? "",
+        contractTypeId: Contract.contractTypeId ?? null,
         contractDate: Contract.contractDate ?? "",
         startDate: Contract.startDate ?? "",
         endDate: Contract.endDate ?? "",
@@ -117,14 +117,14 @@ export default function ContractAddEditPage({
                 path={selectListEndpoints.counterpartiesSelectList}
               />
             </Col>
-            {/* <Col span={12}>
+            <Col span={12}>
               <SelectCustom
                 formik={formik}
-                fieldName="contractType"
+                fieldName="contractTypeId"
                 label="contract.fields.contractType"
-                path={selectListEndpoints.contractsSelectList}
+                path={selectListEndpoints.contractTypeSelectList}
               />
-            </Col> */}
+            </Col>
             <Col span={12}>
               <SelectDate
                 formik={formik}
@@ -142,14 +142,6 @@ export default function ContractAddEditPage({
             <Col span={12}>
               <SelectDate formik={formik} fieldName="endDate" label="endDate" />
             </Col>
-            <Col span={12}>
-              <InputText
-                formik={formik}
-                fieldName="contractType"
-                label="contractType"
-              />
-            </Col>
-
             <Col span={12}>
               <InputText formik={formik} fieldName="comment" label="comment" />
             </Col>
