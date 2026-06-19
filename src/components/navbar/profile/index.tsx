@@ -12,9 +12,9 @@ const ProfileNav: React.FC = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth?.user);
   const [mainPopover, setMainPopover] = useState(false);
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await navigate("/login", { replace: true });
     dispatch(logout());
-    navigate("/login");
   };
 
   const content = (

@@ -26,6 +26,9 @@ function Login() {
           userName: values.userName,
           password: values.password,
         });
+        if (response.data.user.permissions.length === 0) {
+          return toast.error("Tizimga kirishga ruxsatlar berilmagan!");
+        }
         dispatch(login(response.data));
         navigate("/main", { replace: true });
         toast.success("Muvaffaqiyatli kirdingiz!");
@@ -95,7 +98,7 @@ function Login() {
                 htmlType="submit"
                 block
                 size="large"
-                loading={loading}
+                loading={loading || formik.isSubmitting}
                 className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
               >
                 Kirish →

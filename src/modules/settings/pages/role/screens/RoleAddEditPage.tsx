@@ -29,7 +29,7 @@ export default function RoleAddEditPage() {
     initialValues: {
       fullName: data?.fullName ?? "",
       shortName: data?.shortName ?? "",
-      moduleIds: data?.modules.map((item) => item.moduleId) ?? [],
+      modules: data?.modules.map((item) => item.moduleId) ?? [],
       ...(isEdit
         ? {
             stateId: data?.stateId,

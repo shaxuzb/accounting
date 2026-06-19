@@ -13,13 +13,15 @@ import { useCreateContract } from "../hooks/useCreateContract";
 import { useUpdateContract } from "../hooks/useUpdateContract";
 import { contractSchema } from "../types/schema";
 import SelectDate from "@/components/fields/SelectDate";
+import dayjs from "dayjs";
+import { formatDate } from "@/utils/helpers";
 
 const defaultValues: ContractForm = {
   organizationId: null,
   counterpartyId: null,
   contractTypeId: null,
-  contractDate: "",
-  startDate: "",
+  contractDate: dayjs().format(formatDate),
+  startDate: dayjs().format(formatDate),
   endDate: "",
   comment: "",
   stateId: null,
@@ -137,10 +139,24 @@ export default function ContractAddEditPage({
                 formik={formik}
                 fieldName="startDate"
                 label="startDate"
+                maxDate={
+                  formik.values.endDate
+                    ? dayjs(formik.values.endDate)
+                    : undefined
+                }
               />
             </Col>
             <Col span={12}>
-              <SelectDate formik={formik} fieldName="endDate" label="endDate" />
+              <SelectDate
+                formik={formik}
+                fieldName="endDate"
+                minDate={
+                  formik.values.startDate
+                    ? dayjs(formik.values.startDate)
+                    : undefined
+                }
+                label="endDate"
+              />
             </Col>
             <Col span={12}>
               <InputText formik={formik} fieldName="comment" label="comment" />

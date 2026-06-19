@@ -268,7 +268,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         disabled={disabled}
         style={{
           backgroundColor: "transparent",
-          height: "38px",
+          height: mode === "multiple" ? "" : "38px",
           marginBottom: "0px",
         }}
       />

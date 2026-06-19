@@ -41,7 +41,7 @@ const RoleModuleSelector: FC<RoleModuleSelectorProps> = ({
   // );
   const { data = [], isLoading, isFetching } = useGetRoleModules();
 
-  const selectedModules = formik.values.moduleIds ?? [];
+  const selectedModules = formik.values.modules ?? [];
   const filteredGroups = useMemo(() => {
     if (!debouncedSearch) return data;
 
@@ -66,7 +66,7 @@ const RoleModuleSelector: FC<RoleModuleSelectorProps> = ({
       ? Array.from(new Set([...selectedModules, moduleId]))
       : selectedModules.filter((id) => id !== moduleId);
 
-    void formik.setFieldValue("moduleIds", nextModules);
+    void formik.setFieldValue("modules", nextModules);
   };
 
   const toggleGroup = (group: RoleModuleGroup, checked: boolean) => {
@@ -75,7 +75,7 @@ const RoleModuleSelector: FC<RoleModuleSelectorProps> = ({
       ? Array.from(new Set([...selectedModules, ...groupIds]))
       : selectedModules.filter((id) => !groupIds.includes(id));
 
-    void formik.setFieldValue("moduleIds", nextModules);
+    void formik.setFieldValue("modules", nextModules);
   };
 
   const items: CollapseProps["items"] = filteredGroups.map((group) => {
