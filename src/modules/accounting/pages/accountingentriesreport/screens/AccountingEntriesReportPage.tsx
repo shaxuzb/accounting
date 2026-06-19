@@ -1,9 +1,8 @@
 import { useMemo } from "react";
-import { Button, Spin, Table } from "antd";
+import { Spin, Table } from "antd";
 import type { TableColumnsType } from "antd";
 import {
   CalendarDays,
-  ChevronRight,
   Coins,
   FileText,
   ListChecks,
@@ -25,7 +24,7 @@ const DetailLine = ({
 }: {
   item: AccountingEntriesReportSubkontoItem;
 }) => (
-  <div className="flex gap-3">
+  <div className="flex gap-3 border border-border p-1 px-2 rounded-lg">
     <span
       className={
         item.side === "credit"
@@ -61,34 +60,75 @@ export default function AccountingEntriesReportPage() {
         align: "center",
         render: (_, __, index) => index + 1,
       },
+      // {
+      //   dataIndex: "date",
+      //   title: "Sana",
+      //   width: 150,
+      //   render: (value) => customDate(value),
+      // },
       {
-        dataIndex: "date",
-        title: "Sana",
-        width: 150,
-        render: (value) => customDate(value),
+        title: "Debet",
+        className: "text-blue-500!",
+        align: "center",
+        children: [
+          {
+            dataIndex: "debitAccountCode",
+            title: "Hisob (schyot)",
+            width: 190,
+            render: (_, record) => (
+              <div>
+                <div className="font-semibold">{record.debitAccountCode}</div>
+                <div className="text-slate-600">{record.debitAccountName}</div>
+              </div>
+            ),
+          },
+          {
+            dataIndex: "subconto",
+            title: "Subkonto / Analitika",
+            align: "center",
+            width: 190,
+            render: (_, record) => (
+              <div className="space-y-3">
+                {record.debitDetails.map((item, index) => (
+                  <DetailLine key={`${item.value}-${index}`} item={item} />
+                ))}
+              </div>
+            ),
+          },
+        ],
       },
       {
-        dataIndex: "debitAccountCode",
-        title: "Debet schyot",
-        width: 190,
-        render: (_, record) => (
-          <div>
-            <div className="font-semibold">{record.debitAccountCode}</div>
-            <div className="text-slate-600">{record.debitAccountName}</div>
-          </div>
-        ),
+        title: "Kredit",
+        className: "text-blue-500!",
+        align: "center",
+        children: [
+          {
+            dataIndex: "creditAccountCode",
+            title: "Hisob (schyot)",
+            width: 210,
+            render: (_, record) => (
+              <div>
+                <div className="font-semibold">{record.creditAccountCode}</div>
+                <div className="text-slate-600">{record.creditAccountName}</div>
+              </div>
+            ),
+          },
+          {
+            dataIndex: "subconto",
+            title: "Subkonto / Analitika",
+            width: 190,
+            align: "center",
+            render: (_, record) => (
+              <div className="space-y-3">
+                {record.creditDetails.map((item, index) => (
+                  <DetailLine key={`${item.value}-${index}`} item={item} />
+                ))}
+              </div>
+            ),
+          },
+        ],
       },
-      {
-        dataIndex: "creditAccountCode",
-        title: "Kredit schyot",
-        width: 210,
-        render: (_, record) => (
-          <div>
-            <div className="font-semibold">{record.creditAccountCode}</div>
-            <div className="text-slate-600">{record.creditAccountName}</div>
-          </div>
-        ),
-      },
+
       {
         dataIndex: "amount",
         title: "Summa",
@@ -224,42 +264,43 @@ export default function AccountingEntriesReportPage() {
             <Table<AccountingEntriesReportPosting>
               loading={isFetching}
               columns={columns}
+              bordered
               dataSource={generateKeyTable(data?.postings)}
               pagination={false}
               scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
-              expandable={{
-                expandIcon: ({ expanded, onExpand, record }) => (
-                  <Button
-                    className={`p-0! w-6! h-6!`}
-                    onClick={(event) => onExpand(record, event)}
-                  >
-                    <ChevronRight
-                      className={`size-4 transition-transform ${expanded ? "rotate-90" : ""}`}
-                    />
-                  </Button>
-                ),
-                defaultExpandedRowKeys: [1, 2, 3, 4, 5, 6],
-                expandedRowRender: (record) => (
-                  <div className="grid gap-4 rounded-md border border-blue-100 bg-slate-50 p-4 md:grid-cols-2">
-                    <div className="space-y-3">
-                      {record.debitDetails.map((item, index) => (
-                        <DetailLine
-                          key={`${item.value}-${index}`}
-                          item={item}
-                        />
-                      ))}
-                    </div>
-                    <div className="space-y-3 border-t border-slate-200 pt-3 md:border-l md:border-t-0 md:pl-6 md:pt-0">
-                      {record.creditDetails.map((item, index) => (
-                        <DetailLine
-                          key={`${item.value}-${index}`}
-                          item={item}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ),
-              }}
+              // expandable={{
+              //   expandIcon: ({ expanded, onExpand, record }) => (
+              //     <Button
+              //       className={`p-0! w-6! h-6!`}
+              //       onClick={(event) => onExpand(record, event)}
+              //     >
+              //       <ChevronRight
+              //         className={`size-4 transition-transform ${expanded ? "rotate-90" : ""}`}
+              //       />
+              //     </Button>
+              //   ),
+              //   defaultExpandedRowKeys: [1, 2, 3, 4, 5, 6],
+              //   expandedRowRender: (record) => (
+              //     <div className="grid gap-4 rounded-md border border-blue-100 bg-slate-50 p-4 md:grid-cols-2">
+              //       <div className="space-y-3">
+              //         {record.debitDetails.map((item, index) => (
+              //           <DetailLine
+              //             key={`${item.value}-${index}`}
+              //             item={item}
+              //           />
+              //         ))}
+              //       </div>
+              //       <div className="space-y-3 border-t border-slate-200 pt-3 md:border-l md:border-t-0 md:pl-6 md:pt-0">
+              //         {record.creditDetails.map((item, index) => (
+              //           <DetailLine
+              //             key={`${item.value}-${index}`}
+              //             item={item}
+              //           />
+              //         ))}
+              //       </div>
+              //     </div>
+              //   ),
+              // }}
             />
           </Card>
         </>
