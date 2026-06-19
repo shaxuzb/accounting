@@ -363,10 +363,10 @@ const PurchaseImportPage = () => {
           </div>
           <div className="mt-3">
             <Row gutter={20}>
-              <Col span={24}>
+              <Col span={24} sm={12} lg={8} xl={4}>
                 <SelectDate label="Sana" formik={formik} fieldName="docDate" />
               </Col>
-              <Col span={24}>
+              <Col span={24} sm={12} lg={8} xl={4}>
                 <SelectCustom
                   fieldName="counterpartyId"
                   label="Yetkazib beruvchi turi"
@@ -382,7 +382,7 @@ const PurchaseImportPage = () => {
                   // }}
                 />
               </Col>
-              <Col span={24}>
+              <Col span={24} sm={12} lg={8} xl={4}>
                 <SelectCustom
                   path={selectListEndpoints.warehousesSelectList}
                   label="Ombor"
@@ -390,7 +390,7 @@ const PurchaseImportPage = () => {
                   formik={formik}
                 />
               </Col>
-              <Col span={24}>
+              <Col span={24} sm={12} lg={8} xl={4}>
                 <SelectCustom
                   path={selectListEndpoints.currenciesSelectList}
                   label="Valyuta"
@@ -398,7 +398,7 @@ const PurchaseImportPage = () => {
                   formik={formik}
                 />
               </Col>
-              <Col span={24}>
+              <Col span={24} sm={12} lg={8} xl={4}>
                 <SelectCustom
                   path={
                     selectListEndpoints.contractsSelectList +
@@ -427,21 +427,9 @@ const PurchaseImportPage = () => {
                   />
                 </Col>
               )} */}
-              <Col span={4}>
-                <div className="h-full flex justify-end items-center">
-                  <Button
-                    type="primary"
-                    className=""
-                    loading={formik.isSubmitting}
-                    htmlType="submit"
-                  >
-                    {t("common.save")}
-                  </Button>
-                </div>
-              </Col>
             </Row>
           </div>
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 items-center justify-between">
             <div>
               <Segmented
                 disabled={excelData.length > 0}
@@ -461,6 +449,16 @@ const PurchaseImportPage = () => {
                   },
                 ]}
               />
+            </div>
+            <div className="h-full flex justify-end items-center">
+              <Button
+                type="primary"
+                className=""
+                loading={formik.isSubmitting}
+                htmlType="submit"
+              >
+                {t("common.save")}
+              </Button>
             </div>
             {/* {!productWithCount && (
               <div className="text-sm">

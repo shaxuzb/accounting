@@ -53,7 +53,6 @@ const customTheme: ThemeConfig = {
       fontWeightStrong: 900,
       itemHoverBg: color.menuBg,
       itemHoverColor: color.baseColor,
-      subMenuItemBg: color.menuBg,
     },
   },
 };

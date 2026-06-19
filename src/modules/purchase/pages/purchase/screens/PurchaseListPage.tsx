@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from "react-router";
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { Eye, FileUp, ReceiptText, RefreshCw } from "lucide-react";
+import { FileUp, ReceiptText, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -11,9 +11,12 @@ import type { PurchaseData } from "@/modules/purchase/pages/purchase/types/type"
 import { purchasePermissions } from "@/modules/purchase/pages/purchase/constants/permissions";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { useGetListPurchase } from "../hooks/useGetListPurchase";
+import ActionColumn from "@/components/ui/table/actions/ActionColumns";
+import { purchaseEndpoints } from "../constants/endpoints";
 
 export default function PurchaseListPage() {
   const { t } = useTranslation();
+  const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
   const userPermissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
@@ -65,14 +68,11 @@ export default function PurchaseListPage() {
       dataIndex: "statusId",
       title: t("settings.fields.status"),
       align: "center",
-      render: (_, record) => stateStatus(record.statusId, record.stateName),
+      render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
   ];
 
-  const hasActions =
-    userPermissions.includes(purchasePermissions.detail) ||
-    userPermissions.includes(purchasePermissions.update) ||
-    userPermissions.includes(purchasePermissions.delete);
+  const hasActions = userPermissions.includes(purchasePermissions.delete);
 
   const columns: TableColumnType<PurchaseData>[] = hasActions
     ? [
@@ -84,11 +84,18 @@ export default function PurchaseListPage() {
           width: 90,
           fixed: "right",
           render: (_, record) => (
-            <PermissionCard permission={purchasePermissions.detail}>
-              <Link to={`${record.id}`}>
-                <Button icon={<Eye className="size-4" />} />
-              </Link>
-            </PermissionCard>
+            <div>
+              <ActionColumn
+                deletePath={purchaseEndpoints.purchase.list}
+                customPath={`/main/settings/contracts/edit/${record.id}`}
+                record={record}
+                permissions={user?.user.permissions}
+                permissionsCode={{
+                  deleteCode: purchasePermissions.delete,
+                }}
+                refetch={refetch}
+              />
+            </div>
           ),
         },
       ]
@@ -117,7 +124,7 @@ export default function PurchaseListPage() {
           columns={columns}
           dataSource={generateKeyTable(data?.items ?? [])}
           pagination={false}
-          scroll={{ x: "max-content", y: "calc(100vh - 280px)" }}
+          scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
         />
       </Card>
     </div>
