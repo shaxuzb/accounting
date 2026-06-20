@@ -1,0 +1,177 @@
+import { $axiosPrivate } from "@/services/AxiosService";
+import type { Paginated } from "@/shared/types";
+import { saleEndpoints } from "../constants/endpoints";
+import type {
+  SaleDoc,
+  SaleDocForm,
+  SaleDocListParams,
+  SaleDocTable,
+  SaleDocTableForm,
+} from "../types/type";
+
+type UnknownRecord = Record<string, unknown>;
+type SaleListQuery = SaleDocListParams | URLSearchParams;
+
+const toRecord = (value: unknown): UnknownRecord =>
+  value && typeof value === "object" && !Array.isArray(value)
+    ? (value as UnknownRecord)
+    : {};
+
+const read = <T>(record: UnknownRecord, keys: string[], fallback: T): T => {
+  for (const key of keys) {
+    const value = record[key];
+    if (value !== undefined && value !== null) return value as T;
+  }
+  return fallback;
+};
+
+const toNumber = (value: unknown) => {
+  const parsed = Number(value ?? 0);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const unwrap = (value: unknown) => {
+  const root = toRecord(value);
+  return toRecord(read(root, ["data", "result"], root));
+};
+
+const collection = (value: unknown) => {
+  if (Array.isArray(value)) return value;
+  const data = unwrap(value);
+  const items = read<unknown[]>(data, ["items", "results", "rows"], []);
+  return Array.isArray(items) ? items : [];
+};
+
+export const normalizeSaleDoc = (value: unknown): SaleDoc => {
+  const item = unwrap(value);
+  return {
+    id: toNumber(read(item, ["id"], 0)),
+    docNumber: String(read(item, ["docNumber", "documentNumber"], "")),
+    docDate: String(read(item, ["docDate", "date"], "")),
+    counterpartyId: toNumber(read(item, ["counterpartyId"], 0)),
+    counterpartyName: String(read(item, ["counterpartyName"], "")),
+    warehouseId: toNumber(read(item, ["warehouseId"], 0)),
+    warehouseName: String(read(item, ["warehouseName"], "")),
+    currencyId: toNumber(read(item, ["currencyId"], 0)),
+    currencyName: String(
+      read(item, ["currencyName", "currencyCode", "currency"], ""),
+    ),
+    comment: String(read(item, ["comment"], "")) || undefined,
+    stateId: toNumber(read(item, ["stateId"], 0)) || undefined,
+    stateName: String(read(item, ["stateName"], "")) || undefined,
+    statusId: toNumber(read(item, ["statusId"], 0)) || undefined,
+    statusName: String(read(item, ["statusName"], "")) || undefined,
+    totalAmount: toNumber(read(item, ["totalAmount", "finalAmount"], 0)),
+    createdDate: String(read(item, ["createdDate"], "")) || undefined,
+  };
+};
+
+export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
+  const item = unwrap(value);
+  const product = toRecord(read(item, ["product"], {}));
+  const quantity = toNumber(read(item, ["quantity", "qty"], 0));
+  const price = toNumber(read(item, ["price"], 0));
+  return {
+    id: toNumber(read(item, ["id"], 0)),
+    ownerId: toNumber(read(item, ["ownerId"], 0)),
+    productTableId: toNumber(read(item, ["productTableId"], 0)),
+    productId: toNumber(read(item, ["productId"], 0)) || undefined,
+    productName: String(
+      read(item, ["productName", "name"], read(product, ["name"], "")),
+    ),
+    barcode: String(
+      read(item, ["markingNumber", "barcode", "sapCode", "code"], ""),
+    ),
+    unitName: String(read(item, ["unitName", "unit"], "")) || undefined,
+    quantity,
+    price,
+    vatRateId: toNumber(read(item, ["vatRateId"], 0)) || null,
+    vatRateName: String(read(item, ["vatRateName"], "")) || undefined,
+    availableQuantity:
+      read(item, ["availableQuantity", "balance", "remainder"], undefined) ===
+      undefined
+        ? undefined
+        : toNumber(
+            read(item, ["availableQuantity", "balance", "remainder"], 0),
+          ),
+    totalAmount: toNumber(
+      read(item, ["totalAmount", "amount"], quantity * price),
+    ),
+    syncStatus: "confirmed",
+  };
+};
+
+export const saleService = {
+  list: async (params?: SaleListQuery): Promise<Paginated<SaleDoc>> => {
+    const { data } = await $axiosPrivate.get(saleEndpoints.docs.list, { params });
+    const root = unwrap(data);
+    const items = collection(data).map(normalizeSaleDoc);
+    return {
+      items,
+      total: toNumber(read(root, ["total", "count", "totalCount"], items.length)),
+      page: toNumber(read(root, ["page"], 1)),
+      pageSize: toNumber(read(root, ["pageSize"], items.length)),
+    };
+  },
+  detail: async (id: string | number) => {
+    const { data } = await $axiosPrivate.get(saleEndpoints.docs.detail(id));
+    return normalizeSaleDoc(data);
+  },
+  create: async (payload: SaleDocForm) => {
+    const { data } = await $axiosPrivate.post(saleEndpoints.docs.create, payload);
+    return normalizeSaleDoc(data);
+  },
+  createWithLines: async (
+    payload: SaleDocForm,
+    lines: Omit<SaleDocTableForm, "ownerId">[],
+  ) => {
+    const document = await saleService.create(payload);
+    if (!document.id) throw new Error("API savdo hujjati ID sini qaytarmadi");
+
+    try {
+      await Promise.all(
+        lines.map((line) =>
+          saleService.createLine({ ...line, ownerId: document.id }),
+        ),
+      );
+      return document;
+    } catch (error) {
+      await saleService.delete(document.id).catch(() => undefined);
+      throw error;
+    }
+  },
+  update: async (id: string | number, payload: Partial<SaleDocForm>) => {
+    const { data } = await $axiosPrivate.put(
+      saleEndpoints.docs.update(id),
+      payload,
+    );
+    return normalizeSaleDoc(data);
+  },
+  delete: (id: string | number) =>
+    $axiosPrivate.delete(saleEndpoints.docs.delete(id)),
+  lines: async (ownerId: string | number): Promise<SaleDocTable[]> => {
+    const { data } = await $axiosPrivate.get(saleEndpoints.tables.list, {
+      params: { OwnerId: ownerId, Page: 1, PageSize: 1000 },
+    });
+    return collection(data).map(normalizeSaleDocTable);
+  },
+  createLine: async (payload: SaleDocTableForm) => {
+    const { data } = await $axiosPrivate.post(
+      saleEndpoints.tables.create,
+      payload,
+    );
+    return normalizeSaleDocTable(data);
+  },
+  updateLine: async (
+    id: string | number,
+    payload: SaleDocTableForm,
+  ) => {
+    const { data } = await $axiosPrivate.put(
+      saleEndpoints.tables.update(id),
+      payload,
+    );
+    return normalizeSaleDocTable(data);
+  },
+  deleteLine: (id: string | number) =>
+    $axiosPrivate.delete(saleEndpoints.tables.delete(id)),
+};

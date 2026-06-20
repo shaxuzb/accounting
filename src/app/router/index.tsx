@@ -6,6 +6,7 @@ import { dashboardRoutes } from "@/modules/dashboard/routes";
 import { productsRoutes } from "@/modules/products";
 import { purchaseRoutes } from "@/modules/purchase/pages/purchase";
 import { accountingRoutes } from "@/modules/accounting";
+import { saleRoutes } from "@/modules/sale";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
           dashboardRoutes,
           productsRoutes,
           purchaseRoutes,
+          saleRoutes,
           accountingRoutes,
           settingsRoutes,
         ],

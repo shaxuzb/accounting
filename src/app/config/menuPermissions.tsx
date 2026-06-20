@@ -16,12 +16,14 @@ import {
   ReceiptText,
   Settings,
   ShieldCheck,
+  ShoppingBag,
   ShoppingCart,
   Users,
   Wallet,
   Warehouse,
 } from "lucide-react";
 import { contractPermissions } from "@/modules/purchase/pages/contract/constants/permissions";
+import { salePermissions } from "@/modules/sale";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -93,14 +95,14 @@ export const menuPermissions: MainMenu = {
       ],
     },
 
-    // {
-    //   code: "ROLE_VIEW",
-    //   linkData: {
-    //     path: "dashboard/finances",
-    //     title: "Sotuv",
-    //   },
-    //   iconName: <ShoppingBag className="size-5" />,
-    // },
+    {
+      code: salePermissions.view,
+      linkData: {
+        path: "sale",
+        title: "Sotuv",
+      },
+      iconName: <ShoppingBag className="size-5" />,
+    },
     // {
     //   code: "ROLE_VIEW",
     //   linkData: {
