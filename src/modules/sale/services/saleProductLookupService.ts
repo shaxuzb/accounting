@@ -72,6 +72,8 @@ export const saleProductLookupService = {
       barcode:
         stringValue(productTable, ["markingNumber", "barcode"]) ||
         normalizedMarking,
+      serialNumber:
+        stringValue(productTable, ["serialNumber"]) || undefined,
       productName:
         stringValue(productTable, ["productName", "name"]) ||
         stringValue(product, ["name", "productName"]),

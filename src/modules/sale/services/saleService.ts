@@ -7,6 +7,7 @@ import type {
   SaleDocListParams,
   SaleDocTable,
   SaleDocTableForm,
+  SaleDocUpdateForm,
 } from "../types/type";
 
 type UnknownRecord = Record<string, unknown>;
@@ -82,6 +83,7 @@ export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
     barcode: String(
       read(item, ["markingNumber", "barcode", "sapCode", "code"], ""),
     ),
+    serialNumber: String(read(item, ["serialNumber"], "")) || undefined,
     unitName: String(read(item, ["unitName", "unit"], "")) || undefined,
     quantity,
     price,
@@ -118,29 +120,16 @@ export const saleService = {
     return normalizeSaleDoc(data);
   },
   create: async (payload: SaleDocForm) => {
-    const { data } = await $axiosPrivate.post(saleEndpoints.docs.create, payload);
+    const { data } = await $axiosPrivate.post(saleEndpoints.docs.create, {
+      counterpartyId: payload.counterpartyId,
+      warehouseId: payload.warehouseId,
+      currencyId: payload.currencyId,
+      comment: payload.comment,
+      lines: payload.lines,
+    });
     return normalizeSaleDoc(data);
   },
-  createWithLines: async (
-    payload: SaleDocForm,
-    lines: Omit<SaleDocTableForm, "ownerId">[],
-  ) => {
-    const document = await saleService.create(payload);
-    if (!document.id) throw new Error("API savdo hujjati ID sini qaytarmadi");
-
-    try {
-      await Promise.all(
-        lines.map((line) =>
-          saleService.createLine({ ...line, ownerId: document.id }),
-        ),
-      );
-      return document;
-    } catch (error) {
-      await saleService.delete(document.id).catch(() => undefined);
-      throw error;
-    }
-  },
-  update: async (id: string | number, payload: Partial<SaleDocForm>) => {
+  update: async (id: string | number, payload: SaleDocUpdateForm) => {
     const { data } = await $axiosPrivate.put(
       saleEndpoints.docs.update(id),
       payload,

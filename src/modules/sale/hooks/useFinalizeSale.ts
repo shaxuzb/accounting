@@ -1,20 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { saleKeys } from "../constants/queryKeys";
 import { saleService } from "../services/saleService";
-import type { SaleDocForm, SaleDocTableForm } from "../types/type";
-
-interface FinalizeSaleArgs {
-  document: SaleDocForm;
-  lines: Omit<SaleDocTableForm, "ownerId">[];
-}
+import type { SaleDocForm } from "../types/type";
 
 export const useFinalizeSale = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ document, lines }: FinalizeSaleArgs) =>
-      saleService.createWithLines(document, lines),
+    mutationFn: (payload: SaleDocForm) => saleService.create(payload),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: saleKeys.all });
+      queryClient.invalidateQueries({ queryKey: saleKeys.all });
     },
   });
 };

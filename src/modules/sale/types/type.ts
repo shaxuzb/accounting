@@ -31,6 +31,24 @@ export interface SaleDocLineForm {
   productTableId: number;
 }
 
+export interface SaleDocUpdateLineForm {
+  productId: number;
+  markingNumber: string;
+  serialNumber?: string | null;
+  price: number;
+  vatRateId: number | null;
+}
+
+export interface SaleDocUpdateForm {
+  docDate: string;
+  counterpartyId: number;
+  warehouseId: number;
+  currencyId: number;
+  comment: string;
+  stateId: number;
+  lines: SaleDocUpdateLineForm[];
+}
+
 export interface SaleDocTable {
   id: number;
   ownerId: number;
@@ -38,6 +56,7 @@ export interface SaleDocTable {
   productId?: number;
   productName: string;
   barcode: string;
+  serialNumber?: string;
   unitName?: string;
   quantity: number;
   price: number;
@@ -61,6 +80,7 @@ export interface SaleProductLookup {
   productId: number;
   productTableId: number;
   barcode: string;
+  serialNumber?: string;
   productName: string;
   unitName?: string;
   price: number;
