@@ -4,6 +4,7 @@ export const saleEndpoints = {
     detail: (id: string | number) => `sale-docs/${id}`,
     create: "sale-docs",
     update: (id: string | number) => `sale-docs/${id}`,
+    confirm: (id: string | number) => `sale-docs/${id}/confirm`,
     delete: (id: string | number) => `sale-docs/${id}`,
   },
   tables: {
@@ -14,8 +15,8 @@ export const saleEndpoints = {
     delete: (id: string | number) => `sale-doc-tables/${id}`,
   },
   lookup: {
-    productByMarking: (markingNumber: string) =>
-      `product-tables/by-marking/${encodeURIComponent(markingNumber)}`,
+    productByMarking: () =>
+      `product-tables/by-marking`,
     prices: "product-prices",
   },
 } as const;

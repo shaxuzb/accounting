@@ -41,10 +41,17 @@ const stringValue = (record: UnknownRecord, keys: string[]) => {
 };
 
 export const saleProductLookupService = {
-  byMarking: async (markingNumber: string): Promise<SaleProductLookup | null> => {
+  byMarking: async (
+    markingNumber: string,
+  ): Promise<SaleProductLookup | null> => {
     const normalizedMarking = markingNumber.trim();
     const { data } = await $axiosPrivate.get(
-      saleEndpoints.lookup.productByMarking(normalizedMarking),
+      saleEndpoints.lookup.productByMarking(),
+      {
+        params: {
+          markingNumber: encodeURIComponent(normalizedMarking),
+        },
+      },
     );
     const productTable = unwrap(data);
 
@@ -72,8 +79,7 @@ export const saleProductLookupService = {
       barcode:
         stringValue(productTable, ["markingNumber", "barcode"]) ||
         normalizedMarking,
-      serialNumber:
-        stringValue(productTable, ["serialNumber"]) || undefined,
+      serialNumber: stringValue(productTable, ["serialNumber"]) || undefined,
       productName:
         stringValue(productTable, ["productName", "name"]) ||
         stringValue(product, ["name", "productName"]),

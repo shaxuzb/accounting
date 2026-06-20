@@ -60,12 +60,40 @@ export interface SaleDocTable {
   unitName?: string;
   quantity: number;
   price: number;
+  costPrice: number;
+  amount: number;
   vatRateId: number | null;
   vatRateName?: string;
+  vatAmount: number;
   availableQuantity?: number;
   totalAmount: number;
   syncStatus?: "pending" | "confirmed" | "error";
   errorMessage?: string;
+}
+
+export interface SaleAccountingLine extends SaleDocTable {
+  marginPercent: number;
+}
+
+export interface SaleDocConfirmLine {
+  id: number;
+  amount: number;
+  vatRateId: number | null;
+}
+
+export interface SaleDocConfirmForm {
+  counterpartyId: number;
+  docDate: string;
+  lines: SaleDocConfirmLine[];
+}
+
+export interface VatRateOption {
+  id: number;
+  name: string;
+  code?: string;
+  rate?: number;
+  percentage?: number;
+  value?: number;
 }
 
 export interface SaleDocTableForm {

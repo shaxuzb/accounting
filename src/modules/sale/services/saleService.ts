@@ -3,6 +3,7 @@ import type { Paginated } from "@/shared/types";
 import { saleEndpoints } from "../constants/endpoints";
 import type {
   SaleDoc,
+  SaleDocConfirmForm,
   SaleDocForm,
   SaleDocListParams,
   SaleDocTable,
@@ -69,16 +70,31 @@ export const normalizeSaleDoc = (value: unknown): SaleDoc => {
 
 export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
   const item = unwrap(value);
+  const productTable = toRecord(read(item, ["productTable"], {}));
   const product = toRecord(read(item, ["product"], {}));
   const quantity = toNumber(read(item, ["quantity", "qty"], 0));
   const price = toNumber(read(item, ["price"], 0));
+  const costPrice = toNumber(read(item, ["costPrice"], price));
+  const amount = toNumber(read(item, ["amount"], price));
   return {
     id: toNumber(read(item, ["id"], 0)),
     ownerId: toNumber(read(item, ["ownerId"], 0)),
     productTableId: toNumber(read(item, ["productTableId"], 0)),
-    productId: toNumber(read(item, ["productId"], 0)) || undefined,
+    productId:
+      toNumber(read(item, ["productId"], 0)) ||
+      toNumber(read(productTable, ["productId"], 0)) ||
+      toNumber(read(product, ["id", "productId"], 0)) ||
+      undefined,
     productName: String(
-      read(item, ["productName", "name"], read(product, ["name"], "")),
+      read(
+        item,
+        ["productName", "name"],
+        read(
+          productTable,
+          ["productName", "name"],
+          read(product, ["name", "productName"], ""),
+        ),
+      ),
     ),
     barcode: String(
       read(item, ["markingNumber", "barcode", "sapCode", "code"], ""),
@@ -87,8 +103,11 @@ export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
     unitName: String(read(item, ["unitName", "unit"], "")) || undefined,
     quantity,
     price,
+    costPrice,
+    amount,
     vatRateId: toNumber(read(item, ["vatRateId"], 0)) || null,
     vatRateName: String(read(item, ["vatRateName"], "")) || undefined,
+    vatAmount: toNumber(read(item, ["vatAmount"], 0)),
     availableQuantity:
       read(item, ["availableQuantity", "balance", "remainder"], undefined) ===
       undefined
@@ -97,7 +116,7 @@ export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
             read(item, ["availableQuantity", "balance", "remainder"], 0),
           ),
     totalAmount: toNumber(
-      read(item, ["totalAmount", "amount"], quantity * price),
+      read(item, ["totalAmount"], quantity * amount),
     ),
     syncStatus: "confirmed",
   };
@@ -135,6 +154,13 @@ export const saleService = {
       payload,
     );
     return normalizeSaleDoc(data);
+  },
+  confirm: async (id: string | number, payload: SaleDocConfirmForm) => {
+    const { data } = await $axiosPrivate.put(
+      saleEndpoints.docs.confirm(id),
+      payload,
+    );
+    return data;
   },
   delete: (id: string | number) =>
     $axiosPrivate.delete(saleEndpoints.docs.delete(id)),
