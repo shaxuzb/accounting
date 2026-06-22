@@ -1,5 +1,11 @@
 import { Button, Empty, Spin } from "antd";
-import { CheckCircle2, PackageCheck, ReceiptText, Sigma } from "lucide-react";
+import {
+  Boxes,
+  CheckCircle2,
+  PackageCheck,
+  Sigma,
+  UserRound,
+} from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
@@ -7,7 +13,12 @@ import Card from "@/components/ui/card/Card";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { numberSpacing } from "@/utils/utils";
-import { SaleAccountingGroups, SaleDocumentSummary } from "../components";
+import {
+  SaleAccountingGroups,
+  SaleCompletedDocument,
+  SaleDocumentSummary,
+} from "../components";
+import { SaleSummaryItem } from "../components/SaleDocumentSummary";
 import {
   useConfirmSale,
   useGetDetailSale,
@@ -27,18 +38,22 @@ export default function SaleDetailPage() {
   const navigate = useNavigate();
   const organization = useAppSelector((state) => state.organization);
   const documentQuery = useGetDetailSale(id);
-  const linesQuery = useGetSaleLines(id);
-  const vatRatesQuery = useVatRates();
-  const confirmSale = useConfirmSale(id);
-  const [draftLines, setDraftLines] = useState<SaleAccountingLine[] | null>(null);
-
   const document = documentQuery.data;
+  const documentStatusId = document?.statusId ?? document?.stateId;
+  const isCompletedDocument = documentStatusId === 2;
+  const linesQuery = useGetSaleLines(id);
+  const vatRatesQuery = useVatRates(Boolean(document) && !isCompletedDocument);
+  const confirmSale = useConfirmSale(id);
+  const [draftLines, setDraftLines] = useState<SaleAccountingLine[] | null>(
+    null,
+  );
+
   const initialLines = useMemo(
     () => (linesQuery.data ?? []).map(toAccountingLine),
     [linesQuery.data],
   );
   const lines = draftLines ?? initialLines;
-  const currency = document?.currencyName || "UZS";
+  const currency = document?.currencyCode || "UZS";
 
   const updateLines = useCallback(
     (
@@ -96,10 +111,7 @@ export default function SaleDetailPage() {
   const totalAmount = useMemo(
     () =>
       roundMoney(
-        lines.reduce(
-          (sum, line) => sum + line.amount * line.quantity,
-          0,
-        ),
+        lines.reduce((sum, line) => sum + line.amount * line.quantity, 0),
       ),
     [lines],
   );
@@ -158,65 +170,69 @@ export default function SaleDetailPage() {
     );
   }
 
+  if (document && isCompletedDocument) {
+    return (
+      <SaleCompletedDocument
+        document={document}
+        lines={linesQuery.data ?? []}
+        loading={linesQuery.isLoading || linesQuery.isFetching}
+        organizationName={organization.name}
+      />
+    );
+  }
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <h1 className="truncate text-xl font-semibold text-text">
-            {document?.docNumber || "Savdo hujjati"}
-          </h1>
-          <p className="truncate text-sm text-secondary-text">
-            {document?.counterpartyName || "Kontragent tanlanmagan"}
-          </p>
-        </div>
-        <Button
-          type="primary"
-          size="large"
-          className="w-full! sm:w-auto!"
-          icon={<CheckCircle2 size={18} />}
-          loading={confirmSale.isPending}
-          disabled={!lines.length}
-          onClick={handleConfirm}
-        >
-          Tasdiqlash
-        </Button>
-      </div>
-
       <SaleDocumentSummary
         document={document}
         organizationName={organization.name}
         totalAmount={totalAmount || document?.totalAmount || 0}
       />
 
-      <section className="grid overflow-hidden rounded-lg border border-border bg-primary-bg shadow-sm sm:grid-cols-3">
-        <div className="flex items-center gap-3 px-4 py-3 sm:border-r sm:border-border">
-          <ReceiptText size={22} className="shrink-0 text-primary" />
-          <div>
-            <div className="text-xs text-secondary-text">Mahsulot turlari</div>
-            <div className="font-semibold text-text">{productCount}</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3 px-4 py-3 sm:border-r sm:border-border">
-          <PackageCheck size={22} className="shrink-0 text-green-600" />
-          <div>
-            <div className="text-xs text-secondary-text">Umumiy miqdor</div>
-            <div className="font-semibold text-text">{totalQuantity} dona</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3 px-4 py-3">
-          <Sigma size={22} className="shrink-0 text-violet-600" />
-          <div className="min-w-0">
-            <div className="text-xs text-secondary-text">Umumiy summa</div>
-            <div className="break-words font-semibold text-text">
-              {numberSpacing(totalAmount, undefined, true)} {currency}
-            </div>
-          </div>
+      <section className="grid overflow-hidden rounded-lg border border-border bg-primary-bg shadow-sm sm:grid-cols-2 lg:grid-cols-5">
+        <SaleSummaryItem
+          icon={<UserRound size={24} strokeWidth={1.8} />}
+          label="Kontragent"
+          value={document?.counterpartyName || "-"}
+        />
+        <SaleSummaryItem
+          icon={<Boxes size={24} strokeWidth={1.8} />}
+          label="Mahsulot turlari"
+          value={productCount}
+        />
+        <SaleSummaryItem
+          icon={<PackageCheck size={24} strokeWidth={1.8} />}
+          label="Umumiy miqdor"
+          value={`${totalQuantity} dona`}
+          iconClassName="text-green-600"
+        />
+        <SaleSummaryItem
+          icon={<Sigma size={24} strokeWidth={1.8} />}
+          label="Umumiy summa"
+          value={`${numberSpacing(totalAmount, undefined, true)} ${currency}`}
+          emphasized
+          iconClassName="text-violet-600"
+        />
+        <div className="flex min-h-20 items-center border-b border-border px-5 py-3 lg:border-b-0">
+          <Button
+            type="primary"
+            size="large"
+            block
+            icon={<CheckCircle2 size={18} />}
+            loading={confirmSale.isPending}
+            disabled={!lines.length}
+            onClick={handleConfirm}
+          >
+            Tasdiqlash
+          </Button>
         </div>
       </section>
 
       <div className="min-w-0">
         {linesQuery.isLoading ? (
-          <div className="flex justify-center p-10"><Spin /></div>
+          <div className="flex justify-center p-10">
+            <Spin />
+          </div>
         ) : lines.length ? (
           <SaleAccountingGroups
             lines={lines}
@@ -230,7 +246,9 @@ export default function SaleDetailPage() {
             onLineAmountChange={handleLineAmountChange}
           />
         ) : (
-          <Card className="border border-border p-8"><Empty description="Mahsulotlar topilmadi" /></Card>
+          <Card className="border border-border p-8">
+            <Empty description="Mahsulotlar topilmadi" />
+          </Card>
         )}
       </div>
     </div>

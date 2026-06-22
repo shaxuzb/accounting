@@ -7,7 +7,6 @@ export interface SaleDoc {
   warehouseId: number;
   warehouseName: string;
   currencyId: number;
-  currencyName: string;
   comment: string;
   stateId?: number;
   stateName?: string;
@@ -16,6 +15,7 @@ export interface SaleDoc {
   totalAmount: number;
   createdDate?: string;
   lines?: SaleDocLineForm[];
+  currencyCode: string;
 }
 
 export interface SaleDocForm {
@@ -69,6 +69,7 @@ export interface SaleDocTable {
   totalAmount: number;
   syncStatus?: "pending" | "confirmed" | "error";
   errorMessage?: string;
+  markingNumber?: string;
 }
 
 export interface SaleAccountingLine extends SaleDocTable {

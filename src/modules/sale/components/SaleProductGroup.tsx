@@ -3,6 +3,7 @@ import type { ColumnsType } from "antd/es/table";
 import { Check, ChevronDown, ChevronRight, Package } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import InputNumberFormat from "@/components/fields/InputNumber";
+import LineClampCell from "@/components/widget/text/LineClampCell";
 import { numberSpacing } from "@/utils/utils";
 import type { SaleAccountingLine, VatRateOption } from "../types/type";
 import { vatAmountFromSale, vatPercentFromOption } from "../utils/pricing";
@@ -70,9 +71,9 @@ function SaleProductGroup({
         width: 74,
       },
       {
-        title: "Markirovka / Product table",
+        title: "Markirovka",
         width: 190,
-        render: (_, line) => line.barcode || line.productTableId,
+        render: (_, line) => <LineClampCell text={line.barcode || null} />,
       },
       {
         title: "Tannarx",
@@ -190,6 +191,7 @@ function SaleProductGroup({
             <span className="mb-1 block text-xs text-secondary-text">Barchasi uchun QQS</span>
             <Select
               className="w-full"
+              size="large"
               allowClear
               loading={vatLoading}
               placeholder="QQS tanlang"
@@ -205,6 +207,7 @@ function SaleProductGroup({
               min={-100}
               max={100000}
               precision={2}
+              height={40}
               value={margin}
               placeholder="Marjani kiriting"
               onValueChange={(value) => {
@@ -221,6 +224,7 @@ function SaleProductGroup({
               standalone
               min={0}
               precision={2}
+              height={40}
               value={amount}
               placeholder="Narxni kiriting"
               onValueChange={(value) => {
@@ -233,6 +237,7 @@ function SaleProductGroup({
           </label>
           <Button
             type="primary"
+            size="large"
             icon={<Check size={16} />}
             disabled={applyMode === null}
             onClick={applyGroupValue}

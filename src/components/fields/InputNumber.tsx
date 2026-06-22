@@ -26,6 +26,7 @@ interface InputNumberFormaterProps {
   precision?: number;
   placeholder?: string;
   standalone?: boolean;
+  height?: number;
 }
 
 const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
@@ -43,6 +44,7 @@ const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
     precision = 5,
     placeholder,
     standalone = false,
+    height = 38,
   } = props;
   const inputValue = onValueChange ? value : getIn(formik?.values, fieldName);
   const hasError = Boolean(
@@ -81,7 +83,7 @@ const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
       style={{
         backgroundColor: "transparent",
         padding: "0px 10px",
-        height: "38px",
+        height: `${height}px`,
         width: "100%",
       }}
     />

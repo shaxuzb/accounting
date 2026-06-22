@@ -3,13 +3,19 @@ import { accountingEntriesReportService } from "../api";
 
 export const useGetAccountingEntriesReport = (
   documentId?: string | number | null,
+  documentTypeId: string | number = 1,
 ) =>
   useQuery({
-    queryKey: ["accounting", "accountingentriesreport", documentId],
+    queryKey: [
+      "accounting",
+      "accountingentriesreport",
+      documentTypeId,
+      documentId,
+    ],
     queryFn: () =>
       accountingEntriesReportService.postings({
         documentId: documentId ?? "",
-        documentTypeId: 1,
+        documentTypeId,
       }),
     enabled: Boolean(documentId),
   });

@@ -1,4 +1,5 @@
 export * from "./useBarcodeProduct";
+export { default as useBarcodeScanner } from "./useBarcodeScanner";
 export * from "./useConfirmSale";
 export * from "./useCreateSale";
 export * from "./useFinalizeSale";

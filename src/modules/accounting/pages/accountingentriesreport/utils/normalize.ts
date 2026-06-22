@@ -58,13 +58,15 @@ const toSubkontoItem = (
       tableTypeLabel[subkontoTypeId] ?? "",
     ),
   );
-  const itemValue = String(
-    getValue(
-      record,
-      ["value", "displayValue", "name", "text", "title"],
-      value ?? "",
-    ),
+  const rawItemValue = getValue(
+    record,
+    ["value", "displayValue", "name", "text", "title"],
+    value ?? "",
   );
+  const itemValue =
+    rawItemValue && typeof rawItemValue === "object"
+      ? JSON.stringify(rawItemValue)
+      : String(rawItemValue ?? "");
   return { label, value: itemValue, side: side ?? tableSideMap[tableSide] };
 };
 
@@ -214,7 +216,7 @@ export const normalizeAccountingEntriesReport = (
       ),
     ),
     currency: String(
-      getValue(data, ["currency", "currencyCode"], first?.currency ?? ""),
+      getValue(data, ["currencyCode", "currency"], first?.currency ?? ""),
     ),
     documentNumber: String(
       getValue(

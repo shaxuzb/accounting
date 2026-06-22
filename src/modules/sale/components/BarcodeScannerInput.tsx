@@ -2,6 +2,7 @@ import { Input, Tooltip } from "antd";
 import type { InputRef } from "antd";
 import { ScanBarcode } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useBarcodeScanner } from "../hooks";
 
 interface BarcodeScannerInputProps {
   disabled?: boolean;
@@ -16,6 +17,11 @@ export default function BarcodeScannerInput({
 }: BarcodeScannerInputProps) {
   const [value, setValue] = useState("");
   const inputRef = useRef<InputRef>(null);
+
+  useBarcodeScanner({
+    onScan,
+    enabled: !disabled && !loading,
+  });
 
   useEffect(() => {
     if (!disabled) inputRef.current?.focus();

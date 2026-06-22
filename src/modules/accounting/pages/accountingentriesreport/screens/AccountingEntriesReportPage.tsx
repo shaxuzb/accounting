@@ -1,18 +1,12 @@
 import { useMemo } from "react";
 import { Spin, Table } from "antd";
 import type { TableColumnsType } from "antd";
-import {
-  CalendarDays,
-  Coins,
-  FileText,
-  ListChecks,
-  // Package,
-  // UserRound,
-  // Warehouse,
-} from "lucide-react";
 import { useSearchParams } from "react-router";
 import Card from "@/components/ui/card/Card";
-import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
+import StructuredDataView from "@/components/ui/data/StructuredDataView";
+import { useAppSelector } from "@/store/hooks";
+import { generateKeyTable, numberSpacing } from "@/utils/utils";
+import AccountingEntriesSummary from "../components/AccountingEntriesSummary";
 import { useGetAccountingEntriesReport } from "../hooks";
 import type {
   AccountingEntriesReportPosting,
@@ -24,7 +18,7 @@ const DetailLine = ({
 }: {
   item: AccountingEntriesReportSubkontoItem;
 }) => (
-  <div className="flex gap-3 border border-border p-1 px-2 rounded-lg">
+  <div className="flex gap-3 rounded-lg border border-border p-1 px-2">
     <span
       className={
         item.side === "credit"
@@ -34,7 +28,7 @@ const DetailLine = ({
     >
       {item.label}
     </span>
-    <span>{item.value}</span>
+    <StructuredDataView value={item.value} className="flex-1" />
   </div>
 );
 
@@ -46,10 +40,12 @@ const DetailLine = ({
 
 export default function AccountingEntriesReportPage() {
   const [searchParams] = useSearchParams();
+  const organizationName = useAppSelector((state) => state.organization.name);
   const documentIdParam = searchParams.get("documentId") ?? "";
+  const documentTypeIdParam = searchParams.get("documentTypeId") ?? "1";
   // const [documentId, setDocumentId] = useState(documentIdParam);
   const { data, isFetching, isLoading } =
-    useGetAccountingEntriesReport(documentIdParam);
+    useGetAccountingEntriesReport(documentIdParam, documentTypeIdParam);
 
   const columns = useMemo<TableColumnsType<AccountingEntriesReportPosting>>(
     () => [
@@ -181,36 +177,8 @@ export default function AccountingEntriesReportPage() {
   //   setSearchParams(nextParams);
   // };
 
-  const summary = [
-    {
-      label: "Jami yozuvlar soni:",
-      value: data?.totalCount ?? 0,
-      icon: ListChecks,
-      tone: "bg-blue-50 text-blue-600",
-    },
-    {
-      label: "Jami summa:",
-      value:
-        `${numberSpacing(data?.totalAmount ?? 0)} ${data?.currency ?? ""}`.trim(),
-      icon: Coins,
-      tone: "bg-emerald-50 text-emerald-600",
-    },
-    {
-      label: "Valyuta:",
-      value: data?.currency || "-",
-      icon: Coins,
-      tone: "bg-violet-50 text-violet-600",
-    },
-    {
-      label: "Hujjat:",
-      value: data?.documentNumber || "-",
-      icon: FileText,
-      tone: "bg-blue-50 text-blue-600",
-    },
-  ];
-
   return (
-    <div className="space-y-5 mt-2">
+    <div className="mt-2 space-y-4">
       {/* <h1 className="text-2xl font-bold">Accounting entries report</h1>
       <div className="flex flex-wrap items-end gap-3">
         <label className="flex flex-col gap-1">
@@ -235,30 +203,10 @@ export default function AccountingEntriesReportPage() {
 
       {data && (
         <>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {summary.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Card key={item.label} className="border border-border p-4">
-                  <div className="flex items-center gap-4">
-                    <div className={`rounded-full p-4 ${item.tone}`}>
-                      <Icon className="size-6" />
-                    </div>
-                    <div>
-                      <div className="text-sm text-slate-500">{item.label}</div>
-                      <div className="text-lg font-bold">{item.value}</div>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
-
-          <div className="flex items-center gap-2 text-slate-700">
-            <CalendarDays className="size-4" />
-            <span>Sana:</span>
-            <span>{customDate(data.date)}</span>
-          </div>
+          <AccountingEntriesSummary
+            data={data}
+            organizationName={organizationName}
+          />
 
           <Card className="overflow-hidden border border-border">
             <Table<AccountingEntriesReportPosting>

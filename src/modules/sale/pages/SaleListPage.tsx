@@ -1,6 +1,6 @@
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { Plus, RefreshCw } from "lucide-react";
+import { Plus, ReceiptText, RefreshCw } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -38,6 +38,19 @@ export default function SaleListPage() {
       ),
     },
     {
+      dataIndex: "accountingEntriesReport",
+      title: "Provodka",
+      align: "center",
+      width: 110,
+      render: (_, record) => (
+        <Link
+          to={`/main/accountingentriesreport?documentTypeId=2&documentId=${record.id}`}
+        >
+          <Button icon={<ReceiptText className="size-4" />} />
+        </Link>
+      ),
+    },
+    {
       title: "Sana",
       dataIndex: "docDate",
       width: 130,
@@ -62,7 +75,7 @@ export default function SaleListPage() {
       width: 160,
       align: "right",
       render: (value, record) =>
-        `${numberSpacing(value)} ${record.currencyName ?? ""}`.trim(),
+        `${numberSpacing(value)} ${record.currencyCode ?? ""}`.trim(),
     },
     {
       title: "Holat",
@@ -104,7 +117,7 @@ export default function SaleListPage() {
           ),
         },
 
-        
+
       ]
     : tableColumns;
 

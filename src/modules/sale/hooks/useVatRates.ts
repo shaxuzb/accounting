@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { saleKeys } from "../constants/queryKeys";
 import type { VatRateOption } from "../types/type";
 
-export const useVatRates = () =>
+export const useVatRates = (enabled = true) =>
   useQuery({
     queryKey: saleKeys.manuals.vatRates,
     queryFn: async () => {
@@ -14,4 +14,5 @@ export const useVatRates = () =>
       return data;
     },
     staleTime: 5 * 60 * 1000,
+    enabled,
   });

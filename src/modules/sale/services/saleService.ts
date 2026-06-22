@@ -55,8 +55,8 @@ export const normalizeSaleDoc = (value: unknown): SaleDoc => {
     warehouseId: toNumber(read(item, ["warehouseId"], 0)),
     warehouseName: String(read(item, ["warehouseName"], "")),
     currencyId: toNumber(read(item, ["currencyId"], 0)),
-    currencyName: String(
-      read(item, ["currencyName", "currencyCode", "currency"], ""),
+    currencyCode: String(
+      read(item, ["currencyCode", "currency", "currencyName"], ""),
     ),
     comment: String(read(item, ["comment"], "")) || undefined,
     stateId: toNumber(read(item, ["stateId"], 0)) || undefined,
@@ -97,7 +97,11 @@ export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
       ),
     ),
     barcode: String(
-      read(item, ["markingNumber", "barcode", "sapCode", "code"], ""),
+      read(
+        item,
+        ["marking", "markingNumber", "barcode", "sapCode", "code"],
+        "",
+      ),
     ),
     serialNumber: String(read(item, ["serialNumber"], "")) || undefined,
     unitName: String(read(item, ["unitName", "unit"], "")) || undefined,
