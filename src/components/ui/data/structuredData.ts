@@ -28,6 +28,11 @@ const knownLabels: Record<string, string> = {
   currency: "Valyuta",
   currencyCode: "Valyuta",
   date: "Sana",
+  contract: "Shartnoma",
+  contractId: "Shartnoma",
+  contractNumber: "Shartnoma",
+  contractDate: "Sana",
+  contract_date: "Sana",
 };
 
 const hiddenPathKeys = new Set([
@@ -41,10 +46,12 @@ const hiddenPathKeys = new Set([
 
 const humanizeKey = (key: string) => {
   if (knownLabels[key]) return knownLabels[key];
+
   const readable = key
     .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
     .replace(/[_-]+/g, " ")
     .trim();
+
   return readable
     ? readable.charAt(0).toLocaleUpperCase() + readable.slice(1)
     : "";
@@ -59,6 +66,7 @@ const parseJsonString = (value: string): unknown => {
       (text.startsWith("{") && text.endsWith("}")) ||
       (text.startsWith("[") && text.endsWith("]")) ||
       (text.startsWith('"') && text.endsWith('"'));
+
     if (!looksLikeJson) break;
 
     try {
@@ -76,8 +84,10 @@ const parseLoosePairs = (value: string): Record<string, string> | null => {
     .split(";")
     .map((part) => part.trim())
     .filter(Boolean);
+
   const singlePairLooksValid =
     parts.length === 1 && /^[^\d:][^:]{0,40}:/.test(parts[0]);
+
   if (
     !parts.length ||
     !parts.every((part) => part.includes(":")) ||
@@ -102,6 +112,7 @@ const isoDatePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
 const primitiveText = (value: unknown) => {
   if (value === null || value === undefined || value === "") return "-";
   if (typeof value === "boolean") return value ? "Ha" : "Yo'q";
+
   if (
     typeof value === "string" &&
     isoDatePattern.test(value) &&
@@ -109,6 +120,7 @@ const primitiveText = (value: unknown) => {
   ) {
     return dayjs(value).format("DD.MM.YYYY HH:mm");
   }
+
   return String(value);
 };
 
@@ -125,7 +137,10 @@ const flattenValue = (
 
   if (Array.isArray(parsed)) {
     return parsed.flatMap((item, index) =>
-      flattenValue(item, parsed.length > 1 ? [...path, String(index + 1)] : path),
+      flattenValue(
+        item,
+        parsed.length > 1 ? [...path, String(index + 1)] : path,
+      ),
     );
   }
 
@@ -137,11 +152,28 @@ const flattenValue = (
 
   const label = path
     .filter((part) => !hiddenPathKeys.has(part.toLocaleLowerCase()))
+    .filter((part, _, currentPath) => {
+      const partLower = part.toLowerCase();
+      const hasContract = currentPath.some((p) =>
+        p.toLowerCase().includes("contract"),
+      );
+      const hasDate = currentPath.some((p) => p.toLowerCase().includes("date"));
+      if (hasDate && partLower.includes("contract")) {
+        return false;
+      }
+      if (hasContract && (partLower === "number" || partLower === "id")) {
+        return false;
+      }
+
+      return true;
+    })
     .map((part) => (/^\d+$/.test(part) ? part : humanizeKey(part)))
     .filter(Boolean)
-    .join(" · ");
+    .join(" ");
+
   return [{ label: label || undefined, value: primitiveText(parsed) }];
 };
 
-export const formatStructuredData = (value: unknown): StructuredDataEntry[] =>
-  flattenValue(value);
+export const formatStructuredData = (value: unknown): StructuredDataEntry[] => {
+  return flattenValue(value);
+};

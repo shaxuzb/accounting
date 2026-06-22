@@ -75,7 +75,7 @@ function SaleProductGroup({
         width: 190,
         render: (_, line) => (
           <LineClampCell
-            text={line.markingNumber || line.barcode || null}
+            text={line.markingNumber}
           />
         ),
       },

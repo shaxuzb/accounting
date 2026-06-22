@@ -41,7 +41,7 @@ export default function SaleCompletedDocument({
       width: 210,
       render: (_, line) => (
         <LineClampCell
-          text={line.markingNumber || line.barcode || null}
+          text={line.markingNumber}
         />
       ),
     },

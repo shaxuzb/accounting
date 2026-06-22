@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import type { PurchaseDetailLine } from "@/modules/purchase/pages/purchase/types/type";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
 import { useGetDetailPurchase } from "../hooks/useGetDetailPurchase";
+import LineClampCell from "@/components/widget/text/LineClampCell";
 
 
 const PurchaseDetailPage = () => {
@@ -49,9 +50,10 @@ const PurchaseDetailPage = () => {
       title: t("purchase.fields.product"),
     },
     {
-      dataIndex: "sapCode",
+      dataIndex: "markingNumber",
       title: t("purchase.fields.sapCode"),
-      align: "center",
+      width: 10,
+      render: (value) => <LineClampCell text={value} />,
     },
     {
       dataIndex: "qty",

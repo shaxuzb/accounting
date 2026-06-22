@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { formatStructuredData } from "./structuredData";
 
+
 interface Props {
   value: unknown;
   className?: string;
