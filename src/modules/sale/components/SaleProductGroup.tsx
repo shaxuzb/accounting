@@ -4,7 +4,7 @@ import { Check, ChevronDown, ChevronRight, Package } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import LineClampCell from "@/components/widget/text/LineClampCell";
-import { numberSpacing } from "@/utils/utils";
+import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import type { SaleAccountingLine, VatRateOption } from "../types/type";
 import { vatAmountFromSale, vatPercentFromOption } from "../utils/pricing";
 
@@ -73,7 +73,7 @@ function SaleProductGroup({
       {
         title: "Markirovka",
         width: 190,
-        render: (_, line) => (
+        render: (_,line) => (
           <LineClampCell
             text={line.markingNumber}
           />
@@ -253,10 +253,9 @@ function SaleProductGroup({
 
       {expanded && (
         <Table<SaleAccountingLine>
-          rowKey="id"
           size="small"
           columns={columns}
-          dataSource={group.lines}
+          dataSource={generateKeyTable(group.lines)}
           pagination={false}
           scroll={{ x: 1250 }}
         />
