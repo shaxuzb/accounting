@@ -4,5 +4,5 @@ export const requiredString = (message = "Required") => Yup.string().required(me
 
 export const loginSchema = Yup.object({
   username: Yup.string().required("Username is required"),
-  password: Yup.string().min(4, "Min 4 characters").required("Password is required"),
+  password: Yup.string().min(4, "Min 4 character").required("Password is required"),
 });
