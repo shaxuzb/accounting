@@ -73,7 +73,11 @@ function SaleProductGroup({
       {
         title: "Markirovka",
         width: 190,
-        render: (_, line) => <LineClampCell text={line.barcode || null} />,
+        render: (_, line) => (
+          <LineClampCell
+            text={line.markingNumber || line.barcode || null}
+          />
+        ),
       },
       {
         title: "Tannarx",

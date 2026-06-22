@@ -14,7 +14,7 @@ export interface SaleDoc {
   statusName?: string;
   totalAmount: number;
   createdDate?: string;
-  lines?: SaleDocLineForm[];
+  lines?: SaleDocTable[];
   currencyCode: string;
 }
 

@@ -9,9 +9,12 @@ export const useGetDetailSale = (id: string | number) =>
     enabled: Boolean(id),
   });
 
-export const useGetSaleLines = (ownerId: string | number) =>
+export const useGetSaleLines = (
+  ownerId: string | number,
+  enabled = true,
+) =>
   useQuery({
     queryKey: saleKeys.tables.list(ownerId),
     queryFn: () => saleService.lines(ownerId),
-    enabled: Boolean(ownerId),
+    enabled: Boolean(ownerId) && enabled,
   });

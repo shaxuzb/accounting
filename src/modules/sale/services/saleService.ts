@@ -46,6 +46,11 @@ const collection = (value: unknown) => {
 
 export const normalizeSaleDoc = (value: unknown): SaleDoc => {
   const item = unwrap(value);
+  const rawLines = read<unknown[]>(
+    item,
+    ["lines", "saleDocTables", "tables"],
+    [],
+  );
   return {
     id: toNumber(read(item, ["id"], 0)),
     docNumber: String(read(item, ["docNumber", "documentNumber"], "")),
@@ -65,6 +70,9 @@ export const normalizeSaleDoc = (value: unknown): SaleDoc => {
     statusName: String(read(item, ["statusName"], "")) || undefined,
     totalAmount: toNumber(read(item, ["totalAmount", "finalAmount"], 0)),
     createdDate: String(read(item, ["createdDate"], "")) || undefined,
+    lines: Array.isArray(rawLines)
+      ? rawLines.map(normalizeSaleDocTable)
+      : [],
   };
 };
 
@@ -76,6 +84,9 @@ export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
   const price = toNumber(read(item, ["price"], 0));
   const costPrice = toNumber(read(item, ["costPrice"], price));
   const amount = toNumber(read(item, ["amount"], price));
+  const markingNumber = String(
+    read(item, ["markingNumber", "marking"], ""),
+  );
   return {
     id: toNumber(read(item, ["id"], 0)),
     ownerId: toNumber(read(item, ["ownerId"], 0)),
@@ -96,13 +107,10 @@ export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
         ),
       ),
     ),
-    barcode: String(
-      read(
-        item,
-        ["marking", "markingNumber", "barcode", "sapCode", "code"],
-        "",
-      ),
-    ),
+    barcode:
+      markingNumber ||
+      String(read(item, ["barcode", "sapCode", "code"], "")),
+    markingNumber: markingNumber || undefined,
     serialNumber: String(read(item, ["serialNumber"], "")) || undefined,
     unitName: String(read(item, ["unitName", "unit"], "")) || undefined,
     quantity,

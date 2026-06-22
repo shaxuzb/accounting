@@ -38,9 +38,12 @@ export default function SaleCompletedDocument({
     },
     {
       title: "Markirovka",
-      dataIndex: "markingNumber",
       width: 210,
-      render: (value: string) => <LineClampCell text={value} />,
+      render: (_, line) => (
+        <LineClampCell
+          text={line.markingNumber || line.barcode || null}
+        />
+      ),
     },
     {
       title: "Miqdor",

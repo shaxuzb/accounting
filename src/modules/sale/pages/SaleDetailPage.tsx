@@ -41,7 +41,10 @@ export default function SaleDetailPage() {
   const document = documentQuery.data;
   const documentStatusId = document?.statusId ?? document?.stateId;
   const isCompletedDocument = documentStatusId === 2;
-  const linesQuery = useGetSaleLines(id);
+  const linesQuery = useGetSaleLines(
+    id,
+    Boolean(document) && !isCompletedDocument,
+  );
   const vatRatesQuery = useVatRates(Boolean(document) && !isCompletedDocument);
   const confirmSale = useConfirmSale(id);
   const [draftLines, setDraftLines] = useState<SaleAccountingLine[] | null>(
@@ -174,8 +177,8 @@ export default function SaleDetailPage() {
     return (
       <SaleCompletedDocument
         document={document}
-        lines={linesQuery.data ?? []}
-        loading={linesQuery.isLoading || linesQuery.isFetching}
+        lines={document.lines ?? []}
+        loading={documentQuery.isFetching}
         organizationName={organization.name}
       />
     );

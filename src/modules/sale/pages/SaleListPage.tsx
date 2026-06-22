@@ -44,7 +44,7 @@ export default function SaleListPage() {
       width: 110,
       render: (_, record) => (
         <Link
-          to={`/main/accountingentriesreport?documentTypeId=2&documentId=${record.id}`}
+          to={`/main/accountingentriesreport?documentTypeId=2&documentId=${record.id}`} 
         >
           <Button icon={<ReceiptText className="size-4" />} />
         </Link>

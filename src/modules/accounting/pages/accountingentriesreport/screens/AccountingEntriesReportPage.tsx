@@ -17,20 +17,26 @@ const DetailLine = ({
   item,
 }: {
   item: AccountingEntriesReportSubkontoItem;
-}) => (
-  <div className="flex gap-3 rounded-lg border border-border p-1 px-2">
-    <span
-      className={
-        item.side === "credit"
-          ? "font-semibold text-red-600"
-          : "font-semibold text-blue-600"
-      }
-    >
-      {item.label}
-    </span>
-    <StructuredDataView value={item.value} className="flex-1" />
-  </div>
-);
+}) => {
+  const labelClassName =
+    item.side === "credit"
+      ? "font-semibold text-red-600"
+      : "font-semibold text-blue-600";
+  const fallbackLabel = /^(purchase|sale)(doc|document)?$/i.test(
+    item.label.trim(),
+  )
+    ? undefined
+    : item.label;
+
+  return (
+    <StructuredDataView
+      value={item.value}
+      fallbackLabel={fallbackLabel}
+      labelClassName={labelClassName}
+      itemClassName="flex gap-3 rounded-lg border border-border p-1 px-2"
+    />
+  );
+};
 
 // const SubkontoIcon = ({ index }: { index: number }) => {
 //   const icons = [Package, Warehouse, UserRound];

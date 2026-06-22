@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export interface StructuredDataEntry {
   label?: string;
   value: string;
@@ -27,6 +29,15 @@ const knownLabels: Record<string, string> = {
   currencyCode: "Valyuta",
   date: "Sana",
 };
+
+const hiddenPathKeys = new Set([
+  "purchase",
+  "purchasedoc",
+  "purchasedocument",
+  "sale",
+  "saledoc",
+  "saledocument",
+]);
 
 const humanizeKey = (key: string) => {
   if (knownLabels[key]) return knownLabels[key];
@@ -86,9 +97,18 @@ const parseLoosePairs = (value: string): Record<string, string> | null => {
   );
 };
 
+const isoDatePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
+
 const primitiveText = (value: unknown) => {
   if (value === null || value === undefined || value === "") return "-";
   if (typeof value === "boolean") return value ? "Ha" : "Yo'q";
+  if (
+    typeof value === "string" &&
+    isoDatePattern.test(value) &&
+    dayjs(value).isValid()
+  ) {
+    return dayjs(value).format("DD.MM.YYYY HH:mm");
+  }
   return String(value);
 };
 
@@ -116,6 +136,7 @@ const flattenValue = (
   }
 
   const label = path
+    .filter((part) => !hiddenPathKeys.has(part.toLocaleLowerCase()))
     .map((part) => (/^\d+$/.test(part) ? part : humanizeKey(part)))
     .filter(Boolean)
     .join(" · ");
