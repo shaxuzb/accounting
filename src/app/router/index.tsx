@@ -3,10 +3,11 @@ import { MainLayout, ProtectAuthLayout } from "@/app/layouts";
 import { authRoutes } from "@/modules/auth";
 import { settingsRoutes } from "@/modules/settings";
 import { dashboardRoutes } from "@/modules/dashboard/routes";
-import { productsRoutes } from "@/modules/products";
 import { purchaseRoutes } from "@/modules/purchase/pages/purchase";
 import { accountingRoutes } from "@/modules/accounting";
 import { saleRoutes } from "@/modules/sale";
+import { productsRoutes } from "@/modules/warehouse/pages/products/routes";
+import { warehouseRoutes } from "@/modules/warehouse";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
           saleRoutes,
           accountingRoutes,
           settingsRoutes,
+          warehouseRoutes
         ],
       },
     ],

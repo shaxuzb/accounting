@@ -1,7 +1,8 @@
 import { purchasePermissions } from "@/modules/purchase/pages/purchase";
-import { productPermissions } from "@/modules/products";
+
 import type { MenuRole } from "@/shared/types";
 import {
+  Box,
   BoxIcon,
   Briefcase,
   Building,
@@ -24,6 +25,8 @@ import {
 } from "lucide-react";
 import { contractPermissions } from "@/modules/purchase/pages/contract/constants/permissions";
 import { salePermissions } from "@/modules/sale";
+import { productPermissions } from "@/modules/warehouse/pages/products/constants/permissions";
+import { warehousePermissions } from "@/modules/warehouse";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -119,14 +122,14 @@ export const menuPermissions: MainMenu = {
     //   },
     //   iconName: <Banknote className="size-5" />,
     // },
-    // {
-    //   code: "SE",
-    //   linkData: {
-    //     path: "dashboard/financessss",
-    //     title: "Ombor",
-    //   },
-    //   iconName: <Box className="size-5" />,
-    // },
+    {
+      code: warehousePermissions.view,
+      linkData: {
+        path: "warehouses",
+        title: "Ombor",
+      },
+      iconName: <Box className="size-5" />,
+    },
     // {
     //   code: "S",
     //   linkData: {

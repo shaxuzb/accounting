@@ -1,8 +1,8 @@
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
-import type { ProductItem } from "@/modules/products";
-import { productItemSchema } from "@/modules/products/pages/products/types/schema";
 import type { PurchaseImportRow } from "@/modules/purchase/pages/purchase/types/type";
+import { productItemSchema } from "@/modules/warehouse/pages/products/types/schema";
+import type { ProductItem } from "@/modules/warehouse/pages/products/types/type";
 import { $axiosPrivate } from "@/services/AxiosService";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { Button, Col, Form, Modal, Row, Switch } from "antd";
