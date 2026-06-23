@@ -70,7 +70,7 @@ export const normalizeSaleDoc = (value: unknown): SaleDoc => {
     statusName: String(read(item, ["statusName"], "")) || undefined,
     totalAmount: toNumber(read(item, ["totalAmount", "finalAmount"], 0)),
     createdDate: String(read(item, ["createdDate"], "")) || undefined,
-    lines: Array.isArray(rawLines)
+     lines: Array.isArray(rawLines)
       ? rawLines.map(normalizeSaleDocTable)
       : [],
   };
@@ -84,7 +84,7 @@ export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
   const price = toNumber(read(item, ["price"], 0));
   const costPrice = toNumber(read(item, ["costPrice"], price));
   const amount = toNumber(read(item, ["amount"], price));
-  const markingNumber = String(
+   const markingNumber = String(
     read(item, ["markingNumber", "marking"], ""),
   );
   return {
@@ -108,7 +108,7 @@ export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
       ),
     ),
     barcode:
-      markingNumber ||
+      markingNumber || 
       String(read(item, ["barcode", "sapCode", "code"], "")),
     markingNumber: markingNumber || undefined,
     serialNumber: String(read(item, ["serialNumber"], "")) || undefined,
@@ -141,7 +141,7 @@ export const saleService = {
     const items = collection(data).map(normalizeSaleDoc);
     return {
       items,
-      total: toNumber(read(root, ["total", "count", "totalCount"], items.length)),
+     total: toNumber(read(root, ["total", "count", "totalCount"], items.length)),
       page: toNumber(read(root, ["page"], 1)),
       pageSize: toNumber(read(root, ["pageSize"], items.length)),
     };
@@ -176,11 +176,11 @@ export const saleService = {
   },
   delete: (id: string | number) =>
     $axiosPrivate.delete(saleEndpoints.docs.delete(id)),
-  lines: async (ownerId: string | number): Promise<SaleDocTable[]> => {
+  lines: async (ownerId: string | number): Promise<Paginated<SaleDocTable>> => {
     const { data } = await $axiosPrivate.get(saleEndpoints.tables.list, {
       params: { OwnerId: ownerId, Page: 1, PageSize: 1000 },
     });
-    return collection(data).map(normalizeSaleDocTable);
+    return data;
   },
   createLine: async (payload: SaleDocTableForm) => {
     const { data } = await $axiosPrivate.post(
@@ -189,10 +189,7 @@ export const saleService = {
     );
     return normalizeSaleDocTable(data);
   },
-  updateLine: async (
-    id: string | number,
-    payload: SaleDocTableForm,
-  ) => {
+  updateLine: async (id: string | number, payload: SaleDocTableForm) => {
     const { data } = await $axiosPrivate.put(
       saleEndpoints.tables.update(id),
       payload,
