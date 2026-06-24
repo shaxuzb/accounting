@@ -1,13 +1,16 @@
 import React from "react";
 import { Button, Result } from "antd";
+import { useTranslation } from "react-i18next";
 
 const Error: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="h-screen flex justify-center items-center bg-primary-bg">
       <Result
         status="error"
-        title="Xatolik yuz berdi"
-        subTitle="Kechirasiz, sahifani yuklashda muammo yuz berdi yoki so'rovlarda hatolik!"
+        title={t("error.title")}
+        subTitle={t("error.subtitle")}
         extra={
           <Button
             type="primary"
@@ -15,7 +18,7 @@ const Error: React.FC = () => {
             onClick={() => window.location.reload()}
             className="mt-4"
           >
-            Sahifani qayta yuklash
+            {t("error.reload")}
           </Button>
         }
       />

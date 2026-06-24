@@ -1,16 +1,13 @@
 import LogoSide from "@/components/sidebar/LogoSide";
 import MenuCustom from "@/components/sidebar/menu";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useAppSelector } from "@/store/hooks";
 import { useMemo } from "react";
 import { menuPermissions } from "../config/menuPermissions";
 // import { logout } from "@/store/features/authSlice";
-import { getEffectiveTheme } from "@/utils/utils";
 import CustomScroller from "react-custom-scroller";
 const Sidebar = () => {
-  const themeMode = useAppSelector((state) => state.mode.mode);
   const sidebarInline = useAppSelector((state) => state.sidebar);
   // const user = useAppSelector((state) => state.auth?.user);
-  const dispatch = useAppDispatch();
   const memoizedMenus = useMemo(() => {
     // if (!user && !user.user) {
     const topMenus = [];
@@ -58,7 +55,7 @@ const Sidebar = () => {
       TOP: [],
       BOTTOM: [],
     };
-  }, [dispatch]);
+  }, []);
   // const snowflakeImages = useMemo(() => {
   //   const img = new Image();
   //   const img2 = new Image();
@@ -69,7 +66,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`${sidebarInline.sidebar ? "w-16" : "w-70"} h-screen sticky overflow-hidden top-0 border-r border-[#e5e7eb] ${getEffectiveTheme(themeMode) === "light" ? "bg-white" : "bg-secondary"} flex flex-col`}
+      className={`${sidebarInline.sidebar ? "w-16" : "w-70"} h-screen sticky overflow-hidden top-0 border-r border-border bg-primary-bg flex flex-col`}
     >
       <LogoSide />
       <CustomScroller className={`duration-300 flex-1 overflow-auto`}>

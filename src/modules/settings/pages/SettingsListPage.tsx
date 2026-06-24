@@ -47,7 +47,6 @@ function SettingsCard({
 }
 
 export default function SettingsListPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
   const settingsRoute = useMemo(() => {
@@ -63,10 +62,10 @@ export default function SettingsListPage() {
 
   return (
     <div className="p-1">
-      <div className="pb-3">
+      {/* <div className="pb-3">
         <h1 className="pt-1 font-bold text-4xl">{t("settings.title")}</h1>
         <p className="pt-1 text-gray-500">{t("settings.description")}</p>
-      </div>
+      </div> */}
       <div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-4">
           {settingsRoute.map((item) => (

@@ -1,11 +1,13 @@
 import { Input } from "antd";
 import { Search } from "lucide-react";
 import { useState, useEffect, type FC } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 interface ClientFilterProps {
   clear?: boolean;
 }
 const SearchFilter: FC<ClientFilterProps> = () => {
+  const { t } = useTranslation();
   const [value, setValue] = useState<string>();
   const [searchParams, setSearchParams] = useSearchParams();
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +40,7 @@ const SearchFilter: FC<ClientFilterProps> = () => {
         min="1"
         id="number"
         name="number"
-        placeholder="Qidirish"
+        placeholder={t("common.search")}
         onChange={handleChange}
         className="w-full! h-8 [&_input]:h-5.5!"
       />

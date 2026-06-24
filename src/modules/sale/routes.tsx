@@ -13,7 +13,7 @@ const withPermission = (element: React.ReactElement, permission: string) => (
 
 export const saleRoutes: RouteObject = {
   path: "sale",
-  handle: { title: "Sotuv" },
+  handle: { title: "sale.title" },
   children: [
     {
       index: true,
@@ -22,17 +22,17 @@ export const saleRoutes: RouteObject = {
     {
       path: "add",
       element: withPermission(<SaleAddEditPage />, salePermissions.create),
-      handle: { title: "Yangi savdo", showBack: true, backTo: ".." },
+      handle: { title: "sale.new", showBack: true, backTo: ".." },
     },
     {
       path: "edit/:id",
       element: withPermission(<SaleAddEditPage />, salePermissions.update),
-      handle: { title: "Savdoni o'zgartirish", showBack: true, backTo: "../.." },
+      handle: { title: "sale.edit", showBack: true, backTo: "../.." },
     },
     {
       path: ":id",
       element: withPermission(<SaleDetailPage />, salePermissions.detail),
-      handle: { title: "Savdo hujjati", showBack: true, backTo: ".." },
+      handle: { title: "sale.document", showBack: true, backTo: ".." },
     },
   ],
 };

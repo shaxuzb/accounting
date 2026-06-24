@@ -2,6 +2,7 @@ import { Button, Input, Table } from "antd";
 import type { TableColumnsType } from "antd";
 import { PlusCircle, Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import Card from "@/components/ui/card/Card";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
@@ -39,6 +40,7 @@ export default function SaleProductSelection({
   onChange,
   disabled = false,
 }: Props) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [activeProductId, setActiveProductId] = useState<number | null>(null);
   const [quantities, setQuantities] = useState<Record<number, number | null>>(
@@ -311,7 +313,7 @@ export default function SaleProductSelection({
         <Card className="overflow-hidden border border-border">
           <div className="flex items-center justify-between border-b border-border p-3">
             <h3 className="font-semibold text-text">
-              Tanlangan mahsulotlar (hujjat)
+              {t("sale.selection.selectedProducts")}
             </h3>
             <Button
               danger
@@ -320,7 +322,7 @@ export default function SaleProductSelection({
               disabled={!products.length || disabled}
               onClick={() => onChange([])}
             >
-              Tozalash
+              {t("common.clear")}
             </Button>
           </div>
           <Table<SaleSelectedProduct>

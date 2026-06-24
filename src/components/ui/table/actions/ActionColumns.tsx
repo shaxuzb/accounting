@@ -6,6 +6,7 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   record: {
@@ -50,13 +51,14 @@ const ActionColumn: React.FC<Props> = ({
   customActions = [],
 }) => {
   const { modal } = App.useApp();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const actions: MenuProps["items"] = [];
   const handleDelete = async (id: number | string) => {
     try {
       const response = await $axiosPrivate.delete(`/${deletePath}/${id}`);
       if (response) {
-        toast.success(`Element ${id} muvaffaqiyatli o'chirildi`);
+        toast.success(t("actions.deleteSuccess", { id }));
         refetch();
       }
     } catch (err: unknown) {
@@ -67,7 +69,7 @@ const ActionColumn: React.FC<Props> = ({
   if (permissions.includes(permissionsCode?.editCode || "")) {
     actions.push({
       key: "edit",
-      label: "O'zgartirish",
+      label: t("common.edit"),
       icon: <Pencil className="size-4" />,
       onClick: () => {
         if (!editModal.isModal)
@@ -96,19 +98,19 @@ const ActionColumn: React.FC<Props> = ({
   if (permissions.includes(permissionsCode?.deleteCode || "")) {
     actions.push({
       key: "delete",
-      label: "O'chirish",
+      label: t("common.delete"),
       icon: <Trash className="size-4.5" />,
       danger: true,
       onClick: () => {
         modal.confirm({
-          title: "Siz ushbu elementni o'chirishni xohlaysizmi?",
-          content: "Bu amalni qaytarib bo'lmaydi!",
-          okText: "O'chirish",
+          title: t("actions.deleteConfirmTitle"),
+          content: t("actions.deleteConfirmContent"),
+          okText: t("common.delete"),
           okButtonProps: {
             type: "primary",
             danger: true,
           },
-          cancelText: "Bekor qilish",
+          cancelText: t("common.cancel"),
           onOk: () => handleDelete(record.id),
         });
       },

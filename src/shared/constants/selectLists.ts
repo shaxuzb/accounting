@@ -31,6 +31,7 @@ export const selectListEndpoints = {
   languagesSelectList: "manuals/languages",
   contractsSelectList: "manuals/contracts",
   contractTypeSelectList: "manuals/contract-types",
+  serviceTypesSelectList: "manuals/purchase-service-types",
 };
 
 export const selectListKeys = {

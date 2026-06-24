@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -13,8 +13,10 @@ import {
   Layers,
 } from "lucide-react";
 import { useAppSelector } from "@/store/hooks";
+import { useTranslation } from "react-i18next";
 
 const LoadingScreen = () => {
+  const { t } = useTranslation();
   const themeMode = useAppSelector((state) => state.mode.mode); // "dark" | "light"
   const isDark =
     themeMode === "dark"
@@ -29,18 +31,18 @@ const LoadingScreen = () => {
 
   const modules = useMemo(
     () => [
-      { label: "Moliyaviy hisobot", Icon: Calculator, color: "#22c55e" },
-      { label: "Xodimlarni boshqarish", Icon: Users, color: "#38bdf8" },
-      { label: "Ta’minot zanjiri", Icon: Truck, color: "#a78bfa" },
-      { label: "Ishlab chiqarish", Icon: Factory, color: "#f97316" },
-      { label: "Loyiha boshqaruvi", Icon: ClipboardList, color: "#06b6d4" },
+      { label: t("loading.financialReport"), Icon: Calculator, color: "#22c55e" },
+      { label: t("loading.hr"), Icon: Users, color: "#38bdf8" },
+      { label: t("loading.supplyChain"), Icon: Truck, color: "#a78bfa" },
+      { label: t("loading.production"), Icon: Factory, color: "#f97316" },
+      { label: t("loading.projectManagement"), Icon: ClipboardList, color: "#06b6d4" },
       { label: "CRM", Icon: Layers, color: "#eab308" },
-      { label: "Savdo", Icon: ShoppingCart, color: "#fb7185" },
-      { label: "Biznes tahlili", Icon: BarChart3, color: "#60a5fa" },
-      { label: "Xizmatlar", Icon: Wrench, color: "#f43f5e" },
-      { label: "Hujjatlar", Icon: FileText, color: "#14b8a6" },
+      { label: t("loading.sales"), Icon: ShoppingCart, color: "#fb7185" },
+      { label: t("loading.businessAnalytics"), Icon: BarChart3, color: "#60a5fa" },
+      { label: t("loading.services"), Icon: Wrench, color: "#f43f5e" },
+      { label: t("loading.documents"), Icon: FileText, color: "#14b8a6" },
     ],
-    [],
+    [t],
   );
 
   return (
@@ -210,3 +212,4 @@ const LoadingScreen = () => {
 };
 
 export default LoadingScreen;
+

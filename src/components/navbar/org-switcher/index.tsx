@@ -66,6 +66,7 @@ const OrgSwitcher: React.FC = () => {
         // className="min-w-32 max-w-48 [&_.ant-select-selector]:!px-0 [&_.ant-select-selection-item]:!text-sm [&_.ant-select-selection-item]:!font-medium [&_.ant-select-selection-item]:!text-text"
         popupMatchSelectWidth={false}
         placeholder="Tashkilot"
+        size="medium"
       />
     </div>
   );

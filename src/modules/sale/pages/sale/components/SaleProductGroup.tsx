@@ -15,11 +15,7 @@ interface Props {
   onApplyMargin: (lineKeys: string[], margin: number) => void;
   onApplyMarginAmount: (lineKeys: string[], marginAmount: number) => void;
   onApplySalePrice: (lineKeys: string[], salePrice: number) => void;
-  onApplyVat: (
-    lineKeys: string[],
-    vatRateId: number | null,
-    vatRateName?: string | null,
-  ) => void;
+  onApplyVat: (lineKeys: string[], vatRateId: number | null) => void;
   onLineMarginChange: (lineKey: string, margin: number) => void;
   onLineSalePriceChange: (lineKey: string, salePrice: number) => void;
 }
@@ -83,13 +79,8 @@ function SaleProductGroup({
   useEffect(() => {
     if (previousVatRateId.current === formik.values.vatRateId) return;
     previousVatRateId.current = formik.values.vatRateId;
-    onApplyVat(lineKeys, formik.values.vatRateId, formik.values.vatRateName);
-  }, [
-    formik.values.vatRateId,
-    formik.values.vatRateName,
-    lineKeys,
-    onApplyVat,
-  ]);
+    onApplyVat(lineKeys, formik.values.vatRateId);
+  }, [formik.values.vatRateId, lineKeys, onApplyVat]);
 
   return (
     <section className="overflow-hidden rounded-lg border border-border bg-primary-bg">

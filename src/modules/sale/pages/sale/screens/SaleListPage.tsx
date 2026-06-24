@@ -2,35 +2,36 @@ import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, ReceiptText, RefreshCw } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
+import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
+import { ProcessStatusBadge } from "@/components/ui/status";
 import { useAppSelector } from "@/store/hooks";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
-import { stateStatus } from "@/utils/helpers/statusHelper";
 import { saleEndpoints } from "../constants/endpoints";
 import { salePermissions } from "../constants/permissions";
 import { useGetListSale } from "../hooks";
 import type { SaleDoc } from "../types/type";
 
 export default function SaleListPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
-  const { data, isLoading, isFetching, refetch } =
-    useGetListSale(searchParams);
+  const { data, isLoading, isFetching, refetch } = useGetListSale(searchParams);
 
   const tableColumns: TableColumnsType<SaleDoc> = [
     {
       dataIndex: "indexId",
-      title: "№",
+      title: t("common.rowNumber"),
       width: 70,
       align: "center",
     },
     {
-      title: "Hujjat raqami",
+      title: t("purchase.fields.docNumber"),
       dataIndex: "docNumber",
       minWidth: 150,
       render: (value, record) => (
@@ -51,39 +52,38 @@ export default function SaleListPage() {
       ),
     },
     {
-      title: "Sana",
+      title: t("purchase.fields.docDate"),
       dataIndex: "docDate",
-      width: 130,
       align: "center",
       render: customDate,
     },
     {
-      title: "Kontragent",
+      title: t("settings.fields.counterparty"),
       dataIndex: "counterpartyName",
-      minWidth: 200,
       align: "center",
     },
     {
-      title: "Ombor",
+      title: t("purchase.fields.warehouse"),
       dataIndex: "warehouseName",
-      minWidth: 160,
       align: "center",
     },
     {
-      title: "Summa",
+      title: t("purchase.fields.amount"),
       dataIndex: "totalAmount",
-      width: 160,
       align: "right",
       render: (value, record) =>
         `${numberSpacing(value)} ${record.currencyCode ?? ""}`.trim(),
     },
     {
-      title: "Holat",
+      title: t("settings.fields.status"),
       dataIndex: "statusName",
-      width: 130,
       align: "center",
-      render: (_, record) =>
-        stateStatus(record.statusId, record.statusName),
+      render: (_, record) => (
+        <ProcessStatusBadge
+          statusId={record.statusId}
+          statusName={record.statusName}
+        />
+      ),
     },
   ];
 
@@ -95,9 +95,8 @@ export default function SaleListPage() {
         ...tableColumns,
         {
           dataIndex: "actions",
-          title: "Amallar",
+          title: t("common.actions"),
           align: "center",
-          width: 90,
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
@@ -128,7 +127,7 @@ export default function SaleListPage() {
           <PermissionCard permission={salePermissions.create}>
             <Link to="add">
               <Button type="primary" icon={<Plus className="size-4" />}>
-                Qo'shish
+                {t("common.add")}
               </Button>
             </Link>
           </PermissionCard>
@@ -147,3 +146,4 @@ export default function SaleListPage() {
     </div>
   );
 }
+

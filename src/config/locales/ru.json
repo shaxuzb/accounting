@@ -2,23 +2,101 @@
   "common": {
     "add": "Добавить",
     "save": "Сохранить",
-    "submit": "Завершить",
+    "submit": "Подтвердить",
     "search": "Поиск",
     "view": "Просмотр",
     "name": "Название",
     "actions": "Действия",
+    "edit": "Изменить",
+    "delete": "Удалить",
+    "cancel": "Отмена",
+    "clear": "Очистить",
+    "import": "Импорт",
+    "upload": "Загрузить",
+    "ready": "Готово",
+    "loading": "Загрузка",
     "rowNumber": "№",
     "total": "Итого",
     "created": "Создано",
     "back": "Назад",
     "next": "Далее"
   },
+  "actions": {
+    "deleteSuccess": "Элемент {{id}} успешно удалён",
+    "deleteConfirmTitle": "Удалить этот элемент?",
+    "deleteConfirmContent": "Это действие нельзя отменить!"
+  },
+  "processStatuses": {
+    "draft": "Черновик",
+    "posted": "Проведён",
+    "cancelled": "Отменён",
+    "pending": "Ожидает"
+  },
+  "error": {
+    "title": "Произошла ошибка",
+    "subtitle": "Не удалось загрузить страницу или обработать запрос.",
+    "reload": "Перезагрузить страницу"
+  },
+  "profile": {
+    "defaultUser": "Пользователь",
+    "theme": "Тема",
+    "security": "Безопасность",
+    "language": "Язык",
+    "wallpaper": "Обои",
+    "logout": "Выйти",
+    "languages": {
+      "uz": "Узбекский",
+      "ru": "Русский",
+      "en": "Английский"
+    }
+  },
+  "ThemeSettings": {
+    "title": "Настройки внешнего вида",
+    "reset": "Сбросить",
+    "themeMode": {
+      "title": "Цветовой режим"
+    }
+  },
+  "loading": {
+    "financialReport": "Финансовая отчётность",
+    "hr": "Управление персоналом",
+    "supplyChain": "Цепочка поставок",
+    "production": "Производство",
+    "projectManagement": "Управление проектами",
+    "sales": "Продажи",
+    "businessAnalytics": "Бизнес-аналитика",
+    "services": "Услуги",
+    "documents": "Документы"
+  },
+  "menu": {
+    "dashboard": "Управление",
+    "warehouse": "Склад",
+    "warehouseMain": "Склад",
+    "sale": "Продажи",
+    "company": "HisobKitob MCHJ"
+  },
+  "Buttons": {
+    "back": "Назад"
+  },
+  "auth": {
+    "systemName": "Бухгалтерская система",
+    "welcome": "Добро пожаловать!",
+    "subtitle": "Войдите в аккаунт и удобно управляйте процессами.",
+    "userName": "Имя пользователя",
+    "password": "Пароль",
+    "rememberMe": "Запомнить",
+    "forgotPassword": "Забыли пароль?",
+    "login": "Войти",
+    "loginSuccess": "Вы успешно вошли!",
+    "noPermissions": "Нет разрешений для входа в систему!",
+    "copyright": "© 2026 HisobKitob. Все права защищены."
+  },
   "validation": {
     "required": "{{field}} обязательно",
     "invalidEmail": "Неверный формат email",
     "invalidPhone": "Неверный формат телефона",
     "minString": "{{field}} должно содержать минимум {{min}} символов",
-    "minArray": "{{field}} должно содержать минимум {{min}} выбранный элемент"
+    "minArray": "{{field}} должно содержать минимум {{min}} выбранных элементов"
   },
   "settings": {
     "title": "Настройки",
@@ -39,26 +117,28 @@
       "productGroups": "Группы товаров",
       "cashBox": "Касса",
       "counterpartyContacts": "Контакты контрагента",
-      "warehouse": "Склад"
+      "warehouse": "Склад",
+      "purchaseServices": "Услуги закупки"
     },
     "descriptions": {
-      "roles": "Управление ролями и правами доступа в системе.",
-      "users": "Управление пользователями и их ролями в системе.",
+      "roles": "Управление ролями и правами доступа.",
+      "users": "Управление пользователями и их ролями.",
       "organizations": "Управление данными организаций.",
       "counterparty": "Управление карточками контрагентов.",
-      "departments": "Управление списком отделов.",
-      "branches": "Управление списком филиалов.",
+      "departments": "Управление отделами.",
+      "branches": "Управление филиалами.",
       "chartAccounts": "Управление планом счетов.",
       "bankAccounts": "Управление банковскими счетами контрагентов.",
       "orgBankAccounts": "Управление банковскими счетами организации.",
-      "positions": "Управление списком должностей.",
+      "positions": "Управление должностями.",
       "productGroups": "Управление группами товаров.",
-      "cashBox": "Управление списком касс.",
+      "cashBox": "Управление кассами.",
       "counterpartyContacts": "Управление контактами контрагентов.",
-      "warehouse": "Управление списком складов."
+      "warehouse": "Управление складами.",
+      "purchaseServices": "Управление услугами, используемыми в закупках."
     },
     "fields": {
-      "accountNumber": "Номер счета",
+      "accountNumber": "Номер счёта",
       "address": "Адрес",
       "bank": "Банк",
       "bankName": "Название банка",
@@ -88,6 +168,9 @@
       "region": "Регион",
       "responsibleUser": "Ответственный пользователь",
       "role": "Роль",
+      "description": "Описание",
+      "serviceType": "Тип услуги",
+      "serviceTypeId": "ID типа услуги",
       "shortName": "Краткое название",
       "status": "Статус",
       "userName": "Имя пользователя"
@@ -104,21 +187,22 @@
       "created": "Запись успешно создана",
       "updated": "Запись успешно обновлена",
       "userCreated": "Пользователь успешно создан",
-      "userUpdated": "Пользователь успешно обновлен",
+      "userUpdated": "Пользователь успешно обновлён",
       "roleCreated": "Роль успешно создана",
       "roleUpdated": "Роль успешно обновлена"
     },
     "role": {
       "selectAll": "Выбрать все",
-      "searchPlaceholder": "Искать по названию модуля..."
+      "searchPlaceholder": "Поиск по названию модуля..."
     }
   },
   "purchase": {
-    "title": "Покупки",
-    "detailTitle": "Документ покупки",
-    "importTitle": "Импорт покупки",
+    "title": "Закупки",
+    "detailTitle": "Документ закупки",
+    "importTitle": "Импорт закупки",
     "fields": {
       "amount": "Сумма",
+      "warehouse": "Склад",
       "contract": "Договор",
       "description": "Описание",
       "discount": "Скидка",
@@ -130,13 +214,13 @@
       "quantity": "Количество",
       "sapCode": "SAP код",
       "serialNumber": "Серийный номер",
-      "markingNumber": "Маркировочный номер",
+      "markingNumber": "Код маркировки",
       "supplier": "Поставщик",
       "total": "Итоговая сумма",
       "uom": "Единица"
     },
     "messages": {
-      "imported": "Данные покупки импортированы"
+      "imported": "Данные закупки импортированы"
     },
     "import": {
       "nonSerial": "Без серии",
@@ -144,12 +228,64 @@
       "withDiscount": "Со скидкой",
       "withoutDiscount": "Без скидки",
       "uploadTitle": "Выберите Excel файл или перетащите его сюда",
-      "uploadHint": "Файл импорта покупки в формате XLS или XLSX",
+      "uploadHint": "Файл импорта закупки в формате XLS или XLSX",
       "modalTitle": "Импорт Excel",
       "sheetStep": "Выбор листа",
       "previewStep": "Просмотр данных",
       "mappingStep": "Сопоставление колонок",
       "selectField": "Выберите поле"
+    }
+  },
+  "bank": {
+    "title": "Банк",
+    "statementImport": "Импорт банковской выписки",
+    "fields": {
+      "bankAccount": "Банковский счёт",
+      "operationType": "Тип операции",
+      "counterparty": "Контрагент",
+      "date": "Дата",
+      "amount": "Сумма",
+      "comment": "Комментарий",
+      "debit": "Дебет",
+      "credit": "Кредит",
+      "currencyId": "ID валюты",
+      "counterpartyId": "ID контрагента",
+      "accountNumber": "Номер счёта"
+    },
+    "messages": {
+      "imported": "Банковская выписка импортирована",
+      "saved": "Банковские операции сохранены",
+      "partialSaved": "Сохранено {{saved}} транзакций, пропущено {{skipped}}",
+      "noValidTransactions": "Нет заполненных транзакций для сохранения",
+      "saveNextStep": "Сохранение будет подключено к BankOperation API на следующем шаге",
+      "missingRequired": "В {{count}} транзакциях не хватает обязательных данных",
+      "noData": "Импортированных банковских выписок пока нет",
+      "noTransactions": "Транзакции не найдены",
+      "counterpartyMissing": "Контрагент не найден",
+      "bankAccountMissing": "Банковский счёт отсутствует",
+      "bankAccountMissingDescription": "Транзакции этой карточки не будут отправлены, потому что bankAccountId не найден."
+    },
+    "import": {
+      "title": "Импорт банковской выписки",
+      "description": "Загрузите Excel файл, и парсер сам извлечёт данные.",
+      "uploadText": "Нажмите для загрузки файла или перетащите его сюда",
+      "uploadHint": "Поддерживаются банковские выписки XLS или XLSX.",
+      "statements": "Выписки",
+      "transactions": "Транзакции",
+      "status": "Статус",
+      "readyToSave": "Готово к сохранению"
+    }
+  },
+  "contract": {
+    "title": "Договор",
+    "fields": {
+      "counterpartyName": "Название контрагента",
+      "contractType": "Тип договора",
+      "contractNumber": "Номер договора",
+      "stateName": "Статус",
+      "startDate": "Дата начала",
+      "endDate": "Дата окончания",
+      "contractDate": "Дата договора"
     }
   },
   "products": {
@@ -169,7 +305,7 @@
       "clientUom": "Единица клиента",
       "supplierToStockFactor": "Коэффициент закупка-склад",
       "stockToClientFactor": "Коэффициент склад-клиент",
-      "unit": "Birlik"
+      "unit": "Единица"
     },
     "actions": {
       "addProduct": "Создать товар"
@@ -181,7 +317,24 @@
     },
     "messages": {
       "created": "Товар успешно создан",
-      "updated": "Товар успешно обновлен"
+      "updated": "Товар успешно обновлён"
+    }
+  },
+  "sale": {
+    "title": "Продажи",
+    "new": "Новая продажа",
+    "edit": "Редактировать продажу",
+    "document": "Документ продажи",
+    "selection": {
+      "selectedProducts": "Выбранные товары (документ)"
+    }
+  },
+  "warehouses": {
+    "title": "Склад"
+  },
+  "Purchase": {
+    "excelImport": {
+      "title": "Импорт закупки"
     }
   }
 }

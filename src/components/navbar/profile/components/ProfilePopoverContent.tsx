@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+﻿import React, { useRef, useState } from "react";
 import { Avatar, Button, Popover } from "antd";
 import { ChevronRight, Moon, ShieldCheck, Palette, LogOut } from "lucide-react";
 import ProfileIcon from "@/assets/images/profile/profile.svg";
@@ -80,22 +80,22 @@ const MenuCard = ({
 const LanguagePopoverContent = ({ onSelect }: { onSelect?: () => void }) => {
   const dispatch = useAppDispatch();
   const lang = useAppSelector((state) => state.lang.lang);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const languages: { key: Lang; label: string; icon: React.ReactNode }[] = [
     {
       key: "uz",
-      label: "O'zbek",
+      label: t("profile.languages.uz"),
       icon: <UzbFlagIcon className="h-5 w-5" />,
     },
     {
       key: "ru",
-      label: "Русский",
+      label: t("profile.languages.ru"),
       icon: <RusFlagIcon className="h-5 w-5" />,
     },
     {
       key: "en",
-      label: "English",
+      label: t("profile.languages.en"),
       icon: <EngFlagIcon className="h-5 w-5" />,
     },
   ];
@@ -130,7 +130,7 @@ const LanguagePopoverContent = ({ onSelect }: { onSelect?: () => void }) => {
 export default LanguagePopoverContent;
 
 export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
-  fullName = "Foydalanuvchi",
+  fullName,
   phone = "+998 90 123 45 67",
   onProfileClick,
   onThemeClick,
@@ -140,6 +140,7 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
   // onMobileDownload,
   onLogout,
 }) => {
+  const { t } = useTranslation();
   const lang = useAppSelector((state) => state.lang.lang);
   const [langPopover, setLangPopover] = useState(false);
   const langTriggerRef = useRef<HTMLDivElement | null>(null);
@@ -155,7 +156,7 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
             <Avatar src={ProfileIcon} size={30} />
             <div>
               <div className="text-[14px] font-semibold text-slate-900">
-                {fullName}
+                {fullName ?? t("profile.defaultUser")}
               </div>
               <div className="text-xs text-muted-second">{phone}</div>
             </div>
@@ -168,13 +169,13 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
           <div className="grid grid-cols-4 gap-3 ">
             <MenuCard
               icon={<Moon className="size-5" />}
-              label="Mavzu"
+              label={t("profile.theme")}
               onClick={onThemeClick}
             />
 
             <MenuCard
               icon={<ShieldCheck className="size-5" />}
-              label="Xavfsizlik"
+              label={t("profile.security")}
               onClick={onSecurityClick}
             />
 
@@ -216,7 +217,7 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
                         <EngFlagIcon className="w-3/4" />
                       )
                     }
-                    label="Til"
+                    label={t("profile.language")}
                   />
                 </div>
               </Popover>
@@ -224,7 +225,7 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
 
             <MenuCard
               icon={<Palette className="size-5" />}
-              label="Oboy"
+              label={t("profile.wallpaper")}
               onClick={onWallpaperClick}
             />
           </div>
@@ -254,9 +255,10 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
           className="font-semibold! "
           icon={<LogOut className="h-4 w-4" />}
         >
-          Chiqish
+          {t("profile.logout")}
         </Button>
       </div>
     </div>
   );
 };
+

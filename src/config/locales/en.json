@@ -1,0 +1,340 @@
+{
+  "common": {
+    "add": "Add",
+    "save": "Save",
+    "submit": "Submit",
+    "search": "Search",
+    "view": "View",
+    "name": "Name",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "clear": "Clear",
+    "import": "Import",
+    "upload": "Upload",
+    "ready": "Ready",
+    "loading": "Loading",
+    "rowNumber": "No.",
+    "total": "Total",
+    "created": "Created",
+    "back": "Back",
+    "next": "Next"
+  },
+  "actions": {
+    "deleteSuccess": "Element {{id}} was deleted successfully",
+    "deleteConfirmTitle": "Do you want to delete this element?",
+    "deleteConfirmContent": "This action cannot be undone!"
+  },
+  "processStatuses": {
+    "draft": "Draft",
+    "posted": "Posted",
+    "cancelled": "Cancelled",
+    "pending": "Pending"
+  },
+  "error": {
+    "title": "An error occurred",
+    "subtitle": "Sorry, there was a problem loading the page or processing requests.",
+    "reload": "Reload page"
+  },
+  "profile": {
+    "defaultUser": "User",
+    "theme": "Theme",
+    "security": "Security",
+    "language": "Language",
+    "wallpaper": "Wallpaper",
+    "logout": "Log out",
+    "languages": {
+      "uz": "Uzbek",
+      "ru": "Russian",
+      "en": "English"
+    }
+  },
+  "ThemeSettings": {
+    "title": "Appearance settings",
+    "reset": "Reset",
+    "themeMode": {
+      "title": "Color mode"
+    }
+  },
+  "loading": {
+    "financialReport": "Financial reporting",
+    "hr": "HR management",
+    "supplyChain": "Supply chain",
+    "production": "Production",
+    "projectManagement": "Project management",
+    "sales": "Sales",
+    "businessAnalytics": "Business analytics",
+    "services": "Services",
+    "documents": "Documents"
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "warehouse": "Warehouse",
+    "warehouseMain": "Warehouse",
+    "sale": "Sales",
+    "company": "HisobKitob LLC"
+  },
+  "Buttons": {
+    "back": "Back"
+  },
+  "auth": {
+    "systemName": "Accounting system",
+    "welcome": "Welcome!",
+    "subtitle": "Sign in to your account and manage processes easily.",
+    "userName": "Username",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "login": "Sign in",
+    "loginSuccess": "Signed in successfully!",
+    "noPermissions": "No permissions have been granted to access the system!",
+    "copyright": "© 2026 HisobKitob. All rights reserved."
+  },
+  "validation": {
+    "required": "{{field}} is required",
+    "invalidEmail": "Invalid email format",
+    "invalidPhone": "Invalid phone number format",
+    "minString": "{{field}} must contain at least {{min}} characters",
+    "minArray": "{{field}} must contain at least {{min}} selected item(s)"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "System parameters",
+    "entities": {
+      "role": "Role",
+      "roles": "Roles",
+      "user": "User",
+      "users": "Users",
+      "organizations": "Organizations",
+      "counterparty": "Counterparties",
+      "departments": "Departments",
+      "branches": "Branches",
+      "chartAccounts": "Chart of accounts",
+      "bankAccounts": "Bank accounts",
+      "orgBankAccounts": "Organization bank accounts",
+      "positions": "Positions",
+      "productGroups": "Product groups",
+      "cashBox": "Cash desk",
+      "counterpartyContacts": "Counterparty contacts",
+      "warehouse": "Warehouse",
+      "purchaseServices": "Purchase services"
+    },
+    "descriptions": {
+      "roles": "Manage system roles and permissions.",
+      "users": "Manage users and their roles.",
+      "organizations": "Manage organization data.",
+      "counterparty": "Manage counterparty cards.",
+      "departments": "Manage departments.",
+      "branches": "Manage branches.",
+      "chartAccounts": "Manage chart of accounts.",
+      "bankAccounts": "Manage counterparty bank accounts.",
+      "orgBankAccounts": "Manage organization bank accounts.",
+      "positions": "Manage positions.",
+      "productGroups": "Manage product groups.",
+      "cashBox": "Manage cash desks.",
+      "counterpartyContacts": "Manage counterparty contacts.",
+      "warehouse": "Manage warehouses.",
+      "purchaseServices": "Manage services used in purchases."
+    },
+    "fields": {
+      "accountNumber": "Account number",
+      "address": "Address",
+      "bank": "Bank",
+      "bankName": "Bank name",
+      "branch": "Branch",
+      "branchName": "Branch name",
+      "code": "Code",
+      "comment": "Comment",
+      "counterparty": "Counterparty",
+      "counterpartyName": "Counterparty name",
+      "currency": "Currency",
+      "director": "Director",
+      "district": "District",
+      "email": "Email",
+      "firstName": "First name",
+      "fullName": "Full name",
+      "inn": "TIN",
+      "language": "Language",
+      "lastName": "Last name",
+      "modules": "Modules",
+      "name": "Name",
+      "organization": "Organization",
+      "organizationName": "Organization name",
+      "partyType": "Counterparty type",
+      "password": "Password",
+      "phoneNumber": "Phone number",
+      "position": "Position",
+      "region": "Region",
+      "responsibleUser": "Responsible user",
+      "role": "Role",
+      "description": "Description",
+      "serviceType": "Service type",
+      "serviceTypeId": "Service type ID",
+      "shortName": "Short name",
+      "status": "Status",
+      "userName": "Username"
+    },
+    "form": {
+      "createTitle": "Add new record",
+      "editTitle": "Edit record",
+      "createUser": "Add user",
+      "editUser": "Edit user",
+      "createRole": "Add role",
+      "editRole": "Edit role"
+    },
+    "messages": {
+      "created": "Record created successfully",
+      "updated": "Record updated successfully",
+      "userCreated": "User created successfully",
+      "userUpdated": "User updated successfully",
+      "roleCreated": "Role created successfully",
+      "roleUpdated": "Role updated successfully"
+    },
+    "role": {
+      "selectAll": "Select all",
+      "searchPlaceholder": "Search by module name..."
+    }
+  },
+  "purchase": {
+    "title": "Purchases",
+    "detailTitle": "Purchase document",
+    "importTitle": "Purchase import",
+    "fields": {
+      "amount": "Amount",
+      "warehouse": "Warehouse",
+      "contract": "Contract",
+      "description": "Description",
+      "discount": "Discount",
+      "docDate": "Date",
+      "docNumber": "Document number",
+      "price": "Price",
+      "product": "Product",
+      "productId": "Product ID",
+      "quantity": "Quantity",
+      "sapCode": "SAP code",
+      "serialNumber": "Serial number",
+      "markingNumber": "Marking number",
+      "supplier": "Supplier",
+      "total": "Total price",
+      "uom": "Unit"
+    },
+    "messages": {
+      "imported": "Purchase data imported"
+    },
+    "import": {
+      "nonSerial": "Non-serial",
+      "serial": "Serial",
+      "withDiscount": "With discount",
+      "withoutDiscount": "Without discount",
+      "uploadTitle": "Select an Excel file or drag it here",
+      "uploadHint": "Purchase import file in XLS or XLSX format",
+      "modalTitle": "Excel import",
+      "sheetStep": "Select sheet",
+      "previewStep": "Preview data",
+      "mappingStep": "Map columns",
+      "selectField": "Select field"
+    }
+  },
+  "bank": {
+    "title": "Bank",
+    "statementImport": "Bank statement import",
+    "fields": {
+      "bankAccount": "Bank account",
+      "operationType": "Operation type",
+      "counterparty": "Counterparty",
+      "date": "Date",
+      "amount": "Amount",
+      "comment": "Comment",
+      "debit": "Debit",
+      "credit": "Credit",
+      "currencyId": "Currency ID",
+      "counterpartyId": "Counterparty ID",
+      "accountNumber": "Account number"
+    },
+    "messages": {
+      "imported": "Bank statement imported",
+      "saved": "Bank operations saved",
+      "partialSaved": "{{saved}} transactions saved, {{skipped}} skipped",
+      "noValidTransactions": "No complete transactions found to save",
+      "saveNextStep": "Saving will be connected to the BankOperation API in the next step",
+      "missingRequired": "{{count}} transactions are missing required data",
+      "noData": "No imported bank statements yet",
+      "noTransactions": "No transactions found",
+      "counterpartyMissing": "Counterparty not found",
+      "bankAccountMissing": "No bank account",
+      "bankAccountMissingDescription": "Transactions in this card will not be sent because bankAccountId was not found."
+    },
+    "import": {
+      "title": "Bank statement import",
+      "description": "Upload an Excel file and the parser will extract the data.",
+      "uploadText": "Click to upload a file or drag it here",
+      "uploadHint": "XLS or XLSX bank statement files are supported.",
+      "statements": "Statements",
+      "transactions": "Transactions",
+      "status": "Status",
+      "readyToSave": "Ready to save"
+    }
+  },
+  "contract": {
+    "title": "Contract",
+    "fields": {
+      "counterpartyName": "Counterparty name",
+      "contractType": "Contract type",
+      "contractNumber": "Contract number",
+      "stateName": "Status",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "contractDate": "Contract date"
+    }
+  },
+  "products": {
+    "title": "Products",
+    "createTitle": "Create product group",
+    "editTitle": "Edit product group",
+    "fields": {
+      "name": "Name",
+      "productType": "Product type",
+      "sapCode": "SAP code",
+      "supplier": "Supplier",
+      "description": "Description",
+      "status": "Status",
+      "currency": "Currency",
+      "supplierUom": "Purchase unit",
+      "stockUom": "Warehouse unit",
+      "clientUom": "Client unit",
+      "supplierToStockFactor": "Purchase-to-stock factor",
+      "stockToClientFactor": "Stock-to-client factor",
+      "unit": "Unit"
+    },
+    "actions": {
+      "addProduct": "Create product"
+    },
+    "status": {
+      "new": "New",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "messages": {
+      "created": "Product created successfully",
+      "updated": "Product updated successfully"
+    }
+  },
+  "sale": {
+    "title": "Sales",
+    "new": "New sale",
+    "edit": "Edit sale",
+    "document": "Sale document",
+    "selection": {
+      "selectedProducts": "Selected products (document)"
+    }
+  },
+  "warehouses": {
+    "title": "Warehouse"
+  },
+  "Purchase": {
+    "excelImport": {
+      "title": "Purchase import"
+    }
+  }
+}

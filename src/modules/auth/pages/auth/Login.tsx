@@ -1,4 +1,4 @@
-import InputPassword from "@/components/fields/InputPassword";
+﻿import InputPassword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
 import { Button, Checkbox, Form } from "antd";
 import { useFormik } from "formik";
@@ -7,11 +7,14 @@ import { authSchema } from "../../types/auth";
 import { authService, type LoginPayload } from "@/services/authService";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { login } from "@/store/features/authSlice";
+import { setLang } from "@/store/features/langSlice";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import { useTranslation } from "react-i18next";
 
 function Login() {
+  const { i18n, t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const loading = useAppSelector((s) => s.auth.loading);
@@ -27,11 +30,11 @@ function Login() {
           password: values.password,
         });
         if (response.data.user.permissions.length === 0) {
-          return toast.error("Tizimga kirishga ruxsatlar berilmagan!");
+          return toast.error(t("auth.noPermissions"));
         }
         dispatch(login(response.data));
         navigate("/main", { replace: true });
-        toast.success("Muvaffaqiyatli kirdingiz!");
+        toast.success(t("auth.loginSuccess"));
       } catch (error) {
         errorHandlers(error);
       }
@@ -55,17 +58,17 @@ function Login() {
                   HisobKitob
                 </h1>
                 <p className="text-[11px] text-blue-600 font-semibold mt-0.5 tracking-wider">
-                  Buxgalteriya tizimi
+                  {t("auth.systemName")}
                 </p>
               </div>
             </div>
 
             <div className="mb-7">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Xush kelibsiz!
+                {t("auth.welcome")}
               </h2>
               <p className="text-sm text-gray-400 leading-relaxed">
-                Hisobingizga kiring va jarayonlarni oson boshqaring.
+                {t("auth.subtitle")}
               </p>
             </div>
 
@@ -73,23 +76,23 @@ function Login() {
               <InputText
                 fieldName="userName"
                 formik={formik}
-                label="Foydalanuvchi nomi"
+                label="auth.userName"
               />
               <InputPassword
                 formik={formik}
                 fieldName="password"
-                label="Parol"
+                label="auth.password"
               />
 
               <div className="flex items-center justify-between py-3">
                 <Checkbox className="text-xs font-medium text-gray-500">
-                  Eslab qolish
+                  {t("auth.rememberMe")}
                 </Checkbox>
                 <a
                   href="#"
                   className="text-xs font-semibold text-blue-600 hover:underline"
                 >
-                  Parolni unutdingizmi?
+                  {t("auth.forgotPassword")}
                 </a>
               </div>
 
@@ -101,24 +104,42 @@ function Login() {
                 loading={loading || formik.isSubmitting}
                 className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
               >
-                Kirish →
+                {t("auth.login")} →
               </Button>
             </Form>
           </div>
 
           <div className="border-t border-gray-100 pt-5 max-w-90 mx-auto w-full">
             <p className="text-center text-[11px] text-gray-400 mb-3">
-              © 2026 HisobKitob. Barcha huquqlar himoyalangan.
+              {t("auth.copyright")}
             </p>
             <div className="flex justify-center gap-5 items-center text-[11px] font-semibold text-gray-400">
-              <span className="hover:text-blue-600 cursor-pointer transition-all">
-                O'zbekcha
+              <span
+                className="hover:text-blue-600 cursor-pointer transition-all"
+                onClick={() => {
+                  dispatch(setLang("uz"));
+                  void i18n.changeLanguage("uz");
+                }}
+              >
+                {t("profile.languages.uz")}
               </span>
-              <span className="hover:text-blue-600 cursor-pointer transition-all">
-                Русский
+              <span
+                className="hover:text-blue-600 cursor-pointer transition-all"
+                onClick={() => {
+                  dispatch(setLang("ru"));
+                  void i18n.changeLanguage("ru");
+                }}
+              >
+                {t("profile.languages.ru")}
               </span>
-              <span className="hover:text-blue-600 cursor-pointer transition-all">
-                English
+              <span
+                className="hover:text-blue-600 cursor-pointer transition-all"
+                onClick={() => {
+                  dispatch(setLang("en"));
+                  void i18n.changeLanguage("en");
+                }}
+              >
+                {t("profile.languages.en")}
               </span>
             </div>
           </div>
@@ -231,3 +252,4 @@ function Login() {
 }
 
 export default Login;
+

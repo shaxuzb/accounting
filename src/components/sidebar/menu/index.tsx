@@ -29,26 +29,26 @@ const menuClassName = cn(
 );
 
 const menuItemClassName = cn(
-  "!mx-3 !my-1 !h-11 !w-[calc(100%-24px)] !rounded-lg !leading-[44px] !text-[#526276]",
-  "hover:!bg-[#e8f1ff] hover:!text-[#1554d1]",
-  "[&.ant-menu-item-selected]:!bg-[#e8f1ff] [&.ant-menu-item-selected]:!font-bold [&.ant-menu-item-selected]:!text-[#1554d1]",
+  "!mx-3 !my-1 !h-11 !w-[calc(100%-24px)] !rounded-lg !leading-[44px] !text-muted-second",
+  "hover:!bg-surface-hover hover:!text-primary",
+  "[&.ant-menu-item-selected]:!bg-surface-hover [&.ant-menu-item-selected]:!font-bold [&.ant-menu-item-selected]:!text-primary",
   "[&.ant-menu-item-selected_.ant-menu-item-icon]:!text-[#1554d1]",
 );
 
 const dropdownClassName = cn(
-  "[&>.ant-menu-submenu-title]:!mx-3 [&>.ant-menu-submenu-title]:!my-1 [&>.ant-menu-submenu-title]:!h-11 [&>.ant-menu-submenu-title]:!w-[calc(100%-24px)] [&>.ant-menu-submenu-title]:!rounded-lg [&>.ant-menu-submenu-title]:!leading-[44px] [&>.ant-menu-submenu-title]:!text-[#526276]",
-  "[&>.ant-menu-submenu-title:hover]:!bg-[#e8f1ff] [&>.ant-menu-submenu-title:hover]:!text-[#1554d1]",
-  "[&.ant-menu-submenu-open>.ant-menu-submenu-title]:!bg-[#e8f1ff] [&.ant-menu-submenu-open>.ant-menu-submenu-title]:!text-[#1554d1]",
-  "[&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!bg-[#e8f1ff] [&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!font-bold [&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!text-[#1554d1]",
+  "[&>.ant-menu-submenu-title]:!mx-3 [&>.ant-menu-submenu-title]:!my-1 [&>.ant-menu-submenu-title]:!h-11 [&>.ant-menu-submenu-title]:!w-[calc(100%-24px)] [&>.ant-menu-submenu-title]:!rounded-lg [&>.ant-menu-submenu-title]:!leading-[44px] [&>.ant-menu-submenu-title]:!text-muted-second",
+  "[&>.ant-menu-submenu-title:hover]:!bg-surface-hover [&>.ant-menu-submenu-title:hover]:!text-primary",
+  "[&.ant-menu-submenu-open>.ant-menu-submenu-title]:!bg-surface-hover [&.ant-menu-submenu-open>.ant-menu-submenu-title]:!text-primary",
+  "[&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!bg-surface-hover [&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!font-bold [&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!text-primary",
   "[&.ant-menu-submenu-open>.ant-menu-submenu-title_.ant-menu-item-icon]:!text-[#1554d1] [&.ant-menu-submenu-open>.ant-menu-submenu-title_.sidebar-menu-arrow]:!text-[#1554d1]",
   "[&.ant-menu-submenu-selected>.ant-menu-submenu-title_.ant-menu-item-icon]:!text-[#1554d1] [&.ant-menu-submenu-selected>.ant-menu-submenu-title_.sidebar-menu-arrow]:!text-[#1554d1]",
 );
 
 const subItemClassName = cn(
-  "group text-animation-trick-parent !relative !mx-0 !my-1.5 !flex !h-8 !w-[calc(100%-12px)] !items-center !bg-transparent !pl-8 !pr-0 !leading-8 !text-[#64748b]",
-  "hover:!bg-transparent hover:!text-[#1554d1]",
+  "group text-animation-trick-parent !relative !mx-0 !my-1.5 !flex !h-8 !w-[calc(100%-12px)] !items-center !bg-transparent !pl-8 !pr-0 !leading-8 !text-muted-second",
+  "hover:!bg-transparent hover:!text-primary",
   "[&_.ant-menu-item-icon]:!absolute [&_.ant-menu-item-icon]:!left-2 [&_.ant-menu-item-icon]:!m-0 [&_.ant-menu-item-icon]:!h-2 [&_.ant-menu-item-icon]:!min-w-2 [&_.ant-menu-item-icon]:!w-2",
-  "[&.ant-menu-item-selected]:!bg-transparent [&.ant-menu-item-selected]:!text-[#1554d1]",
+  "[&.ant-menu-item-selected]:!bg-transparent [&.ant-menu-item-selected]:!text-primary",
 );
 
 const MenuCustom: FC<LinkProps> = ({ route }) => {

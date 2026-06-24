@@ -2,7 +2,11 @@ import { RouterProvider } from "react-router";
 import { useEffect, useState } from "react";
 import { App, ConfigProvider, theme } from "antd";
 import uzUz from "antd/es/locale/uz_UZ";
+import ruRU from "antd/es/locale/ru_RU";
+import enUS from "antd/es/locale/en_US";
 import "dayjs/locale/uz";
+import "dayjs/locale/ru";
+import "dayjs/locale/en";
 import isoWeek from "dayjs/plugin/isoWeek";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
@@ -19,12 +23,22 @@ dayjs.locale("uz");
 
 const Root = () => {
   const themeMode = useAppSelector((state) => state.mode.mode);
-  const [effectiveTheme, setEffectiveTheme] = useState(() =>
-    getEffectiveTheme(themeMode),
+  const lang = useAppSelector((state) => state.lang.lang);
+  const [systemTheme, setSystemTheme] = useState<"light" | "dark">(() =>
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light",
   );
+  const effectiveTheme =
+    themeMode === "system" ? systemTheme : getEffectiveTheme(themeMode);
   // const dispatch = useAppDispatch();
+  const localeMap = {
+    uz: uzUz,
+    ru: ruRU,
+    en: enUS,
+  } as const;
   const customLocale = {
-    ...uzUz,
+    ...localeMap[lang],
     week: 1,
   };
   const queryClient = new QueryClient({
@@ -36,12 +50,15 @@ const Root = () => {
     },
   });
   useEffect(() => {
-    setEffectiveTheme(getEffectiveTheme(themeMode));
+    dayjs.locale(lang);
+  }, [lang]);
+
+  useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const handleSystemThemeChange = () => {
       if (themeMode === "system") {
-        setEffectiveTheme(getEffectiveTheme(themeMode));
+        setSystemTheme(mediaQuery.matches ? "dark" : "light");
       }
     };
 
@@ -63,7 +80,7 @@ const Root = () => {
       }}
       locale={customLocale}
     >
-      <div className={`theme-${effectiveTheme} `}>
+      <div className={`theme-${effectiveTheme} ${effectiveTheme}`}>
         <App>
           <Toaster />
           <QueryClientProvider client={queryClient}>

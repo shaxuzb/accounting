@@ -16,6 +16,7 @@ import ProductGroupListPage from "./pages/productGroups/screens/ProductGroupList
 import CashBoxListPage from "./pages/cashbox/screens/CashBoxListPage";
 import CounterpartyContactListPage from "./pages/counterpartycontact/screens/CounterpartyContactListPage";
 import WarehouseListPage from "./pages/warehouse/screens/WarehouseListPage";
+import PurchaseServiceListPage from "./pages/purchaseService/screens/PurchaseServiceListPage";
 import { rolePermissions } from "./pages/role/constants/permissions";
 import { userPermissions } from "./pages/users/constants/permissions";
 import { organizationsPermissions } from "./pages/organizations/constants/permissions";
@@ -30,6 +31,8 @@ import { productGroupsPermissions } from "./pages/productGroups/constants/permis
 import { cashBoxPermissions } from "./pages/cashbox/constants/permissions";
 import { counterpartyContactPermissions } from "./pages/counterpartycontact/constants/permissions";
 import { warehousePermissions } from "./pages/warehouse/constants/permissions";
+import { purchaseServicePermissions } from "./pages/purchaseService/constants/permissions";
+import { purchasePermissions } from "../purchase/pages/purchase/constants/permissions";
 
 const settingsPermissions = [
   rolePermissions.view,
@@ -46,6 +49,8 @@ const settingsPermissions = [
   cashBoxPermissions.view,
   counterpartyContactPermissions.view,
   warehousePermissions.view,
+  purchaseServicePermissions.view,
+  purchasePermissions.view,
 ];
 
 const withPermission = (
@@ -233,6 +238,18 @@ export const settingsRoutes: RouteObject = {
         backTo: "..",
       },
       element: withPermission(<WarehouseListPage />, warehousePermissions.view),
+    },
+    {
+      path: "purchase-services",
+      handle: {
+        title: "settings.entities.purchaseServices",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <PurchaseServiceListPage />,
+        [purchaseServicePermissions.view, purchasePermissions.view],
+      ),
     },
   ],
 };

@@ -7,11 +7,89 @@
     "view": "Ko'rish",
     "name": "Nomi",
     "actions": "Amallar",
+    "edit": "O'zgartirish",
+    "delete": "O'chirish",
+    "cancel": "Bekor qilish",
+    "clear": "Tozalash",
+    "import": "Import",
+    "upload": "Yuklash",
+    "ready": "Tayyor",
+    "loading": "Yuklanmoqda",
     "rowNumber": "T/r",
     "total": "Jami",
     "created": "Yaratildi",
     "back": "Orqaga",
     "next": "Keyingisi"
+  },
+  "actions": {
+    "deleteSuccess": "Element {{id}} muvaffaqiyatli o'chirildi",
+    "deleteConfirmTitle": "Ushbu elementni o'chirishni xohlaysizmi?",
+    "deleteConfirmContent": "Bu amalni qaytarib bo'lmaydi!"
+  },
+  "processStatuses": {
+    "draft": "Qoralama",
+    "posted": "O'tkazilgan",
+    "cancelled": "Bekor qilingan",
+    "pending": "Kutilmoqda"
+  },
+  "error": {
+    "title": "Xatolik yuz berdi",
+    "subtitle": "Kechirasiz, sahifani yuklashda muammo yuz berdi yoki so'rovlarda xatolik bor.",
+    "reload": "Sahifani qayta yuklash"
+  },
+  "profile": {
+    "defaultUser": "Foydalanuvchi",
+    "theme": "Mavzu",
+    "security": "Xavfsizlik",
+    "language": "Til",
+    "wallpaper": "Fon rasmi",
+    "logout": "Chiqish",
+    "languages": {
+      "uz": "O'zbek",
+      "ru": "Ruscha",
+      "en": "Inglizcha"
+    }
+  },
+  "ThemeSettings": {
+    "title": "Ko'rinish sozlamalari",
+    "reset": "Tiklash",
+    "themeMode": {
+      "title": "Rang rejimi"
+    }
+  },
+  "loading": {
+    "financialReport": "Moliyaviy hisobot",
+    "hr": "Xodimlarni boshqarish",
+    "supplyChain": "Ta'minot zanjiri",
+    "production": "Ishlab chiqarish",
+    "projectManagement": "Loyiha boshqaruvi",
+    "sales": "Savdo",
+    "businessAnalytics": "Biznes tahlili",
+    "services": "Xizmatlar",
+    "documents": "Hujjatlar"
+  },
+  "menu": {
+    "dashboard": "Boshqaruv",
+    "warehouse": "Ombor",
+    "warehouseMain": "Omborxona",
+    "sale": "Sotuv",
+    "company": "HisobKitob MCHJ"
+  },
+  "Buttons": {
+    "back": "Orqaga"
+  },
+  "auth": {
+    "systemName": "Buxgalteriya tizimi",
+    "welcome": "Xush kelibsiz!",
+    "subtitle": "Hisobingizga kiring va jarayonlarni oson boshqaring.",
+    "userName": "Foydalanuvchi nomi",
+    "password": "Parol",
+    "rememberMe": "Eslab qolish",
+    "forgotPassword": "Parolni unutdingizmi?",
+    "login": "Kirish",
+    "loginSuccess": "Muvaffaqiyatli kirdingiz!",
+    "noPermissions": "Tizimga kirishga ruxsatlar berilmagan!",
+    "copyright": "© 2026 HisobKitob. Barcha huquqlar himoyalangan."
   },
   "validation": {
     "required": "{{field}} majburiy",
@@ -39,7 +117,8 @@
       "productGroups": "Mahsulot guruhlari",
       "cashBox": "Kassa",
       "counterpartyContacts": "Kontragent kontaktlari",
-      "warehouse": "Ombor"
+      "warehouse": "Ombor",
+      "purchaseServices": "Xarid xizmatlari"
     },
     "descriptions": {
       "roles": "Tizimdagi rollar va ularning huquqlarini boshqarish.",
@@ -55,7 +134,8 @@
       "productGroups": "Mahsulot guruhlarini boshqarish.",
       "cashBox": "Kassalar ro'yxatini boshqarish.",
       "counterpartyContacts": "Kontragent kontaktlarini boshqarish.",
-      "warehouse": "Omborlar ro'yxatini boshqarish."
+      "warehouse": "Omborlar ro'yxatini boshqarish.",
+      "purchaseServices": "Xaridda ishlatiladigan xizmatlar ro'yxatini boshqarish."
     },
     "fields": {
       "accountNumber": "Hisob raqami",
@@ -88,6 +168,9 @@
       "region": "Viloyat",
       "responsibleUser": "Mas'ul foydalanuvchi",
       "role": "Rol",
+      "description": "Tavsif",
+      "serviceType": "Xizmat turi",
+      "serviceTypeId": "Xizmat turi ID",
       "shortName": "Qisqacha nomi",
       "status": "Holati",
       "userName": "Foydalanuvchi nomi"
@@ -154,6 +237,46 @@
       "selectField": "Maydonni tanlang"
     }
   },
+  "bank": {
+    "title": "Bank",
+    "statementImport": "Bank statement import",
+    "fields": {
+      "bankAccount": "Bank hisobi",
+      "operationType": "Operatsiya turi",
+      "counterparty": "Kontragent",
+      "date": "Sana",
+      "amount": "Summa",
+      "comment": "Izoh",
+      "debit": "Debit",
+      "credit": "Kredit",
+      "currencyId": "Valyuta ID",
+      "counterpartyId": "Kontragent ID",
+      "accountNumber": "Hisob raqam"
+    },
+    "messages": {
+      "imported": "Bank statement import qilindi",
+      "saved": "Bank operatsiyalari saqlandi",
+      "partialSaved": "{{saved}} ta transaction saqlandi, {{skipped}} tasi o'tkazib yuborildi",
+      "noValidTransactions": "Saqlash uchun to'liq transaction topilmadi",
+      "saveNextStep": "Saqlash keyingi bosqichda BankOperation APIga ulanadi",
+      "missingRequired": "{{count}} ta transactionda majburiy ma'lumot yetishmaydi",
+      "noData": "Hali import qilingan bank statement yo'q",
+      "noTransactions": "Transaction topilmadi",
+      "counterpartyMissing": "Kontragent topilmadi",
+      "bankAccountMissing": "Bank hisobi yo'q",
+      "bankAccountMissingDescription": "Bu card ichidagi transactionlar bankAccountId topilmagani uchun saqlashga yuborilmaydi."
+    },
+    "import": {
+      "title": "Bank statement import",
+      "description": "Excel faylni yuklang, parser ma'lumotlarni o'zi ajratadi.",
+      "uploadText": "Faylni yuklash uchun bosing yoki shu yerga tashlang",
+      "uploadHint": "XLS yoki XLSX bank statement fayli qo'llab-quvvatlanadi.",
+      "statements": "Statementlar",
+      "transactions": "Transactionlar",
+      "status": "Holat",
+      "readyToSave": "Saqlashga tayyor"
+    }
+  },
   "contract": {
     "title": "Shartnoma",
     "fields": {
@@ -196,6 +319,24 @@
     "messages": {
       "created": "Mahsulot muvaffaqiyatli yaratildi",
       "updated": "Mahsulot muvaffaqiyatli o'zgartirildi"
+    }
+  }
+  ,
+  "sale": {
+    "title": "Sotuv",
+    "new": "Yangi savdo",
+    "edit": "Savdoni o'zgartirish",
+    "document": "Savdo hujjati",
+    "selection": {
+      "selectedProducts": "Tanlangan mahsulotlar (hujjat)"
+    }
+  },
+  "warehouses": {
+    "title": "Ombor"
+  },
+  "Purchase": {
+    "excelImport": {
+      "title": "Sotib olish importi"
     }
   }
 }

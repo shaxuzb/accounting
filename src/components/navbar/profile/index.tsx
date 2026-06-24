@@ -56,7 +56,7 @@ const ProfileNav: React.FC = () => {
             className="border border-teal-500"
           />
           <div className="flex flex-col justify-center">
-            <h2 className="text-[14px] text-[#1a202c] font-bold leading-tight m-0 flex items-center">
+            <h2 className="text-[14px] text-text font-bold leading-tight m-0 flex items-center">
               {user?.user?.userName}
             </h2>
             <p className="text-[12px] text-gray-400 font-medium m-0 mt-0.5 leading-none">
