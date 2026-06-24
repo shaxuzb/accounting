@@ -6,7 +6,7 @@ import type {
   PurchaseDetailData,
   PurchaseForm,
 } from "../types/type";
-import type { PurchaseImportForm } from "../types/form";
+import type { PurchaseCreatePayload } from "../types/form";
 
 type QueryParams = ListParams | URLSearchParams;
 
@@ -30,7 +30,7 @@ export const purchaseService = {
     $axiosPrivate
       .get<PurchaseDetailData>(endpoints.detail(id))
       .then((res) => res.data),
-  create: (payload: PurchaseImportForm) =>
+  create: (payload: PurchaseCreatePayload) =>
     $axiosPrivate
       .post<PurchaseDetailData>(endpoints.create, payload)
       .then((res) => res.data),

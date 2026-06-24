@@ -63,7 +63,10 @@ const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
         formik?.setFieldValue(fieldName, nextValue, true);
       }}
       onKeyDown={(event) => {
-        if (event.key === "Enter") onPressEnter?.();
+        if (event.key === "Enter") {
+          event.currentTarget.blur();
+          onPressEnter?.();
+        }
       }}
       isAllowed={(values) => {
         if (values.floatValue === undefined) return true;

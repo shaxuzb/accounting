@@ -10,8 +10,8 @@ interface Props {
   lines: SalePricingLine[];
   currencyCode: string;
   vatRateName?: string | null;
-  onMarginChange: (lineId: number, margin: number) => void;
-  onSalePriceChange: (lineId: number, salePrice: number) => void;
+  onMarginChange: (lineKey: string, margin: number) => void;
+  onSalePriceChange: (lineKey: string, salePrice: number) => void;
 }
 
 export default function SaleProductLinesTable({
@@ -51,7 +51,7 @@ export default function SaleProductLinesTable({
           precision={2}
           value={value}
           onValueChange={(margin) =>
-            onMarginChange(line.id, Number(margin ?? 0))
+            onMarginChange(line.rowKey, Number(margin ?? 0))
           }
         />
       ),
@@ -67,7 +67,7 @@ export default function SaleProductLinesTable({
           precision={2}
           value={value}
           onValueChange={(salePrice) =>
-            onSalePriceChange(line.id, Number(salePrice ?? 0))
+            onSalePriceChange(line.rowKey, Number(salePrice ?? 0))
           }
         />
       ),
@@ -115,12 +115,11 @@ export default function SaleProductLinesTable({
       ),
     },
   ];
-
   return (
     <Table<SalePricingLine>
       size="small"
       columns={columns}
-      dataSource={generateKeyTable(lines)}
+      dataSource={generateKeyTable(lines, "rowKey")}
       pagination={false}
       scroll={{ x: 1250 }}
     />

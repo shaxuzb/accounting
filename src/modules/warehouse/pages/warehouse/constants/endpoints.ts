@@ -1,10 +1,8 @@
 export const warehouseEndpoints = {
-  warehouse: {
-    list: "/product-tables/product-group-summary",
-    detail:  "/product-tables/product-summary",
-    detailSerial: "/product-tables/product-table-summary"
-    // create: "/warehouse",
-    // update: (id: string | number) => `/warehouse/${id}`,
+  productStock: {
+    list: "/product-stocks/groups",
+    detail: "/product-stocks/products",
+    detailSerial: "/product-stocks/tables",
   },
   /* modux:endpoints */
 };

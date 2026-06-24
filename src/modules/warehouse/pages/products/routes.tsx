@@ -12,7 +12,7 @@ const withPermission = (element: React.ReactElement, permission: string) => (
 );
 
 export const productsRoutes: RouteObject = {
-  path: "products",
+  path: "warehouses/products",
   handle: { title: "products.title" },
   children: [
     {

@@ -1,117 +1,90 @@
-import { Button, Space, Table } from "antd";
-import type { TableColumnType, TableColumnsType } from "antd";
-import { Plus, RefreshCw } from "lucide-react";
-import { Link, useNavigate, useSearchParams } from "react-router";
-import { useTranslation } from "react-i18next";
-import ActionColumn from "@/components/ui/table/actions/ActionColumns";
+import { Table } from "antd";
+import type { TableColumnsType } from "antd";
+import { Link, useSearchParams } from "react-router";
 import Card from "@/components/ui/card/Card";
-import PermissionCard from "@/components/ui/card/PermissionCard";
-import SearchFilter from "@/components/ui/filters/SearchFilter";
-import { useAppSelector } from "@/store/hooks";
-import { generateKeyTable } from "@/utils/utils";
-import { stateStatus } from "@/utils/helpers/statusHelper";
-import { warehousePermissions } from "../constants/permissions";
-import type { WarehouseAll } from "../types/type";
+import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import { useGetListWarehouse } from "../hooks/useGetListWarehouse";
+import type { ProductStock } from "../types/type";
+
+const getProductName = (record: ProductStock) =>
+  record.productTypeName || record.productName || record.name || "-";
+
+const getCurrency = (record?: ProductStock) => record?.currencyCode || "USD";
+
+const getPurchaseAmount = (record: ProductStock) =>
+  record.purchaseTotalAmount ??
+  record.totalPurchaseAmount ??
+  record.purchaseAmount ??
+  record.purchaseSum ??
+  0;
+
+const getSaleAmount = (record: ProductStock) =>
+  record.saleTotalAmount ??
+  record.totalSaleAmount ??
+  record.saleAmount ??
+  record.saleSum ??
+  record.totalAmount ??
+  0;
+
+const formatMoney = (value: number, currencyCode: string) =>
+  `${numberSpacing(value, undefined, true)} ${currencyCode}`;
 
 export default function ProductSummaryListPage() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-//   const { user } = useAppSelector((state) => state.auth);
-
   const [searchParams] = useSearchParams();
-  const { data, isLoading, isFetching } =
-    useGetListWarehouse(searchParams);
-  const items = data?.items ?? data?.items ?? [];
-//   const permissions = user?.user.permissions ?? [];
+  const { data, isLoading, isFetching } = useGetListWarehouse(searchParams);
+  const items = data?.items ?? [];
 
-  const tableColumns: TableColumnsType<WarehouseAll> = [
+  const columns: TableColumnsType<ProductStock> = [
     {
       dataIndex: "indexId",
-      title: t("common.rowNumber"),
+      title: "T/r",
+      width: 80,
       align: "center",
-      width: 70,
     },
     {
       dataIndex: "name",
-      title: t("warehouses.fields.warehouseName"),
-      minWidth: 180,
-      render: (value, record) => <Link to={`edit/${record.id}`}>{value}</Link>,
+      title: "Mahsulot turi",
+      minWidth: 260,
+      render: (_, record) => (
+        <Link to={`${record.id}`} className="text-primary hover:underline">
+          {getProductName(record)}
+        </Link>
+      ),
     },
     {
-      dataIndex: "unitName",
-      title: t("warehouses.fields.description"),
-      minWidth: 180,
+      dataIndex: "quantity",
+      title: "Miqdori",
+      width: 160,
+      align: "center",
+      render: (value: number) => numberSpacing(value, undefined, true),
     },
-    // {
-    //   dataIndex: "stateId",
-    //   title: t("warehouses.fields.status"),
-    //   width: 120,
-    //   align: "center",
-    //   render: (_, record) =>
-    //     stateStatus(record.stateId, (record as any).stateName),
-    // },
+    {
+      dataIndex: "purchaseAmount",
+      title: "Xarid summa USD",
+      width: 240,
+      align: "right",
+      render: (_, record) =>
+        formatMoney(getPurchaseAmount(record), getCurrency(record)),
+    },
+    {
+      dataIndex: "saleAmount",
+      title: "Sotuv summa USD",
+      width: 240,
+      align: "right",
+      render: (_, record) =>
+        formatMoney(getSaleAmount(record), getCurrency(record)),
+    },
   ];
 
-//   const hasActions =
-//     permissions.includes(warehousePermissions.update) ||
-//     permissions.includes(warehousePermissions.delete);
-
-//   const columns: TableColumnType<WarehouseAll>[] = hasActions
-//     ? [
-//         ...tableColumns,
-//         {
-//           dataIndex: "actions",
-//           title: t("common.actions"),
-//           align: "center",
-//           width: 100,
-//           fixed: "right",
-//           render: (_, record) => (
-//             <ActionColumn
-//               deletePath="warehouse-groups"
-//               customPath={`/main/warehouses/edit/${record.id}`}
-//               record={record}
-//               permissions={permissions}
-//             //   permissionsCode={{
-//             //     deleteCode: warehousePermissions.delete,
-//             //     editCode: warehousePermissions.update,
-//             //   }}
-//               refetch={refetch}
-//             />
-//           ),
-//         },
-//       ]
-//     : tableColumns;
-
   return (
-    <div className="w-full">
-      {/* <div className="mb-3 flex items-center justify-between gap-3">
-        <SearchFilter />
-        <Space>
-          <Button
-            icon={<RefreshCw className="size-4" />}
-            onClick={() => refetch()}
-          />
-          <PermissionCard permission={warehousePermissions.create}>
-            <Button
-              type="primary"
-              icon={<Plus className="size-4" />}
-              onClick={() => navigate("add")}
-            >
-              {t("common.add")}
-            </Button>
-          </PermissionCard>
-        </Space>
-      </div> */}
-      <Card className="overflow-hidden border border-border">
-        <Table<WarehouseAll>
-          loading={isLoading || isFetching}
-          columns={tableColumns}
-          dataSource={generateKeyTable(items)}
-          pagination={false}
-          scroll={{ x: "max-content", y: "calc(100vh - 280px)" }}
-        />
-      </Card>
-    </div>
+    <Card className="overflow-hidden border border-border">
+      <Table<ProductStock>
+        loading={isLoading || isFetching}
+        columns={columns}
+        dataSource={generateKeyTable(items, "id")}
+        pagination={false}
+        scroll={{ x: "max-content", y: "calc(100vh - 260px)" }}
+      />
+    </Card>
   );
 }

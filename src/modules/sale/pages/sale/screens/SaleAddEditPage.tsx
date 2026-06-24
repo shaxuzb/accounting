@@ -1,34 +1,23 @@
-import { Form } from "antd";
+import { Button, Form, Spin } from "antd";
 import dayjs from "dayjs";
 import { useFormik } from "formik";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
-import Card from "@/components/ui/card/Card";
+import { Save } from "lucide-react";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useAppSelector } from "@/store/hooks";
 import { formatDate } from "@/utils/helpers";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import {
-  SaleBarcodeScanner,
-  SaleDocumentFormFields,
-  SaleDraftSummary,
-  ScannedProductsTable,
-} from "../components";
-import {
-  useCreateSale,
-  useGetDetailSale,
-  useGetProductByMarking,
-  useGetSaleLines,
-  useUpdateSale,
-} from "../hooks";
+import { SaleDocumentFormFields, SaleProductSelection } from "../components";
+import { useCreateSale, useGetDetailSale, useUpdateSale } from "../hooks";
 import type {
   SaleDocCreateForm,
   SaleDocForm,
   SaleDocUpdateForm,
 } from "../types/form";
 import { saleDocSchema } from "../types/schema";
-import type { SaleScannedProduct } from "../types/type";
+import type { SaleSelectedProduct } from "../types/type";
 import {
   clearSaleDraft,
   getSaleDraft,
@@ -52,36 +41,45 @@ export default function SaleAddEditPage() {
   const [initialDraft] = useState(() =>
     isEdit ? null : getSaleDraft(organizationId),
   );
-  const [scannedProducts, setScannedProducts] = useState<
-    SaleScannedProduct[] | null
-  >(() => initialDraft?.lines ?? null);
+  const [selectedProducts, setSelectedProducts] = useState<
+    SaleSelectedProduct[] | null
+  >(() => initialDraft?.products ?? null);
 
-  const { data: document } = useGetDetailSale(id);
-  const { data: saleDocTables, isLoading: isLinesLoading } =
-    useGetSaleLines(id);
+  const { data: document, isLoading: isDocumentLoading } =
+    useGetDetailSale(id);
   const createSale = useCreateSale();
   const updateSale = useUpdateSale();
-  const getProductByMarking = useGetProductByMarking();
 
-  const savedProducts = useMemo<SaleScannedProduct[]>(
-    () =>
-      (saleDocTables?.items ?? document?.lines ?? []).map((line) => ({
-        scanId: line.id,
-        productTableId: line.productTableId,
-        productId: line.productId,
-        productName: line.productName,
-        markingNumber: line.markingNumber,
-        serialNumber: line.serialNumber,
-        unitName: line.unitName,
-        price: line.price,
-        vatRateId: line.vatRateId,
-        scanStatus: "confirmed",
-      })),
-    [document?.lines, saleDocTables?.items],
-  );
+  const savedProducts = useMemo<SaleSelectedProduct[]>(() => {
+    const products = document?.products ?? [];
+    if (products.length) {
+      return products.map((product) => ({
+        id: product.id,
+        productId: product.productId,
+        productName: product.productName,
+        quantity: product.quantity,
+        availableQuantity: product.quantity,
+        unitPrice: product.unitPrice || product.amount || 0,
+        unitName: product.unitName,
+        vatRateId: product.vatRateId,
+      }));
+    }
+
+    return (document?.lines ?? []).map((line) => ({
+      id: line.id,
+      productId: line.productId,
+      productName: line.productName,
+      quantity: line.quantity,
+      availableQuantity: line.quantity,
+      unitPrice: line.price || line.amount || 0,
+      unitName: line.unitName,
+      vatRateId: line.vatRateId,
+    }));
+  }, [document?.lines, document?.products]);
+
   const products = useMemo(
-    () => scannedProducts ?? (isEdit ? savedProducts : []),
-    [isEdit, savedProducts, scannedProducts],
+    () => selectedProducts ?? (isEdit ? savedProducts : []),
+    [isEdit, savedProducts, selectedProducts],
   );
 
   const formik = useFormik<SaleDocForm>({
@@ -98,26 +96,15 @@ export default function SaleAddEditPage() {
     enableReinitialize: true,
     validationSchema: saleDocSchema,
     onSubmit: async (values) => {
-      if (!isEdit && !products.length) {
-        toast.error("Kamida bitta mahsulot kiriting");
-        return;
-      }
-      if (products.some((product) => product.scanStatus === "pending")) {
-        toast.error("Mahsulotlar tekshiruvi tugashini kuting");
-        return;
-      }
-
-      const confirmedProducts = products.filter(
-        (product) => product.scanStatus === "confirmed",
+      const validProducts = products.filter(
+        (product) => product.productId > 0 && product.quantity > 0,
       );
-      const createLines = confirmedProducts
-        .map((product) => ({
-          productTableId: Number(product.productTableId || 0),
-        }))
-        .filter((line) => line.productTableId > 0);
-
-      if (createLines.length !== confirmedProducts.length) {
-        toast.error("Mahsulot ma'lumotlari to'liq emas, qayta skaner qiling");
+      if (!validProducts.length) {
+        toast.error("Kamida bitta mahsulotni miqdori bilan kiriting");
+        return;
+      }
+      if (products.some((product) => !product.productId)) {
+        toast.error("Tanlangan mahsulotlarda productId topilmadi");
         return;
       }
 
@@ -125,40 +112,37 @@ export default function SaleAddEditPage() {
         if (isEdit && document) {
           const payload: SaleDocUpdateForm = {
             docDate: values.docDate,
-            counterpartyId: values.counterpartyId ?? 0,
-            warehouseId: values.warehouseId ?? 0,
-            currencyId: values.currencyId ?? 0,
-            comment: values.comment,
+            counterpartyId: values.counterpartyId ?? document.counterpartyId,
+            warehouseId: values.warehouseId ?? document.warehouseId,
+            currencyId: values.currencyId ?? document.currencyId,
+            comment: values.comment || null,
             stateId: values.stateId ?? document.stateId,
-            lines: confirmedProducts.map((product) => ({
-              id: product.scanId,
-              productTableId: product.productTableId,
+            products: validProducts.map((product) => ({
+              id: product.id,
               productId: product.productId,
-              markingNumber: product.markingNumber,
-              serialNumber: product.serialNumber,
-              price: product.price ?? 0,
+              quantity: product.quantity,
+              unitPrice: product.unitPrice,
               vatRateId: product.vatRateId ?? null,
             })),
           };
           await updateSale.mutateAsync({ id: document.id, payload });
         } else {
           const payload: SaleDocCreateForm = {
-            docDate: values.docDate,
             counterpartyId: values.counterpartyId ?? 0,
             warehouseId: values.warehouseId ?? 0,
             currencyId: values.currencyId ?? 0,
-            comment: values.comment,
-            lines: createLines,
+            comment: values.comment || null,
+            products: validProducts.map((product) => ({
+              productId: product.productId,
+              quantity: product.quantity,
+              unitPrice: product.unitPrice,
+              vatRateId: product.vatRateId ?? null,
+            })),
           };
           await createSale.mutateAsync(payload);
           clearSaleDraft(organizationId);
         }
         navigate("/main/sale");
-        if (isEdit) {
-          toast.success("Sotuv hujjati muvaffaqiyatli yangilandi");
-        } else {
-          toast.success("Sotuv hujjati muvaffaqiyatli yaratildi");
-        }
       } catch (error) {
         errorHandlers(error);
       }
@@ -168,7 +152,7 @@ export default function SaleAddEditPage() {
   const draftValue = useMemo(
     () => ({
       form: formik.values,
-      lines: products.filter((product) => product.scanStatus === "confirmed"),
+      products,
     }),
     [formik.values, products],
   );
@@ -177,73 +161,13 @@ export default function SaleAddEditPage() {
     if (!isEdit) saveSaleDraft(organizationId, draft);
   }, [draft, isEdit, organizationId]);
 
-  const handleScan = async (markingNumber: string) => {
-    const code = markingNumber.trim();
-    if (products.some((product) => product.markingNumber === code)) {
-      toast.error("Bu markirovka avval qo'shilgan");
-      return;
-    }
-
-    const scanId = -Date.now();
-    const pendingProduct: SaleScannedProduct = {
-      scanId,
-      productTableId: 0,
-      productId: 0,
-      productName: "Tekshirilmoqda...",
-      markingNumber: code,
-      serialNumber: "",
-      scanStatus: "pending",
-    };
-    setScannedProducts((current) => [
-      ...(current ?? products),
-      pendingProduct,
-    ]);
-
-    try {
-      const product = await getProductByMarking.mutateAsync(code);
-      const productTableId = Number(product.productTableId ?? product.id ?? 0);
-
-      if (!productTableId) {
-        setScannedProducts((current) =>
-          (current ?? []).filter((item) => item.scanId !== scanId),
-        );
-        toast.error("Mahsulot jadvali ID topilmadi");
-        return;
-      }
-
-      setScannedProducts((current) =>
-        (current ?? []).map((item) =>
-          item.scanId === scanId
-            ? {
-                scanId,
-                productTableId,
-                productId: product.productId,
-                productName: product.productName,
-                markingNumber: product.markingNumber || code,
-                serialNumber: product.serialNumber,
-                unitName: product.unitName,
-                price: product.price,
-                vatRateId: product.vatRateId,
-                scanStatus: "confirmed",
-              }
-            : item,
-        ),
-      );
-    } catch (error) {
-      setScannedProducts((current) =>
-        (current ?? []).filter((product) => product.scanId !== scanId),
-      );
-      errorHandlers(error);
-    }
-  };
-
-  const confirmedProducts = products.filter(
-    (product) => product.scanStatus === "confirmed",
-  );
-  const totalAmount = confirmedProducts.reduce(
-    (sum, product) => sum + (product.price ?? 0),
-    0,
-  );
+  if (isEdit && isDocumentLoading) {
+    return (
+      <div className="flex justify-center p-10">
+        <Spin />
+      </div>
+    );
+  }
 
   return (
     <Form
@@ -254,30 +178,22 @@ export default function SaleAddEditPage() {
       }}
     >
       <div className="space-y-3">
-        <SaleDocumentFormFields formik={formik} isEdit={isEdit} />
-        <div className="grid items-start gap-3 xl:grid-cols-[minmax(0,1fr)_240px]">
-          <div className="min-w-0 space-y-3">
-            <SaleBarcodeScanner onScan={handleScan} />
-            <Card className="overflow-hidden border border-border">
-              <ScannedProductsTable
-                products={products}
-                loading={isLinesLoading}
-                onDelete={(product) =>
-                  setScannedProducts(
-                    products.filter((item) => item.scanId !== product.scanId),
-                  )
-                }
-              />
-            </Card>
-          </div>
-          <SaleDraftSummary
-            positionCount={confirmedProducts.length}
-            totalQuantity={confirmedProducts.length}
-            totalAmount={totalAmount}
-            pendingCount={products.length - confirmedProducts.length}
+        {!isEdit && <SaleDocumentFormFields formik={formik} isEdit={false} />}
+        <SaleProductSelection
+          products={products}
+          onChange={setSelectedProducts}
+          disabled={createSale.isPending || updateSale.isPending}
+        />
+        <div className="flex justify-end">
+          <Button
+            type="primary"
+            size="large"
+            htmlType="submit"
+            icon={<Save className="size-4" />}
             loading={createSale.isPending || updateSale.isPending}
-            isEdit={isEdit}
-          />
+          >
+            Rasmiylashtirish
+          </Button>
         </div>
       </div>
     </Form>

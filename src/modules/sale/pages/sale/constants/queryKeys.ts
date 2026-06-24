@@ -10,4 +10,9 @@ export const saleKeys = {
     list: (ownerId: string | number) =>
       ["sale", "tables", "list", ownerId] as const,
   },
+  productStock: {
+    all: ["sale", "product-stock"] as const,
+    products: (params?: unknown) =>
+      ["sale", "product-stock", "products", params] as const,
+  },
 } as const;

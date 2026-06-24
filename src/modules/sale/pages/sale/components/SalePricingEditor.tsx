@@ -6,9 +6,10 @@ import {
   Sigma,
   UserRound,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
+import useLocalStorage from "@/hooks/UseLocalStorage";
 import Card from "@/components/ui/card/Card";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { numberSpacing } from "@/utils/utils";
@@ -18,6 +19,8 @@ import {
   createSalePricingLine,
   getMarginBySalePrice,
   getSalePriceByMargin,
+  getSalePriceByMarginAmount,
+  getVatAmount,
   roundMoney,
 } from "../utils/pricing";
 import SaleDocumentSummary, {
@@ -32,6 +35,15 @@ interface Props {
   organizationName: string;
 }
 
+interface SalePricingDraftLine {
+  rowKey: string;
+  id: number;
+  amount: number;
+  vatRateId: number | null;
+  vatRateName?: string | null;
+  marginPercent: number;
+}
+
 export default function SalePricingEditor({
   document,
   lines: sourceLines,
@@ -40,58 +52,127 @@ export default function SalePricingEditor({
 }: Props) {
   const navigate = useNavigate();
   const confirmSale = useConfirmSale(document.id);
+  const [draftLines, setDraftLines] = useLocalStorage<SalePricingDraftLine[]>(
+    `sale:pricing:${document.id}`,
+    [],
+  );
   const [editedLines, setEditedLines] = useState<SalePricingLine[] | null>(null);
+  const updateLineAmounts = useCallback((line: SalePricingLine) => {
+    const vatAmount = getVatAmount(line.amount, line.quantity, line.vatRateName);
+
+    return {
+      ...line,
+      vatAmount,
+      totalAmount: roundMoney(line.amount * line.quantity),
+    };
+  }, []);
   const initialLines = useMemo(
-    () => sourceLines.map(createSalePricingLine),
-    [sourceLines],
+    () =>
+      sourceLines.map(createSalePricingLine).map((line) => {
+        const draftLine = draftLines.find(
+          (item) => item.rowKey === line.rowKey || item.id === line.id,
+        );
+        if (!draftLine) return line;
+
+        return updateLineAmounts({
+          ...line,
+          amount: draftLine.amount,
+          vatRateId: draftLine.vatRateId,
+          vatRateName: draftLine.vatRateName ?? line.vatRateName,
+          marginPercent: draftLine.marginPercent,
+        });
+      }),
+    [draftLines, sourceLines, updateLineAmounts],
   );
   const lines = editedLines ?? initialLines;
 
+  useEffect(() => {
+    if (!editedLines) return;
+    setDraftLines(
+      editedLines.map((line) => ({
+        rowKey: line.rowKey,
+        id: line.id,
+        amount: line.amount,
+        vatRateId: line.vatRateId,
+        vatRateName: line.vatRateName,
+        marginPercent: line.marginPercent,
+      })),
+    );
+  }, [editedLines, setDraftLines]);
+
   const updateLines = useCallback(
     (
-      lineIds: number[],
+      lineKeys: string[],
       update: (line: SalePricingLine) => SalePricingLine,
     ) => {
-      const ids = new Set(lineIds);
+      const keys = new Set(lineKeys);
       setEditedLines((current) =>
         (current ?? initialLines).map((line) =>
-          ids.has(line.id) ? update(line) : line,
+          keys.has(line.rowKey) ? update(line) : line,
         ),
       );
     },
     [initialLines],
   );
-
   const applyMargin = useCallback(
-    (lineIds: number[], margin: number) =>
-      updateLines(lineIds, (line) => ({
-        ...line,
-        marginPercent: margin,
-        amount: getSalePriceByMargin(line.costPrice, margin),
-      })),
-    [updateLines],
+    (lineKeys: string[], margin: number) =>
+      updateLines(lineKeys, (line) =>
+        updateLineAmounts({
+          ...line,
+          marginPercent: margin,
+          amount: getSalePriceByMargin(line.costPrice, margin),
+        }),
+      ),
+    [updateLineAmounts, updateLines],
   );
   const applySalePrice = useCallback(
-    (lineIds: number[], salePrice: number) =>
-      updateLines(lineIds, (line) => ({
-        ...line,
-        amount: roundMoney(Math.max(0, salePrice)),
-        marginPercent: getMarginBySalePrice(line.costPrice, salePrice),
-      })),
-    [updateLines],
+    (lineKeys: string[], salePrice: number) =>
+      updateLines(lineKeys, (line) =>
+        updateLineAmounts({
+          ...line,
+          amount: roundMoney(Math.max(0, salePrice)),
+          marginPercent: getMarginBySalePrice(line.costPrice, salePrice),
+        }),
+      ),
+    [updateLineAmounts, updateLines],
+  );
+  const applyMarginAmount = useCallback(
+    (lineKeys: string[], marginAmount: number) =>
+      updateLines(lineKeys, (line) => {
+        const salePrice = getSalePriceByMarginAmount(
+          line.costPrice,
+          marginAmount,
+        );
+        return updateLineAmounts({
+          ...line,
+          amount: salePrice,
+          marginPercent: getMarginBySalePrice(line.costPrice, salePrice),
+        });
+      }),
+    [updateLineAmounts, updateLines],
   );
   const applyVat = useCallback(
-    (lineIds: number[], vatRateId: number | null) =>
-      updateLines(lineIds, (line) => ({ ...line, vatRateId })),
-    [updateLines],
+    (
+      lineKeys: string[],
+      vatRateId: number | null,
+      vatRateName?: string | null,
+    ) =>
+      updateLines(lineKeys, (line) =>
+        updateLineAmounts({
+          ...line,
+          vatRateId,
+          vatRateName: vatRateName ?? line.vatRateName,
+        }),
+      ),
+    [updateLineAmounts, updateLines],
   );
   const changeLineMargin = useCallback(
-    (lineId: number, margin: number) => applyMargin([lineId], margin),
+    (lineKey: string, margin: number) => applyMargin([lineKey], margin),
     [applyMargin],
   );
   const changeLineSalePrice = useCallback(
-    (lineId: number, salePrice: number) =>
-      applySalePrice([lineId], salePrice),
+    (lineKey: string, salePrice: number) =>
+      applySalePrice([lineKey], salePrice),
     [applySalePrice],
   );
 
@@ -124,18 +205,20 @@ export default function SalePricingEditor({
       toast.error("Barcha mahsulotlar uchun QQS stavkasini tanlang");
       return;
     }
+    if (lines.some((line) => !line.id)) {
+      toast.error("Mahsulotlarda sale-doc-table id topilmadi");
+      return;
+    }
 
     try {
       await confirmSale.mutateAsync({
-        counterpartyId: document.counterpartyId,
-        docDate: document.docDate,
         lines: lines.map((line) => ({
           id: line.id,
           amount: roundMoney(line.amount),
-          vatRateId: line.vatRateId,
         })),
       });
-      navigate("/main/sale");
+      setDraftLines([]);
+      navigate("/main/sale", { replace: true });
     } catch (error) {
       errorHandlers(error);
     }
@@ -148,7 +231,7 @@ export default function SalePricingEditor({
       <SaleDocumentSummary
         document={document}
         organizationName={organizationName}
-        totalAmount={totals.totalAmount || document.totalAmount}
+        totalAmount={totals.totalAmount}
       />
       <section className="grid overflow-hidden rounded-lg border border-border bg-primary-bg shadow-sm sm:grid-cols-2 lg:grid-cols-5">
         <SaleSummaryItem
@@ -198,6 +281,7 @@ export default function SalePricingEditor({
           lines={lines}
           currencyCode={currencyCode}
           onApplyMargin={applyMargin}
+          onApplyMarginAmount={applyMarginAmount}
           onApplySalePrice={applySalePrice}
           onApplyVat={applyVat}
           onLineMarginChange={changeLineMargin}

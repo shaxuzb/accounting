@@ -1,11 +1,14 @@
 import { useParams } from "react-router";
 import Card from "@/components/ui/card/Card";
-import { Calendar, ChartPie, FileText, Package } from "lucide-react";
+import { Calendar, ChartPie, FileText, Package, Wrench } from "lucide-react";
 
 import { Table, type TableColumnType } from "antd";
 // import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { PurchaseDetailLine } from "@/modules/purchase/pages/purchase/types/type";
+import type {
+  PurchaseDetailLine,
+  PurchaseDetailServiceLine,
+} from "@/modules/purchase/pages/purchase/types/type";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
 import { useGetDetailPurchase } from "../hooks/useGetDetailPurchase";
 import LineClampCell from "@/components/widget/text/LineClampCell";
@@ -56,7 +59,7 @@ const PurchaseDetailPage = () => {
       render: (value) => <LineClampCell text={value} />,
     },
     {
-      dataIndex: "qty",
+      dataIndex: "quantity",
       title: t("purchase.fields.quantity"),
       align: "center",
     },
@@ -70,6 +73,34 @@ const PurchaseDetailPage = () => {
       title: t("purchase.fields.price"),
       align: "center",
       render: (val) => numberSpacing(val),
+    },
+  ];
+  const serviceLineColumns: TableColumnType<PurchaseDetailServiceLine>[] = [
+    {
+      dataIndex: "indexId",
+      title: "T/r",
+      align: "center",
+      width: 70,
+    },
+    {
+      dataIndex: "serviceName",
+      title: "Nomi",
+      render: (value) => <LineClampCell text={value} />,
+    },
+    {
+      dataIndex: "expenseAccountName",
+      title: "expenseAccountName",
+      width: 180,
+      render: (value, record) => (
+        <LineClampCell text={value || record.accountId} />
+      ),
+    },
+    {
+      dataIndex: "price",
+      title: t("purchase.fields.price"),
+      align: "right",
+      width: 160,
+      render: (value) => numberSpacing(value, undefined, true),
     },
   ];
   // useChangeSelectType("disabled");
@@ -177,6 +208,10 @@ const PurchaseDetailPage = () => {
 
         {/* Products List Card */}
         <Card className="">
+          <div className="mb-3 flex items-center gap-2 px-1 text-sm font-semibold text-text">
+            <Package className="size-4 text-primary" />
+            <span>Mahsulotlar</span>
+          </div>
           <Table
             dataSource={generateKeyTable(data?.lines)}
             pagination={false}
@@ -287,6 +322,21 @@ const PurchaseDetailPage = () => {
             // }}
           />
         </Card>
+        {!!data?.serviceLines?.length && (
+          <Card className="">
+            <div className="mb-3 flex items-center gap-2 px-1 text-sm font-semibold text-text">
+              <Wrench className="size-4 text-primary" />
+              <span>Serinkasiz mahsulotlar</span>
+            </div>
+            <Table
+              dataSource={generateKeyTable(data.serviceLines)}
+              pagination={false}
+              scroll={{ x: "max-content" }}
+              loading={isLoading || isFetching}
+              columns={serviceLineColumns}
+            />
+          </Card>
+        )}
       </div>
       {/* <StockProductSerialView
         open={!!itemData}

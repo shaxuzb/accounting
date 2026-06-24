@@ -1,5 +1,17 @@
 import * as Yup from "yup";
 import type { PurchaseImportForm } from "./form";
+import type { PurchaseImportRow } from "./type";
+
+export const isCompletePurchaseLine = (line: PurchaseImportRow) => {
+  const price = Number(line.price ?? line.pricePerUom ?? 0);
+  const qty = Number(line.qty ?? 0);
+
+  return Boolean(line.productId && qty > 0 && price > 0);
+};
+
+export const isCompletePurchaseServiceLine = (
+  line: PurchaseImportForm["serviceLines"][number],
+) => Boolean(line.serviceId && Number(line.price) > 0);
 
 export const purchaseValidationSchema = Yup.object<PurchaseImportForm>({
   docDate: Yup.string().trim().required("validation.required"),
@@ -7,7 +19,16 @@ export const purchaseValidationSchema = Yup.object<PurchaseImportForm>({
   warehouseId: Yup.number().nullable().required("validation.required"),
   currencyId: Yup.number().nullable().required("validation.required"),
   comment: Yup.string().trim().notRequired(),
-  lines: Yup.array()
-    .min(1, "validation.required")
-    .required("validation.required"),
-});
+  lines: Yup.array().required("validation.required"),
+  serviceLines: Yup.array().required("validation.required"),
+}).test(
+  "has-lines-or-service-lines",
+  "Kamida bitta mahsulot yoki serinkasiz mahsulot kiriting",
+  (value: unknown) => {
+    const form = value as PurchaseImportForm | undefined;
+    return Boolean(
+      form?.lines?.some(isCompletePurchaseLine) ||
+        form?.serviceLines?.some(isCompletePurchaseServiceLine),
+    );
+  },
+);

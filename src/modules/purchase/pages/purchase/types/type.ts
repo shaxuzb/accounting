@@ -102,9 +102,19 @@ export interface PurchaseDetailLine {
   vatRateName: string;
 }
 
+export interface PurchaseDetailServiceLine {
+  id?: number;
+  ownerId?: number;
+  name: string;
+  price: number;
+  accountId: number;
+  accountName?: string;
+}
+
 export interface PurchaseDetailData extends PurchaseData {
   comment: string;
   lines: PurchaseDetailLine[];
+  serviceLines?: PurchaseDetailServiceLine[];
   organizationName: string;
   vatAmount: number;
 }

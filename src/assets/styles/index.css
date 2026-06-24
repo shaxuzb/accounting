@@ -47,10 +47,13 @@
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
 }
+<<<<<<< HEAD
 
 /* sidebar  */
 
 /* 
+=======
+>>>>>>> f743447ef8cd72f351a85ad5c12d9221b09f9dec
 @layer components {
   .hisob-kitob-custom-table .ant-table-thead > tr > th {
     background-color: #f7f8fa !important;

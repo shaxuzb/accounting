@@ -4,12 +4,17 @@ export const saleEndpoints = {
     detail: (id: string | number) => `sale-docs/${id}`,
     create: "sale-docs",
     update: (id: string | number) => `sale-docs/${id}`,
+    warehouseConfirm: (id: string | number) =>
+      `sale-docs/${id}/warehouse-confirm`,
     confirm: (id: string | number) => `sale-docs/${id}/confirm`,
   },
   saleDocTable: {
     list: "sale-doc-tables",
   },
   productTable: {
-    byMarking: "product-tables/by-marking",
+    byMarking: "product-stocks/by-marking",
+  },
+  productStock: {
+    products: "product-stocks/products",
   },
 } as const;

@@ -8,4 +8,6 @@ export { default as SalePricingEditor } from "./SalePricingEditor";
 export { default as SaleProductGroup } from "./SaleProductGroup";
 export { default as SaleProductGroupList } from "./SaleProductGroupList";
 export { default as SaleProductLinesTable } from "./SaleProductLinesTable";
+export { default as SaleProductSelection } from "./SaleProductSelection";
+export { default as SaleWarehouseConfirm } from "./SaleWarehouseConfirm";
 export { default as ScannedProductsTable } from "./ScannedProductsTable";

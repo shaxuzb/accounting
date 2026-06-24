@@ -1,9 +1,11 @@
 // import LineClampAnimation from "@/components/widget/text/LineClampAnimation";
 import type { AuthToken, MenuRole } from "@/shared/types";
 import { useAppSelector } from "@/store/hooks";
+import { cn } from "@/utils/utils";
 import { Badge, Menu } from "antd";
 import type { MenuProps } from "antd/lib/menu";
 import dayjs from "dayjs";
+import { ChevronDown } from "lucide-react";
 import { useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
@@ -17,6 +19,38 @@ interface LevelKeysProps {
 }
 type MenuItem = Required<MenuProps>["items"][number];
 
+const menuClassName = cn(
+  "sidebar-menu border-e-0! bg-transparent! px-0!",
+  "[&_.ant-menu-sub]:relative [&_.ant-menu-sub]:!ml-[26px] [&_.ant-menu-sub]:!bg-transparent",
+  "[&_.ant-menu-sub]:before:absolute [&_.ant-menu-sub]:before:bottom-2 [&_.ant-menu-sub]:before:left-3 [&_.ant-menu-sub]:before:top-1 [&_.ant-menu-sub]:before:w-px [&_.ant-menu-sub]:before:bg-[#d7e0ea] [&_.ant-menu-sub]:before:content-['']",
+  "[&.ant-menu-inline-collapsed_.ant-menu-item]:!mx-2 [&.ant-menu-inline-collapsed_.ant-menu-item]:!flex [&.ant-menu-inline-collapsed_.ant-menu-item]:!w-[calc(100%-16px)] [&.ant-menu-inline-collapsed_.ant-menu-item]:!justify-center [&.ant-menu-inline-collapsed_.ant-menu-item]:!px-0",
+  "[&.ant-menu-inline-collapsed_.ant-menu-submenu-title]:!mx-2 [&.ant-menu-inline-collapsed_.ant-menu-submenu-title]:!flex [&.ant-menu-inline-collapsed_.ant-menu-submenu-title]:!w-[calc(100%-16px)] [&.ant-menu-inline-collapsed_.ant-menu-submenu-title]:!justify-center [&.ant-menu-inline-collapsed_.ant-menu-submenu-title]:!px-0",
+  "[&.ant-menu-inline-collapsed_.ant-menu-sub]:before:hidden [&.ant-menu-inline-collapsed_.sidebar-menu-dot]:hidden",
+);
+
+const menuItemClassName = cn(
+  "!mx-3 !my-1 !h-11 !w-[calc(100%-24px)] !rounded-lg !leading-[44px] !text-[#526276]",
+  "hover:!bg-[#e8f1ff] hover:!text-[#1554d1]",
+  "[&.ant-menu-item-selected]:!bg-[#e8f1ff] [&.ant-menu-item-selected]:!font-bold [&.ant-menu-item-selected]:!text-[#1554d1]",
+  "[&.ant-menu-item-selected_.ant-menu-item-icon]:!text-[#1554d1]",
+);
+
+const dropdownClassName = cn(
+  "[&>.ant-menu-submenu-title]:!mx-3 [&>.ant-menu-submenu-title]:!my-1 [&>.ant-menu-submenu-title]:!h-11 [&>.ant-menu-submenu-title]:!w-[calc(100%-24px)] [&>.ant-menu-submenu-title]:!rounded-lg [&>.ant-menu-submenu-title]:!leading-[44px] [&>.ant-menu-submenu-title]:!text-[#526276]",
+  "[&>.ant-menu-submenu-title:hover]:!bg-[#e8f1ff] [&>.ant-menu-submenu-title:hover]:!text-[#1554d1]",
+  "[&.ant-menu-submenu-open>.ant-menu-submenu-title]:!bg-[#e8f1ff] [&.ant-menu-submenu-open>.ant-menu-submenu-title]:!text-[#1554d1]",
+  "[&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!bg-[#e8f1ff] [&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!font-bold [&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!text-[#1554d1]",
+  "[&.ant-menu-submenu-open>.ant-menu-submenu-title_.ant-menu-item-icon]:!text-[#1554d1] [&.ant-menu-submenu-open>.ant-menu-submenu-title_.sidebar-menu-arrow]:!text-[#1554d1]",
+  "[&.ant-menu-submenu-selected>.ant-menu-submenu-title_.ant-menu-item-icon]:!text-[#1554d1] [&.ant-menu-submenu-selected>.ant-menu-submenu-title_.sidebar-menu-arrow]:!text-[#1554d1]",
+);
+
+const subItemClassName = cn(
+  "group text-animation-trick-parent !relative !mx-0 !my-1.5 !flex !h-8 !w-[calc(100%-12px)] !items-center !bg-transparent !pl-8 !pr-0 !leading-8 !text-[#64748b]",
+  "hover:!bg-transparent hover:!text-[#1554d1]",
+  "[&_.ant-menu-item-icon]:!absolute [&_.ant-menu-item-icon]:!left-2 [&_.ant-menu-item-icon]:!m-0 [&_.ant-menu-item-icon]:!h-2 [&_.ant-menu-item-icon]:!min-w-2 [&_.ant-menu-item-icon]:!w-2",
+  "[&.ant-menu-item-selected]:!bg-transparent [&.ant-menu-item-selected]:!text-[#1554d1]",
+);
+
 const MenuCustom: FC<LinkProps> = ({ route }) => {
   const user = useAppSelector((state) => state.auth?.user) as AuthToken | null;
   const params = new URLSearchParams();
@@ -27,7 +61,6 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const [stateOpenKeys, setStateOpenKeys] = useState<string[]>([]);
   const sidebarInline = useAppSelector((state) => state.sidebar);
   const getSelectedKey = (pathname: string) => {
     for (const item of route) {
@@ -50,6 +83,15 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
     }
     return pathname;
   };
+  const currentPath = location.pathname.slice(1);
+  const selectedKey = getSelectedKey(currentPath);
+  const selectedParentKey = route.find(
+    (item) =>
+      item.dropdown && selectedKey.startsWith(`main/${item.linkData?.path}/`),
+  )?.linkData?.path;
+  const [stateOpenKeys, setStateOpenKeys] = useState<string[]>(() =>
+    selectedParentKey ? [`main/${selectedParentKey}`] : [],
+  );
   // const handleAddTabItem = (path: string, item: SideBarItems) => {
   //   dispatch(
   //     setAddTab({
@@ -63,9 +105,9 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
     const isDropdown = itemParent.dropdown && itemParent.items?.length;
     return {
       key: "main/" + itemParent.linkData?.path,
-      // className: `${itemParent.code === "SETTINGS" ? "!mt-10" : ""}`,
+      className: isDropdown ? dropdownClassName : menuItemClassName,
       label: isDropdown ? (
-        <div className="flex items-center justify-between w-full text-sm font-medium">
+        <div className="flex items-center justify-between w-full text-sm font-semibold">
           {t(String(itemParent.dropdownName ?? ""))}
         </div>
       ) : (
@@ -77,7 +119,7 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
             itemParent.linkData.path === "settings"
               ? "settings"
               : itemParent.linkData.path;
-          if (location.pathname.slice(1) !== targetPath) {
+          if (currentPath !== `main/${targetPath}`) {
             navigate(`/main/${targetPath}`);
           }
         }
@@ -103,23 +145,39 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
                   !user?.user?.permissions?.length ||
                   user.user?.permissions?.some((perm) => perm === item.code),
               )
-              ?.map((item) => ({
-                key: `main/${itemParent.linkData.path}/${item.linkData?.path}`,
-                className:
-                  "!pl-[25px] !pr-0 !flex !items-center text-animation-trick-parent",
-                label: t(item.linkData?.title || ""),
-                onClick: () => {
-                  if (
-                    location.pathname.slice(1) !==
-                    `${itemParent.linkData.path}/${item.linkData?.path}`
-                  ) {
-                    navigate(
-                      `/main/${itemParent.linkData.path}/${item.linkData?.path}`,
-                    );
-                  }
-                },
-                icon: item.iconName,
-              })),
+              ?.map((item) => {
+                const childKey = `main/${itemParent.linkData.path}/${item.linkData?.path}`;
+                const isSelected = selectedKey === childKey;
+
+                return {
+                  key: childKey,
+                  className: subItemClassName,
+                  label: (
+                    <span
+                      className={
+                        isSelected
+                          ? "font-semibold text-[#1554d1]"
+                          : "text-inherit"
+                      }
+                    >
+                      {t(item.linkData?.title || "")}
+                    </span>
+                  ),
+                  onClick: () => {
+                    if (currentPath !== childKey) {
+                      navigate(`/${childKey}`);
+                    }
+                  },
+                  icon: (
+                    <span
+                      className={cn(
+                        "sidebar-menu-dot block size-2 rounded-full transition-colors duration-150 group-hover:bg-[#3b82f6]",
+                        isSelected ? "bg-[#1d4ed8]" : "bg-[#d8e0ea]",
+                      )}
+                    />
+                  ),
+                };
+              }),
           }
         : {}),
     };
@@ -165,16 +223,23 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
   return (
     <>
       <Menu
-        className="sidebar-menu px-0!"
+        className={cn(
+          menuClassName,
+          sidebarInline.sidebar ? "!w-[60px] !p-0" : "!p-2.5",
+        )}
+        expandIcon={({ isOpen }) => (
+          <ChevronDown
+            className={`sidebar-menu-arrow size-4 transition-transform ${
+              isOpen ? "rotate-180" : ""
+            }`}
+          />
+        )}
         forceSubMenuRender={true}
         mode="inline"
         inlineCollapsed={sidebarInline.sidebar}
         openKeys={stateOpenKeys}
         onOpenChange={onOpenChange}
-        style={
-          sidebarInline.sidebar ? { padding: 0, width: 60 } : { padding: 10 }
-        }
-        selectedKeys={[getSelectedKey(location.pathname.slice(1))]} // Aktiv menyu yo‘nalishi
+        selectedKeys={[selectedKey]}
         items={items}
       />
     </>

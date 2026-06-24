@@ -2,7 +2,7 @@ import { Table } from "antd";
 import type { TableColumnsType } from "antd";
 import Card from "@/components/ui/card/Card";
 import LineClampCell from "@/components/widget/text/LineClampCell";
-import { numberSpacing } from "@/utils/utils";
+import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import type { SaleDoc, SaleDocTable } from "../types/type";
 import SaleDocumentSummary from "./SaleDocumentSummary";
 
@@ -15,7 +15,7 @@ interface Props {
 
 export default function ConfirmedSaleDocument({
   document,
-  lines,
+  lines = [],
   loading,
   organizationName,
 }: Props) {
@@ -24,6 +24,8 @@ export default function ConfirmedSaleDocument({
     (sum, line) => sum + (line.totalAmount || line.amount * line.quantity),
     0,
   );
+
+  
   const columns: TableColumnsType<SaleDocTable> = [
     {
       title: "№",
@@ -101,10 +103,9 @@ export default function ConfirmedSaleDocument({
       />
       <Card className="overflow-hidden border border-border">
         <Table<SaleDocTable>
-          rowKey="id"
           loading={loading}
           columns={columns}
-          dataSource={lines}
+          dataSource={generateKeyTable(lines, "rowKey")}
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 280px)" }}
         />

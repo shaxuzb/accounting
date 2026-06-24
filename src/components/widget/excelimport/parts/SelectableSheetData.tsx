@@ -14,11 +14,18 @@ interface SelectableSheetDataProps {
   formik: FormikProps<FormValues>;
   selectBoxOptions: SelectBoxOptions[];
   setSelectBoxOptions: React.Dispatch<React.SetStateAction<SelectBoxOptions[]>>;
+  onSave?: () => void;
 }
 
 const SelectableSheetData: FC<SelectableSheetDataProps> = (props) => {
-  const { excelData, setData, formik, selectBoxOptions, setSelectBoxOptions } =
-    props;
+  const {
+    excelData,
+    setData,
+    formik,
+    selectBoxOptions,
+    setSelectBoxOptions,
+    onSave,
+  } = props;
   const [newData, setNewData] = useState<ExcelRow[]>([]);
 
   const tableSource = excelData.map((item, index) => ({
@@ -78,6 +85,7 @@ const SelectableSheetData: FC<SelectableSheetDataProps> = (props) => {
       prev.map((item) => ({ ...item, disabled: false })),
     );
     setData(finalData);
+    onSave?.();
   };
 
   return (
