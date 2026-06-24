@@ -16,6 +16,6 @@ export const useGetSaleLines = (
 ) =>
   useQuery({
     queryKey: saleKeys.saleDocTable.list(ownerId),
-    queryFn: () => saleDocTableService.list(ownerId),
+    queryFn: () => saleDocTableService.list(),
     enabled: Boolean(ownerId) && enabled,
   });

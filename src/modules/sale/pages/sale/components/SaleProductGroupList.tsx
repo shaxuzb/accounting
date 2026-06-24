@@ -8,11 +8,16 @@ import SaleProductGroup from "./SaleProductGroup";
 interface Props {
   lines: SalePricingLine[];
   currencyCode: string;
-  onApplyMargin: (lineIds: number[], margin: number) => void;
-  onApplySalePrice: (lineIds: number[], salePrice: number) => void;
-  onApplyVat: (lineIds: number[], vatRateId: number | null) => void;
-  onLineMarginChange: (lineId: number, margin: number) => void;
-  onLineSalePriceChange: (lineId: number, salePrice: number) => void;
+  onApplyMargin: (lineKeys: string[], margin: number) => void;
+  onApplyMarginAmount: (lineKeys: string[], marginAmount: number) => void;
+  onApplySalePrice: (lineKeys: string[], salePrice: number) => void;
+  onApplyVat: (
+    lineKeys: string[],
+    vatRateId: number | null,
+    vatRateName?: string | null,
+  ) => void;
+  onLineMarginChange: (lineKey: string, margin: number) => void;
+  onLineSalePriceChange: (lineKey: string, salePrice: number) => void;
 }
 
 export default function SaleProductGroupList({ lines, ...props }: Props) {
@@ -22,7 +27,7 @@ export default function SaleProductGroupList({ lines, ...props }: Props) {
     lines.forEach((line) => {
       const groupKey = line.productId
         ? `product-${line.productId}`
-        : `product-table-${line.productTableId}`;
+        : line.rowKey;
       const group = result.get(groupKey);
       if (group) {
         group.lines.push(line);

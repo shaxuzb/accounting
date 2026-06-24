@@ -18,7 +18,6 @@ interface WorkbookWithMeta extends XLSX.WorkBook {
 
 interface ExcelImportFileProps {
   setData: React.Dispatch<React.SetStateAction<ExcelRow[]>>;
-  excelData: ExcelRow[];
   formik: FormikProps<FormValues>;
   setSelectBoxOptions: React.Dispatch<React.SetStateAction<SelectBoxOptions[]>>;
   selectBoxOptions: SelectBoxOptions[];
@@ -28,7 +27,6 @@ interface ExcelImportFileProps {
 const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
   const {
     setData,
-    excelData,
     formik,
     selectBoxOptions,
     disabled = false,
@@ -40,46 +38,48 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
   const [value, setValue] = useState<string>("");
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
+  const readWorkbookFile = (file: Blob & { name?: string }) => {
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onload = (event) => {
+      const data = event.target?.result;
+      if (!data) {
+        return;
+      }
+
+      const workbook = XLSX.read(data, {
+        type: "array",
+        cellDates: true,
+        cellFormula: false,
+        cellHTML: false,
+        cellNF: false,
+        cellText: false,
+        dense: true,
+      });
+
+      if (workbook.SheetNames.length === 1) {
+        setValue(workbook.SheetNames[0]);
+        setCurrent(1);
+      }
+      setSheetData({ ...workbook, fileName: file.name });
+      setModalOpen(true);
+    };
+  };
+
   const props: UploadProps = {
     name: "file",
     multiple: false,
     accept: ".xlsx,.xls",
-    onChange(info) {
-      const { status } = info.file;
-      if (status === "error") {
-        const file = info.file.originFileObj;
-        if (file && file instanceof Blob) {
-          const reader = new FileReader();
-          reader.readAsArrayBuffer(file);
-          reader.onload = (e) => {
-            const data = e.target?.result;
-            if (data) {
-              const workbook = XLSX.read(data, {
-                type: "binary",
-                cellDates: true,
-                cellFormula: false,
-                cellHTML: false,
-                cellNF: false,
-                cellText: false,
-                dense: true,
-              });
-              if (workbook.SheetNames.length === 1) {
-                setValue(workbook.SheetNames[0]);
-                setCurrent(1);
-              }
-              setSheetData({ ...workbook, fileName: file.name });
-              setModalOpen(true);
-            }
-          };
-        }
-      }
+    showUploadList: false,
+    beforeUpload(file) {
+      readWorkbookFile(file);
+      return false;
     },
   };
 
   const handleDeleteFile = () => {
     setSheetData(null);
     setValue("");
-    formik.resetForm();
     setData([]);
     setCurrent(0);
     setModalOpen(false);
@@ -125,7 +125,7 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
       {sheetData &&
         sheetData.SheetNames &&
         sheetData.SheetNames.length > 0 &&
-        excelData.length < 1 && (
+        modalOpen && (
           <Modal
             open={modalOpen}
             width={"100%"}
@@ -221,6 +221,7 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
                   selectBoxOptions={selectBoxOptions}
                   setSelectBoxOptions={setSelectBoxOptions}
                   excelData={sheetJson}
+                  onSave={() => setModalOpen(false)}
                 />
               )}
             </div>

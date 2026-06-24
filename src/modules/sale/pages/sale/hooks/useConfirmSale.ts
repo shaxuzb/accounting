@@ -9,7 +9,8 @@ export const useConfirmSale = (id: string | number) => {
   return useMutation({
     mutationFn: (payload: SaleDocConfirmForm) =>
       saleDocService.confirm(id, payload),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      queryClient.setQueryData(saleKeys.saleDoc.detail(id), data);
       queryClient.invalidateQueries({ queryKey: saleKeys.saleDoc.all });
       queryClient.invalidateQueries({ queryKey: saleKeys.saleDoc.detail(id) });
       queryClient.invalidateQueries({

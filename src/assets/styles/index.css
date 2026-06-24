@@ -47,13 +47,6 @@
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
 }
-
-
-
-/* sidebar  */
-
-
-
 @layer components {
   /* 1. Sarlavha (Header) qismi: Shrift o'lchami, rangi va fonini pikselma-piksel sozlash */
   .hisob-kitob-custom-table .ant-table-thead > tr > th {

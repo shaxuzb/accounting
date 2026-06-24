@@ -8,8 +8,13 @@ export const getSalePriceByMargin = (
   marginPercent: number,
 ) => roundMoney(costPrice * (1 + marginPercent / 100));
 
+export const getSalePriceByMarginAmount = (
+  costPrice: number,
+  marginAmount: number,
+) => roundMoney(costPrice + marginAmount);
+
 export const getMarginBySalePrice = (costPrice: number, salePrice: number) =>
-  costPrice > 0
+  costPrice > 0 && salePrice > 0
     ? roundMoney(((salePrice - costPrice) / costPrice) * 100)
     : 0;
 
@@ -24,9 +29,17 @@ export const getVatAmount = (
   vatRateName?: string | null,
 ) => roundMoney(salePrice * quantity * (getVatPercent(vatRateName) / 100));
 
+const getPricingLineKey = (line: SaleDocTable, index: number) =>
+  line.rowKey ||
+  line.markingNumber ||
+  (line.productTableId ? `product-table-${line.productTableId}` : "") ||
+  `line-${line.id}-${index}`;
+
 export const createSalePricingLine = (
   line: SaleDocTable,
+  index = 0,
 ): SalePricingLine => ({
   ...line,
+  rowKey: getPricingLineKey(line, index),
   marginPercent: getMarginBySalePrice(line.costPrice, line.amount),
 });

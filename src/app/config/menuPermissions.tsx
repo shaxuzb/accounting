@@ -3,13 +3,11 @@ import { purchasePermissions } from "@/modules/purchase/pages/purchase";
 import type { MenuRole } from "@/shared/types";
 import {
   Box,
-  BoxIcon,
   Briefcase,
   Building,
   Building2,
   ContactRound,
   CreditCard,
-  FileSignature,
   GitBranch,
   Handshake,
   Landmark,
@@ -61,14 +59,7 @@ export const menuPermissions: MainMenu = {
       },
       iconName: <LayoutDashboard className="size-5" />,
     },
-    {
-      code: productPermissions.view,
-      linkData: {
-        path: "products",
-        title: "products.title",
-      },
-      iconName: <BoxIcon className="size-5" />,
-    },
+
     {
       code: purchasePermissions.view,
       iconName: <ShoppingCart className="size-5" />,
@@ -81,7 +72,6 @@ export const menuPermissions: MainMenu = {
       items: [
         {
           code: purchasePermissions.view,
-          iconName: <ShoppingCart className="size-5" />,
           linkData: {
             path: "purchase",
             title: "purchase.title",
@@ -89,10 +79,35 @@ export const menuPermissions: MainMenu = {
         },
         {
           code: contractPermissions.view,
-          iconName: <FileSignature className="size-5" />,
           linkData: {
             path: "contracts",
             title: "contract.title",
+          },
+        },
+      ],
+    },
+    {
+      code: warehousePermissions.view,
+      iconName: <Box className="size-5" />,
+      dropdown: true,
+      dropdownName: "Ombor",
+      linkData: {
+        path: "warehouses",
+        title: "Ombor",
+      },
+      items: [
+        {
+          code: warehousePermissions.view,
+          linkData: {
+            path: "warehouse",
+            title: "Omborxona",
+          },
+        },
+        {
+          code: productPermissions.view,
+          linkData: {
+            path: "products",
+            title: "products.title",
           },
         },
       ],
@@ -122,14 +137,7 @@ export const menuPermissions: MainMenu = {
     //   },
     //   iconName: <Banknote className="size-5" />,
     // },
-    {
-      code: warehousePermissions.view,
-      linkData: {
-        path: "warehouses",
-        title: "Ombor",
-      },
-      iconName: <Box className="size-5" />,
-    },
+
     // {
     //   code: "S",
     //   linkData: {

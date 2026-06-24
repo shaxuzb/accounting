@@ -7,25 +7,20 @@ export interface SaleDocForm {
   stateId?: number | null;
 }
 
-export interface SaleDocCreateLineForm {
-  productTableId: number;
+export interface SaleDocProductForm {
+  id?: number | null;
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+  vatRateId: number | null;
 }
 
 export interface SaleDocCreateForm {
-  docDate: string;
   counterpartyId: number;
   warehouseId: number;
   currencyId: number;
-  comment: string;
-  lines: SaleDocCreateLineForm[];
-}
-
-export interface SaleDocUpdateLineForm {
-  productId: number;
-  markingNumber: string;
-  serialNumber?: string | null;
-  price: number;
-  vatRateId: number | null;
+  comment: string | null;
+  products: SaleDocProductForm[];
 }
 
 export interface SaleDocUpdateForm {
@@ -33,26 +28,40 @@ export interface SaleDocUpdateForm {
   counterpartyId: number;
   warehouseId: number;
   currencyId: number;
-  comment: string;
+  comment: string | null;
   stateId: number;
-  lines: SaleDocUpdateLineForm[];
+  products: SaleDocProductForm[];
+}
+
+export interface SaleDocTableUpdateForm {
+  ownerId: number;
+  productTableId: number;
+  amount: number;
+  vatRateId: number | null;
 }
 
 export interface SaleDocConfirmLineForm {
   id: number;
   amount: number;
-  vatRateId: number | null;
 }
 
 export interface SaleDocConfirmForm {
-  counterpartyId: number;
-  docDate: string;
   lines: SaleDocConfirmLineForm[];
+}
+
+export interface SaleDocWarehouseConfirmItemForm {
+  productTableId: number;
+}
+
+export interface SaleDocWarehouseConfirmForm {
+  items: SaleDocWarehouseConfirmItemForm[];
 }
 
 export interface SaleProductGroupForm {
   vatRateId: number | null;
   vatRateName: string;
+  priceMode: "marginPercent" | "marginAmount" | "salePrice";
   margin: number | null;
+  marginAmount: number | null;
   salePrice: number | null;
 }

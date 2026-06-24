@@ -1,16 +1,23 @@
 import { $axiosPrivate } from "@/services/AxiosService";
 import type { ListParams, Paginated } from "@/shared/types";
 import { warehouseEndpoints } from "../constants/endpoints";
-import type { WarehouseAll } from "../types/type";
+import type { ProductStock, ProductStockSerial } from "../types/type";
 
+type QueryParams = ListParams | URLSearchParams;
 
-const endpoints = warehouseEndpoints.warehouse;
+const endpoints = warehouseEndpoints.productStock;
 
 export const warehouseService = {
-  list: (params?: ListParams) =>
-    $axiosPrivate.get<Paginated<WarehouseAll>>(endpoints.list, { params }).then((res) => res.data),
-  detail: (params?: ListParams | URLSearchParams) =>
-    $axiosPrivate.get<WarehouseAll>(endpoints.detail, { params }).then((res) => res.data),
-  detailSerial: (params?: ListParams | URLSearchParams) =>
-    $axiosPrivate.get<WarehouseAll>(endpoints.detailSerial, { params }).then((res) => res.data),
+  list: (params?: QueryParams) =>
+    $axiosPrivate
+      .get<Paginated<ProductStock>>(endpoints.list, { params })
+      .then((res) => res.data),
+  detail: (params?: QueryParams) =>
+    $axiosPrivate
+      .get<Paginated<ProductStock>>(endpoints.detail, { params })
+      .then((res) => res.data),
+  detailSerial: (params?: QueryParams) =>
+    $axiosPrivate
+      .get<Paginated<ProductStockSerial>>(endpoints.detailSerial, { params })
+      .then((res) => res.data),
 };

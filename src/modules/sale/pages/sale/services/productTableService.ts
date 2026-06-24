@@ -7,7 +7,7 @@ export const productTableService = {
     return $axiosPrivate
       .get<ProductTableByMarking>(saleEndpoints.productTable.byMarking, {
         params: {
-          markingNumber: encodeURIComponent(markingNumber.trim()),
+          markingNumber: markingNumber.trim(),
         },
       })
       .then((res) => res.data);

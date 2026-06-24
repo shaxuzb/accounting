@@ -5,6 +5,7 @@ import type {
   SaleDocConfirmForm,
   SaleDocCreateForm,
   SaleDocUpdateForm,
+  SaleDocWarehouseConfirmForm,
 } from "../types/form";
 import type { SaleDoc } from "../types/type";
 
@@ -28,6 +29,13 @@ export const saleDocService = {
   update: (id: string | number, payload: SaleDocUpdateForm) =>
     $axiosPrivate
       .put<SaleDoc>(endpoints.update(id), payload)
+      .then((res) => res.data),
+  warehouseConfirm: (
+    id: string | number,
+    payload: SaleDocWarehouseConfirmForm,
+  ) =>
+    $axiosPrivate
+      .put<SaleDoc>(endpoints.warehouseConfirm(id), payload)
       .then((res) => res.data),
   confirm: (id: string | number, payload: SaleDocConfirmForm) =>
     $axiosPrivate

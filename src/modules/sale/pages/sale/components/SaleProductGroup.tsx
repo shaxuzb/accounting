@@ -1,4 +1,4 @@
-import { Button, Form, Tooltip } from "antd";
+import { Button, Form, Segmented, Tooltip } from "antd";
 import { useFormik } from "formik";
 import { Check, ChevronDown, ChevronRight, Package } from "lucide-react";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
@@ -12,25 +12,31 @@ import SaleProductLinesTable from "./SaleProductLinesTable";
 interface Props {
   group: SaleProductGroupData;
   currencyCode: string;
-  onApplyMargin: (lineIds: number[], margin: number) => void;
-  onApplySalePrice: (lineIds: number[], salePrice: number) => void;
-  onApplyVat: (lineIds: number[], vatRateId: number | null) => void;
-  onLineMarginChange: (lineId: number, margin: number) => void;
-  onLineSalePriceChange: (lineId: number, salePrice: number) => void;
+  onApplyMargin: (lineKeys: string[], margin: number) => void;
+  onApplyMarginAmount: (lineKeys: string[], marginAmount: number) => void;
+  onApplySalePrice: (lineKeys: string[], salePrice: number) => void;
+  onApplyVat: (
+    lineKeys: string[],
+    vatRateId: number | null,
+    vatRateName?: string | null,
+  ) => void;
+  onLineMarginChange: (lineKey: string, margin: number) => void;
+  onLineSalePriceChange: (lineKey: string, salePrice: number) => void;
 }
 
 function SaleProductGroup({
   group,
   currencyCode,
   onApplyMargin,
+  onApplyMarginAmount,
   onApplySalePrice,
   onApplyVat,
   onLineMarginChange,
   onLineSalePriceChange,
 }: Props) {
   const [expanded, setExpanded] = useState(true);
-  const lineIds = useMemo(
-    () => group.lines.map((line) => line.id),
+  const lineKeys = useMemo(
+    () => group.lines.map((line) => line.rowKey),
     [group.lines],
   );
   const initialVatRateId = group.lines.every(
@@ -49,24 +55,41 @@ function SaleProductGroup({
     initialValues: {
       vatRateId: initialVatRateId,
       vatRateName: initialVatRateName,
+      priceMode: "marginPercent",
       margin: null,
+      marginAmount: null,
       salePrice: null,
     },
     onSubmit: (values, helpers) => {
-      if (values.margin !== null) {
-        onApplyMargin(lineIds, values.margin);
-      } else if (values.salePrice !== null) {
-        onApplySalePrice(lineIds, values.salePrice);
+      if (values.priceMode === "marginPercent" && values.margin !== null) {
+        onApplyMargin(lineKeys, values.margin);
+      } else if (
+        values.priceMode === "marginAmount" &&
+        values.marginAmount !== null
+      ) {
+        onApplyMarginAmount(lineKeys, values.marginAmount);
+      } else if (values.priceMode === "salePrice" && values.salePrice !== null) {
+        onApplySalePrice(lineKeys, values.salePrice);
       }
-      helpers.setValues({ ...values, margin: null, salePrice: null });
+      helpers.setValues({
+        ...values,
+        margin: null,
+        marginAmount: null,
+        salePrice: null,
+      });
     },
   });
 
   useEffect(() => {
     if (previousVatRateId.current === formik.values.vatRateId) return;
     previousVatRateId.current = formik.values.vatRateId;
-    onApplyVat(lineIds, formik.values.vatRateId);
-  }, [formik.values.vatRateId, lineIds, onApplyVat]);
+    onApplyVat(lineKeys, formik.values.vatRateId, formik.values.vatRateName);
+  }, [
+    formik.values.vatRateId,
+    formik.values.vatRateName,
+    lineKeys,
+    onApplyVat,
+  ]);
 
   return (
     <section className="overflow-hidden rounded-lg border border-border bg-primary-bg">
@@ -105,7 +128,7 @@ function SaleProductGroup({
 
         <Form
           layout="vertical"
-          className="grid w-full gap-3 sm:grid-cols-2 xl:grid-cols-[280px_190px_190px_120px] xl:items-end 2xl:w-205"
+          className="grid w-full gap-3 sm:grid-cols-2 xl:grid-cols-[280px_240px_190px_120px] xl:items-end 2xl:w-[860px]"
         >
           <div className="min-w-0 [&_.ant-form-item]:mb-0! [&_.ant-form-item-label]:pb-1! [&_.ant-select-selector]:h-9.5!">
             <SelectCustom
@@ -118,33 +141,67 @@ function SaleProductGroup({
               clearable
             />
           </div>
-          <div className="min-w-0 [&_.ant-form-item]:mb-0! [&_.ant-form-item-label]:pb-1!">
-            <InputNumberFormat
-              label="Marja, %"
-              fieldName="margin"
-              formik={formik}
-              value={formik.values.margin}
-              min={-100}
-              max={100000}
-              precision={2}
-              onValueChange={(value) => {
-                formik.setFieldValue("margin", value);
+          <div className="min-w-0">
+            <Segmented
+              block
+              value={formik.values.priceMode}
+              options={[
+                { label: "Marja, %", value: "marginPercent" },
+                { label: "Marja summa", value: "marginAmount" },
+                { label: "Sotuv narxi", value: "salePrice" },
+              ]}
+              onChange={(value) => {
+                formik.setFieldValue("priceMode", value);
+                formik.setFieldValue("margin", null);
+                formik.setFieldValue("marginAmount", null);
                 formik.setFieldValue("salePrice", null);
               }}
-              onPressEnter={formik.handleSubmit}
             />
           </div>
           <div className="min-w-0 [&_.ant-form-item]:mb-0! [&_.ant-form-item-label]:pb-1!">
             <InputNumberFormat
-              label="Sotuv narxi"
-              fieldName="salePrice"
+              label={
+                formik.values.priceMode === "marginPercent"
+                  ? "Marja, %"
+                  : formik.values.priceMode === "marginAmount"
+                    ? "Marja summa"
+                    : "Sotuv narxi"
+              }
+              fieldName={
+                formik.values.priceMode === "marginPercent"
+                  ? "margin"
+                  : formik.values.priceMode === "marginAmount"
+                    ? "marginAmount"
+                    : "salePrice"
+              }
               formik={formik}
-              value={formik.values.salePrice}
-              min={0}
+              value={
+                formik.values.priceMode === "marginPercent"
+                  ? formik.values.margin
+                  : formik.values.priceMode === "marginAmount"
+                    ? formik.values.marginAmount
+                    : formik.values.salePrice
+              }
+              min={formik.values.priceMode === "marginPercent" ? -100 : 0}
+              max={100000}
               precision={2}
               onValueChange={(value) => {
-                formik.setFieldValue("salePrice", value);
-                formik.setFieldValue("margin", null);
+                if (formik.values.priceMode === "marginPercent") {
+                  formik.setFieldValue("margin", value);
+                } else if (formik.values.priceMode === "marginAmount") {
+                  formik.setFieldValue("marginAmount", value);
+                } else {
+                  formik.setFieldValue("salePrice", value);
+                }
+                if (formik.values.priceMode !== "marginPercent") {
+                  formik.setFieldValue("margin", null);
+                }
+                if (formik.values.priceMode !== "marginAmount") {
+                  formik.setFieldValue("marginAmount", null);
+                }
+                if (formik.values.priceMode !== "salePrice") {
+                  formik.setFieldValue("salePrice", null);
+                }
               }}
               onPressEnter={formik.handleSubmit}
             />
@@ -154,7 +211,9 @@ function SaleProductGroup({
             size="large"
             icon={<Check size={16} />}
             disabled={
-              formik.values.margin === null && formik.values.salePrice === null
+              formik.values.margin === null &&
+              formik.values.marginAmount === null &&
+              formik.values.salePrice === null
             }
             onClick={() => formik.handleSubmit()}
           >
@@ -185,6 +244,7 @@ const sameProductGroup = (previous: Props, next: Props) =>
     (line, index) => line === next.group.lines[index],
   ) &&
   previous.onApplyMargin === next.onApplyMargin &&
+  previous.onApplyMarginAmount === next.onApplyMarginAmount &&
   previous.onApplySalePrice === next.onApplySalePrice &&
   previous.onApplyVat === next.onApplyVat &&
   previous.onLineMarginChange === next.onLineMarginChange &&

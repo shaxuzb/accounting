@@ -1,9 +1,9 @@
 import type { SaleDocForm } from "../types/form";
-import type { SaleScannedProduct } from "../types/type";
+import type { SaleSelectedProduct } from "../types/type";
 
 export interface SaleDraft {
   form: SaleDocForm;
-  lines: SaleScannedProduct[];
+  products: SaleSelectedProduct[];
 }
 
 const draftKey = (organizationId: number) =>

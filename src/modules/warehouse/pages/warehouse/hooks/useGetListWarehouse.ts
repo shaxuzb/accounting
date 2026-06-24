@@ -7,6 +7,6 @@ import { warehouseService } from "../services/warehouseService";
 export const useGetListWarehouse = (params?: ListParams | URLSearchParams) =>
   useQuery({
     queryKey: WarehouseKeys.warehouse.list(params),
-    queryFn: () => warehouseService.list(params as any),
+    queryFn: () => warehouseService.list(params),
     placeholderData: keepPreviousData,
   });

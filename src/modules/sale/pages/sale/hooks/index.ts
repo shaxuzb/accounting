@@ -3,5 +3,8 @@ export * from "./useConfirmSale";
 export * from "./useCreateSale";
 export * from "./useGetDetailSale";
 export * from "./useGetListSale";
+export * from "./useGetSaleProductStocks";
 export * from "./useGetProductByMarking";
+export * from "./useUpdateSaleDocTable";
 export * from "./useUpdateSale";
+export * from "./useWarehouseConfirmSale";

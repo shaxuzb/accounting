@@ -1,6 +1,5 @@
-import { memo, useCallback, useEffect, useState } from "react";
-import { Button, Input } from "antd";
-import { Plus } from "lucide-react";
+import { memo, useCallback, useState } from "react";
+import { Input } from "antd";
 import LineClampCell from "@/components/widget/text/LineClampCell";
 
 const numericColumns = new Set([
@@ -17,7 +16,6 @@ interface PurchaseImportEditableCellProps {
   rowIndex: number;
   isInvalid?: boolean;
   onCommit: (rowIndex: number, dataIndex: string, value: string) => void;
-  onAddClick?: () => void;
 }
 
 function PurchaseImportEditableCell({
@@ -26,18 +24,16 @@ function PurchaseImportEditableCell({
   rowIndex,
   onCommit,
   isInvalid = false,
-  onAddClick,
 }: PurchaseImportEditableCellProps) {
   const [localValue, setLocalValue] = useState(String(value ?? ""));
   const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    if (!isEditing) {
-      setLocalValue(String(value ?? ""));
-    }
-  }, [isEditing, value]);
+  const displayValue = String(value ?? "");
 
-  const startEditing = useCallback(() => setIsEditing(true), []);
+  const startEditing = useCallback(() => {
+    setLocalValue(displayValue);
+    setIsEditing(true);
+  }, [displayValue]);
 
   const commit = useCallback(() => {
     onCommit(rowIndex, dataIndex, localValue);
@@ -86,21 +82,8 @@ function PurchaseImportEditableCell({
         onClick={startEditing}
         onFocus={startEditing}
       >
-        <LineClampCell text={localValue || null} />
+        <LineClampCell text={displayValue || null} />
       </button>
-      {isInvalid && onAddClick && (
-        <Button
-          type="link"
-          size="small"
-          className="h-6! px-1!"
-          icon={<Plus className="size-3" />}
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={(event) => {
-            event.stopPropagation();
-            onAddClick();
-          }}
-        />
-      )}
     </div>
   );
 }
