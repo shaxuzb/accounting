@@ -52,13 +52,11 @@ export const purchaseRoutes: RouteObject = {
           },
         },
       ],
-
     },
     {
       path: "contracts",
       handle: "purchase.contract",
-      element: <ContractListPage/>
-
+      element: <ContractListPage />,
     },
   ],
 };
