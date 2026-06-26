@@ -32,7 +32,7 @@ const LineClampAnimation: React.FC<LineClampCellProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`text-ellipsis-wrapper text-animation-trick-parent test ${animate ? "text-animation-trick-parent-accepted" : ""}`}
+      className={`text-ellipsis-wrapper text-animation-trick-parent tests ${animate ? "text-animation-trick-parent-accepted" : ""}`}
     >
       {isOverflowing ? (
         <div className="text-ellipsis-track">
