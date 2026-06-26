@@ -1,26 +1,20 @@
 export interface BankStatementTransaction {
-  id: string;
-  fields: Record<string, unknown>;
-  date?: string;
-  docDate?: string;
-  docNumber?: string;
-  operationCode?: string;
-  operationTypeId?: number | null;
-  account?: string;
-  mfoCounterparty?: string;
-  counterpartyAccount?: string;
-  counterpartyInn?: string;
-  counterpartyName?: string;
-  counterparty?: string;
-  counterpartyId: number | null;
-  bankAccountId?: number | null;
-  currencyId?: number | null;
-  debit?: number | null;
-  credit?: number | null;
-  purpose?: string;
-  comment?: string;
-  direction?: string;
-  amount?: number | null;
+  date: string;
+  docNumber: string;
+  operationTypeId: number;
+  operationCode: string;
+  mfoCounterparty: string;
+  counterpartyAccount: string;
+  counterpartyInn: string;
+  counterpartyName: string;
+  counterpartyId: number;
+  debit: number;
+  credit: number;
+  purpose: string;
+  direction: string;
+  amount: number;
+  currencyId?: number;
+  currencyName?: string;
 }
 
 export interface BankStatementCardData {
@@ -33,7 +27,6 @@ export interface BankStatementCardData {
   operationTypeId?: number | null;
   dateFrom?: string;
   dateTo?: string;
-  metadata: Record<string, unknown>;
   transactions: BankStatementTransaction[];
   raw: unknown;
 }
@@ -53,18 +46,4 @@ export interface BankOperationData {
   comment?: string | null;
   stateId?: number;
   stateName?: string;
-}
-
-export interface BankOperationCreatePayload {
-  bankAccountId: number;
-  operationTypeId: number;
-  counterpartyId: number;
-  docDate: string;
-  currencyId: number;
-  amount: number;
-  comment: string | null;
-}
-
-export interface BankOperationsCreatePayload {
-  operations: BankOperationCreatePayload[];
 }

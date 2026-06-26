@@ -22,6 +22,7 @@ interface ExcelImportFileProps {
   setSelectBoxOptions: React.Dispatch<React.SetStateAction<SelectBoxOptions[]>>;
   selectBoxOptions: SelectBoxOptions[];
   disabled?: boolean;
+  variant?: "dropzone" | "button";
 }
 
 const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
@@ -31,6 +32,7 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
     selectBoxOptions,
     disabled = false,
     setSelectBoxOptions,
+    variant = "dropzone",
   } = propsSheet;
   const { Dragger } = Upload;
   const [sheetData, setSheetData] = useState<WorkbookWithMeta | null>(null);
@@ -93,25 +95,33 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
       : [];
 
   return (
-    <div className="mt-4 w-full">
+    <div className={variant === "button" ? "" : "mt-4 w-full"}>
       {!sheetData ? (
-        <Card className="w-full!">
-          <Dragger disabled={disabled} {...props}>
-            <div className="flex justify-center items-center my-3">
-              <UploadIcon fontSize={40} />
-            </div>
-            <p className="ant-upload-text">
-              Faylni yuklash uchun bu hududga bosing yoki sudrab olib keling
-            </p>
-            <p className="ant-upload-hint">
-              Yagona yoki ko'p faylni yuklashni qo'llab-quvvatlaydi. Kompaniya
-              ma'lumotlari yoki taqiqlangan fayllarni yuklash qat'iyan man
-              etiladi.
-            </p>
-          </Dragger>
-        </Card>
+        variant === "button" ? (
+          <Upload disabled={disabled} {...props}>
+            <Button icon={<UploadIcon className="size-4" />} disabled={disabled}>
+              Excel import
+            </Button>
+          </Upload>
+        ) : (
+          <Card className="w-full!">
+            <Dragger disabled={disabled} {...props}>
+              <div className="flex justify-center items-center my-3">
+                <UploadIcon fontSize={40} />
+              </div>
+              <p className="ant-upload-text">
+                Faylni yuklash uchun bu hududga bosing yoki sudrab olib keling
+              </p>
+              <p className="ant-upload-hint">
+                Yagona yoki ko'p faylni yuklashni qo'llab-quvvatlaydi. Kompaniya
+                ma'lumotlari yoki taqiqlangan fayllarni yuklash qat'iyan man
+                etiladi.
+              </p>
+            </Dragger>
+          </Card>
+        )
       ) : (
-        <Card className="inline-block min-w-75 p-3 mb-4">
+        <Card className={variant === "button" ? "inline-block p-2" : "inline-block min-w-75 p-3 mb-4"}>
           <div className="flex gap-4 justify-between items-center w-auto">
             <h1 className="font-semibold text-base text-wrap w-full max-w-60">
               Yuklangan fayl: <LineClampCell text={sheetData.fileName ?? ""} />

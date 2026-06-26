@@ -8,14 +8,8 @@ import type {
   BankStatementCardData,
   BankStatementTransaction,
 } from "../types/type";
-import dayjs from "@/config/dayjs";
+import { customDate, numberSpacing } from "@/utils/utils";
 
-const formatMoney = (value: number | null | undefined) =>
-  typeof value === "number"
-    ? new Intl.NumberFormat("uz-UZ", {
-        maximumFractionDigits: 2,
-      }).format(value)
-    : "-";
 
 const stringifyValue = (value: unknown) => {
   if (value === null || value === undefined || value === "") return "-";
@@ -23,18 +17,13 @@ const stringifyValue = (value: unknown) => {
   return String(value);
 };
 
-const formatDate = (value: unknown) => {
-  if (!value) return "-";
-  const date = dayjs(String(value));
-  return date.isValid() ? date.format("DD.MM.YYYY HH:mm") : stringifyValue(value);
-};
 
 interface BankStatementCardProps {
   item: BankStatementCardData;
   expanded: boolean;
   onToggle: () => void;
   onDelete: () => void;
-  onDeleteTransaction: (transactionId: string) => void;
+  onDeleteTransaction: (transactionIndex: number) => void;
 }
 
 export default function BankStatementCard({
@@ -58,14 +47,17 @@ export default function BankStatementCard({
     0,
   );
   const hasBankAccount = Boolean(item.bankAccountId);
+  const hasMissingCounterparty = item.transactions.some(
+    (transaction) => !transaction.counterpartyId,
+  );
   const dateFrom =
     item.dateFrom ??
-    item.transactions.map((transaction) => transaction.docDate ?? transaction.date).find(Boolean);
+    item.transactions.map((transaction) => transaction.date).find(Boolean);
   const dateTo =
     item.dateTo ??
     [...item.transactions]
       .reverse()
-      .map((transaction) => transaction.docDate ?? transaction.date)
+      .map((transaction) => transaction.date)
       .find(Boolean);
 
   const columns: ColumnsType<BankStatementTransaction> = [
@@ -73,7 +65,7 @@ export default function BankStatementCard({
       title: t("bank.fields.date"),
       dataIndex: "date",
       width: 150,
-      render: (_, record) => formatDate(record.docDate ?? record.date),
+      render: (_, record) => customDate(record.date),
     },
     {
       title: t("bank.fields.accountNumber"),
@@ -92,7 +84,7 @@ export default function BankStatementCard({
       dataIndex: "purpose",
       width: 200,
       render: (_, record) => {
-        const text = stringifyValue(record.comment ?? record.purpose);
+        const text = stringifyValue(record.purpose);
         return (
           <Tooltip title={text}>
             <span className="line-clamp-2">{text}</span>
@@ -117,31 +109,31 @@ export default function BankStatementCard({
       title: t("bank.fields.debit"),
       dataIndex: "debit",
       align: "right",
-      render: (value) => formatMoney(value),
+      render: (value) => numberSpacing(value),
     },
     {
       title: t("bank.fields.credit"),
       dataIndex: "credit",
       align: "right",
-      render: (value) => formatMoney(value),
+      render: (value) => numberSpacing(value),
     },
     {
       title: t("bank.fields.amount"),
       dataIndex: "amount",
       align: "right",
-      render: (value) => formatMoney(value),
+      render: (value) => numberSpacing(value),
     },
     {
       title: t("common.actions"),
       dataIndex: "actions",
       align: "center",
       fixed: "right",
-      render: (_, record) => (
+      render: (_, __, index) => (
         <Button
           type="text"
           danger
           icon={<Trash2 className="size-4" />}
-          onClick={() => onDeleteTransaction(record.id)}
+          onClick={() => onDeleteTransaction(index)}
         />
       ),
     },
@@ -151,7 +143,9 @@ export default function BankStatementCard({
     <Card
       className={clsx(
         "overflow-hidden border",
-        hasBankAccount ? "border-border" : "border-red-300 bg-red-50/30",
+        hasBankAccount && !hasMissingCounterparty
+          ? "border-border"
+          : "border-red-300 bg-red-50/30",
       )}
     >
       <div className="flex flex-wrap items-start justify-between gap-3 p-4">
@@ -181,6 +175,9 @@ export default function BankStatementCard({
                   ? `${t("bank.fields.bankAccount")}: ${item.bankAccountId}`
                   : t("bank.messages.bankAccountMissing")}
               </Tag>
+              {hasMissingCounterparty && (
+                <Tag color="red">{t("bank.messages.counterpartyMissing")}</Tag>
+              )}
               {item.accountNumber && <Tag>{item.accountNumber}</Tag>}
             </span>
           </span>
@@ -190,8 +187,8 @@ export default function BankStatementCard({
           <div className="rounded-lg bg-gray-50 px-3 py-2">
             <div className="text-xs text-gray-500">{t("bank.fields.date")}</div>
             <div className="font-semibold">
-              {formatDate(dateFrom)}
-              {dateTo && dateTo !== dateFrom ? ` - ${formatDate(dateTo)}` : ""}
+              {customDate(dateFrom)}
+              {dateTo && dateTo !== dateFrom ? ` - ${customDate(dateTo)}` : ""}
             </div>
           </div>
           <div className="rounded-lg bg-gray-50 px-3 py-2 text-right">
@@ -204,15 +201,15 @@ export default function BankStatementCard({
           </div>
           <div className="rounded-lg bg-gray-50 px-3 py-2 text-right">
             <div className="text-xs text-gray-500">{t("bank.fields.debit")}</div>
-            <div className="font-semibold">{formatMoney(totalDebit)}</div>
+            <div className="font-semibold">{numberSpacing(totalDebit)}</div>
           </div>
           <div className="rounded-lg bg-gray-50 px-3 py-2 text-right">
             <div className="text-xs text-gray-500">{t("bank.fields.credit")}</div>
-            <div className="font-semibold">{formatMoney(totalCredit)}</div>
+            <div className="font-semibold">{numberSpacing(totalCredit)}</div>
           </div>
           <div className="rounded-lg bg-gray-50 px-3 py-2 text-right">
             <div className="text-xs text-gray-500">{t("bank.fields.amount")}</div>
-            <div className="font-semibold">{formatMoney(totalAmount)}</div>
+            <div className="font-semibold">{numberSpacing(totalAmount)}</div>
           </div>
           <Button
             danger
@@ -228,7 +225,7 @@ export default function BankStatementCard({
       {expanded && (
         <div className="border-t border-border p-4">
           <Table<BankStatementTransaction>
-            rowKey="id"
+            rowKey={(_, index) => `${item.id}-${index ?? 0}`}
             columns={columns}
             dataSource={item.transactions}
             pagination={false}
@@ -236,7 +233,7 @@ export default function BankStatementCard({
             scroll={{ x: "max-content", y: "calc(100vh - 200px)" }}
             rowClassName={(record) =>
               !record.counterpartyId
-                ? "[&>td]:!bg-red-50 hover:[&>td]:!bg-red-100"
+                ? "[&_.ant-table-cell]:!bg-red-50 hover:[&_.ant-table-cell]:!bg-red-100"
                 : ""
             }
             locale={{ emptyText: t("bank.messages.noTransactions") }}

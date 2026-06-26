@@ -1,32 +1,27 @@
 import { Link, useSearchParams } from "react-router";
-import { Button, Space, Table } from "antd";
+import { Button, Space, Table, Tooltip } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { FileUp, RefreshCw } from "lucide-react";
+import { FileUp, Plus, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import dayjs from "@/config/dayjs";
+import { useState } from "react";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { useAppSelector } from "@/store/hooks";
-import { generateKeyTable } from "@/utils/utils";
+import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
 import { bankStatementEndpoints } from "../constants/endpoints";
 import { bankPermissions } from "../constants/permissions";
 import { useGetBankOperations } from "../hooks";
 import type { BankOperationData } from "../types/type";
+import BankOperationAddEditPage from "./BankOperationAddEditPage";
+import SearchFilter from "@/components/ui/filters/SearchFilter";
 
-const formatDate = (value: string) => {
-  const date = dayjs(value);
-  return date.isValid() ? date.format("DD.MM.YYYY HH:mm") : value;
-};
-
-const formatMoney = (value: number) =>
-  new Intl.NumberFormat("uz-UZ", {
-    maximumFractionDigits: 2,
-  }).format(value ?? 0);
 
 export default function BankOperationListPage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editRecord, setEditRecord] = useState<BankOperationData | null>(null);
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
@@ -38,48 +33,51 @@ export default function BankOperationListPage() {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
       align: "center",
-      width: 70,
     },
     {
       dataIndex: "docDate",
       title: t("bank.fields.date"),
-      width: 170,
-      render: (value) => formatDate(value),
+      render: (value) => customDate(value),
     },
     {
       dataIndex: "bankAccountName",
       title: t("bank.fields.bankAccount"),
-      minWidth: 180,
+      align: "center",
       render: (_, record) => record.bankAccountName ?? record.bankAccountId,
     },
     {
       dataIndex: "operationTypeName",
       title: t("bank.fields.operationType"),
-      minWidth: 170,
       render: (_, record) => record.operationTypeName ?? record.operationTypeId,
     },
     {
       dataIndex: "counterpartyName",
       title: t("bank.fields.counterparty"),
-      minWidth: 200,
       render: (_, record) => record.counterpartyName ?? record.counterpartyId,
     },
     {
       dataIndex: "amount",
       title: t("bank.fields.amount"),
-      align: "right",
-      width: 140,
-      render: (value) => formatMoney(value),
+      align: "center",
+      render: (value) => numberSpacing(value)+" UZS",
     },
     {
       dataIndex: "comment",
       title: t("bank.fields.comment"),
-      minWidth: 220,
-      render: (value) => value || "-",
+      width: 200,
+      render: (value) => {
+        return (
+          <Tooltip title={value}>
+            <span className="line-clamp-2">{value}</span>
+          </Tooltip>
+        );
+      },
     },
   ];
 
-  const hasActions = permissions.includes(bankPermissions.delete);
+  const hasActions =
+    permissions.includes(bankPermissions.update) ||
+    permissions.includes(bankPermissions.delete);
   const columns: TableColumnType<BankOperationData>[] = hasActions
     ? [
         ...tableColumns,
@@ -96,8 +94,15 @@ export default function BankOperationListPage() {
               permissions={permissions}
               permissionsCode={{
                 deleteCode: bankPermissions.delete,
+                editCode: bankPermissions.update,
               }}
               refetch={refetch}
+              editModal={{
+                isModal: true,
+                setOpenEditModal: setIsAddOpen,
+                setEditData: (value: unknown) =>
+                  setEditRecord(value as BankOperationData),
+              }}
             />
           ),
         },
@@ -106,8 +111,21 @@ export default function BankOperationListPage() {
 
   return (
     <div className="w-full">
-      <div className="mb-3 flex items-center justify-end">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <SearchFilter />
         <Space>
+          <PermissionCard permission={[bankPermissions.create, "ROLE_VIEW"]}>
+            <Button
+              type="primary"
+              icon={<Plus className="size-4" />}
+              onClick={() => {
+                setEditRecord(null);
+                setIsAddOpen(true);
+              }}
+            >
+              {t("common.add")}
+            </Button>
+          </PermissionCard>
           <PermissionCard permission={[bankPermissions.create, "ROLE_VIEW"]}>
             <Link to="import">
               <Button type="primary" icon={<FileUp className="size-4" />}>
@@ -130,6 +148,15 @@ export default function BankOperationListPage() {
           scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
         />
       </Card>
+      <BankOperationAddEditPage
+        open={isAddOpen}
+        onClose={() => {
+          setIsAddOpen(false);
+          setEditRecord(null);
+          void refetch();
+        }}
+        record={editRecord}
+      />
     </div>
   );
 }

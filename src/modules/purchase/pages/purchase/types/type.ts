@@ -73,7 +73,13 @@ export interface PurchaseImportRow {
   currencyId: number;
   currency?: string;
   markingNumber: string;
+  markingNumbers?: string[];
   price: number;
+  pricePerUom?: number;
+  unitId?: number | null;
+  unitCode?: string | null;
+  unitName?: string | null;
+  mxik?: string | null;
   vatRateId: number | null;
   vatRates: number | null;
   isSerial?: boolean;

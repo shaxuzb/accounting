@@ -1,18 +1,19 @@
 import { $axiosPrivate } from "@/services/AxiosService";
-import type { Paginated } from "@/shared/types";
-import { saleEndpoints } from "../constants/endpoints";
+import type { ListParams, Paginated } from "@/shared/types";
+import { saleEndpoints } from "../pages/sale/constants/endpoints";
+import type {
+  SaleDocConfirmForm,
+  SaleDocCreateForm,
+  SaleDocTableUpdateForm,
+  SaleDocUpdateForm,
+} from "../pages/sale/types/form";
 import type {
   SaleDoc,
-  SaleDocConfirmForm,
-  SaleDocForm,
-  SaleDocListParams,
   SaleDocTable,
-  SaleDocTableForm,
-  SaleDocUpdateForm,
-} from "../types/type";
+} from "../pages/sale/types/type";
 
 type UnknownRecord = Record<string, unknown>;
-type SaleListQuery = SaleDocListParams | URLSearchParams;
+type SaleListQuery = ListParams | URLSearchParams;
 
 const toRecord = (value: unknown): UnknownRecord =>
   value && typeof value === "object" && !Array.isArray(value)
@@ -107,9 +108,6 @@ export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
         ),
       ),
     ),
-    barcode:
-      markingNumber || 
-      String(read(item, ["barcode", "sapCode", "code"], "")),
     markingNumber: markingNumber || undefined,
     serialNumber: String(read(item, ["serialNumber"], "")) || undefined,
     unitName: String(read(item, ["unitName", "unit"], "")) || undefined,
@@ -120,23 +118,17 @@ export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
     vatRateId: toNumber(read(item, ["vatRateId"], 0)) || null,
     vatRateName: String(read(item, ["vatRateName"], "")) || undefined,
     vatAmount: toNumber(read(item, ["vatAmount"], 0)),
-    availableQuantity:
-      read(item, ["availableQuantity", "balance", "remainder"], undefined) ===
-      undefined
-        ? undefined
-        : toNumber(
-            read(item, ["availableQuantity", "balance", "remainder"], 0),
-          ),
     totalAmount: toNumber(
       read(item, ["totalAmount"], quantity * amount),
     ),
-    syncStatus: "confirmed",
   };
 };
 
 export const saleService = {
   list: async (params?: SaleListQuery): Promise<Paginated<SaleDoc>> => {
-    const { data } = await $axiosPrivate.get(saleEndpoints.docs.list, { params });
+    const { data } = await $axiosPrivate.get(saleEndpoints.saleDoc.list, {
+      params,
+    });
     const root = unwrap(data);
     const items = collection(data).map(normalizeSaleDoc);
     return {
@@ -147,55 +139,52 @@ export const saleService = {
     };
   },
   detail: async (id: string | number) => {
-    const { data } = await $axiosPrivate.get(saleEndpoints.docs.detail(id));
+    const { data } = await $axiosPrivate.get(saleEndpoints.saleDoc.detail(id));
     return normalizeSaleDoc(data);
   },
-  create: async (payload: SaleDocForm) => {
-    const { data } = await $axiosPrivate.post(saleEndpoints.docs.create, {
-      counterpartyId: payload.counterpartyId,
-      warehouseId: payload.warehouseId,
-      currencyId: payload.currencyId,
-      comment: payload.comment,
-      lines: payload.lines,
-    });
+  create: async (payload: SaleDocCreateForm) => {
+    const { data } = await $axiosPrivate.post(
+      saleEndpoints.saleDoc.create,
+      payload,
+    );
     return normalizeSaleDoc(data);
   },
   update: async (id: string | number, payload: SaleDocUpdateForm) => {
     const { data } = await $axiosPrivate.put(
-      saleEndpoints.docs.update(id),
+      saleEndpoints.saleDoc.update(id),
       payload,
     );
     return normalizeSaleDoc(data);
   },
   confirm: async (id: string | number, payload: SaleDocConfirmForm) => {
     const { data } = await $axiosPrivate.put(
-      saleEndpoints.docs.confirm(id),
+      saleEndpoints.saleDoc.confirm(id),
       payload,
     );
     return data;
   },
   delete: (id: string | number) =>
-    $axiosPrivate.delete(saleEndpoints.docs.delete(id)),
+    $axiosPrivate.delete(saleEndpoints.saleDoc.detail(id)),
   lines: async (ownerId: string | number): Promise<Paginated<SaleDocTable>> => {
-    const { data } = await $axiosPrivate.get(saleEndpoints.tables.list, {
+    const { data } = await $axiosPrivate.get(saleEndpoints.saleDocTable.list, {
       params: { OwnerId: ownerId, Page: 1, PageSize: 1000 },
     });
     return data;
   },
-  createLine: async (payload: SaleDocTableForm) => {
+  createLine: async (payload: SaleDocTableUpdateForm) => {
     const { data } = await $axiosPrivate.post(
-      saleEndpoints.tables.create,
+      saleEndpoints.saleDocTable.list,
       payload,
     );
     return normalizeSaleDocTable(data);
   },
-  updateLine: async (id: string | number, payload: SaleDocTableForm) => {
+  updateLine: async (id: string | number, payload: SaleDocTableUpdateForm) => {
     const { data } = await $axiosPrivate.put(
-      saleEndpoints.tables.update(id),
+      `${saleEndpoints.saleDocTable.list}/${id}`,
       payload,
     );
     return normalizeSaleDocTable(data);
   },
   deleteLine: (id: string | number) =>
-    $axiosPrivate.delete(saleEndpoints.tables.delete(id)),
+    $axiosPrivate.delete(`${saleEndpoints.saleDocTable.list}/${id}`),
 };

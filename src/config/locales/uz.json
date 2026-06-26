@@ -111,6 +111,7 @@
       "departments": "Bo'limlar",
       "branches": "Filiallar",
       "chartAccounts": "Schyotlar rejasi",
+      "banks": "Banklar",
       "bankAccounts": "Bank hisoblari",
       "orgBankAccounts": "Tashkilot bank hisoblari",
       "positions": "Lavozimlar",
@@ -128,6 +129,7 @@
       "departments": "Bo'limlar ro'yxatini boshqarish.",
       "branches": "Filiallar ro'yxatini boshqarish.",
       "chartAccounts": "Schyotlar rejasini boshqarish.",
+      "banks": "Banklar ro'yxatini boshqarish.",
       "bankAccounts": "Kontragent bank hisoblarini boshqarish.",
       "orgBankAccounts": "Tashkilot bank hisoblarini boshqarish.",
       "positions": "Lavozimlar ro'yxatini boshqarish.",
@@ -158,6 +160,7 @@
       "language": "Til",
       "lastName": "Familiya",
       "modules": "Modullar",
+      "mfo": "MFO",
       "name": "Nomi",
       "organization": "Tashkilot",
       "organizationName": "Tashkilot nomi",
@@ -173,7 +176,8 @@
       "serviceTypeId": "Xizmat turi ID",
       "shortName": "Qisqacha nomi",
       "status": "Holati",
-      "userName": "Foydalanuvchi nomi"
+      "userName": "Foydalanuvchi nomi",
+      "createdDate": "Yaratilgan sana"
     },
     "form": {
       "createTitle": "Yangi ma'lumot qo'shish",
@@ -293,9 +297,16 @@
     "title": "Mahsulotlar",
     "createTitle": "Mahsulot guruhini yaratish",
     "editTitle": "Mahsulot guruhini o'zgartirish",
+    "segments": {
+      "products": "Mahsulotlar",
+      "services": "Servislar"
+    },
     "fields": {
       "name": "Nomi",
       "productType": "Mahsulot turi",
+      "serviceType": "Servis turi",
+      "serviceGroupName": "Servis guruhi nomi",
+      "groupKind": "Guruh turi",
       "sapCode": "SAP kod",
       "supplier": "Yetkazib beruvchi",
       "description": "Ma'lumot",
@@ -306,10 +317,18 @@
       "clientUom": "Mijoz birligi",
       "supplierToStockFactor": "Xariddan omborga koeffitsient",
       "stockToClientFactor": "Ombordan mijozga koeffitsient",
-      "unit": "Birlik"
+      "unit": "Birlik",
+      "productGroup": "Mahsulot guruhi"
     },
     "actions": {
-      "addProduct": "Mahsulot yaratish"
+      "addProduct": "Mahsulot yaratish",
+      "addService": "Servis yaratish"
+    },
+    "modal": {
+      "createProduct": "Mahsulot yaratish",
+      "editProduct": "Mahsulotni o'zgartirish",
+      "createService": "Servis yaratish",
+      "editService": "Servisni o'zgartirish"
     },
     "status": {
       "new": "Yangi",
@@ -318,7 +337,13 @@
     },
     "messages": {
       "created": "Mahsulot muvaffaqiyatli yaratildi",
-      "updated": "Mahsulot muvaffaqiyatli o'zgartirildi"
+      "updated": "Mahsulot muvaffaqiyatli o'zgartirildi",
+      "serviceCreated": "Servis muvaffaqiyatli yaratildi",
+      "serviceUpdated": "Servis muvaffaqiyatli o'zgartirildi",
+      "itemCreated": "Mahsulot qo'shildi",
+      "itemUpdated": "Mahsulot o'zgartirildi",
+      "serviceItemCreated": "Servis qo'shildi",
+      "serviceItemUpdated": "Servis o'zgartirildi"
     }
   }
   ,

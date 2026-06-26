@@ -4,8 +4,15 @@ import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import Card from "@/components/ui/card/Card";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
-import type { PurchaseServiceLineForm } from "../types/form";
 import PurchaseServiceLineModal from "./PurchaseServiceLineModal";
+
+export interface PurchaseServiceLineForm {
+  serviceId: number;
+  serviceName?: string;
+  price: number;
+  unitId?: number | null;
+  vatRateId?: number | null;
+}
 
 interface Props {
   items: PurchaseServiceLineForm[];

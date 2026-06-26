@@ -1,15 +1,7 @@
-export interface ProductItemUom {
-  supplierUomId: number | null;
-  stockUomId: number | null;
-  clientUomId: number | null;
-  supplierToStockFactor: number | null;
-  stockToClientFactor: number | null;
-}
-
-export interface ProductCharacteristic {
-  key: string;
-  value: string;
-}
+// API DTO's based on swagger:
+// ProductInGroupBaseDto - create payload item
+// ProductInGroupUpdateDto - update payload item (+ id, stateId)
+// ProductGroupCreateDto / ProductGroupUpdateDto - top-level group
 
 export interface ProductItem {
   id?: number | null;
@@ -17,38 +9,32 @@ export interface ProductItem {
   name: string;
   unitId: number | null;
   barcode: string;
-  productGroupId: number | null;
-  // supplierId: number | null;
-  // supplier?: string;
   description: string;
-  // isSerial: boolean;
   isService: boolean;
-  // productUom: ProductItemUom;
-  // currencyId: number | null;
+  // not in swagger group-item DTO, but kept for UI state
+  productGroupId?: number | null;
   stateId?: number | null;
   state?: string;
   new?: boolean;
-  // characteristics: ProductCharacteristic[];
 }
 
 export interface ProductType {
   id: number;
   state: string;
   stateId: number;
-  supplierId: number | null;
-  supplier?: string;
   name: string;
+  description?: string;
+  isService?: boolean;
   products: ProductItem[];
   photoUrl?: string;
-  description: string;
 }
 
 export interface ProductTypeForm {
   id?: number | null;
   stateId?: number | null;
   name: string;
-  // description: string;
-  // supplierId: number | null;
+  // ui-only — keeps the group locked to a single kind (true=services, false=products)
+  isService: boolean;
   products: ProductItem[];
 }
 
@@ -57,4 +43,11 @@ export interface ProductListResponse {
   results?: ProductType[];
   total?: number;
   count?: number;
+}
+
+export interface ProductListParams {
+  IsService?: boolean;
+  Search?: string;
+  Page?: number;
+  PageSize?: number;
 }

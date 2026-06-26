@@ -101,7 +101,7 @@ export default function SaleListPage() {
           render: (_, record) => (
             <ActionColumn
               deletePath={saleEndpoints.saleDoc.list}
-              customPath={`/main/sale/edit/${record.id}`}
+              customPath={`/main/sales/sale/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{

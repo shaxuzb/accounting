@@ -10,6 +10,7 @@ import DepartmentListPage from "./pages/departments/screens/DepartmentListPage";
 import ChartAccountListPage from "./pages/chartAccounts/screens/ChartAccountListPage";
 import BranchListPage from "./pages/branches/screens/BranchListPage";
 import CounterpartyBankAccountListPage from "./pages/counterpartybankaccount/screens/CounterpartyBankAccountListPage";
+import SettingsBankListPage from "./pages/bank/screens/SettingsBankListPage";
 import OrgBankAccountListPage from "./pages/orgBankAccounts/screens/OrgBankAccountListPage";
 import PositionListPage from "./pages/positions/screens/PositionListPage";
 import ProductGroupListPage from "./pages/productGroups/screens/ProductGroupListPage";
@@ -25,6 +26,7 @@ import { departmentsPermissions } from "./pages/departments/constants/permission
 import { branchesPermissions } from "./pages/branches/constants/permissions";
 import { chartAccountsPermissions } from "./pages/chartAccounts/constants/permissions";
 import { counterpartybankaccountPermissions } from "./pages/counterpartybankaccount/constants/permissions";
+import { settingsBankPermissions } from "./pages/bank/constants/permissions";
 import { orgBankAccountsPermissions } from "./pages/orgBankAccounts/constants/permissions";
 import { positionsPermissions } from "./pages/positions/constants/permissions";
 import { productGroupsPermissions } from "./pages/productGroups/constants/permissions";
@@ -33,6 +35,7 @@ import { counterpartyContactPermissions } from "./pages/counterpartycontact/cons
 import { warehousePermissions } from "./pages/warehouse/constants/permissions";
 import { purchaseServicePermissions } from "./pages/purchaseService/constants/permissions";
 import { purchasePermissions } from "../purchase/pages/purchase/constants/permissions";
+import { bankPermissions } from "../bank";
 
 const settingsPermissions = [
   rolePermissions.view,
@@ -42,6 +45,8 @@ const settingsPermissions = [
   departmentsPermissions.view,
   branchesPermissions.view,
   chartAccountsPermissions.view,
+  settingsBankPermissions.view,
+  bankPermissions.view,
   counterpartybankaccountPermissions.view,
   orgBankAccountsPermissions.view,
   positionsPermissions.view,
@@ -165,6 +170,18 @@ export const settingsRoutes: RouteObject = {
       ),
     },
     {
+      path: "banks",
+      handle: {
+        title: "settings.entities.banks",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(<SettingsBankListPage />, [
+        settingsBankPermissions.view,
+        bankPermissions.view,
+      ]),
+    },
+    {
       path: "counterparty-bank-accounts",
       handle: {
         title: "settings.entities.bankAccounts",
@@ -246,10 +263,19 @@ export const settingsRoutes: RouteObject = {
         showBack: true,
         backTo: "..",
       },
-      element: withPermission(
-        <PurchaseServiceListPage />,
-        [purchaseServicePermissions.view, purchasePermissions.view],
-      ),
+      element: withPermission(<PurchaseServiceListPage />, [
+        purchaseServicePermissions.view,
+        purchasePermissions.view,
+      ]),
+    },
+    {
+      path: "bank",
+      handle: {
+        title: "settings.entities.counterpartyContacts",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(<SettingsBankListPage />, bankPermissions.view),
     },
   ],
 };

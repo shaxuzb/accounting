@@ -100,15 +100,6 @@ const getStringByKeys = (record: Record<string, unknown>, keys: string[]) => {
 const getNumberByKeys = (record: Record<string, unknown>, keys: string[]) =>
   toNumber(getByKeys(record, keys));
 
-const pickPrimitiveMetadata = (record: Record<string, unknown>) =>
-  Object.fromEntries(
-    Object.entries(record).filter(
-      ([, value]) =>
-        value === null ||
-        ["string", "number", "boolean"].includes(typeof value),
-    ),
-  );
-
 const getTransactionArray = (record: Record<string, unknown>) => {
   for (const key of transactionKeys) {
     const value = getByKeys(record, [key]);
@@ -120,7 +111,7 @@ const getTransactionArray = (record: Record<string, unknown>) => {
 
 const normalizeTransaction = (
   value: unknown,
-  index: number,
+  _index: number,
   cardDefaults?: Partial<BankStatementCardData>,
 ): BankStatementTransaction => {
   const fields = isRecord(value) ? value : { value };
@@ -129,38 +120,26 @@ const normalizeTransaction = (
   const amount = toNumber(getByKeys(fields, amountKeys)) ?? credit ?? debit;
 
   return {
-    id: String(getByKeys(fields, ["id", "operationId"]) ?? `${index}-${Date.now()}`),
-    fields,
-    date: getStringByKeys(fields, ["date"]),
-    docDate: getStringByKeys(fields, dateKeys),
-    account: getStringByKeys(fields, accountKeys),
-    docNumber: getStringByKeys(fields, ["docNumber", "documentNumber"]),
-    operationCode: getStringByKeys(fields, ["operationCode"]),
+    date: getStringByKeys(fields, dateKeys) ?? "",
+    docNumber: getStringByKeys(fields, ["docNumber", "documentNumber"]) ?? "",
     operationTypeId:
       getNumberByKeys(fields, operationTypeIdKeys) ??
       cardDefaults?.operationTypeId ??
-      null,
-    mfoCounterparty: getStringByKeys(fields, ["mfoCounterparty", "mfo"]),
-    counterpartyAccount: getStringByKeys(fields, ["counterpartyAccount"]),
-    counterpartyInn: getStringByKeys(fields, ["counterpartyInn", "inn"]),
-    counterpartyName: getStringByKeys(fields, [
-      "counterpartyName",
-      ...counterpartyKeys,
-    ]),
-    counterparty: getStringByKeys(fields, counterpartyKeys),
-    counterpartyId: getNumberByKeys(fields, counterpartyIdKeys),
-    bankAccountId:
-      getNumberByKeys(fields, bankAccountIdKeys) ??
-      cardDefaults?.bankAccountId ??
-      null,
-    currencyId:
-      getNumberByKeys(fields, currencyIdKeys) ?? cardDefaults?.currencyId ?? null,
-    comment: getStringByKeys(fields, commentKeys),
-    purpose: getStringByKeys(fields, ["purpose", "paymentPurpose"]),
-    direction: getStringByKeys(fields, ["direction"]),
-    debit,
-    credit,
-    amount,
+      0,
+    operationCode: getStringByKeys(fields, ["operationCode"]) ?? "",
+    mfoCounterparty: getStringByKeys(fields, ["mfoCounterparty", "mfo"]) ?? "",
+    counterpartyAccount: getStringByKeys(fields, ["counterpartyAccount"]) ?? "",
+    counterpartyInn: getStringByKeys(fields, ["counterpartyInn", "inn"]) ?? "",
+    counterpartyName:
+      getStringByKeys(fields, ["counterpartyName", ...counterpartyKeys]) ?? "",
+    counterpartyId: getNumberByKeys(fields, counterpartyIdKeys) ?? 0,
+    debit: debit ?? 0,
+    credit: credit ?? 0,
+    purpose: getStringByKeys(fields, commentKeys) ?? "",
+    direction: getStringByKeys(fields, ["direction"]) ?? "",
+    amount: amount ?? 0,
+    currencyId: getNumberByKeys(fields, currencyIdKeys) ?? undefined,
+    currencyName: getStringByKeys(fields, ["currencyName", "currency"]) ?? undefined,
   };
 };
 
@@ -203,7 +182,6 @@ const normalizeCard = (
     fileName,
     title: getCardTitle(record, fileName ?? "Bank statement", index),
     ...cardDefaults,
-    metadata: pickPrimitiveMetadata(record),
     transactions,
     raw: value,
   };
@@ -244,7 +222,6 @@ export const normalizeBankStatements = (
         bankAccountId: null,
         currencyId: null,
         operationTypeId: null,
-        metadata: {},
         transactions: payload.map((item, index) =>
           normalizeTransaction(item, index),
         ),

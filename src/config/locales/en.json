@@ -111,6 +111,7 @@
       "departments": "Departments",
       "branches": "Branches",
       "chartAccounts": "Chart of accounts",
+      "banks": "Banks",
       "bankAccounts": "Bank accounts",
       "orgBankAccounts": "Organization bank accounts",
       "positions": "Positions",
@@ -128,6 +129,7 @@
       "departments": "Manage departments.",
       "branches": "Manage branches.",
       "chartAccounts": "Manage chart of accounts.",
+      "banks": "Manage banks.",
       "bankAccounts": "Manage counterparty bank accounts.",
       "orgBankAccounts": "Manage organization bank accounts.",
       "positions": "Manage positions.",
@@ -158,6 +160,7 @@
       "language": "Language",
       "lastName": "Last name",
       "modules": "Modules",
+      "mfo": "MFO",
       "name": "Name",
       "organization": "Organization",
       "organizationName": "Organization name",
@@ -173,7 +176,8 @@
       "serviceTypeId": "Service type ID",
       "shortName": "Short name",
       "status": "Status",
-      "userName": "Username"
+      "userName": "Username",
+      "createdDate": "Created date"
     },
     "form": {
       "createTitle": "Add new record",
@@ -292,9 +296,16 @@
     "title": "Products",
     "createTitle": "Create product group",
     "editTitle": "Edit product group",
+    "segments": {
+      "products": "Products",
+      "services": "Services"
+    },
     "fields": {
       "name": "Name",
       "productType": "Product type",
+      "serviceType": "Service type",
+      "serviceGroupName": "Service group name",
+      "groupKind": "Group kind",
       "sapCode": "SAP code",
       "supplier": "Supplier",
       "description": "Description",
@@ -305,10 +316,18 @@
       "clientUom": "Client unit",
       "supplierToStockFactor": "Purchase-to-stock factor",
       "stockToClientFactor": "Stock-to-client factor",
-      "unit": "Unit"
+      "unit": "Unit",
+      "productGroup": "Product group"
     },
     "actions": {
-      "addProduct": "Create product"
+      "addProduct": "Create product",
+      "addService": "Create service"
+    },
+    "modal": {
+      "createProduct": "Create product",
+      "editProduct": "Edit product",
+      "createService": "Create service",
+      "editService": "Edit service"
     },
     "status": {
       "new": "New",
@@ -317,7 +336,13 @@
     },
     "messages": {
       "created": "Product created successfully",
-      "updated": "Product updated successfully"
+      "updated": "Product updated successfully",
+      "serviceCreated": "Service created successfully",
+      "serviceUpdated": "Service updated successfully",
+      "itemCreated": "Product added",
+      "itemUpdated": "Product updated",
+      "serviceItemCreated": "Service added",
+      "serviceItemUpdated": "Service updated"
     }
   },
   "sale": {

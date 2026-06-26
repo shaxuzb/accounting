@@ -2,10 +2,11 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { bankStatementEndpoints } from "../constants/endpoints";
+import type { BankOperationData } from "../types/type";
 import type {
-  BankOperationData,
+  BankOperationCreatePayload,
   BankOperationsCreatePayload,
-} from "../types/type";
+} from "../types/form";
 
 export const bankStatementParserService = {
   parse: async (file: File) => {
@@ -33,6 +34,25 @@ export const bankStatementParserService = {
   createManyOperations: async (payload: BankOperationsCreatePayload) => {
     const { data } = await $axiosPrivate.post<BankOperationData[]>(
       bankStatementEndpoints.operations.createMany,
+      payload,
+    );
+    return data;
+  },
+  createOperation: async (
+    payload: BankOperationCreatePayload,
+  ) => {
+    const { data } = await $axiosPrivate.post<BankOperationData>(
+      bankStatementEndpoints.operations.create,
+      payload,
+    );
+    return data;
+  },
+  updateOperation: async (
+    id: string | number,
+    payload: BankOperationCreatePayload,
+  ) => {
+    const { data } = await $axiosPrivate.put<BankOperationData>(
+      bankStatementEndpoints.operations.update(id),
       payload,
     );
     return data;

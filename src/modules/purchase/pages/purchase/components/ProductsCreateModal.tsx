@@ -59,17 +59,16 @@ const ProductsCreateModal: FC<ModalPros> = (props) => {
     validationSchema: schemaAuth,
     onSubmit: async (values) => {
       try {
-        const response = await $axiosPrivate.post(
-          "products/many",
-          values.products.map((item) => ({
+        const response = await $axiosPrivate.post("products/many", {
+          products: values.products.map((item) => ({
             productGroupId: values.productGroupId,
+            unitId: values.unitId,
             name: item.product || item.name,
             barcode: item.sapCode.toString(),
             description: "",
-            unitId: values.unitId,
             isService: values.isService,
           })),
-        );
+        });
 
         if (response) {
           toast.success("Mahsulot muvaffaqiyatli yaratildi");
@@ -87,6 +86,7 @@ const ProductsCreateModal: FC<ModalPros> = (props) => {
   const handleDelete = (id: number) => {
     const filtered = (editData ?? []).filter((item) => item.indexId !== id);
     setEditData?.(filtered);
+    formik.setFieldValue("products", filtered, true);
   };
 
   const tableColumnLabels: TableColumnType<PurchaseImportRow>[] = [

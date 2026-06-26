@@ -111,6 +111,7 @@
       "departments": "Отделы",
       "branches": "Филиалы",
       "chartAccounts": "План счетов",
+      "banks": "Банки",
       "bankAccounts": "Банковские счета",
       "orgBankAccounts": "Банковские счета организации",
       "positions": "Должности",
@@ -128,6 +129,7 @@
       "departments": "Управление отделами.",
       "branches": "Управление филиалами.",
       "chartAccounts": "Управление планом счетов.",
+      "banks": "Управление списком банков.",
       "bankAccounts": "Управление банковскими счетами контрагентов.",
       "orgBankAccounts": "Управление банковскими счетами организации.",
       "positions": "Управление должностями.",
@@ -158,6 +160,7 @@
       "language": "Язык",
       "lastName": "Фамилия",
       "modules": "Модули",
+      "mfo": "МФО",
       "name": "Название",
       "organization": "Организация",
       "organizationName": "Название организации",
@@ -173,7 +176,8 @@
       "serviceTypeId": "ID типа услуги",
       "shortName": "Краткое название",
       "status": "Статус",
-      "userName": "Имя пользователя"
+      "userName": "Имя пользователя",
+      "createdDate": "Дата создания"
     },
     "form": {
       "createTitle": "Добавить новую запись",
@@ -292,9 +296,16 @@
     "title": "Товары",
     "createTitle": "Создать группу товаров",
     "editTitle": "Редактировать группу товаров",
+    "segments": {
+      "products": "Товары",
+      "services": "Услуги"
+    },
     "fields": {
       "name": "Название",
       "productType": "Тип товара",
+      "serviceType": "Тип услуги",
+      "serviceGroupName": "Название группы услуг",
+      "groupKind": "Тип группы",
       "sapCode": "SAP код",
       "supplier": "Поставщик",
       "description": "Описание",
@@ -305,10 +316,18 @@
       "clientUom": "Единица клиента",
       "supplierToStockFactor": "Коэффициент закупка-склад",
       "stockToClientFactor": "Коэффициент склад-клиент",
-      "unit": "Единица"
+      "unit": "Единица",
+      "productGroup": "Группа товаров"
     },
     "actions": {
-      "addProduct": "Создать товар"
+      "addProduct": "Создать товар",
+      "addService": "Создать услугу"
+    },
+    "modal": {
+      "createProduct": "Создать товар",
+      "editProduct": "Редактировать товар",
+      "createService": "Создать услугу",
+      "editService": "Редактировать услугу"
     },
     "status": {
       "new": "Новый",
@@ -317,7 +336,13 @@
     },
     "messages": {
       "created": "Товар успешно создан",
-      "updated": "Товар успешно обновлён"
+      "updated": "Товар успешно обновлён",
+      "serviceCreated": "Услуга успешно создана",
+      "serviceUpdated": "Услуга успешно обновлена",
+      "itemCreated": "Товар добавлен",
+      "itemUpdated": "Товар обновлён",
+      "serviceItemCreated": "Услуга добавлена",
+      "serviceItemUpdated": "Услуга обновлена"
     }
   },
   "sale": {

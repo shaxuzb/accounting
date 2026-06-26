@@ -52,7 +52,8 @@ export default function SettingsListPage() {
   const settingsRoute = useMemo(() => {
     const permissions = user?.user.permissions ?? [];
     return menuPermissions.SETTINGS.filter((item) =>
-      permissions.includes(item.code),
+      permissions.includes(item.code) ||
+      (item.filterCode ? permissions.includes(item.filterCode) : false),
     );
   }, [user]);
 

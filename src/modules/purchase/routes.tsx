@@ -4,7 +4,8 @@ import PurchaseImportPage from "./pages/purchase/screens/PurchaseImportPage";
 import { purchasePermissions } from "./pages/purchase/constants/permissions";
 import PurchaseListPage from "./pages/purchase/screens/PurchaseListPage";
 import PurchaseDetailPage from "./pages/purchase/screens/PurchaseDetailPage";
-import ContractListPage from "./pages/contract/screens/ContractListPage";
+import ContractListPage from "../contract/screens/ContractListPage";
+
 
 const withPermission = (element: React.ReactElement, permission: string) => (
   <PermissionCard permission={permission} mode="redirect">

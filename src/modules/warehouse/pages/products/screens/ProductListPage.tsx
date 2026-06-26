@@ -1,8 +1,9 @@
-import { Button, Space, Table } from "antd";
+import { Button, Segmented, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
+import { useMemo } from "react";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -19,11 +20,27 @@ export default function ProductListPage() {
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const isService = searchParams.get("isService") === "true";
+
+  const queryParams = useMemo(() => {
+    const next = new URLSearchParams(searchParams);
+    next.set("IsService", String(isService));
+    next.delete("isService");
+    return next;
+  }, [searchParams, isService]);
+
   const { data, isLoading, isFetching, refetch } =
-    useGetListProducts(searchParams);
+    useGetListProducts(queryParams);
   const items = data?.items ?? data?.results ?? [];
   const permissions = user?.user.permissions ?? [];
+
+  const handleSegmentChange = (value: string | number) => {
+    const next = new URLSearchParams(searchParams);
+    if (value === "services") next.set("isService", "true");
+    else next.delete("isService");
+    setSearchParams(next, { replace: true });
+  };
 
   const tableColumns: TableColumnsType<ProductType> = [
     {
@@ -34,9 +51,13 @@ export default function ProductListPage() {
     },
     {
       dataIndex: "name",
-      title: t("products.fields.productType"),
+      title: isService
+        ? t("products.fields.serviceType")
+        : t("products.fields.productType"),
       minWidth: 180,
-      render: (value, record) => <Link to={`edit/${record.id}`}>{value}</Link>,
+      render: (value, record) => (
+        <Link to={`edit/${record.id}?isService=${isService}`}>{value}</Link>
+      ),
     },
     {
       dataIndex: "description",
@@ -69,7 +90,7 @@ export default function ProductListPage() {
           render: (_, record) => (
             <ActionColumn
               deletePath="product-groups"
-              customPath={`/main/products/edit/${record.id}`}
+              customPath={`/main/warehouses/products/edit/${record.id}?isService=${isService}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
@@ -86,7 +107,17 @@ export default function ProductListPage() {
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <SearchFilter />
+        <div className="flex items-center gap-3">
+          <Segmented
+            value={isService ? "services" : "products"}
+            onChange={handleSegmentChange}
+            options={[
+              { label: t("products.segments.products"), value: "products" },
+              { label: t("products.segments.services"), value: "services" },
+            ]}
+          />
+          <SearchFilter />
+        </div>
         <Space>
           <Button
             icon={<RefreshCw className="size-4" />}
@@ -96,9 +127,11 @@ export default function ProductListPage() {
             <Button
               type="primary"
               icon={<Plus className="size-4" />}
-              onClick={() => navigate("add")}
+              onClick={() => navigate(`add?isService=${isService}`)}
             >
-              {t("common.add")}
+              {isService
+                ? t("products.actions.addService")
+                : t("common.add")}
             </Button>
           </PermissionCard>
         </Space>

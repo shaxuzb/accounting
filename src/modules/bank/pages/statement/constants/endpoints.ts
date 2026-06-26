@@ -4,6 +4,8 @@ export const bankStatementEndpoints = {
   },
   operations: {
     list: "bank-operations",
+    create: "bank-operations",
+    update: (id: string | number) => `bank-operations/${id}`,
     createMany: "bank-operations/many",
     delete: (id: string | number) => `bank-operations/${id}`,
   },

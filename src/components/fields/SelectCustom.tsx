@@ -43,6 +43,7 @@ interface SelectCustomProps {
   getCustomValue?: number | string;
   isOrganizationId?: boolean;
   isPossibleBorrow?: boolean;
+  allowedIds?: (number | string)[];
 }
 
 // const normalizeText = (text: unknown): string =>
@@ -82,6 +83,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
       onClick: () => {},
     },
     disabled = false,
+    allowedIds,
     mode,
   } = props;
 
@@ -101,6 +103,12 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     },
     enabled,
   });
+  const selectOptions = React.useMemo(() => {
+    const options = data ?? [];
+    if (!allowedIds?.length) return options;
+    const allowedSet = new Set(allowedIds.map(String));
+    return options.filter((item) => allowedSet.has(String(item.id)));
+  }, [allowedIds, data]);
 
   const hasError = !!(
     getIn(formik.touched, fieldName) && getIn(formik.errors, fieldName)
@@ -108,36 +116,40 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
   useEffect(() => {
     if (
       isSuccess &&
-      (data?.length < 2 || getFirst) &&
+      (selectOptions?.length < 2 || getFirst) &&
       mode !== "multiple" &&
       mode !== "tags" &&
       getIn(formik.values, fieldName) === null
     ) {
-      formik.setFieldValue(fieldName, data[0]?.id, true);
+      formik.setFieldValue(fieldName, selectOptions[0]?.id, true);
       if (
         getCustomValue &&
-        data[0] &&
-        !Array.isArray(data[0]) &&
-        getCustomValue in data[0]
+        selectOptions[0] &&
+        !Array.isArray(selectOptions[0]) &&
+        getCustomValue in selectOptions[0]
       ) {
         formik.setFieldValue(
           `${String(getCustomValue)}Static`,
-          data[0][getCustomValue],
+          selectOptions[0][getCustomValue],
           true,
         );
       }
       if (getFieldName) {
-        formik.setFieldValue(getFieldName, data[0]?.[dinamicLabel], true);
+        formik.setFieldValue(
+          getFieldName,
+          selectOptions[0]?.[dinamicLabel],
+          true,
+        );
       }
       if (getFieldNames) {
         getFieldNames.forEach((item) => {
-          formik.setFieldValue(item, data[0]?.[item], true);
+          formik.setFieldValue(item, selectOptions[0]?.[item], true);
         });
       }
     }
   }, [
     isSuccess,
-    data,
+    selectOptions,
     formik,
     fieldName,
     mode,
@@ -259,7 +271,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
             : undefined
         }
         placeholder={placeholder ? t(placeholder) : ""}
-        options={data?.map((item) => ({
+        options={selectOptions.map((item) => ({
           ...item,
           value: item.id,
           label: item[dinamicLabel] as React.ReactNode,

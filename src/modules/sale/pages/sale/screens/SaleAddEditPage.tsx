@@ -99,10 +99,10 @@ export default function SaleAddEditPage() {
       const validProducts = products.filter(
         (product) => product.productId > 0 && product.quantity > 0,
       );
-      if (!validProducts.length) {
-        toast.error("Kamida bitta mahsulotni miqdori bilan kiriting");
-        return;
-      }
+      // if (!validProducts.length) {
+      //   toast.error("Kamida bitta mahsulotni miqdori bilan kiriting");
+      //   return;
+      // }
       if (products.some((product) => !product.productId)) {
         toast.error("Tanlangan mahsulotlarda productId topilmadi");
         return;
@@ -142,7 +142,7 @@ export default function SaleAddEditPage() {
           await createSale.mutateAsync(payload);
           clearSaleDraft(organizationId);
         }
-        navigate("/main/sale");
+        navigate("/main/sales/sale");
       } catch (error) {
         errorHandlers(error);
       }

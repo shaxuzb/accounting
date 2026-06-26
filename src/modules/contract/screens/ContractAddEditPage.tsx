@@ -31,12 +31,14 @@ interface ContractAddEditPageProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
+  contractTypeId?: number;
 }
 
 export default function ContractAddEditPage({
   open,
   onClose,
   id,
+  contractTypeId,
 }: ContractAddEditPageProps) {
   const { t } = useTranslation();
   const editId = id ?? null;
@@ -49,6 +51,7 @@ export default function ContractAddEditPage({
   const formik = useFormik<ContractForm>({
     initialValues: {
       ...defaultValues,
+      contractTypeId: contractTypeId ?? null,
       stateId: isEdit ? null : 1,
     },
     enableReinitialize: true,
@@ -125,6 +128,8 @@ export default function ContractAddEditPage({
                 fieldName="contractTypeId"
                 label="contract.fields.contractType"
                 path={selectListEndpoints.contractTypeSelectList}
+                allowedIds={contractTypeId ? [contractTypeId] : undefined}
+                getFirst
               />
             </Col>
             <Col span={12}>

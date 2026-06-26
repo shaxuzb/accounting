@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
-import type { PurchaseServiceLineForm } from "../types/form";
+import type { PurchaseServiceLineForm } from "./PurchaseServiceLinesTable";
 
 interface ServiceLineDraft {
   serviceId: number | null;

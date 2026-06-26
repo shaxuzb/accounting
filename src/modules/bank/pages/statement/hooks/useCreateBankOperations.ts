@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { bankQueryKeys } from "../constants/queryKeys";
 import { bankStatementParserService } from "../services/bankStatementParserService";
-import type { BankOperationsCreatePayload } from "../types/type";
+import type { BankOperationsCreatePayload } from "../types/form";
+
 
 export const useCreateBankOperations = () => {
   const queryClient = useQueryClient();

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Form, Row, Spin } from "antd";
+import { Button, Col, Form, Row, Spin, Tag } from "antd";
 import { useFormik } from "formik";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
@@ -19,9 +19,12 @@ import ProductItemsTable from "../components/ProductItemsTable";
 import { changeSelectListType } from "@/store/features/organizationSlice";
 import { useAppDispatch } from "@/store/hooks";
 
-const getInitialValues = (isEdit: boolean): ProductTypeForm => ({
+const getInitialValues = (
+  isEdit: boolean,
+  isService: boolean,
+): ProductTypeForm => ({
   name: "",
-  // stateId: 1,
+  isService,
   products: [],
   ...(isEdit ? { id: null, stateId: null } : {}),
 });
@@ -30,7 +33,10 @@ export default function ProductAddEditPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const isEdit = Boolean(id);
+  const isServiceParam = searchParams.get("isService") === "true";
+
   const [productModalOpen, setProductModalOpen] = useState(false);
   const { data, isLoading } = useGetDetailProduct(id);
   const createMutation = useCreateProduct();
@@ -38,16 +44,24 @@ export default function ProductAddEditPage() {
   const dispatch = useAppDispatch();
 
   const formik = useFormik<ProductTypeForm>({
-    initialValues: getInitialValues(isEdit),
+    initialValues: getInitialValues(isEdit, isServiceParam),
     validationSchema: productTypeSchema(isEdit),
     enableReinitialize: true,
     onSubmit: async (values) => {
       if (isEdit && id) {
         await updateMutation.mutateAsync({ id, payload: values });
-        toast.success(t("products.messages.updated"));
+        toast.success(
+          values.isService
+            ? t("products.messages.serviceUpdated")
+            : t("products.messages.updated"),
+        );
       } else {
         await createMutation.mutateAsync(values);
-        toast.success(t("products.messages.created"));
+        toast.success(
+          values.isService
+            ? t("products.messages.serviceCreated")
+            : t("products.messages.created"),
+        );
       }
       navigate(-1);
     },
@@ -55,27 +69,22 @@ export default function ProductAddEditPage() {
 
   useEffect(() => {
     if (!data) return;
+    const items = data.products ?? [];
+    const detectedIsService =
+      data.isService ?? items[0]?.isService ?? isServiceParam;
     formik.setValues({
       id: data.id,
       name: data.name ?? "",
-      // description: data.description ?? "",
-      // supplierId: data.supplierId ?? null,
       stateId: data.stateId ?? null,
-      products: (data.products ?? []).map((item, index) => ({
+      isService: detectedIsService,
+      products: items.map((item, index) => ({
         ...item,
         idIndex: item.idIndex ?? item.id ?? index + 1,
-        // productUom: {
-        //   supplierUomId: item.productUom?.supplierUomId ?? null,
-        //   stockUomId: item.productUom?.stockUomId ?? null,
-        //   clientUomId: item.productUom?.clientUomId ?? null,
-        //   supplierToStockFactor: item.productUom?.supplierToStockFactor ?? 1,
-        //   stockToClientFactor: item.productUom?.stockToClientFactor ?? 1,
-        // },
-        // characteristics: item.characteristics ?? [],
       })),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
   useEffect(() => {
     dispatch(changeSelectListType("disabled"));
     return () => {
@@ -94,29 +103,28 @@ export default function ProductAddEditPage() {
   return (
     <Form layout="vertical" onFinish={formik.handleSubmit}>
       <Card className="mb-3 border border-border p-4">
+        <div className="mb-3 flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            {t("products.fields.groupKind")}:
+          </span>
+          <Tag color={formik.values.isService ? "purple" : "blue"}>
+            {formik.values.isService
+              ? t("products.segments.services")
+              : t("products.segments.products")}
+          </Tag>
+        </div>
         <Row gutter={12}>
           <Col span={24} md={8}>
             <InputText
-              label="products.fields.name"
+              label={
+                formik.values.isService
+                  ? "products.fields.serviceGroupName"
+                  : "products.fields.name"
+              }
               formik={formik}
               fieldName="name"
             />
           </Col>
-          {/* <Col span={24} md={8}>
-            <InputText
-              label="products.fields.description"
-              formik={formik}
-              fieldName="description"
-            />
-          </Col>
-          <Col span={24} md={8}>
-            <SelectCustom
-              label="products.fields.supplier"
-              path={selectListEndpoints.counterpartiesSelectList}
-              formik={formik}
-              fieldName="supplierId"
-            />
-          </Col> */}
           {isEdit && (
             <Col span={24} md={8}>
               <SelectCustom
@@ -133,7 +141,9 @@ export default function ProductAddEditPage() {
       <Card className="border border-border p-4">
         <div className="mb-3 flex justify-end">
           <Button type="default" onClick={() => setProductModalOpen(true)}>
-            {t("products.actions.addProduct")}
+            {formik.values.isService
+              ? t("products.actions.addService")
+              : t("products.actions.addProduct")}
           </Button>
         </div>
         <ProductItemsTable

@@ -1,29 +1,31 @@
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
-import { useSearchParams } from "react-router";
-import { useTranslation } from "react-i18next";
-import { formatDate, generateKeyTable } from "@/utils/utils";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
-import { useAppSelector } from "@/store/hooks";
-import { stateStatus } from "@/utils/helpers/statusHelper";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
-import { useState } from "react";
-import ContractAddEditPage from "./ContractAddEditPage";
-import { useGetListContract } from "../hooks/useGetListContract";
-import type { Contract } from "../types/type";
-import { contractPermissions } from "../constants/permissions";
+import { useAppSelector } from "@/store/hooks";
+import { stateStatus } from "@/utils/helpers/statusHelper";
+import { customDate, generateKeyTable } from "@/utils/utils";
+import { settingsBankPermissions } from "../constants/permissions";
+import { useGetListSettingsBank } from "../hooks";
+import type { SettingsBank } from "../types/type";
+import SettingsBankAddEditPage from "./SettingsBankAddEditPage";
 
-export default function ContractListPage() {
+export default function SettingsBankListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
   const { data, refetch, isLoading, isFetching } =
-    useGetListContract(searchParams);
+    useGetListSettingsBank(searchParams);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
 
-  const tableColumns: TableColumnsType<Contract> = [
+  const tableColumns: TableColumnsType<SettingsBank> = [
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
@@ -31,38 +33,44 @@ export default function ContractListPage() {
       width: 70,
     },
     {
-      title: t("contract.fields.contractNumber"),
-      dataIndex: "contractNumber",
+      dataIndex: "code",
+      title: t("settings.fields.code"),
+      width: 140,
     },
     {
-      title: t("contract.fields.counterpartyName"),
-      dataIndex: "counterpartyName",
+      dataIndex: "name",
+      title: t("settings.fields.name"),
+      minWidth: 220,
     },
     {
-      title: t("contract.fields.contractDate"),
-      dataIndex: "contractDate",
+      dataIndex: "mfo",
+      title: t("settings.fields.mfo"),
+      width: 140,
+      render: (value: string | null) => value || "-",
+    },
+
+    {
+      dataIndex: "createdDate",
+      title: t("settings.fields.createdDate"),
       align: "center",
-      render: (value) => {
-        return formatDate(value);
-      },
+      width: 180,
+      render: customDate,
     },
     {
-      title: t("contract.fields.contractType"),
-      dataIndex: "contractTypeName",
-    },
-    {
-      title: t("contract.fields.stateName"),
       dataIndex: "stateId",
+      title: t("settings.fields.status"),
       align: "center",
+      width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
   ];
+
   const permissions = user?.user.permissions ?? [];
   const hasActions =
-    permissions.includes(contractPermissions.update) ||
-    permissions.includes(contractPermissions.delete);
+    permissions.includes(settingsBankPermissions.update) ||
+    permissions.includes(settingsBankPermissions.delete);
 
-  const columns: TableColumnType<Contract>[] = hasActions
+  const columns: TableColumnType<SettingsBank>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -73,20 +81,20 @@ export default function ContractListPage() {
           fixed: "right",
           render: (_, record) => (
             <ActionColumn
-              deletePath="contracts"
-              customPath={`/main/settings/contracts/edit/${record.id}`}
+              deletePath="banks"
+              customPath={`/main/settings/banks/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: contractPermissions.delete,
-                editCode: contractPermissions.update,
+                deleteCode: settingsBankPermissions.delete,
+                editCode: settingsBankPermissions.update,
               }}
               refetch={refetch}
               editModal={{
                 isModal: true,
                 setOpenEditModal: setIsAddOpen,
                 setEditData: (value: unknown) =>
-                  setEditId((value as Contract)?.id ?? null),
+                  setEditId((value as SettingsBank)?.id ?? null),
               }}
             />
           ),
@@ -94,21 +102,16 @@ export default function ContractListPage() {
       ]
     : tableColumns;
 
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
-
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <SearchFilter />
-        </div>
+        <SearchFilter />
         <Space>
           <Button
             icon={<RefreshCw className="size-4" />}
-            onClick={() => void refetch()}
+            onClick={() => refetch()}
           />
-          <PermissionCard permission={contractPermissions.create}>
+          <PermissionCard permission={settingsBankPermissions.create}>
             <Button
               type="primary"
               icon={<Plus className="size-4" />}
@@ -119,8 +122,9 @@ export default function ContractListPage() {
           </PermissionCard>
         </Space>
       </div>
+
       <Card className="overflow-hidden border border-border">
-        <Table<Contract>
+        <Table<SettingsBank>
           loading={isLoading || isFetching}
           columns={columns}
           scroll={{
@@ -131,7 +135,8 @@ export default function ContractListPage() {
           pagination={false}
         />
       </Card>
-      <ContractAddEditPage
+
+      <SettingsBankAddEditPage
         open={isAddOpen}
         onClose={() => {
           setIsAddOpen(false);

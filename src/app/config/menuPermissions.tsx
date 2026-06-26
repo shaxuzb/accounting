@@ -22,11 +22,13 @@ import {
   Warehouse,
   Wrench,
 } from "lucide-react";
-import { contractPermissions } from "@/modules/purchase/pages/contract/constants/permissions";
+
 import { salePermissions } from "@/modules/sale";
 import { productPermissions } from "@/modules/warehouse/pages/products/constants/permissions";
 import { warehousePermissions } from "@/modules/warehouse";
 import { bankPermissions } from "@/modules/bank";
+import { settingsBankPermissions } from "@/modules/settings/pages/bank/constants/permissions";
+import { contractPermissions } from "@/modules/contract/constants/permissions";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -42,6 +44,8 @@ export const settingsViewPermissions = [
   "DEPARTMENT_VIEW",
   "BRANCH_VIEW",
   "CHART_ACCOUNT_VIEW",
+  settingsBankPermissions.view,
+  bankPermissions.view,
   "COUNTERPARTY_BANK_ACCOUNT_VIEW",
   "ORG_BANK_ACCOUNT_VIEW",
   "POSITION_VIEW",
@@ -58,7 +62,7 @@ export const menuPermissions: MainMenu = {
       code: "ROLE_VIEW",
       linkData: {
         path: "dashboard",
-        title: "menu.dashboard",
+        title: "Boshqaruv",
       },
       iconName: <LayoutDashboard className="size-5" />,
     },
@@ -94,17 +98,17 @@ export const menuPermissions: MainMenu = {
       code: warehousePermissions.view,
       iconName: <Box className="size-5" />,
       dropdown: true,
-      dropdownName: "menu.warehouse",
+      dropdownName: "Ombor",
       linkData: {
         path: "warehouses",
-        title: "menu.warehouse",
+        title: "Ombor",
       },
       items: [
         {
           code: warehousePermissions.view,
           linkData: {
             path: "warehouse",
-            title: "menu.warehouseMain",
+            title: "Omborxona",
           },
         },
         {
@@ -128,11 +132,30 @@ export const menuPermissions: MainMenu = {
 
     {
       code: salePermissions.view,
-      linkData: {
-        path: "sale",
-        title: "sale.title",
-      },
+      dropdown: true,
+      dropdownName: "Sotuv",
       iconName: <ShoppingBag className="size-5" />,
+      linkData: {
+        path: "sales",
+        title: "Sotuv",
+      },
+      items: [
+        {
+          code: salePermissions.view,
+          linkData: {
+            path: "sale",
+            title: "Sotuvlar",
+          },
+        },
+
+        {
+          code: contractPermissions.view,
+          linkData: {
+            path: "contracts",
+            title: "contract.title",
+          },
+        },
+      ],
     },
 
     // {
@@ -174,7 +197,7 @@ export const menuPermissions: MainMenu = {
       code: "SETTINGS",
       linkData: {
         path: "settings",
-        title: "menu.company",
+        title: "HisobKitob MCHJ",
       },
       iconName: <Building2 className="size-5" />,
     },
@@ -250,6 +273,7 @@ export const menuPermissions: MainMenu = {
         description: "settings.descriptions.chartAccounts",
       },
     },
+
     {
       code: "COUNTERPARTY_BANK_ACCOUNT_VIEW",
       iconName: <Landmark className="size-5" />,
@@ -327,6 +351,15 @@ export const menuPermissions: MainMenu = {
         path: "purchase-services",
         title: "settings.entities.purchaseServices",
         description: "settings.descriptions.purchaseServices",
+      },
+    },
+    {
+      code: settingsBankPermissions.view,
+      iconName: <Landmark className="size-5" />,
+      linkData: {
+        path: "banks",
+        title: "settings.entities.banks",
+        description: "settings.descriptions.banks",
       },
     },
   ],
