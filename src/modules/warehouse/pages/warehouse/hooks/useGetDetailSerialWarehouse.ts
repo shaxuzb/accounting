@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { warehouseService } from "../api";
 import { queryKeys } from "../constants/queryKeys";
 
-interface Params {
+export interface Params {
   productGroupId?: number | null;
   productId?: number | null;
   page?: number;

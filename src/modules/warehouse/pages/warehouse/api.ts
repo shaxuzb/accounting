@@ -6,6 +6,7 @@ import type {
   ProductStockGroup,
   ProductStockSerial,
 } from "./types/type";
+import type { Params } from "./hooks/useGetDetailSerialWarehouse";
 
 type RawParams = URLSearchParams | Record<string, unknown>;
 
@@ -14,11 +15,11 @@ export const warehouseService = {
     $axiosPrivate
       .get<Paginated<ProductStockGroup>>(endpoints.groups, { params })
       .then((res) => res.data),
-  products: (params?: RawParams) =>
+  products: (params?: Params) =>
     $axiosPrivate
       .get<Paginated<ProductStock>>(endpoints.products, { params })
       .then((res) => res.data),
-  tables: (params?: RawParams) =>
+  tables: (params?: Params) =>
     $axiosPrivate
       .get<Paginated<ProductStockSerial>>(endpoints.tables, { params })
       .then((res) => res.data),
