@@ -13,7 +13,7 @@ export interface PurchaseDocLineDto {
   unitId: number;
   unitPrice: number;
   vatRateId: number | null;
-  items: PurchaseDocLineItemDto[] | null;
+  items?: PurchaseDocLineItemDto[];
 }
 
 export interface PurchaseImportForm {
@@ -25,6 +25,16 @@ export interface PurchaseImportForm {
   comment: string;
   lines: PurchaseImportRow[];
 }
+
+export type PurchaseImportHeaderDraft = Pick<
+  PurchaseImportForm,
+  | "docDate"
+  | "counterpartyId"
+  | "contractId"
+  | "currencyId"
+  | "warehouseId"
+  | "comment"
+>;
 
 // Swagger DTO — PurchaseDocCreateDto
 export interface PurchaseCreatePayload {

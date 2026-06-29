@@ -119,7 +119,9 @@
       "cashBox": "Kassa",
       "counterpartyContacts": "Kontragent kontaktlari",
       "warehouse": "Ombor",
-      "purchaseServices": "Xarid xizmatlari"
+      "purchaseServices": "Xarid xizmatlari",
+      "pricingConditions": "Narxlash shartlari",
+      "saleConditions": "Sotuv shartlari"
     },
     "descriptions": {
       "roles": "Tizimdagi rollar va ularning huquqlarini boshqarish.",
@@ -137,7 +139,9 @@
       "cashBox": "Kassalar ro'yxatini boshqarish.",
       "counterpartyContacts": "Kontragent kontaktlarini boshqarish.",
       "warehouse": "Omborlar ro'yxatini boshqarish.",
-      "purchaseServices": "Xaridda ishlatiladigan xizmatlar ro'yxatini boshqarish."
+      "purchaseServices": "Xaridda ishlatiladigan xizmatlar ro'yxatini boshqarish.",
+      "pricingConditions": "Narxlash usuli va yaxlitlash shartlarini boshqarish.",
+      "saleConditions": "Sotuv tannarx va NDS shartlarini boshqarish."
     },
     "fields": {
       "accountNumber": "Hisob raqami",
@@ -177,7 +181,18 @@
       "shortName": "Qisqacha nomi",
       "status": "Holati",
       "userName": "Foydalanuvchi nomi",
-      "createdDate": "Yaratilgan sana"
+      "createdDate": "Yaratilgan sana",
+      "pricingMethod": "Narxlash usuli",
+      "pricingValue": "Narxlash qiymati",
+      "roundingMethod": "Yaxlitlash usuli",
+      "roundingPrecision": "Yaxlitlash aniqligi",
+      "startDate": "Boshlanish sanasi",
+      "endDate": "Tugash sanasi",
+      "costingMethod": "Tannarx usuli",
+      "vatRate": "NDS stavkasi",
+      "period": "Amal qilish davri",
+      "conditionId": "Shart ID",
+      "organizationId": "Tashkilot ID"
     },
     "form": {
       "createTitle": "Yangi ma'lumot qo'shish",
@@ -185,7 +200,10 @@
       "createUser": "Foydalanuvchi qo'shish",
       "editUser": "Foydalanuvchini o'zgartirish",
       "createRole": "Rol qo'shish",
-      "editRole": "Rolni tahrirlash"
+      "editRole": "Rolni tahrirlash",
+      "createPricingCondition": "Narxlash sharti qo'shish",
+      "viewPricingCondition": "Narxlash sharti",
+      "createSaleCondition": "Sotuv sharti yaratish"
     },
     "messages": {
       "created": "Ma'lumot muvaffaqiyatli yaratildi",
@@ -198,6 +216,17 @@
     "role": {
       "selectAll": "Hammasini belgilash",
       "searchPlaceholder": "Modul nomi bo'yicha qidiring..."
+    },
+    "saleCondition": {
+      "current": "Tekushi",
+      "history": "Tarix",
+      "create": "Shart yaratish",
+      "active": "Faol",
+      "noActive": "Hozirda faol sotuv sharti topilmadi",
+      "activeTitle": "Hozirgi sotuv sharti",
+      "activeDescription": "Hozirgi paytda amal qilayotgan faol sotuv shartining ma'lumotlari ko'rsatilmoqda.",
+      "infoTitle": "Ma'lumot",
+      "infoDescription": "Ushbu sotuv sharti tashkilotda ko'rsatilgan davr ichida barcha sotuv operatsiyalariga qo'llaniladi."
     }
   },
   "purchase": {

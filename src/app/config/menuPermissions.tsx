@@ -17,6 +17,8 @@ import {
   ShieldCheck,
   ShoppingBag,
   ShoppingCart,
+  Tag,
+  TrendingUp,
   Users,
   Wallet,
   Warehouse,
@@ -28,6 +30,8 @@ import { productPermissions } from "@/modules/warehouse/pages/products/constants
 import { warehousePermissions } from "@/modules/warehouse";
 import { bankPermissions } from "@/modules/bank";
 import { settingsBankPermissions } from "@/modules/settings/pages/bank/constants/permissions";
+import { pricingConditionPermissions } from "@/modules/settings/pages/pricingCondition/constants/permissions";
+import { saleConditionPermissions } from "@/modules/settings/pages/saleCondition/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 
 interface MainMenu {
@@ -54,6 +58,8 @@ export const settingsViewPermissions = [
   "COUNTERPARTY_CONTACT_VIEW",
   "WAREHOUSE_VIEW",
   purchasePermissions.view,
+  pricingConditionPermissions.view,
+  saleConditionPermissions.view,
 ] as const;
 
 export const menuPermissions: MainMenu = {
@@ -360,6 +366,24 @@ export const menuPermissions: MainMenu = {
         path: "banks",
         title: "settings.entities.banks",
         description: "settings.descriptions.banks",
+      },
+    },
+    {
+      code: pricingConditionPermissions.view,
+      iconName: <Tag className="size-5" />,
+      linkData: {
+        path: "pricing-conditions",
+        title: "settings.entities.pricingConditions",
+        description: "settings.descriptions.pricingConditions",
+      },
+    },
+    {
+      code: saleConditionPermissions.view,
+      iconName: <TrendingUp className="size-5" />,
+      linkData: {
+        path: "sale-conditions",
+        title: "settings.entities.saleConditions",
+        description: "settings.descriptions.saleConditions",
       },
     },
   ],

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import { ProfilePopoverContent } from "./components/ProfilePopoverContent";
 import { logout } from "@/store/features/authSlice";
 import { toggleMode } from "@/store/features/modeSlice";
+import toast from "react-hot-toast";
 const ProfileNav: React.FC = () => {
   const navigate = useNavigate();
   // const loading = useAppSelector((state) => state.auth.loading);
@@ -15,6 +16,7 @@ const ProfileNav: React.FC = () => {
   const handleLogout = async () => {
     await navigate("/login", { replace: true });
     dispatch(logout());
+    toast.success("Tizimdan chiqdingiz!");
   };
 
   const content = (

@@ -42,12 +42,9 @@ function Login() {
   });
 
   return (
-    <div
-      className="h-screen w-screen overflow-hidden bg-[#f5f5f5] flex items-center justify-center"
-      style={{ padding: "15px" }}
-    >
-      <div className="w-full h-full flex rounded-2xl shadow-2xl overflow-hidden shadow-[#828487]">
-        <div className="w-[38%] min-w-85 h-full bg-white flex flex-col px-10 py-8">
+    <div className="min-h-dvh w-full bg-[#f5f5f5] flex items-center justify-center p-3 sm:p-4">
+      <div className="w-full lg:h-[calc(100dvh-2rem)] flex flex-col lg:flex-row rounded-2xl shadow-2xl overflow-hidden shadow-[#828487] bg-white">
+        <div className="w-full lg:w-[38%] lg:min-w-85 flex flex-col px-6 py-6 sm:px-10 sm:py-8">
           <div className="flex flex-col flex-1 justify-center max-w-90 mx-auto w-full">
             <div className="flex items-center gap-3 mb-10">
               <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-200">
@@ -118,7 +115,7 @@ function Login() {
                 className="hover:text-blue-600 cursor-pointer transition-all"
                 onClick={() => {
                   dispatch(setLang("uz"));
-                  void i18n.changeLanguage("uz");
+                   i18n.changeLanguage("uz");
                 }}
               >
                 {t("profile.languages.uz")}
@@ -127,7 +124,7 @@ function Login() {
                 className="hover:text-blue-600 cursor-pointer transition-all"
                 onClick={() => {
                   dispatch(setLang("ru"));
-                  void i18n.changeLanguage("ru");
+                  i18n.changeLanguage("ru");
                 }}
               >
                 {t("profile.languages.ru")}
@@ -136,7 +133,7 @@ function Login() {
                 className="hover:text-blue-600 cursor-pointer transition-all"
                 onClick={() => {
                   dispatch(setLang("en"));
-                  void i18n.changeLanguage("en");
+                  i18n.changeLanguage("en");
                 }}
               >
                 {t("profile.languages.en")}
@@ -144,7 +141,7 @@ function Login() {
             </div>
           </div>
         </div>
-        <div className="flex-1 h-full relative overflow-hidden">
+        <div className="hidden lg:block flex-1 h-full relative overflow-hidden">
           <img
             src={loginP}
             alt="Accounting illustration"

@@ -21,6 +21,7 @@ interface InputNumberFormaterProps {
   value?: number | null;
   onValueChange?: (value: number | null) => void;
   onPressEnter?: () => void;
+  onBlur?: () => void;
   min?: number;
   max?: number;
   precision?: number;
@@ -39,6 +40,7 @@ const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
     value,
     onValueChange,
     onPressEnter,
+    onBlur,
     min,
     max,
     precision = 5,
@@ -68,6 +70,8 @@ const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
           onPressEnter?.();
         }
       }}
+      onBlur={onBlur}
+      onFocus={(event) => event.target.select()}
       isAllowed={(values) => {
         if (values.floatValue === undefined) return true;
         if (min !== undefined && values.floatValue < min) return false;

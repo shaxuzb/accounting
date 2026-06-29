@@ -119,7 +119,9 @@
       "cashBox": "Касса",
       "counterpartyContacts": "Контакты контрагента",
       "warehouse": "Склад",
-      "purchaseServices": "Услуги закупки"
+      "purchaseServices": "Услуги закупки",
+      "pricingConditions": "Условия ценообразования",
+      "saleConditions": "Условия продаж"
     },
     "descriptions": {
       "roles": "Управление ролями и правами доступа.",
@@ -137,7 +139,9 @@
       "cashBox": "Управление кассами.",
       "counterpartyContacts": "Управление контактами контрагентов.",
       "warehouse": "Управление складами.",
-      "purchaseServices": "Управление услугами, используемыми в закупках."
+      "purchaseServices": "Управление услугами, используемыми в закупках.",
+      "pricingConditions": "Управление методами ценообразования и округления.",
+      "saleConditions": "Управление методами себестоимости и НДС для продаж."
     },
     "fields": {
       "accountNumber": "Номер счёта",
@@ -177,7 +181,18 @@
       "shortName": "Краткое название",
       "status": "Статус",
       "userName": "Имя пользователя",
-      "createdDate": "Дата создания"
+      "createdDate": "Дата создания",
+      "pricingMethod": "Метод ценообразования",
+      "pricingValue": "Значение ценообразования",
+      "roundingMethod": "Метод округления",
+      "roundingPrecision": "Точность округления",
+      "startDate": "Дата начала",
+      "endDate": "Дата окончания",
+      "costingMethod": "Метод себестоимости",
+      "vatRate": "Ставка НДС",
+      "period": "Период действия",
+      "conditionId": "ID условия",
+      "organizationId": "ID организации"
     },
     "form": {
       "createTitle": "Добавить новую запись",
@@ -185,7 +200,10 @@
       "createUser": "Добавить пользователя",
       "editUser": "Редактировать пользователя",
       "createRole": "Добавить роль",
-      "editRole": "Редактировать роль"
+      "editRole": "Редактировать роль",
+      "createPricingCondition": "Добавить условие ценообразования",
+      "viewPricingCondition": "Условие ценообразования",
+      "createSaleCondition": "Создать условие продаж"
     },
     "messages": {
       "created": "Запись успешно создана",
@@ -198,6 +216,17 @@
     "role": {
       "selectAll": "Выбрать все",
       "searchPlaceholder": "Поиск по названию модуля..."
+    },
+    "saleCondition": {
+      "current": "Текущие",
+      "history": "История",
+      "create": "Создать условие",
+      "active": "Активно",
+      "noActive": "Нет активного условия продаж",
+      "activeTitle": "Текущее условие продаж",
+      "activeDescription": "Отображаются данные активного условия продаж, действующего в текущий момент.",
+      "infoTitle": "Информация",
+      "infoDescription": "Это условие продаж применяется ко всем операциям продаж в указанный период для текущей организации."
     }
   },
   "purchase": {

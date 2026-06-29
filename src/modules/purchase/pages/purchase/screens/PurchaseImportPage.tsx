@@ -3,8 +3,6 @@ import {
   Button,
   Col,
   Form,
-  Input,
-  Modal,
   Row,
   Segmented,
   Select,
@@ -18,6 +16,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  type ClipboardEvent,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -25,21 +24,31 @@ import { useTranslation } from "react-i18next";
 import SelectDate from "@/components/fields/SelectDate";
 import dayjs from "dayjs";
 import { $axiosPrivate } from "@/services/AxiosService";
-import { ArrowLeft, PackagePlus, Plus, QrCode, Trash2, X } from "lucide-react";
+import { ArrowLeft, PackagePlus, Plus, QrCode, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import SelectCustom from "@/components/fields/SelectCustom";
 import Card from "@/components/ui/card/Card";
 import { useNavigate } from "react-router";
 import useWindowSize from "@/shared/hooks/useWindowSize";
-import type { PurchaseImportRow, SelectBoxOptions } from "../types/type";
+import type {
+  ProductListResponse,
+  ProductSelectOption,
+  PurchaseImportRow,
+  PurchaseMode,
+  SelectBoxOptions,
+  SelectOption,
+} from "../types/type";
 import {
   filterIds,
   selectListEndpoints,
   selectListKeys,
 } from "@/shared/constants/selectLists";
 import ExcelImportFile from "@/components/widget/excelimport/ExcelImportFile";
-import type { PurchaseImportForm } from "@/modules/purchase/pages/purchase/types/form";
-import { formatDate, formatDateWithOutTime } from "@/utils/helpers";
+import type {
+  PurchaseImportForm,
+  PurchaseImportHeaderDraft,
+} from "@/modules/purchase/pages/purchase/types/form";
+import { formatDateWithOutTime } from "@/utils/helpers";
 import { numberSpacing } from "@/utils/utils";
 import {
   purchaseValidationSchema,
@@ -47,6 +56,8 @@ import {
 } from "@/modules/purchase/pages/purchase/types/schema";
 import PurchaseImportEditableCell from "../components/PurchaseImportEditableCell";
 import ProductsCreateModal from "../components/ProductsCreateModal";
+import PurchaseImportSummary from "../components/PurchaseImportSummary";
+import PurchaseMarkingModal from "../components/PurchaseMarkingModal";
 import {
   buildColumnConfig,
   getBaseColumnConfig,
@@ -56,94 +67,29 @@ import {
 } from "../utils/importColumns";
 import { useCreatePurchase } from "../hooks/useCreatePurchase";
 import useLocalStorage from "@/hooks/UseLocalStorage";
-
-interface ProductSelectOption {
-  id: number;
-  code?: string;
-  barcode?: string;
-  name: string;
-  mxik?: string;
-  unitId?: number | null;
-  unitCode?: string | null;
-  unitName?: string | null;
-  unit?: string | null;
-  price?: number | null;
-  purchasePrice?: number | null;
-  pricePerUom?: number | null;
-}
-
-interface SelectOption {
-  id: number;
-  name: string;
-  code?: string;
-}
-
-type PurchaseMode = "goods" | "services";
-
-type PurchaseImportHeaderDraft = Pick<
-  PurchaseImportForm,
-  | "docDate"
-  | "counterpartyId"
-  | "contractId"
-  | "currencyId"
-  | "warehouseId"
-  | "comment"
->;
+import {
+  createEmptyPurchaseRow,
+  getDefaultPurchaseImportHeader,
+  getNumber,
+  getProductCode,
+  getProductPrice,
+  getPurchaseImportTotals,
+  getRowAmount,
+  getRowUnitLabel,
+  getRowUnitPrice,
+  getRowVatAmount,
+  getUnmarkedPieceTrackedRow,
+  normalizeProductOptions,
+  parseMarkingInput,
+  toMarkingNumbers,
+  toPurchaseCreatePayload,
+} from "../utils/purchaseImport";
 
 const PURCHASE_IMPORT_DRAFT_HEADER_KEY = "purchase-import:draft:header";
 const PURCHASE_IMPORT_DRAFT_LINES_KEY = "purchase-import:draft:lines";
 const PURCHASE_IMPORT_DRAFT_PRODUCT_WITH_COUNT_KEY =
   "purchase-import:draft:product-with-count";
 const PURCHASE_IMPORT_DRAFT_MODE_KEY = "purchase-import:draft:mode";
-
-const getDefaultPurchaseImportHeader = (): PurchaseImportHeaderDraft => ({
-  docDate: dayjs().format(formatDate),
-  counterpartyId: null,
-  contractId: null,
-  currencyId: 1,
-  warehouseId: null,
-  comment: "",
-});
-
-const getNumber = (value: unknown) => {
-  const numberValue = Number(value);
-  return Number.isFinite(numberValue) ? numberValue : 0;
-};
-
-const getVatPercent = (vatRateId: unknown, options: SelectOption[]) => {
-  const option = options.find((item) => item.id === Number(vatRateId));
-  const match = String(option?.name ?? "").match(/(\d+(?:[.,]\d+)?)/);
-  return match ? Number(match[1].replace(",", ".")) : 0;
-};
-
-const getProductCode = (item?: ProductSelectOption | SelectOption | null) =>
-  String(
-    (item as ProductSelectOption | undefined)?.mxik ??
-      (item as ProductSelectOption | undefined)?.code ??
-      (item as ProductSelectOption | undefined)?.barcode ??
-      "",
-  );
-
-const getProductPrice = (item?: ProductSelectOption | null) =>
-  Number(item?.purchasePrice ?? item?.pricePerUom ?? item?.price ?? 0);
-
-const getRowUnitLabel = (row: PurchaseImportRow) =>
-  row.unitCode ?? row.unitName ?? "";
-
-const getRowUnitPrice = (row: PurchaseImportRow) =>
-  getNumber(row.price || row.pricePerUom);
-
-const getRowAmount = (row: PurchaseImportRow) =>
-  getNumber(row.qty) * getRowUnitPrice(row);
-
-const getRowVatAmount = (row: PurchaseImportRow, options: SelectOption[]) =>
-  (getRowAmount(row) * getVatPercent(row.vatRateId, options)) / 100;
-
-const toMarkingNumbers = (row: PurchaseImportRow) => {
-  if (Array.isArray(row.markingNumbers)) return row.markingNumbers;
-  const marking = String(row.markingNumber ?? "").trim();
-  return marking ? [marking] : [];
-};
 
 const PurchaseImportPage = () => {
   const { t } = useTranslation();
@@ -192,66 +138,82 @@ const PurchaseImportPage = () => {
     [baseColumnConfig, selectBoxOptions],
   );
 
+  const initialLines = useMemo(
+    () =>
+      excelData.length
+        ? excelData
+        : [
+            createEmptyPurchaseRow({
+              indexId: 1,
+              counterpartyId: headerDraft.counterpartyId,
+              currencyId: headerDraft.currencyId,
+              purchaseMode,
+              productWithCount,
+            }),
+          ],
+    [
+      excelData,
+      headerDraft.counterpartyId,
+      headerDraft.currencyId,
+      purchaseMode,
+      productWithCount,
+    ],
+  );
+
   const formik = useFormik<PurchaseImportForm>({
     initialValues: {
       ...headerDraft,
-      lines: excelData,
+      lines: initialLines,
       // newProducts: productWithCount ? excelData : [],
       // newSerialProducts: !productWithCount ? excelData : [],
     },
     validationSchema: purchaseValidationSchema,
     onSubmit: async (values, helpers) => {
+      const completedRows = values.lines.filter(isCompletePurchaseLine);
+      const unmarkedRow = getUnmarkedPieceTrackedRow(
+        completedRows,
+        purchaseMode,
+      );
+
+      if (unmarkedRow) {
+        toast.error(
+          `${unmarkedRow.product || unmarkedRow.productName || "Mahsulot"} uchun markirovka kiriting`,
+        );
+        return;
+      }
+
       // Swagger DTO — PurchaseDocLineDto:
       // { productId, quantity, unitId, unitPrice, vatRateId, items: [{markingNumber, serialNumber}] | null }
-      const lines = values.lines
-        .filter(isCompletePurchaseLine)
-        .map((item) => {
-          const markingNumbers = toMarkingNumbers(item);
-          const hasMarking =
-            purchaseMode === "goods" && markingNumbers.length > 0;
-          // Serinkali rejim (productWithCount=false) — har qator bitta dona, items[] majburiy
-          // Serinkasiz rejim (productWithCount=true) — quantity > 1, items yo'q
-          const quantity = Number(item.qty ?? 1);
-          const unitPrice = getRowUnitPrice(item);
-          return {
-            productId: Number(item.productId),
-            quantity,
-            unitId: Number(item.unitId ?? 1),
-            unitPrice,
-            vatRateId: item.vatRateId ?? null,
-            items: hasMarking
-              ? markingNumbers.map((markingNumber) => ({
-                  markingNumber,
-                  serialNumber: null,
-                }))
-              : null,
-          };
-        });
-
+      const payload = toPurchaseCreatePayload(
+        values,
+        completedRows,
+        purchaseMode,
+      );
       // Servislar (Приход услуг) — bir xil lines[] ga qo'shiladi, items=null
-      // if (!lines.length) {
-      //   toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
-      //   return;
-      // }
+      if (!payload.lines.length) {
+        toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
+        return;
+      }
 
-      await importPurchase.mutateAsync({
-        docDate: values.docDate,
-        counterpartyId: values.counterpartyId ?? 0,
-        warehouseId: values.warehouseId ?? 0,
-        currencyId: values.currencyId ?? 0,
-        contractId: values.contractId,
-        comment: values.comment || null,
-        lines,
-      });
+      await importPurchase.mutateAsync(payload);
       const defaultHeader = getDefaultPurchaseImportHeader();
+      const defaultLines = [
+        createEmptyPurchaseRow({
+          indexId: 1,
+          counterpartyId: defaultHeader.counterpartyId,
+          currencyId: defaultHeader.currencyId,
+          purchaseMode: "goods",
+          productWithCount: false,
+        }),
+      ];
       setHeaderDraft(defaultHeader);
-      setExcelData([]);
+      setExcelData(defaultLines);
       setProductWithCount(false);
       setPurchaseMode("goods");
       helpers.resetForm({
         values: {
           ...defaultHeader,
-          lines: [],
+          lines: defaultLines,
         },
       });
       navigate(-1);
@@ -299,22 +261,34 @@ const PurchaseImportPage = () => {
   } = useQuery<ProductSelectOption[]>({
     queryKey: ["selectlist", selectListKeys.product, "purchase-goods"],
     queryFn: async () => {
-      const { data } = await $axiosPrivate.get<ProductSelectOption[]>(
-        `${selectListEndpoints.productsSelectList}?IsService=false`,
-      );
-      return data ?? [];
+      const { data } = await $axiosPrivate.get<
+        ProductSelectOption[] | ProductListResponse
+      >("products", {
+        params: {
+          IsService: false,
+          PageSize: 1000,
+        },
+      });
+      return normalizeProductOptions(data);
     },
     enabled: true,
   });
-  const { data: serviceOptions = [], isLoading: isServicesLoading } = useQuery<
-    ProductSelectOption[]
-  >({
+  const {
+    data: serviceOptions = [],
+    isLoading: isServicesLoading,
+    isSuccess: isServicesSuccess,
+  } = useQuery<ProductSelectOption[]>({
     queryKey: ["selectlist", selectListKeys.product, "purchase-services"],
     queryFn: async () => {
-      const { data } = await $axiosPrivate.get<ProductSelectOption[]>(
-        `${selectListEndpoints.productsSelectList}?IsService=true`,
-      );
-      return data ?? [];
+      const { data } = await $axiosPrivate.get<
+        ProductSelectOption[] | ProductListResponse
+      >("products", {
+        params: {
+          IsService: true,
+          PageSize: 1000,
+        },
+      });
+      return normalizeProductOptions(data);
     },
     enabled: true,
   });
@@ -339,27 +313,32 @@ const PurchaseImportPage = () => {
     enabled: true,
   });
 
+  const productLookupOptions = useMemo(
+    () => [...(data ?? []), ...serviceOptions],
+    [data, serviceOptions],
+  );
+
   const productIdBySapCode = useMemo(() => {
     const map = new Map<string, number>();
-    (data ?? []).forEach((item) => {
+    productLookupOptions.forEach((item) => {
       const codes = [item.code, item.barcode, item.mxik].filter(Boolean);
       codes.forEach((code) => {
         map.set(String(code).trim(), Number(item.id));
       });
     });
     return map;
-  }, [data]);
+  }, [productLookupOptions]);
 
   const productByCode = useMemo(() => {
     const map = new Map<string, ProductSelectOption>();
-    (data ?? []).forEach((item) => {
+    productLookupOptions.forEach((item) => {
       const codes = [item.code, item.barcode, item.mxik].filter(Boolean);
       codes.forEach((code) => {
         map.set(String(code).trim(), item);
       });
     });
     return map;
-  }, [data]);
+  }, [productLookupOptions]);
 
   const itemOptions = useMemo<ProductSelectOption[]>(
     () =>
@@ -387,8 +366,15 @@ const PurchaseImportPage = () => {
           unitId: item.unitId ?? product?.unitId ?? null,
           unitCode: item.unitCode ?? product?.unitCode ?? null,
           unitName: item.unitName ?? product?.unitName ?? product?.unit ?? null,
-          price: getNumber(item.price) || unitPrice,
-          pricePerUom: getNumber(item.pricePerUom) || unitPrice,
+          price: item.price || unitPrice || null,
+          pricePerUom: item.pricePerUom || unitPrice || null,
+          isPieceTracked: Boolean(product?.isPieceTracked),
+          ...(product?.isPieceTracked
+            ? {}
+            : {
+                markingNumber: "",
+                markingNumbers: [],
+              }),
         };
       }),
     [productByCode],
@@ -404,40 +390,56 @@ const PurchaseImportPage = () => {
 
   const handleRowValueChange = useCallback(
     (rowIndex: number, patch: Partial<PurchaseImportRow>) => {
-      const nextRows = excelData.map((item, index) =>
+      const nextRows = formik.values.lines.map((item, index) =>
         index === rowIndex ? { ...item, ...patch } : item,
       );
       commitRows(nextRows);
     },
-    [commitRows, excelData],
+    [commitRows, formik.values.lines],
   );
 
   const handleItemSelect = useCallback(
     (rowIndex: number, value: number) => {
+      const currentRows = formik.values.lines;
       const selected = itemOptions.find((item) => item.id === value);
       const productCode = getProductCode(selected);
       const unitPrice = getProductPrice(selected);
+      const isPieceTracked =
+        purchaseMode === "goods" && Boolean(selected?.isPieceTracked);
+      const currentMarkings = toMarkingNumbers(currentRows[rowIndex]);
       handleRowValueChange(rowIndex, {
         productId: value,
         product: selected?.name ?? "",
         productName: selected?.name ?? "",
         name: selected?.name ?? "",
-        sapCode: productCode || excelData[rowIndex]?.sapCode || "",
+        sapCode: productCode || currentRows[rowIndex]?.sapCode || "",
         mxik: selected?.mxik ?? productCode,
-        unitId: selected?.unitId ?? (excelData[rowIndex]?.unitId as number | null),
+        unitId: selected?.unitId ?? (currentRows[rowIndex]?.unitId as number | null),
         unitCode: selected?.unitCode ?? null,
         unitName: selected?.unitName ?? selected?.unit ?? null,
-        price: unitPrice || getNumber(excelData[rowIndex]?.price),
-        pricePerUom: unitPrice || getNumber(excelData[rowIndex]?.pricePerUom),
+        price: unitPrice || currentRows[rowIndex]?.price || null,
+        pricePerUom: unitPrice || currentRows[rowIndex]?.pricePerUom || null,
+        isPieceTracked,
+        qty: isPieceTracked
+          ? currentMarkings.length
+          : currentRows[rowIndex]?.qty,
+        markingNumber: isPieceTracked
+          ? currentRows[rowIndex]?.markingNumber
+          : "",
+        markingNumbers: isPieceTracked ? currentMarkings : [],
       });
     },
-    [excelData, handleRowValueChange, itemOptions],
+    [formik.values.lines, handleRowValueChange, itemOptions, purchaseMode],
   );
 
   const openMarkingModal = useCallback((rowIndex: number) => {
+    if (!formik.values.lines[rowIndex]?.isPieceTracked) {
+      toast.error("Bu mahsulot markirovkasiz");
+      return;
+    }
     setMarkingRowIndex(rowIndex);
     setMarkingInput("");
-  }, []);
+  }, [formik.values.lines]);
 
   const closeMarkingModal = useCallback(() => {
     setMarkingRowIndex(null);
@@ -449,7 +451,7 @@ const PurchaseImportPage = () => {
       handleRowValueChange(rowIndex, {
         markingNumbers,
         markingNumber: markingNumbers.join("\n"),
-        qty: markingNumbers.length || 1,
+        qty: markingNumbers.length,
       });
     },
     [handleRowValueChange],
@@ -457,28 +459,50 @@ const PurchaseImportPage = () => {
 
   const handleAddMarking = useCallback(() => {
     if (markingRowIndex === null) return;
-    const marking = markingInput.trim();
-    if (!marking) return;
+    const nextMarkings = parseMarkingInput(markingInput);
+    if (!nextMarkings.length) return;
 
-    const current = toMarkingNumbers(excelData[markingRowIndex]);
-    if (current.includes(marking)) {
-      toast.error("Bu markirovka avval kiritilgan");
+    const current = toMarkingNumbers(formik.values.lines[markingRowIndex]);
+    const currentSet = new Set(current);
+    const uniqueMarkings = nextMarkings.filter((marking) => {
+      if (currentSet.has(marking)) return false;
+      currentSet.add(marking);
+      return true;
+    });
+
+    if (!uniqueMarkings.length) {
+      toast.error("Kiritilgan markirovkalar avval qo'shilgan");
       return;
     }
 
-    updateRowMarkings(markingRowIndex, [...current, marking]);
+    updateRowMarkings(markingRowIndex, [...current, ...uniqueMarkings]);
     setMarkingInput("");
-  }, [excelData, markingInput, markingRowIndex, updateRowMarkings]);
+  }, [formik.values.lines, markingInput, markingRowIndex, updateRowMarkings]);
+
+  const handleMarkingPaste = useCallback(
+    (event: ClipboardEvent<HTMLInputElement>) => {
+      const pastedText = event.clipboardData.getData("text");
+      const pastedMarkings = parseMarkingInput(pastedText);
+
+      if (pastedMarkings.length < 2) return;
+
+      event.preventDefault();
+      setMarkingInput((prev) =>
+        [...parseMarkingInput(prev), ...pastedMarkings].join(" "),
+      );
+    },
+    [],
+  );
 
   const handleRemoveMarking = useCallback(
     (marking: string) => {
       if (markingRowIndex === null) return;
-      const nextMarkings = toMarkingNumbers(excelData[markingRowIndex]).filter(
-        (item) => item !== marking,
-      );
+      const nextMarkings = toMarkingNumbers(
+        formik.values.lines[markingRowIndex],
+      ).filter((item) => item !== marking);
       updateRowMarkings(markingRowIndex, nextMarkings);
     },
-    [excelData, markingRowIndex, updateRowMarkings],
+    [formik.values.lines, markingRowIndex, updateRowMarkings],
   );
 
   const handleExcelDataChange = useCallback<
@@ -496,62 +520,62 @@ const PurchaseImportPage = () => {
   );
 
   const handleAddManualRow = useCallback(() => {
-    const indexId = excelData.length + 1;
+    const indexId = formik.values.lines.length + 1;
     commitRows([
-      ...excelData,
-      {
-        key: Date.now(),
-        id: 0,
+      ...formik.values.lines,
+      createEmptyPurchaseRow({
         indexId,
-        name: "",
         counterpartyId: formik.values.counterpartyId,
-        product: "",
-        productId: null,
-        productName: "",
-        sapCode: "",
-        qty: 1,
-        serialNumber: "",
-        currencyId: formik.values.currencyId ?? 1,
-        currency: "",
-        markingNumber: "",
-        markingNumbers: [],
-        mxik: "",
-        price: 0,
-        pricePerUom: 0,
-        unitId: null,
-        unitCode: null,
-        unitName: null,
-        vatRateId: null,
-        vatRates: null,
-        isSerial: purchaseMode === "goods" && !productWithCount,
-      },
+        currencyId: formik.values.currencyId,
+        purchaseMode,
+        productWithCount,
+      }),
     ]);
   }, [
     commitRows,
-    excelData,
     formik.values.counterpartyId,
     formik.values.currencyId,
+    formik.values.lines,
     purchaseMode,
     productWithCount,
   ]);
 
   const handleDeleteRow = useCallback(
     (rowIndex: number) => {
-      const nextRows = excelData
+      const nextRows = formik.values.lines
         .filter((_, index) => index !== rowIndex)
         .map((item, index) => ({
           ...item,
           indexId: index + 1,
         }));
-      commitRows(nextRows);
+      commitRows(
+        nextRows.length
+          ? nextRows
+          : [
+              createEmptyPurchaseRow({
+                indexId: 1,
+                counterpartyId: formik.values.counterpartyId,
+                currencyId: formik.values.currencyId,
+                purchaseMode,
+                productWithCount,
+              }),
+            ],
+      );
     },
-    [commitRows, excelData],
+    [
+      commitRows,
+      formik.values.counterpartyId,
+      formik.values.currencyId,
+      formik.values.lines,
+      purchaseMode,
+      productWithCount,
+    ],
   );
 
   // Table columnlarni yaratish
   const handleCellCommit = useCallback(
     (rowIndex: number, dataIndex: string, rawValue: string) => {
-      const currentRows = excelData;
+      const currentRows = formik.values.lines;
 
       if (!currentRows[rowIndex]) {
         return;
@@ -570,8 +594,28 @@ const PurchaseImportPage = () => {
       }
 
       if (dataIndex === "sapCode") {
-        targetRow.productId =
-          productIdBySapCode.get(String(rawValue).trim()) ?? null;
+        const selected = productByCode.get(String(rawValue).trim());
+        const unitPrice = getProductPrice(selected);
+        const isPieceTracked =
+          purchaseMode === "goods" && Boolean(selected?.isPieceTracked);
+        targetRow.productId = selected?.id ?? null;
+        targetRow.product = selected?.name ?? "";
+        targetRow.productName = selected?.name ?? "";
+        targetRow.name = selected?.name ?? "";
+        targetRow.mxik = selected?.mxik ?? getProductCode(selected);
+        targetRow.unitId = selected?.unitId ?? null;
+        targetRow.unitCode = selected?.unitCode ?? null;
+        targetRow.unitName = selected?.unitName ?? selected?.unit ?? null;
+        targetRow.price = targetRow.price || unitPrice || null;
+        targetRow.pricePerUom = targetRow.pricePerUom || unitPrice || null;
+        targetRow.isPieceTracked = isPieceTracked;
+        if (!isPieceTracked) {
+          targetRow.markingNumber = "";
+          targetRow.markingNumbers = [];
+          targetRow.qty = getNumber(targetRow.qty) || 1;
+        } else {
+          targetRow.qty = toMarkingNumbers(targetRow).length;
+        }
       }
 
       const previousValue = (currentRows[rowIndex] as Record<string, unknown>)[
@@ -586,7 +630,7 @@ const PurchaseImportPage = () => {
 
       commitRows(nextRows);
     },
-    [commitRows, excelData, productIdBySapCode],
+    [commitRows, formik.values.lines, productByCode, purchaseMode],
   );
 
   const isSapCodeValid = useCallback(
@@ -607,8 +651,13 @@ const PurchaseImportPage = () => {
   const tableColumns: TableColumnType<PurchaseImportRow>[] = useMemo(() => {
     const visibleColumnConfig = columnConfig.filter(
       (col) =>
-        !["serialNumber", "markingNumber"].includes(col.code) &&
-        (purchaseMode === "goods" || col.code !== "sapCode"),
+        ![
+          "serialNumber",
+          "markingNumber",
+          "qty",
+          "price",
+          "pricePerUom",
+        ].includes(col.code),
     );
 
     const editableColumns = visibleColumnConfig.map((col: ImportColumnConfig) => {
@@ -660,7 +709,7 @@ const PurchaseImportPage = () => {
         ...baseColumn,
         render: (
           value: unknown,
-          _record: PurchaseImportRow,
+          record: PurchaseImportRow,
           rowIndex: number,
         ) => {
           const isSapCodeCell = col.code === "sapCode";
@@ -675,67 +724,53 @@ const PurchaseImportPage = () => {
               rowIndex={rowIndex ?? 0}
               onCommit={handleCellCommit}
               isInvalid={invalidSapCode}
+              disabled={isSapCodeCell && Boolean(record.productId)}
             />
           );
         },
       };
     });
 
-    const hasQuantityColumn = visibleColumnConfig.some(
-      (col) => col.code === "qty",
+    const markingColumn: TableColumnType<PurchaseImportRow> = {
+      dataIndex: "markingNumber",
+      title: "Markirovka",
+      width: 130,
+      align: "center",
+      render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => {
+        const markingCount = toMarkingNumbers(record).length;
+        const isTracked = Boolean(record.isPieceTracked);
+        return (
+          <Tooltip
+            title={
+              isTracked
+                ? markingCount
+                  ? `${markingCount} ta markirovka`
+                  : "Markirovka kiritish"
+                : "Bu mahsulot markirovkasiz"
+            }
+          >
+            <Button
+              type="text"
+              disabled={!isTracked}
+              className="text-primary"
+              icon={<QrCode className="size-5" />}
+              onClick={() => openMarkingModal(rowIndex)}
+            >
+              {markingCount || ""}
+            </Button>
+          </Tooltip>
+        );
+      },
+    };
+
+    const orderedEditableColumns = editableColumns.flatMap((column) =>
+      purchaseMode === "goods" && column.dataIndex === "sapCode"
+        ? [column, markingColumn]
+        : [column],
     );
 
     return [
-      ...editableColumns,
-      ...(purchaseMode === "goods"
-        ? [
-            {
-              dataIndex: "markingNumber",
-              title: "Markirovka",
-              width: 120,
-              align: "center",
-              render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => {
-                const markingCount = toMarkingNumbers(record).length;
-                return (
-                  <Tooltip
-                    title={
-                      markingCount
-                        ? `${markingCount} ta markirovka`
-                        : "Markirovka kiritish"
-                    }
-                  >
-                    <Button
-                      type="text"
-                      className="text-primary"
-                      icon={<QrCode className="size-5" />}
-                      onClick={() => openMarkingModal(rowIndex)}
-                    >
-                      {markingCount || ""}
-                    </Button>
-                  </Tooltip>
-                );
-              },
-            } satisfies TableColumnType<PurchaseImportRow>,
-          ]
-        : []),
-      ...(!hasQuantityColumn
-        ? [
-            {
-              dataIndex: "qty",
-              title: "Miqdor",
-              width: 120,
-              align: "center",
-              render: (value: unknown, _record: PurchaseImportRow, rowIndex: number) => (
-                <PurchaseImportEditableCell
-                  value={value}
-                  dataIndex="qty"
-                  rowIndex={rowIndex ?? 0}
-                  onCommit={handleCellCommit}
-                />
-              ),
-            } satisfies TableColumnType<PurchaseImportRow>,
-          ]
-        : []),
+      ...orderedEditableColumns,
       {
         dataIndex: "unitId",
         title: "Birlik",
@@ -762,6 +797,35 @@ const PurchaseImportPage = () => {
           )
         ),
       },
+      {
+        dataIndex: "qty",
+        title: "Miqdor",
+        width: 120,
+        align: "center",
+        render: (value: unknown, record: PurchaseImportRow, rowIndex: number) => (
+          <PurchaseImportEditableCell
+            value={value}
+            dataIndex="qty"
+            rowIndex={rowIndex ?? 0}
+            onCommit={handleCellCommit}
+            disabled={purchaseMode === "goods" && Boolean(record.isPieceTracked)}
+          />
+        ),
+      } satisfies TableColumnType<PurchaseImportRow>,
+      {
+        dataIndex: "price",
+        title: "Narx",
+        width: 140,
+        align: "center",
+        render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => (
+          <PurchaseImportEditableCell
+            value={getRowUnitPrice(record)}
+            dataIndex="price"
+            rowIndex={rowIndex ?? 0}
+            onCommit={handleCellCommit}
+          />
+        ),
+      } satisfies TableColumnType<PurchaseImportRow>,
       {
         dataIndex: "amount",
         title: "Summa",
@@ -852,13 +916,15 @@ const PurchaseImportPage = () => {
   ]);
 
   useEffect(() => {
-    if (purchaseMode === "goods" && isSuccess && data && excelData.length > 0) {
-      const updated = resolveProductIds(excelData);
+    const hasLoadedOptions =
+      purchaseMode === "goods" ? isSuccess && data : isServicesSuccess;
+    if (hasLoadedOptions && formik.values.lines.length > 0) {
+      const updated = resolveProductIds(formik.values.lines);
       const timeoutId = window.setTimeout(() => commitRows(updated), 0);
       return () => window.clearTimeout(timeoutId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, isSuccess, purchaseMode, resolveProductIds]);
+  }, [data, isServicesSuccess, isSuccess, purchaseMode, resolveProductIds]);
 
   const handleDeleteSapCodes = () => {
     const filteredData = formik.values.lines?.filter((item) => item.productId);
@@ -882,6 +948,24 @@ const PurchaseImportPage = () => {
         (item) => String(item.sapCode ?? "").trim() && !item.productId,
       ).length ?? 0,
     [formik.values.lines],
+  );
+
+  const hasSelectedRows = useMemo(
+    () => formik.values.lines.some((item) => Boolean(item.productId)),
+    [formik.values.lines],
+  );
+
+  const totals = useMemo(
+    () => getPurchaseImportTotals(formik.values.lines ?? [], vatRateOptions),
+    [formik.values.lines, vatRateOptions],
+  );
+
+  const activeMarkings = useMemo(
+    () =>
+      markingRowIndex === null
+        ? []
+        : toMarkingNumbers(formik.values.lines[markingRowIndex]),
+    [formik.values.lines, markingRowIndex],
   );
 
   // Chegirma switch o'zgarganda
@@ -993,6 +1077,7 @@ const PurchaseImportPage = () => {
                   label="Shartnoma"
                   fieldName="contractId"
                   formik={draftFormik}
+                  required
                   refetchSync={`${formik.values.counterpartyId}${formik.values.docDate}`}
                 />
               </Col>
@@ -1018,7 +1103,7 @@ const PurchaseImportPage = () => {
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
             <div className="flex flex-wrap items-center gap-3">
               <Segmented
-                disabled={excelData.length > 0}
+                disabled={hasSelectedRows}
                 value={purchaseMode}
                 onChange={(value) => {
                   setPurchaseMode(value as PurchaseMode);
@@ -1102,7 +1187,7 @@ const PurchaseImportPage = () => {
         )} */}
         <div className="mt-3 flex flex-col gap-3">
           <div className="flex flex-wrap items-center justify-end gap-3">
-            {excelData.length > 0 && (
+            {formik.values.lines.length > 0 && (
               <>
                 {purchaseMode === "goods" && (
                   <>
@@ -1132,9 +1217,9 @@ const PurchaseImportPage = () => {
           </div>
         </div>
 
-        {excelData.length > 0 && (
           <div className="rounded-lg relative">
             <Table
+              className="[&_.ant-table-tbody>tr>td]:!h-16 [&_.ant-table-tbody>tr>td]:!py-3"
               loading={isLoading || isFetching}
               columns={tableColumns}
               dataSource={formik.values.lines?.map((item, index) => ({
@@ -1145,6 +1230,13 @@ const PurchaseImportPage = () => {
               virtual
               scroll={{ y: height - 320, x: "max-content" }}
               pagination={false}
+            />
+            <PurchaseImportSummary
+              comment={formik.values.comment}
+              totals={totals}
+              onCommentChange={(value) =>
+                draftFormik.setFieldValue("comment", value, false)
+              }
             />
             <div className="sticky bottom-0 z-10 flex justify-center border-t border-border bg-primary-bg/95 py-2 backdrop-blur">
               <Tooltip title="Qator qo'shish">
@@ -1161,62 +1253,27 @@ const PurchaseImportPage = () => {
               </Tooltip>
             </div>
           </div>
-        )}
         {/* <SupplierAddEdit
           open={openSupplier}
           setOpen={setOpenSupplier}
           edit={null}
         /> */}
-        <Modal
-          title="Markirovkalarni kiritish"
+        <PurchaseMarkingModal
           open={markingRowIndex !== null}
-          onCancel={closeMarkingModal}
-          footer={null}
-          width={640}
-          destroyOnHidden
-        >
-          <div className="flex gap-2">
-            <Input
-              autoFocus
-              value={markingInput}
-              placeholder="Markirovka raqamini kiriting"
-              onChange={(event) => setMarkingInput(event.target.value)}
-              onPressEnter={handleAddMarking}
-            />
-            <Button type="primary" icon={<Plus className="size-4" />} onClick={handleAddMarking}>
-              Qo'shish
-            </Button>
-          </div>
-          <div className="mt-3 flex max-h-64 flex-col gap-2 overflow-auto rounded border border-border p-2">
-            {markingRowIndex !== null &&
-            toMarkingNumbers(excelData[markingRowIndex]).length ? (
-              toMarkingNumbers(excelData[markingRowIndex]).map((marking) => (
-                <div
-                  key={marking}
-                  className="flex items-center justify-between gap-3 rounded bg-gray-50 px-3 py-2 text-sm"
-                >
-                  <span className="break-all">{marking}</span>
-                  <Button
-                    type="text"
-                    danger
-                    icon={<X className="size-4" />}
-                    onClick={() => handleRemoveMarking(marking)}
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="py-6 text-center text-sm text-gray-500">
-                Markirovka kiritilmagan
-              </div>
-            )}
-          </div>
-        </Modal>
+          value={markingInput}
+          markings={activeMarkings}
+          onChange={setMarkingInput}
+          onPaste={handleMarkingPaste}
+          onAdd={handleAddMarking}
+          onRemove={handleRemoveMarking}
+          onClose={closeMarkingModal}
+        />
         <ProductsCreateModal
           open={productCreateOpen}
-          setOpen={setProductCreateOpen}
-          editData={missingProductRows}
-          setEditData={setMissingProductRows}
-          refetch={() => {
+          rows={missingProductRows}
+          onRowsChange={setMissingProductRows}
+          onClose={() => setProductCreateOpen(false)}
+          onCreated={() => {
             void refetchProducts();
           }}
         />

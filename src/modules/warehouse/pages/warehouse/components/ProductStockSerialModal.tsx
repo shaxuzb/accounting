@@ -39,19 +39,17 @@ export default function ProductStockSerialModal({
     {
       dataIndex: "indexId",
       title: "T/r",
-      width: 70,
       align: "center",
     },
-    {
-      dataIndex: "serialNumber",
-      title: "Seriya raqami",
-      width: 280,
-      render: (value) => <CopyableText value={value} />,
-    },
+    // {
+    //   dataIndex: "serialNumber",
+    //   title: "Seriya raqami",
+    //   width: 280,
+    //   render: (value) => <CopyableText value={value} />,
+    // },
     {
       dataIndex: "markingNumber",
       title: "Marker raqami",
-      width: 760,
       render: (value) => <CopyableText value={value} />,
     },
   ];

@@ -1,37 +1,34 @@
-export interface ProductStock {
+// Swagger: /api/product-stocks/groups
+export interface ProductStockGroup {
   id: number;
-  name?: string;
-  productName?: string;
-  productTypeName?: string;
-  productId?: number;
-  barcode?: string;
-  sapCode?: string;
-  productGroupName?: string;
-  unitName?: string;
+  name: string;
   quantity: number;
-  purchaseAmount?: number;
-  saleAmount?: number;
-  purchaseTotalAmount?: number;
-  saleTotalAmount?: number;
-  totalPurchaseAmount?: number;
-  totalSaleAmount?: number;
-  purchaseSum?: number;
-  saleSum?: number;
-  price: number;
-  salePrice?: number;
+  costPrice: number;
   totalAmount: number;
   currencyCode?: string;
   currencyName?: string;
 }
 
-export interface ProductStockDetail {
+// Swagger: /api/product-stocks/products
+export interface ProductStock {
   id: number;
-  name: string;
+  productId: number;
+  name?: string;
+  productName?: string;
+  barcode?: string;
+  sapCode?: string;
+  unitName?: string;
+  productGroupName?: string;
   quantity: number;
-  price: number;
+  price?: number;
+  salePrice?: number;
+  costPrice?: number;
   totalAmount: number;
+  currencyCode?: string;
+  mxik: string;
 }
 
+// Swagger: /api/product-stocks/tables
 export interface ProductStockSerial {
   id: number;
   productId: number;
@@ -39,7 +36,3 @@ export interface ProductStockSerial {
   serialNumber?: string | null;
   markingNumber?: string | null;
 }
-
-export type WarehouseAll = ProductStock;
-export type WarehouseDetail = ProductStockDetail;
-export type ProductTableByMarking = ProductStockSerial;

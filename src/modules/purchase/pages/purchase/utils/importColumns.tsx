@@ -17,7 +17,7 @@ const renderClamp = (value: unknown) => (
 );
 
 export const getBaseColumnConfig = (
-  productWithCount: boolean,
+  _productWithCount: boolean,
   withDiscount: boolean,
 ): ImportColumnConfig[] => {
   const baseColumns: ImportColumnConfig[] = [
@@ -39,62 +39,30 @@ export const getBaseColumnConfig = (
     },
   ];
 
-  const modeColumns: ImportColumnConfig[] = productWithCount
-    ? [
-        {
-          dataIndex: "sapCode",
-          title: "Sap kod",
-          align: "center",
-          width: 160,
-          code: "sapCode",
-        },
-        {
-          dataIndex: "qty",
-          title: "Miqdori",
-          align: "center",
-          width: 120,
-          code: "qty",
-        },
-        {
-          dataIndex: "pricePerUom",
-          title: "Narxi",
-          align: "center",
-          width: 140,
-          code: "pricePerUom",
-          render: renderClamp,
-        },
-      ]
-    : [
-        {
-          dataIndex: "serialNumber",
-          title: "Seriya raqam",
-          width: 200,
-          code: "serialNumber",
-        },
-        {
-          dataIndex: "sapCode",
-          title: "Sap kodi",
-          width: 160,
-          align: "center",
-          code: "sapCode",
-        },
-        {
-          dataIndex: "markingNumber",
-          title: "Markirovka raqami",
-          width: 200,
-          align: "center",
-          code: "markingNumber",
-          render: renderClamp,
-        },
-        {
-          dataIndex: "price",
-          title: "Narxi",
-          width: 140,
-          align: "center",
-          code: "price",
-          render: renderClamp,
-        },
-      ];
+  const modeColumns: ImportColumnConfig[] = [
+    {
+      dataIndex: "sapCode",
+      title: "MXIK kod",
+      align: "center",
+      width: 160,
+      code: "sapCode",
+    },
+    {
+      dataIndex: "qty",
+      title: "Miqdori",
+      align: "center",
+      width: 120,
+      code: "qty",
+    },
+    {
+      dataIndex: "price",
+      title: "Narxi",
+      align: "center",
+      width: 140,
+      code: "price",
+      render: renderClamp,
+    },
+  ];
 
   const discountColumn: ImportColumnConfig[] = withDiscount
     ? [

@@ -1,4 +1,4 @@
-import { Button, Col, Form, Modal, Row } from "antd";
+import { Button, Col, Form, Modal, Row, Switch } from "antd";
 import { useFormik } from "formik";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -20,11 +20,13 @@ interface ProductItemModalProps {
 
 const emptyProductItem = (isService: boolean): ProductItem => ({
   name: "",
-  barcode: "",
+  mxik: "",
   description: "",
   isService,
+  isPieceTracked: false,
   stateId: 1,
   unitId: null,
+  // barcode: null,
 });
 
 export default function ProductItemModal({
@@ -122,11 +124,18 @@ export default function ProductItemModal({
           </Col>
           <Col span={24} md={12}>
             <InputText
-              label="products.fields.sapCode"
+              label="Mxik"
+              formik={productFormik}
+              fieldName="mxik"
+            />
+          </Col>
+              {/* <Col span={24} md={12}>
+            <InputText
+              label="sap"
               formik={productFormik}
               fieldName="barcode"
             />
-          </Col>
+          </Col> */}
           <Col span={24} md={12}>
             <SelectCustom
               label="products.fields.unit"
@@ -143,6 +152,24 @@ export default function ProductItemModal({
               fieldName="description"
             />
           </Col>
+          {!isService && (
+            <Col span={24} md={12}>
+              <Form.Item label="Markirovkali">
+                <Switch
+                  checked={Boolean(productFormik.values.isPieceTracked)}
+                  checkedChildren="Ha"
+                  unCheckedChildren="Yo'q"
+                  onChange={(checked) =>
+                    productFormik.setFieldValue(
+                      "isPieceTracked",
+                      checked,
+                      true,
+                    )
+                  }
+                />
+              </Form.Item>
+            </Col>
+          )}
           {editItem && (
             <Col span={24} md={12}>
               <SelectCustom

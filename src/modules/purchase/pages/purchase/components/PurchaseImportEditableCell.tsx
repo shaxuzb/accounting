@@ -1,6 +1,8 @@
 import { memo, useCallback, useState } from "react";
 import { Input } from "antd";
+import InputNumberFormat from "@/components/fields/InputNumber";
 import LineClampCell from "@/components/widget/text/LineClampCell";
+import { numberSpacing } from "@/utils/utils";
 
 const numericColumns = new Set([
   "qty",
@@ -15,6 +17,7 @@ interface PurchaseImportEditableCellProps {
   dataIndex: string;
   rowIndex: number;
   isInvalid?: boolean;
+  disabled?: boolean;
   onCommit: (rowIndex: number, dataIndex: string, value: string) => void;
 }
 
@@ -24,16 +27,19 @@ function PurchaseImportEditableCell({
   rowIndex,
   onCommit,
   isInvalid = false,
+  disabled = false,
 }: PurchaseImportEditableCellProps) {
   const [localValue, setLocalValue] = useState(String(value ?? ""));
   const [isEditing, setIsEditing] = useState(false);
 
   const displayValue = String(value ?? "");
+  const isNumeric = numericColumns.has(dataIndex);
 
   const startEditing = useCallback(() => {
-    setLocalValue(displayValue);
+    if (disabled) return;
+    setLocalValue(isNumeric && Number(displayValue) === 0 ? "" : displayValue);
     setIsEditing(true);
-  }, [displayValue]);
+  }, [disabled, displayValue, isNumeric]);
 
   const commit = useCallback(() => {
     onCommit(rowIndex, dataIndex, localValue);
@@ -46,6 +52,22 @@ function PurchaseImportEditableCell({
   }, [value]);
 
   if (isEditing) {
+    if (isNumeric) {
+      return (
+        <InputNumberFormat
+          standalone
+          value={localValue === "" ? null : Number(localValue)}
+          min={0}
+          precision={5}
+          onValueChange={(nextValue) => {
+            setLocalValue(nextValue === null ? "" : String(nextValue));
+          }}
+          onPressEnter={commit}
+          onBlur={commit}
+        />
+      );
+    }
+
     return (
       <Input
         autoFocus
@@ -79,10 +101,17 @@ function PurchaseImportEditableCell({
         className={`w-full bg-transparent px-1 py-1 text-left text-sm outline-none ${
           isInvalid ? "text-red-600" : "text-inherit"
         }`}
+        disabled={disabled}
         onClick={startEditing}
         onFocus={startEditing}
       >
-        <LineClampCell text={displayValue || null} />
+        <LineClampCell
+          text={
+            isNumeric && displayValue
+              ? String(numberSpacing(Number(displayValue), undefined, true))
+              : displayValue || null
+          }
+        />
       </button>
     </div>
   );

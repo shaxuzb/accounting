@@ -7,26 +7,30 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { Button, Col, Form, Modal, Row, Switch } from "antd";
 import { useFormik } from "formik";
-import { useEffect, type FC } from "react";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 
-interface ModalPros {
-  open?: boolean;
-  refetch: () => void;
-  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  editData?: PurchaseImportRow | null;
-  setEditData?: React.Dispatch<React.SetStateAction<PurchaseImportRow[]>>;
+interface ProductCreateModalProps {
+  open: boolean;
+  onClose: () => void;
+  onCreated: () => void;
+  initialRow?: PurchaseImportRow | null;
 }
 
-const ProductCreateModal: FC<ModalPros> = (props) => {
-  const { open, setOpen, refetch, editData, setEditData } = props;
+const ProductCreateModal = ({
+  open,
+  onClose,
+  onCreated,
+  initialRow,
+}: ProductCreateModalProps) => {
   const formik = useFormik<ProductItem>({
     initialValues: {
       name: "",
-      barcode: "",
+      mxik: "",
       description: "",
       productGroupId: null,
-      isService: true,
+      isService: false,
+      isPieceTracked: false,
       unitId: null,
     },
     validationSchema: productItemSchema(false),
@@ -34,30 +38,33 @@ const ProductCreateModal: FC<ModalPros> = (props) => {
       await $axiosPrivate.post("products", values);
       toast.success("Mahsulot muvaffaqiyatli yaratildi");
       handleClose();
-      refetch();
+      onCreated();
     },
   });
 
   const handleClose = () => {
     formik.resetForm();
-    setEditData?.([]);
-    setOpen?.(false);
+    onClose();
   };
 
   useEffect(() => {
-    if (editData) {
+    if (initialRow) {
       formik.setValues({
         productGroupId: null,
-        name: editData.productName || editData.name || editData.product || "",
-        barcode: editData.sapCode.toString(),
+        name:
+          initialRow.productName ||
+          initialRow.name ||
+          initialRow.product ||
+          "",
+        mxik: initialRow.mxik.toString(),
         unitId: null,
-        isService: editData.isSerial,
+        isService: false,
+        isPieceTracked: Boolean(initialRow.isPieceTracked),
         description: "",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editData]);
-  console.log(editData);
+  }, [initialRow]);
 
   return (
     <Modal
@@ -81,11 +88,11 @@ const ProductCreateModal: FC<ModalPros> = (props) => {
           <Col span={24} className="relative">
             <InputText label="Sab kod" formik={formik} fieldName="barcode" />
             <div className="absolute right-2 top-0">
-              <span>Seriyali: </span>
+              <span>Markirovkali: </span>
               <Switch
-                checked={formik.values.isService}
+                checked={Boolean(formik.values.isPieceTracked)}
                 onChange={(e) => {
-                  formik.setFieldValue("isService", e, true);
+                  formik.setFieldValue("isPieceTracked", e, true);
                 }}
                 size="small"
               />

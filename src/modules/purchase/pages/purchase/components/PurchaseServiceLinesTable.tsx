@@ -14,12 +14,15 @@ export interface PurchaseServiceLineForm {
   vatRateId?: number | null;
 }
 
-interface Props {
+interface PurchaseServiceLinesTableProps {
   items: PurchaseServiceLineForm[];
   onChange: (items: PurchaseServiceLineForm[]) => void;
 }
 
-export default function PurchaseServiceLinesTable({ items, onChange }: Props) {
+export default function PurchaseServiceLinesTable({
+  items,
+  onChange,
+}: PurchaseServiceLinesTableProps) {
   const [open, setOpen] = useState(false);
 
   const columns: TableColumnsType<PurchaseServiceLineForm> = [
@@ -77,7 +80,7 @@ export default function PurchaseServiceLinesTable({ items, onChange }: Props) {
         </Button>
       </div>
       <Table<PurchaseServiceLineForm>
-        size="small"
+        size="large"
         columns={columns}
         dataSource={generateKeyTable(items)}
         pagination={false}

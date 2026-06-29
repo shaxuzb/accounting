@@ -119,7 +119,9 @@
       "cashBox": "Cash desk",
       "counterpartyContacts": "Counterparty contacts",
       "warehouse": "Warehouse",
-      "purchaseServices": "Purchase services"
+      "purchaseServices": "Purchase services",
+      "pricingConditions": "Pricing conditions",
+      "saleConditions": "Sale conditions"
     },
     "descriptions": {
       "roles": "Manage system roles and permissions.",
@@ -137,7 +139,9 @@
       "cashBox": "Manage cash desks.",
       "counterpartyContacts": "Manage counterparty contacts.",
       "warehouse": "Manage warehouses.",
-      "purchaseServices": "Manage services used in purchases."
+      "purchaseServices": "Manage services used in purchases.",
+      "pricingConditions": "Manage pricing methods and rounding rules.",
+      "saleConditions": "Manage costing method and VAT rate for sales."
     },
     "fields": {
       "accountNumber": "Account number",
@@ -177,7 +181,18 @@
       "shortName": "Short name",
       "status": "Status",
       "userName": "Username",
-      "createdDate": "Created date"
+      "createdDate": "Created date",
+      "pricingMethod": "Pricing method",
+      "pricingValue": "Pricing value",
+      "roundingMethod": "Rounding method",
+      "roundingPrecision": "Rounding precision",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "costingMethod": "Costing method",
+      "vatRate": "VAT rate",
+      "period": "Validity period",
+      "conditionId": "Condition ID",
+      "organizationId": "Organization ID"
     },
     "form": {
       "createTitle": "Add new record",
@@ -185,7 +200,10 @@
       "createUser": "Add user",
       "editUser": "Edit user",
       "createRole": "Add role",
-      "editRole": "Edit role"
+      "editRole": "Edit role",
+      "createPricingCondition": "Add pricing condition",
+      "viewPricingCondition": "Pricing condition",
+      "createSaleCondition": "Create sale condition"
     },
     "messages": {
       "created": "Record created successfully",
@@ -198,6 +216,17 @@
     "role": {
       "selectAll": "Select all",
       "searchPlaceholder": "Search by module name..."
+    },
+    "saleCondition": {
+      "current": "Current",
+      "history": "History",
+      "create": "Create condition",
+      "active": "Active",
+      "noActive": "No active sale condition found",
+      "activeTitle": "Current sale condition",
+      "activeDescription": "Showing the data of the active sale condition currently in effect.",
+      "infoTitle": "Information",
+      "infoDescription": "This sale condition applies to all sale operations in the specified period for the current organization."
     }
   },
   "purchase": {

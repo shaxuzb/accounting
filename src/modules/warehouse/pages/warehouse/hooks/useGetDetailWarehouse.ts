@@ -1,12 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { warehouseService } from "../services/warehouseService";
-import { WarehouseKeys } from "../constants/queryKeys";
-import type { ListParams } from "@/shared/types";
+import { warehouseService } from "../api";
+import { queryKeys } from "../constants/queryKeys";
 
+interface Params {
+  productGroupId?: number | null;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+}
 
-export const useGetDetailWarehouse = (params?: ListParams | URLSearchParams) =>
+export const useGetDetailWarehouse = (params?: Params) =>
   useQuery({
-    queryKey: WarehouseKeys.warehouse.detail(params),
-    queryFn: () => warehouseService.detail(params ),
-    enabled: Boolean(params),
+    queryKey: queryKeys.products(params),
+    queryFn: () => warehouseService.products(params),
+    enabled: Boolean(params?.productGroupId),
   });

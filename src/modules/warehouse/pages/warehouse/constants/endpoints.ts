@@ -1,8 +1,8 @@
-export const warehouseEndpoints = {
-  productStock: {
-    list: "/product-stocks/groups",
-    detail: "/product-stocks/products",
-    detailSerial: "/product-stocks/tables",
-  },
-  /* modux:endpoints */
-};
+export const endpoints = {
+  groups: "/product-stocks/groups",
+  products: "/product-stocks/products",
+  tables: "/product-stocks/tables",
+  byMarking: "/product-stocks/by-marking",
+  purchases: (productId: number | string) =>
+    `/product-stocks/${productId}/purchases`,
+} as const;

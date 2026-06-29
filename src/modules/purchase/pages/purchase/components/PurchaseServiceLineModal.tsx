@@ -12,7 +12,7 @@ interface ServiceLineDraft {
   price: number | null;
 }
 
-interface Props {
+interface PurchaseServiceLineModalProps {
   open: boolean;
   onClose: () => void;
   onAdd: (line: PurchaseServiceLineForm) => void;
@@ -27,7 +27,7 @@ export default function PurchaseServiceLineModal({
   open,
   onClose,
   onAdd,
-}: Props) {
+}: PurchaseServiceLineModalProps) {
   const formik = useFormik<ServiceLineDraft>({
     initialValues: {
       serviceId: null,

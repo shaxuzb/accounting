@@ -1,67 +1,99 @@
 import { useParams } from "react-router";
 import Card from "@/components/ui/card/Card";
-import { Calendar, ChartPie, FileText, Package, Wrench } from "lucide-react";
+import { Calendar, ChartPie, FileText, Menu, Package, Wrench } from "lucide-react";
 
-import { Table, type TableColumnType } from "antd";
-// import { useState } from "react";
+import { Button, Table, type TableColumnType } from "antd";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type {
   PurchaseDetailLine,
   PurchaseDetailServiceLine,
 } from "@/modules/purchase/pages/purchase/types/type";
+import { ProductStockSerialModal } from "@/modules/warehouse/pages/warehouse/components";
+import { useGetDetailSerialWarehouse } from "@/modules/warehouse/pages/warehouse/hooks/useGetDetailSerialWarehouse";
+import type { ProductStockSerial } from "@/modules/warehouse/pages/warehouse/types/type";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
 import { useGetDetailPurchase } from "../hooks/useGetDetailPurchase";
 import LineClampCell from "@/components/widget/text/LineClampCell";
 
-
 const PurchaseDetailPage = () => {
   const params = useParams();
   const { t } = useTranslation();
+  const [selectedLine, setSelectedLine] = useState<PurchaseDetailLine | null>(
+    null,
+  );
   const { data, isLoading, isFetching } = useGetDetailPurchase(
     Number(params.id),
   );
-  // const [itemData, setItemData] = useState<PurchaseDetailLine | null>(null);
+  const shouldFetchSerials =
+    Boolean(selectedLine?.productId) && !selectedLine?.items?.length;
+  const serialParams = shouldFetchSerials
+    ? {
+        productId: selectedLine?.productId,
+        page: 1,
+        pageSize: 1000,
+      }
+    : undefined;
+  const {
+    data: serialData,
+    isLoading: isSerialLoading,
+    isFetching: isSerialFetching,
+  } = useGetDetailSerialWarehouse(serialParams);
+  const selectedLineItems = useMemo<ProductStockSerial[]>(() => {
+    if (selectedLine?.items?.length) {
+      return selectedLine.items.map((item, index) => ({
+        id: item.id ?? index + 1,
+        productId:
+          item.productId ?? selectedLine.productId ?? selectedLine.productTableId,
+        productName: selectedLine.productName,
+        serialNumber: item.serialNumber,
+        markingNumber: item.markingNumber,
+      }));
+    }
+
+    return serialData?.items ?? [];
+  }, [selectedLine, serialData?.items]);
   const tableColumnLabels: TableColumnType<PurchaseDetailLine>[] = [
     {
       dataIndex: "indexId",
       title: "CH",
       align: "center",
       width: 70,
-      // render(_, record) {
-      //   return (
-      //     <Button
-      //       type="default"
-      //       color="red"
-      //       // style={{
-      //       //   borderRadius: "50%",
-      //       //   backgroundColor: "ActiveBorder",
-      //       //   boxShadow: "none",
-      //       // }}
-      //       disabled={!record.isSerial}
-      //       className="px-0! w-8! rounded-full!"
-      //       onClick={() => {
-      //         setItemData(record);
-      //       }}
-      //     >
-      //       <Menu className="size-4" />
-      //     </Button>
-      //   ); 
-      // },
+      render: (_, record) => (
+        <Button
+          shape="circle"
+          icon={<Menu className="size-4" />}
+          disabled={!record.productId && !record.items?.length}
+          onClick={() => setSelectedLine(record)}
+        />
+      ),
     },
     {
       dataIndex: "productName",
       title: t("purchase.fields.product"),
     },
-    {
-      dataIndex: "markingNumber",
-      title: t("purchase.fields.sapCode"),
-      width: 10,
-      render: (value) => <LineClampCell text={value} />,
-    },
+    // {
+    //   dataIndex: "markingNumber",
+    //   title: t("purchase.fields.sapCode"),
+    //   width: 10,
+    //   render: (value) => <LineClampCell text={value} />,
+    // },
     {
       dataIndex: "quantity",
       title: t("purchase.fields.quantity"),
       align: "center",
+    },
+    {
+      dataIndex: "price",
+      title: t("Dona narxi"),
+      align: "center",
+      render: (_, record) => numberSpacing(record.unitPrice),
+    },
+    {
+      dataIndex: "amount",
+      title: t("purchase.fields.price"),
+      align: "center",
+      render: (val) => numberSpacing(val),
     },
     {
       dataIndex: "vatRateName",
@@ -69,7 +101,14 @@ const PurchaseDetailPage = () => {
       align: "center",
     },
     {
-      dataIndex: "price",
+      dataIndex: "vatAmount",
+      title: t("QQS summasi"),
+      align: "center",
+      render: (val) => numberSpacing(val),
+    },
+
+    {
+      dataIndex: "totalAmount",
       title: t("purchase.fields.price"),
       align: "center",
       render: (val) => numberSpacing(val),
@@ -210,7 +249,7 @@ const PurchaseDetailPage = () => {
         <Card className="">
           <div className="mb-3 flex items-center gap-2 px-1 text-sm font-semibold text-text">
             <Package className="size-4 text-primary" />
-            <span>Mahsulotlar</span>
+            <span>Mahsulot va Xizmatlar</span>
           </div>
           <Table
             dataSource={generateKeyTable(data?.lines)}
@@ -221,6 +260,7 @@ const PurchaseDetailPage = () => {
             }}
             loading={isLoading || isFetching}
             columns={tableColumnLabels}
+            size="large"
             // summary={(pageData) => {
             //   const totals = pageData.reduce(
             //     (acc, { pricePerUom, qty, currencyId, discountPercent }) => {
@@ -334,16 +374,18 @@ const PurchaseDetailPage = () => {
               scroll={{ x: "max-content" }}
               loading={isLoading || isFetching}
               columns={serviceLineColumns}
+              size="large"
             />
           </Card>
         )}
-      </div>
-      {/* <StockProductSerialView
-        open={!!itemData}
-        onClose={() => setItemData(null)}
-        item={itemData}
-        fromItem={true}
-      /> */}
+      </div>  
+      <ProductStockSerialModal
+        open={Boolean(selectedLine)}
+        title={selectedLine?.productName || "Markirovkalar"}
+        items={selectedLineItems}
+        loading={isSerialLoading || isSerialFetching}
+        onClose={() => setSelectedLine(null)}
+      />
     </div>
   );
 };

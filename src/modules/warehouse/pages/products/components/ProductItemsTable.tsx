@@ -56,8 +56,8 @@ export default function ProductItemsTable({
       ),
     },
     {
-      dataIndex: "barcode",
-      title: t("products.fields.sapCode"),
+      dataIndex: "mxik",
+      title: t("mxik code"),
       width: 130,
     },
     // {

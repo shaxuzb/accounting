@@ -8,9 +8,11 @@ export interface ProductItem {
   idIndex?: number;
   name: string;
   unitId: number | null;
-  barcode: string;
+  // barcode: string;
+  mxik: string;
   description: string;
   isService: boolean;
+  isPieceTracked?: boolean;
   // not in swagger group-item DTO, but kept for UI state
   productGroupId?: number | null;
   stateId?: number | null;

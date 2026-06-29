@@ -18,6 +18,8 @@ import CashBoxListPage from "./pages/cashbox/screens/CashBoxListPage";
 import CounterpartyContactListPage from "./pages/counterpartycontact/screens/CounterpartyContactListPage";
 import WarehouseListPage from "./pages/warehouse/screens/WarehouseListPage";
 import PurchaseServiceListPage from "./pages/purchaseService/screens/PurchaseServiceListPage";
+import PricingConditionListPage from "./pages/pricingCondition/screens/PricingConditionListPage";
+import SaleConditionListPage from "./pages/saleCondition/screens/SaleConditionListPage";
 import { rolePermissions } from "./pages/role/constants/permissions";
 import { userPermissions } from "./pages/users/constants/permissions";
 import { organizationsPermissions } from "./pages/organizations/constants/permissions";
@@ -34,6 +36,8 @@ import { cashBoxPermissions } from "./pages/cashbox/constants/permissions";
 import { counterpartyContactPermissions } from "./pages/counterpartycontact/constants/permissions";
 import { warehousePermissions } from "./pages/warehouse/constants/permissions";
 import { purchaseServicePermissions } from "./pages/purchaseService/constants/permissions";
+import { pricingConditionPermissions } from "./pages/pricingCondition/constants/permissions";
+import { saleConditionPermissions } from "./pages/saleCondition/constants/permissions";
 import { purchasePermissions } from "../purchase/pages/purchase/constants/permissions";
 import { bankPermissions } from "../bank";
 
@@ -56,6 +60,8 @@ const settingsPermissions = [
   warehousePermissions.view,
   purchaseServicePermissions.view,
   purchasePermissions.view,
+  pricingConditionPermissions.view,
+  saleConditionPermissions.view,
 ];
 
 const withPermission = (
@@ -276,6 +282,30 @@ export const settingsRoutes: RouteObject = {
         backTo: "..",
       },
       element: withPermission(<SettingsBankListPage />, bankPermissions.view),
+    },
+    {
+      path: "pricing-conditions",
+      handle: {
+        title: "settings.entities.pricingConditions",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <PricingConditionListPage />,
+        pricingConditionPermissions.view,
+      ),
+    },
+    {
+      path: "sale-conditions",
+      handle: {
+        title: "settings.entities.saleConditions",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <SaleConditionListPage />,
+        saleConditionPermissions.view,
+      ),
     },
   ],
 };

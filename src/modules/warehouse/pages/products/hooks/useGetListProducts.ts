@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { productService } from "../api";
 import { productKeys } from "../constants/queryKeys";
+import { buildProductListParams } from "../types/form";
 
 export const useGetListProducts = (
   params?: URLSearchParams | Record<string, unknown>,
@@ -9,5 +10,5 @@ export const useGetListProducts = (
     queryKey: productKeys.list(
       params instanceof URLSearchParams ? params.toString() : params,
     ),
-    queryFn: () => productService.list(params),
+    queryFn: () => productService.list(buildProductListParams(params)),
   });

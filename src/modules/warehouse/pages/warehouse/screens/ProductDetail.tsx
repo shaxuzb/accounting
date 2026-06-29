@@ -13,59 +13,48 @@ import type { ProductStock } from "../types/type";
 const getProductName = (record?: ProductStock | null) =>
   record?.productName || record?.name || "-";
 
-const getSapCode = (record: ProductStock) =>
-  record.sapCode || record.barcode || "-";
-
-const getCurrency = (record?: ProductStock | null) =>
-  record?.currencyCode || "USD";
-
-const getSalePrice = (record: ProductStock) =>
-  record.salePrice ?? record.price ?? 0;
-
-const getSaleAmount = (record: ProductStock) =>
-  record.saleTotalAmount ??
-  record.totalSaleAmount ??
-  record.saleAmount ??
-  record.totalAmount ??
-  0;
-
-const formatMoney = (value: number, currencyCode: string) =>
-  `${numberSpacing(value, undefined, true)} ${currencyCode}`;
+const formatMoney = (value: number, currencyCode?: string) => {
+  const formatted = numberSpacing(value, undefined, true);
+  return currencyCode ? `${formatted} ${currencyCode}` : formatted;
+};
 
 export default function ProductDetail() {
   const navigate = useNavigate();
   const { id = "" } = useParams();
-  const [selectedProduct, setSelectedProduct] =
-    useState<ProductStock | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductStock | null>(
+    null,
+  );
 
+  const productGroupId = Number(id) || null;
   const { data, isLoading, isFetching } = useGetDetailWarehouse({
-    productGroupId: Number(id),
+    productGroupId,
     page: 1,
     pageSize: 1000,
   });
+
   const serialProductId =
     selectedProduct?.productId ?? selectedProduct?.id ?? null;
-  const serialParams = serialProductId
-    ? { productId: serialProductId, page: 1, pageSize: 1000 }
-    : undefined;
   const {
     data: serialData,
     isLoading: isSerialLoading,
     isFetching: isSerialFetching,
-  } = useGetDetailSerialWarehouse(serialParams);
+  } = useGetDetailSerialWarehouse(
+    serialProductId
+      ? { productId: serialProductId, page: 1, pageSize: 1000 }
+      : undefined,
+  );
 
   const items = useMemo(() => data?.items ?? [], [data?.items]);
   const totalAmount = useMemo(
-    () => items.reduce((sum, item) => sum + getSaleAmount(item), 0),
+    () => items.reduce((sum, item) => sum + (item.totalAmount ?? 0), 0),
     [items],
   );
-  const currencyCode = getCurrency(items[0]);
+  const currencyCode = items[0]?.currencyCode;
 
   const columns: TableColumnsType<ProductStock> = [
     {
       dataIndex: "actions",
       title: "CH",
-      width: 80,
       align: "center",
       render: (_, record) => (
         <Button
@@ -78,43 +67,36 @@ export default function ProductDetail() {
     {
       dataIndex: "name",
       title: "Mahsulot nomi",
-      minWidth: 240,
       render: (_, record) => getProductName(record),
     },
     {
-      dataIndex: "sapCode",
-      title: "SAP kodi",
-      width: 180,
-      render: (_, record) => getSapCode(record),
+      dataIndex: "mxik",
+      title: "Mxik kodi",
+      align: "center",
     },
     {
       dataIndex: "quantity",
       title: "Qoldiq",
-      width: 140,
       align: "center",
       render: (value: number) => numberSpacing(value, undefined, true),
     },
     {
       dataIndex: "unitName",
       title: "Birlik",
-      width: 140,
       render: (value) => value || "-",
     },
     {
-      dataIndex: "price",
+      dataIndex: "costPrice",
       title: "Sotuv narxi",
-      width: 180,
-      align: "right",
-      render: (_, record) =>
-        formatMoney(getSalePrice(record), getCurrency(record)),
+      align: "center",
+      render: (_, record) => numberSpacing(record.costPrice),
     },
     {
       dataIndex: "totalAmount",
       title: "Jami sotuv narxi",
-      width: 220,
-      align: "right",
-      render: (_, record) =>
-        formatMoney(getSaleAmount(record), getCurrency(record)),
+      align: "center",
+      render: (value: number, record) =>
+        formatMoney(value ?? 0, record.currencyCode),
     },
   ];
 
@@ -133,7 +115,7 @@ export default function ProductDetail() {
         <Table<ProductStock>
           loading={isLoading || isFetching}
           columns={columns}
-          dataSource={generateKeyTable(items, "id")}
+          dataSource={generateKeyTable(items)}
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 300px)" }}
           summary={() => (

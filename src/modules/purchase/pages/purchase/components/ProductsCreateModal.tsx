@@ -14,16 +14,16 @@ import {
 } from "antd";
 import { useFormik } from "formik";
 import { Trash } from "lucide-react";
-import { useEffect, type FC } from "react";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 import * as yup from "yup";
 
-interface ModalPros {
-  open?: boolean;
-  refetch: () => void;
-  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  editData?: PurchaseImportRow[] | null;
-  setEditData?: React.Dispatch<React.SetStateAction<PurchaseImportRow[]>>;
+interface ProductsCreateModalProps {
+  open: boolean;
+  rows: PurchaseImportRow[];
+  onClose: () => void;
+  onCreated: () => void;
+  onRowsChange: (rows: PurchaseImportRow[]) => void;
 }
 
 const schemaAuth = yup.object({
@@ -31,6 +31,7 @@ const schemaAuth = yup.object({
   productGroupId: yup.number().required("Login majburiy"),
   unitId: yup.number().required("Majburiy"),
   isService: yup.boolean().required("Yetkazib beruvchi majburiy"),
+  isPieceTracked: yup.boolean().required("Majburiy"),
 });
 
 interface Products {
@@ -45,16 +46,23 @@ interface ProductInitialValues {
   productGroupId: number | null;
   unitId: number | null;
   isService: boolean;
+  isPieceTracked: boolean;
 }
 
-const ProductsCreateModal: FC<ModalPros> = (props) => {
-  const { open, setOpen, refetch, editData, setEditData } = props;
+const ProductsCreateModal = ({
+  open,
+  rows,
+  onClose,
+  onCreated,
+  onRowsChange,
+}: ProductsCreateModalProps) => {
   const formik = useFormik<ProductInitialValues>({
     initialValues: {
-      products: (editData as unknown as Products[]) ?? [],
+      products: rows as unknown as Products[],
       productGroupId: null,
       unitId: null,
-      isService: true,
+      isService: false,
+      isPieceTracked: false,
     },
     validationSchema: schemaAuth,
     onSubmit: async (values) => {
@@ -67,15 +75,16 @@ const ProductsCreateModal: FC<ModalPros> = (props) => {
             barcode: item.sapCode.toString(),
             description: "",
             isService: values.isService,
+            isPieceTracked: values.isPieceTracked,
           })),
         });
 
         if (response) {
           toast.success("Mahsulot muvaffaqiyatli yaratildi");
-          setOpen?.(false);
           formik.resetForm();
-          setEditData?.([]);
-          refetch();
+          onRowsChange([]);
+          onClose();
+          onCreated();
         }
       } catch {
         toast.error("Mahsulotlarni yaratishda xatolik yuz berdi");
@@ -84,8 +93,8 @@ const ProductsCreateModal: FC<ModalPros> = (props) => {
   });
 
   const handleDelete = (id: number) => {
-    const filtered = (editData ?? []).filter((item) => item.indexId !== id);
-    setEditData?.(filtered);
+    const filtered = rows.filter((item) => item.indexId !== id);
+    onRowsChange(filtered);
     formik.setFieldValue("products", filtered, true);
   };
 
@@ -132,21 +141,22 @@ const ProductsCreateModal: FC<ModalPros> = (props) => {
 
   const handleClose = () => {
     formik.resetForm();
-    setEditData?.([]);
-    setOpen?.(false);
+    onRowsChange([]);
+    onClose();
   };
 
   useEffect(() => {
-    if (editData && editData.length > 0) {
+    if (rows.length > 0) {
       formik.setValues({
         productGroupId: null,
-        products: editData as unknown as Products[],
-        isService: Boolean(editData[0].isSerial),
+        products: rows as unknown as Products[],
+        isService: false,
+        isPieceTracked: Boolean(rows[0].isPieceTracked),
         unitId: null,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editData]);
+  }, [rows]);
 
   return (
     <Modal
@@ -173,11 +183,11 @@ const ProductsCreateModal: FC<ModalPros> = (props) => {
             />
 
             <div className="absolute right-2 top-0">
-              <span>Seriyali: </span>
+              <span>Markirovkali: </span>
               <Switch
-                checked={formik.values.isService}
+                checked={formik.values.isPieceTracked}
                 onChange={(e) => {
-                  formik.setFieldValue("isService", e, true);
+                  formik.setFieldValue("isPieceTracked", e, true);
                 }}
                 size="small"
               />
@@ -196,7 +206,7 @@ const ProductsCreateModal: FC<ModalPros> = (props) => {
             <Table
               columns={tableColumnLabels}
               bordered
-              dataSource={(editData ?? []).map((item, index) => ({
+              dataSource={rows.map((item, index) => ({
                 ...item,
                 indexId: index + 1,
               }))}

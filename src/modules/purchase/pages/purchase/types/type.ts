@@ -12,6 +12,36 @@ export interface SelectBoxOptions {
   disabled: boolean;
   new?: boolean;
 }
+
+export type PurchaseMode = "goods" | "services";
+
+export interface SelectOption {
+  id: number;
+  name: string;
+  code?: string;
+}
+
+export interface ProductSelectOption {
+  id: number;
+  code?: string;
+  barcode?: string;
+  name: string;
+  mxik?: string;
+  unitId?: number | null;
+  unitCode?: string | null;
+  unitName?: string | null;
+  unit?: string | null;
+  price?: number | null;
+  purchasePrice?: number | null;
+  pricePerUom?: number | null;
+  isPieceTracked?: boolean;
+}
+
+export interface ProductListResponse {
+  items?: ProductSelectOption[];
+  results?: ProductSelectOption[];
+  data?: ProductSelectOption[];
+}
 export interface PurchaseData {
   counterpartyId: number;
   counterpartyName: string;
@@ -68,14 +98,14 @@ export interface PurchaseImportRow {
   productId: number | null;
   productName: string;
   sapCode: string;
-  qty: number;
+  qty: number | null;
   serialNumber: string;
   currencyId: number;
   currency?: string;
   markingNumber: string;
   markingNumbers?: string[];
-  price: number;
-  pricePerUom?: number;
+  price: number | null;
+  pricePerUom?: number | null;
   unitId?: number | null;
   unitCode?: string | null;
   unitName?: string | null;
@@ -83,6 +113,7 @@ export interface PurchaseImportRow {
   vatRateId: number | null;
   vatRates: number | null;
   isSerial?: boolean;
+  isPieceTracked?: boolean;
   [key: string]: unknown;
 }
 export interface PurchasePayment {
@@ -97,8 +128,10 @@ export interface PurchasePayment {
 export interface PurchaseDetailLine {
   amount: number;
   id: number;
+  items?: PurchaseDetailLineItem[];
   ownerId: number;
   price: number;
+  productId?: number;
   productName: string;
   productTableId: number;
   quantity: number;
@@ -106,6 +139,14 @@ export interface PurchaseDetailLine {
   vatAmount: number;
   vatRateId: number;
   vatRateName: string;
+  unitPrice: number;
+}
+
+export interface PurchaseDetailLineItem {
+  id?: number;
+  productId?: number;
+  serialNumber?: string | null;
+  markingNumber?: string | null;
 }
 
 export interface PurchaseDetailServiceLine {

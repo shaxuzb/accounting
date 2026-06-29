@@ -1,12 +1,14 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import type { ListParams } from "@/shared/types";
-import { WarehouseKeys } from "../constants/queryKeys";
-import { warehouseService } from "../services/warehouseService";
+import { warehouseService } from "../api";
+import { queryKeys } from "../constants/queryKeys";
 
-
-export const useGetListWarehouse = (params?: ListParams | URLSearchParams) =>
+export const useGetListWarehouse = (
+  params?: URLSearchParams | Record<string, unknown>,
+) =>
   useQuery({
-    queryKey: WarehouseKeys.warehouse.list(params),
-    queryFn: () => warehouseService.list(params),
+    queryKey: queryKeys.groups(
+      params instanceof URLSearchParams ? params.toString() : params,
+    ),
+    queryFn: () => warehouseService.groups(params),
     placeholderData: keepPreviousData,
   });

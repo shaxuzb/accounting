@@ -33,6 +33,9 @@ export const selectListEndpoints = {
   contractsSelectList: "manuals/contracts",
   contractTypeSelectList: "manuals/contract-types",
   serviceTypesSelectList: "manuals/purchase-service-types",
+  pricingMethodsSelectList: "manuals/pricing-methods",
+  priceRoundingMethodsSelectList: "manuals/price-rounding-methods",
+  costingMethodsSelectList: "manuals/costing-methods",
 };
 
 export const selectListKeys = {
