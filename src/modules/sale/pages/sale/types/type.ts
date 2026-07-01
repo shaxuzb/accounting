@@ -4,6 +4,8 @@ export interface SaleDoc {
   docDate: string;
   counterpartyId: number;
   counterpartyName: string;
+  contractId?: number | null;
+  contractName?: string | null;
   warehouseId: number;
   warehouseName: string;
   currencyId: number;
@@ -28,6 +30,7 @@ export interface SaleDocProduct {
   productName: string;
   quantity: number;
   unitName?: string;
+  unitId?: number | null;
   unitPrice: number;
   costPrice?: number;
   price?: number;
@@ -59,7 +62,9 @@ export interface SaleDocTable {
   productTableId: number;
   productId: number;
   productName: string;
+  productMxik?: string;
   quantity: number;
+  unitPrice?: number;
   costPrice: number;
   price: number;
   amount: number;
@@ -70,6 +75,25 @@ export interface SaleDocTable {
   markingNumber: string;
   serialNumber: string;
   unitName?: string;
+  unitId?: number | null;
+  purchaseDocNumber?: string;
+  purchaseDate?: string;
+  items?: SaleDocLineItem[];
+}
+
+export interface SaleDocLineItem {
+  id: number;
+  productTableId: number;
+  markingNumber: string | null;
+  serialNumber: string | null;
+  costPrice: number;
+  amount: number;
+  vatRateId: number | null;
+  vatRateName?: string | null;
+  vatAmount: number;
+  totalAmount: number;
+  purchaseDocNumber?: string;
+  purchaseDate?: string;
 }
 
 export interface ProductTableByMarking {
@@ -91,23 +115,52 @@ export interface SaleProductStock {
   name?: string;
   barcode?: string;
   sapCode?: string;
+  mxik?: string;
   quantity: number;
+  unitId?: number | null;
   unitName?: string;
   price?: number;
   salePrice?: number;
+  costPrice?: number;
   totalAmount?: number;
   currencyCode?: string;
+  isPieceTracked?: boolean;
 }
 
 export interface SaleSelectedProduct {
   id?: number | null;
+  rowKey?: string;
   productId: number;
   productName: string;
+  mxik?: string;
   quantity: number;
   availableQuantity: number;
+  costPrice: number;
+  unitId: number;
   unitPrice: number;
   unitName?: string;
   vatRateId?: number | null;
+  vatRateName?: string | null;
+  markupPercent?: number;
+  priceType?: "costPlusPercent" | "manual";
+  isPieceTracked?: boolean;
+  priceLayers?: SaleProductPriceLayer[];
+  layers?: SaleProductPriceLayer[];
+}
+
+export interface SaleProductPriceLayer {
+  id?: number | null;
+  purchaseId?: number | null;
+  productTableId?: number | null;
+  productTableIds?: number[];
+  purchaseDocNumber?: string;
+  purchaseDate?: string;
+  warehouseName?: string;
+  availableQuantity: number;
+  writeOffQuantity: number;
+  costPrice: number;
+  unitPrice: number;
+  salePrice: number;
 }
 
 export interface SaleScannedProduct {
@@ -132,6 +185,22 @@ export interface SaleProductGroupData {
   key: string;
   productId: number;
   productName: string;
+  markingCount: number;
   lines: SalePricingLine[];
   totalQuantity: number;
+}
+
+export interface SaleDocumentLineGroup {
+  key: string;
+  productId: number;
+  productName: string;
+  productMxik?: string;
+  quantity: number;
+  unitName?: string;
+  unitPrice: number;
+  amount: number;
+  vatRateName?: string | null;
+  vatAmount: number;
+  totalAmount: number;
+  lines: SaleDocTable[];
 }

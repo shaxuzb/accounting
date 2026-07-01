@@ -1,6 +1,7 @@
 export interface SaleDocForm {
   docDate: string;
   counterpartyId: number | null;
+  contractId: number | null;
   warehouseId: number | null;
   currencyId: number | null;
   comment: string;
@@ -11,6 +12,8 @@ export interface SaleDocProductForm {
   id?: number | null;
   productId: number;
   quantity: number;
+  costPrice: number;
+  unitId: number;
   unitPrice: number;
   vatRateId: number | null;
 }
@@ -19,8 +22,9 @@ export interface SaleDocCreateForm {
   counterpartyId: number;
   warehouseId: number;
   currencyId: number;
+  contractId: number | null;
   comment: string | null;
-  products: SaleDocProductForm[];
+  lines: SaleDocProductForm[];
 }
 
 export interface SaleDocUpdateForm {
@@ -28,6 +32,7 @@ export interface SaleDocUpdateForm {
   counterpartyId: number;
   warehouseId: number;
   currencyId: number;
+  contractId: number | null;
   comment: string | null;
   stateId: number;
   products: SaleDocProductForm[];
@@ -42,7 +47,9 @@ export interface SaleDocTableUpdateForm {
 
 export interface SaleDocConfirmLineForm {
   id: number;
-  amount: number;
+  costPrice: number;
+  unitPrice: number;
+  vatRateId: number;
 }
 
 export interface SaleDocConfirmForm {

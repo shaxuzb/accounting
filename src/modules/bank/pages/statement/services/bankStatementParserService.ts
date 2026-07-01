@@ -4,6 +4,7 @@ import type { QueryParams } from "@/shared/types/api";
 import { bankStatementEndpoints } from "../constants/endpoints";
 import type { BankOperationData } from "../types/type";
 import type {
+  BankCounterpartiesCreatePayload,
   BankOperationCreatePayload,
   BankOperationsCreatePayload,
 } from "../types/form";
@@ -34,6 +35,15 @@ export const bankStatementParserService = {
   createManyOperations: async (payload: BankOperationsCreatePayload) => {
     const { data } = await $axiosPrivate.post<BankOperationData[]>(
       bankStatementEndpoints.operations.createMany,
+      payload,
+    );
+    return data;
+  },
+  createManyCounterparties: async (
+    payload: BankCounterpartiesCreatePayload,
+  ) => {
+    const { data } = await $axiosPrivate.post<unknown>(
+      bankStatementEndpoints.counterpartyCards.createMany,
       payload,
     );
     return data;

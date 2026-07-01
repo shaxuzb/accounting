@@ -38,7 +38,7 @@ export default function ProductAddEditPage() {
   const isServiceParam = searchParams.get("isService") === "true";
 
   const [productModalOpen, setProductModalOpen] = useState(false);
-  const { data, isLoading } = useGetDetailProduct(id);
+  const { data, isLoading } = useGetDetailProduct(id, isServiceParam);
   const createMutation = useCreateProduct();
   const updateMutation = useUpdateProduct();
   const dispatch = useAppDispatch();
@@ -80,6 +80,8 @@ export default function ProductAddEditPage() {
       products: items.map((item, index) => ({
         ...item,
         idIndex: item.idIndex ?? item.id ?? index + 1,
+        // barcode: item.barcode ?? "",
+        mxik: item.mxik ?? item.barcode ?? "",
       })),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,7 +92,7 @@ export default function ProductAddEditPage() {
     return () => {
       dispatch(changeSelectListType("selectable"));
     };
-  }, []);
+  }, [dispatch]);
 
   if (isEdit && isLoading) {
     return (

@@ -21,7 +21,7 @@ export default function ContractListPage() {
   const { user } = useAppSelector((state) => state.auth);
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
-  const contractTypeId = pathname.startsWith("/main/sales/contracts") ? 1 : 2;
+  const contractTypeId = pathname.startsWith("/main/sales/contracts") ? 2 : 1;
   const newParams = useMemo(() => {
     const params = new URLSearchParams(searchParams);
     params.set("ContractTypeId", String(contractTypeId));

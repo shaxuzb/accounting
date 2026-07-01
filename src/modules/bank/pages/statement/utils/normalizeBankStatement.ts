@@ -63,6 +63,11 @@ const creditKeys = ["credit", "creditAmount", "income", "receipt"];
 const amountKeys = ["amount", "sum", "total", "paymentAmount"];
 const bankAccountIdKeys = ["bankAccountId", "accountId", "orgBankAccountId"];
 const operationTypeIdKeys = ["operationTypeId", "operationId"];
+const paymentPurposeIdKeys = [
+  "paymentPurposeId",
+  "purposeId",
+  "paymentPurpose",
+];
 const currencyIdKeys = ["currencyId"];
 const counterpartyIdKeys = ["counterpartyId"];
 
@@ -138,6 +143,7 @@ const normalizeTransaction = (
     purpose: getStringByKeys(fields, commentKeys) ?? "",
     direction: getStringByKeys(fields, ["direction"]) ?? "",
     amount: amount ?? 0,
+    paymentPurposeId: getNumberByKeys(fields, paymentPurposeIdKeys) ?? undefined,
     currencyId: getNumberByKeys(fields, currencyIdKeys) ?? undefined,
     currencyName: getStringByKeys(fields, ["currencyName", "currency"]) ?? undefined,
   };

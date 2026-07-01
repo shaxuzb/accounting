@@ -8,6 +8,7 @@ export const selectListEndpoints = {
   counterpartyTypesSelectList: "manuals/counterparty-types",
   counterparty: "manuals/counterparties",
   paymentTypesSelectList: "manuals/payment-types",
+  paymentPurposesSelectList: "manuals/payment-purposes",
   banksSelectList: "manuals/banks",
   documentTypesSelectList: "manuals/document-types",
   organizationsSelectList: "manuals/organizations",
@@ -36,6 +37,7 @@ export const selectListEndpoints = {
   pricingMethodsSelectList: "manuals/pricing-methods",
   priceRoundingMethodsSelectList: "manuals/price-rounding-methods",
   costingMethodsSelectList: "manuals/costing-methods",
+  counterPartyBankAccounts: "manuals/counterparty-bank-accounts", 
 };
 
 export const selectListKeys = {
@@ -47,6 +49,7 @@ export const selectListKeys = {
   documentStatus: "selectListDocumentStatuses",
   counterpartyType: "selectListCounterpartyTypes",
   paymentType: "selectListPaymentTypes",
+  paymentPurpose: "selectListPaymentPurposes",
   bank: "selectListBanks",
   documentType: "selectListDocumentTypes",
   operationType: "selectListOperationTypes",
@@ -70,6 +73,11 @@ export const selectListKeys = {
   language: "selectListLanguages",
   contract: "selectListContract",
   contractType: "selectListContractTypes",
+  serviceType: "selectListServiceTypes",
+  pricingMethod: "selectListPricingMethods",
+  priceRoundingMethod: "selectListPriceRoundingMethods",
+  costingMethod: "selectListCostingMethods",
+  counterPartyBankAccount: "selectListCounterPartyBankAccounts",
 };
 
 export const filterIds = {
@@ -103,4 +111,9 @@ export const filterIds = {
   language: "languageId",
   contractType: "contractTypeId",
   contract: "contractId",
+  serviceType: "serviceTypeId",
+  pricingMethod: "pricingMethodId",
+  priceRoundingMethod: "priceRoundingMethodId",
+  costingMethod: "costingMethodId",
+  counterPartyBankAccount: "counterPartyBankAccountId",
 };

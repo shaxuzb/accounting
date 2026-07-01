@@ -25,19 +25,19 @@ export default function SaleProductGroupList({ lines, ...props }: Props) {
     const result = new Map<string, SaleProductGroupData>();
 
     lines.forEach((line) => {
-      const groupKey = line.productId
-        ? `product-${line.productId}`
-        : line.rowKey;
+      const groupKey = String(line.productId || line.rowKey);
       const group = result.get(groupKey);
       if (group) {
         group.lines.push(line);
         group.totalQuantity += line.quantity;
+        if (line.markingNumber) group.markingCount += 1;
         return;
       }
       result.set(groupKey, {
         key: groupKey,
         productId: line.productId,
         productName: line.productName,
+        markingCount: line.markingNumber ? 1 : 0,
         lines: [line],
         totalQuantity: line.quantity,
       });

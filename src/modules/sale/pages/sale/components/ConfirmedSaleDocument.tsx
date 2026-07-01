@@ -1,9 +1,7 @@
-import { Table } from "antd";
-import type { TableColumnsType } from "antd";
 import Card from "@/components/ui/card/Card";
-import LineClampCell from "@/components/widget/text/LineClampCell";
-import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import type { SaleDoc, SaleDocTable } from "../types/type";
+import { groupSaleDocumentLines } from "../utils/saleDocumentGroups";
+import SaleConfirmedLinesTable from "./SaleConfirmedLinesTable";
 import SaleDocumentSummary from "./SaleDocumentSummary";
 
 interface Props {
@@ -20,79 +18,10 @@ export default function ConfirmedSaleDocument({
   organizationName,
 }: Props) {
   const currency = document.currencyCode || "UZS";
-  const totalAmount = lines.reduce(
-    (sum, line) => sum + (line.totalAmount || line.amount * line.quantity),
+  const totalAmount = groupSaleDocumentLines(lines).reduce(
+    (sum, group) => sum + group.totalAmount,
     0,
   );
-
-  
-  const columns: TableColumnsType<SaleDocTable> = [
-    {
-      title: "№",
-      width: 70,
-      align: "center",
-      render: (_, __, index) => index + 1,
-    },
-    {
-      title: "Mahsulot",
-      dataIndex: "productName",
-      minWidth: 220,
-    },
-    {
-      title: "Markirovka",
-      width: 210,
-      render: (_, line) => (
-        <LineClampCell
-          text={line.markingNumber}
-        />
-      ),
-    },
-    {
-      title: "Miqdor",
-      dataIndex: "quantity",
-      width: 120,
-      align: "center",
-      render: (value: number, line) => `${value} ${line.unitName || "dona"}`,
-    },
-    {
-      title: "QQS",
-      dataIndex: "vatRateName",
-      width: 120,
-      align: "center",
-      render: (value: string) => value || "-",
-    },
-    {
-      title: "Sotuv narxi",
-      dataIndex: "amount",
-      width: 160,
-      align: "right",
-      render: (value: number) =>
-        `${numberSpacing(value, undefined, true)} ${currency}`,
-    },
-    {
-      title: "QQS summasi",
-      dataIndex: "vatAmount",
-      width: 150,
-      align: "right",
-      render: (value: number) =>
-        `${numberSpacing(value, undefined, true)} ${currency}`,
-    },
-    {
-      title: "Jami",
-      width: 170,
-      align: "right",
-      render: (_, line) => (
-        <span className="font-semibold">
-          {numberSpacing(
-            line.totalAmount || line.amount * line.quantity,
-            undefined,
-            true,
-          )}{" "}
-          {currency}
-        </span>
-      ),
-    },
-  ];
 
   return (
     <div className="space-y-4">
@@ -102,12 +31,10 @@ export default function ConfirmedSaleDocument({
         totalAmount={totalAmount || document.totalAmount || 0}
       />
       <Card className="overflow-hidden border border-border">
-        <Table<SaleDocTable>
+        <SaleConfirmedLinesTable
+          lines={lines}
           loading={loading}
-          columns={columns}
-          dataSource={generateKeyTable(lines, "rowKey")}
-          pagination={false}
-          scroll={{ x: "max-content", y: "calc(100vh - 280px)" }}
+          currency={currency}
         />
       </Card>
     </div>

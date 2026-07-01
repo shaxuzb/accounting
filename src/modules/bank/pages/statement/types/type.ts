@@ -15,6 +15,7 @@ export interface BankStatementTransaction {
   amount: number;
   currencyId?: number;
   currencyName?: string;
+  paymentPurposeId?: number;
 }
 
 export interface BankStatementCardData {
@@ -37,6 +38,10 @@ export interface BankOperationData {
   bankAccountName?: string;
   operationTypeId: number;
   operationTypeName?: string;
+  paymentPurposeId?: number;
+  counterpartyBankAccountId?: number | null;
+  contractId?: number | null;
+  exchangeRate?: number | null;
   counterpartyId: number | null;
   counterpartyName?: string | null;
   docDate: string;

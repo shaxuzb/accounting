@@ -38,8 +38,14 @@ const getPricingLineKey = (line: SaleDocTable, index: number) =>
 export const createSalePricingLine = (
   line: SaleDocTable,
   index = 0,
-): SalePricingLine => ({
-  ...line,
-  rowKey: getPricingLineKey(line, index),
-  marginPercent: getMarginBySalePrice(line.costPrice, line.amount),
-});
+): SalePricingLine => {
+  const amount = roundMoney(line.amount || line.price || 0);
+
+  return {
+    ...line,
+    amount,
+    totalAmount: roundMoney(amount * line.quantity),
+    rowKey: getPricingLineKey(line, index),
+    marginPercent: getMarginBySalePrice(line.costPrice, amount),
+  };
+};

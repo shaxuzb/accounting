@@ -28,6 +28,7 @@ interface InputNumberFormaterProps {
   placeholder?: string;
   standalone?: boolean;
   height?: number;
+  emptyZero?: boolean;
 }
 
 const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
@@ -47,8 +48,11 @@ const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
     placeholder,
     standalone = false,
     height = 38,
+    emptyZero = false,
   } = props;
-  const inputValue = onValueChange ? value : getIn(formik?.values, fieldName);
+  const rawInputValue = onValueChange ? value : getIn(formik?.values, fieldName);
+  const inputValue =
+    emptyZero && Number(rawInputValue) === 0 ? "" : rawInputValue;
   const hasError = Boolean(
     getIn(formik?.touched, fieldName) && getIn(formik?.errors, fieldName),
   );

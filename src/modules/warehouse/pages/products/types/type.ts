@@ -8,7 +8,7 @@ export interface ProductItem {
   idIndex?: number;
   name: string;
   unitId: number | null;
-  // barcode: string;
+  barcode: string;
   mxik: string;
   description: string;
   isService: boolean;

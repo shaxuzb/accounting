@@ -29,10 +29,12 @@ export default function PurchaseListPage() {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
       align: "center",
+      width: 10
     },
     {
       dataIndex: "docNumber",
       title: t("purchase.fields.docNumber"),
+      width: 130,
       render: (value, record) => (
         <Link to={`${record.id}`}>{value || record.id}</Link>
       ),
@@ -41,7 +43,7 @@ export default function PurchaseListPage() {
       dataIndex: "accountingEntriesReport",
       title: "Provodka",
       align: "center",
-      width: 110,
+      width: 100,
       render: (_, record) => (
         <Link to={`/main/accountingentriesreport?documentId=${record.id}`}>
           <Button icon={<ReceiptText className="size-4" />} />
@@ -51,6 +53,7 @@ export default function PurchaseListPage() {
     {
       dataIndex: "docDate",
       title: t("purchase.fields.docDate"),
+      width: 100,
       render: (value) => formatDate(value),
       align: "center",
     },
@@ -114,7 +117,7 @@ export default function PurchaseListPage() {
           </PermissionCard>
           <Button
             icon={<RefreshCw className="size-4" />}
-            onClick={() => void refetch()}
+            onClick={() => refetch()}
           />
         </Space>
       </div>

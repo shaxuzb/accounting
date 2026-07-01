@@ -61,6 +61,11 @@ export default function ProductItemsTable({
       width: 130,
     },
     // {
+    //   dataIndex: "barcode",
+    //   title: "SAP kod",
+    //   width: 130,
+    // },
+    // {
     //   dataIndex: "supplier",
     //   title: t("products.fields.supplier"),
     //   minWidth: 160,

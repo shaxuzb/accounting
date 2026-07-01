@@ -1,7 +1,12 @@
 import type { FormikProps } from "formik";
+import dayjs from "dayjs";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import {
+  filterIds,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
+import { formatDateWithOutTime } from "@/utils/helpers";
 import type { SaleDocForm } from "../types/form";
 
 interface Props {
@@ -19,11 +24,22 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
         required
       />
       <SelectCustom
-        label="Kontragent"
+        label="Mijoz"
         fieldName="counterpartyId"
         path={selectListEndpoints.counterpartiesSelectList}
         formik={formik}
         search
+        required
+      />
+      <SelectCustom
+        path={
+          selectListEndpoints.contractsSelectList +
+          `?choosedDate=${dayjs(formik.values.docDate).format(formatDateWithOutTime)}${formik.values.counterpartyId ? `&${filterIds.counterparty}=${formik.values.counterpartyId}` : ""}`
+        }
+        label="Shartnoma"
+        fieldName="contractId"
+        formik={formik}
+        refetchSync={`${formik.values.counterpartyId}${formik.values.docDate}`}
         required
       />
       <SelectCustom
@@ -33,14 +49,16 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
         formik={formik}
         required
       />
-      <SelectCustom
-        label="Valyuta"
-        fieldName="currencyId"
-        path={selectListEndpoints.currenciesSelectList}
-        formik={formik}
-        getFirst
-        required
-      />
+      <div className="hidden">
+        <SelectCustom
+          label="Valyuta"
+          fieldName="currencyId"
+          path={selectListEndpoints.currenciesSelectList}
+          formik={formik}
+          getFirst
+          required
+        />
+      </div>
       {isEdit && (
         <SelectCustom
           label="Holat"

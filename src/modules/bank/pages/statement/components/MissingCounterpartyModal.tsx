@@ -1,18 +1,15 @@
-import { Button, Input, Modal, Select, Table, type TableColumnsType } from "antd";
-import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { Button, Input, Modal, Table, type TableColumnsType } from "antd";
+import { useFormik } from "formik";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { $axiosPrivate } from "@/services/AxiosService";
+import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import { useCreateBankCounterparties } from "../hooks";
 import type { BankStatementTransaction } from "../types/type";
 import { getMissingCounterpartyKey } from "../utils/missingCounterpartyKey";
-
-interface SelectOption {
-  id: number;
-  name: string;
-}
+import DistrictSelect from "@/components/fields/DistrictSelect";
 
 export interface MissingCounterpartyItem {
   cardId: string;
@@ -22,6 +19,7 @@ export interface MissingCounterpartyItem {
 
 interface CounterpartyDraftRow {
   key: string;
+  formKey: string;
   count: number;
   sourceName: string;
   sourceAccount: string;
@@ -37,6 +35,10 @@ interface CounterpartyDraftRow {
   regionId: number | null;
   districtId: number | null;
   address: string;
+}
+
+interface CounterpartyDraftForm {
+  rows: Record<string, CounterpartyDraftRow>;
 }
 
 interface MissingCounterpartyModalProps {
@@ -68,6 +70,120 @@ const getRecordId = (payload: unknown) => {
   return Number.isFinite(id) && id > 0 ? id : null;
 };
 
+const getFieldName = (
+  record: CounterpartyDraftRow,
+  fieldName: keyof CounterpartyDraftRow,
+) => `rows.${record.formKey}.${fieldName}`;
+
+const toFormRows = (rows: CounterpartyDraftRow[]) =>
+  rows.reduce<Record<string, CounterpartyDraftRow>>((acc, row) => {
+    acc[row.formKey] = row;
+    return acc;
+  }, {});
+
+interface CounterpartyDraftTextCellProps {
+  value: string;
+  placeholder?: string;
+  onCommit: (value: string) => void;
+}
+
+const formatUzbekPhoneForInput = (value: string) => {
+  const digits = value.replace(/\D/g, "");
+  let localDigits = digits;
+
+  if (localDigits.startsWith("998")) {
+    localDigits = localDigits.slice(3);
+  }
+  if (localDigits.startsWith("0")) {
+    localDigits = localDigits.slice(1);
+  }
+
+  localDigits = localDigits.slice(0, 9);
+
+  if (localDigits.length === 0) {
+    return "";
+  }
+
+  if (localDigits.length <= 2) {
+    return localDigits;
+  }
+
+  if (localDigits.length <= 5) {
+    return `${localDigits.slice(0, 2)} ${localDigits.slice(2)}`;
+  }
+
+  if (localDigits.length <= 7) {
+    return `${localDigits.slice(0, 2)} ${localDigits.slice(2, 5)}-${localDigits.slice(5)}`;
+  }
+
+  return `${localDigits.slice(0, 2)} ${localDigits.slice(2, 5)}-${localDigits.slice(5, 7)}-${localDigits.slice(7, 9)}`;
+};
+
+const hasFormattedPhoneValue = /^\d{2} \d{3}-\d{2}-\d{2}$/;
+const buildApiPhoneValue = (value: string) => {
+  const formatted = formatUzbekPhoneForInput(value);
+  if (!formatted) return "";
+
+  return `+998 ${formatted}`;
+};
+
+const CounterpartyDraftTextCell = memo(function CounterpartyDraftTextCell({
+  value,
+  placeholder,
+  onCommit,
+}: CounterpartyDraftTextCellProps) {
+  const [draftValue, setDraftValue] = useState(value);
+
+  const commit = () => {
+    if (draftValue !== value) {
+      onCommit(draftValue);
+    }
+  };
+
+  return (
+    <Input
+      value={draftValue}
+      placeholder={placeholder}
+      onChange={(event) => setDraftValue(event.target.value)}
+      onBlur={commit}
+      onPressEnter={commit}
+    />
+  );
+});
+
+interface CounterpartyDraftPhoneCellProps {
+  value: string;
+  onCommit: (value: string) => void;
+}
+
+const CounterpartyDraftPhoneCell = memo(function CounterpartyDraftPhoneCell({
+  value,
+  onCommit,
+}: CounterpartyDraftPhoneCellProps) {
+  const [draftValue, setDraftValue] = useState(formatUzbekPhoneForInput(value));
+
+  const commit = () => {
+    const normalized = formatUzbekPhoneForInput(draftValue);
+    if (normalized !== value) {
+      onCommit(normalized);
+    }
+    setDraftValue(normalized);
+  };
+
+  return (
+    <Input
+      value={draftValue}
+      addonBefore="+998"
+      placeholder="99 123-45-67"
+      maxLength={15}
+      onChange={(event) => setDraftValue(formatUzbekPhoneForInput(event.target.value))}
+      onBlur={commit}
+      onPressEnter={commit}
+      onFocus={(event) => event.currentTarget.select()}
+    />
+  );
+});
+
 export default function MissingCounterpartyModal({
   open,
   items,
@@ -75,47 +191,8 @@ export default function MissingCounterpartyModal({
   onApply,
 }: MissingCounterpartyModalProps) {
   const { t } = useTranslation();
-  const [rowEdits, setRowEdits] = useState<
-    Record<string, Partial<CounterpartyDraftRow>>
-  >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { data: counterpartyTypeOptions = [], isFetching: isTypesLoading } =
-    useQuery<SelectOption[]>({
-      queryKey: ["selectlist", "bank-import-counterparty-types"],
-      queryFn: async () => {
-        const { data } = await $axiosPrivate.get<SelectOption[]>(
-          selectListEndpoints.counterpartyTypesSelectList,
-        );
-        return data;
-      },
-      enabled: open,
-    });
-
-  const { data: regionOptions = [], isFetching: isRegionsLoading } = useQuery<
-    SelectOption[]
-  >({
-    queryKey: ["selectlist", "bank-import-regions"],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<SelectOption[]>(
-        selectListEndpoints.regionsSelectList,
-      );
-      return data;
-    },
-    enabled: open,
-  });
-
-  const { data: districtOptions = [], isFetching: isDistrictsLoading } =
-    useQuery<SelectOption[]>({
-      queryKey: ["selectlist", "bank-import-districts"],
-      queryFn: async () => {
-        const { data } = await $axiosPrivate.get<SelectOption[]>(
-          selectListEndpoints.districtsSelectList,
-        );
-        return data;
-      },
-      enabled: open,
-    });
+  const createCounterparties = useCreateBankCounterparties();
 
   const duplicateGroups = useMemo(() => {
     const grouped = new Map<string, MissingCounterpartyItem[]>();
@@ -130,13 +207,14 @@ export default function MissingCounterpartyModal({
 
   const baseRows = useMemo(
     () =>
-      Array.from(duplicateGroups.entries()).map(([key, group]) => {
+      Array.from(duplicateGroups.entries()).map(([key, group], index) => {
         const transaction = group[0]?.transaction;
         const name = transaction?.counterpartyName?.trim() || "";
         const inn = transaction?.counterpartyInn?.trim() || "";
 
         return {
           key,
+          formKey: `row_${index}`,
           count: group.length,
           sourceName: name || "-",
           sourceAccount: transaction?.counterpartyAccount || "-",
@@ -157,253 +235,255 @@ export default function MissingCounterpartyModal({
     [duplicateGroups],
   );
 
-  const rows = useMemo(
-    () =>
-      baseRows.map((row) => ({
-        ...row,
-        ...rowEdits[row.key],
-      })),
-    [baseRows, rowEdits],
-  );
+  const formik = useFormik<CounterpartyDraftForm>({
+    initialValues: {
+      rows: toFormRows(baseRows),
+    },
+    validateOnChange: false,
+    validateOnBlur: true,
+    enableReinitialize: true,
+    onSubmit: async (values, helpers) => {
+      const rows = Object.values(values.rows);
+      const hasInvalidPhone = rows.some(
+        (row) => !hasFormattedPhoneValue.test(row.phoneNumber),
+      );
 
-  const updateRow = <K extends keyof CounterpartyDraftRow>(
-    key: string,
-    fieldName: K,
-    value: CounterpartyDraftRow[K],
-  ) => {
-    setRowEdits((prev) => ({
-      ...prev,
-      [key]: {
-        ...prev[key],
-        [fieldName]: value,
-      },
-    }));
-  };
-
-  const handleClose = () => {
-    setRowEdits({});
-    onClose();
-  };
-
-  const handleSubmit = async () => {
-    const hasEmpty = rows.some(
-      (row) =>
-        !row.counterpartyTypeId ||
-        !row.shortName.trim() ||
-        !row.fullName.trim() ||
-        !row.inn.trim() ||
-        !row.phoneNumber.trim() ||
-        !row.regionId ||
-        !row.districtId ||
-        !row.address.trim(),
-    );
-
-    if (hasEmpty) {
-      toast.error("Kontragent ma'lumotlarini to'liq to'ldiring");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const payload = {
-        counterparties: rows.map((row) => ({
-          counterpartyTypeId: Number(row.counterpartyTypeId),
-          shortName: row.shortName.trim(),
-          fullName: row.fullName.trim(),
-          inn: row.inn.trim(),
-          phoneNumber: row.phoneNumber.trim(),
-          email: row.email.trim(),
-          regionId: Number(row.regionId),
-          districtId: Number(row.districtId),
-          address: row.address.trim(),
-        })),
-      };
-
-      const { data } = await $axiosPrivate.post("counterparty-cards/many", payload);
-      const createdRows = getResponseList(data);
-      const assignments: Record<string, number> = {};
-
-      rows.forEach((row, index) => {
-        const createdId = getRecordId(createdRows[index]);
-        if (createdId) {
-          assignments[row.key] = createdId;
-        }
-      });
-
-      if (Object.keys(assignments).length !== rows.length) {
-        toast.error("Yaratilgan kontragent IDlari topilmadi");
+      if (hasInvalidPhone) {
+        toast.error("Telefon raqamini +998 formatida kiriting");
         return;
       }
 
-      toast.success("Kontragentlar muvaffaqiyatli yaratildi");
-      setRowEdits({});
-      onApply(assignments);
-    } catch (error) {
-      errorHandlers(error);
-    } finally {
-      setIsSubmitting(false);
-    }
+      const hasEmpty = rows.some(
+        (row) =>
+          !row.counterpartyTypeId ||
+          !row.shortName.trim() ||
+          !row.fullName.trim() ||
+          !row.inn.trim() ||
+          !row.phoneNumber.trim() ||
+          !row.regionId ||
+          !row.districtId ||
+          !row.address.trim(),
+      );
+
+      if (hasEmpty) {
+        toast.error("Kontragent ma'lumotlarini to'liq to'ldiring");
+        return;
+      }
+
+      setIsSubmitting(true);
+      try {
+        const payload = {
+          counterparties: rows.map((row) => ({
+            counterpartyTypeId: Number(row.counterpartyTypeId),
+            shortName: row.shortName.trim(),
+            fullName: row.fullName.trim(),
+            inn: row.inn.trim(),
+            phoneNumber: buildApiPhoneValue(row.phoneNumber),
+            email: row.email.trim(),
+            regionId: Number(row.regionId),
+            districtId: Number(row.districtId),
+            address: row.address.trim(),
+          })),
+        };
+
+        const response = await createCounterparties.mutateAsync(payload);
+        const createdRows = getResponseList(response);
+        const assignments: Record<string, number> = {};
+
+        rows.forEach((row, index) => {
+          const createdId = getRecordId(createdRows[index]);
+          if (createdId) {
+            assignments[row.key] = createdId;
+          }
+        });
+
+        if (Object.keys(assignments).length !== rows.length) {
+          toast.error("Yaratilgan kontragent IDlari topilmadi");
+          return;
+        }
+
+        toast.success("Kontragentlar muvaffaqiyatli yaratildi");
+        helpers.resetForm();
+        onApply(assignments);
+      } catch (error) {
+        errorHandlers(error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+  });
+
+  const rows = useMemo(
+    () => Object.values(formik.values.rows),
+    [formik.values.rows],
+  );
+
+  const updateRow = useCallback(
+    <K extends keyof CounterpartyDraftRow>(
+      record: CounterpartyDraftRow,
+      fieldName: K,
+      value: CounterpartyDraftRow[K],
+    ) => {
+      formik.setFieldValue(getFieldName(record, fieldName), value, false);
+    },
+    [formik],
+  );
+
+  const handleClose = () => {
+    formik.resetForm();
+    onClose();
   };
 
-  const columns: TableColumnsType<CounterpartyDraftRow> = [
-    {
-      title: "Manba",
-      dataIndex: "sourceName",
-      width: 180,
-      fixed: "left",
-    },
-    {
-      title: "Hisob raqami",
-      dataIndex: "sourceAccount",
-      width: 190,
-    },
-    {
-      title: "Soni",
-      dataIndex: "count",
-      width: 70,
-      align: "center",
-      render: (value) => `${value} ta`,
-    },
-    {
-      title: "Turi",
-      dataIndex: "counterpartyTypeId",
-      width: 180,
-      render: (_, record) => (
-        <Select
-          showSearch
-          className="w-full"
-          loading={isTypesLoading}
-          placeholder="Turi"
-          value={record.counterpartyTypeId ?? undefined}
-          optionFilterProp="label"
-          options={counterpartyTypeOptions.map((item) => ({
-            value: item.id,
-            label: item.name,
-          }))}
-          onChange={(value) =>
-            updateRow(record.key, "counterpartyTypeId", Number(value))
-          }
-        />
-      ),
-    },
-    {
-      title: "Qisqa nomi",
-      dataIndex: "shortName",
-      width: 190,
-      render: (_, record) => (
-        <Input
-          disabled={record.readonlyShortName}
-          value={record.shortName}
-          onChange={(event) =>
-            updateRow(record.key, "shortName", event.target.value)
-          }
-        />
-      ),
-    },
-    {
-      title: "To'liq nomi",
-      dataIndex: "fullName",
-      width: 220,
-      render: (_, record) => (
-        <Input
-          disabled={record.readonlyFullName}
-          value={record.fullName}
-          onChange={(event) =>
-            updateRow(record.key, "fullName", event.target.value)
-          }
-        />
-      ),
-    },
-    {
-      title: "INN",
-      dataIndex: "inn",
+  const columns = useMemo<TableColumnsType<CounterpartyDraftRow>>(() => {
+    const result: TableColumnsType<CounterpartyDraftRow> = [
+      {
+        title: "Kontragent",
+        dataIndex: "sourceName",
+        width: 220,
+        fixed: "left",
+      },
+      {
+        title: "Soni",
+        dataIndex: "count",
+        width: 70,
+        align: "center",
+        render: (value) => `${value} ta`,
+      },
+      {
+        title: "Turi",
+        dataIndex: "counterpartyTypeId",
+        width: 190,
+        render: (_, record) => (
+          <SelectCustom
+            formik={formik}
+            fieldName={getFieldName(record, "counterpartyTypeId")}
+            path={selectListEndpoints.counterpartyTypesSelectList}
+            placeholder="Turi"
+            marginBottom="mb-0"
+            search
+            enabled={open}
+          />
+        ),
+      },
+    ];
+
+    if (rows.some((row) => !row.readonlyShortName)) {
+      result.push({
+        title: "Qisqa nomi",
+        dataIndex: "shortName",
+        width: 190,
+        render: (_, record) =>
+          record.readonlyShortName ? null : (
+            <CounterpartyDraftTextCell
+              value={record.shortName}
+              onCommit={(value) => updateRow(record, "shortName", value)}
+            />
+          ),
+      });
+    }
+
+    if (rows.some((row) => !row.readonlyFullName)) {
+      result.push({
+        title: "To'liq nomi",
+        dataIndex: "fullName",
+        width: 220,
+        render: (_, record) =>
+          record.readonlyFullName ? null : (
+            <CounterpartyDraftTextCell
+              value={record.fullName}
+              onCommit={(value) => updateRow(record, "fullName", value)}
+            />
+          ),
+      });
+    }
+
+    if (rows.some((row) => !row.readonlyInn)) {
+      result.push({
+        title: "INN",
+        dataIndex: "inn",
+        width: 160,
+        render: (_, record) =>
+          record.readonlyInn ? null : (
+            <CounterpartyDraftTextCell
+              value={record.inn}
+              onCommit={(value) => updateRow(record, "inn", value)}
+            />
+          ),
+      });
+    }
+
+    result.push(
+      {
+        title: "Telefon",
+        dataIndex: "phoneNumber",
       width: 160,
       render: (_, record) => (
-        <Input
-          disabled={record.readonlyInn}
-          value={record.inn}
-          onChange={(event) => updateRow(record.key, "inn", event.target.value)}
-        />
-      ),
-    },
-    {
-      title: "Telefon",
-      dataIndex: "phoneNumber",
-      width: 160,
-      render: (_, record) => (
-        <Input
+        <CounterpartyDraftPhoneCell
           value={record.phoneNumber}
-          onChange={(event) =>
-            updateRow(record.key, "phoneNumber", event.target.value)
+          onCommit={(value) =>
+            updateRow(record, "phoneNumber", formatUzbekPhoneForInput(value))
           }
         />
       ),
     },
-    {
-      title: "Email",
-      dataIndex: "email",
+      {
+        title: "Email",
+        dataIndex: "email",
       width: 190,
       render: (_, record) => (
-        <Input
+        <CounterpartyDraftTextCell
           value={record.email}
-          onChange={(event) => updateRow(record.key, "email", event.target.value)}
+          placeholder="Email"
+          onCommit={(value) => updateRow(record, "email", value)}
         />
       ),
     },
-    {
-      title: "Viloyat",
-      dataIndex: "regionId",
-      width: 170,
-      render: (_, record) => (
-        <Select
-          showSearch
-          className="w-full"
-          loading={isRegionsLoading}
-          placeholder="Viloyat"
-          value={record.regionId ?? undefined}
-          optionFilterProp="label"
-          options={regionOptions.map((item) => ({
-            value: item.id,
-            label: item.name,
-          }))}
-          onChange={(value) => updateRow(record.key, "regionId", Number(value))}
-        />
-      ),
-    },
-    {
-      title: "Tuman",
-      dataIndex: "districtId",
-      width: 170,
-      render: (_, record) => (
-        <Select
-          showSearch
-          className="w-full"
-          loading={isDistrictsLoading}
-          placeholder="Tuman"
-          value={record.districtId ?? undefined}
-          optionFilterProp="label"
-          options={districtOptions.map((item) => ({
-            value: item.id,
-            label: item.name,
-          }))}
-          onChange={(value) => updateRow(record.key, "districtId", Number(value))}
-        />
-      ),
-    },
-    {
-      title: "Manzil",
-      dataIndex: "address",
+      {
+        title: "Viloyat",
+        dataIndex: "regionId",
+        width: 180,
+        render: (_, record) => (
+          <SelectCustom
+            formik={formik}
+            fieldName={getFieldName(record, "regionId")}
+            path={selectListEndpoints.regionsSelectList}
+            placeholder="Viloyat"
+            marginBottom="mb-0"
+            search
+            enabled={open}
+          />
+        ),
+      },
+      {
+        title: "Tuman",
+        dataIndex: "districtId",
+        width: 180,
+        render: (_, record) => (
+          <DistrictSelect
+            formik={formik}
+            regionFieldName={getFieldName(record, "regionId")}
+            fieldName={getFieldName(record, "districtId")}
+            path={selectListEndpoints.districtsSelectList}
+            marginBottom="mb-0"
+          />
+        ),
+      },
+      {
+        title: "Manzil",
+        dataIndex: "address",
       width: 220,
       render: (_, record) => (
-        <Input
+        <CounterpartyDraftTextCell
           value={record.address}
-          onChange={(event) =>
-            updateRow(record.key, "address", event.target.value)
-          }
+          placeholder="Manzil"
+          onCommit={(value) => updateRow(record, "address", value)}
         />
       ),
     },
-  ];
+    );
+
+    return result;
+  }, [formik, open, rows, updateRow]);
 
   return (
     <Modal
@@ -425,13 +505,15 @@ export default function MissingCounterpartyModal({
         dataSource={rows}
         columns={columns}
         scroll={{ y: 460, x: 2180 }}
+        virtual={rows.length > 30}
       />
       <Button
         type="primary"
         block
         className="mt-3"
-        loading={isSubmitting}
-        onClick={() => void handleSubmit()}
+        loading={isSubmitting || createCounterparties.isPending}
+        onClick={() => formik.handleSubmit()}
+        size="large"
       >
         {t("common.submit")}
       </Button>

@@ -201,6 +201,10 @@ export default function SalePricingEditor({
       toast.error("Barcha mahsulotlar uchun sotuv narxini kiriting");
       return;
     }
+    if (lines.some((line) => line.costPrice <= 0)) {
+      toast.error("Barcha mahsulotlar uchun tannarx topilmadi");
+      return;
+    }
     if (lines.some((line) => line.vatRateId === null)) {
       toast.error("Barcha mahsulotlar uchun QQS stavkasini tanlang");
       return;
@@ -214,11 +218,13 @@ export default function SalePricingEditor({
       await confirmSale.mutateAsync({
         lines: lines.map((line) => ({
           id: line.id,
-          amount: roundMoney(line.amount),
+          costPrice: roundMoney(line.costPrice),
+          unitPrice: roundMoney(line.amount),
+          vatRateId: Number(line.vatRateId),
         })),
       });
       setDraftLines([]);
-      navigate("/main/sale", { replace: true });
+      navigate("/main/sales/sale", { replace: true });
     } catch (error) {
       errorHandlers(error);
     }

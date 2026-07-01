@@ -1,15 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
-import {
-  Button,
-  Col,
-  Form,
-  Row,
-  Segmented,
-  Select,
-  Table,
-  Tooltip,
-  type TableColumnType,
-} from "antd";
+import { Form } from "antd";
 import { useFormik } from "formik";
 import {
   useCallback,
@@ -20,43 +9,25 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import { useTranslation } from "react-i18next";
-import SelectDate from "@/components/fields/SelectDate";
-import dayjs from "dayjs";
-import { $axiosPrivate } from "@/services/AxiosService";
-import { ArrowLeft, PackagePlus, Plus, QrCode, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
-import SelectCustom from "@/components/fields/SelectCustom";
-import Card from "@/components/ui/card/Card";
 import { useNavigate } from "react-router";
 import useWindowSize from "@/shared/hooks/useWindowSize";
 import type {
-  ProductListResponse,
-  ProductSelectOption,
   PurchaseImportRow,
   PurchaseMode,
   SelectBoxOptions,
-  SelectOption,
 } from "../types/type";
-import {
-  filterIds,
-  selectListEndpoints,
-  selectListKeys,
-} from "@/shared/constants/selectLists";
-import ExcelImportFile from "@/components/widget/excelimport/ExcelImportFile";
 import type {
   PurchaseImportForm,
   PurchaseImportHeaderDraft,
 } from "@/modules/purchase/pages/purchase/types/form";
-import { formatDateWithOutTime } from "@/utils/helpers";
-import { numberSpacing } from "@/utils/utils";
 import {
   purchaseValidationSchema,
   isCompletePurchaseLine,
 } from "@/modules/purchase/pages/purchase/types/schema";
-import PurchaseImportEditableCell from "../components/PurchaseImportEditableCell";
+import PurchaseImportHeader from "../components/PurchaseImportHeader";
 import ProductsCreateModal from "../components/ProductsCreateModal";
-import PurchaseImportSummary from "../components/PurchaseImportSummary";
+import PurchaseImportLinesSection from "../components/PurchaseImportLinesSection";
 import PurchaseMarkingModal from "../components/PurchaseMarkingModal";
 import {
   buildColumnConfig,
@@ -66,6 +37,8 @@ import {
   type ImportColumnConfig,
 } from "../utils/importColumns";
 import { useCreatePurchase } from "../hooks/useCreatePurchase";
+import { usePurchaseImportOptions } from "../hooks/usePurchaseImportOptions";
+import { usePurchaseImportColumns } from "../hooks/usePurchaseImportColumns";
 import useLocalStorage from "@/hooks/UseLocalStorage";
 import {
   createEmptyPurchaseRow,
@@ -74,12 +47,7 @@ import {
   getProductCode,
   getProductPrice,
   getPurchaseImportTotals,
-  getRowAmount,
-  getRowUnitLabel,
-  getRowUnitPrice,
-  getRowVatAmount,
   getUnmarkedPieceTrackedRow,
-  normalizeProductOptions,
   parseMarkingInput,
   toMarkingNumbers,
   toPurchaseCreatePayload,
@@ -92,7 +60,6 @@ const PURCHASE_IMPORT_DRAFT_PRODUCT_WITH_COUNT_KEY =
 const PURCHASE_IMPORT_DRAFT_MODE_KEY = "purchase-import:draft:mode";
 
 const PurchaseImportPage = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   // const org = useAppSelector((state) => state.organization);
   const [headerDraft, setHeaderDraft] =
@@ -254,102 +221,18 @@ const PurchaseImportPage = () => {
 
   const {
     data,
-    isLoading,
     isFetching,
+    isLoading,
+    isServicesLoading,
+    isServicesSuccess,
     isSuccess,
-    refetch: refetchProducts,
-  } = useQuery<ProductSelectOption[]>({
-    queryKey: ["selectlist", selectListKeys.product, "purchase-goods"],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<
-        ProductSelectOption[] | ProductListResponse
-      >("products", {
-        params: {
-          IsService: false,
-          PageSize: 1000,
-        },
-      });
-      return normalizeProductOptions(data);
-    },
-    enabled: true,
-  });
-  const {
-    data: serviceOptions = [],
-    isLoading: isServicesLoading,
-    isSuccess: isServicesSuccess,
-  } = useQuery<ProductSelectOption[]>({
-    queryKey: ["selectlist", selectListKeys.product, "purchase-services"],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<
-        ProductSelectOption[] | ProductListResponse
-      >("products", {
-        params: {
-          IsService: true,
-          PageSize: 1000,
-        },
-      });
-      return normalizeProductOptions(data);
-    },
-    enabled: true,
-  });
-  const { data: unitOptions = [] } = useQuery<SelectOption[]>({
-    queryKey: ["selectlist", selectListKeys.unit],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<SelectOption[]>(
-        selectListEndpoints.unitsSelectList,
-      );
-      return data ?? [];
-    },
-    enabled: true,
-  });
-  const { data: vatRateOptions = [] } = useQuery<SelectOption[]>({
-    queryKey: ["selectlist", selectListKeys.vatRate],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<SelectOption[]>(
-        selectListEndpoints.vatRatesSelectList,
-      );
-      return data ?? [];
-    },
-    enabled: true,
-  });
-
-  const productLookupOptions = useMemo(
-    () => [...(data ?? []), ...serviceOptions],
-    [data, serviceOptions],
-  );
-
-  const productIdBySapCode = useMemo(() => {
-    const map = new Map<string, number>();
-    productLookupOptions.forEach((item) => {
-      const codes = [item.code, item.barcode, item.mxik].filter(Boolean);
-      codes.forEach((code) => {
-        map.set(String(code).trim(), Number(item.id));
-      });
-    });
-    return map;
-  }, [productLookupOptions]);
-
-  const productByCode = useMemo(() => {
-    const map = new Map<string, ProductSelectOption>();
-    productLookupOptions.forEach((item) => {
-      const codes = [item.code, item.barcode, item.mxik].filter(Boolean);
-      codes.forEach((code) => {
-        map.set(String(code).trim(), item);
-      });
-    });
-    return map;
-  }, [productLookupOptions]);
-
-  const itemOptions = useMemo<ProductSelectOption[]>(
-    () =>
-      purchaseMode === "services"
-        ? serviceOptions
-        : (data ?? []).map((item) => ({
-            ...item,
-            code: getProductCode(item),
-          })),
-    [data, purchaseMode, serviceOptions],
-  );
+    itemOptions,
+    productByCode,
+    productIdBySapCode,
+    refetchProducts,
+    unitOptions,
+    vatRateOptions,
+  } = usePurchaseImportOptions(purchaseMode);
 
   const resolveProductIds = useCallback(
     (rows: PurchaseImportRow[]) =>
@@ -648,258 +531,7 @@ const PurchaseImportPage = () => {
     [data, productIdBySapCode],
   );
 
-  const tableColumns: TableColumnType<PurchaseImportRow>[] = useMemo(() => {
-    const visibleColumnConfig = columnConfig.filter(
-      (col) =>
-        ![
-          "serialNumber",
-          "markingNumber",
-          "qty",
-          "price",
-          "pricePerUom",
-        ].includes(col.code),
-    );
-
-    const editableColumns = visibleColumnConfig.map((col: ImportColumnConfig) => {
-      const baseColumn: TableColumnType<PurchaseImportRow> = {
-        dataIndex: col.dataIndex,
-        title:
-          col.code === "product"
-            ? purchaseMode === "services"
-              ? "Xizmat"
-              : "Tovar"
-            : col.code === "sapCode"
-              ? "MXIK"
-              : col.title,
-        width: col.width,
-        align: col.align,
-        ellipsis: false,
-      };
-
-      if (col.code === "indexId") {
-        return {
-          ...baseColumn,
-          render: col.render,
-        };
-      }
-
-      if (col.code === "product") {
-        return {
-          ...baseColumn,
-          width: 280,
-          render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => (
-            <Select
-              showSearch
-              className="w-full"
-              placeholder={purchaseMode === "services" ? "Xizmat" : "Tovar"}
-              value={record.productId ?? undefined}
-              loading={isLoading || isServicesLoading}
-              optionFilterProp="label"
-              options={itemOptions.map((item) => ({
-                value: item.id,
-                label: item.name,
-              }))}
-              onChange={(value) => handleItemSelect(rowIndex, Number(value))}
-            />
-          ),
-        };
-      }
-
-      return {
-        ...baseColumn,
-        render: (
-          value: unknown,
-          record: PurchaseImportRow,
-          rowIndex: number,
-        ) => {
-          const isSapCodeCell = col.code === "sapCode";
-          const hasSapCodeValue = String(value ?? "").trim().length > 0;
-          const invalidSapCode =
-            isSapCodeCell && hasSapCodeValue && !isSapCodeValid(value);
-
-          return (
-            <PurchaseImportEditableCell
-              value={value}
-              dataIndex={String(col.dataIndex)}
-              rowIndex={rowIndex ?? 0}
-              onCommit={handleCellCommit}
-              isInvalid={invalidSapCode}
-              disabled={isSapCodeCell && Boolean(record.productId)}
-            />
-          );
-        },
-      };
-    });
-
-    const markingColumn: TableColumnType<PurchaseImportRow> = {
-      dataIndex: "markingNumber",
-      title: "Markirovka",
-      width: 130,
-      align: "center",
-      render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => {
-        const markingCount = toMarkingNumbers(record).length;
-        const isTracked = Boolean(record.isPieceTracked);
-        return (
-          <Tooltip
-            title={
-              isTracked
-                ? markingCount
-                  ? `${markingCount} ta markirovka`
-                  : "Markirovka kiritish"
-                : "Bu mahsulot markirovkasiz"
-            }
-          >
-            <Button
-              type="text"
-              disabled={!isTracked}
-              className="text-primary"
-              icon={<QrCode className="size-5" />}
-              onClick={() => openMarkingModal(rowIndex)}
-            >
-              {markingCount || ""}
-            </Button>
-          </Tooltip>
-        );
-      },
-    };
-
-    const orderedEditableColumns = editableColumns.flatMap((column) =>
-      purchaseMode === "goods" && column.dataIndex === "sapCode"
-        ? [column, markingColumn]
-        : [column],
-    );
-
-    return [
-      ...orderedEditableColumns,
-      {
-        dataIndex: "unitId",
-        title: "Birlik",
-        width: 140,
-        align: "center",
-        render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => (
-          getRowUnitLabel(record) ? (
-            <span className="font-medium">{getRowUnitLabel(record)}</span>
-          ) : (
-            <Select
-              showSearch
-              className="w-full"
-              placeholder="Birlik"
-              value={(record.unitId as number | null) ?? undefined}
-              optionFilterProp="label"
-              options={unitOptions.map((item) => ({
-                value: item.id,
-                label: item.name,
-              }))}
-              onChange={(value) =>
-                handleRowValueChange(rowIndex, { unitId: Number(value) })
-              }
-            />
-          )
-        ),
-      },
-      {
-        dataIndex: "qty",
-        title: "Miqdor",
-        width: 120,
-        align: "center",
-        render: (value: unknown, record: PurchaseImportRow, rowIndex: number) => (
-          <PurchaseImportEditableCell
-            value={value}
-            dataIndex="qty"
-            rowIndex={rowIndex ?? 0}
-            onCommit={handleCellCommit}
-            disabled={purchaseMode === "goods" && Boolean(record.isPieceTracked)}
-          />
-        ),
-      } satisfies TableColumnType<PurchaseImportRow>,
-      {
-        dataIndex: "price",
-        title: "Narx",
-        width: 140,
-        align: "center",
-        render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => (
-          <PurchaseImportEditableCell
-            value={getRowUnitPrice(record)}
-            dataIndex="price"
-            rowIndex={rowIndex ?? 0}
-            onCommit={handleCellCommit}
-          />
-        ),
-      } satisfies TableColumnType<PurchaseImportRow>,
-      {
-        dataIndex: "amount",
-        title: "Summa",
-        width: 140,
-        align: "right",
-        render: (_: unknown, record: PurchaseImportRow) => {
-          const qty = getNumber(record.qty);
-          const price = getRowUnitPrice(record);
-          return numberSpacing(qty * price, undefined, true);
-        },
-      },
-      {
-        dataIndex: "vatRateId",
-        title: "QQS (foiz va summa)",
-        width: 260,
-        align: "center",
-        render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => {
-          const vatAmount = getRowVatAmount(record, vatRateOptions);
-          return (
-            <div className="flex items-center gap-2">
-              <Select
-                showSearch
-                allowClear
-                className="min-w-28"
-                placeholder="QQS"
-                value={record.vatRateId ?? undefined}
-                optionFilterProp="label"
-                options={vatRateOptions.map((item) => ({
-                  value: item.id,
-                  label: item.name,
-                }))}
-                onChange={(value) =>
-                  handleRowValueChange(rowIndex, {
-                    vatRateId: value ? Number(value) : null,
-                  })
-                }
-              />
-              <span className="min-w-24 text-right">
-                {numberSpacing(vatAmount, undefined, true)}
-              </span>
-            </div>
-          );
-        },
-      },
-      {
-        dataIndex: "totalAmount",
-        title: "Jami",
-        width: 140,
-        align: "right",
-        render: (_: unknown, record: PurchaseImportRow) => {
-          const amount = getRowAmount(record);
-          const vatAmount = getRowVatAmount(record, vatRateOptions);
-          return numberSpacing(amount + vatAmount, undefined, true);
-        },
-      },
-      {
-        dataIndex: "actions",
-        title: "Amallar",
-        width: 90,
-        fixed: "right",
-        align: "center",
-        render: (_: unknown, __: PurchaseImportRow, rowIndex: number) => (
-          <Tooltip title="Qatorni o'chirish">
-            <Button
-              danger
-              type="text"
-              icon={<Trash2 className="size-4" />}
-              onClick={() => handleDeleteRow(rowIndex)}
-            />
-          </Tooltip>
-        ),
-      } satisfies TableColumnType<PurchaseImportRow>,
-    ];
-  }, [
+  const tableColumns = usePurchaseImportColumns({
     columnConfig,
     handleCellCommit,
     handleDeleteRow,
@@ -913,7 +545,7 @@ const PurchaseImportPage = () => {
     purchaseMode,
     unitOptions,
     vatRateOptions,
-  ]);
+  });
 
   useEffect(() => {
     const hasLoadedOptions =
@@ -953,6 +585,19 @@ const PurchaseImportPage = () => {
   const hasSelectedRows = useMemo(
     () => formik.values.lines.some((item) => Boolean(item.productId)),
     [formik.values.lines],
+  );
+
+  const handlePurchaseModeChange = useCallback(
+    (value: PurchaseMode) => {
+      setPurchaseMode(value);
+      setProductWithCount(value === "services");
+      setSelectBoxOptions(
+        toSelectBoxOptions(
+          getBaseColumnConfig(value === "services", withDiscount),
+        ),
+      );
+    },
+    [setProductWithCount, setPurchaseMode, withDiscount],
   );
 
   const totals = useMemo(
@@ -1010,173 +655,17 @@ const PurchaseImportPage = () => {
   return (
     <div>
       <Form onFinish={formik.handleSubmit} layout="vertical">
-        <Card className="p-3">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold">
-              {t("Purchase.excelImport.title")}
-            </h2>
-            <div className="flex items-center gap-2">
-              {/* <ExcelTemplateDropdown /> */}
-              <Button type="text" onClick={() => navigate(-1)}>
-                <ArrowLeft className="size-4" />
-                {t("Buttons.back")}
-              </Button>
-            </div>
-          </div>
-          <div className="mt-3">
-            <Row gutter={20}>
-              <Col span={24} sm={12} lg={8} xl={4}>
-                <SelectDate
-                  label="Sana"
-                  formik={draftFormik}
-                  fieldName="docDate"
-                />
-              </Col>
-              <Col span={24} sm={12} lg={8} xl={4}>
-                <SelectCustom
-                  fieldName="counterpartyId"
-                  label={
-                    purchaseMode === "services"
-                      ? "Ijrochi"
-                      : "Yetkazib beruvchi"
-                  }
-                  path={selectListEndpoints.counterpartiesSelectList}
-                  getFirst
-                  formik={draftFormik}
-                  // addOption={{
-                  //   bool: true,
-                  //   permissionCode: counterpartyPermissions.create,
-                  //   onClick() {
-                  //     setOpenSupplier(true);
-                  //   },
-                  // }}
-                />
-              </Col>
-              <Col span={24} sm={12} lg={8} xl={4}>
-                <SelectCustom
-                  path={selectListEndpoints.warehousesSelectList}
-                  label="Ombor"
-                  fieldName="warehouseId"
-                  formik={draftFormik}
-                />
-              </Col>
-              <Col span={24} sm={12} lg={8} xl={4}>
-                <SelectCustom
-                  path={selectListEndpoints.currenciesSelectList}
-                  label="Valyuta"
-                  fieldName="currencyId"
-                  formik={draftFormik}
-                />
-              </Col>
-              <Col span={24} sm={12} lg={8} xl={4}>
-                <SelectCustom
-                  path={
-                    selectListEndpoints.contractsSelectList +
-                    `?choosedDate=${dayjs(formik.values.docDate).format(formatDateWithOutTime)}${formik.values.counterpartyId ? `&${filterIds.counterparty}=${formik.values.counterpartyId}` : ""}`
-                  }
-                  label="Shartnoma"
-                  fieldName="contractId"
-                  formik={draftFormik}
-                  required
-                  refetchSync={`${formik.values.counterpartyId}${formik.values.docDate}`}
-                />
-              </Col>
-              {/* {org.useContractAccounting && (
-                <Col span={6}>
-                  <SelectCustom
-                    path={
-                      selectListEndpoints.projectContractSelectList +
-                      "?isMovement=true&supplierId=" +
-                      formik.values.supplierId
-                    }
-                    enabled={!!formik.values.supplierId}
-                    label="Shartnoma"
-                    refetchSync={formik.values.supplierId?.toString()}
-                    formik={formik}
-                    required={true}
-                    fieldName={"contractId"}
-                  />
-                </Col>
-              )} */}
-            </Row>
-          </div>
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-            <div className="flex flex-wrap items-center gap-3">
-              <Segmented
-                disabled={hasSelectedRows}
-                value={purchaseMode}
-                onChange={(value) => {
-                  setPurchaseMode(value as PurchaseMode);
-                  setProductWithCount(value === "services");
-                  setSelectBoxOptions(
-                    toSelectBoxOptions(
-                      getBaseColumnConfig(value === "services", withDiscount),
-                    ),
-                  );
-                }}
-                options={[
-                  { label: "Prixod tovar", value: "goods" },
-                  { label: "Prixod uslug", value: "services" },
-                ]}
-              />
-              <ExcelImportFile
-                variant="button"
-                selectBoxOptions={selectBoxOptions}
-                setSelectBoxOptions={setSelectBoxOptions}
-                setData={handleExcelDataChange}
-                formik={draftFormik}
-                disabled={!formik.values.counterpartyId}
-              />
-              <Button
-                type="default"
-                htmlType="button"
-                icon={<Plus className="size-4" />}
-                disabled={!formik.values.counterpartyId}
-                onClick={handleAddManualRow}
-              >
-                {purchaseMode === "services" ? "Xizmat qo'shish" : "Tovar qo'shish"}
-              </Button>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button htmlType="button" onClick={() => navigate(-1)}>
-                Bekor qilish
-              </Button>
-              <Button
-                type="primary"
-                loading={formik.isSubmitting}
-                htmlType="submit"
-              >
-                {t("common.save")}
-              </Button>
-            </div>
-            {/* {!productWithCount && (
-              <div className="text-sm">
-                <Switch
-                  checkedChildren="Serinkasiz mahsulot"
-                  unCheckedChildren="Avval ustiga bosing"
-                  checked={isNonSerial}
-                  onChange={(e) => setIsNonSerial(e)}
-                />
-              </div>
-            )} */}
-            {/* <div className="text-sm">
-              <Switch
-                checkedChildren="Chegirmali"
-                unCheckedChildren="Chegirmasiz"
-                checked={withDiscount}
-                onChange={handleDiscountChange}
-              />
-            </div>
-            <div className="text-sm">
-              <Switch
-                checkedChildren="Tavsifli"
-                unCheckedChildren="Tavsifsiz"
-                checked={formik.values.isCharacter}
-                onChange={handleCharacterChange}
-              />
-            </div> */}
-          </div>
-        </Card>
+        <PurchaseImportHeader
+          formik={draftFormik}
+          hasSelectedRows={hasSelectedRows}
+          onAddManualRow={handleAddManualRow}
+          onBack={() => navigate(-1)}
+          onExcelDataChange={handleExcelDataChange}
+          onPurchaseModeChange={handlePurchaseModeChange}
+          purchaseMode={purchaseMode}
+          selectBoxOptions={selectBoxOptions}
+          setSelectBoxOptions={setSelectBoxOptions}
+        />
         {/* {isNonSerial && (
           <Card className="rounded-lg relative my-4">
             <NonSerialTableImport
@@ -1185,74 +674,24 @@ const PurchaseImportPage = () => {
             />
           </Card>
         )} */}
-        <div className="mt-3 flex flex-col gap-3">
-          <div className="flex flex-wrap items-center justify-end gap-3">
-            {formik.values.lines.length > 0 && (
-              <>
-                {purchaseMode === "goods" && (
-                  <>
-                    <Button
-                      type="default"
-                      htmlType="button"
-                      onClick={handleOpenMissingProductsModal}
-                      icon={<PackagePlus className="size-4" />}
-                      disabled={isLoading || isFetching || foundedSapCodes === 0}
-                    >
-                      Topilmagan SAP kodlarni belgilash ({foundedSapCodes})
-                    </Button>
-                    <Button
-                      type="primary"
-                      htmlType="button"
-                      danger
-                      onClick={handleDeleteSapCodes}
-                      icon={<div>{foundedSapCodes}</div>}
-                      disabled={isLoading || isFetching || foundedSapCodes === 0}
-                    >
-                      Topilmagan SAP kodlarni o'chirish
-                    </Button>
-                  </>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-
-          <div className="rounded-lg relative">
-            <Table
-              className="[&_.ant-table-tbody>tr>td]:!h-16 [&_.ant-table-tbody>tr>td]:!py-3"
-              loading={isLoading || isFetching}
-              columns={tableColumns}
-              dataSource={formik.values.lines?.map((item, index) => ({
-                ...item,
-                indexId: index + 1,
-                key: index + 1,
-              }))}
-              virtual
-              scroll={{ y: height - 320, x: "max-content" }}
-              pagination={false}
-            />
-            <PurchaseImportSummary
-              comment={formik.values.comment}
-              totals={totals}
-              onCommentChange={(value) =>
-                draftFormik.setFieldValue("comment", value, false)
-              }
-            />
-            <div className="sticky bottom-0 z-10 flex justify-center border-t border-border bg-primary-bg/95 py-2 backdrop-blur">
-              <Tooltip title="Qator qo'shish">
-                <Button
-                  type="primary"
-                  htmlType="button"
-                  shape="circle"
-                  size="large"
-                  className="shadow-md"
-                  icon={<Plus className="size-5" />}
-                  disabled={!formik.values.counterpartyId}
-                  onClick={handleAddManualRow}
-                />
-              </Tooltip>
-            </div>
-          </div>
+        <PurchaseImportLinesSection
+          columns={tableColumns}
+          comment={formik.values.comment}
+          counterpartyId={formik.values.counterpartyId}
+          foundedSapCodes={foundedSapCodes}
+          height={height}
+          isFetching={isFetching}
+          isLoading={isLoading}
+          lines={formik.values.lines}
+          onAddManualRow={handleAddManualRow}
+          onCommentChange={(value) =>
+            draftFormik.setFieldValue("comment", value, false)
+          }
+          onDeleteSapCodes={handleDeleteSapCodes}
+          onOpenMissingProductsModal={handleOpenMissingProductsModal}
+          purchaseMode={purchaseMode}
+          totals={totals}
+        />
         {/* <SupplierAddEdit
           open={openSupplier}
           setOpen={setOpenSupplier}

@@ -26,6 +26,7 @@ const ProductCreateModal = ({
   const formik = useFormik<ProductItem>({
     initialValues: {
       name: "",
+      barcode: "",
       mxik: "",
       description: "",
       productGroupId: null,
@@ -57,6 +58,7 @@ const ProductCreateModal = ({
           initialRow.product ||
           "",
         mxik: initialRow.mxik.toString(),
+        barcode: initialRow.sapCode || "",
         unitId: null,
         isService: false,
         isPieceTracked: Boolean(initialRow.isPieceTracked),

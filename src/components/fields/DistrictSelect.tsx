@@ -39,10 +39,12 @@ const DistrictSelect: React.FC<SelectCustomProps> = (props) => {
     disabled = false,
   } = props;
 
+
   const regionId = getIn(formik.values, regionFieldName) as
     | number
     | null
     | undefined;
+    console.log(regionId);
   const { data, isFetching, isLoading } = useQuery<SelectItem[]>({
     queryKey: [fieldName, regionId],
     queryFn: async () => {

@@ -5,6 +5,7 @@ export * from "./useGetDetailSale";
 export * from "./useGetListSale";
 export * from "./useGetSaleProductStocks";
 export * from "./useGetProductByMarking";
+export * from "./useGetProductPriceDetails";
 export * from "./useUpdateSaleDocTable";
 export * from "./useUpdateSale";
 export * from "./useWarehouseConfirmSale";

@@ -9,4 +9,7 @@ export const bankStatementEndpoints = {
     createMany: "bank-operations/many",
     delete: (id: string | number) => `bank-operations/${id}`,
   },
+  counterpartyCards: {
+    createMany: "counterparty-cards/many",
+  },
 } as const;

@@ -1,13 +1,33 @@
 export interface BankOperationCreatePayload {
   bankAccountId: number;
   operationTypeId: number;
+  paymentPurposeId?: number;
   counterpartyId: number;
+  counterpartyBankAccountId: number;
+  contractId: number;
+  exchangeRate: number;
   docDate: string;
   currencyId: number;
   amount: number;
   comment: string | null;
-  stateId?: number
+  stateId?: number;
 }
 export interface BankOperationsCreatePayload {
   operations: BankOperationCreatePayload[];
+}
+
+export interface BankCounterpartyCreatePayload {
+  counterpartyTypeId: number;
+  shortName: string;
+  fullName: string;
+  inn: string;
+  phoneNumber: string;
+  email: string;
+  regionId: number;
+  districtId: number;
+  address: string;
+}
+
+export interface BankCounterpartiesCreatePayload {
+  counterparties: BankCounterpartyCreatePayload[];
 }

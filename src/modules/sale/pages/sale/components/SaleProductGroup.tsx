@@ -5,6 +5,7 @@ import { memo, useEffect, useMemo, useRef, useState } from "react";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
+import { numberSpacing } from "@/utils/utils";
 import type { SaleProductGroupForm } from "../types/form";
 import type { SaleProductGroupData } from "../types/type";
 import SaleProductLinesTable from "./SaleProductLinesTable";
@@ -15,7 +16,11 @@ interface Props {
   onApplyMargin: (lineKeys: string[], margin: number) => void;
   onApplyMarginAmount: (lineKeys: string[], marginAmount: number) => void;
   onApplySalePrice: (lineKeys: string[], salePrice: number) => void;
-  onApplyVat: (lineKeys: string[], vatRateId: number | null) => void;
+  onApplyVat: (
+    lineKeys: string[],
+    vatRateId: number | null,
+    vatRateName?: string | null,
+  ) => void;
   onLineMarginChange: (lineKey: string, margin: number) => void;
   onLineSalePriceChange: (lineKey: string, salePrice: number) => void;
 }
@@ -35,6 +40,15 @@ function SaleProductGroup({
     () => group.lines.map((line) => line.rowKey),
     [group.lines],
   );
+  const groupTotalAmount = useMemo(
+    () =>
+      group.lines.reduce(
+        (total, line) => total + line.amount * line.quantity,
+        0,
+      ),
+    [group.lines],
+  );
+  const productMxik = group.lines[0]?.productMxik;
   const initialVatRateId = group.lines.every(
     (line) => line.vatRateId === group.lines[0]?.vatRateId,
   )
@@ -79,8 +93,8 @@ function SaleProductGroup({
   useEffect(() => {
     if (previousVatRateId.current === formik.values.vatRateId) return;
     previousVatRateId.current = formik.values.vatRateId;
-    onApplyVat(lineKeys, formik.values.vatRateId);
-  }, [formik.values.vatRateId, lineKeys, onApplyVat]);
+    onApplyVat(lineKeys, formik.values.vatRateId, formik.values.vatRateName);
+  }, [formik.values.vatRateId, formik.values.vatRateName, lineKeys, onApplyVat]);
 
   return (
     <section className="overflow-hidden rounded-lg border border-border bg-primary-bg">
@@ -108,13 +122,22 @@ function SaleProductGroup({
             >
               {group.productName}
             </h3>
-            <p className="text-xs text-secondary-text">
-              Product ID: {group.productId || "-"}
-            </p>
+            <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-secondary-text">
+              <span>Product ID: {group.productId || "-"}</span>
+              {productMxik && <span>MXIK: {productMxik}</span>}
+              <span>Itemlar: {group.lines.length}</span>
+              <span>Markirovka: {group.markingCount || 0}</span>
+              <span>
+                Umumiy summa:{" "}
+                {numberSpacing(groupTotalAmount, undefined, true)}{" "}
+                {currencyCode}
+              </span>
+            </div>
           </div>
           <span className="ml-auto whitespace-nowrap rounded bg-primary/10 px-2 py-1 text-xs font-semibold text-primary xl:ml-2">
             {group.totalQuantity} ta
           </span>
+         
         </div>
 
         <Form

@@ -4,10 +4,24 @@ import type { SaleSelectedProduct } from "../types/type";
 export interface SaleDraft {
   form: SaleDocForm;
   products: SaleSelectedProduct[];
+  saleConditionKey?: string;
 }
 
 const draftKey = (organizationId: number) =>
   `accounting:sale-draft:${organizationId || "default"}`;
+
+export const getSaleConditionDraftKey = (saleCondition?: {
+  id?: number | null;
+  costingMethodId?: number | null;
+  vatRateId?: number | null;
+}) =>
+  saleCondition
+    ? [
+        saleCondition.id ?? "none",
+        saleCondition.costingMethodId ?? "none",
+        saleCondition.vatRateId ?? "none",
+      ].join(":")
+    : "";
 
 export const getSaleDraft = (organizationId: number): SaleDraft | null => {
   try {

@@ -22,27 +22,41 @@ export default function SaleProductLinesTable({
   onSalePriceChange,
 }: Props) {
   const columns: ColumnsType<SalePricingLine> = [
-    { title: "ID", dataIndex: "id", width: 74 },
+    { title: "ID", dataIndex: "id" },
+    // {
+    //   dataIndex: "purchaseDocNumber",
+    //   title: "Kirim hujjati",
+    //   width: 150,
+    //   render: (value) => value || "-",
+    // },
+    // {
+    //   dataIndex: "purchaseDate",
+    //   title: "Kirim sanasi",
+    //   width: 130,
+    //   render: (value) => formatDate(value),
+    // },
     {
       dataIndex: "markingNumber",
       title: "Markirovka",
-      width: 190,
-      render: (value) => (
-        <LineClampCell text={value ? String(value) : null} />
-      ),
+      width: 280,
+      render: (value) => {
+        return (
+     
+            <div className="w-70 "><LineClampCell text={value}/></div>
+    
+        );
+      },
     },
     {
       dataIndex: "costPrice",
       title: "Tannarx",
-      width: 140,
-      align: "right",
       render: (value: number) =>
         `${numberSpacing(value, undefined, true)} ${currencyCode}`,
     },
     {
       dataIndex: "marginPercent",
       title: "Marja, %",
-      width: 130,
+      width: 120,
       render: (value, line) => (
         <InputNumberFormat
           standalone
@@ -59,7 +73,7 @@ export default function SaleProductLinesTable({
     {
       dataIndex: "amount",
       title: "Sotuv narxi",
-      width: 160,
+      width: 120,
       render: (value, line) => (
         <InputNumberFormat
           standalone
@@ -75,22 +89,18 @@ export default function SaleProductLinesTable({
     {
       dataIndex: "quantity",
       title: "Miqdor",
-      width: 100,
       align: "center",
-      render: (value: number, line) =>
-        `${value} ${line.unitName || "dona"}`,
+      render: (value: number, line) => `${value} ${line.unitName || "dona"}`,
     },
     {
       dataIndex: "vatRateName",
       title: "QQS",
-      width: 120,
       render: (value) => vatRateName || value || "-",
     },
     {
       dataIndex: "vatAmount",
       title: "QQS summasi",
-      width: 140,
-      align: "right",
+      align: "center",
       render: (_, line) =>
         numberSpacing(
           getVatAmount(
@@ -105,8 +115,7 @@ export default function SaleProductLinesTable({
     {
       dataIndex: "totalAmount",
       title: "Jami",
-      width: 150,
-      align: "right",
+      align: "center",
       render: (_, line) => (
         <span className="font-semibold">
           {numberSpacing(line.amount * line.quantity, undefined, true)}{" "}
@@ -121,7 +130,7 @@ export default function SaleProductLinesTable({
       columns={columns}
       dataSource={generateKeyTable(lines, "rowKey")}
       pagination={false}
-      scroll={{ x: 1250 }}
+      scroll={{ x: "max-content" }}
     />
   );
 }

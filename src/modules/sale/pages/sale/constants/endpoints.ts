@@ -17,4 +17,7 @@ export const saleEndpoints = {
   productStock: {
     products: "product-stocks/products",
   },
+  productPrice: {
+    detail: (productId: string | number) => `product-prices/${productId}/details`,
+  },
 } as const;

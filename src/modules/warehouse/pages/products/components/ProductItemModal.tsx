@@ -20,13 +20,13 @@ interface ProductItemModalProps {
 
 const emptyProductItem = (isService: boolean): ProductItem => ({
   name: "",
+  barcode: "",
   mxik: "",
   description: "",
   isService,
   isPieceTracked: false,
   stateId: 1,
   unitId: null,
-  // barcode: null,
 });
 
 export default function ProductItemModal({
@@ -129,9 +129,9 @@ export default function ProductItemModal({
               fieldName="mxik"
             />
           </Col>
-              {/* <Col span={24} md={12}>
+          {/* <Col span={24} md={12}>
             <InputText
-              label="sap"
+              label="SAP kod"
               formik={productFormik}
               fieldName="barcode"
             />

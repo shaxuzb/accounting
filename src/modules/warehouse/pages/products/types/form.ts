@@ -5,7 +5,8 @@ export interface ProductGroupCreateDto {
   name: string;
   products: Array<{
     name: string;
-    barcode: string;
+    barcode: string | null;
+    mxik?: string | null;
     description: string;
     unitId: number;
     isPieceTracked: boolean;
@@ -21,7 +22,8 @@ export interface ProductGroupUpdateDto {
     id?: number | null;
     stateId?: number | null;
     name: string;
-    barcode: string;
+    barcode: string | null;
+    mxik?: string | null;
     description: string;
     unitId: number;
     isPieceTracked: boolean;
@@ -35,7 +37,8 @@ export const toCreatePayload = (
   name: form.name,
   products: form.products.map((p) => ({
     name: p.name,
-    barcode: p.mxik,
+    barcode: p.barcode || null,
+    mxik: p.mxik || null,
     description: p.description ?? "",
     unitId: p.unitId as number,
     isPieceTracked: Boolean(p.isPieceTracked),
@@ -52,7 +55,8 @@ export const toUpdatePayload = (
     id: p.new ? null : (p.id ?? null),
     stateId: p.stateId ?? null,
     name: p.name,
-    barcode: p.mxik,
+    barcode: p.barcode || null,
+    mxik: p.mxik || null,
     description: p.description ?? "",
     unitId: p.unitId as number,
     isPieceTracked: Boolean(p.isPieceTracked),
