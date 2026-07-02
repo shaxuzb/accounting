@@ -3,7 +3,6 @@ import { Button, Space, Table, Tooltip } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
 import { FileUp, Plus, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -13,15 +12,12 @@ import { bankStatementEndpoints } from "../constants/endpoints";
 import { bankPermissions } from "../constants/permissions";
 import { useGetBankOperations } from "../hooks";
 import type { BankOperationData } from "../types/type";
-import BankOperationAddEditPage from "./BankOperationAddEditPage";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 
 
 export default function BankOperationListPage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editRecord, setEditRecord] = useState<BankOperationData | null>(null);
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
@@ -97,12 +93,7 @@ export default function BankOperationListPage() {
                 editCode: bankPermissions.update,
               }}
               refetch={refetch}
-              editModal={{
-                isModal: true,
-                setOpenEditModal: setIsAddOpen,
-                setEditData: (value: unknown) =>
-                  setEditRecord(value as BankOperationData),
-              }}
+              customPath={`/main/bank/edit/${record.id}`}
             />
           ),
         },
@@ -115,16 +106,11 @@ export default function BankOperationListPage() {
         <SearchFilter />
         <Space>
           <PermissionCard permission={[bankPermissions.create, "ROLE_VIEW"]}>
-            <Button
-              type="primary"
-              icon={<Plus className="size-4" />}
-              onClick={() => {
-                setEditRecord(null);
-                setIsAddOpen(true);
-              }}
-            >
-              {t("common.add")}
-            </Button>
+            <Link to="add">
+              <Button type="primary" icon={<Plus className="size-4" />}>
+                {t("common.add")}
+              </Button>
+            </Link>
           </PermissionCard>
           <PermissionCard permission={[bankPermissions.create, "ROLE_VIEW"]}>
             <Link to="import">
@@ -148,15 +134,6 @@ export default function BankOperationListPage() {
           scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
         />
       </Card>
-      <BankOperationAddEditPage
-        open={isAddOpen}
-        onClose={() => {
-          setIsAddOpen(false);
-          setEditRecord(null);
-          void refetch();
-        }}
-        record={editRecord}
-      />
     </div>
   );
 }

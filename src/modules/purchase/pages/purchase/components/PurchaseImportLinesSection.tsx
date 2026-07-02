@@ -29,7 +29,6 @@ export default function PurchaseImportLinesSection({
   comment,
   counterpartyId,
   foundedSapCodes,
-  height,
   isFetching,
   isLoading,
   lines,
@@ -74,7 +73,7 @@ export default function PurchaseImportLinesSection({
 
       <div className="rounded-lg relative">
         <Table
-          className="sm={12} lg={8} xl={4} [&_.ant-table-tbody>tr>td]:py-3! "
+          // className="sm={12} lg={8} xl={4} [&_.ant-table-tbody>tr>td]:py-3! "
           loading={loading}
           columns={columns}
           dataSource={lines.map((item, index) => ({
@@ -83,13 +82,14 @@ export default function PurchaseImportLinesSection({
             key: index + 1,
           }))}
           virtual
-          scroll={{ y: height - 320, x: "max-content" }}
+          scroll={{ y: "height - 320", x: "max-content" }}
           pagination={false}
         />
         <PurchaseImportSummary
           comment={comment}
           totals={totals}
           onCommentChange={onCommentChange}
+        
         />
         <div className="sticky bottom-0 z-10 flex justify-center border-t border-border bg-primary-bg/95 py-2 backdrop-blur">
           <Tooltip title="Qator qo'shish">

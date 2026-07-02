@@ -2,6 +2,7 @@ import type { RouteObject } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import BankOperationListPage from "./pages/statement/screens/BankOperationListPage";
 import BankStatementImportPage from "./pages/statement/screens/BankStatementImportPage";
+import BankOperationAddEditPage from "./pages/statement/screens/BankOperationAddEditPage";
 import { bankPermissions } from "./pages/statement/constants/permissions";
 
 const withPermission = (
@@ -32,6 +33,30 @@ export const bankRoutes: RouteObject = {
       ]),
       handle: {
         title: "bank.statementImport",
+        showBack: true,
+        backTo: "..",
+      },
+    },
+    {
+      path: "add",
+      element: withPermission(<BankOperationAddEditPage />, [
+        bankPermissions.create,
+        "ROLE_VIEW",
+      ]),
+      handle: {
+        title: "settings.form.createTitle",
+        showBack: true,
+        backTo: "..",
+      },
+    },
+    {
+      path: "edit/:id",
+      element: withPermission(<BankOperationAddEditPage />, [
+        bankPermissions.update,
+        "ROLE_VIEW",
+      ]),
+      handle: {
+        title: "settings.form.editTitle",
         showBack: true,
         backTo: "..",
       },

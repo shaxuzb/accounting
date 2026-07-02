@@ -38,6 +38,7 @@ export const selectListEndpoints = {
   priceRoundingMethodsSelectList: "manuals/price-rounding-methods",
   costingMethodsSelectList: "manuals/costing-methods",
   counterPartyBankAccounts: "manuals/counterparty-bank-accounts", 
+  paymentPurposes: "manuals/payment-purposes",
 };
 
 export const selectListKeys = {
@@ -78,6 +79,7 @@ export const selectListKeys = {
   priceRoundingMethod: "selectListPriceRoundingMethods",
   costingMethod: "selectListCostingMethods",
   counterPartyBankAccount: "selectListCounterPartyBankAccounts",
+  paymentPurposes: "selectListPaymentPurposes",
 };
 
 export const filterIds = {
@@ -116,4 +118,5 @@ export const filterIds = {
   priceRoundingMethod: "priceRoundingMethodId",
   costingMethod: "costingMethodId",
   counterPartyBankAccount: "counterPartyBankAccountId",
+  paymentPurposes: "paymentPurposeId",
 };

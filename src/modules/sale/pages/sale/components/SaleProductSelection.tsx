@@ -311,7 +311,6 @@ export default function SaleProductSelection({
     {
       dataIndex: "indexId",
       title: "T/r",
-      width: 44,
       align: "center",
       className: "whitespace-nowrap",
     },
@@ -329,7 +328,6 @@ export default function SaleProductSelection({
             isFetching ||
             loadingProductId === record.productId
           }
-          optionFilterProp="label"
           options={productOptions}
           disabled={disabled}
           onChange={(value) => handleSelectProduct(Number(value), record.rowKey)}
@@ -379,10 +377,11 @@ export default function SaleProductSelection({
       width: 100,
       render: (value, record) =>
         isNewRow(record.rowKey) ? (
-          <InputNumberFormat standalone value={0} emptyZero disabled />
+          <InputNumberFormat standalone value={0} emptyZero disabled height={30} />
         ) : (
           <InputNumberFormat
             standalone
+            height={30}
             emptyZero
             min={0}
             max={record.availableQuantity}
@@ -415,6 +414,7 @@ export default function SaleProductSelection({
       render: (value, record) => (
         <InputNumberFormat
           standalone
+          height={30}
           emptyZero
           value={Number(value ?? 0)}
           disabled={isNewRow(record.rowKey) || disabled}
@@ -454,7 +454,6 @@ export default function SaleProductSelection({
             className="min-w-28"
             value={record.vatRateId ?? undefined}
             disabled={isNewRow(record.rowKey) || disabled}
-            optionFilterProp="label"
             options={vatRateOptions.map((item) => ({
               value: item.id,
               label: item.name,

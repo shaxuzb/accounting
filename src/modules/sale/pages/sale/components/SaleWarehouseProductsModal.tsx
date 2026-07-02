@@ -3,7 +3,7 @@ import type { TableColumnsType } from "antd";
 import { Plus, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import InputNumberFormat from "@/components/fields/InputNumber";
-import { numberSpacing } from "@/utils/utils";
+import { formatDate, numberSpacing } from "@/utils/utils";
 import { useGetProductPriceDetails } from "../hooks";
 import type {
   SaleProductPriceLayer,
@@ -140,27 +140,23 @@ export default function SaleWarehouseProductsModal({
     {
       dataIndex: "indexId",
       title: "T/r",
-      width: 48,
       align: "center",
       render: (_, __, index) => index + 1,
     },
     {
       dataIndex: "productName",
       title: "Mahsulot",
-      minWidth: 260,
       render: (_, record) => getProductName(record.product),
     },
     {
       dataIndex: "purchaseDocNumber",
       title: "Kirim hujjati",
-      width: 150,
       render: (_, record) => record.layer.purchaseDocNumber || "-",
     },
     {
       dataIndex: "purchaseDate",
       title: "Kirim sanasi",
-      width: 170,
-      render: (_, record) => record.layer.purchaseDate || "-",
+      render: (_, record) => formatDate(record.layer.purchaseDate) || "-",
     },
     // {
     //   dataIndex: "mxik",
@@ -172,35 +168,31 @@ export default function SaleWarehouseProductsModal({
     {
       dataIndex: "availableQuantity",
       title: "Qoldiq",
-      align: "right",
-      width: 100,
+      align: "center",
       render: (_, record) =>
         numberSpacing(record.layer.availableQuantity, undefined, true),
     },
     { 
       dataIndex: "unitName",
       title: "Birlik",
-      width: 90,
       render: (_, record) => record.product.unitName || "Dona",
     },
     {
       dataIndex: "unitPrice",
       title: "Tannarx",
-      align: "right",
-      width: 130,
+      align: "center",
       render: (_, record) => numberSpacing(record.layer.unitPrice, undefined, true),
     },
     {
       dataIndex: "salePrice",
       title: "Sotuv narxi",
-      align: "right",
-      width: 130,
+      align: "center",
       render: (_, record) => numberSpacing(record.layer.salePrice, undefined, true),
     },
     {
       dataIndex: "quantity",
       title: "Miqdor",
-      width: 140,
+      width: 130,
       render: (_, record) => (
         <InputNumberFormat
           standalone
@@ -220,9 +212,8 @@ export default function SaleWarehouseProductsModal({
     },
     {
       dataIndex: "actions",
-      title: "Amallar",
+      // title: "Amallar",
       align: "center",
-      width: 90,
       render: (_, record) => {
         const productId = getStockProductId(record.product);
         const quantity = Number(quantities[record.rowKey] ?? 0);
@@ -244,7 +235,7 @@ export default function SaleWarehouseProductsModal({
       open={open}
       title="Omborxona"
       footer={null}
-      width={1400}
+      width={1500}
       destroyOnHidden
       onCancel={onClose}
     >

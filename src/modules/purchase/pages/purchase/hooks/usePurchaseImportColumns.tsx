@@ -103,12 +103,12 @@ export const usePurchaseImportColumns = ({
               placeholder={purchaseMode === "services" ? "Xizmat" : "Tovar"}
               value={record.productId ?? undefined}
               loading={isLoading || isServicesLoading}
-              optionFilterProp="label"
               options={itemOptions.map((item) => ({
                 value: item.id,
                 label: item.name,
               }))}
               onChange={(value) => handleItemSelect(rowIndex, Number(value))}
+              size="medium"
             />
           ),
         };
@@ -194,7 +194,6 @@ export const usePurchaseImportColumns = ({
               className="w-full"
               placeholder="Birlik"
               value={(record.unitId as number | null) ?? undefined}
-              optionFilterProp="label"
               options={unitOptions.map((item) => ({
                 value: item.id,
                 label: item.name,
@@ -260,7 +259,6 @@ export const usePurchaseImportColumns = ({
                 className="min-w-28"
                 placeholder="QQS"
                 value={record.vatRateId ?? undefined}
-                optionFilterProp="label"
                 options={vatRateOptions.map((item) => ({
                   value: item.id,
                   label: item.name,
@@ -291,7 +289,7 @@ export const usePurchaseImportColumns = ({
       },
       {
         dataIndex: "actions",
-        title: "Amallar",
+        // title: "Amallar",
         render: (_: unknown, __: PurchaseImportRow, rowIndex: number) => (
           <Tooltip title="Qatorni o'chirish">
             <Button

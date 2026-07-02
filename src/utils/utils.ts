@@ -43,7 +43,7 @@ export function numberSpacingWithCurrency(
 
 export const formatDate = (
   value?: string | number | Date,
-  format = "DD.MM.YYYY",
+  format = "DD.MM.YYYY  HH:mm",
 ) => (value ? dayjs(value).format(format) : "-");
 
 export const hexToRgb = (hex: string) => {

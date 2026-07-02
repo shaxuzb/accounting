@@ -1,28 +1,24 @@
-import { Button, Col, Form, Modal, Row, Select, Segmented, Spin } from "antd";
-import { useEffect, useMemo } from "react";
+import { Button, Col, Form, Row, Segmented, Spin } from "antd";
+import { useEffect, useMemo, useRef } from "react";
+import { useNavigate, useParams } from "react-router";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { useQuery } from "@tanstack/react-query";
 import dayjs from "@/config/dayjs";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
-import { selectListKeys } from "@/shared/constants/selectLists";
-import { $axiosPrivate } from "@/services/AxiosService";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { useCreateBankOperation, useUpdateBankOperation } from "../hooks";
-
+import {
+  useCreateBankOperation,
+  useGetDetailBankOperation,
+  useUpdateBankOperation,
+} from "../hooks";
 import { schema } from "../types/schema";
 import type { BankOperationCreatePayload } from "../types/form";
-import type { BankOperationData } from "../types/type";
-
-interface PaymentPurposeOption {
-  id: number;
-  name: string;
-}
+import Card from "@/components/ui/card/Card";
 
 const toPositiveNumber = (value: unknown) => {
   const numberValue = Number(value);
@@ -53,7 +49,7 @@ type BankOperationForm = Omit<
 
 const defaultValues: BankOperationForm = {
   bankAccountId: null,
-  operationTypeId: null,
+  operationTypeId: 1,
   paymentPurposeId: null,
   counterpartyId: null,
   counterpartyBankAccountId: null,
@@ -66,21 +62,17 @@ const defaultValues: BankOperationForm = {
   stateId: null,
 };
 
-interface BankOperationAddEditPageProps {
-  open: boolean;
-  onClose: () => void;
-  record?: BankOperationData | null;
-}
-
-export default function BankOperationAddEditPage({
-  open,
-  onClose,
-  record,
-}: BankOperationAddEditPageProps) {
+export default function BankOperationAddEditPage() {
   const { t } = useTranslation();
-  const isEdit = Boolean(record?.id);
+  const navigate = useNavigate();
+  const params = useParams();
+  const id = params.id;
+  const isEdit = Boolean(id);
   const createMutation = useCreateBankOperation();
   const updateMutation = useUpdateBankOperation();
+  const { data: record, isLoading: isDetailLoading } =
+    useGetDetailBankOperation(id);
+
   const formik = useFormik<BankOperationForm>({
     initialValues: defaultValues,
     enableReinitialize: true,
@@ -103,15 +95,16 @@ export default function BankOperationAddEditPage({
           ...(isEdit ? { stateId: Number(values.stateId) } : {}),
         };
 
-        if (isEdit && record?.id) {
-          await updateMutation.mutateAsync({ id: record.id, payload });
+        if (isEdit && id) {
+          await updateMutation.mutateAsync({ id, payload });
           toast.success(t("settings.messages.updated"));
         } else {
           await createMutation.mutateAsync(payload);
           toast.success(t("settings.messages.created"));
         }
+
         helpers.resetForm();
-        onClose();
+        navigate("..");
       } catch (err: unknown) {
         errorHandlers(err);
       }
@@ -122,32 +115,10 @@ export default function BankOperationAddEditPage({
     () => toPositiveNumber(formik.values.operationTypeId),
     [formik.values.operationTypeId],
   );
-
-  const {
-    data: paymentPurposeOptions = [],
-    isLoading: isPaymentPurposeLoading,
-  } = useQuery<PaymentPurposeOption[]>({
-    queryKey: ["selectlist", selectListKeys.paymentPurpose, operationTypeId],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<PaymentPurposeOption[]>(
-        `${selectListEndpoints.paymentPurposesSelectList}?operationTypeId=${operationTypeId}`,
-      );
-      return data ?? [];
-    },
-    enabled: open && Boolean(operationTypeId),
-  });
-
-  const paymentPurposeOptionsForSelect = useMemo(
-    () =>
-      paymentPurposeOptions.map((option) => ({
-        value: option.id,
-        label: option.name,
-      })),
-    [paymentPurposeOptions],
-  );
+  const previousOperationTypeId = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!record || !open) return;
+    if (!record) return;
 
     formik.setValues({
       bankAccountId: record.bankAccountId ?? null,
@@ -164,37 +135,32 @@ export default function BankOperationAddEditPage({
       stateId: record.stateId ?? null,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [record, open]);
+  }, [record]);
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   useEffect(() => {
-    const selectedPaymentPurposeId = toPositiveNumber(
-      formik.values.paymentPurposeId,
-    );
-    if (!operationTypeId || !selectedPaymentPurposeId) return;
-
-    const isAllowed = paymentPurposeOptions.some(
-      (option) => option.id === selectedPaymentPurposeId,
-    );
-    if (!isAllowed) {
+    if (
+      previousOperationTypeId.current !== null &&
+      previousOperationTypeId.current !== operationTypeId
+    ) {
       formik.setFieldValue("paymentPurposeId", null, false);
     }
-  }, [formik, operationTypeId, paymentPurposeOptions]);
-
-  if (!open) return null;
+    previousOperationTypeId.current = operationTypeId;
+  }, [formik, operationTypeId]);
 
   return (
-    <Modal
-      title={
-        <div className="flex justify-between">
-          <div>
-            {isEdit
-              ? t("settings.form.editTitle")
-              : t("settings.form.createTitle")}
+    <div className="w-full ">
+      <Card className="w-full border border-border p-4">
+        <div className="mb-6 space-y-4">
+          <div className="space-y-1">
+            <div className="text-xl font-semibold text-text">
+              {isEdit
+                ? t("settings.form.editTitle")
+                : t("settings.form.createTitle")}
+            </div>
           </div>
-          <div className="w-70 mr-8">
-            {/* <Col span={12}> */}
+          <div className="w-80">
             <Segmented
               block
               options={[
@@ -204,143 +170,143 @@ export default function BankOperationAddEditPage({
               value={operationTypeId ?? undefined}
               disabled={isSubmitting}
               onChange={(value) =>
-                formik.setFieldValue("operationTypeId", value, true)
+                formik.setFieldValue("operationTypeId", value)
               }
             />
-            {/* </Col> */}
           </div>
         </div>
-      }
-      open={open}
-      onCancel={() => {
-        formik.resetForm();
-        onClose();
-      }}
-      footer={null}
-      centered
-      width={760}
-      destroyOnHidden
-    >
-      <Spin spinning={createMutation.isPending}>
-        <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <Row gutter={[16, 8]}>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="bankAccountId"
-                label="bank.fields.bankAccount"
-                path={selectListEndpoints.orgBankAccountsSelectList}
-              />
-            </Col>
 
-            <Col span={12}>
-              <Form.Item label="To'lov maqsadi">
-                <Select
-                  showSearch
-                  value={formik.values.paymentPurposeId ?? undefined}
-                  placeholder="To'lov maqsadini tanlang"
-                  options={paymentPurposeOptionsForSelect}
-                  allowClear
-                  loading={isPaymentPurposeLoading}
-                  // disabled={isSubmitting || !formik.values.operationTypeId}
-                  onChange={(value) =>
-                    formik.setFieldValue(
-                      "paymentPurposeId",
-                      value ? Number(value) : null,
-                      true,
-                    )
-                  }
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="counterpartyId"
-                label="bank.fields.counterparty"
-                path={selectListEndpoints.counterpartiesSelectList}
-              />
-            </Col>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="counterpartyBankAccountId"
-                label="Counterparty bank hisob raqami"
-                path={selectListEndpoints.counterPartyBankAccounts}
-              />
-            </Col>
-            <Col span={12}>
-              <InputNumberFormat
-                formik={formik}
-                fieldName="exchangeRate"
-                label="Kurs"
-                min={0}
-                precision={6}
-              />
-            </Col>
-            <Col span={12}>
-              <SelectDate
-                formik={formik}
-                fieldName="docDate"
-                label="bank.fields.date"
-              />
-            </Col>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="currencyId"
-                label="settings.fields.currency"
-                path={selectListEndpoints.currenciesSelectList}
-              />
-            </Col>
-            <Col span={12}>
-              <InputNumberFormat
-                formik={formik}
-                fieldName="amount"
-                label="bank.fields.amount"
-                min={0}
-                precision={2}
-              />
-            </Col>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="contractId"
-                label="Shartnoma"
-                path={selectListEndpoints.contractsSelectList}
-              />
-            </Col>
-            <Col span={24}>
-              <InputText
-                formik={formik}
-                fieldName="comment"
-                label="bank.fields.comment"
-              />
-            </Col>
-            {isEdit && (
-              <Col span={12}>
+        <Spin spinning={isSubmitting || isDetailLoading}>
+          <Form layout="vertical" onFinish={formik.handleSubmit}>
+            <Row gutter={[24, 8]}>
+              <Col span={8}>
                 <SelectCustom
                   formik={formik}
-                  fieldName="stateId"
-                  label="settings.fields.status"
-                  path={selectListEndpoints.statesSelectList}
+                  fieldName="bankAccountId"
+                  label="bank.fields.bankAccount"
+                  path={selectListEndpoints.orgBankAccountsSelectList}
                 />
               </Col>
-            )}
-          </Row>
 
-          <Button
-            type="primary"
-            htmlType="submit"
-            block
-            size="large"
-            className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-            loading={isSubmitting}
-          >
-            {t("common.submit")}
-          </Button>
-        </Form>
-      </Spin>
-    </Modal>
+              <Col span={8}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="paymentPurposeId"
+                  label="To'lov maqsadi"
+                  path={`${selectListEndpoints.paymentPurposesSelectList}?operationTypeId=${operationTypeId ?? ""}`}
+                  enabled={Boolean(operationTypeId)}
+                  clearable
+                  search
+                  placeholder="To'lov maqsadini tanlang"
+                  // disabled={!operationTypeId}
+                  refetchSync={String(operationTypeId ?? "")}
+                  marginBottom="mb-0"
+                />
+              </Col>
+
+              <Col span={8}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="counterpartyId"
+                  label="bank.fields.counterparty"
+                  path={selectListEndpoints.counterpartiesSelectList}
+                />
+              </Col>
+
+              <Col span={8}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="counterpartyBankAccountId"
+                  label="Counterparty bank hisob raqami"
+                  path={selectListEndpoints.counterPartyBankAccounts}
+                />
+              </Col>
+
+              <Col span={8}>
+                <InputNumberFormat
+                  formik={formik}
+                  fieldName="exchangeRate"
+                  label="Kurs"
+                  min={0}
+                  precision={6}
+                />
+              </Col>
+
+              <Col span={8}>
+                <SelectDate
+                  formik={formik}
+                  fieldName="docDate"
+                  label="bank.fields.date"
+                />
+              </Col>
+
+              <Col span={8}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="currencyId"
+                  label="settings.fields.currency"
+                  path={selectListEndpoints.currenciesSelectList}
+                />
+              </Col>
+
+              <Col span={8}>
+                <InputNumberFormat
+                  formik={formik}
+                  fieldName="amount"
+                  label="bank.fields.amount"
+                  min={0}
+                  precision={2}
+                />
+              </Col>
+
+              <Col span={8}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="contractId"
+                  label="Shartnoma"
+                  path={selectListEndpoints.contractsSelectList}
+                />
+              </Col>
+              {isEdit ? (
+                <>
+                  <Col span={8}>
+                    <SelectCustom
+                      formik={formik}
+                      fieldName="stateId"
+                      label="settings.fields.status"
+                      path={selectListEndpoints.statesSelectList}
+                    />
+                  </Col>
+                  <Col span={16}>
+                    <InputText
+                      formik={formik}
+                      fieldName="comment"
+                      label="bank.fields.comment"
+                    />
+                  </Col>
+                </>
+              ) : (
+                <Col span={24}>
+                  <InputText
+                    formik={formik}
+                    fieldName="comment"
+                    label="bank.fields.comment"
+                  />
+                </Col>
+              )}
+            </Row>
+
+            <div className=" flex justify-end gap-3 ">
+              <Button onClick={() => navigate("..")}>
+                {t("common.cancel")}
+              </Button>
+              <Button type="primary" htmlType="submit" loading={isSubmitting}>
+                {t("common.submit")}
+              </Button>
+            </div>
+          </Form>
+        </Spin>
+      </Card>
+    </div>
   );
 }
