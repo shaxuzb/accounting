@@ -2,71 +2,14 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router";
 import { RefreshCw } from "lucide-react";
 import { Button, Spin, Table } from "antd";
-import type { TableColumnsType } from "antd";
-import { customDate, generateKeyTable } from "@/utils/utils";
-import dayjs from "@/config/dayjs";
+import { generateKeyTable } from "@/utils/utils";
 import Card from "@/components/ui/card/Card";
 import { useGetPostingTemplateViews } from "../hooks";
 import type { PostingTemplateView } from "../types/type";
-
-const toDisplayValue = (value: unknown) => {
-  if (value === null || value === undefined) return "-";
-
-  if (typeof value === "boolean") return value ? "Ha" : "Yo'q";
-
-  if (typeof value === "number") return String(value);
-
-  if (value instanceof Date) return customDate(value.toISOString());
-
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    if (
-      trimmed &&
-      dayjs(trimmed).isValid() &&
-      trimmed.includes("T") &&
-      trimmed.includes("-")
-    ) {
-      return customDate(trimmed);
-    }
-    return trimmed || "-";
-  }
-
-  if (typeof value === "object") {
-    return JSON.stringify(value);
-  }
-
-  return String(value);
-};
-
-const getColumnCandidates = (record: PostingTemplateView | null) => {
-  if (!record) return [];
-
-  const ordered = [
-    "name",
-    "templateName",
-    "title",
-    "code",
-    "statusName",
-    "stateName",
-    "organizationName",
-    "createdAt",
-    "updatedAt",
-    "createdBy",
-    "id",
-  ];
-  const keys = new Set(Object.keys(record));
-  const base = ordered.filter((field) => keys.has(field));
-
-  const additional = [...keys].filter(
-    (key) =>
-      !base.includes(key) &&
-      key !== "id" &&
-      key !== "key" &&
-      key !== "indexId",
-  );
-
-  return [...base, ...additional].slice(0, 10);
-};
+import {
+  createPostingTemplateViewColumns,
+  getPostingTemplateViewFields,
+} from "../components";
 
 export default function PostingTemplateViewsPage() {
   const navigate = useNavigate();
@@ -78,24 +21,11 @@ export default function PostingTemplateViewsPage() {
 
   const titleLabel = useMemo(() => {
     const first = tableData?.[0] as PostingTemplateView | undefined;
-    return getColumnCandidates(first ?? null);
+    return getPostingTemplateViewFields(first ?? null);
   }, [tableData]);
 
-  const columns = useMemo<TableColumnsType<PostingTemplateView>>(
-    () => [
-      {
-        dataIndex: "indexId",
-        title: "No",
-        width: 72,
-        align: "center",
-      },
-      ...titleLabel.map((field) => ({
-        title: field,
-        dataIndex: field,
-        width: 220,
-        render: (value: unknown) => toDisplayValue(value),
-      })),
-    ],
+  const columns = useMemo(
+    () => createPostingTemplateViewColumns(titleLabel),
     [titleLabel],
   );
 

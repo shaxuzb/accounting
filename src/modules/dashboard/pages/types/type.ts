@@ -6,3 +6,9 @@ export interface PostingTemplateView {
 export interface PostingTemplateViewsPageParams {
   [key: string]: string | number | boolean | null | undefined;
 }
+
+export interface PostingTemplateViewDetailRow {
+  key: string;
+  field: string;
+  value: unknown;
+}

@@ -33,6 +33,7 @@ import { settingsBankPermissions } from "@/modules/settings/pages/bank/constants
 import { pricingConditionPermissions } from "@/modules/settings/pages/pricingCondition/constants/permissions";
 import { saleConditionPermissions } from "@/modules/settings/pages/saleCondition/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
+import { dashboardPermissions } from "@/modules/dashboard/pages/constants/permissions";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -65,7 +66,7 @@ export const settingsViewPermissions = [
 export const menuPermissions: MainMenu = {
   TOP: [
     {
-      code: "ROLE_VIEW",
+      code: dashboardPermissions.view,
       linkData: {
         path: "dashboard",
         title: "Boshqaruv",
