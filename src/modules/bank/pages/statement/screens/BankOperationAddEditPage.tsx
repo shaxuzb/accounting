@@ -152,13 +152,11 @@ export default function BankOperationAddEditPage() {
   return (
     <div className="w-full ">
       <Card className="w-full border border-border p-4">
-        <div className="mb-6 space-y-4">
-          <div className="space-y-1">
-            <div className="text-xl font-semibold text-text">
-              {isEdit
-                ? t("settings.form.editTitle")
-                : t("settings.form.createTitle")}
-            </div>
+        <div className=" flex justify-between mb-6 ">
+          <div className="text-xl font-semibold text-text">
+            {isEdit
+              ? t("settings.form.editTitle")
+              : t("settings.form.createTitle")}
           </div>
           <div className="w-80">
             <Segmented

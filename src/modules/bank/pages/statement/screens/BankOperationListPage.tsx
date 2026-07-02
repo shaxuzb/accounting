@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from "react-router";
 import { Button, Space, Table, Tooltip } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { FileUp, Plus, RefreshCw } from "lucide-react";
+import { FileUp, Plus, ReceiptText, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
@@ -35,17 +35,30 @@ export default function BankOperationListPage() {
       title: t("bank.fields.date"),
       render: (value) => customDate(value),
     },
-    {
-      dataIndex: "bankAccountName",
-      title: t("bank.fields.bankAccount"),
+        {
+      dataIndex: "accountingEntriesReport",
+      title: "Provodka",
       align: "center",
-      render: (_, record) => record.bankAccountName ?? record.bankAccountId,
+      render: (_, record) => (
+        <Link
+          to={`/main/accountingentriesreport?documentTypeId=3&documentId=${record.id}`}
+        >
+          <Button icon={<ReceiptText className="size-4" />} />
+        </Link>
+      ),
     },
+    // {
+    //   dataIndex: "bankAccountName",
+    //   title: t("bank.fields.bankAccount"),
+    //   align: "center",
+    //   render: (_, record) => record.bankAccountName ?? record.bankAccountId,
+    // },
     {
       dataIndex: "operationTypeName",
       title: t("bank.fields.operationType"),
       render: (_, record) => record.operationTypeName ?? record.operationTypeId,
     },
+
     {
       dataIndex: "counterpartyName",
       title: t("bank.fields.counterparty"),
@@ -60,7 +73,7 @@ export default function BankOperationListPage() {
     {
       dataIndex: "comment",
       title: t("bank.fields.comment"),
-      width: 200,
+      width: 400,
       render: (value) => {
         return (
           <Tooltip title={value}>
@@ -82,7 +95,6 @@ export default function BankOperationListPage() {
           title: t("common.actions"),
           align: "center",
           fixed: "right",
-          width: 90,
           render: (_, record) => (
             <ActionColumn
               deletePath={bankStatementEndpoints.operations.list}
