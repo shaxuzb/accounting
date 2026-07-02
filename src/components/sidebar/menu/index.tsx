@@ -171,8 +171,8 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
                   icon: (
                     <span
                       className={cn(
-                        "sidebar-menu-dot block size-2 rounded-full transition-colors duration-150 group-hover:bg-[#3b82f6]",
-                        isSelected ? "bg-[#1d4ed8]" : "bg-[#d8e0ea]",
+                        "sidebar-menu-dot bg-border group-hover:bg-primary block size-2 rounded-full transition-colors duration-150",
+                        isSelected ? "bg-primary" : "bg-border",
                       )}
                     />
                   ),

@@ -20,10 +20,10 @@ const LogoSide = () => {
         {/* Title */}
         {!sidebarInline.sidebar && (
           <div>
-            <h1 className="text-xl font-bold leading-none  text-blue-600">
+            <h1 className="text-blue-600  text-xl font-bold leading-none">
               HisobKitob
             </h1>
-            <p className="text-[10px] text-gray-400 font-semibold mt-0.5  tracking-wider">
+            <p className="text-blue-600 mt-0.5 text-[10px] font-semibold tracking-wider">
               Buxgalteriya tizimi
             </p>
           </div>

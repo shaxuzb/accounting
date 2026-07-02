@@ -5,13 +5,14 @@ import ProfileIcon from "@/assets/images/profile/profile.svg";
 import { useNavigate } from "react-router";
 import { ProfilePopoverContent } from "./components/ProfilePopoverContent";
 import { logout } from "@/store/features/authSlice";
-import { toggleMode } from "@/store/features/modeSlice";
+import { setMode } from "@/store/features/modeSlice";
 import toast from "react-hot-toast";
 const ProfileNav: React.FC = () => {
   const navigate = useNavigate();
   // const loading = useAppSelector((state) => state.auth.loading);
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth?.user);
+  const themeMode = useAppSelector((state) => state.mode.mode);
   const [mainPopover, setMainPopover] = useState(false);
   const handleLogout = async () => {
     await navigate("/login", { replace: true });
@@ -24,7 +25,9 @@ const ProfileNav: React.FC = () => {
       fullName={user?.user?.userName}
       phone={user?.user?.phoneNumber || "+998 -- --- -- --"}
       onProfileClick={() => navigate("/profile")}
-      onThemeClick={() => dispatch(toggleMode())}
+      onThemeClick={() =>
+        dispatch(setMode(themeMode === "dark" ? "light" : "dark"))
+      }
       onSecurityClick={() => navigate("/settings/security")}
       onLanguageClick={() => {}}
       onWallpaperClick={() => navigate("/settings/wallpaper")}
@@ -55,13 +58,13 @@ const ProfileNav: React.FC = () => {
           <Avatar
             src={ProfileIcon}
             size={40}
-            className="border border-teal-500"
+            className="border border-border shadow-sm"
           />
           <div className="flex flex-col justify-center">
             <h2 className="text-[14px] text-text font-bold leading-tight m-0 flex items-center">
               {user?.user?.userName}
             </h2>
-            <p className="text-[12px] text-gray-400 font-medium m-0 mt-0.5 leading-none">
+            <p className="text-muted-second m-0 mt-0.5 text-[12px] font-medium leading-none">
               {user?.user?.roleName}
             </p>
           </div>

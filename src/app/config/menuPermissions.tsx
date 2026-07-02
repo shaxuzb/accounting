@@ -2,6 +2,7 @@ import { purchasePermissions } from "@/modules/purchase/pages/purchase";
 
 import type { MenuRole } from "@/shared/types";
 import {
+  Banknote,
   Box,
   Briefcase,
   Building,
@@ -136,6 +137,14 @@ export const menuPermissions: MainMenu = {
       iconName: <Landmark className="size-5" />,
       filterCode: bankPermissions.view,
     },
+    {
+      code: "SET",
+      linkData: {
+        path: "dashboard/financesss",
+        title: "Kassa",
+      },
+      iconName: <Banknote className="size-5" />,
+    },
 
     {
       code: salePermissions.view,
@@ -164,15 +173,6 @@ export const menuPermissions: MainMenu = {
         },
       ],
     },
-
-    // {
-    //   code: "SET",
-    //   linkData: {
-    //     path: "dashboard/financesss",
-    //     title: "Kassa",
-    //   },
-    //   iconName: <Banknote className="size-5" />,
-    // },
 
     // {
     //   code: "S",

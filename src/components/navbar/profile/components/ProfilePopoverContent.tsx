@@ -1,6 +1,13 @@
 ﻿import React, { useRef, useState } from "react";
 import { Avatar, Button, Popover } from "antd";
-import { ChevronRight, Moon, ShieldCheck, Palette, LogOut } from "lucide-react";
+import {
+  ChevronRight,
+  Moon,
+  ShieldCheck,
+  Palette,
+  LogOut,
+  Sun,
+} from "lucide-react";
 import ProfileIcon from "@/assets/images/profile/profile.svg";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useTranslation } from "react-i18next";
@@ -35,7 +42,7 @@ const MenuCard = ({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-transparent py-1 bg-primary-bg transition-all hover:border-gray-100 hover:bg-gray-100"
+      className="bg-primary-bg hover:bg-surface-hover hover:border-border flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-transparent py-1 transition-all"
     >
       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary text-muted-second">
         {icon}
@@ -116,7 +123,7 @@ const LanguagePopoverContent = ({ onSelect }: { onSelect?: () => void }) => {
           className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition ${
             lang === item.key
               ? "bg-secondary text-foreground font-semibold"
-              : "hover:bg-gray-100"
+              : "hover:bg-surface-hover text-text"
           }`}
         >
           {item.icon}
@@ -142,20 +149,22 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
 }) => {
   const { t } = useTranslation();
   const lang = useAppSelector((state) => state.lang.lang);
+  const themeMode = useAppSelector((state) => state.mode.mode);
   const [langPopover, setLangPopover] = useState(false);
   const langTriggerRef = useRef<HTMLDivElement | null>(null);
+  const isDarkMode = themeMode === "dark";
 
   return (
     <div className="rounded-lg bg-primary-bg p-0">
       <div className="rounded-lg border border-secondary p-2 ">
         <div
           onClick={onProfileClick}
-          className="flex cursor-pointer items-center justify-between rounded-lg border border-secondary bg-primary-bg p-2  hover:bg-gray-100"
+          className="bg-primary-bg hover:bg-surface-hover flex cursor-pointer items-center justify-between rounded-lg border border-secondary p-2"
         >
           <div className="flex items-center gap-3">
             <Avatar src={ProfileIcon} size={30} />
             <div>
-              <div className="text-[14px] font-semibold text-slate-900">
+              <div className="text-text text-[14px] font-semibold">
                 {fullName ?? t("profile.defaultUser")}
               </div>
               <div className="text-xs text-muted-second">{phone}</div>
@@ -168,8 +177,14 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
         <div className="mt-3 rounded-lg bg-primary-bg ">
           <div className="grid grid-cols-4 gap-3 ">
             <MenuCard
-              icon={<Moon className="size-5" />}
-              label={t("profile.theme")}
+              icon={
+                isDarkMode ? (
+                  <Sun className="size-5" />
+                ) : (
+                  <Moon className="size-5" />
+                )
+              }
+              label={`${t("profile.theme")} ${isDarkMode ? "Dark" : "Light"}`}
               onClick={onThemeClick}
             />
 
