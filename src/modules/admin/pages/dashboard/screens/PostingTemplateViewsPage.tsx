@@ -58,7 +58,11 @@ const getColumnCandidates = (record: PostingTemplateView | null) => {
   const base = ordered.filter((field) => keys.has(field));
 
   const additional = [...keys].filter(
-    (key) => !base.includes(key) && key !== "id" && key !== "key" && key !== "indexId",
+    (key) =>
+      !base.includes(key) &&
+      key !== "id" &&
+      key !== "key" &&
+      key !== "indexId",
   );
 
   return [...base, ...additional].slice(0, 10);
@@ -70,10 +74,7 @@ export default function PostingTemplateViewsPage() {
     useGetPostingTemplateViews();
 
   const rows = data ?? [];
-  const tableData = useMemo(
-    () => generateKeyTable(rows, "id"),
-    [rows],
-  );
+  const tableData = useMemo(() => generateKeyTable(rows, "id"), [rows]);
 
   const titleLabel = useMemo(() => {
     const first = tableData?.[0] as PostingTemplateView | undefined;
@@ -84,7 +85,7 @@ export default function PostingTemplateViewsPage() {
     () => [
       {
         dataIndex: "indexId",
-        title: "№",
+        title: "No",
         width: 72,
         align: "center",
       },
@@ -123,7 +124,11 @@ export default function PostingTemplateViewsPage() {
             pagination={false}
             scroll={{ x: "max-content", y: "calc(100vh - 260px)" }}
             onRow={(record) => ({
-              onClick: () => navigate(`/main/dashboard/posting-template-views/${record.id}`),
+              onClick: () =>
+                record.id !== undefined &&
+                navigate(
+                  `/main/dashboard/posting-template-views/${record.id}`,
+                ),
             })}
             rowClassName={() => "cursor-pointer"}
           />

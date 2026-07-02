@@ -19,7 +19,11 @@ export const adminRoutes: RouteObject = {
     {
       path: "posting-template-views/:id",
       element: <PostingTemplateViewDetailPage />,
-      handle: { title: "Posting Template View Detail" },
+      handle: {
+        title: "Posting Template View Detail",
+        showBack: true,
+        backTo: "..",
+      },
     },
   ],
 };

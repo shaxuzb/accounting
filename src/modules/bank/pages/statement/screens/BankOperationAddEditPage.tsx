@@ -18,7 +18,6 @@ import { useCreateBankOperation, useUpdateBankOperation } from "../hooks";
 import { schema } from "../types/schema";
 import type { BankOperationCreatePayload } from "../types/form";
 import type { BankOperationData } from "../types/type";
-import { Divide } from "lucide-react";
 
 interface PaymentPurposeOption {
   id: number;

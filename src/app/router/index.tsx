@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router";
 import { MainLayout, ProtectAuthLayout } from "@/app/layouts";
 import { authRoutes } from "@/modules/auth";
 import { settingsRoutes } from "@/modules/settings";
-import { dashboardRoutes } from "@/modules/dashboard/routes";
+import { adminRoutes } from "@/modules/admin";
 import { purchaseRoutes } from "@/modules/purchase/pages/purchase";
 import { accountingRoutes } from "@/modules/accounting";
 import { saleRoutes } from "@/modules/sale";
@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
         path: "main",
         element: <MainLayout />,
         children: [
-          dashboardRoutes,
+          adminRoutes,
           productsRoutes,
           purchaseRoutes,
           bankRoutes,
