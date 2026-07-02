@@ -126,14 +126,12 @@ const lineColumns: TableColumnsType<PostingLine> = [
 const detailColumns: TableColumnsType<DetailRow> = [
   {
     dataIndex: "indexId",
-    title: "No",
-    width: 70,
+    title: "N",
     align: "center",
   },
   {
     dataIndex: "field",
     title: "Maydon",
-    width: 220,
   },
   {
     dataIndex: "value",

@@ -1,24 +1,10 @@
 import type { TableColumnsType } from "antd";
 import dayjs from "@/config/dayjs";
-import { customDate } from "@/utils/utils";
+import { customDate, generateKeyTable } from "@/utils/utils";
 import type {
   PostingTemplateView,
   PostingTemplateViewDetailRow,
 } from "../types/type";
-
-const preferredFields = [
-  "name",
-  "templateName",
-  "title",
-  "code",
-  "statusName",
-  "stateName",
-  "organizationName",
-  "createdAt",
-  "updatedAt",
-  "createdBy",
-  "id",
-] as const;
 
 export const formatPostingTemplateValue = (value: unknown) => {
   if (value === null || value === undefined) return "-";
@@ -51,40 +37,62 @@ export const formatPostingTemplateValue = (value: unknown) => {
   return String(value);
 };
 
-export const getPostingTemplateViewFields = (
-  record: PostingTemplateView | null,
-) => {
-  if (!record) return [];
+export const postingTemplateViewColumns: TableColumnsType<PostingTemplateView> =
+  [
+    {
+      dataIndex: "indexId",
+      title: "No",
+      width: 72,
+      align: "center",
+    },
+    {
+      dataIndex: "name",
+      title: "Nomi",
+      width: 220,
+      render: (value) => formatPostingTemplateValue(value),
+    },
+    {
+      dataIndex: "code",
+      title: "Kodi",
+      width: 160,
+      render: (value) => formatPostingTemplateValue(value),
+    },
+    {
+      dataIndex: "documentTypeName",
+      title: "Document type",
+      width: 220,
+      render: (value) => formatPostingTemplateValue(value),
+    },
+    {
+      dataIndex: "linesCount",
+      title: "Lines",
+      width: 100,
+      align: "center",
+      render: (value) => formatPostingTemplateValue(value),
+    },
+    {
+      dataIndex: "createdBy",
+      title: "Created by",
+      width: 180,
+      render: (value) => formatPostingTemplateValue(value),
+    },
+    {
+      dataIndex: "createdAt",
+      title: "Created at",
+      width: 180,
+      render: (value) => formatPostingTemplateValue(value),
+    },
+    {
+      dataIndex: "updatedAt",
+      title: "Updated at",
+      width: 180,
+      render: (value) => formatPostingTemplateValue(value),
+    },
+  ];
 
-  const keys = new Set(Object.keys(record));
-  const baseFields = preferredFields.filter((field) => keys.has(field));
-  const additionalFields = [...keys].filter(
-    (key) =>
-      !baseFields.includes(key as (typeof preferredFields)[number]) &&
-      key !== "id" &&
-      key !== "key" &&
-      key !== "indexId",
-  );
-
-  return [...baseFields, ...additionalFields].slice(0, 10);
-};
-
-export const createPostingTemplateViewColumns = (
-  fields: string[],
-): TableColumnsType<PostingTemplateView> => [
-  {
-    dataIndex: "indexId",
-    title: "No",
-    width: 72,
-    align: "center",
-  },
-  ...fields.map((field) => ({
-    title: field,
-    dataIndex: field,
-    width: 220,
-    render: (value: unknown) => formatPostingTemplateValue(value),
-  })),
-];
+export const createPostingTemplateViewTableData = (
+  data?: PostingTemplateView[],
+) => generateKeyTable(data ?? [], "id");
 
 export const createPostingTemplateViewDetailRows = (
   data?: PostingTemplateView,

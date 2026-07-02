@@ -2,13 +2,12 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router";
 import { RefreshCw } from "lucide-react";
 import { Button, Spin, Table } from "antd";
-import { generateKeyTable } from "@/utils/utils";
 import Card from "@/components/ui/card/Card";
 import { useGetPostingTemplateViews } from "../hooks";
 import type { PostingTemplateView } from "../types/type";
 import {
-  createPostingTemplateViewColumns,
-  getPostingTemplateViewFields,
+  createPostingTemplateViewTableData,
+  postingTemplateViewColumns,
 } from "../components";
 
 export default function PostingTemplateViewsPage() {
@@ -16,18 +15,7 @@ export default function PostingTemplateViewsPage() {
   const { data, isLoading, isFetching, refetch } =
     useGetPostingTemplateViews();
 
-  const rows = data ?? [];
-  const tableData = useMemo(() => generateKeyTable(rows, "id"), [rows]);
-
-  const titleLabel = useMemo(() => {
-    const first = tableData?.[0] as PostingTemplateView | undefined;
-    return getPostingTemplateViewFields(first ?? null);
-  }, [tableData]);
-
-  const columns = useMemo(
-    () => createPostingTemplateViewColumns(titleLabel),
-    [titleLabel],
-  );
+  const tableData = useMemo(() => createPostingTemplateViewTableData(data), [data]);
 
   return (
     <div className="space-y-4">
@@ -49,7 +37,7 @@ export default function PostingTemplateViewsPage() {
         <Card className="overflow-hidden border border-border">
           <Table<PostingTemplateView>
             loading={isFetching}
-            columns={columns}
+            columns={postingTemplateViewColumns}
             dataSource={tableData}
             pagination={false}
             scroll={{ x: "max-content", y: "calc(100vh - 260px)" }}
