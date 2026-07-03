@@ -39,6 +39,7 @@ export const selectListEndpoints = {
   costingMethodsSelectList: "manuals/costing-methods",
   counterPartyBankAccounts: "manuals/counterparty-bank-accounts", 
   paymentPurposes: "manuals/payment-purposes",
+  operationTypes: "manuals/operation-types",
 };
 
 export const selectListKeys = {

@@ -35,6 +35,7 @@ import { pricingConditionPermissions } from "@/modules/settings/pages/pricingCon
 import { saleConditionPermissions } from "@/modules/settings/pages/saleCondition/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 import { dashboardPermissions } from "@/modules/dashboard/pages/constants/permissions";
+import { cashOperationPermissions } from "@/modules/cashoperation";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -138,9 +139,9 @@ export const menuPermissions: MainMenu = {
       filterCode: bankPermissions.view,
     },
     {
-      code: "SET",
+      code: cashOperationPermissions.view,
       linkData: {
-        path: "dashboard/financesss",
+        path: "cash-operations",
         title: "Kassa",
       },
       iconName: <Banknote className="size-5" />,
