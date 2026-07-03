@@ -28,7 +28,12 @@ import {
 
 import { salePermissions } from "@/modules/sale";
 import { productPermissions } from "@/modules/warehouse/pages/products/constants/permissions";
-import { warehousePermissions } from "@/modules/warehouse";
+import {
+  inventoryAdjustmentPermissions,
+  inventoryCountPermissions,
+  warehousePermissions,
+  warehouseTransferPermissions,
+} from "@/modules/warehouse";
 import { bankPermissions } from "@/modules/bank";
 import { settingsBankPermissions } from "@/modules/settings/pages/bank/constants/permissions";
 import { pricingConditionPermissions } from "@/modules/settings/pages/pricingCondition/constants/permissions";
@@ -125,6 +130,27 @@ export const menuPermissions: MainMenu = {
           linkData: {
             path: "products",
             title: "products.title",
+          },
+        },
+        {
+          code: warehouseTransferPermissions.view,
+          linkData: {
+            path: "transfers",
+            title: "Omborlar orasida ko'chirish",
+          },
+        },
+        {
+          code: inventoryCountPermissions.view,
+          linkData: {
+            path: "inventory-counts",
+            title: "Inventarizatsiya",
+          },
+        },
+        {
+          code: inventoryAdjustmentPermissions.view,
+          linkData: {
+            path: "inventory-adjustments",
+            title: "Qoldiqni tuzatish",
           },
         },
       ],

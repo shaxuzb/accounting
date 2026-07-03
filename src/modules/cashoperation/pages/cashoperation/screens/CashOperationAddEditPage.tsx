@@ -40,7 +40,6 @@ export default function CashOperationAddEditPage({
   id,
 }: CashOperationAddEditPageProps) {
   const { t } = useTranslation();
-  const isEdit = Boolean(id);
   const createMutation = useCreateCashOperation();
   const updateMutation = useUpdateCashOperation();
   const { data: record, isLoading: isDetailLoading } =
@@ -48,10 +47,10 @@ export default function CashOperationAddEditPage({
   const formik = useFormik<CashOperationForm>({
     initialValues: defaultValues,
     enableReinitialize: true,
-    validationSchema: cashOperationSchema(isEdit),
+    validationSchema: cashOperationSchema(),
     onSubmit: async (values, helpers) => {
       try {
-        if (isEdit && id) {
+        if (id) {
           await updateMutation.mutateAsync({ id, payload: values });
           toast.success(t("settings.messages.updated"));
         } else {
@@ -87,7 +86,7 @@ export default function CashOperationAddEditPage({
   return (
     <Modal
       title={
-        isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
+        id ? t("settings.form.editTitle") : t("settings.form.createTitle")
       }
       open={open}
       onCancel={() => {
@@ -152,20 +151,17 @@ export default function CashOperationAddEditPage({
             <Col span={24}>
               <InputText
                 formik={formik}
+                fieldName="docNumber"
+                label="bank.fields.docNumber"
+              />
+            </Col>
+            <Col span={24}>
+              <InputText
+                formik={formik}
                 fieldName="comment"
                 label="bank.fields.comment"
               />
             </Col>
-            {isEdit && (
-              <Col span={12}>
-                <SelectCustom
-                  formik={formik}
-                  fieldName="stateId"
-                  label="settings.fields.status"
-                  path={selectListEndpoints.statesSelectList}
-                />
-              </Col>
-            )}
           </Row>
           <div className="mt-4 w-full">
             {/* <Button

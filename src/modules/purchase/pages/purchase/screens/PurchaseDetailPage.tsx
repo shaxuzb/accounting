@@ -1,10 +1,20 @@
 import { useParams } from "react-router";
 import Card from "@/components/ui/card/Card";
-import { Calendar, ChartPie, FileText, Menu, Package, Wrench } from "lucide-react";
+import {
+  Calendar,
+  ChartPie,
+  FileText,
+  Menu,
+  Package,
+  Wrench,
+} from "lucide-react";
 
 import { Button, Table, type TableColumnType } from "antd";
 import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import PermissionCard from "@/components/ui/card/PermissionCard";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import type {
   PurchaseDetailLine,
   PurchaseDetailServiceLine,
@@ -12,9 +22,14 @@ import type {
 import { ProductStockSerialModal } from "@/modules/warehouse/pages/warehouse/components";
 import { useGetDetailSerialWarehouse } from "@/modules/warehouse/pages/warehouse/hooks/useGetDetailSerialWarehouse";
 import type { ProductStockSerial } from "@/modules/warehouse/pages/warehouse/types/type";
+import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
+import { purchasePermissions } from "../constants/permissions";
+import { useCancelPurchase } from "../hooks/useCancelPurchase";
+import { useConfirmPurchase } from "../hooks/useConfirmPurchase";
 import { useGetDetailPurchase } from "../hooks/useGetDetailPurchase";
 import LineClampCell from "@/components/widget/text/LineClampCell";
+import PurchaseEditor from "../components/PurchaseEditor";
 
 const PurchaseDetailPage = () => {
   const params = useParams();
@@ -25,6 +40,9 @@ const PurchaseDetailPage = () => {
   const { data, isLoading, isFetching } = useGetDetailPurchase(
     Number(params.id),
   );
+  const confirmMutation = useConfirmPurchase(Number(params.id));
+  const cancelMutation = useCancelPurchase(Number(params.id));
+  const isDraft = data?.statusId === 1;
   const shouldFetchSerials =
     Boolean(selectedLine?.productId) && !selectedLine?.items?.length;
   const serialParams = shouldFetchSerials
@@ -39,12 +57,15 @@ const PurchaseDetailPage = () => {
     isLoading: isSerialLoading,
     isFetching: isSerialFetching,
   } = useGetDetailSerialWarehouse(serialParams);
+
   const selectedLineItems = useMemo<ProductStockSerial[]>(() => {
     if (selectedLine?.items?.length) {
       return selectedLine.items.map((item, index) => ({
         id: item.id ?? index + 1,
         productId:
-          item.productId ?? selectedLine.productId ?? selectedLine.productTableId,
+          item.productId ??
+          selectedLine.productId ??
+          selectedLine.productTableId,
         productName: selectedLine.productName,
         serialNumber: item.serialNumber,
         markingNumber: item.markingNumber,
@@ -143,6 +164,9 @@ const PurchaseDetailPage = () => {
     },
   ];
   // useChangeSelectType("disabled");
+  if (isDraft) {
+    return <PurchaseEditor purchaseId={Number(params.id)} />;
+  }
   return (
     <div className="">
       <div className="mt-2 space-y-4">
@@ -214,9 +238,48 @@ const PurchaseDetailPage = () => {
                   <span className="font-semibold">Holati</span>
                 </div>
                 <p className="text-sm w-fit flex justify-center items-center">
-                  {/* {customProductStatus(data?.statusId ?? 0)} */}
+                  <ProcessStatusBadge
+                    statusId={data?.statusId}
+                    statusName={data?.statusName}
+                  />
                 </p>
               </div>
+              {isDraft && (
+                <PermissionCard permission={purchasePermissions.confirm}>
+                  <Button
+                    type="primary"
+                    loading={confirmMutation.isPending}
+                    onClick={async () => {
+                      try {
+                        await confirmMutation.mutateAsync();
+                        toast.success("Hujjat tasdiqlandi");
+                      } catch (error) {
+                        errorHandlers(error);
+                      }
+                    }}
+                  >
+                    Tasdiqlash
+                  </Button>
+                </PermissionCard>
+              )}
+              {isDraft && (
+                <PermissionCard permission={purchasePermissions.cancel}>
+                  <Button
+                    danger
+                    loading={cancelMutation.isPending}
+                    onClick={async () => {
+                      try {
+                        await cancelMutation.mutateAsync();
+                        toast.success("Hujjat bekor qilindi");
+                      } catch (error) {
+                        errorHandlers(error);
+                      }
+                    }}
+                  >
+                    Bekor qilish
+                  </Button>
+                </PermissionCard>
+              )}
               {/* {params.id && (
                 <Link to={`/main/accountingentriesreport?documentId=${params.id}`}>
                   <Button type="primary">Accounting entries report</Button>
@@ -378,7 +441,7 @@ const PurchaseDetailPage = () => {
             />
           </Card>
         )}
-      </div>  
+      </div>
       <ProductStockSerialModal
         open={Boolean(selectedLine)}
         title={selectedLine?.productName || "Markirovkalar"}

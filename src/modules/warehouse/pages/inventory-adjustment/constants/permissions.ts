@@ -1,0 +1,9 @@
+export const inventoryAdjustmentPermissions = {
+  view: "INVENTORY_ADJUSTMENT_VIEW",
+  detail: "INVENTORY_ADJUSTMENT_VIEW_DETAIL",
+  create: "INVENTORY_ADJUSTMENT_CREATE",
+  update: "INVENTORY_ADJUSTMENT_UPDATE",
+  delete: "INVENTORY_ADJUSTMENT_DELETE",
+  confirm: "CONFIRM_INVENTORY_ADJUSTMENT",
+  cancel: "CANCEL_INVENTORY_ADJUSTMENT",
+} as const;

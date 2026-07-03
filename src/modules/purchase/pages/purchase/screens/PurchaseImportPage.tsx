@@ -1,4 +1,4 @@
-import { Form } from "antd";
+import { Button, Form, Spin } from "antd";
 import { useFormik } from "formik";
 import {
   useCallback,
@@ -10,9 +10,15 @@ import {
   type SetStateAction,
 } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import { CheckCircle2, CircleX } from "lucide-react";
 import useWindowSize from "@/shared/hooks/useWindowSize";
+import Card from "@/components/ui/card/Card";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import type {
+  ProductSelectOption,
+  PurchaseDetailData,
   PurchaseImportRow,
   PurchaseMode,
   SelectBoxOptions,
@@ -36,9 +42,13 @@ import {
   toSelectBoxOptions,
   type ImportColumnConfig,
 } from "../utils/importColumns";
+import { useCancelPurchase } from "../hooks/useCancelPurchase";
+import { useConfirmPurchase } from "../hooks/useConfirmPurchase";
 import { useCreatePurchase } from "../hooks/useCreatePurchase";
+import { useGetDetailPurchase } from "../hooks/useGetDetailPurchase";
 import { usePurchaseImportOptions } from "../hooks/usePurchaseImportOptions";
 import { usePurchaseImportColumns } from "../hooks/usePurchaseImportColumns";
+import { useUpdatePurchase } from "../hooks/useUpdatePurchase";
 import useLocalStorage from "@/hooks/UseLocalStorage";
 import {
   createEmptyPurchaseRow,
@@ -59,9 +69,71 @@ const PURCHASE_IMPORT_DRAFT_PRODUCT_WITH_COUNT_KEY =
   "purchase-import:draft:product-with-count";
 const PURCHASE_IMPORT_DRAFT_MODE_KEY = "purchase-import:draft:mode";
 
+const buildTouched = (values: PurchaseImportForm) => ({
+  docDate: Boolean(values.docDate),
+  counterpartyId: values.counterpartyId !== null,
+  contractId: values.contractId !== null,
+  currencyId: values.currencyId !== null,
+  warehouseId: values.warehouseId !== null,
+  comment: Boolean(values.comment),
+});
+
+const mapDetailLinesToRows = (
+  detail: PurchaseDetailData | undefined,
+  products: ProductSelectOption[],
+): PurchaseImportRow[] => {
+  if (!detail) return [];
+
+  const productMap = new Map<number, ProductSelectOption>();
+  products.forEach((item) => {
+    productMap.set(Number(item.id), item);
+  });
+
+  return (detail.lines ?? []).map((line, index) => {
+    const productId = Number(line.productId ?? line.productTableId);
+    const product = productMap.get(productId);
+    const markingNumbers = (line.items ?? [])
+      .map((item) => item.markingNumber?.trim())
+      .filter((item): item is string => Boolean(item));
+
+    return {
+      key: line.id || index + 1,
+      id: line.id,
+      indexId: index + 1,
+      name: line.productName,
+      counterpartyId: detail.counterpartyId ?? null,
+      product: line.productName,
+      productId,
+      productName: line.productName,
+      sapCode: getProductCode(product),
+      qty: line.quantity,
+      serialNumber: (line.items ?? [])
+        .map((item) => item.serialNumber?.trim())
+        .filter(Boolean)
+        .join("\n"),
+      currencyId: detail.currencyId ?? 1,
+      currency: detail.currencyName,
+      markingNumber: markingNumbers.join("\n"),
+      markingNumbers,
+      price: line.unitPrice ?? line.price ?? null,
+      pricePerUom: line.unitPrice ?? line.price ?? null,
+      unitId: product?.unitId ?? null,
+      unitCode: product?.unitCode ?? null,
+      unitName: product?.unitName ?? product?.unit ?? null,
+      mxik: product?.mxik ?? getProductCode(product),
+      vatRateId: line.vatRateId ?? null,
+      vatRates: null,
+      isSerial: false,
+      isPieceTracked: Boolean(product?.isPieceTracked),
+    };
+  });
+};
+
 const PurchaseImportPage = () => {
   const navigate = useNavigate();
-  // const org = useAppSelector((state) => state.organization);
+  const params = useParams();
+  const purchaseId = Number(params.id);
+  const isEdit = Boolean(purchaseId);
   const [headerDraft, setHeaderDraft] =
     useLocalStorage<PurchaseImportHeaderDraft>(
       PURCHASE_IMPORT_DRAFT_HEADER_KEY,
@@ -71,7 +143,6 @@ const PurchaseImportPage = () => {
     PURCHASE_IMPORT_DRAFT_LINES_KEY,
     [],
   );
-  // const [openSupplier, setOpenSupplier] = useState(false);
   const [productWithCount, setProductWithCount] = useLocalStorage<boolean>(
     PURCHASE_IMPORT_DRAFT_PRODUCT_WITH_COUNT_KEY,
     false,
@@ -83,13 +154,52 @@ const PurchaseImportPage = () => {
   );
   const { height } = useWindowSize();
   const importPurchase = useCreatePurchase();
-  // Asosiy column konfiguratsiyasini olish
+  const updatePurchase = useUpdatePurchase();
+  const detailQuery = useGetDetailPurchase(purchaseId);
+  const detailData = detailQuery.data;
+  const confirmMutation = useConfirmPurchase(purchaseId);
+  const cancelMutation = useCancelPurchase(purchaseId);
+  const isDraft = detailData?.statusId === 1;
+  const isSubmitting =
+    importPurchase.isPending ||
+    updatePurchase.isPending ||
+    confirmMutation.isPending ||
+    cancelMutation.isPending;
+
+  const detailPurchaseMode = useMemo<PurchaseMode>(() => {
+    if (detailData?.serviceLines?.length) return "services";
+    return "goods";
+  }, [detailData?.serviceLines?.length]);
+
+  useEffect(() => {
+    if (!isEdit || !detailData) return;
+
+    if (detailData.statusId !== 1) {
+      navigate(`/main/purchases/purchase/${purchaseId}`, { replace: true });
+      return;
+    }
+
+    if (purchaseMode !== detailPurchaseMode) {
+      setPurchaseMode(detailPurchaseMode);
+      setProductWithCount(detailPurchaseMode === "services");
+    }
+  }, [
+    detailData,
+    detailPurchaseMode,
+    isEdit,
+    navigate,
+    productWithCount,
+    purchaseId,
+    purchaseMode,
+    setProductWithCount,
+    setPurchaseMode,
+  ]);
+
   const baseColumnConfig = useMemo(
     () => getBaseColumnConfig(productWithCount, withDiscount),
     [productWithCount, withDiscount],
   );
 
-  // SelectBox options ni column konfiguratsiyasidan yaratish
   const [selectBoxOptions, setSelectBoxOptions] = useState<SelectBoxOptions[]>(
     () => toSelectBoxOptions(baseColumnConfig),
   );
@@ -103,120 +213,6 @@ const PurchaseImportPage = () => {
   const columnConfig = useMemo<ImportColumnConfig[]>(
     () => buildColumnConfig(baseColumnConfig, selectBoxOptions),
     [baseColumnConfig, selectBoxOptions],
-  );
-
-  const initialLines = useMemo(
-    () =>
-      excelData.length
-        ? excelData
-        : [
-            createEmptyPurchaseRow({
-              indexId: 1,
-              counterpartyId: headerDraft.counterpartyId,
-              currencyId: headerDraft.currencyId,
-              purchaseMode,
-              productWithCount,
-            }),
-          ],
-    [
-      excelData,
-      headerDraft.counterpartyId,
-      headerDraft.currencyId,
-      purchaseMode,
-      productWithCount,
-    ],
-  );
-
-  const formik = useFormik<PurchaseImportForm>({
-    initialValues: {
-      ...headerDraft,
-      lines: initialLines,
-      // newProducts: productWithCount ? excelData : [],
-      // newSerialProducts: !productWithCount ? excelData : [],
-    },
-    validationSchema: purchaseValidationSchema,
-    onSubmit: async (values, helpers) => {
-      const completedRows = values.lines.filter(isCompletePurchaseLine);
-      const unmarkedRow = getUnmarkedPieceTrackedRow(
-        completedRows,
-        purchaseMode,
-      );
-
-      if (unmarkedRow) {
-        toast.error(
-          `${unmarkedRow.product || unmarkedRow.productName || "Mahsulot"} uchun markirovka kiriting`,
-        );
-        return;
-      }
-
-      // Swagger DTO — PurchaseDocLineDto:
-      // { productId, quantity, unitId, unitPrice, vatRateId, items: [{markingNumber, serialNumber}] | null }
-      const payload = toPurchaseCreatePayload(
-        values,
-        completedRows,
-        purchaseMode,
-      );
-      // Servislar (Приход услуг) — bir xil lines[] ga qo'shiladi, items=null
-      if (!payload.lines.length) {
-        toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
-        return;
-      }
-
-      await importPurchase.mutateAsync(payload);
-      const defaultHeader = getDefaultPurchaseImportHeader();
-      const defaultLines = [
-        createEmptyPurchaseRow({
-          indexId: 1,
-          counterpartyId: defaultHeader.counterpartyId,
-          currencyId: defaultHeader.currencyId,
-          purchaseMode: "goods",
-          productWithCount: false,
-        }),
-      ];
-      setHeaderDraft(defaultHeader);
-      setExcelData(defaultLines);
-      setProductWithCount(false);
-      setPurchaseMode("goods");
-      helpers.resetForm({
-        values: {
-          ...defaultHeader,
-          lines: defaultLines,
-        },
-      });
-      navigate(-1);
-    },
-  });
-
-  const setDraftFieldValue: typeof formik.setFieldValue = useCallback(
-    (field, value, shouldValidate) => {
-      if (
-        field === "docDate" ||
-        field === "counterpartyId" ||
-        field === "contractId" ||
-        field === "currencyId" ||
-        field === "warehouseId" ||
-        field === "comment"
-      ) {
-        setHeaderDraft((prev) => ({
-          ...prev,
-          [field]: value,
-        }));
-      }
-      if (field === "lines" && Array.isArray(value)) {
-        setExcelData(value as PurchaseImportRow[]);
-      }
-
-      return formik.setFieldValue(field, value, shouldValidate);
-    },
-    [formik, setExcelData, setHeaderDraft],
-  );
-
-  const draftFormik = useMemo(
-    () => ({
-      ...formik,
-      setFieldValue: setDraftFieldValue,
-    }),
-    [formik, setDraftFieldValue],
   );
 
   const {
@@ -234,10 +230,198 @@ const PurchaseImportPage = () => {
     vatRateOptions,
   } = usePurchaseImportOptions(purchaseMode);
 
+  const detailLines = useMemo(
+    () => mapDetailLinesToRows(detailData, itemOptions),
+    [detailData, itemOptions],
+  );
+
+  const initialLines = useMemo(
+    () =>
+      isEdit
+        ? detailLines
+        : excelData.length
+          ? excelData
+          : [
+              createEmptyPurchaseRow({
+                indexId: 1,
+                counterpartyId: headerDraft.counterpartyId,
+                currencyId: headerDraft.currencyId,
+                purchaseMode,
+                productWithCount,
+              }),
+            ],
+    [
+      detailLines,
+      excelData,
+      headerDraft.counterpartyId,
+      headerDraft.currencyId,
+      isEdit,
+      productWithCount,
+      purchaseMode,
+    ],
+  );
+
+  const initialValues = useMemo<PurchaseImportForm>(
+    () =>
+      isEdit && detailData
+        ? {
+            docDate: detailData.docDate,
+            counterpartyId: detailData.counterpartyId ?? null,
+            currencyId: detailData.currencyId ?? null,
+            contractId:
+              "contractId" in detailData
+                ? (detailData.contractId as number | null)
+                : null,
+            warehouseId: detailData.warehouseId ?? null,
+            comment: detailData.comment ?? "",
+            lines: initialLines,
+          }
+        : {
+            ...headerDraft,
+            lines: initialLines,
+          },
+    [detailData, headerDraft, initialLines, isEdit],
+  );
+
+  const formik = useFormik<PurchaseImportForm>({
+    initialValues,
+    enableReinitialize: true,
+    validationSchema: purchaseValidationSchema,
+    onSubmit: async (values) => {
+      const saved = await persistPurchase(values, true);
+      if (!saved || isEdit) return;
+
+      const defaultHeader = getDefaultPurchaseImportHeader();
+      const defaultLines = [
+        createEmptyPurchaseRow({
+          indexId: 1,
+          counterpartyId: defaultHeader.counterpartyId,
+          currencyId: defaultHeader.currencyId,
+          purchaseMode: "goods",
+          productWithCount: false,
+        }),
+      ];
+      setHeaderDraft(defaultHeader);
+      setExcelData(defaultLines);
+      setProductWithCount(false);
+      setPurchaseMode("goods");
+      formik.resetForm({
+        values: {
+          ...defaultHeader,
+          lines: defaultLines,
+        },
+      });
+      navigate(-1);
+    },
+  });
+
+  const persistPurchase = useCallback(
+    async (values: PurchaseImportForm, showSuccess: boolean) => {
+      const errors = await formik.validateForm();
+      if (Object.keys(errors).length > 0) {
+        formik.setTouched(buildTouched(values));
+        toast.error("Majburiy maydonlarni to'ldiring");
+        return false;
+      }
+
+      const completedRows = values.lines.filter(isCompletePurchaseLine);
+      const unmarkedRow = getUnmarkedPieceTrackedRow(
+        completedRows,
+        purchaseMode,
+      );
+
+      if (unmarkedRow) {
+        toast.error(
+          `${unmarkedRow.product || unmarkedRow.productName || "Mahsulot"} uchun markirovka kiriting`,
+        );
+        return false;
+      }
+
+      const payload = toPurchaseCreatePayload(values, completedRows, purchaseMode);
+      if (!payload.lines.length) {
+        toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
+        return false;
+      }
+
+      try {
+        if (isEdit && purchaseId) {
+          await updatePurchase.mutateAsync({
+            id: purchaseId,
+            payload,
+          });
+          if (showSuccess) {
+            toast.success("Hujjat saqlandi");
+          }
+          return true;
+        }
+
+        await importPurchase.mutateAsync(payload);
+        if (showSuccess) {
+          toast.success("Hujjat saqlandi");
+        }
+        return true;
+      } catch (error) {
+        errorHandlers(error);
+        return false;
+      }
+    },
+    [
+      formik,
+      importPurchase,
+      isEdit,
+      purchaseId,
+      purchaseMode,
+      updatePurchase,
+    ],
+  );
+
+  const ensureSavedBeforeAction = useCallback(async () => {
+    if (!formik.dirty) return true;
+    return persistPurchase(formik.values, false);
+  }, [formik.dirty, formik.values, persistPurchase]);
+
+  const setDraftFieldValue: typeof formik.setFieldValue = useCallback(
+    (field, value, shouldValidate) => {
+      if (
+        !isEdit &&
+        (field === "docDate" ||
+          field === "counterpartyId" ||
+          field === "contractId" ||
+          field === "currencyId" ||
+          field === "warehouseId" ||
+          field === "comment")
+      ) {
+        setHeaderDraft((prev) => ({
+          ...prev,
+          [field]: value,
+        }));
+      }
+      if (!isEdit && field === "lines" && Array.isArray(value)) {
+        setExcelData(value as PurchaseImportRow[]);
+      }
+
+      return formik.setFieldValue(field, value, shouldValidate);
+    },
+    [formik, isEdit, setExcelData, setHeaderDraft],
+  );
+
+  const draftFormik = useMemo(
+    () => ({
+      ...formik,
+      setFieldValue: setDraftFieldValue,
+    }),
+    [formik, setDraftFieldValue],
+  );
+
   const resolveProductIds = useCallback(
     (rows: PurchaseImportRow[]) =>
       rows.map((item) => {
-        const product = productByCode.get(String(item.sapCode ?? "").trim());
+        const normalizedCode = String(item.sapCode ?? "").trim();
+        const product =
+          (item.productId
+            ? itemOptions.find((option) => option.id === item.productId)
+            : undefined) ??
+          productByCode.get(normalizedCode);
         const unitPrice = getProductPrice(product);
         return {
           ...item,
@@ -260,15 +444,17 @@ const PurchaseImportPage = () => {
               }),
         };
       }),
-    [productByCode],
+    [itemOptions, productByCode],
   );
 
   const commitRows = useCallback(
     (rows: PurchaseImportRow[]) => {
-      setExcelData(rows);
+      if (!isEdit) {
+        setExcelData(rows);
+      }
       formik.setFieldValue("lines", rows, false);
     },
-    [formik, setExcelData],
+    [formik, isEdit, setExcelData],
   );
 
   const handleRowValueChange = useCallback(
@@ -315,14 +501,17 @@ const PurchaseImportPage = () => {
     [formik.values.lines, handleRowValueChange, itemOptions, purchaseMode],
   );
 
-  const openMarkingModal = useCallback((rowIndex: number) => {
-    if (!formik.values.lines[rowIndex]?.isPieceTracked) {
-      toast.error("Bu mahsulot markirovkasiz");
-      return;
-    }
-    setMarkingRowIndex(rowIndex);
-    setMarkingInput("");
-  }, [formik.values.lines]);
+  const openMarkingModal = useCallback(
+    (rowIndex: number) => {
+      if (!formik.values.lines[rowIndex]?.isPieceTracked) {
+        toast.error("Bu mahsulot markirovkasiz");
+        return;
+      }
+      setMarkingRowIndex(rowIndex);
+      setMarkingInput("");
+    },
+    [formik.values.lines],
+  );
 
   const closeMarkingModal = useCallback(() => {
     setMarkingRowIndex(null);
@@ -392,6 +581,14 @@ const PurchaseImportPage = () => {
     Dispatch<SetStateAction<PurchaseImportRow[]>>
   >(
     (value) => {
+      if (isEdit) {
+        const nextRaw =
+          typeof value === "function" ? value(formik.values.lines) : value;
+        const nextRows = resolveProductIds(nextRaw);
+        formik.setFieldValue("lines", nextRows, false);
+        return;
+      }
+
       setExcelData((prev) => {
         const nextRaw = typeof value === "function" ? value(prev) : value;
         const nextRows = resolveProductIds(nextRaw);
@@ -399,7 +596,7 @@ const PurchaseImportPage = () => {
         return nextRows;
       });
     },
-    [formik, resolveProductIds, setExcelData],
+    [formik, formik.values.lines, isEdit, resolveProductIds, setExcelData],
   );
 
   const handleAddManualRow = useCallback(() => {
@@ -419,8 +616,8 @@ const PurchaseImportPage = () => {
     formik.values.counterpartyId,
     formik.values.currencyId,
     formik.values.lines,
-    purchaseMode,
     productWithCount,
+    purchaseMode,
   ]);
 
   const handleDeleteRow = useCallback(
@@ -450,12 +647,11 @@ const PurchaseImportPage = () => {
       formik.values.counterpartyId,
       formik.values.currencyId,
       formik.values.lines,
-      purchaseMode,
       productWithCount,
+      purchaseMode,
     ],
   );
 
-  // Table columnlarni yaratish
   const handleCellCommit = useCallback(
     (rowIndex: number, dataIndex: string, rawValue: string) => {
       const currentRows = formik.values.lines;
@@ -510,7 +706,6 @@ const PurchaseImportPage = () => {
       }
 
       nextRows[rowIndex] = targetRow;
-
       commitRows(nextRows);
     },
     [commitRows, formik.values.lines, productByCode, purchaseMode],
@@ -555,8 +750,15 @@ const PurchaseImportPage = () => {
       const timeoutId = window.setTimeout(() => commitRows(updated), 0);
       return () => window.clearTimeout(timeoutId);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, isServicesSuccess, isSuccess, purchaseMode, resolveProductIds]);
+  }, [
+    commitRows,
+    data,
+    formik.values.lines,
+    isServicesSuccess,
+    isSuccess,
+    purchaseMode,
+    resolveProductIds,
+  ]);
 
   const handleDeleteSapCodes = () => {
     const filteredData = formik.values.lines?.filter((item) => item.productId);
@@ -613,48 +815,102 @@ const PurchaseImportPage = () => {
     [formik.values.lines, markingRowIndex],
   );
 
-  // Chegirma switch o'zgarganda
-  // const handleDiscountChange = (e: boolean) => {
-  //   setWithWithDiscount(e);
-  //   setFoundedSapCodes(0);
-  //   formik.resetForm();
-  //   setExcelData([]);
-  // };
+  const handleConfirm = useCallback(async () => {
+    if (!purchaseId || !isDraft) return;
 
-  // Character switch o'zgarganda - bu endi faqat selectBox options ni o'zgartiradi
-  // const handleCharacterChange = (e: boolean) => {
-  //   formik.setFieldValue("isCharacter", e, true);
+    const ready = await ensureSavedBeforeAction();
+    if (!ready) return;
 
-  // if (e) {
-  //   // Character yoqilganda yangi optionlar qo'shish
+    try {
+      await confirmMutation.mutateAsync();
+      toast.success("Hujjat tasdiqlandi");
+      navigate(`/main/purchases/purchase/${purchaseId}`);
+    } catch (error) {
+      errorHandlers(error);
+    }
+  }, [
+    confirmMutation,
+    ensureSavedBeforeAction,
+    isDraft,
+    navigate,
+    purchaseId,
+  ]);
 
-  //   setSelectBoxOptions(prev => {
-  //     const existingCodes = new Set(prev.map(opt => opt.code));
-  //     const optionsToAdd = newCharacterOptions.filter(opt => !existingCodes.has(opt.code));
-  //     return [...prev, ...optionsToAdd];
-  //   });
-  // } else {
-  //   // Character o'chirilganda character optionlarini olib tashlash
-  //   const characterCodes = ["weightGram", "size", "description"];
-  //   setSelectBoxOptions(prev =>
-  //     prev.filter(opt => !characterCodes.includes(opt.code))
-  //   );
-  // }
-  // };
-  // useEffect(() => {
-  //   if (formik.values.requestCode === "") {
-  //     formik.setFieldValue(
-  //       "requestCode",
-  //       dayjs().toDate().getTime().toString(),
-  //     );
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [formik.values.requestCode]);
-  // useChangeSelectType("disabled");
+  const handleCancelDocument = useCallback(async () => {
+    if (!purchaseId || !isDraft) return;
+
+    const ready = await ensureSavedBeforeAction();
+    if (!ready) return;
+
+    try {
+      await cancelMutation.mutateAsync();
+      toast.success("Hujjat bekor qilindi");
+      navigate(`/main/purchases/purchase/${purchaseId}`);
+    } catch (error) {
+      errorHandlers(error);
+    }
+  }, [
+    cancelMutation,
+    ensureSavedBeforeAction,
+    isDraft,
+    navigate,
+    purchaseId,
+  ]);
+
+  if (isEdit && (detailQuery.isLoading || !detailData)) {
+    return (
+      <div className="flex justify-center p-10">
+        <Spin />
+      </div>
+    );
+  }
 
   return (
     <div>
       <Form onFinish={formik.handleSubmit} layout="vertical">
+        {isEdit && detailData && (
+          <Card className="mb-3 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="space-y-1">
+                <div className="text-sm text-muted-foreground">Hujjat raqami</div>
+                <div className="text-lg font-semibold">
+                  {detailData.docNumber || detailData.id}
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <ProcessStatusBadge
+                  statusId={detailData.statusId}
+                  statusName={detailData.statusName}
+                />
+                <Button
+                  onClick={() => void formik.submitForm()}
+                  loading={updatePurchase.isPending}
+                >
+                  Saqlash
+                </Button>
+                <Button
+                  type="primary"
+                  icon={<CheckCircle2 className="size-4" />}
+                  loading={confirmMutation.isPending}
+                  disabled={!isDraft || isSubmitting}
+                  onClick={() => void handleConfirm()}
+                >
+                  Tasdiqlash
+                </Button>
+                <Button
+                  danger
+                  icon={<CircleX className="size-4" />}
+                  loading={cancelMutation.isPending}
+                  disabled={!isDraft || isSubmitting}
+                  onClick={() => void handleCancelDocument()}
+                >
+                  Bekor qilish
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
         <PurchaseImportHeader
           formik={draftFormik}
           hasSelectedRows={hasSelectedRows}
@@ -666,14 +922,6 @@ const PurchaseImportPage = () => {
           selectBoxOptions={selectBoxOptions}
           setSelectBoxOptions={setSelectBoxOptions}
         />
-        {/* {isNonSerial && (
-          <Card className="rounded-lg relative my-4">
-            <NonSerialTableImport
-              formik={formik}
-              data={formik.values.newProducts ?? []}
-            />
-          </Card>
-        )} */}
         <PurchaseImportLinesSection
           columns={tableColumns}
           comment={formik.values.comment}
@@ -692,11 +940,6 @@ const PurchaseImportPage = () => {
           purchaseMode={purchaseMode}
           totals={totals}
         />
-        {/* <SupplierAddEdit
-          open={openSupplier}
-          setOpen={setOpenSupplier}
-          edit={null}
-        /> */}
         <PurchaseMarkingModal
           open={markingRowIndex !== null}
           value={markingInput}

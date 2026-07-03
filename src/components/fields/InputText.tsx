@@ -32,6 +32,7 @@ const InputText: React.FC<inputProps> = (props) => {
         }}
         name={fieldName}
         placeholder={t(label)}
+        disabled={disabled}
         className={`${disabled ? "disabled" : ""}`}
         style={{
           backgroundColor: "transparent",

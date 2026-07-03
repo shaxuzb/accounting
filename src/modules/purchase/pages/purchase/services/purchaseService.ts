@@ -34,8 +34,19 @@ export const purchaseService = {
     $axiosPrivate
       .post<PurchaseDetailData>(endpoints.create, payload)
       .then((res) => res.data),
-  update: (id: string | number, payload: Partial<PurchaseForm>) =>
+  update: (
+    id: string | number,
+    payload: PurchaseCreatePayload | Partial<PurchaseForm>,
+  ) =>
     $axiosPrivate
       .put<PurchaseDetailData>(endpoints.update(id), payload)
+      .then((res) => res.data),
+  confirm: (id: string | number) =>
+    $axiosPrivate
+      .put<PurchaseDetailData>(endpoints.confirm(id))
+      .then((res) => res.data),
+  cancel: (id: string | number) =>
+    $axiosPrivate
+      .put<PurchaseDetailData>(endpoints.cancel(id))
       .then((res) => res.data),
 };

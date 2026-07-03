@@ -13,6 +13,7 @@ import { bankPermissions } from "../constants/permissions";
 import { useGetBankOperations } from "../hooks";
 import type { BankOperationData } from "../types/type";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 
 
 export default function BankOperationListPage() {
@@ -29,6 +30,11 @@ export default function BankOperationListPage() {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
       align: "center",
+    },
+    {
+      dataIndex: "docNumber",
+      title: t("purchase.fields.docNumber"),
+      render: (value, record) => <Link to={`${record.id}`}>{value ?? record.id}</Link>,
     },
     {
       dataIndex: "docDate",
@@ -82,6 +88,17 @@ export default function BankOperationListPage() {
         );
       },
     },
+    {
+      dataIndex: "statusName",
+      title: t("settings.fields.status"),
+      align: "center",
+      render: (_, record) => (
+        <ProcessStatusBadge
+          statusId={record.statusId}
+          statusName={record.statusName}
+        />
+      ),
+    },
   ];
 
   const hasActions =
@@ -102,10 +119,10 @@ export default function BankOperationListPage() {
               permissions={permissions}
               permissionsCode={{
                 deleteCode: bankPermissions.delete,
-                editCode: bankPermissions.update,
+                editCode: record.statusId === 1 ? bankPermissions.update : "",
               }}
               refetch={refetch}
-              customPath={`/main/bank/edit/${record.id}`}
+              customPath={`/main/bank/${record.id}`}
             />
           ),
         },

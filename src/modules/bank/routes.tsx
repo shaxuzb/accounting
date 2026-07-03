@@ -3,6 +3,7 @@ import PermissionCard from "@/components/ui/card/PermissionCard";
 import BankOperationListPage from "./pages/statement/screens/BankOperationListPage";
 import BankStatementImportPage from "./pages/statement/screens/BankStatementImportPage";
 import BankOperationAddEditPage from "./pages/statement/screens/BankOperationAddEditPage";
+import BankOperationDetailPage from "./pages/statement/screens/BankOperationDetailPage";
 import { bankPermissions } from "./pages/statement/constants/permissions";
 
 const withPermission = (
@@ -51,12 +52,26 @@ export const bankRoutes: RouteObject = {
     },
     {
       path: "edit/:id",
-      element: withPermission(<BankOperationAddEditPage />, [
-        bankPermissions.update,
+      element: withPermission(<BankOperationDetailPage />, [
+        bankPermissions.detail,
+        bankPermissions.view,
         "ROLE_VIEW",
       ]),
       handle: {
-        title: "settings.form.editTitle",
+        title: "bank.title",
+        showBack: true,
+        backTo: "..",
+      },
+    },
+    {
+      path: ":id",
+      element: withPermission(<BankOperationDetailPage />, [
+        bankPermissions.detail,
+        bankPermissions.view,
+        "ROLE_VIEW",
+      ]),
+      handle: {
+        title: "bank.title",
         showBack: true,
         backTo: "..",
       },

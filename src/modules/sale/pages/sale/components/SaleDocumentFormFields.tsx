@@ -32,10 +32,13 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
         required
       />
       <SelectCustom
-        path={
-          selectListEndpoints.contractsSelectList +
-          `?choosedDate=${dayjs(formik.values.docDate).format(formatDateWithOutTime)}${formik.values.counterpartyId ? `&${filterIds.counterparty}=${formik.values.counterpartyId}` : ""}`
-        }
+        path={selectListEndpoints.contractsSelectList}
+        queryParams={{
+          choosedDate: dayjs(formik.values.docDate).format(
+            formatDateWithOutTime,
+          ),
+          [filterIds.counterparty]: formik.values.counterpartyId,
+        }}
         label="Shartnoma"
         fieldName="contractId"
         formik={formik}

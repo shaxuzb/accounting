@@ -19,6 +19,7 @@ interface SelectCustomProps {
   formik: FormikProps<FormValues>;
   fieldName: string;
   refetchSync?: string;
+  queryParams?: Record<string, unknown>;
   getFieldName?: string | null;
   required?: boolean;
   optional?: boolean;
@@ -60,6 +61,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     formik,
     fieldName = "",
     required = false,
+    queryParams,
     search = false,
     optional = false,
     readOnly = false,
@@ -87,17 +89,31 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     mode,
   } = props;
 
+  const requestParams = React.useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries({
+          ...(isOrganizationId && {}),
+          ...(isPossibleBorrow && { isPossibleBorrow: true }),
+          ...(queryParams ?? {}),
+        }).filter(
+          ([, value]) =>
+            value !== undefined &&
+            value !== null &&
+            !(typeof value === "string" && value === ""),
+        ),
+      ),
+    [isOrganizationId, isPossibleBorrow, queryParams],
+  );
+
   //   const [searchValue, setSearchValue] = useState<string>("");
   const { data, isFetching, isLoading, isSuccess } = useQuery<
     SelectOptionItem[]
   >({
-    queryKey: ["selectlist", fieldName, refetchSync, path],
+    queryKey: ["selectlist", fieldName, refetchSync, path, requestParams],
     queryFn: async () => {
       const response = await $axiosPrivate.get<SelectOptionItem[]>(path, {
-        params: {
-          ...(isOrganizationId && {}),
-          ...(isPossibleBorrow && { isPossibleBorrow: true }),
-        },
+        params: requestParams,
       });
       return response.data;
     },

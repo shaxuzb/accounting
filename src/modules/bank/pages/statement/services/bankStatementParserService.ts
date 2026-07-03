@@ -32,6 +32,12 @@ export const bankStatementParserService = {
     );
     return data;
   },
+  detailOperation: async (id: string | number) => {
+    const { data } = await $axiosPrivate.get<BankOperationData>(
+      bankStatementEndpoints.operations.detail(id),
+    );
+    return data;
+  },
   createManyOperations: async (payload: BankOperationsCreatePayload) => {
     const { data } = await $axiosPrivate.post<BankOperationData[]>(
       bankStatementEndpoints.operations.createMany,
@@ -64,6 +70,18 @@ export const bankStatementParserService = {
     const { data } = await $axiosPrivate.put<BankOperationData>(
       bankStatementEndpoints.operations.update(id),
       payload,
+    );
+    return data;
+  },
+  confirmOperation: async (id: string | number) => {
+    const { data } = await $axiosPrivate.post<BankOperationData>(
+      bankStatementEndpoints.operations.confirm(id),
+    );
+    return data;
+  },
+  cancelOperation: async (id: string | number) => {
+    const { data } = await $axiosPrivate.post<BankOperationData>(
+      bankStatementEndpoints.operations.cancel(id),
     );
     return data;
   },

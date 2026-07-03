@@ -14,7 +14,8 @@ export const useUpdateBankOperation = () => {
   return useMutation({
     mutationFn: ({ id, payload }: UpdateArgs) =>
       bankStatementParserService.updateOperation(id, payload),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(bankQueryKeys.operations.detail(variables.id), data);
       queryClient.invalidateQueries({
         queryKey: bankQueryKeys.operations.all,
       });

@@ -92,10 +92,13 @@ export default function PurchaseImportHeader({
           </Col>
           <Col span={24} sm={12} lg={8} xl={4}>
             <SelectCustom
-              path={
-                selectListEndpoints.contractsSelectList +
-                `?choosedDate=${dayjs(formik.values.docDate).format(formatDateWithOutTime)}${formik.values.counterpartyId ? `&${filterIds.counterparty}=${formik.values.counterpartyId}` : ""}`
-              }
+              path={selectListEndpoints.contractsSelectList}
+              queryParams={{
+                choosedDate: dayjs(formik.values.docDate).format(
+                  formatDateWithOutTime,
+                ),
+                [filterIds.counterparty]: formik.values.counterpartyId,
+              }}
               label="Shartnoma"
               fieldName="contractId"
               formik={formik}

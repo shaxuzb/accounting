@@ -9,7 +9,8 @@ import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
+import { formatDateWithOutTime } from "@/utils/helpers";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   useCreateBankOperation,
@@ -116,6 +117,11 @@ export default function BankOperationAddEditPage() {
     [formik.values.operationTypeId],
   );
   const previousOperationTypeId = useRef<number | null>(null);
+  const previousCounterpartyId = useRef<number | null>(null);
+  const counterpartyId = useMemo(
+    () => toPositiveNumber(formik.values.counterpartyId),
+    [formik.values.counterpartyId],
+  );
 
   useEffect(() => {
     if (!record) return;
@@ -148,6 +154,17 @@ export default function BankOperationAddEditPage() {
     }
     previousOperationTypeId.current = operationTypeId;
   }, [formik, operationTypeId]);
+
+  useEffect(() => {
+    if (
+      previousCounterpartyId.current !== null &&
+      previousCounterpartyId.current !== counterpartyId
+    ) {
+      formik.setFieldValue("counterpartyBankAccountId", null, false);
+      formik.setFieldValue("contractId", null, false);
+    }
+    previousCounterpartyId.current = counterpartyId;
+  }, [counterpartyId, formik]);
 
   return (
     <div className="w-full ">
@@ -217,6 +234,12 @@ export default function BankOperationAddEditPage() {
                   fieldName="counterpartyBankAccountId"
                   label="Counterparty bank hisob raqami"
                   path={selectListEndpoints.counterPartyBankAccounts}
+                  queryParams={{
+                    [filterIds.counterparty]: counterpartyId,
+                  }}
+                  enabled={Boolean(counterpartyId)}
+                  refetchSync={String(counterpartyId ?? "")}
+                  disabled={!counterpartyId}
                 />
               </Col>
 
@@ -263,6 +286,15 @@ export default function BankOperationAddEditPage() {
                   fieldName="contractId"
                   label="Shartnoma"
                   path={selectListEndpoints.contractsSelectList}
+                  queryParams={{
+                    choosedDate: dayjs(formik.values.docDate).format(
+                      formatDateWithOutTime,
+                    ),
+                    [filterIds.counterparty]: counterpartyId,
+                  }}
+                  enabled={Boolean(counterpartyId)}
+                  refetchSync={`${counterpartyId ?? ""}${formik.values.docDate ?? ""}`}
+                  disabled={!counterpartyId}
                 />
               </Col>
               {isEdit ? (

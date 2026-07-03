@@ -1,6 +1,8 @@
 export { useCreateBankOperation } from "./useCreateBankOperation";
 export { useCreateBankCounterparties } from "./useCreateBankCounterparties";
 export { useCreateBankOperations } from "./useCreateBankOperations";
+export { useCancelBankOperation } from "./useCancelBankOperation";
+export { useConfirmBankOperation } from "./useConfirmBankOperation";
 export { useGetDetailBankOperation } from "./useGetDetailBankOperation";
 export { useGetBankOperations } from "./useGetBankOperations";
 export { useParseBankStatement } from "./useParseBankStatement";

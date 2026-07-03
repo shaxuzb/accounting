@@ -60,7 +60,7 @@ const PermissionCard = ({
       navigate(-1);
       toast.error("Sizda bu sahifaga kirish uchun ruxsat yo'q");
     }
-  }, [hasAccess,  , shouldRedirect]);
+  }, [hasAccess, navigate, shouldRedirect]);
 
   return hasAccess ? <>{children}</> : null;
 };

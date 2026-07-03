@@ -15,7 +15,7 @@ import { cashOperationPermissions } from "../constants/permissions";
 import { useGetCashOperations } from "../hooks";
 import type { CashOperation } from "../types/type";
 import CashOperationAddEditPage from "./CashOperationAddEditPage";
-import { stateStatus } from "@/utils/helpers/statusHelper";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 
 export default function CashOperationListPage() {
   const { t } = useTranslation();
@@ -37,6 +37,9 @@ export default function CashOperationListPage() {
     {
       dataIndex: "docNumber",
       title: t("purchase.fields.docNumber"),
+      render: (value, record) => (
+        <Link to={`${record.id}`}>{value ?? record.id}</Link>
+      ),
     },
     {
       dataIndex: "accountingEntriesReport",
@@ -88,10 +91,14 @@ export default function CashOperationListPage() {
     },
     {
       title: t("settings.fields.status"),
-      dataIndex: "stateName",
+      dataIndex: "statusName",
       align: "center",
-      width: 120,
-      render: (_, record) => stateStatus(record.stateId, record.stateName),
+      render: (_, record) => (
+        <ProcessStatusBadge
+          statusId={record.statusId}
+          statusName={record.statusName}
+        />
+      ),
     },
   ];
 
@@ -114,7 +121,8 @@ export default function CashOperationListPage() {
               permissions={permissions}
               permissionsCode={{
                 deleteCode: cashOperationPermissions.delete,
-                editCode: cashOperationPermissions.update,
+                editCode:
+                  record.statusId === 1 ? cashOperationPermissions.update : "",
               }}
               refetch={() => refetch()}
               editModal={{

@@ -34,6 +34,7 @@ export interface BankStatementCardData {
 
 export interface BankOperationData {
   id: number;
+  docNumber?: string | null;
   bankAccountId: number;
   bankAccountName?: string;
   operationTypeId: number;
@@ -51,4 +52,9 @@ export interface BankOperationData {
   comment?: string | null;
   stateId?: number;
   stateName?: string;
+  statusId?: number | null;
+  statusName?: string | null;
+  paymentPurposeName?: string | null;
+  counterpartyBankAccountName?: string | null;
+  contractName?: string | null;
 }

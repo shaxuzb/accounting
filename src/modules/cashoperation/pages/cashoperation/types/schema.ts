@@ -1,10 +1,7 @@
 import * as Yup from "yup";
-import {
-  editStateSchema,
-  requiredNumber,
-} from "@/modules/settings/shared/validation";
+import { requiredNumber } from "@/modules/settings/shared/validation";
 
-export const cashOperationSchema = (isEdit = false) =>
+export const cashOperationSchema = () =>
   Yup.object({
     cashBoxId: requiredNumber("settings.entities.cashBox"),
     counterpartyId: requiredNumber("settings.entities.counterparty"),
@@ -12,5 +9,4 @@ export const cashOperationSchema = (isEdit = false) =>
     currencyId: requiredNumber("settings.fields.currency"),
     amount: Yup.number().nullable().required(),
     comment: Yup.string().nullable(),
-    stateId: editStateSchema(isEdit),
   });

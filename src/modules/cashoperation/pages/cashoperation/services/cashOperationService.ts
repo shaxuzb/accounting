@@ -22,4 +22,12 @@ export const cashOperationService = {
     $axiosPrivate
       .put<CashOperation>(cashOperationEndpoints.update(id), payload)
       .then((res) => res.data),
+  confirm: (id: string | number) =>
+    $axiosPrivate
+      .put<CashOperation>(cashOperationEndpoints.confirm(id))
+      .then((res) => res.data),
+  cancel: (id: string | number) =>
+    $axiosPrivate
+      .put<void>(cashOperationEndpoints.cancel(id))
+      .then((res) => res.data),
 };

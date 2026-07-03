@@ -17,7 +17,9 @@ const addToken = (config: InternalAxiosRequestConfig) => {
     errorHandlers(error);
   }
   try {
+    const lang = localStorage.getItem("lang");
     const orgData = localStorage.getItem("org");
+    config.headers["X-Language"] = lang ?? "uz";
     if (orgData) {
       const { id } = JSON.parse(orgData) as { id: number };
       if (id) {

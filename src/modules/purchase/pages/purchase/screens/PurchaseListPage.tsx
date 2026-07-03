@@ -9,10 +9,11 @@ import { useAppSelector } from "@/store/hooks";
 import { formatDate, generateKeyTable } from "@/utils/utils";
 import type { PurchaseData } from "@/modules/purchase/pages/purchase/types/type";
 import { purchasePermissions } from "@/modules/purchase/pages/purchase/constants/permissions";
-import { stateStatus } from "@/utils/helpers/statusHelper";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { useGetListPurchase } from "../hooks/useGetListPurchase";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import { purchaseEndpoints } from "../constants/endpoints";
+import SearchFilter from "@/components/ui/filters/SearchFilter";
 
 export default function PurchaseListPage() {
   const { t } = useTranslation();
@@ -28,13 +29,10 @@ export default function PurchaseListPage() {
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
-      align: "center",
-      width: 10
     },
     {
       dataIndex: "docNumber",
       title: t("purchase.fields.docNumber"),
-      width: 130,
       render: (value, record) => (
         <Link to={`${record.id}`}>{value || record.id}</Link>
       ),
@@ -43,7 +41,6 @@ export default function PurchaseListPage() {
       dataIndex: "accountingEntriesReport",
       title: "Provodka",
       align: "center",
-      width: 100,
       render: (_, record) => (
         <Link to={`/main/accountingentriesreport?documentId=${record.id}`}>
           <Button icon={<ReceiptText className="size-4" />} />
@@ -53,9 +50,7 @@ export default function PurchaseListPage() {
     {
       dataIndex: "docDate",
       title: t("purchase.fields.docDate"),
-      width: 100,
       render: (value) => formatDate(value),
-      align: "center",
     },
     {
       dataIndex: "counterpartyName",
@@ -68,14 +63,21 @@ export default function PurchaseListPage() {
       align: "center",
     },
     {
-      dataIndex: "statusId",
+      dataIndex: "statusName",
       title: t("settings.fields.status"),
       align: "center",
-      render: (_, record) => stateStatus(record.stateId, record.stateName),
+      render: (_, record) => (
+        <ProcessStatusBadge
+          statusId={record.statusId}
+          statusName={record.statusName}
+        />
+      ),
     },
   ];
 
-  const hasActions = userPermissions.includes(purchasePermissions.delete);
+  const hasActions =
+    userPermissions.includes(purchasePermissions.update) ||
+    userPermissions.includes(purchasePermissions.delete);
 
   const columns: TableColumnType<PurchaseData>[] = hasActions
     ? [
@@ -90,11 +92,14 @@ export default function PurchaseListPage() {
             <div>
               <ActionColumn
                 deletePath={purchaseEndpoints.purchase.list}
-                customPath={`/main/settings/contracts/edit/${record.id}`}
+                customPath={`/main/purchases/purchase/edit/${record.id}`}
                 record={record}
                 permissions={user?.user.permissions}
                 permissionsCode={{
-                  deleteCode: purchasePermissions.delete,
+                  editCode:
+                    record.statusId === 1 ? purchasePermissions.update : "",
+                  deleteCode:
+                    record.statusId === 1 ? purchasePermissions.delete : "",
                 }}
                 refetch={refetch}
               />
@@ -106,7 +111,10 @@ export default function PurchaseListPage() {
 
   return (
     <div className="w-full">
-      <div className="mb-3 flex items-center justify-end">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <SearchFilter />
+        </div>
         <Space>
           <PermissionCard permission={purchasePermissions.create}>
             <Link to="import">
