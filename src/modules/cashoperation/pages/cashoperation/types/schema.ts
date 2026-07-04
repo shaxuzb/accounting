@@ -4,6 +4,7 @@ import { requiredNumber } from "@/modules/settings/shared/validation";
 export const cashOperationSchema = () =>
   Yup.object({
     cashBoxId: requiredNumber("settings.entities.cashBox"),
+    paymentPurposeId: requiredNumber("To'lov maqsadini tanlang"),
     counterpartyId: requiredNumber("settings.entities.counterparty"),
     docDate: Yup.string().required(),
     currencyId: requiredNumber("settings.fields.currency"),

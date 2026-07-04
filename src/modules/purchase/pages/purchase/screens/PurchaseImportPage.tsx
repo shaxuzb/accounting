@@ -292,6 +292,7 @@ const PurchaseImportPage = () => {
       if (!saved || isEdit) return;
 
       const defaultHeader = getDefaultPurchaseImportHeader();
+      const defaultDraftLines: PurchaseImportRow[] = [];
       const defaultLines = [
         createEmptyPurchaseRow({
           indexId: 1,
@@ -302,7 +303,7 @@ const PurchaseImportPage = () => {
         }),
       ];
       setHeaderDraft(defaultHeader);
-      setExcelData(defaultLines);
+      setExcelData(defaultDraftLines);
       setProductWithCount(false);
       setPurchaseMode("goods");
       formik.resetForm({

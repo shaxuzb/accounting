@@ -8,18 +8,15 @@ import {
   FileText,
   Landmark,
   MessagesSquare,
+  Save,
   Wallet,
 } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
-import InputNumberFormat from "@/components/fields/InputNumber";
-import InputText from "@/components/fields/InputText";
-import SelectCustom from "@/components/fields/SelectCustom";
-import SelectDate from "@/components/fields/SelectDate";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import CashOperationFormFields from "@/modules/cashoperation/shared/components/CashOperationFormFields";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, numberSpacing } from "@/utils/utils";
 import { cashOperationSchema } from "../types/schema";
@@ -32,6 +29,7 @@ const buildTouched = (values: CashOperationForm) => ({
   cashBoxId: values.cashBoxId !== null,
   cashOperationId: values.cashOperationId !== null,
   operationTypeId: values.operationTypeId !== null,
+  paymentPurposeId: values.paymentPurposeId !== null,
   counterpartyId: values.counterpartyId !== null,
   docDate: Boolean(values.docDate),
   currencyId: values.currencyId !== null,
@@ -61,6 +59,7 @@ export default function CashOperationDetailPage() {
       cashBoxId: record?.cashBoxId ?? null,
       cashOperationId: record?.cashOperationId ?? null,
       operationTypeId: record?.operationTypeId ?? null,
+      paymentPurposeId: record?.paymentPurposeId ?? null,
       counterpartyId: record?.counterpartyId ?? null,
       docDate: record?.docDate ?? "",
       currencyId: record?.currencyId ?? null,
@@ -209,58 +208,7 @@ export default function CashOperationDetailPage() {
           </div>
 
           <form onSubmit={formik.handleSubmit} className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <SelectCustom
-                formik={formik}
-                fieldName="cashBoxId"
-                label="settings.entities.cashBox"
-                path={selectListEndpoints.cashBoxesSelectList}
-                disabled={!isDraft}
-              />
-              <SelectCustom
-                formik={formik}
-                fieldName="operationTypeId"
-                label="Operatsiya turi"
-                path={selectListEndpoints.operationTypes}
-                disabled={!isDraft}
-              />
-              <SelectCustom
-                formik={formik}
-                fieldName="counterpartyId"
-                label="bank.fields.counterparty"
-                path={selectListEndpoints.counterpartiesSelectList}
-                disabled={!isDraft}
-              />
-              <SelectDate
-                formik={formik}
-                fieldName="docDate"
-                label="bank.fields.date"
-                disabled={!isDraft}
-              />
-              <SelectCustom
-                formik={formik}
-                fieldName="currencyId"
-                label="settings.fields.currency"
-                path={selectListEndpoints.currenciesSelectList}
-                disabled={!isDraft}
-              />
-              <InputNumberFormat
-                formik={formik}
-                fieldName="amount"
-                label="bank.fields.amount"
-                min={0}
-                precision={2}
-                disabled={!isDraft}
-              />
-              <div className="md:col-span-2">
-                <InputText
-                  formik={formik}
-                  fieldName="comment"
-                  label="bank.fields.comment"
-                  disabled={!isDraft}
-                />
-              </div>
-            </div>
+            <CashOperationFormFields formik={formik} disabled={!isDraft} />
           </form>
 
           <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm text-muted-foreground">
@@ -277,6 +225,16 @@ export default function CashOperationDetailPage() {
           </div>
 
           <div className="space-y-3">
+            <Button
+              block
+              size="large"
+              icon={<Save className="size-4" />}
+              loading={updateMutation.isPending}
+              disabled={isActionBusy || !isDraft}
+              onClick={() => void saveDraft()}
+            >
+              Saqlash
+            </Button>
             <Button
               type="primary"
               block

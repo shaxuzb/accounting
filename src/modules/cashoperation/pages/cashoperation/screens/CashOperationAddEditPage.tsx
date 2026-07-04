@@ -1,14 +1,10 @@
-import { Button, Col, Form, Modal, Row, Spin } from "antd";
+import { Button, Form, Modal, Spin } from "antd";
 import { useEffect } from "react";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
-import InputNumberFormat from "@/components/fields/InputNumber";
-import InputText from "@/components/fields/InputText";
-import SelectCustom from "@/components/fields/SelectCustom";
-import SelectDate from "@/components/fields/SelectDate";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import CashOperationFormFields from "@/modules/cashoperation/shared/components/CashOperationFormFields";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   useCreateCashOperation,
@@ -22,6 +18,7 @@ const defaultValues: CashOperationForm = {
   cashBoxId: null,
   cashOperationId: null,
   operationTypeId: null,
+  paymentPurposeId: null,
   counterpartyId: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   currencyId: null,
@@ -71,6 +68,7 @@ export default function CashOperationAddEditPage({
       cashBoxId: record.cashBoxId ?? null,
       cashOperationId: record.cashOperationId ?? null,
       operationTypeId: record.operationTypeId ?? null,
+      paymentPurposeId: record.paymentPurposeId ?? null,
       counterpartyId: record.counterpartyId ?? null,
       docDate: record.docDate ?? defaultValues.docDate,
       currencyId: record.currencyId ?? null,
@@ -99,79 +97,8 @@ export default function CashOperationAddEditPage({
     >
       <Spin spinning={isSubmitting || isDetailLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <Row gutter={[16, 8]}>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="cashBoxId"
-                label="settings.entities.cashBox"
-                path={selectListEndpoints.cashBoxesSelectList}
-              />
-            </Col>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="operationTypeId"
-                label="Operatsiya turi"
-                path={selectListEndpoints.operationTypes}
-              />
-            </Col>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="counterpartyId"
-                label="bank.fields.counterparty"
-                path={selectListEndpoints.counterpartiesSelectList}
-              />
-            </Col>
-            <Col span={12}>
-              <SelectDate
-                formik={formik}
-                fieldName="docDate"
-                label="bank.fields.date"
-              />
-            </Col>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="currencyId"
-                label="settings.fields.currency"
-                path={selectListEndpoints.currenciesSelectList}
-              />
-            </Col>
-            <Col span={12}>
-              <InputNumberFormat
-                formik={formik}
-                fieldName="amount"
-                label="bank.fields.amount"
-                min={0}
-                precision={2}
-              />
-            </Col>
-            <Col span={24}>
-              <InputText
-                formik={formik}
-                fieldName="docNumber"
-                label="bank.fields.docNumber"
-              />
-            </Col>
-            <Col span={24}>
-              <InputText
-                formik={formik}
-                fieldName="comment"
-                label="bank.fields.comment"
-              />
-            </Col>
-          </Row>
+          <CashOperationFormFields formik={formik} />
           <div className="mt-4 w-full">
-            {/* <Button
-              onClick={() => {
-                formik.resetForm();
-                onClose();
-              }}
-            >
-              {t("common.cancel")}
-            </Button> */}
             <Button
               type="primary"
               htmlType="submit"

@@ -5,11 +5,16 @@ export interface CashOperation {
   cashBoxName?: string | null;
   cashOperationId: number | null;
   cashOperationName?: string | null;
+  paymentPurposeId?: number | null;
+  paymentPurposeName?: string | null;
+  paymentTypeId?: number | null;
+  paymentTypeName?: string | null;
   counterpartyId: number | null;
   counterpartyName?: string | null;
   docDate: string;
   currencyId: number | null;
   currencyName?: string | null;
+  exchangeRate?: number | null;
   amount: number;
   comment?: string | null;
   stateId?: number | null;

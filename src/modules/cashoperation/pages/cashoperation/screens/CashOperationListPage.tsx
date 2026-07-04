@@ -75,6 +75,11 @@ export default function CashOperationListPage() {
       render: (_, record) => record.counterpartyName ?? record.counterpartyId,
     },
     {
+      dataIndex: "paymentPurposeName",
+      title: "To'lov maqsadi",
+      render: (_, record) => record.paymentPurposeName ?? record.paymentPurposeId ?? "-",
+    },
+    {
       dataIndex: "amount",
       title: t("bank.fields.amount"),
       align: "center",

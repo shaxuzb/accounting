@@ -40,7 +40,11 @@ import { pricingConditionPermissions } from "@/modules/settings/pages/pricingCon
 import { saleConditionPermissions } from "@/modules/settings/pages/saleCondition/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 import { dashboardPermissions } from "@/modules/dashboard/pages/constants/permissions";
-import { cashOperationPermissions } from "@/modules/cashoperation";
+import {
+  cashBookPermissions,
+  cashDocumentPermissions,
+  cashOperationPermissions,
+} from "@/modules/cashoperation";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -166,11 +170,43 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: cashOperationPermissions.view,
+      dropdown: true,
+      dropdownName: "Kassa",
+      iconName: <Banknote className="size-5" />,
       linkData: {
-        path: "cash-operations",
+        path: "cash-operationses",
         title: "Kassa",
       },
-      iconName: <Banknote className="size-5" />,
+      items: [
+        {
+          code: cashOperationPermissions.view,
+          linkData: {
+            path: "cash-operations",
+            title: "Kassa amaliyotlari",
+          },
+        },
+        {
+          code: cashDocumentPermissions.view,
+          linkData: {
+            path: "cash-documents/pko",
+            title: "Kirim orderlari",
+          },
+        },
+        {
+          code: cashDocumentPermissions.view,
+          linkData: {
+            path: "cash-documents/rko",
+            title: "Chiqim orderlari",
+          },
+        },
+        {
+          code: cashBookPermissions.view,
+          linkData: {
+            path: "cash-book",
+            title: "Kassa hisobi",
+          },
+        },
+      ],
     },
 
     {

@@ -38,6 +38,18 @@ const toPositiveNumber = (value: unknown) => {
   return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : null;
 };
 
+const getPaymentPurposeId = (record?: {
+  paymentPurposeId?: number | null;
+  lines?: { paymentPurposeId?: number | null }[] | null;
+}) =>
+  toPositiveNumber(record?.paymentPurposeId) ??
+  toPositiveNumber(record?.lines?.[0]?.paymentPurposeId);
+
+const getPaymentPurposeName = (record?: {
+  paymentPurposeName?: string | null;
+  lines?: { paymentPurposeName?: string | null }[] | null;
+}) => record?.paymentPurposeName ?? record?.lines?.[0]?.paymentPurposeName ?? null;
+
 type BankOperationForm = Omit<
   BankOperationCreatePayload,
   | "bankAccountId"
@@ -105,7 +117,7 @@ export default function BankOperationDetailPage() {
     () => ({
       bankAccountId: record?.bankAccountId ?? null,
       operationTypeId: record?.operationTypeId ?? 1,
-      paymentPurposeId: record?.paymentPurposeId ?? null,
+      paymentPurposeId: getPaymentPurposeId(record),
       counterpartyId: record?.counterpartyId ?? null,
       counterpartyBankAccountId: record?.counterpartyBankAccountId ?? null,
       contractId: record?.contractId ?? null,
@@ -315,7 +327,7 @@ export default function BankOperationDetailPage() {
               />
               <DisplayField
                 label="To'lov maqsadi"
-                value={record.paymentPurposeName}
+                value={getPaymentPurposeName(record)}
               />
               <DisplayField
                 label="Kontragent"
@@ -323,7 +335,10 @@ export default function BankOperationDetailPage() {
               />
               <DisplayField
                 label="Kontragent bank hisobi"
-                value={record.counterpartyBankAccountName}
+                value={
+                  record.counterpartyBankAccountName ??
+                  record.counterpartyBankAccountNumber
+                }
               />
               <DisplayField label="Valyuta" value={record.currencyName} />
               <DisplayField
@@ -331,7 +346,10 @@ export default function BankOperationDetailPage() {
                 value={`${numberSpacing(record.amount)} ${record.currencyName ?? ""}`}
               />
               <DisplayField label="Kurs" value={record.exchangeRate} />
-              <DisplayField label="Shartnoma" value={record.contractName} />
+              <DisplayField
+                label="Shartnoma"
+                value={record.contractName ?? record.contractNumber}
+              />
               <div className="md:col-span-2">
                 <DisplayField label="Izoh" value={record.comment} />
               </div>

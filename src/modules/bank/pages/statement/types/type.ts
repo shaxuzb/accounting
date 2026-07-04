@@ -57,4 +57,18 @@ export interface BankOperationData {
   paymentPurposeName?: string | null;
   counterpartyBankAccountName?: string | null;
   contractName?: string | null;
+  counterpartyBankAccountNumber?: string | null;
+  contractNumber?: string | null;
+  lines?: BankOperationLine[] | null;
+}
+
+export interface BankOperationLine {
+  id: number;
+  orderNumber?: number | null;
+  paymentPurposeId?: number | null;
+  counterpartyId?: number | null;
+  amount?: number | null;
+  comment?: string | null;
+  paymentPurposeCode?: string | null;
+  paymentPurposeName?: string | null;
 }

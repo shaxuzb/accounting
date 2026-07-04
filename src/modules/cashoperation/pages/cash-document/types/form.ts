@@ -1,12 +1,11 @@
-export interface CashOperationForm {
+export interface CashDocumentForm {
   cashBoxId: number | null;
-  cashOperationId: number | null;
-  operationTypeId: number | null;
   paymentPurposeId: number | null;
+  paymentTypeId: number | null;
   counterpartyId: number | null;
   docDate: string;
   currencyId: number | null;
   amount: number | null;
+  exchangeRate: number | null;
   comment: string;
-  stateId?: number | null;
 }

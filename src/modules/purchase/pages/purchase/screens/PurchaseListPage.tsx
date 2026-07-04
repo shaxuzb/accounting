@@ -76,6 +76,7 @@ export default function PurchaseListPage() {
   ];
 
   const hasActions =
+    userPermissions.includes(purchasePermissions.detail) ||
     userPermissions.includes(purchasePermissions.update) ||
     userPermissions.includes(purchasePermissions.delete);
 
@@ -92,14 +93,19 @@ export default function PurchaseListPage() {
             <div>
               <ActionColumn
                 deletePath={purchaseEndpoints.purchase.list}
-                customPath={`/main/purchases/purchase/edit/${record.id}`}
+                customPath={
+                  record.statusId === 1
+                    ? `/main/purchases/purchase/edit/${record.id}`
+                    : `/main/purchases/purchase/${record.id}`
+                }
                 record={record}
                 permissions={user?.user.permissions}
                 permissionsCode={{
                   editCode:
-                    record.statusId === 1 ? purchasePermissions.update : "",
-                  deleteCode:
-                    record.statusId === 1 ? purchasePermissions.delete : "",
+                    record.statusId === 1
+                      ? purchasePermissions.update
+                      : purchasePermissions.detail,
+                  deleteCode: purchasePermissions.delete,
                 }}
                 refetch={refetch}
               />
