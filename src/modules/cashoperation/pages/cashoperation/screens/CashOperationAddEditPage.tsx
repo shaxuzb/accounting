@@ -4,7 +4,6 @@ import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
-import CashOperationFormFields from "@/modules/cashoperation/shared/components/CashOperationFormFields";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   useCreateCashOperation,
@@ -13,6 +12,7 @@ import {
 } from "../hooks";
 import { cashOperationSchema } from "../types/schema";
 import type { CashOperationForm } from "../types/form";
+import CashOperationModal from "@/modules/cashoperation/pages/cashoperation/components/CashOperationModal";
 
 const defaultValues: CashOperationForm = {
   cashBoxId: null,
@@ -97,7 +97,7 @@ export default function CashOperationAddEditPage({
     >
       <Spin spinning={isSubmitting || isDetailLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <CashOperationFormFields formik={formik} />
+          <CashOperationModal formik={formik} />
           <div className="mt-4 w-full">
             <Button
               type="primary"

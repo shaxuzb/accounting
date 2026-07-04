@@ -16,7 +16,7 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
-import CashOperationFormFields from "@/modules/cashoperation/shared/components/CashOperationFormFields";
+import CashOperationFormFields from "@/modules/cashoperation/pages/cashoperation/components/CashOperationModal";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, numberSpacing } from "@/utils/utils";
 import { cashOperationSchema } from "../types/schema";

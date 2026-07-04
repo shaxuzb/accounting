@@ -69,14 +69,19 @@ export default function CashDocumentDetailPage() {
     onSubmit: async (values) => {
       try {
         if (isCreate) {
-          const created = await createMutation.mutateAsync(values);
+          await createMutation.mutateAsync(values);
           toast.success("Hujjat yaratildi");
-          navigate(`/main/cash-operationses/cash-documents/${kind}/${created.id}`, { replace: true });
+          navigate(`/main/cash-operationses/cash-documents/${kind}`, {
+            replace: true,
+          });
           return;
         }
 
         await updateMutation.mutateAsync(values);
         toast.success("Hujjat saqlandi");
+        navigate(`/main/cash-operationses/cash-documents/${kind}/${id}`, {
+          replace: true,
+        });
       } catch (error) {
         errorHandlers(error);
       }
@@ -123,7 +128,9 @@ export default function CashDocumentDetailPage() {
       <Card className="p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="text-sm text-muted-foreground">{labels.detailTitle}</div>
+            <div className="text-sm text-muted-foreground">
+              {labels.detailTitle}
+            </div>
             <div className="text-lg font-semibold">
               {record?.docNumber ?? (isCreate ? labels.addTitle : "Hujjat")}
             </div>
@@ -135,7 +142,10 @@ export default function CashDocumentDetailPage() {
                 statusName={record?.statusName}
               />
             )}
-            <Button icon={<ArrowLeft className="size-4" />} onClick={() => navigate("..")}>
+            <Button
+              icon={<ArrowLeft className="size-4" />}
+              onClick={() => navigate("..")}
+            >
               Orqaga
             </Button>
           </div>
@@ -145,7 +155,11 @@ export default function CashDocumentDetailPage() {
       <div className="grid gap-4 lg:grid-cols-[1.7fr_0.9fr]">
         <Card className="p-4">
           <Form layout="vertical" onFinish={formik.handleSubmit}>
-            <CashDocumentFormFields formik={formik} kind={kind} disabled={!isDraft} />
+            <CashDocumentFormFields
+              formik={formik}
+              kind={kind}
+              disabled={!isDraft}
+            />
           </Form>
         </Card>
 
@@ -173,6 +187,9 @@ export default function CashDocumentDetailPage() {
                   try {
                     await confirmMutation.mutateAsync();
                     toast.success("Hujjat tasdiqlandi");
+                    navigate(`/main/cash-operationses/cash-documents/${kind}`, {
+                      replace: true,
+                    });
                   } catch (error) {
                     errorHandlers(error);
                   }
@@ -193,6 +210,9 @@ export default function CashDocumentDetailPage() {
                   try {
                     await cancelMutation.mutateAsync();
                     toast.success("Hujjat bekor qilindi");
+                    navigate(`/main/cash-operationses/cash-documents/${kind}`, {
+                      replace: true,
+                    });
                   } catch (error) {
                     errorHandlers(error);
                   }
@@ -206,7 +226,8 @@ export default function CashDocumentDetailPage() {
           )}
           {record?.statusName && (
             <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
-              Joriy holat: <span className="font-semibold">{record.statusName}</span>
+              Joriy holat:{" "}
+              <span className="font-semibold">{record.statusName}</span>
             </div>
           )}
         </Card>

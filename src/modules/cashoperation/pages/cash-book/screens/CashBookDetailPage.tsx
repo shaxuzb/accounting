@@ -23,7 +23,6 @@ export default function CashBookDetailPage() {
         dataIndex: "indexId",
         title: "№",
         align: "center",
-        width: 70,
       },
       {
         dataIndex: "docDate",
@@ -63,19 +62,19 @@ export default function CashBookDetailPage() {
       {
         dataIndex: "receipt",
         title: "Kirim",
-        align: "right",
+        align: "center",
         render: (value) => numberSpacing(value ?? 0),
       },
       {
         dataIndex: "payment",
         title: "Chiqim",
-        align: "right",
+        align: "center",
         render: (value) => numberSpacing(value ?? 0),
       },
       {
         dataIndex: "runningBalance",
         title: "Qoldiq",
-        align: "right",
+        align: "center",
         render: (value) => numberSpacing(value ?? 0),
       },
     ],
@@ -98,7 +97,7 @@ export default function CashBookDetailPage() {
           <div className="flex gap-2">
             <Button
               icon={<RefreshCw className="size-4" />}
-              onClick={() => void refetch()}
+              onClick={() => refetch()}
             >
               Yangilash
             </Button>

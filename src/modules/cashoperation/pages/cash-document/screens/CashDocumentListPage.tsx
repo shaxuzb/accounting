@@ -106,7 +106,7 @@ export default function CashDocumentListPage() {
               permissions={permissions}
               permissionsCode={{
                 deleteCode:
-                  record.statusId === 1 ? cashDocumentPermissions.delete : "",
+                  cashDocumentPermissions.delete,
                 editCode:
                   record.statusId === 1 ? cashDocumentPermissions.update : "",
               }}

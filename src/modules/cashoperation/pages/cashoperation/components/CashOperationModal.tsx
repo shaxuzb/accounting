@@ -43,7 +43,7 @@ export default function CashOperationFormFields({
           label="To'lov maqsadi"
           path={selectListEndpoints.paymentPurposesSelectList}
           queryParams={{ operationTypeId: formik.values.operationTypeId }}
-          disabled={disabled}
+          disabled={!formik.values.operationTypeId || disabled}
         />
       </Col>
       <Col span={12}>
