@@ -1,4 +1,12 @@
-import { Button, Form, Table, type TableColumnsType, Spin } from "antd";
+import {
+  Button,
+  Form,
+  Table,
+  type TableColumnsType,
+  Spin,
+  Col,
+  Row,
+} from "antd";
 import { useFormik } from "formik";
 import { ArrowLeft, CheckCircle2, CircleX, Save } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -29,6 +37,7 @@ import {
 const defaultValues: InventoryCountForm = {
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   warehouseId: null,
+  stateId: 1,
   comment: "",
   isCountCompleted: false,
   lines: [
@@ -70,6 +79,7 @@ export default function InventoryCountDetailPage() {
     () => ({
       docDate: record?.docDate ?? defaultValues.docDate,
       warehouseId: record?.warehouseId ?? null,
+      stateId: record?.stateId ?? defaultValues.stateId,
       comment: record?.comment ?? "",
       isCountCompleted: record?.isCountCompleted ?? false,
       lines:
@@ -171,7 +181,10 @@ export default function InventoryCountDetailPage() {
                 statusName={record?.statusName}
               />
             )}
-            <Button icon={<ArrowLeft className="size-4" />} onClick={() => navigate("..")}>
+            <Button
+              icon={<ArrowLeft className="size-4" />}
+              onClick={() => navigate("..")}
+            >
               Orqaga
             </Button>
           </div>
@@ -181,29 +194,33 @@ export default function InventoryCountDetailPage() {
       <div className="grid gap-4 lg:grid-cols-[1.8fr_0.9fr]">
         <Card className="p-4">
           <Form layout="vertical" onFinish={formik.handleSubmit}>
-            <div className="grid gap-4 md:grid-cols-2">
-              <SelectDate
-                formik={formik}
-                fieldName="docDate"
-                label="bank.fields.date"
-                disabled={!isDraft}
-              />
-              <SelectCustom
-                formik={formik}
-                fieldName="warehouseId"
-                label="settings.entities.warehouse"
-                path={selectListEndpoints.warehousesSelectList}
-                disabled={!isDraft}
-              />
-              <div className="md:col-span-2">
+            <Row gutter={[16, 8]}>
+              <Col span={12}>
+                <SelectDate
+                  formik={formik}
+                  fieldName="docDate"
+                  label="bank.fields.date"
+                  disabled={!isDraft}
+                />
+              </Col>
+              <Col span={12}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="warehouseId"
+                  label="settings.entities.warehouse"
+                  path={selectListEndpoints.warehousesSelectList}
+                  disabled={!isDraft}
+                />
+              </Col>
+              <Col span={12}>
                 <InputText
                   formik={formik}
                   fieldName="comment"
                   label="bank.fields.comment"
                   disabled={!isDraft}
                 />
-              </div>
-            </div>
+              </Col>
+            </Row>
           </Form>
           <div className="mt-4">
             <InventoryCountLinesEditor
@@ -221,8 +238,13 @@ export default function InventoryCountDetailPage() {
               <Table<InventoryCountDifference>
                 size="small"
                 columns={differenceColumns}
-                dataSource={generateKeyTable(differencesQuery.data ?? [], "productId")}
-                loading={differencesQuery.isLoading || differencesQuery.isFetching}
+                dataSource={generateKeyTable(
+                  differencesQuery.data ?? [],
+                  "productId",
+                )}
+                loading={
+                  differencesQuery.isLoading || differencesQuery.isFetching
+                }
                 pagination={false}
                 scroll={{ x: "max-content" }}
               />
@@ -235,7 +257,7 @@ export default function InventoryCountDetailPage() {
           <Button
             block
             icon={<Save className="size-4" />}
-            onClick={() => void formik.submitForm()}
+            onClick={() => formik.submitForm()}
             disabled={!isDraft}
             loading={createMutation.isPending || updateMutation.isPending}
           >
@@ -243,7 +265,10 @@ export default function InventoryCountDetailPage() {
           </Button>
           {!isCreate && (
             <>
-              <Button block onClick={() => setShowDifferences((current) => !current)}>
+              <Button
+                block
+                onClick={() => setShowDifferences((current) => !current)}
+              >
                 {showDifferences ? "Farqlarni yashirish" : "Farqni ko'rish"}
               </Button>
               <Button

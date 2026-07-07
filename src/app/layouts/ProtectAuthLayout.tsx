@@ -120,7 +120,7 @@ const ProtectAuthLayout = () => {
 
       // Permission umuman yo'q bo'lsa
       redirectToLogin(false);
-      toast.error("Sizda tizimga kirish uchun ruxsat yo'q!");
+      // toast.error("Sizda tizimga kirish uchun ruxsat yo'q!");
       return;
     }
 

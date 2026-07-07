@@ -42,7 +42,7 @@ export default function PurchaseListPage() {
       title: "Provodka",
       align: "center",
       render: (_, record) => (
-        <Link to={`/main/accountingentriesreport?documentId=${record.id}`}>
+        <Link to={`/main/accountingentriesreport?documentTypeId=1&documentId=${record.id}`}>
           <Button icon={<ReceiptText className="size-4" />} />
         </Link>
       ),

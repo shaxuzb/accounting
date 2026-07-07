@@ -117,10 +117,10 @@ export interface AccountTurnoverQuery extends AccountingReportQueryBase {
   pageSize?: number | null;
 }
 
-export interface BalanceSheetQuery extends AccountingReportQueryBase {}
-export interface IncomeStatementQuery extends AccountingReportQueryBase {}
-export interface CashFlowQuery extends AccountingReportQueryBase {}
-export interface JournalQuery extends AccountTurnoverQuery {}
+export type BalanceSheetQuery = AccountingReportQueryBase;
+export type IncomeStatementQuery = AccountingReportQueryBase;
+export type CashFlowQuery = AccountingReportQueryBase;
+export type JournalQuery = AccountTurnoverQuery;
 export interface AccountCardQuery extends AccountingReportQueryBase {
   accountId?: number | null;
 }

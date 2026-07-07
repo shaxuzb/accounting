@@ -127,7 +127,7 @@ export const menuPermissions: MainMenu = {
       },
       items: [
         {
-          code: warehousePermissions.view,
+          code: productPermissions.view,
           linkData: {
             path: "warehouse",
             title: "Omborxona",
@@ -224,7 +224,7 @@ export const menuPermissions: MainMenu = {
       },
       items: [
         {
-          code: accountingReportPermissions.view,
+          code: accountingReportPermissions.balanceSheet,
           linkData: {
             path: "reports/balance-sheet",
             title: "Accounting reports",
@@ -237,7 +237,7 @@ export const menuPermissions: MainMenu = {
             title: "Accounting period",
           },
         },
-  
+
         {
           code: ledgerPermissions.view,
           linkData: {

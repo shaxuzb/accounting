@@ -40,6 +40,10 @@ export const saleRoutes: RouteObject = {
           element: withPermission(<SaleDetailPage />, salePermissions.detail),
           handle: { title: "sale.document", showBack: true, backTo: ".." },
         },
+        {
+          path: ""
+        }
+      
       ],
     },
     {

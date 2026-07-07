@@ -9,6 +9,7 @@ import type {
   CashFlowResponse,
   IncomeStatementQuery,
   IncomeStatementResponse,
+  JournalQuery,
   RawAccountingReportResponse,
   AccountTurnoverResponse,
 } from "./types/type";
@@ -28,7 +29,7 @@ export const accountingReportService = {
       accountingReportEndpoints.accountTurnover,
       params,
     ),
-  journal: (params?: AccountTurnoverQuery) =>
+  journal: (params?: JournalQuery) =>
     getJson<RawAccountingReportResponse>(accountingReportEndpoints.journal, params),
   accountCard: (params?: AccountCardQuery) =>
     getJson<RawAccountingReportResponse>(accountingReportEndpoints.accountCard, params),

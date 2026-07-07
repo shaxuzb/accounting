@@ -339,10 +339,10 @@ const PurchaseImportPage = () => {
       }
 
       const payload = toPurchaseCreatePayload(values, completedRows, purchaseMode);
-      if (!payload.lines.length) {
-        toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
-        return false;
-      }
+      // if (!payload.lines.length) {
+      //   toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
+      //   return false;
+      // }
 
       try {
         if (isEdit && purchaseId) {

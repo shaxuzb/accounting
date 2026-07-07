@@ -21,10 +21,17 @@ const initialValues: AccountCardQuery = {
 
 export default function AccountCardPage() {
   const [submitted, setSubmitted] = useState<AccountCardQuery | null>(null);
-  const query = useGetAccountCard(submitted ?? undefined);
+  const query = useGetAccountCard(submitted?.accountId ? submitted : undefined);
 
   const formik = useFormik<AccountCardQuery>({
     initialValues,
+    validate: (values) => {
+      const errors: Partial<Record<keyof AccountCardQuery, string>> = {};
+      if (!values.accountId) {
+        errors.accountId = "Schyotni tanlang";
+      }
+      return errors;
+    },
     onSubmit: (values) => setSubmitted(values),
   });
 

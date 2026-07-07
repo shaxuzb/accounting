@@ -1,3 +1,8 @@
 export const accountingReportPermissions = {
-  view: "AccRegEntryView",
+  incomeStatement: "ACCOUNTING_REPORT_GET_INCOME_STATEMENT",
+  balanceSheet: "ACCOUNTING_REPORT_GET_BALANCE_SHEET",
+  cashFlow: "ACCOUNTING_REPORT_GET_CASH_FLOW",
+  accountTurnover: "ACCOUNTING_REPORT_GET_ACCOUNT_TURNOVER",
+  accountCard: "ACCOUNTING_REPORT_GET_ACCOUNT_CARD",
+  journal: "ACCOUNTING_REPORT_GET_JOURNAL"
 } as const;

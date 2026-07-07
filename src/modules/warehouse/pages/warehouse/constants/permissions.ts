@@ -1,3 +1,7 @@
 export const warehousePermissions = {
-  view: "PRODUCT_TABLE_VIEW",
+  byMarking: "PRODUCT_STOCK_GET_BY_MARKING_NUMBER",
+  groups: "PRODUCT_STOCK_GET_PRODUCT_GROUP_SUMMARY",
+  products: "PRODUCT_STOCK_GET_PRODUCT_SUMMARY",
+  tables: "PRODUCT_STOCK_GET_PRODUCT_TABLE_SUMMARY"
 } as const;
+

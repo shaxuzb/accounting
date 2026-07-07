@@ -1,4 +1,4 @@
-import { Table } from "antd";
+import { Empty, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import Card from "@/components/ui/card/Card";
 import { generateKeyTable } from "@/utils/utils";
@@ -9,6 +9,13 @@ interface Props {
   title: string;
   emptyText?: string;
 }
+
+const humanizeKey = (key: string) =>
+  key
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .trim()
+    .replace(/^\w/, (char) => char.toUpperCase());
 
 const formatValue = (value: unknown) => {
   if (value === null || value === undefined || value === "") return "-";
@@ -28,13 +35,24 @@ export default function AccountingReportGenericArrayTable({
   const firstRow = rows[0];
   const columns: ColumnsType<Record<string, unknown>> = isObject(firstRow)
     ? Object.keys(firstRow).map((key) => ({
-        title: key,
+        title: humanizeKey(key),
         dataIndex: key,
         render: (value) => formatValue(value),
       }))
     : [];
 
-  if (!rows.length || !columns.length) return null;
+  if (!rows.length || !columns.length) {
+    return (
+      <Card className="overflow-hidden border border-border">
+        <div className="border-b border-border px-4 py-3">
+          <div className="text-base font-semibold text-text">{title}</div>
+        </div>
+        <div className="px-4 py-8">
+          <Empty description={emptyText} />
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="overflow-hidden border border-border">

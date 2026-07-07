@@ -21,6 +21,7 @@ const defaultValues: SettingsBankForm = {
   name: "",
   mfo: "",
   stateId: null,
+  inn: "",
 };
 
 interface SettingsBankAddEditPageProps {
@@ -54,6 +55,7 @@ export default function SettingsBankAddEditPage({
           code: values.code.trim(),
           name: values.name.trim(),
           mfo: values.mfo.trim() || null,
+          inn: values.inn.trim() || null,
         };
 
         if (isEdit && editId) {
@@ -84,6 +86,7 @@ export default function SettingsBankAddEditPage({
         name: data.name ?? "",
         mfo: data.mfo ?? "",
         stateId: data.stateId ?? null,
+        inn: data.inn ?? "",
       });
     }
   }, [data, isEdit, setValues]);
@@ -123,11 +126,18 @@ export default function SettingsBankAddEditPage({
                 label="settings.fields.name"
               />
             </Col>
-            <Col span={isEdit ? 12 : 24}>
+            <Col span={12}>
               <InputText
                 formik={formik}
                 fieldName="mfo"
                 label="settings.fields.mfo"
+              />
+            </Col>
+            <Col span={12}>
+              <InputText
+                formik={formik}
+                fieldName="inn"
+                label="settings.fields.inn"
               />
             </Col>
             {isEdit && (
