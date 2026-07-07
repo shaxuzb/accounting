@@ -1,8 +1,3 @@
-import type {
-  WarehouseDocumentItemForm,
-  WarehouseDocumentLineForm,
-} from "@/modules/warehouse/shared/components/WarehouseDocumentLinesEditor";
-
 export interface InventoryAdjustmentForm {
   docDate: string;
   warehouseId: number | null;
@@ -11,5 +6,19 @@ export interface InventoryAdjustmentForm {
   lines: InventoryAdjustmentLineForm[];
 }
 
-export interface InventoryAdjustmentLineForm extends WarehouseDocumentLineForm {}
-export interface InventoryAdjustmentItemForm extends WarehouseDocumentItemForm {}
+export interface InventoryAdjustmentItemForm {
+  productTableId: number | null;
+  costPrice: number | null;
+  markingNumber?: string | null;
+  serialNumber?: string | null;
+}
+
+export interface InventoryAdjustmentLineForm {
+  productId: number | null;
+  productName?: string | null;
+  unitId: number | null;
+  unitName?: string | null;
+  quantity: number | null;
+  comment: string;
+  items: InventoryAdjustmentItemForm[];
+}

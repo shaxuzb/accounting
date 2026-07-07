@@ -3,6 +3,7 @@ import type { ListParams, Paginated } from "@/shared/types";
 import { inventoryAdjustmentEndpoints as endpoints } from "../constants/endpoints";
 import type { InventoryAdjustmentForm } from "../types/form";
 import type { InventoryAdjustmentDocument } from "../types/type";
+import { toInventoryAdjustmentPayload } from "../utils/inventoryAdjustment";
 
 type QueryParams = ListParams | URLSearchParams;
 
@@ -17,11 +18,17 @@ export const inventoryAdjustmentService = {
       .then((res) => res.data),
   create: (payload: InventoryAdjustmentForm) =>
     $axiosPrivate
-      .post<InventoryAdjustmentDocument>(endpoints.create, payload)
+      .post<InventoryAdjustmentDocument>(
+        endpoints.create,
+        toInventoryAdjustmentPayload(payload),
+      )
       .then((res) => res.data),
   update: (id: string | number, payload: InventoryAdjustmentForm) =>
     $axiosPrivate
-      .put<InventoryAdjustmentDocument>(endpoints.update(id), payload)
+      .put<InventoryAdjustmentDocument>(
+        endpoints.update(id),
+        toInventoryAdjustmentPayload(payload),
+      )
       .then((res) => res.data),
   confirm: (id: string | number) =>
     $axiosPrivate

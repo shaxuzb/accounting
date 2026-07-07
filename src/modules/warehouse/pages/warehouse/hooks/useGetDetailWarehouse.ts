@@ -7,6 +7,7 @@ interface Params {
   search?: string;
   page?: number;
   pageSize?: number;
+  warehouseId?: number | null;
 }
 
 export const useGetDetailWarehouse = (params?: Params) =>

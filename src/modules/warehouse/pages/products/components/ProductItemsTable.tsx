@@ -60,6 +60,41 @@ export default function ProductItemsTable({
       title: t("mxik code"),
       width: 130,
     },
+    {
+      dataIndex: "productTypeId",
+      title: "Product type",
+      width: 160,
+      render: (value) => value ?? "-",
+    },
+    {
+      dataIndex: "isSold",
+      title: "Sotiladi",
+      width: 110,
+      align: "center",
+      render: (value) => (
+        <Tag color={value ? "green" : "default"}>{value ? "Ha" : "Yo'q"}</Tag>
+      ),
+    },
+    {
+      dataIndex: "isPurchased",
+      title: "Xarid qilinadi",
+      width: 130,
+      align: "center",
+      render: (value) => (
+        <Tag color={value ? "blue" : "default"}>{value ? "Ha" : "Yo'q"}</Tag>
+      ),
+    },
+    {
+      dataIndex: "isPieceTracked",
+      title: "Markirovkali",
+      width: 120,
+      align: "center",
+      render: (value) => (
+        <Tag color={value ? "purple" : "default"}>
+          {value ? t("common.yes") : t("common.no")}
+        </Tag>
+      ),
+    },
     // {
     //   dataIndex: "barcode",
     //   title: "SAP kod",

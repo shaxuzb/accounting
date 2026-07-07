@@ -1,5 +1,4 @@
 import { purchasePermissions } from "@/modules/purchase/pages/purchase";
-
 import type { MenuRole } from "@/shared/types";
 import {
   Banknote,
@@ -25,7 +24,6 @@ import {
   Warehouse,
   Wrench,
 } from "lucide-react";
-
 import { salePermissions } from "@/modules/sale";
 import { productPermissions } from "@/modules/warehouse/pages/products/constants/permissions";
 import {
@@ -45,6 +43,12 @@ import {
   cashDocumentPermissions,
   cashOperationPermissions,
 } from "@/modules/cashoperation";
+import { ledgerPermissions } from "@/modules/accountings/pages/ledger/constants/permissions";
+import { trialBalancePermissions } from "@/modules/accountings/pages/trial-balance/constants/permissions";
+import { auditLogPermissions } from "@/modules/accountings/pages/audit-log/constants/permissions";
+import { repostPermissions } from "@/modules/accountings/pages/repost/constants/permissions";
+import { accountingPeriodsPermissions } from "@/modules/accountings/pages/accounting-periods/constants/permissions";
+import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -86,7 +90,7 @@ export const menuPermissions: MainMenu = {
     },
 
     {
-      code: purchasePermissions.view,
+      code: "DROPDOWN",
       iconName: <ShoppingCart className="size-5" />,
       dropdown: true,
       dropdownName: "purchase.title",
@@ -113,7 +117,7 @@ export const menuPermissions: MainMenu = {
     },
 
     {
-      code: warehousePermissions.view,
+      code: "DROPDOWN",
       iconName: <Box className="size-5" />,
       dropdown: true,
       dropdownName: "Ombor",
@@ -169,7 +173,7 @@ export const menuPermissions: MainMenu = {
       filterCode: bankPermissions.view,
     },
     {
-      code: cashOperationPermissions.view,
+      code: "DROPDOWN",
       dropdown: true,
       dropdownName: "Kassa",
       iconName: <Banknote className="size-5" />,
@@ -204,6 +208,69 @@ export const menuPermissions: MainMenu = {
           linkData: {
             path: "cash-book",
             title: "Kassa hisobi",
+          },
+        },
+      ],
+    },
+
+    {
+      code: "DROPDOWN",
+      dropdown: true,
+      dropdownName: "Accounting",
+      iconName: <ReceiptText className="size-5" />,
+      linkData: {
+        path: "accountings",
+        title: "Accounting",
+      },
+      items: [
+        {
+          code: accountingReportPermissions.view,
+          linkData: {
+            path: "reports/balance-sheet",
+            title: "Accounting reports",
+          },
+        },
+        {
+          code: accountingPeriodsPermissions.view,
+          linkData: {
+            path: "register-entries",
+            title: "Accounting period",
+          },
+        },
+  
+        {
+          code: ledgerPermissions.view,
+          linkData: {
+            path: "ledger",
+            title: "Ledger",
+          },
+        },
+        {
+          code: trialBalancePermissions.view,
+          linkData: {
+            path: "trial-balance",
+            title: "Trial balance",
+          },
+        },
+        {
+          code: auditLogPermissions.view,
+          linkData: {
+            path: "audit-log",
+            title: "Audit log",
+          },
+        },
+        {
+          code: repostPermissions.update,
+          linkData: {
+            path: "repost",
+            title: "Repost",
+          },
+        },
+        {
+          code: accountingPeriodsPermissions.update,
+          linkData: {
+            path: "accounting-periods",
+            title: "Accounting periods",
           },
         },
       ],
@@ -254,7 +321,7 @@ export const menuPermissions: MainMenu = {
     //   iconName: <ChartColumnBig className="size-5" />,
     // },
     {
-      code: "Sss",
+      code: "SETTINGS",
       linkData: {
         path: "settings",
         title: "settings.title",

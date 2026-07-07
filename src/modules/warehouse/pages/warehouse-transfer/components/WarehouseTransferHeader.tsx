@@ -1,0 +1,41 @@
+import { Button } from "antd";
+import { ArrowLeft } from "lucide-react";
+import Card from "@/components/ui/card/Card";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import type { WarehouseTransferDocument } from "../types/type";
+
+interface Props {
+  record?: WarehouseTransferDocument | null;
+  isCreate: boolean;
+  onBack: () => void;
+}
+
+export default function WarehouseTransferHeader({
+  record,
+  isCreate,
+  onBack,
+}: Props) {
+  return (
+    <Card className="p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div className="text-sm text-muted-foreground">Warehouse transfer</div>
+          <div className="text-lg font-semibold">
+            {record?.docNumber ?? "Yangi hujjat"}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {!isCreate && (
+            <ProcessStatusBadge
+              statusId={record?.statusId}
+              statusName={record?.statusName}
+            />
+          )}
+          <Button icon={<ArrowLeft className="size-4" />} onClick={onBack}>
+            Orqaga
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
+}

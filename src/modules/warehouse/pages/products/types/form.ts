@@ -4,6 +4,9 @@ import type { ProductTypeForm } from "./type";
 export interface ProductGroupCreateDto {
   name: string;
   products: Array<{
+    code?: string;
+    sku?: string;
+    article?: string;
     name: string;
     barcode: string | null;
     mxik?: string | null;
@@ -11,6 +14,12 @@ export interface ProductGroupCreateDto {
     unitId: number;
     isPieceTracked: boolean;
     isService: boolean;
+    productTypeId?: number | null;
+    isSold?: boolean;
+    isPurchased?: boolean;
+    productGroupId?: number | null;
+    defaultVatRateId?: number | null;
+    minStock?: number | null;
   }>;
 }
 
@@ -21,6 +30,9 @@ export interface ProductGroupUpdateDto {
   products: Array<{
     id?: number | null;
     stateId?: number | null;
+    code?: string;
+    sku?: string;
+    article?: string;
     name: string;
     barcode: string | null;
     mxik?: string | null;
@@ -28,6 +40,12 @@ export interface ProductGroupUpdateDto {
     unitId: number;
     isPieceTracked: boolean;
     isService: boolean;
+    productTypeId?: number | null;
+    isSold?: boolean;
+    isPurchased?: boolean;
+    productGroupId?: number | null;
+    defaultVatRateId?: number | null;
+    minStock?: number | null;
   }>;
 }
 
@@ -36,6 +54,9 @@ export const toCreatePayload = (
 ): ProductGroupCreateDto => ({
   name: form.name,
   products: form.products.map((p) => ({
+    code: p.code ?? "",
+    sku: p.sku ?? "",
+    article: p.article ?? "",
     name: p.name,
     barcode: p.barcode || null,
     mxik: p.mxik || null,
@@ -43,6 +64,12 @@ export const toCreatePayload = (
     unitId: p.unitId as number,
     isPieceTracked: Boolean(p.isPieceTracked),
     isService: form.isService,
+    productTypeId: p.productTypeId ?? null,
+    isSold: Boolean(p.isSold),
+    isPurchased: Boolean(p.isPurchased),
+    productGroupId: p.productGroupId ?? null,
+    defaultVatRateId: p.defaultVatRateId ?? null,
+    minStock: p.minStock ?? null,
   })),
 });
 
@@ -54,6 +81,9 @@ export const toUpdatePayload = (
   products: form.products.map((p) => ({
     id: p.new ? null : (p.id ?? null),
     stateId: p.stateId ?? null,
+    code: p.code ?? "",
+    sku: p.sku ?? "",
+    article: p.article ?? "",
     name: p.name,
     barcode: p.barcode || null,
     mxik: p.mxik || null,
@@ -61,6 +91,12 @@ export const toUpdatePayload = (
     unitId: p.unitId as number,
     isPieceTracked: Boolean(p.isPieceTracked),
     isService: form.isService,
+    productTypeId: p.productTypeId ?? null,
+    isSold: Boolean(p.isSold),
+    isPurchased: Boolean(p.isPurchased),
+    productGroupId: p.productGroupId ?? null,
+    defaultVatRateId: p.defaultVatRateId ?? null,
+    minStock: p.minStock ?? null,
   })),
 });
 

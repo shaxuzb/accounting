@@ -13,7 +13,7 @@ import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
-import InventoryCountLinesEditor from "@/modules/warehouse/shared/components/InventoryCountLinesEditor";
+import InventoryCountLinesEditor from "@/modules/warehouse/pages/components/InventoryCountLinesEditor";
 import type { InventoryCountForm } from "../types/form";
 import type { InventoryCountDifference } from "../types/type";
 import { inventoryCountSchema } from "../types/schema";

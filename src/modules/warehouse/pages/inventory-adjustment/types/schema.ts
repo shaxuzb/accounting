@@ -13,6 +13,14 @@ export const inventoryAdjustmentSchema = Yup.object({
         unitId: requiredNumber("purchase.fields.quantity"),
         quantity: Yup.number().nullable().required(),
         comment: Yup.string().nullable(),
+        items: Yup.array().of(
+          Yup.object({
+            productTableId: Yup.number().nullable(),
+            costPrice: Yup.number().nullable(),
+            markingNumber: Yup.string().nullable(),
+            serialNumber: Yup.string().nullable(),
+          }),
+        ),
       }),
     )
     .min(1),

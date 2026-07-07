@@ -11,6 +11,7 @@ export const selectListEndpoints = {
   paymentPurposesSelectList: "manuals/payment-purposes",
   banksSelectList: "manuals/banks",
   documentTypesSelectList: "manuals/document-types",
+  productTypesSelectList: "manuals/product-types",
   organizationsSelectList: "manuals/organizations",
   operationTypesSelectList: "manuals/organizations",
   bankOperationTypesSelectList: "manuals/operation-types",
@@ -40,6 +41,7 @@ export const selectListEndpoints = {
   counterPartyBankAccounts: "manuals/counterparty-bank-accounts", 
   paymentPurposes: "manuals/payment-purposes",
   operationTypes: "manuals/operation-types",
+  vatRates: "manuals/vat-rates",
 };
 
 export const selectListKeys = {
@@ -81,6 +83,8 @@ export const selectListKeys = {
   costingMethod: "selectListCostingMethods",
   counterPartyBankAccount: "selectListCounterPartyBankAccounts",
   paymentPurposes: "selectListPaymentPurposes",
+  operationTypes: "selectListOperationTypes",
+  vatRates: "selectListVatRates",
 };
 
 export const filterIds = {
@@ -120,4 +124,6 @@ export const filterIds = {
   costingMethod: "costingMethodId",
   counterPartyBankAccount: "counterPartyBankAccountId",
   paymentPurposes: "paymentPurposeId",
+  operationTypes: "operationTypeId",
+  vatRates: "vatRateId",
 };

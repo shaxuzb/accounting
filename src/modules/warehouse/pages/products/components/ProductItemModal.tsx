@@ -19,12 +19,21 @@ interface ProductItemModalProps {
 }
 
 const emptyProductItem = (isService: boolean): ProductItem => ({
+  // code: "",
+  // sku: "",
+  // article: "",
   name: "",
   barcode: "",
   mxik: "",
   description: "",
   isService,
   isPieceTracked: false,
+  productTypeId: null,
+  isSold: false,
+  isPurchased: false,
+  productGroupId: null,
+  defaultVatRateId: null,
+  minStock: null,
   stateId: 1,
   unitId: null,
 });
@@ -122,6 +131,19 @@ export default function ProductItemModal({
               fieldName="name"
             />
           </Col>
+          {/* <Col span={24} md={12}>
+            <InputText label="Code" formik={productFormik} fieldName="code" />
+          </Col>
+          <Col span={24} md={12}>
+            <InputText label="SKU" formik={productFormik} fieldName="sku" />
+          </Col>
+          <Col span={24} md={12}>
+            <InputText
+              label="Article"
+              formik={productFormik}
+              fieldName="article"
+            />
+          </Col> */}
           <Col span={24} md={12}>
             <InputText
               label="Mxik"
@@ -146,11 +168,67 @@ export default function ProductItemModal({
             />
           </Col>
           <Col span={24} md={12}>
+            <SelectCustom
+              label="Product type"
+              path={selectListEndpoints.productTypesSelectList}
+              formik={productFormik}
+              fieldName="productTypeId"
+              queryParams={{ isService }}
+              clearable
+            />
+          </Col>
+          <Col span={24} md={12}>
             <InputText
               label="products.fields.description"
               formik={productFormik}
               fieldName="description"
             />
+          </Col>
+          <Col span={24} md={12}>
+            <SelectCustom
+              label="Default VAT rate ID"
+              path={selectListEndpoints.vatRatesSelectList}
+              formik={productFormik}
+              fieldName="defaultVatRateId"
+            />
+          </Col>
+          {/* <Col span={24} md={12}>
+            <InputNumber
+              label="Min stock"
+              formik={productFormik}
+              fieldName="minStock"
+              min={0}
+            />
+          </Col> */}
+          <Col span={24} md={12}>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type={productFormik.values.isSold ? "primary" : "default"}
+                onClick={() =>
+                  productFormik.setFieldValue(
+                    "isSold",
+                    !productFormik.values.isSold,
+                    true,
+                  )
+                }
+              >
+                {productFormik.values.isSold ? "Sotiladi" : "Sotilmaydi"}
+              </Button>
+              <Button
+                type={productFormik.values.isPurchased ? "primary" : "default"}
+                onClick={() =>
+                  productFormik.setFieldValue(
+                    "isPurchased",
+                    !productFormik.values.isPurchased,
+                    true,
+                  )
+                }
+              >
+                {productFormik.values.isPurchased
+                  ? "Xarid qilinadi"
+                  : "Xarid qilinmaydi"}
+              </Button>
+            </div>
           </Col>
           {!isService && (
             <Col span={24} md={12}>

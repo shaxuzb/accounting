@@ -6,6 +6,9 @@
 export interface ProductItem {
   id?: number | null;
   idIndex?: number;
+  code?: string;
+  sku?: string;
+  article?: string;
   name: string;
   unitId: number | null;
   barcode: string;
@@ -13,8 +16,13 @@ export interface ProductItem {
   description: string;
   isService: boolean;
   isPieceTracked?: boolean;
-  // not in swagger group-item DTO, but kept for UI state
+  productTypeId?: number | null;
+  isSold?: boolean;
+  isPurchased?: boolean;
   productGroupId?: number | null;
+  defaultVatRateId?: number | null;
+  minStock?: number | null;
+  // not in swagger group-item DTO, but kept for UI state
   stateId?: number | null;
   state?: string;
   new?: boolean;

@@ -1,7 +1,7 @@
 import type {
   InventoryCountItemForm,
   InventoryCountLineForm,
-} from "@/modules/warehouse/shared/components/InventoryCountLinesEditor";
+} from "@/modules/warehouse/pages/components/InventoryCountLinesEditor";
 
 export interface InventoryCountForm {
   docDate: string;

@@ -1,8 +1,3 @@
-import type {
-  WarehouseDocumentItemForm,
-  WarehouseDocumentLineForm,
-} from "@/modules/warehouse/shared/components/WarehouseDocumentLinesEditor";
-
 export interface WarehouseTransferForm {
   docDate: string;
   sourceWarehouseId: number | null;
@@ -11,5 +6,19 @@ export interface WarehouseTransferForm {
   lines: WarehouseTransferLineForm[];
 }
 
-export interface WarehouseTransferLineForm extends WarehouseDocumentLineForm {}
-export interface WarehouseTransferItemForm extends WarehouseDocumentItemForm {}
+export interface WarehouseTransferItemForm {
+  productTableId: number | null;
+  costPrice: number | null;
+  markingNumber?: string | null;
+  serialNumber?: string | null;
+}
+
+export interface WarehouseTransferLineForm {
+  productId: number | null;
+  productName?: string | null;
+  unitId: number | null;
+  unitName?: string | null;
+  quantity: number | null;
+  comment: string;
+  items: WarehouseTransferItemForm[];
+}

@@ -17,6 +17,8 @@ export const warehouseTransferSchema = Yup.object({
           Yup.object({
             productTableId: Yup.number().nullable(),
             costPrice: Yup.number().nullable(),
+            markingNumber: Yup.string().nullable(),
+            serialNumber: Yup.string().nullable(),
           }),
         ),
       }),
