@@ -3,6 +3,7 @@ export { default as TrialBalancePage } from "./trial-balance/screens/TrialBalanc
 export { default as AuditLogPage } from "./audit-log/screens/AuditLogPage";
 export { default as RepostPage } from "./repost/screens/RepostPage";
 export { default as AccountingPeriodsPage } from "./accounting-periods/screens/AccountingPeriodsPage";
+export { default as AccountingReportsPage } from "./accounting-report/screens/AccountingReportsPage";
 export { default as BalanceSheetPage } from "./accounting-report/screens/BalanceSheetPage";
 export { default as IncomeStatementPage } from "./accounting-report/screens/IncomeStatementPage";
 export { default as CashFlowPage } from "./accounting-report/screens/CashFlowPage";

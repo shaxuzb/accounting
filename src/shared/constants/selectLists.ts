@@ -42,6 +42,7 @@ export const selectListEndpoints = {
   paymentPurposes: "manuals/payment-purposes",
   operationTypes: "manuals/operation-types",
   vatRates: "manuals/vat-rates",
+  suppliersSelectList: "manuals/suppliers",
 };
 
 export const selectListKeys = {

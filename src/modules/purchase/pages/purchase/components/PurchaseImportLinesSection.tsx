@@ -76,11 +76,8 @@ export default function PurchaseImportLinesSection({
           // className="sm={12} lg={8} xl={4} [&_.ant-table-tbody>tr>td]:py-3! "
           loading={loading}
           columns={columns}
-          dataSource={lines.map((item, index) => ({
-            ...item,
-            indexId: index + 1,
-            key: index + 1,
-          }))}
+          dataSource={lines}
+          rowKey="key"
           virtual
           scroll={{ y: "height - 320", x: "max-content" }}
           pagination={false}

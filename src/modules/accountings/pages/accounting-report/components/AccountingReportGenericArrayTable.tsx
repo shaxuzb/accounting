@@ -1,5 +1,5 @@
 import { Empty, Table } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import type { ColumnsType, TableProps } from "antd/es/table";
 import Card from "@/components/ui/card/Card";
 import { generateKeyTable } from "@/utils/utils";
 import { getArrayFromResponse, isObject } from "../utils/response";
@@ -8,6 +8,8 @@ interface Props {
   data: unknown;
   title: string;
   emptyText?: string;
+  loading?: boolean;
+  onRowClick?: (record: Record<string, unknown>) => void;
 }
 
 const humanizeKey = (key: string) =>
@@ -30,16 +32,32 @@ export default function AccountingReportGenericArrayTable({
   data,
   title,
   emptyText = "Ma'lumot topilmadi",
+  loading = false,
+  onRowClick,
 }: Props) {
   const rows = getArrayFromResponse(data);
-  const firstRow = rows[0];
-  const columns: ColumnsType<Record<string, unknown>> = isObject(firstRow)
+  const normalizedRows = rows.map((row) =>
+    isObject(row) ? row : { value: formatValue(row) },
+  );
+  const firstRow = normalizedRows[0] as Record<string, unknown> | undefined;
+  const columns: ColumnsType<Record<string, unknown>> = firstRow
     ? Object.keys(firstRow).map((key) => ({
         title: humanizeKey(key),
         dataIndex: key,
         render: (value) => formatValue(value),
       }))
-    : [];
+    : [{
+          title: "Value",
+          dataIndex: "value",
+          render: (value) => formatValue(value),
+        }];
+
+  const handleRow: TableProps<Record<string, unknown>>["onRow"] = onRowClick
+    ? (record) => ({
+        onClick: () => onRowClick(record),
+        className: "cursor-pointer hover:bg-muted/30",
+      })
+    : undefined;
 
   if (!rows.length || !columns.length) {
     return (
@@ -63,7 +81,10 @@ export default function AccountingReportGenericArrayTable({
         bordered
         size="middle"
         columns={columns}
-        dataSource={generateKeyTable(rows as Record<string, unknown>[]) }
+        loading={loading}
+        dataSource={generateKeyTable(normalizedRows)}
+        onRow={handleRow}
+        rowClassName={onRowClick ? "transition-colors" : ""}
         pagination={false}
         locale={{ emptyText }}
         scroll={{ x: "max-content" }}

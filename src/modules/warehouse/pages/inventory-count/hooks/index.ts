@@ -1,7 +1,10 @@
 export { useCancelInventoryCount } from "./useCancelInventoryCount";
 export { useConfirmInventoryCount } from "./useConfirmInventoryCount";
 export { useCreateInventoryCount } from "./useCreateInventoryCount";
+export { useDeleteInventoryCount } from "./useDeleteInventoryCount";
 export { useGetDetailInventoryCount } from "./useGetDetailInventoryCount";
 export { useGetInventoryCountDifferences } from "./useGetInventoryCountDifferences";
+export { useGetInventoryCountInventoryMovements } from "./useGetInventoryCountInventoryMovements";
+export { useGetInventoryCountPostingBatches } from "./useGetInventoryCountPostingBatches";
 export { useGetInventoryCounts } from "./useGetInventoryCounts";
 export { useUpdateInventoryCount } from "./useUpdateInventoryCount";

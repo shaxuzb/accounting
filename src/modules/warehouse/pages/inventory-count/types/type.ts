@@ -7,6 +7,8 @@ export interface InventoryCountItem {
 }
 
 export interface InventoryCountLine {
+  id?: number | null;
+  ownerId?: number | null;
   productId: number | null;
   productName?: string | null;
   unitId: number | null;
@@ -46,8 +48,21 @@ export interface InventoryCountDocument {
   stateId?: number | null;
   stateName?: string | null;
   createdDate?: string | null;
+  countCompletedByUserId?: number | null;
   countCompletedAt?: string | null;
   postedAt?: string | null;
   cancelledAt?: string | null;
   lines?: InventoryCountLine[];
 }
+
+export interface InventoryCountListFilter {
+  search?: string;
+  warehouseId?: number | null;
+  statusId?: number | null;
+  page?: number;
+  pageSize?: number;
+}
+
+export type InventoryCountPostingBatch = Record<string, unknown>;
+
+export type InventoryCountInventoryMovement = Record<string, unknown>;

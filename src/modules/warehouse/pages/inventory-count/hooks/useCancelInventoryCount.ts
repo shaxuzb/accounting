@@ -9,6 +9,9 @@ export const useCancelInventoryCount = (id: string | number) => {
     onSuccess: (data) => {
       queryClient.setQueryData(inventoryCountKeys.detail(id), data);
       queryClient.invalidateQueries({ queryKey: inventoryCountKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: inventoryCountKeys.list(),
+      });
     },
   });
 };

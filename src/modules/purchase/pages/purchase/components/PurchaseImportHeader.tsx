@@ -69,7 +69,7 @@ export default function PurchaseImportHeader({
               label={
                 purchaseMode === "services" ? "Ijrochi" : "Yetkazib beruvchi"
               }
-              path={selectListEndpoints.counterpartiesSelectList}
+              path={selectListEndpoints.suppliersSelectList}
               getFirst
               formik={formik}
             />
@@ -88,6 +88,7 @@ export default function PurchaseImportHeader({
               label="Valyuta"
               fieldName="currencyId"
               formik={formik}
+              getFirst={true}
             />
           </Col>
           <Col span={24} sm={12} lg={8} xl={4}>

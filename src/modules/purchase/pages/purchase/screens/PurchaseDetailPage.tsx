@@ -80,14 +80,21 @@ const PurchaseDetailPage = () => {
       title: "CH",
       align: "center",
       width: 70,
-      render: (_, record) => (
-        <Button
-          shape="circle"
-          icon={<Menu className="size-4" />}
-          disabled={!record.productId && !record.items?.length}
-          onClick={() => setSelectedLine(record)}
-        />
-      ),
+      render: (_, record) => {
+        const hasMarkingInfo = Boolean(record.items?.length);
+        return (
+          <Button
+            shape="circle"
+            icon={<Menu className="size-4" />}
+            disabled={!hasMarkingInfo}
+            onClick={() => {
+              if (!hasMarkingInfo) return;
+              setSelectedLine(record);
+            }}
+            title={hasMarkingInfo ? "Markirovkalarni ko'rish" : "Markirovkasiz tovar"}
+          />
+        );
+      },
     },
     {
       dataIndex: "productName",

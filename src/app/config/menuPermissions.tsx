@@ -29,7 +29,6 @@ import { productPermissions } from "@/modules/warehouse/pages/products/constants
 import {
   inventoryAdjustmentPermissions,
   inventoryCountPermissions,
-  warehousePermissions,
   warehouseTransferPermissions,
 } from "@/modules/warehouse";
 import { bankPermissions } from "@/modules/bank";

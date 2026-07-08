@@ -1,12 +1,12 @@
 import { NavLink } from "react-router";
 
 const tabs = [
-  { to: "/main/accountings/reports/balance-sheet", label: "Balance sheet" },
-  { to: "/main/accountings/reports/income-statement", label: "Income statement" },
-  { to: "/main/accountings/reports/cash-flow", label: "Cash flow" },
-  { to: "/main/accountings/reports/account-turnover", label: "Account turnover" },
-  { to: "/main/accountings/reports/journal", label: "Journal" },
-  { to: "/main/accountings/reports/account-card", label: "Account card" },
+  { to: "balance-sheet", label: "Balance sheet" },
+  { to: "income-statement", label: "Income statement" },
+  { to: "cash-flow", label: "Cash flow" },
+  { to: "account-turnover", label: "Account turnover" },
+  { to: "journal", label: "Journal" },
+  { to: "account-card", label: "Account card" },
 ];
 
 export default function AccountingReportTabs() {

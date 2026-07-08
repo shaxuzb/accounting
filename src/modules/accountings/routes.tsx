@@ -9,14 +9,9 @@ import { repostPermissions } from "./pages/repost/constants/permissions";
 import { accountingPeriodsPermissions } from "./pages/accounting-periods/constants/permissions";
 import { accountingReportPermissions } from "./pages/accounting-report/constants/permissions";
 import {
-  AccountCardPage,
-  AccountTurnoverPage,
   AccountingPeriodsPage,
   AuditLogPage,
-  BalanceSheetPage,
-  CashFlowPage,
-  IncomeStatementPage,
-  JournalPage,
+  AccountingReportsPage,
   LedgerPage,
   RepostPage,
   TrialBalancePage,
@@ -34,78 +29,57 @@ export const accountingsRoutes: RouteObject = {
   handle: { title: "Accounting" },
   children: [
     {
-      index: true,
-      element: <Navigate to="reports/balance-sheet" replace />,
-    },
-    {
-      path: "register-entries",
-      handle: { title: "Accounting entries" },
-      children: [
-        // {
-        //   index: true,
-        //   element: withAccess(
-        //     <AccountingRegisterEntriesPage />,
-        //     accountingRegisterEntriesPermissions.view,
-        //   ),
-        // },
-        // {
-        //   path: "daily",
-        //   element: withAccess(
-        //     <AccountingRegisterEntriesDailyPage />,
-        //     accountingRegisterEntriesPermissions.view,
-        //   ),
-        //   handle: {
-        //     title: "Accounting entries daily",
-        //     showBack: true,
-        //     backTo: "..",
-        //   },
-        // },
-      ],
-    },
-    {
       path: "reports",
       handle: { title: "Accounting reports" },
-      element: withAccess(<Outlet />, accountingReportPermissions.view),
+      element: <Outlet />,
       children: [
-        {
-          index: true,
-          element: <Navigate to="balance-sheet" replace />,
-        },
         {
           path: "balance-sheet",
           handle: { title: "Balance sheet" },
-          element: withAccess(<BalanceSheetPage />, accountingReportPermissions.view),
+          element: withAccess(
+            <AccountingReportsPage reportType="balance-sheet" />,
+            accountingReportPermissions.balanceSheet,
+          ),
         },
         {
           path: "income-statement",
           handle: { title: "Income statement" },
           element: withAccess(
-            <IncomeStatementPage />,
-            accountingReportPermissions.view,
+            <AccountingReportsPage reportType="income-statement" />,
+            accountingReportPermissions.incomeStatement,
           ),
         },
         {
           path: "cash-flow",
           handle: { title: "Cash flow" },
-          element: withAccess(<CashFlowPage />, accountingReportPermissions.view),
+          element: withAccess(
+            <AccountingReportsPage reportType="cash-flow" />,
+            accountingReportPermissions.cashFlow,
+          ),
         },
         {
           path: "account-turnover",
           handle: { title: "Account turnover" },
           element: withAccess(
-            <AccountTurnoverPage />,
-            accountingReportPermissions.view,
+            <AccountingReportsPage reportType="account-turnover" />,
+            accountingReportPermissions.accountTurnover,
           ),
         },
         {
           path: "journal",
           handle: { title: "Journal" },
-          element: withAccess(<JournalPage />, accountingReportPermissions.view),
+          element: withAccess(
+            <AccountingReportsPage reportType="journal" />,
+            accountingReportPermissions.journal,
+          ),
         },
         {
           path: "account-card",
           handle: { title: "Account card" },
-          element: withAccess(<AccountCardPage />, accountingReportPermissions.view),
+          element: withAccess(
+            <AccountingReportsPage reportType="account-card" />,
+            accountingReportPermissions.accountCard,
+          ),
         },
       ],
     },

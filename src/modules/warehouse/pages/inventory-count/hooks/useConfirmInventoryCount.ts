@@ -9,6 +9,15 @@ export const useConfirmInventoryCount = (id: string | number) => {
     onSuccess: (data) => {
       queryClient.setQueryData(inventoryCountKeys.detail(id), data);
       queryClient.invalidateQueries({ queryKey: inventoryCountKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: inventoryCountKeys.differences(id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: inventoryCountKeys.postingBatches(id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: inventoryCountKeys.inventoryMovements(id),
+      });
     },
   });
 };

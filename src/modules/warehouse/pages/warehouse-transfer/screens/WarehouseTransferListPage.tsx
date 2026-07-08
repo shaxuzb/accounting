@@ -14,6 +14,7 @@ import { warehouseTransferEndpoints } from "../constants/endpoints";
 import { warehouseTransferPermissions } from "../constants/permissions";
 import { useGetWarehouseTransfers } from "../hooks";
 import type { WarehouseTransferDocument } from "../types/type";
+import { stateStatus } from "@/utils/helpers/statusHelper";
 
 export default function WarehouseTransferListPage() {
   const { t } = useTranslation();
@@ -29,7 +30,9 @@ export default function WarehouseTransferListPage() {
     {
       dataIndex: "docNumber",
       title: t("purchase.fields.docNumber"),
-      render: (value, record) => <Link to={`${record.id}`}>{value ?? record.id}</Link>,
+      render: (value, record) => (
+        <Link to={`${record.id}`}>{value ?? record.id}</Link>
+      ),
     },
     {
       dataIndex: "accountingEntriesReport",
@@ -49,7 +52,8 @@ export default function WarehouseTransferListPage() {
     {
       dataIndex: "sourceWarehouseName",
       title: "Manba ombor",
-      render: (_, record) => record.sourceWarehouseName ?? record.sourceWarehouseId,
+      render: (_, record) =>
+        record.sourceWarehouseName ?? record.sourceWarehouseId,
     },
     {
       dataIndex: "destinationWarehouseName",
@@ -77,6 +81,13 @@ export default function WarehouseTransferListPage() {
         />
       ),
     },
+    {
+      dataIndex: "stateId",
+      title: t("products.fields.status"),
+      align: "center",
+      render: (_, record) =>
+        stateStatus(record.stateId, (record as any).stateName),
+    },
   ];
 
   const hasActions = permissions.includes(warehouseTransferPermissions.delete);
@@ -94,12 +105,13 @@ export default function WarehouseTransferListPage() {
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode:
-                  record.statusId === 1 ? warehouseTransferPermissions.delete : "",
+                deleteCode: warehouseTransferPermissions.delete,
                 editCode:
-                  record.statusId === 1 ? warehouseTransferPermissions.update : "",
+                  record.statusId === 1
+                    ? warehouseTransferPermissions.update
+                    : "",
               }}
-              refetch={() => void refetch()}
+              refetch={() => refetch()}
               customPath={`/main/warehouses/transfers/${record.id}`}
             />
           ),
@@ -119,7 +131,10 @@ export default function WarehouseTransferListPage() {
               </Button>
             </Link>
           </PermissionCard>
-          <Button icon={<RefreshCw className="size-4" />} onClick={() => void refetch()} />
+          <Button
+            icon={<RefreshCw className="size-4" />}
+            onClick={() => void refetch()}
+          />
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">

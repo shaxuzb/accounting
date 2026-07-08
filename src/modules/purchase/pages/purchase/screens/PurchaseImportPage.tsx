@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ClipboardEvent,
   type Dispatch,
@@ -338,7 +339,11 @@ const PurchaseImportPage = () => {
         return false;
       }
 
-      const payload = toPurchaseCreatePayload(values, completedRows, purchaseMode);
+      const payload = toPurchaseCreatePayload(
+        values,
+        completedRows,
+        purchaseMode,
+      );
       // if (!payload.lines.length) {
       //   toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
       //   return false;
@@ -366,14 +371,7 @@ const PurchaseImportPage = () => {
         return false;
       }
     },
-    [
-      formik,
-      importPurchase,
-      isEdit,
-      purchaseId,
-      purchaseMode,
-      updatePurchase,
-    ],
+    [formik, importPurchase, isEdit, purchaseId, purchaseMode, updatePurchase],
   );
 
   const ensureSavedBeforeAction = useCallback(async () => {
@@ -415,16 +413,16 @@ const PurchaseImportPage = () => {
   );
 
   const resolveProductIds = useCallback(
-    (rows: PurchaseImportRow[]) =>
-      rows.map((item) => {
+    (rows: PurchaseImportRow[]) => {
+      let hasChanges = false;
+      const updated = rows.map((item) => {
         const normalizedCode = String(item.sapCode ?? "").trim();
         const product =
           (item.productId
             ? itemOptions.find((option) => option.id === item.productId)
-            : undefined) ??
-          productByCode.get(normalizedCode);
+            : undefined) ?? productByCode.get(normalizedCode);
         const unitPrice = getProductPrice(product);
-        return {
+        const resolved = {
           ...item,
           productId: item.productId ?? product?.id ?? null,
           product: item.product || product?.name || "",
@@ -444,33 +442,66 @@ const PurchaseImportPage = () => {
                 markingNumbers: [],
               }),
         };
-      }),
+
+        const normalizedMarkingNumbers = (item.markingNumbers ?? []).join("|");
+        const resolvedMarkingNumbers = (resolved.markingNumbers ?? []).join("|");
+        const changed =
+          resolved.productId !== item.productId ||
+          resolved.product !== item.product ||
+          resolved.productName !== item.productName ||
+          resolved.name !== item.name ||
+          resolved.mxik !== item.mxik ||
+          resolved.unitId !== item.unitId ||
+          resolved.unitCode !== item.unitCode ||
+          resolved.unitName !== item.unitName ||
+          resolved.price !== item.price ||
+          resolved.pricePerUom !== item.pricePerUom ||
+          resolved.isPieceTracked !== item.isPieceTracked ||
+          resolved.markingNumber !== item.markingNumber ||
+          normalizedMarkingNumbers !== resolvedMarkingNumbers;
+
+        if (!changed) {
+          return item;
+        }
+
+        hasChanges = true;
+        return resolved;
+      });
+
+      return hasChanges ? updated : rows;
+    },
     [itemOptions, productByCode],
   );
 
+  const linesRef = useRef(formik.values.lines);
+  useEffect(() => {
+    linesRef.current = formik.values.lines;
+  }, [formik.values.lines]);
+
   const commitRows = useCallback(
     (rows: PurchaseImportRow[]) => {
+      if (rows === linesRef.current) return;
       if (!isEdit) {
         setExcelData(rows);
       }
       formik.setFieldValue("lines", rows, false);
     },
-    [formik, isEdit, setExcelData],
+    [formik.setFieldValue, isEdit, setExcelData],
   );
 
   const handleRowValueChange = useCallback(
     (rowIndex: number, patch: Partial<PurchaseImportRow>) => {
-      const nextRows = formik.values.lines.map((item, index) =>
+      const nextRows = linesRef.current.map((item, index) =>
         index === rowIndex ? { ...item, ...patch } : item,
       );
       commitRows(nextRows);
     },
-    [commitRows, formik.values.lines],
+    [commitRows],
   );
 
   const handleItemSelect = useCallback(
     (rowIndex: number, value: number) => {
-      const currentRows = formik.values.lines;
+      const currentRows = linesRef.current;
       const selected = itemOptions.find((item) => item.id === value);
       const productCode = getProductCode(selected);
       const unitPrice = getProductPrice(selected);
@@ -484,7 +515,8 @@ const PurchaseImportPage = () => {
         name: selected?.name ?? "",
         sapCode: productCode || currentRows[rowIndex]?.sapCode || "",
         mxik: selected?.mxik ?? productCode,
-        unitId: selected?.unitId ?? (currentRows[rowIndex]?.unitId as number | null),
+        unitId:
+          selected?.unitId ?? (currentRows[rowIndex]?.unitId as number | null),
         unitCode: selected?.unitCode ?? null,
         unitName: selected?.unitName ?? selected?.unit ?? null,
         price: unitPrice || currentRows[rowIndex]?.price || null,
@@ -499,19 +531,19 @@ const PurchaseImportPage = () => {
         markingNumbers: isPieceTracked ? currentMarkings : [],
       });
     },
-    [formik.values.lines, handleRowValueChange, itemOptions, purchaseMode],
+    [handleRowValueChange, itemOptions, purchaseMode],
   );
 
   const openMarkingModal = useCallback(
     (rowIndex: number) => {
-      if (!formik.values.lines[rowIndex]?.isPieceTracked) {
+      if (!linesRef.current[rowIndex]?.isPieceTracked) {
         toast.error("Bu mahsulot markirovkasiz");
         return;
       }
       setMarkingRowIndex(rowIndex);
       setMarkingInput("");
     },
-    [formik.values.lines],
+    [],
   );
 
   const closeMarkingModal = useCallback(() => {
@@ -535,7 +567,7 @@ const PurchaseImportPage = () => {
     const nextMarkings = parseMarkingInput(markingInput);
     if (!nextMarkings.length) return;
 
-    const current = toMarkingNumbers(formik.values.lines[markingRowIndex]);
+    const current = toMarkingNumbers(linesRef.current[markingRowIndex]);
     const currentSet = new Set(current);
     const uniqueMarkings = nextMarkings.filter((marking) => {
       if (currentSet.has(marking)) return false;
@@ -550,7 +582,7 @@ const PurchaseImportPage = () => {
 
     updateRowMarkings(markingRowIndex, [...current, ...uniqueMarkings]);
     setMarkingInput("");
-  }, [formik.values.lines, markingInput, markingRowIndex, updateRowMarkings]);
+  }, [markingInput, markingRowIndex, updateRowMarkings]);
 
   const handleMarkingPaste = useCallback(
     (event: ClipboardEvent<HTMLInputElement>) => {
@@ -570,12 +602,12 @@ const PurchaseImportPage = () => {
   const handleRemoveMarking = useCallback(
     (marking: string) => {
       if (markingRowIndex === null) return;
-      const nextMarkings = toMarkingNumbers(
-        formik.values.lines[markingRowIndex],
-      ).filter((item) => item !== marking);
+      const nextMarkings = toMarkingNumbers(linesRef.current[markingRowIndex]).filter(
+        (item) => item !== marking,
+      );
       updateRowMarkings(markingRowIndex, nextMarkings);
     },
-    [formik.values.lines, markingRowIndex, updateRowMarkings],
+    [markingRowIndex, updateRowMarkings],
   );
 
   const handleExcelDataChange = useCallback<
@@ -583,8 +615,7 @@ const PurchaseImportPage = () => {
   >(
     (value) => {
       if (isEdit) {
-        const nextRaw =
-          typeof value === "function" ? value(formik.values.lines) : value;
+        const nextRaw = typeof value === "function" ? value(linesRef.current) : value;
         const nextRows = resolveProductIds(nextRaw);
         formik.setFieldValue("lines", nextRows, false);
         return;
@@ -597,13 +628,13 @@ const PurchaseImportPage = () => {
         return nextRows;
       });
     },
-    [formik, formik.values.lines, isEdit, resolveProductIds, setExcelData],
+    [formik, isEdit, resolveProductIds, setExcelData],
   );
 
   const handleAddManualRow = useCallback(() => {
-    const indexId = formik.values.lines.length + 1;
+    const indexId = linesRef.current.length + 1;
     commitRows([
-      ...formik.values.lines,
+      ...linesRef.current,
       createEmptyPurchaseRow({
         indexId,
         counterpartyId: formik.values.counterpartyId,
@@ -616,14 +647,13 @@ const PurchaseImportPage = () => {
     commitRows,
     formik.values.counterpartyId,
     formik.values.currencyId,
-    formik.values.lines,
     productWithCount,
     purchaseMode,
   ]);
 
   const handleDeleteRow = useCallback(
     (rowIndex: number) => {
-      const nextRows = formik.values.lines
+      const nextRows = linesRef.current
         .filter((_, index) => index !== rowIndex)
         .map((item, index) => ({
           ...item,
@@ -647,7 +677,6 @@ const PurchaseImportPage = () => {
       commitRows,
       formik.values.counterpartyId,
       formik.values.currencyId,
-      formik.values.lines,
       productWithCount,
       purchaseMode,
     ],
@@ -655,7 +684,7 @@ const PurchaseImportPage = () => {
 
   const handleCellCommit = useCallback(
     (rowIndex: number, dataIndex: string, rawValue: string) => {
-      const currentRows = formik.values.lines;
+      const currentRows = linesRef.current;
 
       if (!currentRows[rowIndex]) {
         return;
@@ -709,7 +738,7 @@ const PurchaseImportPage = () => {
       nextRows[rowIndex] = targetRow;
       commitRows(nextRows);
     },
-    [commitRows, formik.values.lines, productByCode, purchaseMode],
+    [commitRows, productByCode, purchaseMode],
   );
 
   const isSapCodeValid = useCallback(
@@ -746,36 +775,30 @@ const PurchaseImportPage = () => {
   useEffect(() => {
     const hasLoadedOptions =
       purchaseMode === "goods" ? isSuccess && data : isServicesSuccess;
-    if (hasLoadedOptions && formik.values.lines.length > 0) {
-      const updated = resolveProductIds(formik.values.lines);
-      const timeoutId = window.setTimeout(() => commitRows(updated), 0);
-      return () => window.clearTimeout(timeoutId);
-    }
-  }, [
-    commitRows,
-    data,
-    formik.values.lines,
-    isServicesSuccess,
-    isSuccess,
-    purchaseMode,
-    resolveProductIds,
-  ]);
+    if (!hasLoadedOptions || linesRef.current.length === 0) return;
 
-  const handleDeleteSapCodes = () => {
-    const filteredData = formik.values.lines?.filter((item) => item.productId);
+    const updated = resolveProductIds(linesRef.current);
+    if (updated === linesRef.current) return;
+
+    const timeoutId = window.setTimeout(() => commitRows(updated), 0);
+    return () => window.clearTimeout(timeoutId);
+  }, [commitRows, data, isServicesSuccess, isSuccess, purchaseMode, resolveProductIds]);
+
+  const handleDeleteSapCodes = useCallback(() => {
+    const filteredData = linesRef.current?.filter((item) => item.productId);
     const nextRows = filteredData ?? [];
     commitRows(nextRows);
     toast.success("Topilmagan sab kodlar o'chirildi");
-  };
+  }, [commitRows]);
 
-  const handleOpenMissingProductsModal = () => {
+  const handleOpenMissingProductsModal = useCallback(() => {
     const rows =
-      formik.values.lines?.filter(
+      linesRef.current?.filter(
         (item) => String(item.sapCode ?? "").trim() && !item.productId,
       ) ?? [];
     setMissingProductRows(rows);
     setProductCreateOpen(true);
-  };
+  }, []);
 
   const foundedSapCodes = useMemo(
     () =>
@@ -829,13 +852,12 @@ const PurchaseImportPage = () => {
     } catch (error) {
       errorHandlers(error);
     }
-  }, [
-    confirmMutation,
-    ensureSavedBeforeAction,
-    isDraft,
-    navigate,
-    purchaseId,
-  ]);
+  }, [confirmMutation, ensureSavedBeforeAction, isDraft, navigate, purchaseId]);
+
+  const handleCommentChange = useCallback(
+    (value: string) => draftFormik.setFieldValue("comment", value, false),
+    [draftFormik],
+  );
 
   const handleCancelDocument = useCallback(async () => {
     if (!purchaseId || !isDraft) return;
@@ -850,13 +872,7 @@ const PurchaseImportPage = () => {
     } catch (error) {
       errorHandlers(error);
     }
-  }, [
-    cancelMutation,
-    ensureSavedBeforeAction,
-    isDraft,
-    navigate,
-    purchaseId,
-  ]);
+  }, [cancelMutation, ensureSavedBeforeAction, isDraft, navigate, purchaseId]);
 
   if (isEdit && (detailQuery.isLoading || !detailData)) {
     return (
@@ -873,7 +889,9 @@ const PurchaseImportPage = () => {
           <Card className="mb-3 p-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-1">
-                <div className="text-sm text-muted-foreground">Hujjat raqami</div>
+                <div className="text-sm text-muted-foreground">
+                  Hujjat raqami
+                </div>
                 <div className="text-lg font-semibold">
                   {detailData.docNumber || detailData.id}
                 </div>
@@ -933,9 +951,7 @@ const PurchaseImportPage = () => {
           isLoading={isLoading}
           lines={formik.values.lines}
           onAddManualRow={handleAddManualRow}
-          onCommentChange={(value) =>
-            draftFormik.setFieldValue("comment", value, false)
-          }
+          onCommentChange={handleCommentChange}
           onDeleteSapCodes={handleDeleteSapCodes}
           onOpenMissingProductsModal={handleOpenMissingProductsModal}
           purchaseMode={purchaseMode}

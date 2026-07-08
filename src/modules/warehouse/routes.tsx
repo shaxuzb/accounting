@@ -31,12 +31,12 @@ export const warehouseRoutes: RouteObject = {
           index: true,
           element: withPermission(
             <ProductSummaryListPage />,
-            warehousePermissions.view,
+            warehousePermissions.products,
           ),
         },
         {
           path: ":id",
-          element: withPermission(<ProductDetail />, warehousePermissions.view),
+          element: withPermission(<ProductDetail />, warehousePermissions.products),
         },
       ],
     },
@@ -115,7 +115,23 @@ export const warehouseRoutes: RouteObject = {
             <InventoryCountDetailPage />,
             inventoryCountPermissions.create,
           ),
-          handle: { title: "Yangi inventarizatsiya", showBack: true, backTo: ".." },
+          handle: {
+            title: "Yangi inventarizatsiya",
+            showBack: true,
+            backTo: "..",
+          },
+        },
+        {
+          path: ":id/edit",
+          element: withPermission(
+            <InventoryCountDetailPage />,
+            inventoryCountPermissions.update,
+          ),
+          handle: {
+            title: "Inventarizatsiya hujjatini tahrirlash",
+            showBack: true,
+            backTo: "..",
+          },
         },
         {
           path: ":id",
@@ -123,7 +139,11 @@ export const warehouseRoutes: RouteObject = {
             <InventoryCountDetailPage />,
             inventoryCountPermissions.detail,
           ),
-          handle: { title: "Inventarizatsiya hujjati", showBack: true, backTo: ".." },
+          handle: {
+            title: "Inventarizatsiya hujjati",
+            showBack: true,
+            backTo: "..",
+          },
         },
       ],
     },

@@ -48,11 +48,12 @@ export default function WarehouseTransferLinesEditor({
     const map = new Map<number, ProductStock>();
     (stockQuery.data?.items ?? []).forEach((item) => {
       map.set(item.id, item);
+      if (item.productId !== item.id) {
+        map.set(item.productId, item);
+      }
     });
     return map;
   }, [stockQuery.data?.items]);
-
-  console.log(formik.values)
 
   const activeLine =
     activeLineIndex !== null ? formik.values.lines[activeLineIndex] : null;
@@ -84,8 +85,8 @@ export default function WarehouseTransferLinesEditor({
   };
 
   const setLineItems = (index: number, items: ProductStockSerial[]) => {
-    const currentProductId = Number(formik.values.lines[index]?.productId)
-    const productStock = stockMap.get(currentProductId)
+    const currentProductId = Number(formik.values.lines[index]?.productId);
+    const productStock = stockMap.get(currentProductId);
     const nextItems: WarehouseTransferItemForm[] = items.length
       ? items.map((item) => ({
           productTableId: item.id,
@@ -94,14 +95,11 @@ export default function WarehouseTransferLinesEditor({
           serialNumber: item.serialNumber ?? null,
         }))
       : [createDefaultTransferItem()];
-      console.log(nextItems);
-      
 
     setLine(index, {
       quantity: items.length || null,
       items: nextItems,
     });
-    console.log(nextItems);
   };
 
   const addLine = () =>
@@ -169,20 +167,21 @@ export default function WarehouseTransferLinesEditor({
                     Mahsulot
                   </div>
                   <Select
-                    // value={line.productId}
+                    value={line.productId}
                     placeholder="Mahsulotni tanlang"
                     loading={stockQuery.isLoading || stockQuery.isFetching}
                     disabled={disabled}
                     showSearch
                     options={(stockQuery.data?.items ?? []).map((item) => ({
-                      value: item.id,
+                      value: item.productId ?? item.id,
                       label: `${item.productName ?? item.name ?? item.productId} - ${numberSpacing(item.quantity, undefined, true)} dona`,
                     }))}
-                    onSelect={(value) => {
+                    onChange={(value) => {
                       const selected = stockMap.get(Number(value));
+                      const selectedProductId = Number(value);
 
                       setLine(index, {
-                        productId: Number(value),
+                        productId: Number.isNaN(selectedProductId) ? null : selectedProductId,
                         productName:
                           selected?.productName ?? selected?.name ?? "",
                         unitId: line.unitId,
