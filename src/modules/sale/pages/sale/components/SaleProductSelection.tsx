@@ -27,6 +27,7 @@ import {
 import SaleWarehouseProductsModal from "./SaleWarehouseProductsModal";
 
 interface Props {
+  warehouseId?: number | null;
   comment: string;
   products: SaleSelectedProduct[];
   saleCondition: SaleCondition;
@@ -137,6 +138,7 @@ const recalculateLine = ({
 };
 
 export default function SaleProductSelection({
+  warehouseId = null,
   comment,
   products,
   saleCondition,
@@ -150,12 +152,18 @@ export default function SaleProductSelection({
   const [loadingProductId, setLoadingProductId] = useState<number | null>(null);
   const getProductPriceDetails = useGetProductPriceDetails();
   const params = useMemo(() => {
-    const value = new URLSearchParams();
-    value.set("Page", "1");
-    value.set("PageSize", "1000");
-    if (search.trim()) value.set("Search", search.trim());
+    const value: Record<string, string> = {
+      page: "1",
+      pageSize: "1000",
+    };
+    if (warehouseId && warehouseId > 0) {
+      value.warehouseId = String(warehouseId);
+    }
+    if (search.trim()) {
+      value.search = search.trim();
+    }
     return value;
-  }, [search]);
+  }, [search, warehouseId]);
   const { data, isLoading, isFetching } = useGetSaleProductStocks(params);
   const { data: vatRateOptions = [] } = useQuery<VatRateOption[]>({
     queryKey: ["selectlist", selectListKeys.vatRate],
@@ -194,6 +202,7 @@ export default function SaleProductSelection({
     rowKey?: string,
     quantityToAdd?: number,
     sourceLayer?: SaleProductPriceLayer,
+    overrideSalePrice?: number,
   ) => {
     const product = stockProducts.find(
       (item) => getStockProductId(item) === productId,
@@ -216,6 +225,8 @@ export default function SaleProductSelection({
           : existingLine && !rowKey
             ? existingLine.quantity + quantityToAdd
             : quantityToAdd;
+      const salePriceBySelection =
+        overrideSalePrice === undefined ? undefined : Number(overrideSalePrice);
       const priceLayers = sourceLayer ? [sourceLayer] : detail.layers;
       const quantity = Math.min(
         requestedQuantity,
@@ -234,7 +245,8 @@ export default function SaleProductSelection({
       const prices = getCostingPrices({
         costingMethodId: saleCondition.costingMethodId,
         defaultCostPrice: sourceLayer?.unitPrice ?? detail.costPrice,
-        defaultSalePrice: sourceLayer?.salePrice ?? detail.salePrice,
+        defaultSalePrice:
+          salePriceBySelection ?? sourceLayer?.salePrice ?? detail.salePrice,
         layers: allocatedLayers,
       });
       const unitId = detail.unitId || product.unitId || 0;
@@ -242,9 +254,20 @@ export default function SaleProductSelection({
         toast.error("Tanlangan mahsulotda birlik topilmadi");
         return;
       }
+      const selectedSalePrice =
+        salePriceBySelection ??
+        sourceLayer?.salePrice ??
+        detail.salePrice ??
+        prices.unitPrice ??
+        prices.costPrice ??
+        0;
+      const nextMarkupPercent = getMarkupPercent(
+        prices.costPrice,
+        selectedSalePrice,
+      );
       const unitPrice = allocatedLayers.length
-        ? prices.unitPrice || detail.salePrice || prices.costPrice
-        : detail.salePrice || prices.unitPrice || prices.costPrice;
+        ? prices.unitPrice || selectedSalePrice || prices.costPrice
+        : selectedSalePrice || prices.unitPrice || prices.costPrice;
       const nextLine: SaleSelectedProduct = {
         id: existingLine?.id,
         rowKey: existingLine?.rowKey ?? `${productId}-${Date.now()}`,
@@ -259,10 +282,16 @@ export default function SaleProductSelection({
         costPrice: prices.costPrice || sourceLayer?.unitPrice || detail.costPrice,
         unitId,
         unitName: detail.unitName || product.unitName,
-        unitPrice,
+        unitPrice: salePriceBySelection === undefined ? unitPrice : salePriceBySelection,
         vatRateId: existingLine?.vatRateId ?? saleCondition.vatRateId,
-        markupPercent: getMarkupPercent(prices.costPrice, unitPrice),
-        priceType: existingLine?.priceType ?? "costPlusPercent",
+        markupPercent:
+          salePriceBySelection === undefined
+            ? getMarkupPercent(prices.costPrice, unitPrice)
+            : nextMarkupPercent,
+        priceType:
+          salePriceBySelection === undefined
+            ? existingLine?.priceType ?? "costPlusPercent"
+            : "manual",
         isPieceTracked: product.isPieceTracked,
         priceLayers,
         layers: allocatedLayers,
@@ -685,16 +714,16 @@ export default function SaleProductSelection({
         loadingProductId={loadingProductId}
         onSearch={setSearch}
         onClose={() => setWarehouseOpen(false)}
-        onAdd={(product, layer, quantity) =>
-          handleSelectProduct(
-            getStockProductId(product),
-            undefined,
-            quantity,
-            layer,
-          )
-        }
+      onAdd={(product, layer, quantity, salePrice) =>
+        handleSelectProduct(
+          getStockProductId(product),
+          undefined,
+          quantity,
+          layer,
+          salePrice,
+        )
+      }
       />
     </Card>
   );
 }
-

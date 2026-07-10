@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   ShoppingBag,
   ShoppingCart,
+  Boxes,
   Tag,
   TrendingUp,
   Users,
@@ -36,18 +37,25 @@ import { settingsBankPermissions } from "@/modules/settings/pages/bank/constants
 import { pricingConditionPermissions } from "@/modules/settings/pages/pricingCondition/constants/permissions";
 import { saleConditionPermissions } from "@/modules/settings/pages/saleCondition/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
-import { dashboardPermissions } from "@/modules/dashboard/pages/constants/permissions";
 import {
   cashBookPermissions,
   cashDocumentPermissions,
   cashOperationPermissions,
 } from "@/modules/cashoperation";
+import {
+  faAssetPermissions,
+} from "@/modules/fa/pages/faAsset/constants/permissions";
+import { faDisposalPermissions } from "@/modules/fa/pages/faDisposal/constants/permissions";
+import { faDepreciationPermissions } from "@/modules/fa/pages/faDepreciation/constants/permissions";
+import { faMovementPermissions } from "@/modules/fa/pages/faMovement/constants/permissions";
+import { faReceiptPermissions } from "@/modules/fa/pages/faReceipt/constants/permissions";
+import { faRevaluationPermissions } from "@/modules/fa/pages/faRevaluation/constants/permissions";
+import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
+import { accountingPeriodsPermissions } from "@/modules/accountings/pages/accounting-periods/constants/permissions";
 import { ledgerPermissions } from "@/modules/accountings/pages/ledger/constants/permissions";
 import { trialBalancePermissions } from "@/modules/accountings/pages/trial-balance/constants/permissions";
 import { auditLogPermissions } from "@/modules/accountings/pages/audit-log/constants/permissions";
 import { repostPermissions } from "@/modules/accountings/pages/repost/constants/permissions";
-import { accountingPeriodsPermissions } from "@/modules/accountings/pages/accounting-periods/constants/permissions";
-import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -79,14 +87,14 @@ export const settingsViewPermissions = [
 
 export const menuPermissions: MainMenu = {
   TOP: [
-    {
-      code: dashboardPermissions.view,
-      linkData: {
-        path: "dashboard",
-        title: "Boshqaruv",
-      },
-      iconName: <LayoutDashboard className="size-5" />,
-    },
+    // {
+    //   code: dashboardPermissions.view,
+    //   linkData: {
+    //     path: "dashboard",
+    //     title: "Boshqaruv",
+    //   },
+    //   iconName: <LayoutDashboard className="size-5" />,
+    // },
 
     {
       code: "DROPDOWN",
@@ -212,68 +220,122 @@ export const menuPermissions: MainMenu = {
       ],
     },
 
-    {
-      code: "DROPDOWN",
-      dropdown: true,
-      dropdownName: "Accounting",
-      iconName: <ReceiptText className="size-5" />,
-      linkData: {
-        path: "accountings",
-        title: "Accounting",
-      },
-      items: [
-        {
-          code: accountingReportPermissions.balanceSheet,
-          linkData: {
-            path: "reports/balance-sheet",
-            title: "Accounting reports",
-          },
-        },
-        {
-          code: accountingPeriodsPermissions.view,
-          linkData: {
-            path: "register-entries",
-            title: "Accounting period",
-          },
-        },
+    // {
+    //   code: "DROPDOWN",
+    //   dropdown: true,
+    //   dropdownName: "Accounting",
+    //   iconName: <ReceiptText className="size-5" />,
+    //   linkData: {
+    //     path: "accountings",
+    //     title: "Accounting",
+    //   },
+    //   items: [
+    //     {
+    //       code: accountingReportPermissions.balanceSheet,
+    //       linkData: {
+    //         path: "reports/balance-sheet",
+    //         title: "Accounting reports",
+    //       },
+    //     },
+    //     {
+    //       code: accountingPeriodsPermissions.close,
+    //       linkData: {
+    //         path: "register-entries",
+    //         title: "Accounting period",
+    //       },
+    //     },
 
-        {
-          code: ledgerPermissions.view,
-          linkData: {
-            path: "ledger",
-            title: "Ledger",
-          },
-        },
-        {
-          code: trialBalancePermissions.view,
-          linkData: {
-            path: "trial-balance",
-            title: "Trial balance",
-          },
-        },
-        {
-          code: auditLogPermissions.view,
-          linkData: {
-            path: "audit-log",
-            title: "Audit log",
-          },
-        },
-        {
-          code: repostPermissions.update,
-          linkData: {
-            path: "repost",
-            title: "Repost",
-          },
-        },
-        {
-          code: accountingPeriodsPermissions.update,
-          linkData: {
-            path: "accounting-periods",
-            title: "Accounting periods",
-          },
-        },
-      ],
-    },
+    //     {
+    //       code: ledgerPermissions.view,
+    //       linkData: {
+    //         path: "ledger",
+    //         title: "Ledger",
+    //       },
+    //     },
+    //     {
+    //       code: trialBalancePermissions.view,
+    //       linkData: {
+    //         path: "trial-balance",
+    //         title: "Trial balance",
+    //       },
+    //     },
+    //     {
+    //       code: auditLogPermissions.view,
+    //       linkData: {
+    //         path: "audit-log",
+    //         title: "Audit log",
+    //       },
+    //     },
+    //     {
+    //       code: repostPermissions.update,
+    //       linkData: {
+    //         path: "repost",
+    //         title: "Repost",
+    //       },
+    //     },
+    //     {
+    //       code: accountingPeriodsPermissions.reopen,
+    //       linkData: {
+    //         path: "accounting-periods",
+    //         title: "Accounting periods",
+    //       },
+    //     },
+    //   ],
+    // },
+    // {
+    //   code: "DROPDOWN",
+    //   dropdown: true,
+    //   dropdownName: "fa.title",
+    //   iconName: <Boxes className="size-5" />,
+    //   linkData: {
+    //     path: "fa",
+    //     title: "fa.title",
+    //   },
+    //   items: [
+    //     {
+    //       code: faAssetPermissions.view,
+    //       linkData: {
+    //         path: "assets",
+    //         title: "fa.entities.assets",
+    //       },
+    //     },
+    //     {
+    //       code: faReceiptPermissions.view,
+    //       linkData: {
+    //         path: "receipts",
+    //         title: "fa.entities.receipts",
+    //       },
+    //     },
+    //     {
+    //       code: faMovementPermissions.view,
+    //       linkData: {
+    //         path: "movements",
+    //         title: "fa.entities.movements",
+    //       },
+    //     },
+    //     {
+    //       code: faRevaluationPermissions.view,
+    //       linkData: {
+    //         path: "revaluations",
+    //         title: "fa.entities.revaluations",
+    //       },
+    //     },
+    //     {
+    //       code: faDisposalPermissions.view,
+    //       linkData: {
+    //         path: "disposals",
+    //         title: "fa.entities.disposals",
+    //       },
+    //     },
+    //     {
+    //       code: faDepreciationPermissions.view,
+    //       linkData: {
+    //         path: "depreciation",
+    //         title: "fa.entities.depreciation",
+    //       },
+    //     },
+    //   ],
+    // },
 
     {
       code: salePermissions.view,

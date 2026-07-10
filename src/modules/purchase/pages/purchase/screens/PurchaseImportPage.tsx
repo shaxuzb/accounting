@@ -20,6 +20,7 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import type {
   ProductSelectOption,
   PurchaseDetailData,
+  PurchaseDetailLine,
   PurchaseImportRow,
   PurchaseMode,
   SelectBoxOptions,
@@ -57,7 +58,9 @@ import {
   getNumber,
   getProductCode,
   getProductPrice,
+  getPurchaseModeFromDetail,
   getPurchaseImportTotals,
+  isServiceDetailLine,
   getUnmarkedPieceTrackedRow,
   parseMarkingInput,
   toMarkingNumbers,
@@ -79,9 +82,36 @@ const buildTouched = (values: PurchaseImportForm) => ({
   comment: Boolean(values.comment),
 });
 
+const getNumberValue = (value: unknown, fallback = 0) => {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) ? numberValue : fallback;
+};
+
+const getServiceProductId = (
+  serviceLine: Record<string, unknown>,
+) => {
+  const candidates = [
+    serviceLine.ownerId,
+    serviceLine.serviceId,
+    serviceLine.accountId,
+    serviceLine.productTableId,
+    serviceLine.productId,
+  ];
+
+  for (const candidate of candidates) {
+    const next = getNumberValue(candidate, NaN);
+    if (Number.isFinite(next) && next > 0) {
+      return next;
+    }
+  }
+
+  return null;
+};
+
 const mapDetailLinesToRows = (
   detail: PurchaseDetailData | undefined,
   products: ProductSelectOption[],
+  purchaseMode: PurchaseMode,
 ): PurchaseImportRow[] => {
   if (!detail) return [];
 
@@ -90,25 +120,162 @@ const mapDetailLinesToRows = (
     productMap.set(Number(item.id), item);
   });
 
-  return (detail.lines ?? []).map((line, index) => {
-    const productId = Number(line.productId ?? line.productTableId);
+  if (purchaseMode === "services") {
+    const productNameToId = new Map<string, number>();
+    productMap.forEach((item) => {
+      const normalizedName = String(item.name ?? "")
+        .trim()
+        .toLowerCase();
+      if (normalizedName && !productNameToId.has(normalizedName)) {
+        productNameToId.set(normalizedName, Number(item.id));
+      }
+    });
+
+    const detailServiceLines = detail.serviceLines ?? [];
+    const serviceLineIdSet = new Set<number>();
+    detailServiceLines.forEach((line) => {
+      const detailServiceLine = line as unknown as Record<string, unknown>;
+      const serviceLineId = getNumberValue(detailServiceLine.id, NaN);
+      if (Number.isFinite(serviceLineId)) {
+        serviceLineIdSet.add(serviceLineId);
+      }
+    });
+
+    const sourceServiceLines = [
+      ...detailServiceLines,
+      ...detail.lines.filter((line) => {
+        const detailLine = line as unknown as Record<string, unknown>;
+        const lineId = getNumberValue(detailLine.id, NaN);
+        return (
+          isServiceDetailLine(detailLine) &&
+          Number.isFinite(lineId) &&
+          !serviceLineIdSet.has(lineId)
+        );
+      }),
+      ...detail.lines.filter((line) => {
+        const detailLine = line as unknown as Record<string, unknown>;
+        const lineId = getNumberValue(detailLine.id, NaN);
+        if (Number.isFinite(lineId)) return false;
+        return isServiceDetailLine(detailLine);
+      }),
+    ];
+
+    const mappedLines = (
+      sourceServiceLines.length ? sourceServiceLines : detail.lines
+    ).map((line, index) => {
+      const detailLine = line as unknown as Record<string, unknown>;
+      const serviceName = String(
+        detailLine.serviceName ??
+          detailLine.name ??
+          detailLine.expenseAccountName ??
+          detailLine.accountName ??
+          detailLine.productName ??
+          "",
+      ).trim();
+      const detailServiceId = getServiceProductId(detailLine);
+      const lineUnit = (detailLine.unit as Record<string, unknown>) ?? null;
+      const lineUnitId = getNumberValue(
+        (lineUnit as Record<string, unknown>)?.id ??
+          (lineUnit as Record<string, unknown>)?.unitId ??
+          detailLine.unitId,
+        NaN,
+      );
+      const lineUnitCode = String(
+        (lineUnit as Record<string, unknown>)?.code ??
+          (lineUnit as Record<string, unknown>)?.unitCode ??
+          detailLine.unitCode ??
+          "",
+      ).trim();
+      const lineUnitName = String(
+        (lineUnit as Record<string, unknown>)?.name ??
+          (lineUnit as Record<string, unknown>)?.unitName ??
+          detailLine.unitName ??
+          "",
+      ).trim();
+      const detailServiceCandidateId = getNumberValue(detailServiceId, NaN);
+      const nameMatchedProductId = productNameToId.get(serviceName.toLowerCase());
+      const mappedProductId = Number.isFinite(detailServiceCandidateId)
+        ? productMap.has(detailServiceCandidateId)
+          ? detailServiceCandidateId
+          : Number.isFinite(nameMatchedProductId)
+            ? nameMatchedProductId
+            : null
+        : Number.isFinite(nameMatchedProductId)
+          ? nameMatchedProductId
+          : null;
+      const resolvedProduct =
+        mappedProductId !== null ? productMap.get(mappedProductId) : null;
+      const markingNumbers = (Array.isArray(detailLine.items)
+        ? detailLine.items
+        : [])
+        .map((item: Record<string, unknown>) =>
+          typeof item.markingNumber === "string" ? item.markingNumber.trim() : "",
+        )
+        .filter((item): item is string => Boolean(item));
+      const price = getNumberValue(
+        (detailLine.unitPrice ?? detailLine.price) as unknown,
+        NaN,
+      );
+
+      const lineId = getNumberValue(detailLine.id, NaN);
+
+      return {
+        key: lineId || mappedProductId || index + 1,
+        id: Number.isFinite(lineId) ? lineId : null,
+        indexId: index + 1,
+        name: serviceName,
+        counterpartyId: detail.counterpartyId ?? null,
+        product: serviceName,
+        productId: mappedProductId,
+        productName: serviceName,
+        sapCode: getProductCode(resolvedProduct),
+        qty: getNumberValue(detailLine.quantity, 1),
+        serialNumber: "",
+        currencyId: detail.currencyId ?? 1,
+        currency: detail.currencyName,
+        markingNumber: markingNumbers.join("\n"),
+        markingNumbers,
+        price: Number.isFinite(price) ? price : null,
+        pricePerUom: Number.isFinite(price) ? price : null,
+        unitId:
+          resolvedProduct?.unitId ??
+          (Number.isFinite(lineUnitId) ? lineUnitId : null),
+        unitCode: resolvedProduct?.unitCode || lineUnitCode || null,
+        unitName:
+          resolvedProduct?.unitName ??
+          resolvedProduct?.unit ??
+          (lineUnitName || null),
+        mxik: resolvedProduct?.mxik ?? getProductCode(resolvedProduct),
+        vatRateId: (detailLine.vatRateId as number | null) ?? null,
+        vatRates: null,
+        isSerial: false,
+        isPieceTracked: Boolean(resolvedProduct?.isPieceTracked),
+      };
+    });
+
+    if (mappedLines.length) return mappedLines;
+  }
+
+  return detail.lines.map((line, index) => {
+    const detailLine = line as PurchaseDetailLine;
+    const productId = Number(detailLine.productId ?? detailLine.productTableId);
     const product = productMap.get(productId);
-    const markingNumbers = (line.items ?? [])
+    const markingNumbers = (detailLine.items ?? [])
       .map((item) => item.markingNumber?.trim())
       .filter((item): item is string => Boolean(item));
 
     return {
-      key: line.id || index + 1,
-      id: line.id,
+      key: detailLine.id || index + 1,
+      id: detailLine.id,
       indexId: index + 1,
-      name: line.productName,
+      name: detailLine.productName,
       counterpartyId: detail.counterpartyId ?? null,
-      product: line.productName,
+      product: detailLine.productName,
       productId,
-      productName: line.productName,
+      productName: detailLine.productName,
       sapCode: getProductCode(product),
-      qty: line.quantity,
-      serialNumber: (line.items ?? [])
+      qty: detailLine.quantity,
+      serialNumber: (detailLine.items ?? [])
         .map((item) => item.serialNumber?.trim())
         .filter(Boolean)
         .join("\n"),
@@ -116,13 +283,13 @@ const mapDetailLinesToRows = (
       currency: detail.currencyName,
       markingNumber: markingNumbers.join("\n"),
       markingNumbers,
-      price: line.unitPrice ?? line.price ?? null,
-      pricePerUom: line.unitPrice ?? line.price ?? null,
+      price: detailLine.unitPrice ?? detailLine.price ?? null,
+      pricePerUom: detailLine.unitPrice ?? detailLine.price ?? null,
       unitId: product?.unitId ?? null,
       unitCode: product?.unitCode ?? null,
       unitName: product?.unitName ?? product?.unit ?? null,
       mxik: product?.mxik ?? getProductCode(product),
-      vatRateId: line.vatRateId ?? null,
+      vatRateId: detailLine.vatRateId ?? null,
       vatRates: null,
       isSerial: false,
       isPieceTracked: Boolean(product?.isPieceTracked),
@@ -144,16 +311,26 @@ const PurchaseImportPage = () => {
     PURCHASE_IMPORT_DRAFT_LINES_KEY,
     [],
   );
-  const [productWithCount, setProductWithCount] = useLocalStorage<boolean>(
+  const [productWithCountDraft, setProductWithCountDraft] = useLocalStorage<boolean>(
     PURCHASE_IMPORT_DRAFT_PRODUCT_WITH_COUNT_KEY,
     false,
   );
   const [withDiscount, _setWithWithDiscount] = useState(false);
-  const [purchaseMode, setPurchaseMode] = useLocalStorage<PurchaseMode>(
+  const [purchaseModeDraft, setPurchaseModeDraft] = useLocalStorage<PurchaseMode>(
     PURCHASE_IMPORT_DRAFT_MODE_KEY,
     "goods",
   );
+  const [purchaseMode, setPurchaseMode] = useState<PurchaseMode>(
+    isEdit ? "goods" : purchaseModeDraft,
+  );
+  const [productWithCount, setProductWithCount] = useState<boolean>(
+    isEdit ? false : productWithCountDraft,
+  );
+  const isDraftStorageEnabledRef = useRef(true);
   const { height } = useWindowSize();
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(
+    () => (isEdit ? null : headerDraft.warehouseId ?? null),
+  );
   const importPurchase = useCreatePurchase();
   const updatePurchase = useUpdatePurchase();
   const detailQuery = useGetDetailPurchase(purchaseId);
@@ -167,10 +344,31 @@ const PurchaseImportPage = () => {
     confirmMutation.isPending ||
     cancelMutation.isPending;
 
-  const detailPurchaseMode = useMemo<PurchaseMode>(() => {
-    if (detailData?.serviceLines?.length) return "services";
-    return "goods";
-  }, [detailData?.serviceLines?.length]);
+  const {
+    data,
+    isFetching,
+    isLoading,
+    isServicesLoading,
+    isServicesSuccess,
+    isSuccess,
+    itemOptions,
+    productByCode,
+    productIdBySapCode,
+    refetchProducts,
+    unitOptions,
+    vatRateOptions,
+    serviceOptions,
+  } = usePurchaseImportOptions(purchaseMode, selectedWarehouseId);
+
+  const itemOptionsById = useMemo(
+    () => new Map(itemOptions.map((item) => [item.id, item])),
+    [itemOptions],
+  );
+
+  const detailPurchaseMode = useMemo(
+    () => getPurchaseModeFromDetail(detailData, serviceOptions.map((item) => item.id)),
+    [detailData, serviceOptions],
+  );
 
   useEffect(() => {
     if (!isEdit || !detailData) return;
@@ -183,17 +381,22 @@ const PurchaseImportPage = () => {
     if (purchaseMode !== detailPurchaseMode) {
       setPurchaseMode(detailPurchaseMode);
       setProductWithCount(detailPurchaseMode === "services");
+      if (!isEdit) {
+        setPurchaseModeDraft(detailPurchaseMode);
+        setProductWithCountDraft(detailPurchaseMode === "services");
+      }
     }
   }, [
     detailData,
     detailPurchaseMode,
     isEdit,
     navigate,
-    productWithCount,
     purchaseId,
     purchaseMode,
     setProductWithCount,
     setPurchaseMode,
+    setProductWithCountDraft,
+    setPurchaseModeDraft,
   ]);
 
   const baseColumnConfig = useMemo(
@@ -216,24 +419,14 @@ const PurchaseImportPage = () => {
     [baseColumnConfig, selectBoxOptions],
   );
 
-  const {
-    data,
-    isFetching,
-    isLoading,
-    isServicesLoading,
-    isServicesSuccess,
-    isSuccess,
-    itemOptions,
-    productByCode,
-    productIdBySapCode,
-    refetchProducts,
-    unitOptions,
-    vatRateOptions,
-  } = usePurchaseImportOptions(purchaseMode);
-
   const detailLines = useMemo(
-    () => mapDetailLinesToRows(detailData, itemOptions),
-    [detailData, itemOptions],
+    () =>
+      mapDetailLinesToRows(
+        detailData,
+        itemOptions,
+        detailPurchaseMode,
+      ),
+    [detailData, detailPurchaseMode, itemOptions],
   );
 
   const initialLines = useMemo(
@@ -286,7 +479,7 @@ const PurchaseImportPage = () => {
 
   const formik = useFormik<PurchaseImportForm>({
     initialValues,
-    enableReinitialize: true,
+    enableReinitialize: isEdit,
     validationSchema: purchaseValidationSchema,
     onSubmit: async (values) => {
       const saved = await persistPurchase(values, true);
@@ -303,10 +496,13 @@ const PurchaseImportPage = () => {
           productWithCount: false,
         }),
       ];
+      isDraftStorageEnabledRef.current = false;
       setHeaderDraft(defaultHeader);
       setExcelData(defaultDraftLines);
       setProductWithCount(false);
       setPurchaseMode("goods");
+      setProductWithCountDraft(false);
+      setPurchaseModeDraft("goods");
       formik.resetForm({
         values: {
           ...defaultHeader,
@@ -344,10 +540,10 @@ const PurchaseImportPage = () => {
         completedRows,
         purchaseMode,
       );
-      // if (!payload.lines.length) {
-      //   toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
-      //   return false;
-      // }
+      if (!completedRows.length) {
+        toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
+        return false;
+      }
 
       try {
         if (isEdit && purchaseId) {
@@ -383,6 +579,28 @@ const PurchaseImportPage = () => {
     (field, value, shouldValidate) => {
       if (
         !isEdit &&
+        field === "counterpartyId" &&
+        value !== formik.values.counterpartyId
+      ) {
+        if (isDraftStorageEnabledRef.current) {
+          setHeaderDraft((prev) => ({
+            ...prev,
+            counterpartyId: value,
+            contractId: null,
+          }));
+        }
+
+        return formik.setValues(
+          {
+            ...formik.values,
+            counterpartyId: value,
+            contractId: null,
+          },
+          shouldValidate,
+        );
+      }
+      if (
+        !isEdit &&
         (field === "docDate" ||
           field === "counterpartyId" ||
           field === "contractId" ||
@@ -390,13 +608,17 @@ const PurchaseImportPage = () => {
           field === "warehouseId" ||
           field === "comment")
       ) {
-        setHeaderDraft((prev) => ({
-          ...prev,
-          [field]: value,
-        }));
+        if (isDraftStorageEnabledRef.current) {
+          setHeaderDraft((prev) => ({
+            ...prev,
+            [field]: value,
+          }));
+        }
       }
       if (!isEdit && field === "lines" && Array.isArray(value)) {
-        setExcelData(value as PurchaseImportRow[]);
+        if (isDraftStorageEnabledRef.current) {
+          setExcelData(value as PurchaseImportRow[]);
+        }
       }
 
       return formik.setFieldValue(field, value, shouldValidate);
@@ -412,6 +634,10 @@ const PurchaseImportPage = () => {
     [formik, setDraftFieldValue],
   );
 
+  useEffect(() => {
+    setSelectedWarehouseId(formik.values.warehouseId);
+  }, [formik.values.warehouseId]);
+
   const resolveProductIds = useCallback(
     (rows: PurchaseImportRow[]) => {
       let hasChanges = false;
@@ -419,7 +645,7 @@ const PurchaseImportPage = () => {
         const normalizedCode = String(item.sapCode ?? "").trim();
         const product =
           (item.productId
-            ? itemOptions.find((option) => option.id === item.productId)
+            ? itemOptionsById.get(item.productId)
             : undefined) ?? productByCode.get(normalizedCode);
         const unitPrice = getProductPrice(product);
         const resolved = {
@@ -470,7 +696,7 @@ const PurchaseImportPage = () => {
 
       return hasChanges ? updated : rows;
     },
-    [itemOptions, productByCode],
+    [itemOptionsById, productByCode],
   );
 
   const linesRef = useRef(formik.values.lines);
@@ -481,7 +707,7 @@ const PurchaseImportPage = () => {
   const commitRows = useCallback(
     (rows: PurchaseImportRow[]) => {
       if (rows === linesRef.current) return;
-      if (!isEdit) {
+      if (!isEdit && isDraftStorageEnabledRef.current) {
         setExcelData(rows);
       }
       formik.setFieldValue("lines", rows, false);
@@ -817,6 +1043,10 @@ const PurchaseImportPage = () => {
     (value: PurchaseMode) => {
       setPurchaseMode(value);
       setProductWithCount(value === "services");
+      if (!isEdit) {
+        setPurchaseModeDraft(value);
+        setProductWithCountDraft(value === "services");
+      }
       setSelectBoxOptions(
         toSelectBoxOptions(
           getBaseColumnConfig(value === "services", withDiscount),
@@ -848,7 +1078,7 @@ const PurchaseImportPage = () => {
     try {
       await confirmMutation.mutateAsync();
       toast.success("Hujjat tasdiqlandi");
-      navigate(`/main/purchases/purchase/${purchaseId}`);
+      navigate(-1);
     } catch (error) {
       errorHandlers(error);
     }
@@ -868,7 +1098,7 @@ const PurchaseImportPage = () => {
     try {
       await cancelMutation.mutateAsync();
       toast.success("Hujjat bekor qilindi");
-      navigate(`/main/purchases/purchase/${purchaseId}`);
+      navigate(-1);
     } catch (error) {
       errorHandlers(error);
     }

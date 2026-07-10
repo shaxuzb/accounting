@@ -1,5 +1,3 @@
-
-
 export const ledgerPermissions = {
-  view: "ACC_REG_ENTRY_VIEW",
+  view: "LEDGER_GET",
 } as const;

@@ -2,6 +2,7 @@
 import InputText from "@/components/fields/InputText";
 import { Button, Checkbox, Form } from "antd";
 import { useFormik } from "formik";
+/* import logo from "@/assets/images/logo/logo.svg"; */
 import loginP from "@/assets/loginP.png";
 import { authSchema } from "../../types/auth";
 import { authService, type LoginPayload } from "@/services/authService";
@@ -44,9 +45,10 @@ function Login() {
   return (
     <div className="min-h-dvh w-full bg-[#f5f5f5] flex items-center justify-center p-3 sm:p-4">
       <div className="w-full lg:h-[calc(100dvh-2rem)] flex flex-col lg:flex-row rounded-2xl shadow-2xl overflow-hidden shadow-[#828487] bg-white">
-        <div className="w-full lg:w-[38%] lg:min-w-85 flex flex-col px-6 py-6 sm:px-10 sm:py-8">
+        <div className="w-full lg:w-[38%] min-width:30rem flex flex-col px-6 py-6 sm:px-10 sm:py-8">
           <div className="flex flex-col flex-1 justify-center max-w-90 mx-auto w-full">
             <div className="flex items-center gap-3 mb-10">
+              {/* <img src={logo} alt="logo" className="h-11 w-11 object-contain" /> */}
               <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-200">
                 HK
               </div>

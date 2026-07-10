@@ -16,29 +16,44 @@ import {
   normalizeProductOptions,
 } from "../utils/purchaseImport";
 
-export const usePurchaseImportOptions = (purchaseMode: PurchaseMode) => {
+export const usePurchaseImportOptions = (
+  purchaseMode: PurchaseMode,
+  warehouseId: number | null | undefined,
+) => {
+  const hasWarehouseFilter = Boolean(warehouseId);
+
   const productQuery = useQuery<ProductSelectOption[]>({
-    queryKey: ["selectlist", selectListKeys.product, "purchase-goods"],
+    queryKey: [
+      "selectlist",
+      selectListKeys.product,
+      "purchase-goods-manual",
+      warehouseId,
+    ],
     queryFn: async () => {
       const { data } = await $axiosPrivate.get<
         ProductSelectOption[] | ProductListResponse
-      >("products", {
+      >(selectListEndpoints.productsSelectList, {
         params: {
           IsService: false,
+          ...(warehouseId ? { WarehouseId: warehouseId } : {}),
           PageSize: 1000,
         },
       });
       return normalizeProductOptions(data);
     },
-    enabled: true,
+    enabled: hasWarehouseFilter,
   });
 
   const serviceQuery = useQuery<ProductSelectOption[]>({
-    queryKey: ["selectlist", selectListKeys.product, "purchase-services"],
+    queryKey: [
+      "selectlist",
+      selectListKeys.product,
+      "purchase-services-manual",
+    ],
     queryFn: async () => {
       const { data } = await $axiosPrivate.get<
         ProductSelectOption[] | ProductListResponse
-      >("products", {
+      >(selectListEndpoints.productsSelectList, {
         params: {
           IsService: true,
           PageSize: 1000,
@@ -71,10 +86,50 @@ export const usePurchaseImportOptions = (purchaseMode: PurchaseMode) => {
     enabled: true,
   });
 
-  const productLookupOptions = useMemo(
-    () => [...(productQuery.data ?? []), ...(serviceQuery.data ?? [])],
-    [productQuery.data, serviceQuery.data],
+  const productQueryData = productQuery.data ?? [];
+  const serviceQueryData = serviceQuery.data ?? [];
+  const allProductOptions = useMemo(
+    () => [...productQueryData, ...serviceQueryData],
+    [productQueryData, serviceQueryData],
   );
+
+  const productLookupOptions = useMemo(
+    () => {
+      const map = new Map<number, ProductSelectOption>();
+      allProductOptions.forEach((item) => {
+        if (!map.has(Number(item.id))) {
+          map.set(Number(item.id), item);
+        }
+      });
+
+      return [...map.values()];
+    },
+    [allProductOptions],
+  );
+
+  const serviceProductOptions = useMemo(() => {
+    if (serviceQueryData.length) return serviceQueryData;
+
+    const hasServiceFlag = allProductOptions.some(
+      (item) => item.isService === true,
+    );
+
+    if (!hasServiceFlag) return [];
+
+    return allProductOptions.filter((item) => item.isService === true);
+  }, [allProductOptions, serviceQueryData]);
+
+  const goodsProductOptions = useMemo(() => {
+    if (productQueryData.length) return productQueryData;
+
+    const hasProductFlag = allProductOptions.some(
+      (item) => item.isService === false,
+    );
+
+    if (!hasProductFlag) return [];
+
+    return allProductOptions.filter((item) => item.isService === false);
+  }, [allProductOptions, productQueryData]);
 
   const productIdBySapCode = useMemo(() => {
     const map = new Map<string, number>();
@@ -101,12 +156,12 @@ export const usePurchaseImportOptions = (purchaseMode: PurchaseMode) => {
   const itemOptions = useMemo<ProductSelectOption[]>(
     () =>
       purchaseMode === "services"
-        ? (serviceQuery.data ?? [])
-        : (productQuery.data ?? []).map((item) => ({
+        ? serviceProductOptions
+        : goodsProductOptions.map((item) => ({
             ...item,
             code: getProductCode(item),
           })),
-    [productQuery.data, purchaseMode, serviceQuery.data],
+    [goodsProductOptions, purchaseMode, serviceProductOptions],
   );
 
   return {
@@ -120,7 +175,7 @@ export const usePurchaseImportOptions = (purchaseMode: PurchaseMode) => {
     itemOptions,
     productByCode,
     productIdBySapCode,
-    serviceOptions: serviceQuery.data ?? [],
+    serviceOptions: serviceProductOptions,
     unitOptions: unitQuery.data ?? [],
     vatRateOptions: vatRateQuery.data ?? [],
   };

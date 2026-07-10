@@ -1,5 +1,3 @@
-
-
 export const trialBalancePermissions = {
-  view: "ACC_REG_ENTRY_VIEW",
+  view: "TRIAL_BALANCE_GET",
 } as const;

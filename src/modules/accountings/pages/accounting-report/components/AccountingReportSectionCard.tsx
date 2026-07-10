@@ -19,8 +19,8 @@ export default function AccountingReportSectionCard<T extends object>({
   emptyText = "Ma'lumot yo'q",
 }: Props<T>) {
   return (
-    <Card className="overflow-hidden border border-border">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
+    <Card className="space-y-3 border border-border p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <div className="text-base font-semibold text-text">{title}</div>
           {total !== undefined && (
@@ -35,7 +35,7 @@ export default function AccountingReportSectionCard<T extends object>({
         dataSource={generateKeyTable(dataSource)}
         pagination={false}
         locale={{ emptyText }}
-        scroll={{ x: "max-content" }}
+        scroll={{ x: "max-content", y: "calc(100vh - 440px)" }}
       />
     </Card>
   );

@@ -98,6 +98,43 @@
     "minString": "{{field}} должно содержать минимум {{min}} символов",
     "minArray": "{{field}} должно содержать минимум {{min}} выбранных элементов"
   },
+  "fa": {
+    "title": "Основные средства",
+    "entities": {
+      "assets": "Основные средства",
+      "receipts": "Приход",
+      "movements": "Перемещение",
+      "revaluations": "Переоценка",
+      "disposals": "Списание",
+      "depreciation": "Расчет амортизации"
+    },
+    "fields": {
+      "documentNumber": "Номер документа",
+      "documentDate": "Дата документа",
+      "comment": "Комментарий",
+      "inventoryNumber": "Инвентарный номер",
+      "name": "Название",
+      "faGroup": "Группа ОФ",
+      "okof": "ОКОФ",
+      "depreciationMethod": "Метод амортизации",
+      "usefulLifeMonths": "Срок полезного использования (месяцы)",
+      "initialCost": "Первоначальная стоимость",
+      "salvageValue": "Ликвидационная стоимость",
+      "commissioningDate": "Дата ввода в эксплуатацию",
+      "deprStartDate": "Дата начала амортизации",
+      "plannedUnitsTotal": "Плановое общее количество единиц",
+      "sourceProductTable": "Таблица исходного товара",
+      "department": "Отдел",
+      "responsibleUser": "Ответственный пользователь",
+      "state": "Статус"
+    },
+    "form": {
+      "create": "Создать документ ОФ",
+      "edit": "Редактировать документ ОФ",
+      "run": "Запустить амортизацию",
+      "detail": "Документ ОФ"
+    }
+  },
   "settings": {
     "title": "Настройки",
     "description": "Параметры системы",

@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ClipboardEvent,
   type Dispatch,
@@ -31,6 +32,7 @@ import {
   purchaseValidationSchema,
   isCompletePurchaseLine,
 } from "@/modules/purchase/pages/purchase/types/schema";
+import type { PurchaseDetailLine } from "../types/type";
 import PurchaseImportHeader from "./PurchaseImportHeader";
 import ProductsCreateModal from "./ProductsCreateModal";
 import PurchaseImportLinesSection from "./PurchaseImportLinesSection";
@@ -56,7 +58,9 @@ import {
   getNumber,
   getProductCode,
   getProductPrice,
+  getPurchaseModeFromDetail,
   getPurchaseImportTotals,
+  isServiceDetailLine,
   getUnmarkedPieceTrackedRow,
   parseMarkingInput,
   toMarkingNumbers,
@@ -78,9 +82,37 @@ const buildTouched = (values: PurchaseImportForm) => ({
   comment: Boolean(values.comment),
 });
 
+
+const getNumberValue = (value: unknown, fallback = 0) => {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) ? numberValue : fallback;
+};
+
+const getServiceProductId = (
+  serviceLine: Record<string, unknown>,
+) => {
+  const candidates = [
+    serviceLine.ownerId,
+    serviceLine.serviceId,
+    serviceLine.accountId,
+    serviceLine.productTableId,
+    serviceLine.productId,
+  ];
+
+  for (const candidate of candidates) {
+    const next = getNumberValue(candidate, NaN);
+    if (Number.isFinite(next) && next > 0) {
+      return next;
+    }
+  }
+
+  return null;
+};
+
 const mapDetailLinesToRows = (
   detail: PurchaseDetailData | undefined,
   products: ProductSelectOption[],
+  purchaseMode: PurchaseMode,
 ): PurchaseImportRow[] => {
   if (!detail) return [];
 
@@ -89,25 +121,162 @@ const mapDetailLinesToRows = (
     productMap.set(Number(item.id), item);
   });
 
-  return (detail.lines ?? []).map((line, index) => {
-    const productId = Number(line.productId ?? line.productTableId);
+  if (purchaseMode === "services") {
+    const productNameToId = new Map<string, number>();
+    productMap.forEach((item) => {
+      const normalizedName = String(item.name ?? "")
+        .trim()
+        .toLowerCase();
+      if (normalizedName && !productNameToId.has(normalizedName)) {
+        productNameToId.set(normalizedName, Number(item.id));
+      }
+    });
+
+    const detailServiceLines = detail.serviceLines ?? [];
+    const serviceLineIdSet = new Set<number>();
+    detailServiceLines.forEach((line) => {
+      const detailServiceLine = line as unknown as Record<string, unknown>;
+      const serviceLineId = getNumberValue(detailServiceLine.id, NaN);
+      if (Number.isFinite(serviceLineId)) {
+        serviceLineIdSet.add(serviceLineId);
+      }
+    });
+
+    const sourceServiceLines = [
+      ...detailServiceLines,
+      ...detail.lines.filter((line) => {
+        const detailLine = line as unknown as Record<string, unknown>;
+        const lineId = getNumberValue(detailLine.id, NaN);
+        return (
+          isServiceDetailLine(detailLine) &&
+          Number.isFinite(lineId) &&
+          !serviceLineIdSet.has(lineId)
+        );
+      }),
+      ...detail.lines.filter((line) => {
+        const detailLine = line as unknown as Record<string, unknown>;
+        const lineId = getNumberValue(detailLine.id, NaN);
+        if (Number.isFinite(lineId)) return false;
+        return isServiceDetailLine(detailLine);
+      }),
+    ];
+
+    const mappedLines = (
+      sourceServiceLines.length ? sourceServiceLines : detail.lines
+    ).map((line, index) => {
+      const detailLine = line as unknown as Record<string, unknown>;
+      const serviceName = String(
+        detailLine.serviceName ??
+          detailLine.name ??
+          detailLine.expenseAccountName ??
+          detailLine.accountName ??
+          detailLine.productName ??
+          "",
+      ).trim();
+      const detailServiceId = getServiceProductId(detailLine);
+      const lineUnit = (detailLine.unit as Record<string, unknown>) ?? null;
+      const lineUnitId = getNumberValue(
+        (lineUnit as Record<string, unknown>)?.id ??
+          (lineUnit as Record<string, unknown>)?.unitId ??
+          detailLine.unitId,
+        NaN,
+      );
+      const lineUnitCode = String(
+        (lineUnit as Record<string, unknown>)?.code ??
+          (lineUnit as Record<string, unknown>)?.unitCode ??
+          detailLine.unitCode ??
+          "",
+      ).trim();
+      const lineUnitName = String(
+        (lineUnit as Record<string, unknown>)?.name ??
+          (lineUnit as Record<string, unknown>)?.unitName ??
+          detailLine.unitName ??
+          "",
+      ).trim();
+      const detailServiceCandidateId = getNumberValue(detailServiceId, NaN);
+      const nameMatchedProductId = productNameToId.get(serviceName.toLowerCase());
+      const mappedProductId = Number.isFinite(detailServiceCandidateId)
+        ? productMap.has(detailServiceCandidateId)
+          ? detailServiceCandidateId
+          : Number.isFinite(nameMatchedProductId)
+            ? nameMatchedProductId
+            : null
+        : Number.isFinite(nameMatchedProductId)
+          ? nameMatchedProductId
+          : null;
+      const resolvedProduct =
+        mappedProductId !== null ? productMap.get(mappedProductId) : null;
+      const markingNumbers = (Array.isArray(detailLine.items)
+        ? detailLine.items
+        : [])
+        .map((item: Record<string, unknown>) =>
+          typeof item.markingNumber === "string" ? item.markingNumber.trim() : "",
+        )
+        .filter((item): item is string => Boolean(item));
+      const price = getNumberValue(
+        (detailLine.unitPrice ?? detailLine.price) as unknown,
+        NaN,
+      );
+
+      const lineId = getNumberValue(detailLine.id, NaN);
+
+      return {
+        key: lineId || mappedProductId || index + 1,
+        id: Number.isFinite(lineId) ? lineId : null,
+        indexId: index + 1,
+        name: serviceName,
+        counterpartyId: detail.counterpartyId ?? null,
+        product: serviceName,
+        productId: mappedProductId,
+        productName: serviceName,
+        sapCode: getProductCode(resolvedProduct),
+        qty: getNumberValue(detailLine.quantity, 1),
+        serialNumber: "",
+        currencyId: detail.currencyId ?? 1,
+        currency: detail.currencyName,
+        markingNumber: markingNumbers.join("\n"),
+        markingNumbers,
+        price: Number.isFinite(price) ? price : null,
+        pricePerUom: Number.isFinite(price) ? price : null,
+        unitId:
+          resolvedProduct?.unitId ??
+          (Number.isFinite(lineUnitId) ? lineUnitId : null),
+        unitCode: resolvedProduct?.unitCode || lineUnitCode || null,
+        unitName:
+          resolvedProduct?.unitName ??
+          resolvedProduct?.unit ??
+          (lineUnitName || null),
+        mxik: resolvedProduct?.mxik ?? getProductCode(resolvedProduct),
+        vatRateId: (detailLine.vatRateId as number | null) ?? null,
+        vatRates: null,
+        isSerial: false,
+        isPieceTracked: Boolean(resolvedProduct?.isPieceTracked),
+      };
+    });
+
+    if (mappedLines.length) return mappedLines;
+  }
+
+  return detail.lines.map((line, index) => {
+    const detailLine = line as PurchaseDetailLine;
+    const productId = Number(detailLine.productId ?? detailLine.productTableId);
     const product = productMap.get(productId);
-    const markingNumbers = (line.items ?? [])
+    const markingNumbers = (detailLine.items ?? [])
       .map((item) => item.markingNumber?.trim())
       .filter((item): item is string => Boolean(item));
 
     return {
-      key: line.id || index + 1,
-      id: line.id,
+      key: detailLine.id || index + 1,
+      id: detailLine.id,
       indexId: index + 1,
-      name: line.productName,
+      name: detailLine.productName,
       counterpartyId: detail.counterpartyId ?? null,
-      product: line.productName,
+      product: detailLine.productName,
       productId,
-      productName: line.productName,
+      productName: detailLine.productName,
       sapCode: getProductCode(product),
-      qty: line.quantity,
-      serialNumber: (line.items ?? [])
+      qty: detailLine.quantity,
+      serialNumber: (detailLine.items ?? [])
         .map((item) => item.serialNumber?.trim())
         .filter(Boolean)
         .join("\n"),
@@ -115,13 +284,13 @@ const mapDetailLinesToRows = (
       currency: detail.currencyName,
       markingNumber: markingNumbers.join("\n"),
       markingNumbers,
-      price: line.unitPrice ?? line.price ?? null,
-      pricePerUom: line.unitPrice ?? line.price ?? null,
+      price: detailLine.unitPrice ?? detailLine.price ?? null,
+      pricePerUom: detailLine.unitPrice ?? detailLine.price ?? null,
       unitId: product?.unitId ?? null,
       unitCode: product?.unitCode ?? null,
       unitName: product?.unitName ?? product?.unit ?? null,
       mxik: product?.mxik ?? getProductCode(product),
-      vatRateId: line.vatRateId ?? null,
+      vatRateId: detailLine.vatRateId ?? null,
       vatRates: null,
       isSerial: false,
       isPieceTracked: Boolean(product?.isPieceTracked),
@@ -145,16 +314,26 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     PURCHASE_IMPORT_DRAFT_LINES_KEY,
     [],
   );
-  const [productWithCount, setProductWithCount] = useLocalStorage<boolean>(
+  const [productWithCountDraft, setProductWithCountDraft] = useLocalStorage<boolean>(
     PURCHASE_IMPORT_DRAFT_PRODUCT_WITH_COUNT_KEY,
     false,
   );
   const [withDiscount, _setWithWithDiscount] = useState(false);
-  const [purchaseMode, setPurchaseMode] = useLocalStorage<PurchaseMode>(
+  const [purchaseModeDraft, setPurchaseModeDraft] = useLocalStorage<PurchaseMode>(
     PURCHASE_IMPORT_DRAFT_MODE_KEY,
     "goods",
   );
+  const [purchaseMode, setPurchaseMode] = useState<PurchaseMode>(
+    isEdit ? "services" : purchaseModeDraft,
+  );
+  const [productWithCount, setProductWithCount] = useState<boolean>(
+    isEdit ? false : productWithCountDraft,
+  );
+  const isDraftStorageEnabledRef = useRef(true);
   const { height } = useWindowSize();
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(
+    () => null,
+  );
   const importPurchase = useCreatePurchase();
   const updatePurchase = useUpdatePurchase();
   const detailQuery = useGetDetailPurchase(purchaseId ?? 0);
@@ -168,10 +347,35 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     confirmMutation.isPending ||
     cancelMutation.isPending;
 
-  const detailPurchaseMode = useMemo<PurchaseMode>(() => {
-    if (detailData?.serviceLines?.length) return "services";
-    return "goods";
-  }, [detailData?.serviceLines?.length]);
+  const {
+    data,
+    isFetching,
+    isLoading,
+    isServicesLoading,
+    isServicesSuccess,
+    isSuccess,
+    itemOptions,
+    productByCode,
+    productIdBySapCode,
+    refetchProducts,
+    unitOptions,
+    vatRateOptions,
+    serviceOptions,
+  } = usePurchaseImportOptions(purchaseMode, selectedWarehouseId);
+
+  const itemOptionsById = useMemo(
+    () => new Map(itemOptions.map((item) => [item.id, item])),
+    [itemOptions],
+  );
+
+  const detailPurchaseMode = useMemo(
+    () =>
+      getPurchaseModeFromDetail(
+        detailData,
+        serviceOptions.map((item) => item.id),
+      ),
+    [detailData, serviceOptions],
+  );
 
   useEffect(() => {
     if (!isEdit || !detailData) return;
@@ -184,17 +388,22 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     if (purchaseMode !== detailPurchaseMode) {
       setPurchaseMode(detailPurchaseMode);
       setProductWithCount(detailPurchaseMode === "services");
+      if (!isEdit) {
+        setPurchaseModeDraft(detailPurchaseMode);
+        setProductWithCountDraft(detailPurchaseMode === "services");
+      }
     }
   }, [
     detailData,
     detailPurchaseMode,
     isEdit,
     navigate,
-    productWithCount,
     purchaseId,
     purchaseMode,
     setProductWithCount,
     setPurchaseMode,
+    setProductWithCountDraft,
+    setPurchaseModeDraft,
   ]);
 
   const baseColumnConfig = useMemo(
@@ -217,24 +426,14 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     [baseColumnConfig, selectBoxOptions],
   );
 
-  const {
-    data,
-    isFetching,
-    isLoading,
-    isServicesLoading,
-    isServicesSuccess,
-    isSuccess,
-    itemOptions,
-    productByCode,
-    productIdBySapCode,
-    refetchProducts,
-    unitOptions,
-    vatRateOptions,
-  } = usePurchaseImportOptions(purchaseMode);
-
   const detailLines = useMemo(
-    () => mapDetailLinesToRows(detailData, itemOptions),
-    [detailData, itemOptions],
+    () =>
+      mapDetailLinesToRows(
+        detailData,
+        itemOptions,
+        detailPurchaseMode,
+      ),
+    [detailData, detailPurchaseMode, itemOptions],
   );
 
   const initialLines = useMemo(
@@ -303,10 +502,15 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
           productWithCount: false,
         }),
       ];
+      isDraftStorageEnabledRef.current = false;
       setHeaderDraft(defaultHeader);
       setExcelData(defaultLines);
       setProductWithCount(false);
       setPurchaseMode("goods");
+      if (!isEdit) {
+        setProductWithCountDraft(false);
+        setPurchaseModeDraft("goods");
+      }
       formik.resetForm({
         values: {
           ...defaultHeader,
@@ -344,10 +548,10 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
         completedRows,
         purchaseMode,
       );
-      // if (!payload.lines.length) {
-      //   toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
-      //   return false;
-      // }
+      if (!completedRows.length) {
+        toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
+        return false;
+      }
 
       try {
         if (isEdit && purchaseId) {
@@ -383,6 +587,28 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     (field, value, shouldValidate) => {
       if (
         !isEdit &&
+        field === "counterpartyId" &&
+        value !== formik.values.counterpartyId
+      ) {
+        if (isDraftStorageEnabledRef.current) {
+          setHeaderDraft((prev) => ({
+            ...prev,
+            counterpartyId: value,
+            contractId: null,
+          }));
+        }
+
+        return formik.setValues(
+          {
+            ...formik.values,
+            counterpartyId: value,
+            contractId: null,
+          },
+          shouldValidate,
+        );
+      }
+      if (
+        !isEdit &&
         (field === "docDate" ||
           field === "counterpartyId" ||
           field === "contractId" ||
@@ -390,13 +616,17 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
           field === "warehouseId" ||
           field === "comment")
       ) {
-        setHeaderDraft((prev) => ({
-          ...prev,
-          [field]: value,
-        }));
+        if (isDraftStorageEnabledRef.current) {
+          setHeaderDraft((prev) => ({
+            ...prev,
+            [field]: value,
+          }));
+        }
       }
       if (!isEdit && field === "lines" && Array.isArray(value)) {
-        setExcelData(value as PurchaseImportRow[]);
+        if (isDraftStorageEnabledRef.current) {
+          setExcelData(value as PurchaseImportRow[]);
+        }
       }
 
       return formik.setFieldValue(field, value, shouldValidate);
@@ -412,16 +642,21 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     [formik, setDraftFieldValue],
   );
 
+  useEffect(() => {
+    setSelectedWarehouseId(formik.values.warehouseId);
+  }, [formik.values.warehouseId]);
+
   const resolveProductIds = useCallback(
-    (rows: PurchaseImportRow[]) =>
-      rows.map((item) => {
+    (rows: PurchaseImportRow[]) => {
+      let hasChanges = false;
+      const updated = rows.map((item) => {
         const normalizedCode = String(item.sapCode ?? "").trim();
         const product =
           (item.productId
-            ? itemOptions.find((option) => option.id === item.productId)
+            ? itemOptionsById.get(item.productId)
             : undefined) ?? productByCode.get(normalizedCode);
         const unitPrice = getProductPrice(product);
-        return {
+        const resolved = {
           ...item,
           productId: item.productId ?? product?.id ?? null,
           product: item.product || product?.name || "",
@@ -441,13 +676,43 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
                 markingNumbers: [],
               }),
         };
-      }),
-    [itemOptions, productByCode],
+        const normalizedMarkingNumbers = (item.markingNumbers ?? []).join("|");
+        const resolvedMarkingNumbers = (resolved.markingNumbers ?? []).join("|");
+        if (
+          resolved.productId !== item.productId ||
+          resolved.product !== item.product ||
+          resolved.productName !== item.productName ||
+          resolved.name !== item.name ||
+          resolved.mxik !== item.mxik ||
+          resolved.unitId !== item.unitId ||
+          resolved.unitCode !== item.unitCode ||
+          resolved.unitName !== item.unitName ||
+          resolved.price !== item.price ||
+          resolved.pricePerUom !== item.pricePerUom ||
+          resolved.isPieceTracked !== item.isPieceTracked ||
+          resolved.markingNumber !== item.markingNumber ||
+          normalizedMarkingNumbers !== resolvedMarkingNumbers
+        ) {
+          hasChanges = true;
+        }
+
+        return resolved;
+      });
+
+      return hasChanges ? updated : rows;
+    },
+    [itemOptionsById, productByCode],
   );
+
+  const linesRef = useRef<PurchaseImportRow[]>(formik.values.lines);
+  useEffect(() => {
+    linesRef.current = formik.values.lines;
+  }, [formik.values.lines]);
 
   const commitRows = useCallback(
     (rows: PurchaseImportRow[]) => {
-      if (!isEdit) {
+      if (rows === linesRef.current) return;
+      if (!isEdit && isDraftStorageEnabledRef.current) {
         setExcelData(rows);
       }
       formik.setFieldValue("lines", rows, false);
@@ -457,17 +722,17 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
 
   const handleRowValueChange = useCallback(
     (rowIndex: number, patch: Partial<PurchaseImportRow>) => {
-      const nextRows = formik.values.lines.map((item, index) =>
+      const nextRows = linesRef.current.map((item, index) =>
         index === rowIndex ? { ...item, ...patch } : item,
       );
       commitRows(nextRows);
     },
-    [commitRows, formik.values.lines],
+    [commitRows],
   );
 
   const handleItemSelect = useCallback(
     (rowIndex: number, value: number) => {
-      const currentRows = formik.values.lines;
+      const currentRows = linesRef.current;
       const selected = itemOptions.find((item) => item.id === value);
       const productCode = getProductCode(selected);
       const unitPrice = getProductPrice(selected);
@@ -497,19 +762,19 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
         markingNumbers: isPieceTracked ? currentMarkings : [],
       });
     },
-    [formik.values.lines, handleRowValueChange, itemOptions, purchaseMode],
+    [handleRowValueChange, itemOptions, purchaseMode],
   );
 
   const openMarkingModal = useCallback(
     (rowIndex: number) => {
-      if (!formik.values.lines[rowIndex]?.isPieceTracked) {
+      if (!linesRef.current[rowIndex]?.isPieceTracked) {
         toast.error("Bu mahsulot markirovkasiz");
         return;
       }
       setMarkingRowIndex(rowIndex);
       setMarkingInput("");
     },
-    [formik.values.lines],
+    [],
   );
 
   const closeMarkingModal = useCallback(() => {
@@ -533,7 +798,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     const nextMarkings = parseMarkingInput(markingInput);
     if (!nextMarkings.length) return;
 
-    const current = toMarkingNumbers(formik.values.lines[markingRowIndex]);
+    const current = toMarkingNumbers(linesRef.current[markingRowIndex]);
     const currentSet = new Set(current);
     const uniqueMarkings = nextMarkings.filter((marking) => {
       if (currentSet.has(marking)) return false;
@@ -548,7 +813,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
 
     updateRowMarkings(markingRowIndex, [...current, ...uniqueMarkings]);
     setMarkingInput("");
-  }, [formik.values.lines, markingInput, markingRowIndex, updateRowMarkings]);
+  }, [markingInput, markingRowIndex, updateRowMarkings]);
 
   const handleMarkingPaste = useCallback(
     (event: ClipboardEvent<HTMLInputElement>) => {
@@ -569,11 +834,11 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     (marking: string) => {
       if (markingRowIndex === null) return;
       const nextMarkings = toMarkingNumbers(
-        formik.values.lines[markingRowIndex],
+        linesRef.current[markingRowIndex],
       ).filter((item) => item !== marking);
       updateRowMarkings(markingRowIndex, nextMarkings);
     },
-    [formik.values.lines, markingRowIndex, updateRowMarkings],
+    [markingRowIndex, updateRowMarkings],
   );
 
   const handleExcelDataChange = useCallback<
@@ -581,10 +846,9 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
   >(
     (value) => {
       if (isEdit) {
-        const nextRaw =
-          typeof value === "function" ? value(formik.values.lines) : value;
+        const nextRaw = typeof value === "function" ? value(linesRef.current) : value;
         const nextRows = resolveProductIds(nextRaw);
-        formik.setFieldValue("lines", nextRows, false);
+        commitRows(nextRows);
         return;
       }
 
@@ -595,13 +859,13 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
         return nextRows;
       });
     },
-    [formik, formik.values.lines, isEdit, resolveProductIds, setExcelData],
+    [isEdit, resolveProductIds, setExcelData, commitRows],
   );
 
   const handleAddManualRow = useCallback(() => {
-    const indexId = formik.values.lines.length + 1;
+    const indexId = linesRef.current.length + 1;
     commitRows([
-      ...formik.values.lines,
+      ...linesRef.current,
       createEmptyPurchaseRow({
         indexId,
         counterpartyId: formik.values.counterpartyId,
@@ -614,14 +878,13 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     commitRows,
     formik.values.counterpartyId,
     formik.values.currencyId,
-    formik.values.lines,
     productWithCount,
     purchaseMode,
   ]);
 
   const handleDeleteRow = useCallback(
     (rowIndex: number) => {
-      const nextRows = formik.values.lines
+      const nextRows = linesRef.current
         .filter((_, index) => index !== rowIndex)
         .map((item, index) => ({
           ...item,
@@ -645,7 +908,6 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
       commitRows,
       formik.values.counterpartyId,
       formik.values.currencyId,
-      formik.values.lines,
       productWithCount,
       purchaseMode,
     ],
@@ -653,7 +915,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
 
   const handleCellCommit = useCallback(
     (rowIndex: number, dataIndex: string, rawValue: string) => {
-      const currentRows = formik.values.lines;
+      const currentRows = linesRef.current;
 
       if (!currentRows[rowIndex]) {
         return;
@@ -707,7 +969,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
       nextRows[rowIndex] = targetRow;
       commitRows(nextRows);
     },
-    [commitRows, formik.values.lines, productByCode, purchaseMode],
+    [commitRows, productByCode, purchaseMode],
   );
 
   const isSapCodeValid = useCallback(
@@ -744,15 +1006,15 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
   useEffect(() => {
     const hasLoadedOptions =
       purchaseMode === "goods" ? isSuccess && data : isServicesSuccess;
-    if (hasLoadedOptions && formik.values.lines.length > 0) {
-      const updated = resolveProductIds(formik.values.lines);
-      const timeoutId = window.setTimeout(() => commitRows(updated), 0);
-      return () => window.clearTimeout(timeoutId);
-    }
+    if (!hasLoadedOptions || linesRef.current.length === 0) return;
+    const updated = resolveProductIds(linesRef.current);
+    if (updated === linesRef.current) return;
+
+    const timeoutId = window.setTimeout(() => commitRows(updated), 0);
+    return () => window.clearTimeout(timeoutId);
   }, [
     commitRows,
     data,
-    formik.values.lines,
     isServicesSuccess,
     isSuccess,
     purchaseMode,
@@ -760,7 +1022,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
   ]);
 
   const handleDeleteSapCodes = () => {
-    const filteredData = formik.values.lines?.filter((item) => item.productId);
+    const filteredData = linesRef.current?.filter((item) => item.productId);
     const nextRows = filteredData ?? [];
     commitRows(nextRows);
     toast.success("Topilmagan sab kodlar o'chirildi");
@@ -768,7 +1030,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
 
   const handleOpenMissingProductsModal = () => {
     const rows =
-      formik.values.lines?.filter(
+      linesRef.current?.filter(
         (item) => String(item.sapCode ?? "").trim() && !item.productId,
       ) ?? [];
     setMissingProductRows(rows);
@@ -792,13 +1054,17 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     (value: PurchaseMode) => {
       setPurchaseMode(value);
       setProductWithCount(value === "services");
+      if (!isEdit) {
+        setPurchaseModeDraft(value);
+        setProductWithCountDraft(value === "services");
+      }
       setSelectBoxOptions(
         toSelectBoxOptions(
           getBaseColumnConfig(value === "services", withDiscount),
         ),
       );
     },
-    [setProductWithCount, setPurchaseMode, withDiscount],
+    [isEdit, setProductWithCount, setPurchaseMode, setProductWithCountDraft, setPurchaseModeDraft, withDiscount],
   );
 
   const totals = useMemo(
@@ -823,7 +1089,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     try {
       await confirmMutation.mutateAsync();
       toast.success("Hujjat tasdiqlandi");
-      navigate(`/main/purchases/purchase/${purchaseId}`);
+      navigate(-1);
     } catch (error) {
       errorHandlers(error);
     }
@@ -838,7 +1104,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     try {
       await cancelMutation.mutateAsync();
       toast.success("Hujjat bekor qilindi");
-      navigate(`/main/purchases/purchase/${purchaseId}`);
+      navigate(-1);
     } catch (error) {
       errorHandlers(error);
     }
@@ -871,12 +1137,12 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
                   statusId={detailData.statusId}
                   statusName={detailData.statusName}
                 />
-                <Button
-                  onClick={() => void formik.submitForm()}
+                {/* <Button
+                  onClick={() => formik.submitForm()}
                   loading={updatePurchase.isPending}
                 >
                   Saqlash
-                </Button>
+                </Button> */}
                 <Button
                   type="primary"
                   icon={<CheckCircle2 className="size-4" />}
@@ -891,7 +1157,8 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
                   icon={<CircleX className="size-4" />}
                   loading={cancelMutation.isPending}
                   disabled={!isDraft || isSubmitting}
-                  onClick={() => void handleCancelDocument()}
+                  onClick={() => handleCancelDocument()}
+                  
                 >
                   Bekor qilish
                 </Button>

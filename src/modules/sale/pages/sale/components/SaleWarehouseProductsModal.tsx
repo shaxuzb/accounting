@@ -24,6 +24,7 @@ interface Props {
     product: SaleProductStock,
     layer: SaleProductPriceLayer,
     quantity: number,
+    salePrice?: number,
   ) => void | Promise<void>;
 }
 
@@ -68,6 +69,7 @@ export default function SaleWarehouseProductsModal({
   const [quantities, setQuantities] = useState<Record<string, number | null>>(
     {},
   );
+  const [salePrices, setSalePrices] = useState<Record<string, number | null>>({});
   const getProductPriceDetails = useGetProductPriceDetails();
   const visibleProducts = useMemo(
     () => products.filter((item) => getAvailableQuantity(item) > 0),
@@ -127,14 +129,41 @@ export default function SaleWarehouseProductsModal({
   const addLayer = async (row: WarehouseLayerRow) => {
     const quantity = Number(quantities[row.rowKey] ?? 0);
     if (!quantity || quantity <= 0) return;
+    const salePrice = salePrices[row.rowKey];
+    const nextQuantity = Math.min(quantity, row.layer.availableQuantity);
+    const finalSalePrice =
+      salePrice === null || salePrice === undefined
+        ? row.layer.salePrice
+        : salePrice;
 
     await onAdd(
       row.product,
       row.layer,
-      Math.min(quantity, row.layer.availableQuantity),
+      nextQuantity,
+      finalSalePrice,
     );
     setQuantities((current) => ({ ...current, [row.rowKey]: null }));
   };
+
+  const selectedAmounts = useMemo(() => {
+    return rows.reduce(
+      (acc, row) => {
+        const quantity = Number(quantities[row.rowKey] ?? 0);
+        if (!quantity || quantity <= 0) return acc;
+        const salePriceValue =
+          salePrices[row.rowKey] === null || salePrices[row.rowKey] === undefined
+            ? row.layer.salePrice
+            : salePrices[row.rowKey];
+        return {
+          totalCost:
+            acc.totalCost + quantity * Number(row.layer.unitPrice || 0),
+          totalSale:
+            acc.totalSale + quantity * Number(salePriceValue || 0),
+        };
+      },
+      { totalCost: 0, totalSale: 0 },
+    );
+  }, [rows, quantities, salePrices]);
 
   const columns: TableColumnsType<WarehouseLayerRow> = [
     {
@@ -187,7 +216,26 @@ export default function SaleWarehouseProductsModal({
       dataIndex: "salePrice",
       title: "Sotuv narxi",
       align: "center",
-      render: (_, record) => numberSpacing(record.layer.salePrice, undefined, true),
+      render: (_, record) => (
+        <InputNumberFormat
+          standalone
+          emptyZero
+          min={0}
+          precision={2}
+          value={
+            salePrices[record.rowKey] === null ||
+            salePrices[record.rowKey] === undefined
+              ? record.layer.salePrice
+              : salePrices[record.rowKey]
+          }
+          onValueChange={(value) =>
+            setSalePrices((current) => ({
+              ...current,
+              [record.rowKey]: value,
+            }))
+          }
+        />
+      ),
     },
     {
       dataIndex: "quantity",
@@ -258,6 +306,20 @@ export default function SaleWarehouseProductsModal({
         scroll={{ x: "max-content", y: 560 }}
         locale={{ emptyText: "Omborxonada hujjat bo'yicha qoldiq topilmadi" }}
       />
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
+        <div className="rounded border border-border bg-white p-3 text-right">
+          <div className="text-sm text-muted-second">Jami tannarx:</div>
+          <div className="font-semibold">
+            {numberSpacing(selectedAmounts.totalCost, undefined, true)}
+          </div>
+        </div>
+        <div className="rounded border border-border bg-white p-3 text-right">
+          <div className="text-sm text-muted-second">Jami sotuv narxi:</div>
+          <div className="font-semibold">
+            {numberSpacing(selectedAmounts.totalSale, undefined, true)}
+          </div>
+        </div>
+      </div>
     </Modal>
   );
 }

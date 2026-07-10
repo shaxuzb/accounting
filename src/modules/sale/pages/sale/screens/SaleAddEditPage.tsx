@@ -1,7 +1,7 @@
 import { Button, Form, Spin } from "antd";
 import dayjs from "dayjs";
 import { useFormik } from "formik";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
 import { Save } from "lucide-react";
@@ -25,6 +25,11 @@ import {
   getSaleConditionDraftKey,
   saveSaleDraft,
 } from "../utils/saleDraft";
+
+const toPositiveNumber = (value: unknown) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : null;
+};
 
 const defaultValues: SaleDocForm = {
   docDate: dayjs().format(formatDate),
@@ -183,6 +188,42 @@ export default function SaleAddEditPage() {
     },
   });
 
+  const counterpartyId = useMemo(
+    () => toPositiveNumber(formik.values.counterpartyId),
+    [formik.values.counterpartyId],
+  );
+  const warehouseId = useMemo(
+    () => toPositiveNumber(formik.values.warehouseId),
+    [formik.values.warehouseId],
+  );
+  const previousCounterpartyId = useRef<number | null>(null);
+  const previousWarehouseId = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (isEdit) return;
+    if (
+      previousCounterpartyId.current !== null &&
+      previousCounterpartyId.current !== counterpartyId
+    ) {
+      formik.setFieldValue("contractId", null, false);
+      setSelectedProducts([]);
+    }
+
+    previousCounterpartyId.current = counterpartyId;
+  }, [counterpartyId, formik, isEdit]);
+
+  useEffect(() => {
+    if (isEdit) return;
+    if (
+      previousWarehouseId.current !== null &&
+      previousWarehouseId.current !== warehouseId
+    ) {
+      setSelectedProducts([]);
+    }
+
+    previousWarehouseId.current = warehouseId;
+  }, [isEdit, setSelectedProducts, warehouseId]);
+
   const saleConditionDraftKey = useMemo(
     () => getSaleConditionDraftKey(saleCondition),
     [saleCondition],
@@ -267,6 +308,7 @@ export default function SaleAddEditPage() {
       <div className="space-y-3">
         {!isEdit && <SaleDocumentFormFields formik={formik} isEdit={false} />}
         <SaleProductSelection
+          warehouseId={warehouseId}
           comment={formik.values.comment}
           products={products}
           saleCondition={activeSaleCondition}

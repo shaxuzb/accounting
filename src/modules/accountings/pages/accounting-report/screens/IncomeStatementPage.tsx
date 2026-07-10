@@ -8,7 +8,6 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { numberSpacing } from "@/utils/utils";
 import AccountingReportFiltersCard from "../components/AccountingReportFiltersCard";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
-import AccountingReportRawCard from "../components/AccountingReportRawCard";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
 import AccountingReportSummaryGrid from "../components/AccountingReportSummaryGrid";
 import { useGetIncomeStatement } from "../hooks";
@@ -111,11 +110,6 @@ export default function IncomeStatementPage() {
         </>
       )}
 
-      <AccountingReportRawCard
-        data={data}
-        isLoading={query.isLoading || query.isFetching}
-        emptyText="Income statement natijasi yo'q"
-      />
     </AccountingReportPageShell>
   );
 }

@@ -38,11 +38,17 @@ export const selectListEndpoints = {
   pricingMethodsSelectList: "manuals/pricing-methods",
   priceRoundingMethodsSelectList: "manuals/price-rounding-methods",
   costingMethodsSelectList: "manuals/costing-methods",
-  counterPartyBankAccounts: "manuals/counterparty-bank-accounts", 
+  faGroupsSelectList: "manuals/fa-groups",
+  okofsSelectList: "manuals/fa-okofs",
+  depreciationMethodsSelectList: "manuals/fa-depreciation-methods",
+  sourceProductTablesSelectList: "manuals/source-product-tables",
+  counterPartyBankAccounts: "manuals/counterparty-bank-accounts",
   paymentPurposes: "manuals/payment-purposes",
   operationTypes: "manuals/operation-types",
   vatRates: "manuals/vat-rates",
   suppliersSelectList: "manuals/suppliers",
+  clients: "manuals/clients",
+
 };
 
 export const selectListKeys = {
@@ -82,6 +88,10 @@ export const selectListKeys = {
   pricingMethod: "selectListPricingMethods",
   priceRoundingMethod: "selectListPriceRoundingMethods",
   costingMethod: "selectListCostingMethods",
+  faGroup: "selectListFaGroups",
+  okof: "selectListOkofs",
+  depreciationMethod: "selectListDepreciationMethods",
+  sourceProductTable: "selectListSourceProductTables",
   counterPartyBankAccount: "selectListCounterPartyBankAccounts",
   paymentPurposes: "selectListPaymentPurposes",
   operationTypes: "selectListOperationTypes",
@@ -123,8 +133,13 @@ export const filterIds = {
   pricingMethod: "pricingMethodId",
   priceRoundingMethod: "priceRoundingMethodId",
   costingMethod: "costingMethodId",
+  faGroup: "faGroupId",
+  okof: "okofId",
+  depreciationMethod: "depreciationMethodId",
+  sourceProductTable: "sourceProductTableId",
   counterPartyBankAccount: "counterPartyBankAccountId",
   paymentPurposes: "paymentPurposeId",
   operationTypes: "operationTypeId",
   vatRates: "vatRateId",
 };
+

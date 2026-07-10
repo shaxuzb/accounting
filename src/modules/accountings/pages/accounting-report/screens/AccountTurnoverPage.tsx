@@ -8,7 +8,6 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { customDate, numberSpacing } from "@/utils/utils";
 import AccountingReportFiltersCard from "../components/AccountingReportFiltersCard";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
-import AccountingReportRawCard from "../components/AccountingReportRawCard";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
 import AccountingReportSummaryGrid from "../components/AccountingReportSummaryGrid";
 import { useGetAccountTurnover } from "../hooks";
@@ -128,11 +127,6 @@ export default function AccountTurnoverPage() {
         </>
       )}
 
-      <AccountingReportRawCard
-        data={data}
-        isLoading={query.isLoading || query.isFetching}
-        emptyText="Account turnover natijasi yo'q"
-      />
     </AccountingReportPageShell>
   );
 }

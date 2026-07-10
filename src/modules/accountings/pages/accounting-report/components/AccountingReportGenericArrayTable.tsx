@@ -1,7 +1,7 @@
-import { Empty, Table } from "antd";
+import { Table } from "antd";
 import type { ColumnsType, TableProps } from "antd/es/table";
 import Card from "@/components/ui/card/Card";
-import { generateKeyTable } from "@/utils/utils";
+import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
 import { getArrayFromResponse, isObject } from "../utils/response";
 
 interface Props {
@@ -19,11 +19,27 @@ const humanizeKey = (key: string) =>
     .trim()
     .replace(/^\w/, (char) => char.toUpperCase());
 
-const formatValue = (value: unknown) => {
+const formatValue = (value: unknown, key = "") => {
   if (value === null || value === undefined || value === "") return "-";
-  if (typeof value === "number") return value;
-  if (typeof value === "boolean") return value ? "Yes" : "No";
+
+  if (typeof value === "number") {
+    return value === 0 ? "0" : numberSpacing(value, " ", true);
+  }
+
+  if (typeof value === "boolean") return value ? "Ha" : "Yo'q";
+
   if (Array.isArray(value)) return JSON.stringify(value);
+
+  if (typeof value === "string" && key) {
+    const lowerKey = key.toLowerCase();
+    if (
+      (lowerKey.includes("date") || lowerKey.includes("time")) &&
+      !Number.isNaN(Date.parse(value))
+    ) {
+      return customDate(value);
+    }
+  }
+
   if (isObject(value)) return JSON.stringify(value);
   return String(value);
 };
@@ -40,11 +56,19 @@ export default function AccountingReportGenericArrayTable({
     isObject(row) ? row : { value: formatValue(row) },
   );
   const firstRow = normalizedRows[0] as Record<string, unknown> | undefined;
-  const columns: ColumnsType<Record<string, unknown>> = firstRow
-    ? Object.keys(firstRow).map((key) => ({
+  const columnKeys = normalizedRows.reduce<string[]>((keys, row) => {
+    if (!isObject(row)) return keys;
+    for (const key of Object.keys(row as Record<string, unknown>)) {
+      if (!keys.includes(key)) keys.push(key);
+    }
+    return keys;
+  }, []);
+
+  const columns: ColumnsType<Record<string, unknown>> = firstRow && columnKeys.length
+    ? columnKeys.map((key) => ({
         title: humanizeKey(key),
         dataIndex: key,
-        render: (value) => formatValue(value),
+        render: (value) => formatValue(value, key),
       }))
     : [{
           title: "Value",
@@ -59,27 +83,12 @@ export default function AccountingReportGenericArrayTable({
       })
     : undefined;
 
-  if (!rows.length || !columns.length) {
-    return (
-      <Card className="overflow-hidden border border-border">
-        <div className="border-b border-border px-4 py-3">
-          <div className="text-base font-semibold text-text">{title}</div>
-        </div>
-        <div className="px-4 py-8">
-          <Empty description={emptyText} />
-        </div>
-      </Card>
-    );
-  }
-
   return (
     <Card className="overflow-hidden border border-border">
-      <div className="border-b border-border px-4 py-3">
-        <div className="text-base font-semibold text-text">{title}</div>
-      </div>
-      <Table
+      <Table<Record<string, unknown>>
         bordered
         size="middle"
+        title={() => <div className="text-base font-semibold text-text">{title}</div>}
         columns={columns}
         loading={loading}
         dataSource={generateKeyTable(normalizedRows)}
@@ -87,7 +96,7 @@ export default function AccountingReportGenericArrayTable({
         rowClassName={onRowClick ? "transition-colors" : ""}
         pagination={false}
         locale={{ emptyText }}
-        scroll={{ x: "max-content" }}
+        scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
       />
     </Card>
   );

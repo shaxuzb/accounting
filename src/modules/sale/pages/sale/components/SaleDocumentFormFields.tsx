@@ -1,11 +1,18 @@
+import { useState } from "react";
 import type { FormikProps } from "formik";
 import dayjs from "dayjs";
+import { useQueryClient } from "@tanstack/react-query";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
+import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
 import {
   filterIds,
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
+import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
+import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
+import { contractPermissions } from "@/modules/contract/constants/permissions";
 import { formatDateWithOutTime } from "@/utils/helpers";
 import type { SaleDocForm } from "../types/form";
 
@@ -15,6 +22,10 @@ interface Props {
 }
 
 export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
+  const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
+  const [contractCreateOpen, setContractCreateOpen] = useState(false);
+  const queryClient = useQueryClient();
+
   return (
     <div className="grid gap-x-3 border-b border-border pb-1 sm:grid-cols-2 xl:grid-cols-4">
       <SelectDate
@@ -26,10 +37,17 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
       <SelectCustom
         label="Mijoz"
         fieldName="counterpartyId"
-        path={selectListEndpoints.counterpartiesSelectList}
+        path={selectListEndpoints.clients}
         formik={formik}
         search
         required
+        addOption={{
+          bool: true,
+          permissionCode: counterpartyPermissions.create,
+          onClick: () => {
+            setCounterpartyCreateOpen(true);
+          },
+        }}
       />
       <SelectCustom
         path={selectListEndpoints.contractsSelectList}
@@ -42,8 +60,16 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
         label="Shartnoma"
         fieldName="contractId"
         formik={formik}
-        refetchSync={`${formik.values.counterpartyId}${formik.values.docDate}`}
+        enabled={Boolean(formik.values.counterpartyId)}
+        disabled={!formik.values.counterpartyId}
         required
+        addOption={{
+          bool: true,
+          permissionCode: contractPermissions.create,
+          onClick: () => {
+            setContractCreateOpen(true);
+          },
+        }}
       />
       <SelectCustom
         label="Ombor"
@@ -71,6 +97,28 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
           required
         />
       )}
+      <CounterpartyAddEditPage
+        open={counterpartyCreateOpen}
+        onClose={() => {
+          setCounterpartyCreateOpen(false);
+          invalidateSelectListQuery(
+            queryClient,
+            "counterpartyId",
+            selectListEndpoints.clients,
+          );
+        }}
+      />
+      <ContractAddEditPage
+        open={contractCreateOpen}
+        onClose={() => {
+          setContractCreateOpen(false);
+          invalidateSelectListQuery(
+            queryClient,
+            "contractId",
+            selectListEndpoints.contractsSelectList,
+          );
+        }}
+      />
     </div>
   );
 }

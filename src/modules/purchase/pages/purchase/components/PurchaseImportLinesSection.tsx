@@ -2,6 +2,7 @@ import { Button, Table, Tooltip, type TableColumnType } from "antd";
 import { PackagePlus, Plus } from "lucide-react";
 import PurchaseImportSummary from "./PurchaseImportSummary";
 import type { PurchaseImportRow, PurchaseMode } from "../types/type";
+import { generateKeyTable } from "@/utils/utils";
 
 interface PurchaseImportLinesSectionProps {
   columns: TableColumnType<PurchaseImportRow>[];
@@ -76,7 +77,7 @@ export default function PurchaseImportLinesSection({
           // className="sm={12} lg={8} xl={4} [&_.ant-table-tbody>tr>td]:py-3! "
           loading={loading}
           columns={columns}
-          dataSource={lines}
+          dataSource={generateKeyTable(lines)}
           rowKey="key"
           virtual
           scroll={{ y: "height - 320", x: "max-content" }}

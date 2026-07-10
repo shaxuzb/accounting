@@ -1,9 +1,10 @@
 import { Button, Col, Row, Segmented } from "antd";
 import dayjs from "dayjs";
-import type { Dispatch, SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 import type { FormikProps } from "formik";
 import { ArrowLeft, Plus } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectCustom from "@/components/fields/SelectCustom";
 import Card from "@/components/ui/card/Card";
@@ -13,12 +14,17 @@ import {
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
 import { formatDateWithOutTime } from "@/utils/helpers";
+import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import type { PurchaseImportForm } from "../types/form";
 import type {
   PurchaseImportRow,
   PurchaseMode,
   SelectBoxOptions,
 } from "../types/type";
+import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
+import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
+import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
+import { contractPermissions } from "@/modules/contract/constants/permissions";
 
 interface PurchaseImportHeaderProps {
   formik: FormikProps<PurchaseImportForm>;
@@ -44,6 +50,9 @@ export default function PurchaseImportHeader({
   setSelectBoxOptions,
 }: PurchaseImportHeaderProps) {
   const { t } = useTranslation();
+  const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
+  const [contractCreateOpen, setContractCreateOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   return (
     <Card className="p-3">
@@ -59,7 +68,7 @@ export default function PurchaseImportHeader({
         </div>
       </div>
       <div className="mt-3">
-        <Row gutter={20}>
+        <Row gutter={24}>
           <Col span={24} sm={12} lg={8} xl={4}>
             <SelectDate label="Sana" formik={formik} fieldName="docDate" />
           </Col>
@@ -72,6 +81,14 @@ export default function PurchaseImportHeader({
               path={selectListEndpoints.suppliersSelectList}
               getFirst
               formik={formik}
+              addOption={{
+                bool: true,
+                permissionCode: counterpartyPermissions.create,
+                onClick: () => {
+                  setCounterpartyCreateOpen(true);
+                },
+              }}
+             
             />
           </Col>
           <Col span={24} sm={12} lg={8} xl={4}>
@@ -82,7 +99,7 @@ export default function PurchaseImportHeader({
               formik={formik}
             />
           </Col>
-          <Col span={24} sm={12} lg={8} xl={4}>
+          {/* <Col span={24} sm={12} lg={8} xl={4}>
             <SelectCustom
               path={selectListEndpoints.currenciesSelectList}
               label="Valyuta"
@@ -90,7 +107,7 @@ export default function PurchaseImportHeader({
               formik={formik}
               getFirst={true}
             />
-          </Col>
+          </Col> */}
           <Col span={24} sm={12} lg={8} xl={4}>
             <SelectCustom
               path={selectListEndpoints.contractsSelectList}
@@ -100,11 +117,18 @@ export default function PurchaseImportHeader({
                 ),
                 [filterIds.counterparty]: formik.values.counterpartyId,
               }}
+              disabled={!formik.values.counterpartyId}
               label="Shartnoma"
               fieldName="contractId"
               formik={formik}
               required
-              refetchSync={`${formik.values.counterpartyId}${formik.values.docDate}`}
+              addOption={{
+                bool: true,
+                permissionCode: contractPermissions.create,
+                onClick: () => {
+                  setContractCreateOpen(true);
+                },
+              }}
             />
           </Col>
         </Row>
@@ -147,6 +171,28 @@ export default function PurchaseImportHeader({
           </Button>
         </div>
       </div>
+      <CounterpartyAddEditPage
+        open={counterpartyCreateOpen}
+        onClose={() => {
+          setCounterpartyCreateOpen(false);
+          invalidateSelectListQuery(
+            queryClient,
+            "counterpartyId",
+            selectListEndpoints.suppliersSelectList,
+          );
+        }}
+      />
+      <ContractAddEditPage
+        open={contractCreateOpen}
+        onClose={() => {
+          setContractCreateOpen(false);
+          invalidateSelectListQuery(
+            queryClient,
+            "contractId",
+            selectListEndpoints.contractsSelectList,
+          );
+        }}
+      />
     </Card>
   );
 }

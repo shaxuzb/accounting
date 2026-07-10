@@ -5,6 +5,7 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import type { WarehouseTransferForm } from "../types/form";
+import { Col, Form, Row } from "antd";
 
 interface Props {
   formik: FormikProps<WarehouseTransferForm>;
@@ -17,37 +18,44 @@ export default function WarehouseTransferFormFields({
 }: Props) {
   return (
     <Card className="p-4">
-      <div className="grid gap-4 md:grid-cols-2">
-        <SelectDate
-          formik={formik}
-          fieldName="docDate"
-          label="bank.fields.date"
-          disabled={disabled}
-        />
-        <div />
-        <SelectCustom
-          formik={formik}
-          fieldName="sourceWarehouseId"
-          label="Manba ombor"
-          path={selectListEndpoints.warehousesSelectList}
-          disabled={disabled}
-        />
-        <SelectCustom
-          formik={formik}
-          fieldName="destinationWarehouseId"
-          label="Qabul ombor"
-          path={selectListEndpoints.warehousesSelectList}
-          disabled={disabled}
-        />
-        <div className="md:col-span-2">
-          <InputText
-            formik={formik}
-            fieldName="comment"
-            label="bank.fields.comment"
-            disabled={disabled}
-          />
-        </div>
-      </div>
+      <Form layout="vertical">
+        <Row gutter={[16, 0]}>
+          <Col span={8}>
+            <SelectDate
+              formik={formik}
+              fieldName="docDate"
+              label="bank.fields.date"
+              disabled={disabled}
+            />
+          </Col>
+          <Col span={8}>
+            <SelectCustom
+              formik={formik}
+              fieldName="sourceWarehouseId"
+              label="Manba ombor"
+              path={selectListEndpoints.warehousesSelectList}
+              disabled={disabled}
+            />
+          </Col>
+          <Col span={8}>
+            <SelectCustom
+              formik={formik}
+              fieldName="destinationWarehouseId"
+              label="Qabul ombor"
+              path={selectListEndpoints.warehousesSelectList}
+              disabled={disabled}
+            />
+          </Col>
+          <Col span={24}>
+            <InputText
+              formik={formik}
+              fieldName="comment"
+              label="bank.fields.comment"
+              disabled={disabled}
+            />
+          </Col>
+        </Row>
+      </Form>
     </Card>
   );
 }

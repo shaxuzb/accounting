@@ -22,16 +22,13 @@ import type {
   JournalQuery,
 } from "../types/type";
 
-const reportTypes = [
-  "balance-sheet",
-  "income-statement",
-  "cash-flow",
-  "account-turnover",
-  "journal",
-  "account-card",
-] as const;
-
-type ReportType = (typeof reportTypes)[number];
+type ReportType =
+  | "balance-sheet"
+  | "income-statement"
+  | "cash-flow"
+  | "account-turnover"
+  | "journal"
+  | "account-card";
 
 interface Props {
   reportType: ReportType;
@@ -279,11 +276,10 @@ export default function AccountingReportsPage({ reportType }: Props) {
   const config = reportConfig[reportType];
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const searchString = searchParams.toString();
 
   const queryParams = useMemo(
     () => getReportQuery(reportType, searchParams),
-    [reportType, searchString],
+    [reportType, searchParams],
   );
 
   const balanceQuery = useGetBalanceSheet(

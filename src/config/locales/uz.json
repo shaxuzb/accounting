@@ -24,7 +24,8 @@
   "actions": {
     "deleteSuccess": "Element {{id}} muvaffaqiyatli o'chirildi",
     "deleteConfirmTitle": "Ushbu elementni o'chirishni xohlaysizmi?",
-    "deleteConfirmContent": "Bu amalni qaytarib bo'lmaydi!"
+    "deleteConfirmContent": "Bu amalni qaytarib bo'lmaydi!",
+    "confirm": "Tasdiqlash"
   },
   "processStatuses": {
     "draft": "Qoralama",
@@ -97,6 +98,43 @@
     "invalidPhone": "Telefon raqam noto'g'ri formatda",
     "minString": "{{field}} kamida {{min}} ta belgidan iborat bo'lishi kerak",
     "minArray": "{{field}} kamida {{min}} ta tanlanishi kerak"
+  },
+  "fa": {
+    "title": "Asosiy vositalar",
+    "entities": {
+      "assets": "Asosiy vositalar",
+      "receipts": "Kirim",
+      "movements": "Ko'chirish",
+      "revaluations": "Qayta baholash",
+      "disposals": "Hisobdan chiqarish",
+      "depreciation": "Eskirish hisoblash"
+    },
+    "fields": {
+      "documentNumber": "Hujjat raqami",
+      "documentDate": "Hujjat sanasi",
+      "comment": "Izoh",
+      "inventoryNumber": "Inventar raqami",
+      "name": "Nomi",
+      "faGroup": "OS guruhlari",
+      "okof": "O'KOF",
+      "depreciationMethod": "Eskirish usuli",
+      "usefulLifeMonths": "Amaliy umr (oy)",
+      "initialCost": "Boshlang'ich xarajat",
+      "salvageValue": "Qoldiq qiymat",
+      "commissioningDate": "Ishga tushirish sanasi",
+      "deprStartDate": "Eskirish boshlanishi",
+      "plannedUnitsTotal": "Reja bo'yicha birliklar soni",
+      "sourceProductTable": "Mahsulot jadvali",
+      "department": "Bo'lim",
+      "responsibleUser": "Mas'ul foydalanuvchi",
+      "state": "Holat"
+    },
+    "form": {
+      "create": "Asosiy vosita yaratish",
+      "edit": "Asosiy vosita o'zgartirish",
+      "run": "Eskirishni hisoblash",
+      "detail": "Asosiy vosita hujjati"
+    }
   },
   "settings": {
     "title": "Sozlamalar",

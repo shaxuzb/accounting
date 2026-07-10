@@ -9,7 +9,6 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { customDate, numberSpacing } from "@/utils/utils";
 import AccountingReportFiltersCard from "../components/AccountingReportFiltersCard";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
-import AccountingReportRawCard from "../components/AccountingReportRawCard";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
 import AccountingReportSummaryGrid from "../components/AccountingReportSummaryGrid";
 import { useGetBalanceSheet } from "../hooks";
@@ -154,11 +153,6 @@ export default function BalanceSheetPage() {
         </>
       )}
 
-      <AccountingReportRawCard
-        data={data}
-        isLoading={query.isLoading || query.isFetching}
-        emptyText="Balance sheet natijasi yo'q"
-      />
     </AccountingReportPageShell>
   );
 }

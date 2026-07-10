@@ -3,7 +3,8 @@ import { warehouseService } from "../../warehouse/api";
 
 interface Params {
   productId?: number | null;
-  // warehouseId?: number | null;
+  warehouseId?: number | null;
+  isService?: boolean;
   page?: number;
   pageSize?: number;
 }
@@ -11,12 +12,16 @@ interface Params {
 export const useGetWarehouseTransferSerials = (params?: Params) =>
   useQuery({
     queryKey: ["warehouse-transfer", "serials", params ?? null],
-    queryFn: () =>
-      warehouseService.tables({
+    queryFn: () => {
+      const queryParams: Record<string, unknown> = {
         productId: params?.productId ?? undefined,
-        // warehouseId: params?.warehouseId ?? undefined,
+        warehouseId: params?.warehouseId ?? undefined,
+        IsService: params?.isService ?? false,
         page: params?.page ?? 1,
         pageSize: params?.pageSize ?? 1000,
-      }),
-    enabled: Boolean(params?.productId),
+      };
+
+      return warehouseService.tables(queryParams);
+    },
+    enabled: Boolean(params?.productId && params?.warehouseId),
   });

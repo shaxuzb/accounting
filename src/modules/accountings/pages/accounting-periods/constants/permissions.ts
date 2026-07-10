@@ -1,4 +1,4 @@
 export const accountingPeriodsPermissions = {
-  view: "ACC_REG_ENTRY_UPDATE",
-  update: "ACC_REG_ENTRY_UPDATE",
+  close: "ACCOUNTING_PERIOD_CLOSE",
+  reopen: "ACCOUNTING_PERIOD_REOPEN",
 } as const;

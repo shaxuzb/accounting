@@ -24,7 +24,8 @@
   "actions": {
     "deleteSuccess": "Element {{id}} was deleted successfully",
     "deleteConfirmTitle": "Do you want to delete this element?",
-    "deleteConfirmContent": "This action cannot be undone!"
+    "deleteConfirmContent": "This action cannot be undone!",
+    "confirm": "Confirm"
   },
   "processStatuses": {
     "draft": "Draft",
@@ -97,6 +98,43 @@
     "invalidPhone": "Invalid phone number format",
     "minString": "{{field}} must contain at least {{min}} characters",
     "minArray": "{{field}} must contain at least {{min}} selected item(s)"
+  },
+  "fa": {
+    "title": "Fixed Assets",
+    "entities": {
+      "assets": "Assets",
+      "receipts": "Receipts",
+      "movements": "Movements",
+      "revaluations": "Revaluations",
+      "disposals": "Disposals",
+      "depreciation": "Depreciation run"
+    },
+    "fields": {
+      "documentNumber": "Document number",
+      "documentDate": "Document date",
+      "comment": "Comment",
+      "inventoryNumber": "Inventory number",
+      "name": "Name",
+      "faGroup": "FA Group",
+      "okof": "OKOF",
+      "depreciationMethod": "Depreciation method",
+      "usefulLifeMonths": "Useful life (months)",
+      "initialCost": "Initial cost",
+      "salvageValue": "Residual value",
+      "commissioningDate": "Commissioning date",
+      "deprStartDate": "Depreciation start date",
+      "plannedUnitsTotal": "Planned units total",
+      "sourceProductTable": "Source product table",
+      "department": "Department",
+      "responsibleUser": "Responsible user",
+      "state": "Status"
+    },
+    "form": {
+      "create": "Create fixed asset document",
+      "edit": "Edit fixed asset document",
+      "run": "Run depreciation",
+      "detail": "Fixed asset document"
+    }
   },
   "settings": {
     "title": "Settings",

@@ -7,7 +7,6 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import AccountingReportFiltersCard from "../components/AccountingReportFiltersCard";
 import AccountingReportGenericArrayTable from "../components/AccountingReportGenericArrayTable";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
-import AccountingReportRawCard from "../components/AccountingReportRawCard";
 import { useGetAccountCard } from "../hooks";
 import type { AccountCardQuery } from "../types/type";
 
@@ -75,11 +74,6 @@ export default function AccountCardPage() {
         emptyText="Account card rows topilmadi"
       />
 
-      <AccountingReportRawCard
-        data={query.data}
-        isLoading={query.isLoading || query.isFetching}
-        emptyText="Account card natijasi yo'q"
-      />
     </AccountingReportPageShell>
   );
 }

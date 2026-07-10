@@ -37,7 +37,8 @@ export default function WarehouseTransferDetailPage() {
   const isDraft = isCreate || statusId === 1;
 
   const initialValues = useMemo<WarehouseTransferForm>(
-    () => (isCreate ? createDefaultTransferForm() : mapTransferDetailToForm(record)),
+    () =>
+      isCreate ? createDefaultTransferForm() : mapTransferDetailToForm(record),
     [isCreate, record],
   );
 
@@ -48,9 +49,9 @@ export default function WarehouseTransferDetailPage() {
     onSubmit: async (values) => {
       try {
         if (isCreate) {
-          const created = await createMutation.mutateAsync(values);
+          await createMutation.mutateAsync(values);
           toast.success("Hujjat yaratildi");
-          navigate(`/main/warehouses/transfers/${created.id}`, { replace: true });
+          navigate(`/main/warehouses/transfers`, { replace: true });
           return;
         }
 
@@ -100,7 +101,7 @@ export default function WarehouseTransferDetailPage() {
             saving={createMutation.isPending || updateMutation.isPending}
             confirming={confirmMutation.isPending}
             cancelling={cancelMutation.isPending}
-            onSave={() => void saveDraft()}
+            onSave={() => saveDraft()}
             onConfirm={async () => {
               try {
                 await confirmMutation.mutateAsync();

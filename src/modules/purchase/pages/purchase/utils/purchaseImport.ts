@@ -24,6 +24,80 @@ export const getDefaultPurchaseImportHeader =
     comment: "",
   });
 
+const hasPositiveNumericValue = (value: unknown) => {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) && numberValue > 0;
+};
+
+const hasGoodsSignature = (line: Record<string, unknown>) =>
+  hasPositiveNumericValue(line.productId) ||
+  hasPositiveNumericValue(line.unitId);
+
+export const isServiceDetailLine = (line: unknown): line is Record<string, unknown> => {
+  if (!line || typeof line !== "object") return false;
+
+  const record = line as Record<string, unknown>;
+
+  if (
+    "serviceName" in record ||
+    "serviceId" in record ||
+    "accountId" in record ||
+    "expenseAccountName" in record ||
+    "accountName" in record ||
+    "name" in record
+  ) {
+    return true;
+  }
+
+  return "ownerId" in record && !hasGoodsSignature(record);
+};
+
+export const getPurchaseModeFromDetail = (
+  detail:
+    | {
+        serviceLines?: unknown[] | null;
+        lines?: unknown[] | null;
+      }
+    | null
+    | undefined,
+  serviceProductIds?: Iterable<number | string> | null,
+): PurchaseMode => {
+  if (!detail) return "goods";
+  if (detail.serviceLines?.length) return "services";
+
+  const serviceLineIds = new Set(
+    Array.from(serviceProductIds ?? []).map((id) => Number(id)),
+  );
+
+  const hasServiceId = (line: unknown): boolean => {
+    if (!line || typeof line !== "object") return false;
+    const record = line as Record<string, unknown>;
+
+    if (
+      isServiceDetailLine(record) ||
+      "accountId" in record ||
+      "expenseAccountName" in record
+    ) {
+      return true;
+    }
+
+    const candidateLineIds = [
+      record["serviceId"],
+      record["productId"],
+      record["productTableId"],
+    ].filter((value) => Number.isFinite(Number(value)));
+
+    return candidateLineIds.some((value) => {
+      const numeric = Number(value);
+      return serviceLineIds.has(numeric);
+    });
+  };
+
+  if (detail.lines?.some(hasServiceId)) return "services";
+
+  return "goods";
+};
+
 export const createEmptyPurchaseRow = ({
   indexId,
   counterpartyId,

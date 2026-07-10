@@ -22,7 +22,7 @@ export default function WarehouseTransferActions({
   onCancel,
 }: Props) {
   return (
-    <Card className="space-y-3 p-4">
+    <Card className="space-y-3 p-4 ">
       <div className="text-sm font-semibold">Amallar</div>
       <Button
         block

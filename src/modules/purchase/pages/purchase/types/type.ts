@@ -35,6 +35,7 @@ export interface ProductSelectOption {
   purchasePrice?: number | null;
   pricePerUom?: number | null;
   isPieceTracked?: boolean;
+  isService?: boolean
 }
 
 export interface ProductListResponse {

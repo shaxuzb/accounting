@@ -100,7 +100,13 @@ export const usePurchaseImportColumns = ({
             <Select
               showSearch
               className="w-full"
-              placeholder={purchaseMode === "services" ? "Xizmat" : "Tovar"}
+              placeholder={
+                record.product
+                  ? String(record.product)
+                  : purchaseMode === "services"
+                    ? "Xizmat"
+                    : "Tovar"
+              }
               value={record.productId ?? undefined}
               loading={isLoading || isServicesLoading}
               options={itemOptions.map((item) => ({

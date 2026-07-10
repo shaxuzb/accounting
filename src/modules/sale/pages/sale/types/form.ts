@@ -45,11 +45,35 @@ export interface SaleDocTableUpdateForm {
   vatRateId: number | null;
 }
 
+export interface SaleDocConfirmLineItemForm {
+  id: number;
+  productTableId: number;
+  markingNumber?: string | null;
+  serialNumber?: string | null;
+  costPrice: number;
+  amount: number;
+  vatRateId: number;
+  vatAmount?: number;
+  totalAmount?: number;
+}
+
 export interface SaleDocConfirmLineForm {
   id: number;
+  productId: number;
+  productName: string;
+  productMxik?: string | null;
+  isService?: boolean;
+  quantity: number;
+  unitId?: number | null;
+  unitName?: string | null;
   costPrice: number;
   unitPrice: number;
+  amount: number;
   vatRateId: number;
+  vatRateName?: string | null;
+  vatAmount: number;
+  totalAmount: number;
+  items: SaleDocConfirmLineItemForm[];
 }
 
 export interface SaleDocConfirmForm {

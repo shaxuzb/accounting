@@ -22,25 +22,25 @@ export default function PurchaseImportSummary({
         <div className="min-w-36 text-right">
           <div className="text-muted-second">Jami summa:</div>
           <div className="font-semibold">
-            {numberSpacing(totals.amount, undefined, true)}
+            {numberSpacing(totals.amount)}
           </div>
         </div>
         <div className="min-w-36 border-l border-border pl-6 text-right">
           <div className="text-muted-second">Jami QQS:</div>
           <div className="font-semibold">
-            {numberSpacing(totals.vatAmount, undefined, true)}
+            {numberSpacing(totals.vatAmount)}
           </div>
         </div>
         <div className="min-w-40 border-l border-border pl-6 text-right">
           <div className="text-muted-second">To'lovga jami:</div>
           <div className="text-base font-bold">
-            {numberSpacing(totals.totalAmount, undefined, true)}
+            {numberSpacing(totals.totalAmount)}
           </div>
         </div>
       </div>
       <Form.Item label="Kommentariya" className="mb-0!">
         <Input.TextArea
-          rows={3}
+          rows={2}
           value={comment}
           placeholder="Kommentariya kiriting..."
           onChange={(event) => onCommentChange(event.target.value)}

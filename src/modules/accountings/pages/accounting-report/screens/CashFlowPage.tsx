@@ -8,7 +8,6 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { numberSpacing } from "@/utils/utils";
 import AccountingReportFiltersCard from "../components/AccountingReportFiltersCard";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
-import AccountingReportRawCard from "../components/AccountingReportRawCard";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
 import AccountingReportSummaryGrid from "../components/AccountingReportSummaryGrid";
 import { useGetCashFlow } from "../hooks";
@@ -106,11 +105,6 @@ export default function CashFlowPage() {
         </>
       )}
 
-      <AccountingReportRawCard
-        data={data}
-        isLoading={query.isLoading || query.isFetching}
-        emptyText="Cash flow natijasi yo'q"
-      />
     </AccountingReportPageShell>
   );
 }

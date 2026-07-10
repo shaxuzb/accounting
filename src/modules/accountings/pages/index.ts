@@ -1,5 +1,4 @@
 export { default as LedgerPage } from "./ledger/screens/LedgerPage";
-export { default as TrialBalancePage } from "./trial-balance/screens/TrialBalancePage";
 export { default as AuditLogPage } from "./audit-log/screens/AuditLogPage";
 export { default as RepostPage } from "./repost/screens/RepostPage";
 export { default as AccountingPeriodsPage } from "./accounting-periods/screens/AccountingPeriodsPage";

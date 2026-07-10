@@ -118,8 +118,8 @@ export default function ContractAddEditPage({
               <SelectCustom
                 formik={formik}
                 fieldName="counterpartyId"
-                label="contract.fields.counterpartyName"
-                path={selectListEndpoints.counterpartiesSelectList}
+                label="settings.fields.supplyContractor"
+                path={selectListEndpoints.suppliersSelectList}
               />
             </Col>
             <Col span={12}>

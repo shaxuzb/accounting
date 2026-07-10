@@ -91,7 +91,7 @@ const getDifferenceStatus = (
   return "Farq yo'q";
 };
 
-const buildJsonTableColumns = (rows: JsonRecord[]) =>
+const buildJsonTableColumns = (rows: JsonRecord[] = []) =>
   Array.from(
     new Set(rows.flatMap((row) => Object.keys(row))),
   ).map((key) => ({

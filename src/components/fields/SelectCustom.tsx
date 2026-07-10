@@ -270,12 +270,12 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
             ? (menu) => (
                 <>
                   {menu}
-                  <Divider style={{ margin: "8px 0" }} />
-                  <div className="flex justify-end">
+                  <Divider style={{ margin: "4px 0" }}/>
+                  <div >
                     <Button
                       type="primary"
                       size="small"
-                      className="flex px-2! py-3!"
+                      className="flex px-2! py-3! w-full"
                       onClick={addOption.onClick}
                     >
                       <Plus className="size-4.5" />

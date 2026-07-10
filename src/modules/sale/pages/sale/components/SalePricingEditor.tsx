@@ -15,6 +15,7 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { numberSpacing } from "@/utils/utils";
 import { useConfirmSale } from "../hooks";
 import type { SaleDoc, SaleDocTable, SalePricingLine } from "../types/type";
+import type { SaleDocConfirmLineForm } from "../types/form";
 import {
   createSalePricingLine,
   getMarginBySalePrice,
@@ -214,14 +215,135 @@ export default function SalePricingEditor({
       return;
     }
 
+    const toPositiveNumber = (value: number | string | null | undefined) => {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 0;
+    };
+
+    const parentLineByKey = new Map<number, SaleDocTable>();
+    const sourceLineById = new Map<number, SaleDocTable>();
+    const originLines = document.lines?.length ? document.lines : sourceLines;
+
+    sourceLines.forEach((sourceLine) => {
+      const sourceLineId = toPositiveNumber(sourceLine.id);
+      if (sourceLineId > 0) sourceLineById.set(sourceLineId, sourceLine);
+    });
+
+    originLines.forEach((parentLine) => {
+      const parentId = toPositiveNumber(parentLine.id);
+      if (parentId > 0) parentLineByKey.set(parentId, parentLine);
+
+      const parentProductTableId = toPositiveNumber(parentLine.productTableId);
+      if (parentProductTableId > 0) {
+        parentLineByKey.set(parentProductTableId, parentLine);
+      }
+
+      parentLine.items?.forEach((item) => {
+        const itemId = toPositiveNumber(item.id);
+        if (itemId > 0) parentLineByKey.set(itemId, parentLine);
+
+        const itemProductTableId = toPositiveNumber(item.productTableId);
+        if (itemProductTableId > 0) {
+          parentLineByKey.set(itemProductTableId, parentLine);
+        }
+      });
+    });
+
+    const groupedLines = lines.reduce((acc, line) => {
+      const lineId = toPositiveNumber(line.id);
+      const lineOwnerId = toPositiveNumber(line.ownerId);
+      const lineProductTableId = toPositiveNumber(line.productTableId);
+      const parentLine =
+        parentLineByKey.get(lineOwnerId) ??
+        parentLineByKey.get(lineProductTableId) ??
+        (lineOwnerId > 0 ? sourceLineById.get(lineOwnerId) : undefined) ??
+        parentLineByKey.get(lineId) ??
+        sourceLineById.get(lineId) ??
+        line;
+      const resolvedLineId = toPositiveNumber(
+        parentLine?.id || lineOwnerId || lineId,
+      );
+
+      if (!resolvedLineId) {
+        return acc;
+      }
+
+      if (!acc[resolvedLineId]) {
+        acc[resolvedLineId] = {
+          id: resolvedLineId,
+          productId: toPositiveNumber(parentLine?.productId || line.productId),
+          productName: parentLine?.productName || line.productName,
+          productMxik: parentLine?.productMxik ?? line.productMxik ?? null,
+          isService: false,
+          quantity: 0,
+          unitId: parentLine?.unitId ?? line.unitId,
+          unitName: parentLine?.unitName ?? line.unitName,
+          costPrice: 0,
+          unitPrice: roundMoney(
+            line.amount || parentLine?.unitPrice || parentLine?.amount || 0,
+          ),
+          amount: 0,
+          vatRateId: toPositiveNumber(line.vatRateId),
+          vatRateName: parentLine?.vatRateName || line.vatRateName,
+          vatAmount: 0,
+          totalAmount: 0,
+          items: [],
+        };
+      }
+
+      const existingLine = acc[resolvedLineId];
+      const lineQuantity = line.quantity || 1;
+      const lineCostPrice = roundMoney(line.costPrice || 0);
+      const lineAmount = roundMoney(line.amount || 0);
+      const lineVatAmount = roundMoney(line.vatAmount || 0);
+      const lineTotalAmount = roundMoney(line.totalAmount || 0);
+
+      existingLine.quantity += lineQuantity;
+      existingLine.costPrice = roundMoney(
+        existingLine.costPrice + lineCostPrice * lineQuantity,
+      );
+      existingLine.amount = roundMoney(
+        existingLine.amount + lineAmount * lineQuantity,
+      );
+      existingLine.vatAmount = roundMoney(
+        existingLine.vatAmount + lineVatAmount,
+      );
+      existingLine.totalAmount = roundMoney(
+        existingLine.totalAmount + lineTotalAmount,
+      );
+
+      const isItemLine =
+        lineOwnerId > 0 &&
+        lineOwnerId !== lineId &&
+        (parentLineByKey.has(lineOwnerId) ||
+          sourceLineById.has(lineOwnerId));
+      if (isItemLine) {
+        existingLine.items.push({
+          id: lineId,
+          productTableId: lineProductTableId,
+          markingNumber: line.markingNumber || null,
+          serialNumber: line.serialNumber || null,
+          costPrice: lineCostPrice,
+          amount: lineAmount,
+          vatRateId: toPositiveNumber(line.vatRateId),
+          vatAmount: lineVatAmount,
+          totalAmount: lineTotalAmount,
+        });
+      }
+
+      return acc;
+    }, {} as Record<number, SaleDocConfirmLineForm>);
+
+    const payloadLines = Object.values(groupedLines).filter((line) => line.id > 0);
+
+    if (!payloadLines.length) {
+      toast.error("Tasdiqlash uchun to'g'ri mahsulot satrlari tuzilmadi");
+      return;
+    }
+
     try {
       await confirmSale.mutateAsync({
-        lines: lines.map((line) => ({
-          id: line.id,
-          costPrice: roundMoney(line.costPrice),
-          unitPrice: roundMoney(line.amount),
-          vatRateId: Number(line.vatRateId),
-        })),
+        lines: payloadLines,
       });
       setDraftLines([]);
       navigate("/main/sales/sale", { replace: true });

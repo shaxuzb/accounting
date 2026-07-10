@@ -1,4 +1,3 @@
-
 export const repostPermissions = {
-  update: "AccRegEntryUpdate",
+  update: "REPOST_REPOST",
 } as const;

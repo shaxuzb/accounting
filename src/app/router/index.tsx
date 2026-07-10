@@ -8,9 +8,10 @@ import { saleRoutes } from "@/modules/sale";
 import { productsRoutes } from "@/modules/warehouse/pages/products/routes";
 import { warehouseRoutes } from "@/modules/warehouse";
 import { bankRoutes } from "@/modules/bank";
-import { dashboardRoutes } from "@/modules/dashboard/routes";
 import { cashOperationRoutes } from "@/modules/cashoperation";
 import { accountingRoutes } from "@/modules/accounting/routes";
+import { faRoutes } from "@/modules/fa/routes";
+
 
 export const router = createBrowserRouter([
   {
@@ -24,12 +25,12 @@ export const router = createBrowserRouter([
         path: "main",
         element: <MainLayout />,
         children: [
-          dashboardRoutes,
           productsRoutes,
           purchaseRoutes,
           bankRoutes,
           cashOperationRoutes,
           saleRoutes,
+          faRoutes,
           accountingsRoutes,
           accountingRoutes,
           settingsRoutes,

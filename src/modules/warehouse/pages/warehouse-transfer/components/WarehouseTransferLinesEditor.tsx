@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Button, Empty, Select, Tag } from "antd";
+import { Button, Col, Empty, Form, Row, Select, Tag } from "antd";
 import type { FormikProps } from "formik";
 import { Plus, Trash2 } from "lucide-react";
 import Card from "@/components/ui/card/Card";
@@ -9,6 +9,7 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { numberSpacing } from "@/utils/utils";
 import { useGetWarehouseTransferStocks } from "../hooks/useGetWarehouseTransferStocks";
+import { useGetWarehouseTransferProducts } from "../hooks/useGetWarehouseTransferProducts";
 import { useGetWarehouseTransferSerials } from "../hooks/useGetWarehouseTransferSerials";
 import type {
   WarehouseTransferForm,
@@ -36,11 +37,20 @@ export default function WarehouseTransferLinesEditor({
   formik,
   disabled = false,
 }: Props) {
+  const sourceWarehouseId = formik.values.sourceWarehouseId;
+
   const stockQuery = useGetWarehouseTransferStocks({
-    // warehouseId: formik.values.sourceWarehouseId,
+    warehouseId: sourceWarehouseId,
+    isService: false,
     page: 1,
     pageSize: 1000,
   });
+
+  const manualProductsQuery = useGetWarehouseTransferProducts({
+    isService: false,
+    warehouseId: sourceWarehouseId,
+  });
+
   const [activeLineIndex, setActiveLineIndex] = useState<number | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
 
@@ -55,6 +65,34 @@ export default function WarehouseTransferLinesEditor({
     return map;
   }, [stockQuery.data?.items]);
 
+  const manualProductMap = useMemo(() => {
+    const map = new Map<
+      number,
+      {
+        name?: string;
+        unitName?: string | null;
+      }
+    >();
+
+    (manualProductsQuery.data ?? []).forEach((item) => {
+      map.set(Number(item.id), {
+        name: item.name,
+        unitName: item.unitName ?? item.unit,
+      });
+    });
+
+    return map;
+  }, [manualProductsQuery.data]);
+
+  const manualProductOptions = useMemo(
+    () =>
+      (manualProductsQuery.data ?? []).map((item) => ({
+        value: item.id,
+        label: item.name ?? String(item.id),
+      })),
+    [manualProductsQuery.data],
+  );
+
   const activeLine =
     activeLineIndex !== null ? formik.values.lines[activeLineIndex] : null;
 
@@ -62,7 +100,8 @@ export default function WarehouseTransferLinesEditor({
     activeLine?.productId
       ? {
           productId: activeLine.productId,
-          // warehouseId: formik.values.sourceWarehouseId,
+          warehouseId: sourceWarehouseId,
+          isService: false,
           page: 1,
           pageSize: 1000,
         }
@@ -161,68 +200,81 @@ export default function WarehouseTransferLinesEditor({
                 />
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                <div className="xl:col-span-2">
-                  <div className="mb-1 text-sm text-secondary-text">
-                    Mahsulot
-                  </div>
-                  <Select
-                    value={line.productId}
-                    placeholder="Mahsulotni tanlang"
-                    loading={stockQuery.isLoading || stockQuery.isFetching}
-                    disabled={disabled}
-                    showSearch
-                    options={(stockQuery.data?.items ?? []).map((item) => ({
-                      value: item.productId ?? item.id,
-                      label: `${item.productName ?? item.name ?? item.productId} - ${numberSpacing(item.quantity, undefined, true)} dona`,
-                    }))}
-                    onChange={(value) => {
-                      const selected = stockMap.get(Number(value));
-                      const selectedProductId = Number(value);
+              <Form layout="vertical">
+                <Row gutter={[16, 0]}>
+                  <Col span={12}>
+                    <div className="mb-1 text-sm text-secondary-text pb-2">
+                      Mahsulot
+                    </div>
+                    <Select
+                      value={line.productId}
+                      placeholder="Mahsulotni tanlang"
+                      loading={
+                        manualProductsQuery.isLoading ||
+                        manualProductsQuery.isFetching
+                      }
+                      disabled={disabled || !sourceWarehouseId}
+                      showSearch
+                      options={manualProductOptions}
+                      style={{ width: "100%" }}
+                      onChange={(value) => {
+                        const selectedProductId = Number(value);
+                        const selectedStock = stockMap.get(selectedProductId);
+                        const selectedManual =
+                          manualProductMap.get(selectedProductId);
 
-                      setLine(index, {
-                        productId: Number.isNaN(selectedProductId) ? null : selectedProductId,
-                        productName:
-                          selected?.productName ?? selected?.name ?? "",
-                        unitId: line.unitId,
-                        unitName: line.unitName,
-                        quantity: selected?.quantity ? 1 : null,
-                        items: [createDefaultTransferItem()],
-                      });
-                      setActiveLineIndex(index);
-                      setSelectedRowKeys([]);
-                    }}
-                    style={{ width: "100%" }}
-                  />
-                </div>
+                        setLine(index, {
+                          productId: Number.isNaN(selectedProductId)
+                            ? null
+                            : selectedProductId,
+                          productName:
+                            selectedStock?.productName ??
+                            selectedStock?.name ??
+                            selectedManual?.name ??
+                            "",
+                          unitId: line.unitId,
+                          unitName:
+                            line.unitName ||
+                            selectedManual?.unitName?.trim() ||
+                            null,
+                          quantity: selectedStock?.quantity ? 1 : null,
+                          items: [createDefaultTransferItem()],
+                        });
+                        setActiveLineIndex(index);
+                        setSelectedRowKeys([]);
+                      }}
+                    />
+                  </Col>
+                  <Col span={6}>
+                    <InputNumber
+                      formik={formik}
+                      fieldName={`lines[${index}].quantity`}
+                      label="Miqdor"
+                      disabled={disabled}
+                      min={0}
+                    />
+                  </Col>
+                  <Col span={6}>
+                    <SelectCustom
+                      formik={formik}
+                      fieldName={`lines[${index}].unitId`}
+                      label="Birlik"
+                      path={selectListEndpoints.unitsSelectList}
+                      disabled={disabled}
+                      getFieldName={`lines[${index}].unitName`}
+                    />
+                  </Col>
 
-                <SelectCustom
-                  formik={formik}
-                  fieldName={`lines[${index}].unitId`}
-                  label="Birlik"
-                  path={selectListEndpoints.unitsSelectList}
-                  disabled={disabled}
-                  getFieldName={`lines[${index}].unitName`}
-                />
-
-                <InputNumber
-                  formik={formik}
-                  fieldName={`lines[${index}].quantity`}
-                  label="Miqdor"
-                  disabled={disabled}
-                  min={0}
-                />
-
-                <div className="xl:col-span-2">
-                  <InputText
-                    formik={formik}
-                    fieldName={`lines[${index}].comment`}
-                    label="Izoh"
-                    disabled={disabled}
-                  />
-                </div>
-              </div>
-
+                  <Col span={24}>
+                    <InputText
+                      formik={formik}
+                      fieldName={`lines[${index}].comment`}
+                      label="Izoh"
+                      disabled={disabled}
+                    />
+                  </Col>
+                </Row>
+              </Form>
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <Tag color="blue">
                   Qoldiq: {numberSpacing(totalStock, undefined, true)}
@@ -246,6 +298,11 @@ export default function WarehouseTransferLinesEditor({
                 >
                   Markirovka
                 </Button>
+                {!sourceWarehouseId && (
+                  <span className="text-xs text-red-500">
+                    Avval manba omborni tanlang
+                  </span>
+                )}
                 {line.productId && !serialItems.length && canOpenMarking && (
                   <span className="text-xs text-secondary-text">
                     Bu mahsulot markirovkasiz
