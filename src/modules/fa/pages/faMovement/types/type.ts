@@ -1,4 +1,7 @@
-export interface FaMovement{
-    id: number
+export interface FaMovement {
+  id: number;
+  stateId: number;
+  documentNumber: string;
+  documentDate: string;
+  comment: string;
 }
-

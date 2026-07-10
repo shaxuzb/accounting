@@ -13,17 +13,19 @@ import { stateStatus } from "@/utils/helpers/statusHelper";
 import { endpoints } from "../constants/endpoints";
 import { faDisposalPermissions } from "../constants/permissions";
 import { useGetListFaDisposals } from "../hooks";
-import type { FaDisposalRecord } from "../types/type";
+// import type { FaDisposalRecord } from "../types/type";
 
 export default function FaDisposalListPage() {
   const { t } = useTranslation();
-  const permissions = useAppSelector((state) => state.auth.user?.user.permissions ?? []);
-  const [searchParams] = useSearchParams();
-  const { data, isLoading, isFetching, refetch } = useGetListFaDisposals(
-    searchParams,
+  const permissions = useAppSelector(
+    (state) => state.auth.user?.user.permissions ?? [],
   );
+  const [searchParams] = useSearchParams();
+  const { data, isLoading, isFetching, refetch } =
+    useGetListFaDisposals(searchParams);
 
-  const tableColumns: TableColumnsType<FaDisposalRecord> = [
+  //any quyilgan to'g'irlash kerak
+  const tableColumns: TableColumnsType<any> = [
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
@@ -34,9 +36,7 @@ export default function FaDisposalListPage() {
       title: t("fa.fields.documentNumber"),
       dataIndex: "documentNumber",
       render: (_, record) => (
-        <Link to={`${record.id}`}>
-          {record.documentNumber ?? record.id}
-        </Link>
+        <Link to={`${record.id}`}>{record.documentNumber ?? record.id}</Link>
       ),
       minWidth: 180,
     },
@@ -64,7 +64,8 @@ export default function FaDisposalListPage() {
     permissions.includes(faDisposalPermissions.update) ||
     permissions.includes(faDisposalPermissions.delete);
 
-  const columns: TableColumnType<FaDisposalRecord>[] = hasActions
+  // const tableColumns: TableColumnsType<any> = [
+  const columns: TableColumnType<any>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -110,7 +111,7 @@ export default function FaDisposalListPage() {
       </div>
 
       <Card className="overflow-hidden border border-border">
-        <Table<FaDisposalRecord>
+        <Table<any> //any quyilgan to'g'irlash kerak
           loading={isLoading || isFetching}
           columns={columns}
           dataSource={generateKeyTable(data?.items ?? [], "id")}
@@ -121,4 +122,3 @@ export default function FaDisposalListPage() {
     </div>
   );
 }
-

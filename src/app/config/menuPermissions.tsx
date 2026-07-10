@@ -11,13 +11,13 @@ import {
   GitBranch,
   Handshake,
   Landmark,
-  LayoutDashboard,
+  // LayoutDashboard,
   ReceiptText,
   Settings,
   ShieldCheck,
   ShoppingBag,
   ShoppingCart,
-  Boxes,
+  // Boxes,
   Tag,
   TrendingUp,
   Users,
@@ -42,20 +42,20 @@ import {
   cashDocumentPermissions,
   cashOperationPermissions,
 } from "@/modules/cashoperation";
-import {
-  faAssetPermissions,
-} from "@/modules/fa/pages/faAsset/constants/permissions";
-import { faDisposalPermissions } from "@/modules/fa/pages/faDisposal/constants/permissions";
-import { faDepreciationPermissions } from "@/modules/fa/pages/faDepreciation/constants/permissions";
-import { faMovementPermissions } from "@/modules/fa/pages/faMovement/constants/permissions";
-import { faReceiptPermissions } from "@/modules/fa/pages/faReceipt/constants/permissions";
-import { faRevaluationPermissions } from "@/modules/fa/pages/faRevaluation/constants/permissions";
-import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
-import { accountingPeriodsPermissions } from "@/modules/accountings/pages/accounting-periods/constants/permissions";
-import { ledgerPermissions } from "@/modules/accountings/pages/ledger/constants/permissions";
-import { trialBalancePermissions } from "@/modules/accountings/pages/trial-balance/constants/permissions";
-import { auditLogPermissions } from "@/modules/accountings/pages/audit-log/constants/permissions";
-import { repostPermissions } from "@/modules/accountings/pages/repost/constants/permissions";
+// import {
+//   faAssetPermissions,
+// } from "@/modules/fa/pages/faAsset/constants/permissions";
+// import { faDisposalPermissions } from "@/modules/fa/pages/faDisposal/constants/permissions";
+// import { faDepreciationPermissions } from "@/modules/fa/pages/faDepreciation/constants/permissions";
+// import { faMovementPermissions } from "@/modules/fa/pages/faMovement/constants/permissions";
+// import { faReceiptPermissions } from "@/modules/fa/pages/faReceipt/constants/permissions";
+// import { faRevaluationPermissions } from "@/modules/fa/pages/faRevaluation/constants/permissions";
+// import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
+// import { accountingPeriodsPermissions } from "@/modules/accountings/pages/accounting-periods/constants/permissions";
+// import { ledgerPermissions } from "@/modules/accountings/pages/ledger/constants/permissions";
+// import { trialBalancePermissions } from "@/modules/accountings/pages/trial-balance/constants/permissions";
+// import { auditLogPermissions } from "@/modules/accountings/pages/audit-log/constants/permissions";
+// import { repostPermissions } from "@/modules/accountings/pages/repost/constants/permissions";
 
 interface MainMenu {
   TOP: MenuRole[];

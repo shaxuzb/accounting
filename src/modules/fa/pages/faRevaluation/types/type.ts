@@ -1,3 +1,4 @@
-import type { FaRevaluation } from "@/modules/fa/types/fa";
+// import type { FaRevaluation } from "@/modules/fa/types/fa";
 
-export type FaRevaluationRecord = FaRevaluation;
+export type FaRevaluationRecord = any;//any quyilgan to'g'irlash kerak
+

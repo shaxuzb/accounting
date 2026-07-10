@@ -13,17 +13,17 @@ import { customDate, generateKeyTable } from "@/utils/utils";
 import { endpoints } from "../constants/endpoints";
 import { faMovementPermissions } from "../constants/permissions";
 import { useGetListFaMovements } from "../hooks";
-import type { FaMovementRecord } from "../types/type";
 
 export default function FaMovementListPage() {
   const { t } = useTranslation();
-  const permissions = useAppSelector((state) => state.auth.user?.user.permissions ?? []);
-  const [searchParams] = useSearchParams();
-  const { data, isLoading, isFetching, refetch } = useGetListFaMovements(
-    searchParams,
+  const permissions = useAppSelector(
+    (state) => state.auth.user?.user.permissions ?? [],
   );
-
-  const tableColumns: TableColumnsType<FaMovementRecord> = [
+  const [searchParams] = useSearchParams();
+  const { data, isLoading, isFetching, refetch } =
+    useGetListFaMovements(searchParams);
+  //any quyilgan to'g'irlash kerak
+  const tableColumns: TableColumnsType<any> = [
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
@@ -34,9 +34,7 @@ export default function FaMovementListPage() {
       title: t("fa.fields.documentNumber"),
       dataIndex: "documentNumber",
       render: (_, record) => (
-        <Link to={`${record.id}`}>
-          {record.documentNumber ?? record.id}
-        </Link>
+        <Link to={`${record.id}`}>{record.documentNumber ?? record.id}</Link>
       ),
       minWidth: 180,
     },
@@ -64,31 +62,32 @@ export default function FaMovementListPage() {
     permissions.includes(faMovementPermissions.update) ||
     permissions.includes(faMovementPermissions.delete);
 
-  const columns: TableColumnType<FaMovementRecord>[] = hasActions
-    ? [
-        ...tableColumns,
-        {
-          dataIndex: "actions",
-          title: t("common.actions"),
-          align: "center",
-          width: 100,
-          fixed: "right",
-          render: (_, record) => (
-            <ActionColumn
-              deletePath={endpoints.list}
-              customPath={`/main/fa/movements/edit/${record.id}`}
-              record={record}
-              permissions={permissions}
-              permissionsCode={{
-                deleteCode: faMovementPermissions.delete,
-                editCode: faMovementPermissions.update,
-              }}
-              refetch={refetch}
-            />
-          ),
-        },
-      ]
-    : tableColumns;
+  const columns: TableColumnType<any>[] = //any quyilgan to'g'irlash kerak
+    hasActions
+      ? [
+          ...tableColumns,
+          {
+            dataIndex: "actions",
+            title: t("common.actions"),
+            align: "center",
+            width: 100,
+            fixed: "right",
+            render: (_, record) => (
+              <ActionColumn
+                deletePath={endpoints.list}
+                customPath={`/main/fa/movements/edit/${record.id}`}
+                record={record}
+                permissions={permissions}
+                permissionsCode={{
+                  deleteCode: faMovementPermissions.delete,
+                  editCode: faMovementPermissions.update,
+                }}
+                refetch={refetch}
+              />
+            ),
+          },
+        ]
+      : tableColumns;
 
   return (
     <div className="w-full">
@@ -110,7 +109,7 @@ export default function FaMovementListPage() {
       </div>
 
       <Card className="overflow-hidden border border-border">
-        <Table<FaMovementRecord>
+        <Table<any>//any quyilgan to'g'irlash kerak
           loading={isLoading || isFetching}
           columns={columns}
           dataSource={generateKeyTable(data?.items ?? [], "id")}
@@ -121,4 +120,3 @@ export default function FaMovementListPage() {
     </div>
   );
 }
-
