@@ -39,8 +39,10 @@ export default function PurchaseImportLinesSection({
   onOpenMissingProductsModal,
   purchaseMode,
   totals,
+  height,
 }: PurchaseImportLinesSectionProps) {
   const loading = isLoading || isFetching;
+  const tableHeight = Math.max(240, height - 320);
 
   return (
     <>
@@ -79,8 +81,7 @@ export default function PurchaseImportLinesSection({
           columns={columns}
           dataSource={generateKeyTable(lines)}
           rowKey="key"
-          virtual
-          scroll={{ y: "height - 320", x: "max-content" }}
+          scroll={{ y: tableHeight, x: "max-content" }}
           pagination={false}
         />
         <PurchaseImportSummary

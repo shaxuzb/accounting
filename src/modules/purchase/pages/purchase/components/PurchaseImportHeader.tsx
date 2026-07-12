@@ -10,6 +10,8 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import Card from "@/components/ui/card/Card";
 import ExcelImportFile from "@/components/widget/excelimport/ExcelImportFile";
 import {
+  chartAccountOptionLabel,
+  chartAccountSelectedLabel,
   filterIds,
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
@@ -25,6 +27,7 @@ import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/scree
 import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
 import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
+import type { Contract } from "@/modules/contract/types/type";
 
 interface PurchaseImportHeaderProps {
   formik: FormikProps<PurchaseImportForm>;
@@ -53,6 +56,15 @@ export default function PurchaseImportHeader({
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  const handleContractCreated = (contract: Contract) => {
+    formik.setFieldValue("contractId", contract.id, true);
+    invalidateSelectListQuery(
+      queryClient,
+      "contractId",
+      selectListEndpoints.contractsSelectList,
+    );
+  };
 
   return (
     <Card className="p-3">
@@ -88,9 +100,9 @@ export default function PurchaseImportHeader({
                   setCounterpartyCreateOpen(true);
                 },
               }}
-             
             />
           </Col>
+
           <Col span={24} sm={12} lg={8} xl={4}>
             <SelectCustom
               path={selectListEndpoints.warehousesSelectList}
@@ -131,6 +143,18 @@ export default function PurchaseImportHeader({
               }}
             />
           </Col>
+          <Col span={24} sm={12} lg={8} xl={4}>
+            <SelectCustom
+              fieldName="supplierAccountId"
+              label="Yetkazib beruvchi schyoti"
+              path={selectListEndpoints.chartAccountsSelectList}
+              formik={formik}
+              search
+              required
+              optionLabel={chartAccountOptionLabel}
+              selectedLabel={chartAccountSelectedLabel}
+            />
+          </Col>
         </Row>
       </div>
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
@@ -166,7 +190,11 @@ export default function PurchaseImportHeader({
           <Button htmlType="button" onClick={onBack}>
             Bekor qilish
           </Button>
-          <Button type="primary" loading={formik.isSubmitting} htmlType="submit">
+          <Button
+            type="primary"
+            loading={formik.isSubmitting}
+            htmlType="submit"
+          >
             {t("common.save")}
           </Button>
         </div>
@@ -184,13 +212,11 @@ export default function PurchaseImportHeader({
       />
       <ContractAddEditPage
         open={contractCreateOpen}
+        contractTypeId={1}
+        initialCounterpartyId={formik.values.counterpartyId}
+        onCreated={handleContractCreated}
         onClose={() => {
           setContractCreateOpen(false);
-          invalidateSelectListQuery(
-            queryClient,
-            "contractId",
-            selectListEndpoints.contractsSelectList,
-          );
         }}
       />
     </Card>

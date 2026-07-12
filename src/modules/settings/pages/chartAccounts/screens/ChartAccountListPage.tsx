@@ -1,6 +1,6 @@
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { Plus, RefreshCw } from "lucide-react";
+import { BookPlus, Plus, RefreshCw } from "lucide-react";
 import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { generateKeyTable } from "@/utils/utils";
@@ -12,10 +12,10 @@ import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { useState } from "react";
 import ChartAccountAddEditPage from "./ChartAccountAddEditPage";
+import { ChartAccountPresetModal } from "../components";
 import type { ChartAccounts } from "../types/type";
 import { useGetListChartAccounts } from "../hooks";
 import { chartAccountsPermissions } from "../constants/permissions";
-
 
 export default function ChartAccountListPage() {
   const { t } = useTranslation();
@@ -23,34 +23,33 @@ export default function ChartAccountListPage() {
   const [searchParams] = useSearchParams();
   const { data, refetch, isLoading, isFetching } =
     useGetListChartAccounts(searchParams);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isPresetOpen, setIsPresetOpen] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
 
   const tableColumns: TableColumnsType<ChartAccounts> = [
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
       align: "center",
-      width: 70,
+    },
+    {
+      title: t("settings.fields.name"),
+      dataIndex: "number",
     },
     {
       title: t("settings.fields.name"),
       dataIndex: "name",
-      minWidth: 180,
     },
     {
-      title: t("settings.fields.organizationName"),
-      dataIndex: "organizationName",
-      minWidth: 180,
+      title: t("AccountypeName"),
+      dataIndex: "accountTypeName",
     },
-    {
-      title: t("settings.fields.district"),
-      dataIndex: "districtName",
-      minWidth: 160,
-    },
+
     {
       title: t("settings.fields.status"),
       dataIndex: "stateId",
       align: "center",
-      width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
   ];
@@ -91,9 +90,6 @@ export default function ChartAccountListPage() {
       ]
     : tableColumns;
 
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
-
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -107,10 +103,20 @@ export default function ChartAccountListPage() {
           />
           <PermissionCard permission={chartAccountsPermissions.create}>
             <Button
+              icon={<BookPlus className="size-4" />}
+              onClick={() => setIsPresetOpen(true)}
+            >
+              Hisob qo'shish
+            </Button>
+          </PermissionCard>
+          <PermissionCard permission={chartAccountsPermissions.create}>
+            <Button
               type="primary"
               icon={<Plus className="size-4" />}
               onClick={() => setIsAddOpen(true)}
-            >{t("common.add")}</Button>
+            >
+              {t("common.add")}
+            </Button>
           </PermissionCard>
         </Space>
       </div>
@@ -126,14 +132,20 @@ export default function ChartAccountListPage() {
           pagination={false}
         />
       </Card>
-       <ChartAccountAddEditPage
-         open={isAddOpen}
-         onClose={() => {
-           setIsAddOpen(false);
-           setEditId(null);
-         }}
-         id={editId}
-       />
+      <ChartAccountAddEditPage
+        open={isAddOpen}
+        onClose={() => {
+          setIsAddOpen(false);
+          setEditId(null);
+        }}
+        id={editId}
+      />
+
+      <ChartAccountPresetModal
+        open={isPresetOpen}
+        onClose={() => setIsPresetOpen(false)}
+        onCreated={() => refetch()}
+      />
     </div>
   );
 }

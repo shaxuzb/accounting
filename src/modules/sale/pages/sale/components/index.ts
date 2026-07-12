@@ -3,6 +3,7 @@ export { default as ConfirmedSaleDocument } from "./ConfirmedSaleDocument";
 export { default as SaleBarcodeScanner } from "./SaleBarcodeScanner";
 export { default as SaleConfirmedLinesTable } from "./SaleConfirmedLinesTable";
 export { default as SaleDocumentFormFields } from "./SaleDocumentFormFields";
+export { default as SaleLineAccountsDrawer } from "./SaleLineAccountsModal";
 export { default as SaleDocumentSummary } from "./SaleDocumentSummary";
 export { default as SaleDraftSummary } from "./SaleDraftSummary";
 export { default as SalePricingEditor } from "./SalePricingEditor";

@@ -1,33 +1,42 @@
-import { type LoginPayload } from "@/services/authService";
 import { Form, type FormProps, Input } from "antd";
-import { type FormikProps } from "formik";
-import React, { memo } from "react";
+import { getIn, type FormikProps } from "formik";
 import { useTranslation } from "react-i18next";
 
-interface inputProps {
+interface InputProps<T extends object> {
   label?: string;
-  formik: FormikProps<LoginPayload> | any;
+  formik: FormikProps<T>;
   fieldName: string;
   disabled?: boolean;
 }
 
-const InputText: React.FC<inputProps> = (props) => {
+const InputText = <T extends object>({
+  label = "",
+  formik,
+  fieldName = "",
+  disabled = false,
+}: InputProps<T>) => {
   const { t } = useTranslation();
-  const { label = "", formik, fieldName = "", disabled = false } = props;
+  const fieldValue = getIn(formik.values, fieldName) as
+    | string
+    | number
+    | null
+    | undefined;
+  const fieldError = getIn(formik.errors, fieldName);
+  const fieldTouched = getIn(formik.touched, fieldName);
   return (
     <Form.Item<FormProps>
       className="flex flex-col"
       label={label === "" ? false : t(label)}
       validateStatus={
-        formik.touched[fieldName] && formik.errors[fieldName] ? "error" : ""
+        fieldTouched && fieldError ? "error" : ""
       }
-      help={formik.touched[fieldName] && formik.errors[fieldName]}
+      help={fieldTouched && fieldError ? String(fieldError) : undefined}
       rules={[{ required: true, message: "Please input your password!" }]}
     >
       <Input
-        value={formik.values[fieldName]}
+        value={fieldValue ?? ""}
         onChange={(event) => {
-          let value = event.target.value;
+          const value = event.target.value;
           formik.setFieldValue(fieldName, value, true);
         }}
         name={fieldName}
@@ -44,4 +53,4 @@ const InputText: React.FC<inputProps> = (props) => {
   );
 };
 
-export default memo(InputText);
+export default InputText;

@@ -61,6 +61,7 @@ export interface PurchaseData {
   totalAmount: number;
   warehouseId: number;
   warehouseName: string;
+  supplierAccountId?: number | null;
 }
 
 export interface PurchaseQuery {
@@ -113,6 +114,10 @@ export interface PurchaseImportRow {
   mxik?: string | null;
   vatRateId: number | null;
   vatRates: number | null;
+  debitAccountId?: number | null;
+  vatAccountId?: number | null;
+  debitAccountName?: string;
+  vatAccountName?: string;
   isSerial?: boolean;
   isPieceTracked?: boolean;
   [key: string]: unknown;
@@ -141,6 +146,10 @@ export interface PurchaseDetailLine {
   vatRateId: number;
   vatRateName: string;
   unitPrice: number;
+  debitAccountId?: number | null;
+  vatAccountId?: number | null;
+  debitAccountName?: string;
+  vatAccountName?: string;
 }
 
 export interface PurchaseDetailLineItem {
@@ -165,6 +174,7 @@ export interface PurchaseDetailData extends PurchaseData {
   serviceLines?: PurchaseDetailServiceLine[];
   organizationName: string;
   vatAmount: number;
+  supplierAccountId?: number | null;
 }
 
 export interface PurchaseForm {

@@ -2,6 +2,7 @@ import { Button, Card as AntCard, Col, Form, Row, Spin } from "antd";
 import { useFormik } from "formik";
 import {
   ArrowLeft,
+  Calendar,
   CheckCircle2,
   CircleX,
   Landmark,
@@ -19,10 +20,16 @@ import SelectDate from "@/components/fields/SelectDate";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
-import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
+import {
+  chartAccountOptionLabel,
+  chartAccountSelectedLabel,
+  filterIds,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import { formatDateWithOutTime } from "@/utils/helpers";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, numberSpacing } from "@/utils/utils";
+import BankReadonlyDetailsCard from "@/modules/bank/components/BankReadonlyDetailsCard";
 import {
   useCancelBankOperation,
   useConfirmBankOperation,
@@ -38,38 +45,26 @@ const toPositiveNumber = (value: unknown) => {
   return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : null;
 };
 
-const getPaymentPurposeId = (record?: {
-  paymentPurposeId?: number | null;
-  lines?: { paymentPurposeId?: number | null }[] | null;
-}) =>
-  toPositiveNumber(record?.paymentPurposeId) ??
-  toPositiveNumber(record?.lines?.[0]?.paymentPurposeId);
-
-const getPaymentPurposeName = (record?: {
-  paymentPurposeName?: string | null;
-  lines?: { paymentPurposeName?: string | null }[] | null;
-}) => record?.paymentPurposeName ?? record?.lines?.[0]?.paymentPurposeName ?? null;
-
 type BankOperationForm = Omit<
   BankOperationCreatePayload,
   | "bankAccountId"
   | "operationTypeId"
+  | "paymentTypeId"
   | "counterpartyId"
   | "currencyId"
   | "amount"
   | "comment"
-  | "paymentPurposeId"
   | "counterpartyBankAccountId"
   | "contractId"
   | "exchangeRate"
 > & {
   bankAccountId: number | null;
   operationTypeId: number | null;
+  paymentTypeId: number | null;
   counterpartyId: number | null;
   currencyId: number | null;
   amount: number | null;
   comment: string;
-  paymentPurposeId: number | null;
   counterpartyBankAccountId: number | null;
   contractId: number | null;
   exchangeRate: number | null;
@@ -77,8 +72,10 @@ type BankOperationForm = Omit<
 
 const defaultValues: BankOperationForm = {
   bankAccountId: null,
+  bankChartAccountId: 0,
+  offsetAccountId: 0,
   operationTypeId: 1,
-  paymentPurposeId: null,
+  paymentTypeId: null,
   counterpartyId: null,
   counterpartyBankAccountId: null,
   contractId: null,
@@ -88,19 +85,6 @@ const defaultValues: BankOperationForm = {
   amount: null,
   comment: "",
 };
-
-const DisplayField = ({
-  label,
-  value,
-}: {
-  label: string;
-  value?: string | number | null;
-}) => (
-  <AntCard size="small">
-    <div className="text-xs text-muted-foreground">{label}</div>
-    <div className="mt-1 font-medium">{value || "-"}</div>
-  </AntCard>
-);
 
 export default function BankOperationDetailPage() {
   const { id = "" } = useParams();
@@ -116,8 +100,10 @@ export default function BankOperationDetailPage() {
   const initialValues = useMemo<BankOperationForm>(
     () => ({
       bankAccountId: record?.bankAccountId ?? null,
+      bankChartAccountId: record?.bankChartAccountId ?? 0,
+      offsetAccountId: record?.offsetAccountId ?? 0,
       operationTypeId: record?.operationTypeId ?? 1,
-      paymentPurposeId: getPaymentPurposeId(record),
+      paymentTypeId: record?.paymentTypeId ?? null,
       counterpartyId: record?.counterpartyId ?? null,
       counterpartyBankAccountId: record?.counterpartyBankAccountId ?? null,
       contractId: record?.contractId ?? null,
@@ -136,11 +122,12 @@ export default function BankOperationDetailPage() {
     validationSchema: schema,
     onSubmit: async (values) => {
       try {
-        const paymentPurposeId = toPositiveNumber(values.paymentPurposeId);
         const payload: BankOperationCreatePayload = {
           bankAccountId: Number(values.bankAccountId),
+          bankChartAccountId: Number(values.bankChartAccountId),
+          offsetAccountId: Number(values.offsetAccountId),
           operationTypeId: Number(values.operationTypeId),
-          ...(paymentPurposeId ? { paymentPurposeId } : {}),
+          paymentTypeId: Number(values.paymentTypeId),
           counterpartyId: Number(values.counterpartyId),
           counterpartyBankAccountId: Number(values.counterpartyBankAccountId),
           docDate: dayjs(values.docDate).toISOString(),
@@ -157,6 +144,7 @@ export default function BankOperationDetailPage() {
       }
     },
   });
+  const { setFieldValue } = formik;
 
   const counterpartyId = useMemo(
     () => toPositiveNumber(formik.values.counterpartyId),
@@ -168,11 +156,11 @@ export default function BankOperationDetailPage() {
       previousCounterpartyId.current !== null &&
       previousCounterpartyId.current !== counterpartyId
     ) {
-      formik.setFieldValue("counterpartyBankAccountId", null, false);
-      formik.setFieldValue("contractId", null, false);
+      setFieldValue("counterpartyBankAccountId", null, false);
+      setFieldValue("contractId", null, false);
     }
     previousCounterpartyId.current = counterpartyId;
-  }, [counterpartyId, formik]);
+  }, [counterpartyId, setFieldValue]);
 
   if (detailQuery.isLoading || !record) {
     return (
@@ -191,6 +179,15 @@ export default function BankOperationDetailPage() {
             <div className="text-lg font-semibold">
               {record.docNumber ?? record.id}
             </div>
+          </div>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="size-4 text-primary" />
+              <span className="font-semibold">Sana</span>
+            </div>
+            <p className="font-semibold text-foreground">
+              {customDate(record.docDate)}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <ProcessStatusBadge
@@ -223,16 +220,33 @@ export default function BankOperationDetailPage() {
                 <Col span={8}>
                   <SelectCustom
                     formik={formik}
-                    fieldName="paymentPurposeId"
-                    label="To'lov maqsadi"
-                    path={`${selectListEndpoints.paymentPurposesSelectList}?operationTypeId=${formik.values.operationTypeId ?? ""}`}
-                    enabled={Boolean(formik.values.operationTypeId)}
-                    clearable
-                    search
-                    refetchSync={String(formik.values.operationTypeId ?? "")}
-                    marginBottom="mb-0"
+                    fieldName="bankChartAccountId"
+                    label="Bank schyoti"
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    optionLabel={chartAccountOptionLabel}
+                    selectedLabel={chartAccountSelectedLabel}
                   />
                 </Col>
+                <Col span={8}>
+                  <SelectCustom
+                    formik={formik}
+                    fieldName="offsetAccountId"
+                    label="Qarama-qarshi schyot"
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    optionLabel={chartAccountOptionLabel}
+                    selectedLabel={chartAccountSelectedLabel}
+                  />
+                </Col>
+
+                <Col span={8}>
+                  <SelectCustom
+                    formik={formik}
+                    fieldName="paymentTypeId"
+                    label="To'lov turi"
+                    path={selectListEndpoints.paymentTypesSelectList}
+                  />
+                </Col>
+
                 <Col span={8}>
                   <SelectCustom
                     formik={formik}
@@ -315,45 +329,7 @@ export default function BankOperationDetailPage() {
               </Row>
             </Form>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              <DisplayField label="Sana" value={customDate(record.docDate)} />
-              <DisplayField
-                label="Bank hisobi"
-                value={record.bankAccountName}
-              />
-              <DisplayField
-                label="Amaliyot turi"
-                value={record.operationTypeName}
-              />
-              <DisplayField
-                label="To'lov maqsadi"
-                value={getPaymentPurposeName(record)}
-              />
-              <DisplayField
-                label="Kontragent"
-                value={record.counterpartyName}
-              />
-              <DisplayField
-                label="Kontragent bank hisobi"
-                value={
-                  record.counterpartyBankAccountName ??
-                  record.counterpartyBankAccountNumber
-                }
-              />
-              <DisplayField label="Valyuta" value={record.currencyName} />
-              <DisplayField
-                label="Summa"
-                value={`${numberSpacing(record.amount)} ${record.currencyName ?? ""}`}
-              />
-              <DisplayField label="Kurs" value={record.exchangeRate} />
-              <DisplayField
-                label="Shartnoma"
-                value={record.contractName ?? record.contractNumber}
-              />
-              <div className="md:col-span-2">
-                <DisplayField label="Izoh" value={record.comment} />
-              </div>
-            </div>
+            <BankReadonlyDetailsCard record={record} />
           )}
         </Card>
 
@@ -364,7 +340,7 @@ export default function BankOperationDetailPage() {
               <Button
                 block
                 icon={<Save className="size-4" />}
-                onClick={() => void formik.submitForm()}
+                onClick={() => formik.submitForm()}
                 loading={updateMutation.isPending}
               >
                 Saqlash
@@ -384,6 +360,7 @@ export default function BankOperationDetailPage() {
                   try {
                     await confirmMutation.mutateAsync();
                     toast.success("Hujjat tasdiqlandi");
+                    navigate(-1);
                   } catch (error) {
                     errorHandlers(error);
                   }
@@ -406,6 +383,7 @@ export default function BankOperationDetailPage() {
                   try {
                     await cancelMutation.mutateAsync();
                     toast.success("Hujjat bekor qilindi");
+                    navigate(-1);
                   } catch (error) {
                     errorHandlers(error);
                   }
@@ -415,27 +393,29 @@ export default function BankOperationDetailPage() {
               </Button>
             </PermissionCard>
           )}
-          <AntCard size="small">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Landmark className="size-4" />
-              <span>Holati</span>
-            </div>
-            <div className="mt-2">
-              <ProcessStatusBadge
-                statusId={record.statusId}
-                statusName={record.statusName}
-              />
-            </div>
-          </AntCard>
-          <AntCard size="small">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Wallet className="size-4" />
-              <span>Joriy summa</span>
-            </div>
-            <div className="mt-2 font-semibold">
-              {numberSpacing(record.amount)} {record.currencyName ?? ""}
-            </div>
-          </AntCard>
+          <div className="grid gap-4 md:grid-cols-2">
+            <AntCard size="small">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Landmark className="size-4" />
+                <span>Holati</span>
+              </div>
+              <div className="mt-2">
+                <ProcessStatusBadge
+                  statusId={record.statusId}
+                  statusName={record.statusName}
+                />
+              </div>
+            </AntCard>
+            <AntCard size="small">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Wallet className="size-4" />
+                <span>Joriy summa</span>
+              </div>
+              <div className="mt-2 font-semibold">
+                {numberSpacing(record.amount)} {record.currencyName ?? ""}
+              </div>
+            </AntCard>
+          </div>
         </Card>
       </div>
     </div>

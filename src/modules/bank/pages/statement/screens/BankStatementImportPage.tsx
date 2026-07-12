@@ -9,7 +9,6 @@ import dayjs from "@/config/dayjs";
 import { $axiosPrivate } from "@/services/AxiosService";
 import Card from "@/components/ui/card/Card";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { useAppSelector } from "@/store/hooks";
 import BankStatementCard from "../components/BankStatementCard";
 import MissingBankAccountModal, {
   type BankInfoAssignment,
@@ -17,6 +16,7 @@ import MissingBankAccountModal, {
 import MissingCounterpartyModal from "../components/MissingCounterpartyModal";
 import { useCreateBankOperations, useParseBankStatement } from "../hooks";
 import type {
+  BankChartAccountOption,
   BankStatementCardData,
   BankStatementTransaction,
 } from "../types/type";
@@ -28,139 +28,11 @@ import {
   selectListKeys,
 } from "@/shared/constants/selectLists";
 
-interface PaymentPurposeOption {
-  id: number;
-  name: string;
-  operationTypeId?: unknown;
-  operationType?: unknown;
-  operationTypes?: unknown;
-  typeId?: unknown;
-  languageId?: unknown;
-  langId?: unknown;
-  languageCode?: unknown;
-  locale?: unknown;
-  code?: unknown;
-  language?: {
-    id?: unknown;
-    code?: unknown;
-  };
-  [key: string]: unknown;
-}
-
-interface LanguageOption {
-  id: number;
-  code?: unknown;
-  locale?: unknown;
-  [key: string]: unknown;
-}
-
 const toValidNumber = (value: unknown) => {
   const numberValue = Number(value);
   return Number.isFinite(numberValue) && numberValue > 0
     ? numberValue
     : null;
-};
-
-const toPositiveNumberList = (value: unknown): number[] => {
-  if (value === null || value === undefined) return [];
-
-  if (typeof value === "number") {
-    return value > 0 ? [value] : [];
-  }
-
-  if (typeof value === "string") {
-    const numberValue = Number(value);
-    return Number.isFinite(numberValue) && numberValue > 0 ? [numberValue] : [];
-  }
-
-  if (Array.isArray(value)) {
-    return value.flatMap((item) => toPositiveNumberList(item));
-  }
-
-  if (typeof value === "object") {
-    const record = value as Record<string, unknown>;
-    return [
-      ...toPositiveNumberList(record.id),
-      ...toPositiveNumberList(record.typeId),
-      ...toPositiveNumberList(record.operationTypeId),
-      ...toPositiveNumberList(record.operationType),
-      ...toPositiveNumberList(record.operationTypes),
-      ...toPositiveNumberList(record.languageId),
-      ...toPositiveNumberList(record.langId),
-      ...toPositiveNumberList(record.code),
-    ];
-  }
-
-  return [];
-};
-
-const normalizeLanguageCode = (value: unknown) => {
-  if (typeof value !== "string") return "";
-  return value.trim().toLowerCase().replace(/_/g, "-");
-};
-
-const languageMatches = (optionCode: string, langCode: string) => {
-  const normalizedOption = normalizeLanguageCode(optionCode);
-  const normalizedLang = normalizeLanguageCode(langCode);
-
-  if (!normalizedOption || !normalizedLang) return false;
-  if (normalizedOption === normalizedLang) return true;
-  if (normalizedOption.startsWith(`${normalizedLang}-`)) return true;
-  if (normalizedLang.startsWith(`${normalizedOption}-`)) return true;
-  return false;
-};
-
-const getOptionLanguageId = (option: PaymentPurposeOption): number | null =>
-  toPositiveNumberList(
-    option.languageId ??
-      option.langId ??
-      option.language?.id ??
-      option.tenantLanguageId,
-  )[0] ?? null;
-
-const getOptionLanguageCode = (option: PaymentPurposeOption): string | null => {
-  const langCode =
-    option.languageCode ??
-    option.locale ??
-    option.code ??
-    option.language?.code ??
-    (typeof option.language === "object" ? option.language?.code : null);
-
-  const normalized = normalizeLanguageCode(
-    typeof langCode === "string" ? langCode : null,
-  );
-  return normalized || null;
-};
-
-const resolveLanguageIdByCode = (
-  languageOptions: LanguageOption[],
-  languageCode: string,
-) => {
-  const normalized = normalizeLanguageCode(languageCode);
-  const matchedLanguage = languageOptions.find(
-    (language) =>
-      languageMatches(String(language.code), normalized) ||
-      languageMatches(String(language.locale), normalized),
-  );
-
-  return matchedLanguage ? toPositiveNumberList(matchedLanguage.id)[0] ?? null : null;
-};
-
-const isLanguageMatch = (
-  option: PaymentPurposeOption,
-  languageId: number | null,
-  languageCode: string,
-) => {
-  if (!languageId && !languageCode) return true;
-
-  const optionLanguageId = getOptionLanguageId(option);
-  if (optionLanguageId && languageId) {
-    return optionLanguageId === languageId;
-  }
-
-  const optionLanguageCode = getOptionLanguageCode(option);
-  if (!optionLanguageCode) return true;
-  return languageMatches(optionLanguageCode, languageCode);
 };
 
 const hasMissingBankInfo = (card: BankStatementCardData) => {
@@ -184,58 +56,21 @@ export default function BankStatementImportPage() {
   const navigate = useNavigate();
   const parseMutation = useParseBankStatement();
   const createOperations = useCreateBankOperations();
-  const appLang = useAppSelector((state) => state.lang.lang);
   const [cards, setCards] = useState<BankStatementCardData[]>([]);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [bankAssignOpen, setBankAssignOpen] = useState(false);
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
-  const { data: paymentPurposeDebitOptions = [], isLoading: isPaymentPurposeDebitLoading } =
-    useQuery<PaymentPurposeOption[]>({
-      queryKey: ["selectlist", selectListKeys.paymentPurpose, "operationType", 1],
+  const { data: chartAccountOptions = [], isLoading: chartAccountLoading } =
+    useQuery<BankChartAccountOption[]>({
+      queryKey: ["selectlist", selectListKeys.chartAccount],
       queryFn: async () => {
-        const { data } = await $axiosPrivate.get<PaymentPurposeOption[]>(
-          `${selectListEndpoints.paymentPurposesSelectList}?operationTypeId=1`,
+        const { data } = await $axiosPrivate.get<BankChartAccountOption[]>(
+          selectListEndpoints.chartAccountsSelectList,
         );
         return data ?? [];
       },
       enabled: true,
     });
-  const { data: paymentPurposeCreditOptions = [], isLoading: isPaymentPurposeCreditLoading } =
-    useQuery<PaymentPurposeOption[]>({
-      queryKey: ["selectlist", selectListKeys.paymentPurpose, "operationType", 2],
-      queryFn: async () => {
-        const { data } = await $axiosPrivate.get<PaymentPurposeOption[]>(
-          `${selectListEndpoints.paymentPurposesSelectList}?operationTypeId=2`,
-        );
-        return data ?? [];
-      },
-      enabled: true,
-    });
-  const isPaymentPurposeLoading =
-    isPaymentPurposeDebitLoading || isPaymentPurposeCreditLoading;
-  const { data: languageOptions = [] } = useQuery<LanguageOption[]>({
-    queryKey: ["selectlist", selectListKeys.language],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<LanguageOption[]>(
-        selectListEndpoints.languagesSelectList,
-      );
-      return data ?? [];
-    },
-    enabled: true,
-  });
-  const currentLanguageId = useMemo(() => {
-    return resolveLanguageIdByCode(languageOptions, appLang);
-  }, [languageOptions, appLang]);
-  const allPaymentPurposeOptions = useMemo(
-    () => [
-      ...paymentPurposeDebitOptions,
-      ...paymentPurposeCreditOptions.filter(
-        (option) =>
-          !paymentPurposeDebitOptions.some((item) => item.id === option.id),
-      ),
-    ],
-    [paymentPurposeCreditOptions, paymentPurposeDebitOptions],
-  );
   const getTransactionOperationTypeId = useCallback(
     (card: BankStatementCardData, transaction: BankStatementTransaction) => {
       return (
@@ -245,44 +80,6 @@ export default function BankStatementImportPage() {
     },
     [],
   );
-  const getPaymentPurposeOptionsForTransaction = useCallback(
-    (card: BankStatementCardData, transaction: BankStatementTransaction) => {
-      const operationTypeId = getTransactionOperationTypeId(card, transaction);
-      const optionsByType =
-        operationTypeId === 2
-          ? paymentPurposeCreditOptions
-          : operationTypeId === 1
-            ? paymentPurposeDebitOptions
-            : [...paymentPurposeDebitOptions, ...paymentPurposeCreditOptions];
-
-      return allPaymentPurposeOptions.filter(
-        (option) =>
-          (optionsByType.length === 0 ||
-            optionsByType.some((target) => target.id === option.id)) &&
-          isLanguageMatch(option, currentLanguageId, appLang),
-      );
-    },
-    [
-      allPaymentPurposeOptions,
-      paymentPurposeDebitOptions,
-      paymentPurposeCreditOptions,
-      currentLanguageId,
-      appLang,
-      getTransactionOperationTypeId,
-    ],
-  );
-  const isPaymentPurposeAllowedForTransaction = useCallback(
-    (
-      card: BankStatementCardData,
-      transaction: BankStatementTransaction,
-      paymentPurposeId: number | null,
-    ) => {
-      if (!paymentPurposeId) return false;
-      const options = getPaymentPurposeOptionsForTransaction(card, transaction);
-      return options.some((option) => option.id === paymentPurposeId);
-    },
-    [getPaymentPurposeOptionsForTransaction],
-  );
   const buildOperationPayload = useCallback(
     (
       card: BankStatementCardData,
@@ -291,37 +88,35 @@ export default function BankStatementImportPage() {
       const bankAccountId = toValidNumber(card.bankAccountId);
       const operationTypeId = getTransactionOperationTypeId(card, transaction);
       const counterpartyId = toValidNumber(transaction.counterpartyId);
+      const bankChartAccountId = toValidNumber(card.bankChartAccountId);
+      const offsetAccountId = toValidNumber(transaction.offsetAccountId);
       const currencyId =
         toValidNumber(transaction.currencyId) ?? toValidNumber(card.currencyId);
       const amount = toValidNumber(
         transaction.amount || transaction.credit || transaction.debit,
       );
-      const paymentPurposeId = toValidNumber(transaction.paymentPurposeId);
       const rawDate = transaction.date;
       const docDate = rawDate ? dayjs(rawDate) : null;
 
       if (
         !bankAccountId ||
+        !bankChartAccountId ||
+        !offsetAccountId ||
         !operationTypeId ||
         !counterpartyId ||
         !currencyId ||
-        !paymentPurposeId ||
         !amount ||
         !docDate?.isValid()
       ) {
         return null;
       }
 
-      if (
-        !isPaymentPurposeAllowedForTransaction(card, transaction, paymentPurposeId)
-      ) {
-        return null;
-      }
-
       return {
         bankAccountId,
+        bankChartAccountId,
+        offsetAccountId,
         operationTypeId,
-        paymentPurposeId,
+        paymentTypeId: 0,
         counterpartyId,
         counterpartyBankAccountId: 0,
         docDate: docDate.toISOString(),
@@ -332,7 +127,7 @@ export default function BankStatementImportPage() {
         comment: transaction.purpose || null,
       };
     },
-    [getTransactionOperationTypeId, isPaymentPurposeAllowedForTransaction],
+    [getTransactionOperationTypeId],
   );
 
   const totalTransactions = useMemo(
@@ -369,19 +164,18 @@ export default function BankStatementImportPage() {
       ),
     [cards],
   );
-  const missingPaymentPurposeCount = useMemo(
+  const missingBankChartAccountCount = useMemo(
+    () => cards.filter((card) => !toValidNumber(card.bankChartAccountId)).length,
+    [cards],
+  );
+  const missingOffsetAccountCount = useMemo(
     () =>
       cards.reduce((sum, card) => {
-        const missing = card.transactions.filter((transaction) => {
-          const paymentPurposeId = toValidNumber(transaction.paymentPurposeId);
-          return (
-            !paymentPurposeId ||
-            !isPaymentPurposeAllowedForTransaction(card, transaction, paymentPurposeId)
-          );
-        }).length;
-        return sum + missing;
+        return sum + card.transactions.filter(
+          (transaction) => !toValidNumber(transaction.offsetAccountId),
+        ).length;
       }, 0),
-    [cards, isPaymentPurposeAllowedForTransaction],
+    [cards],
   );
 
   const uploadProps: UploadProps = {
@@ -443,10 +237,21 @@ export default function BankStatementImportPage() {
     });
   };
 
-  const handlePaymentPurposeChange = (
+  const handleBankChartAccountChange = (
+    cardId: string,
+    bankChartAccountId: number | null,
+  ) => {
+    setCards((prev) =>
+      prev.map((card) =>
+        card.id === cardId ? { ...card, bankChartAccountId } : card,
+      ),
+    );
+  };
+
+  const handleOffsetAccountChange = (
     cardId: string,
     transactionIndex: number,
-    paymentPurposeId: number | null,
+    offsetAccountId: number | null,
   ) => {
     setCards((prev) =>
       prev.map((card) =>
@@ -455,10 +260,7 @@ export default function BankStatementImportPage() {
               ...card,
               transactions: card.transactions.map((transaction, index) =>
                 index === transactionIndex
-                  ? {
-                      ...transaction,
-                      paymentPurposeId,
-                    }
+                  ? { ...transaction, offsetAccountId }
                   : transaction,
               ),
             }
@@ -510,13 +312,18 @@ export default function BankStatementImportPage() {
   };
 
   const handleSave = async () => {
-    if (!validOperations.length) {
-      toast.error(t("bank.messages.noValidTransactions"));
+    if (missingBankChartAccountCount) {
+      toast.error("Barcha cardlar uchun bank schyotini tanlang");
       return;
     }
 
-    if (missingPaymentPurposeCount) {
-      toast.error("Barcha tranzaksiyalar uchun to'lov maqsadini tanlang");
+    if (missingOffsetAccountCount) {
+      toast.error("Barcha tranzaksiyalar uchun qarama-qarshi schyotni tanlang");
+      return;
+    }
+
+    if (!validOperations.length) {
+      toast.error(t("bank.messages.noValidTransactions"));
       return;
     }
 
@@ -624,9 +431,9 @@ export default function BankStatementImportPage() {
                 count: totalTransactions - validOperations.length,
               })}
             </div>
-            {missingPaymentPurposeCount > 0 && (
+            {(missingBankChartAccountCount > 0 || missingOffsetAccountCount > 0) && (
               <div className="text-xs text-red-600">
-                To'lov maqsadi tanlanmagan: {missingPaymentPurposeCount} ta
+                Schyotlar tanlanmagan: {missingBankChartAccountCount} card, {missingOffsetAccountCount} ta tranzaksiya
               </div>
             )}
             <div className="flex flex-wrap items-center gap-2">
@@ -662,15 +469,16 @@ export default function BankStatementImportPage() {
               onDeleteTransaction={(transactionId) =>
                 handleDeleteTransaction(item.id, transactionId)
               }
-              paymentPurposeLoading={isPaymentPurposeLoading}
-              getPaymentPurposeOptions={(transaction) =>
-                getPaymentPurposeOptionsForTransaction(item, transaction)
+              chartAccountLoading={chartAccountLoading}
+              chartAccountOptions={chartAccountOptions}
+              onBankChartAccountChange={(bankChartAccountId) =>
+                handleBankChartAccountChange(item.id, bankChartAccountId)
               }
-              onPaymentPurposeChange={(transactionId, paymentPurposeId) =>
-                handlePaymentPurposeChange(
+              onOffsetAccountChange={(transactionId, offsetAccountId) =>
+                handleOffsetAccountChange(
                   item.id,
                   transactionId,
-                  paymentPurposeId,
+                  offsetAccountId,
                 )
               }
             />

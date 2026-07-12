@@ -225,7 +225,7 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
       <Menu
         className={cn(
           menuClassName,
-          sidebarInline.sidebar ? "!w-[60px] !p-0" : "!p-2.5",
+          sidebarInline.sidebar ? "w-15! p-0!" : "p-2.5!",
         )}
         expandIcon={({ isOpen }) => (
           <ChevronDown

@@ -15,7 +15,6 @@ import type { BankOperationData } from "../types/type";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 
-
 export default function BankOperationListPage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -34,14 +33,16 @@ export default function BankOperationListPage() {
     {
       dataIndex: "docNumber",
       title: t("purchase.fields.docNumber"),
-      render: (value, record) => <Link to={`${record.id}`}>{value ?? record.id}</Link>,
+      render: (value, record) => (
+        <Link to={`${record.id}`}>{value ?? record.id}</Link>
+      ),
     },
     {
       dataIndex: "docDate",
       title: t("bank.fields.date"),
       render: (value) => customDate(value),
     },
-        {
+    {
       dataIndex: "accountingEntriesReport",
       title: "Provodka",
       align: "center",
@@ -74,12 +75,12 @@ export default function BankOperationListPage() {
       dataIndex: "amount",
       title: t("bank.fields.amount"),
       align: "center",
-      render: (value) => numberSpacing(value)+" UZS",
+      render: (value) => numberSpacing(value) + " UZS",
     },
     {
       dataIndex: "comment",
       title: t("bank.fields.comment"),
-      width: 400,
+      // width: 400,
       render: (value) => {
         return (
           <Tooltip title={value}>

@@ -3,7 +3,11 @@ import { useState } from "react";
 import InputNumber from "@/components/fields/InputNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import {
+  chartAccountOptionLabel,
+  chartAccountSelectedLabel,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import AccountingReportFiltersCard from "../components/AccountingReportFiltersCard";
 import AccountingReportGenericArrayTable from "../components/AccountingReportGenericArrayTable";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
@@ -54,6 +58,8 @@ export default function AccountCardPage() {
             label="Account"
             path={selectListEndpoints.chartAccountsSelectList}
             clearable
+            optionLabel={chartAccountOptionLabel}
+            selectedLabel={chartAccountSelectedLabel}
           />
           <InputNumber formik={formik} fieldName="periodId" label="Period ID" min={1} />
           <SelectDate formik={formik} fieldName="dateFrom" label="Date from" />

@@ -156,6 +156,13 @@ export const normalizeAccountingEntriesReport = (
             getValue(debit, ["code"], ""),
           ),
         ),
+        debitAccountNumber: toNumber(
+          getValue(
+            item,
+            ["debitAccountNumber", "debetNumber", "debitNumber"],
+            getValue(debit, ["number"], 0),
+          ),
+        ),
         debitAccountName: String(
           getValue(
             item,
@@ -168,6 +175,13 @@ export const normalizeAccountingEntriesReport = (
             item,
             ["creditAccountCode", "creditCode"],
             getValue(credit, ["code"], ""),
+          ),
+        ),
+        creditAccountNumber: toNumber(
+          getValue(
+            item,
+            ["creditAccountNumber", "creditNumber"],
+            getValue(credit, ["number"], ""),
           ),
         ),
         creditAccountName: String(

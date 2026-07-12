@@ -31,12 +31,15 @@ import type {
 } from "@/modules/purchase/pages/purchase/types/form";
 import {
   purchaseValidationSchema,
-  isCompletePurchaseLine,
+  isCompletePurchaseLineWithAccounts,
 } from "@/modules/purchase/pages/purchase/types/schema";
 import PurchaseImportHeader from "../components/PurchaseImportHeader";
 import ProductsCreateModal from "../components/ProductsCreateModal";
 import PurchaseImportLinesSection from "../components/PurchaseImportLinesSection";
 import PurchaseMarkingModal from "../components/PurchaseMarkingModal";
+import PurchaseLineAccountsModal, {
+  type PurchaseLineAccountValues,
+} from "../components/PurchaseLineAccountsModal";
 import {
   buildColumnConfig,
   getBaseColumnConfig,
@@ -79,6 +82,7 @@ const buildTouched = (values: PurchaseImportForm) => ({
   contractId: values.contractId !== null,
   currencyId: values.currencyId !== null,
   warehouseId: values.warehouseId !== null,
+  supplierAccountId: values.supplierAccountId !== null,
   comment: Boolean(values.comment),
 });
 
@@ -248,6 +252,10 @@ const mapDetailLinesToRows = (
         mxik: resolvedProduct?.mxik ?? getProductCode(resolvedProduct),
         vatRateId: (detailLine.vatRateId as number | null) ?? null,
         vatRates: null,
+        debitAccountId: getNumberValue(detailLine.debitAccountId, NaN) || null,
+        vatAccountId: getNumberValue(detailLine.vatAccountId, NaN) || null,
+        debitAccountName: String(detailLine.debitAccountName ?? ""),
+        vatAccountName: String(detailLine.vatAccountName ?? ""),
         isSerial: false,
         isPieceTracked: Boolean(resolvedProduct?.isPieceTracked),
       };
@@ -291,6 +299,10 @@ const mapDetailLinesToRows = (
       mxik: product?.mxik ?? getProductCode(product),
       vatRateId: detailLine.vatRateId ?? null,
       vatRates: null,
+      debitAccountId: detailLine.debitAccountId ?? null,
+      vatAccountId: detailLine.vatAccountId ?? null,
+      debitAccountName: detailLine.debitAccountName,
+      vatAccountName: detailLine.vatAccountName,
       isSerial: false,
       isPieceTracked: Boolean(product?.isPieceTracked),
     };
@@ -343,7 +355,6 @@ const PurchaseImportPage = () => {
     updatePurchase.isPending ||
     confirmMutation.isPending ||
     cancelMutation.isPending;
-
   const {
     data,
     isFetching,
@@ -413,6 +424,7 @@ const PurchaseImportPage = () => {
   >([]);
   const [markingRowIndex, setMarkingRowIndex] = useState<number | null>(null);
   const [markingInput, setMarkingInput] = useState("");
+  const [accountRowIndex, setAccountRowIndex] = useState<number | null>(null);
 
   const columnConfig = useMemo<ImportColumnConfig[]>(
     () => buildColumnConfig(baseColumnConfig, selectBoxOptions),
@@ -467,6 +479,7 @@ const PurchaseImportPage = () => {
                 ? (detailData.contractId as number | null)
                 : null,
             warehouseId: detailData.warehouseId ?? null,
+            supplierAccountId: detailData.supplierAccountId ?? null,
             comment: detailData.comment ?? "",
             lines: initialLines,
           }
@@ -522,7 +535,9 @@ const PurchaseImportPage = () => {
         return false;
       }
 
-      const completedRows = values.lines.filter(isCompletePurchaseLine);
+      const completedRows = values.lines.filter(
+        isCompletePurchaseLineWithAccounts,
+      );
       const unmarkedRow = getUnmarkedPieceTrackedRow(
         completedRows,
         purchaseMode,
@@ -606,6 +621,7 @@ const PurchaseImportPage = () => {
           field === "contractId" ||
           field === "currencyId" ||
           field === "warehouseId" ||
+          field === "supplierAccountId" ||
           field === "comment")
       ) {
         if (isDraftStorageEnabledRef.current) {
@@ -712,7 +728,7 @@ const PurchaseImportPage = () => {
       }
       formik.setFieldValue("lines", rows, false);
     },
-    [formik.setFieldValue, isEdit, setExcelData],
+    [formik, isEdit, setExcelData],
   );
 
   const handleRowValueChange = useCallback(
@@ -724,6 +740,29 @@ const PurchaseImportPage = () => {
     },
     [commitRows],
   );
+
+  const handleApplyLineAccounts = useCallback(
+    (values: PurchaseLineAccountValues, applyToAll: boolean) => {
+      const nextRows = linesRef.current.map((item, index) =>
+        applyToAll || index === accountRowIndex
+          ? {
+              ...item,
+              debitAccountId: values.debitAccountId,
+              debitAccountName: values.debitAccountName,
+              vatAccountId: values.vatAccountId,
+              vatAccountName: values.vatAccountName,
+            }
+          : item,
+      );
+      commitRows(nextRows);
+      setAccountRowIndex(null);
+    },
+    [accountRowIndex, commitRows],
+  );
+
+  const openAccountModal = useCallback((rowIndex: number) => {
+    setAccountRowIndex(rowIndex);
+  }, []);
 
   const handleItemSelect = useCallback(
     (rowIndex: number, value: number) => {
@@ -854,7 +893,7 @@ const PurchaseImportPage = () => {
         return nextRows;
       });
     },
-    [formik, isEdit, resolveProductIds, setExcelData],
+    [formik.setFieldValue, isEdit, setExcelData],
   );
 
   const handleAddManualRow = useCallback(() => {
@@ -992,6 +1031,7 @@ const PurchaseImportPage = () => {
     isSapCodeValid,
     isServicesLoading,
     itemOptions,
+    openAccountModal,
     openMarkingModal,
     purchaseMode,
     unitOptions,
@@ -1053,7 +1093,14 @@ const PurchaseImportPage = () => {
         ),
       );
     },
-    [setProductWithCount, setPurchaseMode, withDiscount],
+    [
+      isEdit,
+      setProductWithCount,
+      setProductWithCountDraft,
+      setPurchaseMode,
+      setPurchaseModeDraft,
+      withDiscount,
+    ],
   );
 
   const totals = useMemo(
@@ -1196,6 +1243,16 @@ const PurchaseImportPage = () => {
           onAdd={handleAddMarking}
           onRemove={handleRemoveMarking}
           onClose={closeMarkingModal}
+        />
+        <PurchaseLineAccountsModal
+          open={accountRowIndex !== null}
+          line={
+            accountRowIndex === null
+              ? null
+              : formik.values.lines[accountRowIndex] ?? null
+          }
+          onClose={() => setAccountRowIndex(null)}
+          onApply={handleApplyLineAccounts}
         />
         <ProductsCreateModal
           open={productCreateOpen}

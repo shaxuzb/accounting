@@ -19,7 +19,6 @@ export interface CashBookEntry {
   docDate: string;
   docNumber?: string | null;
   documentKind?: string | null;
-  paymentPurposeId?: number | null;
   paymentPurposeName?: string | null;
   counterpartyId?: number | null;
   counterpartyName?: string | null;

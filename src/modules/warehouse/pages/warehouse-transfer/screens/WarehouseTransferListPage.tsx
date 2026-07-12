@@ -86,7 +86,7 @@ export default function WarehouseTransferListPage() {
       title: t("products.fields.status"),
       align: "center",
       render: (_, record) =>
-        stateStatus(record.stateId, (record as any).stateName),
+        stateStatus(record.stateId, record.stateName),
     },
   ];
 

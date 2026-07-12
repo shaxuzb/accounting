@@ -1,10 +1,19 @@
 import type { FormikProps } from "formik";
+import { useState } from "react";
 import { Col, Row } from "antd";
+import { useQueryClient } from "@tanstack/react-query";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
+import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
+import {
+  chartAccountOptionLabel,
+  chartAccountSelectedLabel,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
+import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import type { CashOperationForm } from "@/modules/cashoperation/pages/cashoperation/types/form";
 
 interface CashOperationFormFieldsProps {
@@ -16,14 +25,40 @@ export default function CashOperationFormFields({
   formik,
   disabled = false,
 }: CashOperationFormFieldsProps) {
+  const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
+  const queryClient = useQueryClient();
+
   return (
-    <Row gutter={[16, 8]}>
+    <>
+      <Row gutter={[16, 8]}>
       <Col span={12}>
         <SelectCustom
           formik={formik}
           fieldName="cashBoxId"
           label="settings.entities.cashBox"
           path={selectListEndpoints.cashBoxesSelectList}
+          disabled={disabled}
+        />
+      </Col>
+      <Col span={12}>
+        <SelectCustom
+          formik={formik}
+          fieldName="cashChartAccountId"
+          label="Kassa schyoti"
+          path={selectListEndpoints.chartAccountsSelectList}
+          optionLabel={chartAccountOptionLabel}
+          selectedLabel={chartAccountSelectedLabel}
+          disabled={disabled}
+        />
+      </Col>
+      <Col span={12}>
+        <SelectCustom
+          formik={formik}
+          fieldName="offsetAccountId"
+          label="Qarama-qarshi schyot"
+          path={selectListEndpoints.chartAccountsSelectList}
+          optionLabel={chartAccountOptionLabel}
+          selectedLabel={chartAccountSelectedLabel}
           disabled={disabled}
         />
       </Col>
@@ -39,11 +74,10 @@ export default function CashOperationFormFields({
       <Col span={12}>
         <SelectCustom
           formik={formik}
-          fieldName="paymentPurposeId"
-          label="To'lov maqsadi"
-          path={selectListEndpoints.paymentPurposesSelectList}
-          queryParams={{ operationTypeId: formik.values.operationTypeId }}
-          disabled={!formik.values.operationTypeId || disabled}
+          fieldName="paymentTypeId"
+          label="To'lov turi"
+          path={selectListEndpoints.paymentTypesSelectList}
+          disabled={disabled}
         />
       </Col>
       <Col span={12}>
@@ -52,6 +86,11 @@ export default function CashOperationFormFields({
           fieldName="counterpartyId"
           label="bank.fields.counterparty"
           path={selectListEndpoints.counterpartiesSelectList}
+          addOption={{
+            bool: true,
+            permissionCode: counterpartyPermissions.create,
+            onClick: () => setCounterpartyCreateOpen(true),
+          }}
           disabled={disabled}
         />
       </Col>
@@ -90,6 +129,19 @@ export default function CashOperationFormFields({
           disabled={disabled}
         />
       </Col>
-    </Row>
+      </Row>
+      <CounterpartyAddEditPage
+        open={counterpartyCreateOpen}
+        onCreated={(counterparty) => {
+          formik.setFieldValue("counterpartyId", counterparty.id, true);
+          invalidateSelectListQuery(
+            queryClient,
+            "counterpartyId",
+            selectListEndpoints.counterpartiesSelectList,
+          );
+        }}
+        onClose={() => setCounterpartyCreateOpen(false)}
+      />
+    </>
   );
 }

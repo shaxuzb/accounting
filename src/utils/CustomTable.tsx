@@ -1,7 +1,6 @@
 import { Table, type TableProps } from "antd";
 
-interface CustomTableProps<T> extends TableProps<T> {
-}
+type CustomTableProps<T> = TableProps<T>;
 
 function CustomTable<T extends object>({ 
   columns, 

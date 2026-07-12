@@ -4,4 +4,5 @@ export const chartAccountsPermissions = {
   create: "CHART_ACCOUNT_CREATE",
   update: "CHART_ACCOUNT_UPDATE",
   delete: "CHART_ACCOUNT_DELETE",
+  createFromPreset: "CHART_ACCOUNT_CREATE"
 } as const;

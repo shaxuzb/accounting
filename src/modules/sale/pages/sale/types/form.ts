@@ -4,6 +4,8 @@ export interface SaleDocForm {
   contractId: number | null;
   warehouseId: number | null;
   currencyId: number | null;
+  customerAccountId: number | null;
+  vatAccountId: number | null;
   comment: string;
   stateId?: number | null;
 }
@@ -16,6 +18,9 @@ export interface SaleDocProductForm {
   unitId: number;
   unitPrice: number;
   vatRateId: number | null;
+  inventoryAccountId?: number;
+  incomeAccountId?: number;
+  costAccountId?: number;
 }
 
 export interface SaleDocCreateForm {
@@ -23,6 +28,8 @@ export interface SaleDocCreateForm {
   warehouseId: number;
   currencyId: number;
   contractId: number | null;
+  customerAccountId: number;
+  vatAccountId: number;
   comment: string | null;
   lines: SaleDocProductForm[];
 }

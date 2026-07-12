@@ -21,6 +21,7 @@ export const getDefaultPurchaseImportHeader =
     contractId: null,
     currencyId: 1,
     warehouseId: null,
+    supplierAccountId: null,
     comment: "",
   });
 
@@ -134,6 +135,10 @@ export const createEmptyPurchaseRow = ({
   unitName: null,
   vatRateId: null,
   vatRates: null,
+  debitAccountId: null,
+  vatAccountId: null,
+  debitAccountName: "",
+  vatAccountName: "",
   isSerial: purchaseMode === "goods" && !productWithCount,
   isPieceTracked: false,
 });
@@ -239,6 +244,7 @@ export const toPurchaseCreatePayload = (
   warehouseId: values.warehouseId ?? 0,
   currencyId: values.currencyId ?? 0,
   contractId: values.contractId,
+  supplierAccountId: values.supplierAccountId ?? 0,
   comment: values.comment || null,
   lines: completedRows.map((item) => {
     const markingNumbers = toMarkingNumbers(item);
@@ -256,6 +262,8 @@ export const toPurchaseCreatePayload = (
       unitId: Number(item.unitId),
       unitPrice: getRowUnitPrice(item),
       vatRateId: item.vatRateId ?? null,
+      debitAccountId: Number(item.debitAccountId ?? 0),
+      vatAccountId: Number(item.vatAccountId ?? 0),
     };
 
     if (!hasMarking) return line;

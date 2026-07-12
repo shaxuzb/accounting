@@ -1,6 +1,6 @@
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { Plus, RefreshCw } from "lucide-react";
+import { Plus, ReceiptText, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useSearchParams } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -46,6 +46,18 @@ export default function CashDocumentListPage() {
         </Link>
       ),
     },
+    // {
+    //   dataIndex: "accountingEntriesReport",
+    //   title: "Provodka",
+    //   align: "center",
+    //   render: (_, record) => (
+    //     <Link
+    //       to={`/main/accountingentriesreport?documentTypeId=4&documentId=${record.id}`}
+    //     >
+    //       <Button icon={<ReceiptText className="size-4" />} />
+    //     </Link>
+    //   ),
+    // },
     {
       dataIndex: "docDate",
       title: t("bank.fields.date"),
@@ -62,12 +74,7 @@ export default function CashDocumentListPage() {
       render: (_, record) =>
         record.counterpartyName ?? record.counterpartyId ?? "-",
     },
-    {
-      dataIndex: "paymentPurposeName",
-      title: "To'lov maqsadi",
-      render: (_, record) =>
-        record.paymentPurposeName ?? record.paymentPurposeId ?? "-",
-    },
+
     {
       dataIndex: "amount",
       title: t("bank.fields.amount"),
@@ -105,8 +112,7 @@ export default function CashDocumentListPage() {
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode:
-                  cashDocumentPermissions.delete,
+                deleteCode: cashDocumentPermissions.delete,
                 editCode:
                   record.statusId === 1 ? cashDocumentPermissions.update : "",
               }}

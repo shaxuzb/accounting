@@ -8,9 +8,12 @@ export const accountingEntriesReportService = {
     documentId,
     documentTypeId = 1,
   }: AccountingEntriesReportQueryParams) => {
-    const { data } = await $axiosPrivate.get(accountingEntriesReportEndpoints.postings, {
-      params: { documentTypeId, documentId },
-    });
+    const { data } = await $axiosPrivate.get(
+      accountingEntriesReportEndpoints.postings,
+      {
+        params: { documentTypeId, documentId },
+      },
+    );
     return normalizeAccountingEntriesReport(data);
   },
 };

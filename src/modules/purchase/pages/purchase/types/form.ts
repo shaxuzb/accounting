@@ -13,6 +13,8 @@ export interface PurchaseDocLineDto {
   unitId: number;
   unitPrice: number;
   vatRateId: number | null;
+  debitAccountId: number;
+  vatAccountId: number;
   items?: PurchaseDocLineItemDto[];
 }
 
@@ -22,6 +24,7 @@ export interface PurchaseImportForm {
   currencyId: number | null;
   contractId: number | null;
   warehouseId: number | null;
+  supplierAccountId: number | null;
   comment: string;
   lines: PurchaseImportRow[];
 }
@@ -33,6 +36,7 @@ export type PurchaseImportHeaderDraft = Pick<
   | "contractId"
   | "currencyId"
   | "warehouseId"
+  | "supplierAccountId"
   | "comment"
 >;
 
@@ -44,5 +48,6 @@ export interface PurchaseCreatePayload {
   currencyId: number;
   comment: string | null;
   contractId: number | null;
+  supplierAccountId: number;
   lines: PurchaseDocLineDto[];
 }

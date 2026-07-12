@@ -64,6 +64,8 @@ export const normalizeSaleDoc = (value: unknown): SaleDoc => {
     currencyCode: String(
       read(item, ["currencyCode", "currency", "currencyName"], ""),
     ),
+    customerAccountId: toNumber(read(item, ["customerAccountId"], 0)) || null,
+    vatAccountId: toNumber(read(item, ["vatAccountId"], 0)) || null,
     comment: String(read(item, ["comment"], "")) || undefined,
     stateId: toNumber(read(item, ["stateId"], 0)) || undefined,
     stateName: String(read(item, ["stateName"], "")) || undefined,
@@ -116,6 +118,15 @@ export const normalizeSaleDocTable = (value: unknown): SaleDocTable => {
     costPrice,
     amount,
     vatRateId: toNumber(read(item, ["vatRateId"], 0)) || null,
+    inventoryAccountId:
+      toNumber(read(item, ["inventoryAccountId"], 0)) || null,
+    incomeAccountId: toNumber(read(item, ["incomeAccountId"], 0)) || null,
+    costAccountId: toNumber(read(item, ["costAccountId"], 0)) || null,
+    inventoryAccountName: String(
+      read(item, ["inventoryAccountName"], ""),
+    ) || undefined,
+    incomeAccountName: String(read(item, ["incomeAccountName"], "")) || undefined,
+    costAccountName: String(read(item, ["costAccountName"], "")) || undefined,
     vatRateName: String(read(item, ["vatRateName"], "")) || undefined,
     vatAmount: toNumber(read(item, ["vatAmount"], 0)),
     totalAmount: toNumber(

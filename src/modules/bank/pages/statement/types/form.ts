@@ -1,7 +1,9 @@
 export interface BankOperationCreatePayload {
   bankAccountId: number;
+  bankChartAccountId: number;
+  offsetAccountId: number;
   operationTypeId: number;
-  paymentPurposeId?: number;
+  paymentTypeId: number;
   counterpartyId: number;
   counterpartyBankAccountId: number;
   contractId: number;

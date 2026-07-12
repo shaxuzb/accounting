@@ -11,6 +11,8 @@ export interface AccountingEntriesReportPosting {
   debitAccountName: string;
   creditAccountCode: string;
   creditAccountName: string;
+  debitAccountNumber: number;
+  creditAccountNumber: number;
   amount: number;
   currency: string;
   documentNumber: string;

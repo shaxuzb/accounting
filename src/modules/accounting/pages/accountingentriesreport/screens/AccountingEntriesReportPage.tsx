@@ -50,8 +50,11 @@ export default function AccountingEntriesReportPage() {
   const documentIdParam = searchParams.get("documentId") ?? "";
   const documentTypeIdParam = searchParams.get("documentTypeId") ?? "1";
   // const [documentId, setDocumentId] = useState(documentIdParam);
-  const { data, isFetching, isLoading } =
-    useGetAccountingEntriesReport(documentIdParam, documentTypeIdParam);
+  const { data, isFetching, isLoading } = useGetAccountingEntriesReport(
+    documentIdParam,
+    documentTypeIdParam,
+  );
+  
 
   const columns = useMemo<TableColumnsType<AccountingEntriesReportPosting>>(
     () => [
@@ -80,7 +83,9 @@ export default function AccountingEntriesReportPage() {
             render: (_, record) => (
               <div>
                 <div className="font-semibold">{record.debitAccountCode}</div>
-                <div className="text-slate-600">{record.debitAccountName}</div>
+                <div className="font-semibold text-slate-600 ">
+                  {record.debitAccountNumber}
+                </div>
               </div>
             ),
           },
@@ -111,7 +116,9 @@ export default function AccountingEntriesReportPage() {
             render: (_, record) => (
               <div>
                 <div className="font-semibold">{record.creditAccountCode}</div>
-                <div className="text-slate-600">{record.creditAccountName}</div>
+                <div className="font-semibold text-slate-600">
+                  {record.creditAccountNumber}
+                </div>
               </div>
             ),
           },

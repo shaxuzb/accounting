@@ -6,4 +6,6 @@ export const queryKeys = {
       ["settings", "chart-accounts", "detail", id] as const,
     modules: (organizationId?: string | number) =>
       ["settings", "chart-accounts", "modules", organizationId] as const,
+    presetAccounts: (params?: unknown) =>
+      ["settings", "chart-account-preset-accounts", "grouped", params] as const,
   };

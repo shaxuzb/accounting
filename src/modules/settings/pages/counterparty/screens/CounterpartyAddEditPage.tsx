@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { counterpartySchema } from "../types/schema";
 import type { CounterpartyForm } from "../types/form";
+import type { Counterparty } from "../types/type";
 import { useCreateCounteryParty } from "../hooks";
 import { useUpdateCounteryParty } from "../hooks";
 import { useGetDetailCounteryParty } from "../hooks";
@@ -31,12 +32,14 @@ const defaultValues: CounterpartyForm = {
 interface CounterpartyAddEditPageProps {
   open: boolean;
   onClose: () => void;
+  onCreated?: (counterparty: Counterparty) => void;
   id?: number | null;
 }
 
 export default function CounterpartyAddEditPage({
   open,
   onClose,
+  onCreated,
   id,
 }: CounterpartyAddEditPageProps) {
   const { t } = useTranslation();
@@ -57,7 +60,8 @@ export default function CounterpartyAddEditPage({
           await updateMutation.mutateAsync({ id: editId, payload: values });
           toast.success(t("settings.messages.updated"));
         } else {
-          await createMutation.mutateAsync(values);
+          const createdCounterparty = await createMutation.mutateAsync(values);
+          onCreated?.(createdCounterparty);
           toast.success(t("settings.messages.created"));
         }
         onClose();

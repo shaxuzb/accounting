@@ -2,7 +2,7 @@ import type { CashOperation } from "../../cashoperation/types/type";
 
 export type CashDocumentKind = "pko" | "rko";
 
-export interface CashDocument extends CashOperation {}
+export type CashDocument = CashOperation;
 
 export interface CashDocumentLabels {
   kind: CashDocumentKind;

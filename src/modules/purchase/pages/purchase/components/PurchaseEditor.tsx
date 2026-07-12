@@ -30,13 +30,16 @@ import type {
 } from "@/modules/purchase/pages/purchase/types/form";
 import {
   purchaseValidationSchema,
-  isCompletePurchaseLine,
+  isCompletePurchaseLineWithAccounts,
 } from "@/modules/purchase/pages/purchase/types/schema";
 import type { PurchaseDetailLine } from "../types/type";
 import PurchaseImportHeader from "./PurchaseImportHeader";
 import ProductsCreateModal from "./ProductsCreateModal";
 import PurchaseImportLinesSection from "./PurchaseImportLinesSection";
 import PurchaseMarkingModal from "./PurchaseMarkingModal";
+import PurchaseLineAccountsModal, {
+  type PurchaseLineAccountValues,
+} from "./PurchaseLineAccountsModal";
 import {
   buildColumnConfig,
   getBaseColumnConfig,
@@ -79,6 +82,7 @@ const buildTouched = (values: PurchaseImportForm) => ({
   contractId: values.contractId !== null,
   currencyId: values.currencyId !== null,
   warehouseId: values.warehouseId !== null,
+  supplierAccountId: values.supplierAccountId !== null,
   comment: Boolean(values.comment),
 });
 
@@ -249,6 +253,10 @@ const mapDetailLinesToRows = (
         mxik: resolvedProduct?.mxik ?? getProductCode(resolvedProduct),
         vatRateId: (detailLine.vatRateId as number | null) ?? null,
         vatRates: null,
+        debitAccountId: getNumberValue(detailLine.debitAccountId, NaN) || null,
+        vatAccountId: getNumberValue(detailLine.vatAccountId, NaN) || null,
+        debitAccountName: String(detailLine.debitAccountName ?? ""),
+        vatAccountName: String(detailLine.vatAccountName ?? ""),
         isSerial: false,
         isPieceTracked: Boolean(resolvedProduct?.isPieceTracked),
       };
@@ -292,6 +300,10 @@ const mapDetailLinesToRows = (
       mxik: product?.mxik ?? getProductCode(product),
       vatRateId: detailLine.vatRateId ?? null,
       vatRates: null,
+      debitAccountId: detailLine.debitAccountId ?? null,
+      vatAccountId: detailLine.vatAccountId ?? null,
+      debitAccountName: detailLine.debitAccountName,
+      vatAccountName: detailLine.vatAccountName,
       isSerial: false,
       isPieceTracked: Boolean(product?.isPieceTracked),
     };
@@ -346,7 +358,6 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     updatePurchase.isPending ||
     confirmMutation.isPending ||
     cancelMutation.isPending;
-
   const {
     data,
     isFetching,
@@ -420,6 +431,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
   >([]);
   const [markingRowIndex, setMarkingRowIndex] = useState<number | null>(null);
   const [markingInput, setMarkingInput] = useState("");
+  const [accountRowIndex, setAccountRowIndex] = useState<number | null>(null);
 
   const columnConfig = useMemo<ImportColumnConfig[]>(
     () => buildColumnConfig(baseColumnConfig, selectBoxOptions),
@@ -474,6 +486,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
                 ? (detailData.contractId as number | null)
                 : null,
             warehouseId: detailData.warehouseId ?? null,
+            supplierAccountId: detailData.supplierAccountId ?? null,
             comment: detailData.comment ?? "",
             lines: initialLines,
           }
@@ -530,7 +543,9 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
         return false;
       }
 
-      const completedRows = values.lines.filter(isCompletePurchaseLine);
+      const completedRows = values.lines.filter(
+        isCompletePurchaseLineWithAccounts,
+      );
       const unmarkedRow = getUnmarkedPieceTrackedRow(
         completedRows,
         purchaseMode,
@@ -614,6 +629,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
           field === "contractId" ||
           field === "currencyId" ||
           field === "warehouseId" ||
+          field === "supplierAccountId" ||
           field === "comment")
       ) {
         if (isDraftStorageEnabledRef.current) {
@@ -729,6 +745,29 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     },
     [commitRows],
   );
+
+  const handleApplyLineAccounts = useCallback(
+    (values: PurchaseLineAccountValues, applyToAll: boolean) => {
+      const nextRows = linesRef.current.map((item, index) =>
+        applyToAll || index === accountRowIndex
+          ? {
+              ...item,
+              debitAccountId: values.debitAccountId,
+              debitAccountName: values.debitAccountName,
+              vatAccountId: values.vatAccountId,
+              vatAccountName: values.vatAccountName,
+            }
+          : item,
+      );
+      commitRows(nextRows);
+      setAccountRowIndex(null);
+    },
+    [accountRowIndex, commitRows],
+  );
+
+  const openAccountModal = useCallback((rowIndex: number) => {
+    setAccountRowIndex(rowIndex);
+  }, []);
 
   const handleItemSelect = useCallback(
     (rowIndex: number, value: number) => {
@@ -878,8 +917,8 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     commitRows,
     formik.values.counterpartyId,
     formik.values.currencyId,
-    productWithCount,
-    purchaseMode,
+      productWithCount,
+      purchaseMode,
   ]);
 
   const handleDeleteRow = useCallback(
@@ -937,7 +976,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
         const selected = productByCode.get(String(rawValue).trim());
         const unitPrice = getProductPrice(selected);
         const isPieceTracked =
-          purchaseMode === "goods" && Boolean(selected?.isPieceTracked);
+        purchaseMode === "goods" && Boolean(selected?.isPieceTracked);
         targetRow.productId = selected?.id ?? null;
         targetRow.product = selected?.name ?? "";
         targetRow.productName = selected?.name ?? "";
@@ -997,6 +1036,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
     isSapCodeValid,
     isServicesLoading,
     itemOptions,
+    openAccountModal,
     openMarkingModal,
     purchaseMode,
     unitOptions,
@@ -1205,6 +1245,16 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
           onAdd={handleAddMarking}
           onRemove={handleRemoveMarking}
           onClose={closeMarkingModal}
+        />
+        <PurchaseLineAccountsModal
+          open={accountRowIndex !== null}
+          line={
+            accountRowIndex === null
+              ? null
+              : formik.values.lines[accountRowIndex] ?? null
+          }
+          onClose={() => setAccountRowIndex(null)}
+          onApply={handleApplyLineAccounts}
         />
         <ProductsCreateModal
           open={productCreateOpen}

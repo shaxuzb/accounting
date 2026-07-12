@@ -1,6 +1,13 @@
 import { Button, Select, Tooltip, type TableColumnType } from "antd";
-import { QrCode, Trash2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Pencil, QrCode, Trash2 } from "lucide-react";
 import { useMemo } from "react";
+import { $axiosPrivate } from "@/services/AxiosService";
+import {
+  chartAccountSelectedLabel,
+  selectListEndpoints,
+  selectListKeys,
+} from "@/shared/constants/selectLists";
 import { numberSpacing } from "@/utils/utils";
 import PurchaseImportEditableCell from "../components/PurchaseImportEditableCell";
 import type {
@@ -18,6 +25,13 @@ import {
   getRowVatAmount,
   toMarkingNumbers,
 } from "../utils/purchaseImport";
+
+interface PurchaseChartAccountOption {
+  id: number;
+  number?: string | number;
+  code?: string | number;
+  name?: string;
+}
 
 interface UsePurchaseImportColumnsParams {
   columnConfig: ImportColumnConfig[];
@@ -37,6 +51,7 @@ interface UsePurchaseImportColumnsParams {
   isServicesLoading: boolean;
   itemOptions: ProductSelectOption[];
   openMarkingModal: (rowIndex: number) => void;
+  openAccountModal: (rowIndex: number) => void;
   purchaseMode: PurchaseMode;
   unitOptions: SelectOption[];
   vatRateOptions: SelectOption[];
@@ -53,11 +68,47 @@ export const usePurchaseImportColumns = ({
   isServicesLoading,
   itemOptions,
   openMarkingModal,
+  openAccountModal,
   purchaseMode,
   unitOptions,
   vatRateOptions,
-}: UsePurchaseImportColumnsParams): TableColumnType<PurchaseImportRow>[] =>
-  useMemo(() => {
+}: UsePurchaseImportColumnsParams): TableColumnType<PurchaseImportRow>[] => {
+  const { data: chartAccounts = [] } = useQuery<PurchaseChartAccountOption[]>({
+    queryKey: ["selectlist", selectListKeys.chartAccount],
+    queryFn: async () => {
+      const { data } = await $axiosPrivate.get<PurchaseChartAccountOption[]>(
+        selectListEndpoints.chartAccountsSelectList,
+      );
+      return data ?? [];
+    },
+  });
+  const chartAccountById = useMemo(
+    () =>
+      new Map(
+        chartAccounts.map((account) => [Number(account.id), account] as const),
+      ),
+    [chartAccounts],
+  );
+
+  return useMemo(() => {
+    const getAccountPreviewLabel = (
+      accountId: number | null | undefined,
+      accountName: string | undefined,
+    ) => {
+      const account = chartAccountById.get(Number(accountId));
+      return account
+        ? chartAccountSelectedLabel(account)
+        : accountName || (accountId ? String(accountId) : "—");
+    };
+
+    const getAccountPreview = (row: PurchaseImportRow) =>
+      [
+        getAccountPreviewLabel(row.debitAccountId, row.debitAccountName) ||
+          (row.debitAccountId ? `#${row.debitAccountId}` : "—"),
+        getAccountPreviewLabel(row.vatAccountId, row.vatAccountName) ||
+          (row.vatAccountId ? `#${row.vatAccountId}` : "—"),
+      ].join(" / ");
+
     const visibleColumnConfig = columnConfig.filter(
       (col) =>
         ![
@@ -243,7 +294,7 @@ export const usePurchaseImportColumns = ({
         dataIndex: "amount",
         title: "Summa",
         width: 140,
-        align: "right",
+        align: "center",
         render: (_: unknown, record: PurchaseImportRow) => {
           const qty = getNumber(record.qty);
           const price = getRowUnitPrice(record);
@@ -286,7 +337,7 @@ export const usePurchaseImportColumns = ({
         dataIndex: "totalAmount",
         title: "Jami",
         width: 140,
-        align: "right",
+        align: "center",
         render: (_: unknown, record: PurchaseImportRow) => {
           const amount = getRowAmount(record);
           const vatAmount = getRowVatAmount(record, vatRateOptions);
@@ -294,8 +345,30 @@ export const usePurchaseImportColumns = ({
         },
       },
       {
+        dataIndex: "accounts",
+        title: "Hisobvaraqlar",
+        align: "center",
+        render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => (
+          <div className="flex min-w-30 items-center gap-1">
+            <span
+              className="min-w-0 flex-1 truncate text-xs text-left"
+              title={getAccountPreview(record)}
+            >
+              {getAccountPreview(record)}
+            </span>
+            <Button
+              type="text"
+              size="small"
+              icon={<Pencil className="size-4" />}
+              title="Hisobvaraqlarni tanlash"
+              onClick={() => openAccountModal(rowIndex)}
+            />
+          </div>
+        ),
+      },
+      {
         dataIndex: "actions",
-        // title: "Amallar",
+        title: "Amallar",
         render: (_: unknown, __: PurchaseImportRow, rowIndex: number) => (
           <Tooltip title="Qatorni o'chirish">
             <Button
@@ -318,8 +391,11 @@ export const usePurchaseImportColumns = ({
     isSapCodeValid,
     isServicesLoading,
     itemOptions,
+    openAccountModal,
     openMarkingModal,
     purchaseMode,
     unitOptions,
     vatRateOptions,
+    chartAccountById,
   ]);
+};

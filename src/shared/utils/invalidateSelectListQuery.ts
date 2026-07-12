@@ -2,12 +2,11 @@ import type { QueryClient } from "@tanstack/react-query";
 
 export const invalidateSelectListQuery = (
   queryClient: QueryClient,
-  fieldName: string,
+  _fieldName: string,
   path: string,
 ) => {
   queryClient.invalidateQueries({
-    queryKey: ["selectlist", fieldName, undefined, path],
+    queryKey: ["selectlist", path],
     exact: false,
   });
 };
-

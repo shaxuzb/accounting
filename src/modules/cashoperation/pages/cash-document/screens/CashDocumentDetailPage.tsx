@@ -1,13 +1,15 @@
 import { Button, Form, Spin } from "antd";
 import { useFormik } from "formik";
-import { ArrowLeft, CheckCircle2, CircleX, Save } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle2, CircleX, Save } from "lucide-react";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import CashReadonlyDetailsCard from "@/modules/cashoperation/components/CashReadonlyDetailsCard";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import { customDate, numberSpacing } from "@/utils/utils";
 import { cashDocumentSchema } from "../types/schema";
 import type { CashDocumentForm } from "../types/form";
 import {
@@ -22,13 +24,14 @@ import CashDocumentFormFields from "./CashDocumentFormFields";
 
 const defaultValues: CashDocumentForm = {
   cashBoxId: null,
-  paymentPurposeId: null,
   paymentTypeId: null,
   counterpartyId: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   currencyId: null,
   amount: null,
   exchangeRate: 1,
+  cashChartAccountId: null,
+  offsetAccountId: null,
   comment: "",
 };
 
@@ -50,7 +53,6 @@ export default function CashDocumentDetailPage() {
   const initialValues = useMemo<CashDocumentForm>(
     () => ({
       cashBoxId: record?.cashBoxId ?? null,
-      paymentPurposeId: record?.paymentPurposeId ?? null,
       paymentTypeId: record?.paymentTypeId ?? null,
       counterpartyId: record?.counterpartyId ?? null,
       docDate: record?.docDate ?? defaultValues.docDate,
@@ -58,6 +60,8 @@ export default function CashDocumentDetailPage() {
       amount: record?.amount ?? null,
       exchangeRate: record?.exchangeRate ?? 1,
       comment: record?.comment ?? "",
+      cashChartAccountId: record?.cashChartAccountId ?? null,
+      offsetAccountId: record?.offsetAccountId ?? null,
     }),
     [record],
   );
@@ -93,7 +97,6 @@ export default function CashDocumentDetailPage() {
     if (Object.keys(errors).length > 0) {
       formik.setTouched({
         cashBoxId: true,
-        paymentPurposeId: true,
         paymentTypeId: true,
         counterpartyId: true,
         docDate: true,
@@ -101,6 +104,8 @@ export default function CashDocumentDetailPage() {
         amount: true,
         exchangeRate: true,
         comment: true,
+        cashChartAccountId:true,
+        offsetAccountId: true,
       });
       toast.error("Iltimos, majburiy maydonlarni to'ldiring");
       return false;
@@ -135,6 +140,15 @@ export default function CashDocumentDetailPage() {
               {record?.docNumber ?? (isCreate ? labels.addTitle : "Hujjat")}
             </div>
           </div>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="size-4 text-primary" />
+              <span className="font-semibold">Sana</span>
+            </div>
+            <p className="font-semibold text-foreground">
+              {customDate(record?.docDate)}
+            </p>
+          </div>
           <div className="flex items-center gap-2">
             {!isCreate && (
               <ProcessStatusBadge
@@ -154,80 +168,89 @@ export default function CashDocumentDetailPage() {
 
       <div className="grid gap-4 lg:grid-cols-[1.7fr_0.9fr]">
         <Card className="p-4">
-          <Form layout="vertical" onFinish={formik.handleSubmit}>
-            <CashDocumentFormFields
-              formik={formik}
-              kind={kind}
-              disabled={!isDraft}
-            />
-          </Form>
+          {isDraft ? (
+            <Form layout="vertical" onFinish={formik.handleSubmit}>
+              <CashDocumentFormFields formik={formik} />
+            </Form>
+          ) : (
+            record && <CashReadonlyDetailsCard record={record} />
+          )}
         </Card>
 
         <Card className="space-y-3 p-4">
           <div className="text-sm font-semibold">Amallar</div>
-          <Button
-            block
-            icon={<Save className="size-4" />}
-            onClick={() => void saveDraft()}
-            disabled={!isDraft}
-            loading={createMutation.isPending || updateMutation.isPending}
-          >
-            Saqlash
-          </Button>
-          {!isCreate && (
+          {isDraft && (
             <>
               <Button
-                type="primary"
                 block
-                icon={<CheckCircle2 className="size-4" />}
-                onClick={async () => {
-                  const ready = await ensureSavedBeforeAction();
-                  if (!ready) return;
-
-                  try {
-                    await confirmMutation.mutateAsync();
-                    toast.success("Hujjat tasdiqlandi");
-                    navigate(`/main/cash-operationses/cash-documents/${kind}`, {
-                      replace: true,
-                    });
-                  } catch (error) {
-                    errorHandlers(error);
-                  }
-                }}
-                disabled={!isDraft}
-                loading={confirmMutation.isPending}
+                icon={<Save className="size-4" />}
+                onClick={() => void saveDraft()}
+                loading={createMutation.isPending || updateMutation.isPending}
               >
-                Tasdiqlash
+                Saqlash
               </Button>
-              <Button
-                danger
-                block
-                icon={<CircleX className="size-4" />}
-                onClick={async () => {
-                  const ready = await ensureSavedBeforeAction();
-                  if (!ready) return;
+              {!isCreate && (
+                <>
+                  <Button
+                    type="primary"
+                    block
+                    icon={<CheckCircle2 className="size-4" />}
+                    onClick={async () => {
+                      const ready = await ensureSavedBeforeAction();
+                      if (!ready) return;
 
-                  try {
-                    await cancelMutation.mutateAsync();
-                    toast.success("Hujjat bekor qilindi");
-                    navigate(`/main/cash-operationses/cash-documents/${kind}`, {
-                      replace: true,
-                    });
-                  } catch (error) {
-                    errorHandlers(error);
-                  }
-                }}
-                disabled={!isDraft}
-                loading={cancelMutation.isPending}
-              >
-                Bekor qilish
-              </Button>
+                      try {
+                        await confirmMutation.mutateAsync();
+                        toast.success("Hujjat tasdiqlandi");
+                        navigate(`/main/cash-operationses/cash-documents/${kind}`, {
+                          replace: true,
+                        });
+                      } catch (error) {
+                        errorHandlers(error);
+                      }
+                    }}
+                    loading={confirmMutation.isPending}
+                  >
+                    Tasdiqlash
+                  </Button>
+                  <Button
+                    danger
+                    block
+                    icon={<CircleX className="size-4" />}
+                    onClick={async () => {
+                      const ready = await ensureSavedBeforeAction();
+                      if (!ready) return;
+
+                      try {
+                        await cancelMutation.mutateAsync();
+                        toast.success("Hujjat bekor qilindi");
+                        navigate(`/main/cash-operationses/cash-documents/${kind}`, {
+                          replace: true,
+                        });
+                      } catch (error) {
+                        errorHandlers(error);
+                      }
+                    }}
+                    loading={cancelMutation.isPending}
+                  >
+                    Bekor qilish
+                  </Button>
+                </>
+              )}
             </>
           )}
           {record?.statusName && (
             <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
               Joriy holat:{" "}
               <span className="font-semibold">{record.statusName}</span>
+            </div>
+          )}
+          {record?.amount != null && (
+            <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
+              Summa:{" "}
+              <span className="font-semibold">
+                {numberSpacing(record.amount)} {record.currencyName ?? ""}
+              </span>
             </div>
           )}
         </Card>

@@ -48,8 +48,25 @@ export const selectListEndpoints = {
   vatRates: "manuals/vat-rates",
   suppliersSelectList: "manuals/suppliers",
   clients: "manuals/clients",
-
+  subkontoTypes: "manuals/subkonto-types",
+  accountType: "manuals/account-types",
 };
+
+export const chartAccountOptionLabel = (item: {
+  number?: unknown;
+  code?: unknown;
+  name?: unknown;
+}) => {
+  const number = String(item.number ?? item.code ?? "").trim();
+  const name = String(item.name ?? "").trim();
+  return [number, name].filter(Boolean).join(" - ") || number || name;
+};
+
+export const chartAccountSelectedLabel = (item: {
+  number?: unknown;
+  code?: unknown;
+  name?: unknown;
+}) => String(item.number ?? item.code ?? item.name ?? "").trim();
 
 export const selectListKeys = {
   state: "selectListStates",
@@ -96,6 +113,7 @@ export const selectListKeys = {
   paymentPurposes: "selectListPaymentPurposes",
   operationTypes: "selectListOperationTypes",
   vatRates: "selectListVatRates",
+  
 };
 
 export const filterIds = {
@@ -142,4 +160,3 @@ export const filterIds = {
   operationTypes: "operationTypeId",
   vatRates: "vatRateId",
 };
-

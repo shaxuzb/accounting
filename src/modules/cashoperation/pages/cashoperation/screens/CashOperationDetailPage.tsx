@@ -15,6 +15,7 @@ import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import Card from "@/components/ui/card/Card";
+import CashReadonlyDetailsCard from "@/modules/cashoperation/components/CashReadonlyDetailsCard";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import CashOperationFormFields from "@/modules/cashoperation/pages/cashoperation/components/CashOperationModal";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
@@ -27,9 +28,11 @@ import { useUpdateCashOperation } from "../hooks";
 
 const buildTouched = (values: CashOperationForm) => ({
   cashBoxId: values.cashBoxId !== null,
+  cashChartAccountId: values.cashChartAccountId !== null,
+  offsetAccountId: values.offsetAccountId !== null,
   cashOperationId: values.cashOperationId !== null,
   operationTypeId: values.operationTypeId !== null,
-  paymentPurposeId: values.paymentPurposeId !== null,
+  paymentTypeId: values.paymentTypeId !== null,
   counterpartyId: values.counterpartyId !== null,
   docDate: Boolean(values.docDate),
   currencyId: values.currencyId !== null,
@@ -48,18 +51,18 @@ export default function CashOperationDetailPage() {
 
   const record = detailQuery.data;
   const isDraft = record?.statusId === 1;
-  const isConfirmed = record?.statusId === 2;
-  const isCancelled = record?.statusId === 3;
   const isBusy = detailQuery.isLoading || updateMutation.isPending;
-  const isActionBusy =
+  const   isActionBusy =
     confirmMutation.isPending || cancelMutation.isPending || updateMutation.isPending;
 
   const initialValues = useMemo<CashOperationForm>(
     () => ({
       cashBoxId: record?.cashBoxId ?? null,
+      cashChartAccountId: record?.cashChartAccountId ?? null,
+      offsetAccountId: record?.offsetAccountId ?? null,
       cashOperationId: record?.cashOperationId ?? null,
       operationTypeId: record?.operationTypeId ?? null,
-      paymentPurposeId: record?.paymentPurposeId ?? null,
+      paymentTypeId: record?.paymentTypeId ?? null,
       counterpartyId: record?.counterpartyId ?? null,
       docDate: record?.docDate ?? "",
       currencyId: record?.currencyId ?? null,
@@ -74,15 +77,17 @@ export default function CashOperationDetailPage() {
     initialValues,
     enableReinitialize: true,
     validationSchema: cashOperationSchema(),
-    onSubmit: async () => {},
-  });
+    onSubmit: async (values) => {
+      if (!id) return;
 
-  useEffect(() => {
-    if (!record) return;
-    formik.setValues(initialValues);
-    formik.setTouched({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialValues, record]);
+      try {
+        await updateMutation.mutateAsync({ id, payload: values });
+        toast.success("Hujjat saqlandi");
+      } catch (error) {
+        errorHandlers(error);
+      }
+    },
+  });
 
   useEffect(() => {
     if (!detailQuery.error) return;
@@ -207,15 +212,14 @@ export default function CashOperationDetailPage() {
             <span>Document ma'lumotlari</span>
           </div>
 
-          <form onSubmit={formik.handleSubmit} className="space-y-4">
-            <CashOperationFormFields formik={formik} disabled={!isDraft} />
-          </form>
+          {isDraft ? (
+            <form onSubmit={formik.handleSubmit} className="space-y-4">
+              <CashOperationFormFields formik={formik} />
+            </form>
+          ) : (
+            record && <CashReadonlyDetailsCard record={record} />
+          )}
 
-          <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm text-muted-foreground">
-            {isDraft
-              ? "Hujjat qoralama holatda. Maydonlarni o`zgartirish, saqlash, tasdiqlash yoki bekor qilish mumkin."
-              : "Hujjat yakuniy holatda. Tasdiqlangan yoki bekor qilingan hujjatlar readonly bo`ladi."}
-          </div>
         </Card>
 
         <Card className="space-y-4 p-4">
@@ -224,54 +228,46 @@ export default function CashOperationDetailPage() {
             <span>Amallar</span>
           </div>
 
-          <div className="space-y-3">
-            <Button
-              block
-              size="large"
-              icon={<Save className="size-4" />}
-              loading={updateMutation.isPending}
-              disabled={isActionBusy || !isDraft}
-              onClick={() => void saveDraft()}
-            >
-              Saqlash
-            </Button>
-            <Button
-              type="primary"
-              block
-              size="large"
-              icon={<CheckCircle2 className="size-4" />}
-              loading={confirmMutation.isPending}
-              disabled={isActionBusy || !isDraft}
-              onClick={() => void handleConfirm()}
-            >
-              Tasdiqlash
-            </Button>
-            <Button
-              danger
-              block
-              size="large"
-              icon={<CircleX className="size-4" />}
-              loading={cancelMutation.isPending}
-              disabled={isActionBusy || !isDraft}
-              onClick={() => void handleCancel()}
-            >
-              Bekor qilish
-            </Button>
-          </div>
+          {isDraft && (
+            <div className="space-y-3">
+              <Button
+                block
+                size="large"
+                icon={<Save className="size-4" />}
+                loading={updateMutation.isPending}
+                disabled={isActionBusy || !isDraft}
+                onClick={() => void saveDraft()}
+              >
+                Saqlash
+              </Button>
+              <Button
+                type="primary"
+                block
+                size="large"
+                icon={<CheckCircle2 className="size-4" />}
+                loading={confirmMutation.isPending}
+                disabled={isActionBusy || !isDraft}
+                onClick={() => void handleConfirm()}
+              >
+                Tasdiqlash
+              </Button>
+              <Button
+                danger
+                block
+                size="large"
+                icon={<CircleX className="size-4" />}
+                loading={cancelMutation.isPending}
+                disabled={isActionBusy || !isDraft}
+                onClick={() => void handleCancel()}
+              >
+                Bekor qilish
+              </Button>
+            </div>
+          )}
 
           {record?.statusName && (
             <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
               Joriy holat: <span className="font-semibold">{record.statusName}</span>
-            </div>
-          )}
-          {isConfirmed && (
-            <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-3 text-sm text-green-700">
-              Hujjat tasdiqlangan. Endi bu yerda o`zgartirish yoki qayta tasdiqlash mumkin emas.
-            </div>
-          )}
-          {isCancelled && (
-            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-700">
-              Hujjat bekor qilingan. Endi bu yerda o`zgartirish yoki action bajarish mumkin emas.
             </div>
           )}
           {record?.amount != null && (

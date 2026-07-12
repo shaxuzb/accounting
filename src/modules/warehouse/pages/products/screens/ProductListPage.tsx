@@ -70,7 +70,7 @@ export default function ProductListPage() {
       width: 120,
       align: "center",
       render: (_, record) =>
-        stateStatus(record.stateId, (record as any).stateName),
+        stateStatus(record.stateId, record.state),
     },
   ];
 

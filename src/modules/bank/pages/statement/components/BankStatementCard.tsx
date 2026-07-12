@@ -5,15 +5,15 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import type {
+  BankChartAccountOption,
   BankStatementCardData,
   BankStatementTransaction,
 } from "../types/type";
+import {
+  chartAccountOptionLabel,
+  chartAccountSelectedLabel,
+} from "@/shared/constants/selectLists";
 import { customDate, numberSpacing } from "@/utils/utils";
-
-interface PaymentPurposeOption {
-  id: number;
-  name: string;
-}
 
 const stringifyValue = (value: unknown) => {
   if (value === null || value === undefined || value === "") return "-";
@@ -27,15 +27,13 @@ interface BankStatementCardProps {
   onToggle: () => void;
   onDelete: () => void;
   onDeleteTransaction: (transactionIndex: number) => void;
-  paymentPurposeLoading: boolean;
-  onPaymentPurposeChange: (
+  chartAccountLoading: boolean;
+  chartAccountOptions: BankChartAccountOption[];
+  onBankChartAccountChange: (bankChartAccountId: number | null) => void;
+  onOffsetAccountChange: (
     transactionIndex: number,
-    paymentPurposeId: number | null,
+    offsetAccountId: number | null,
   ) => void;
-  getPaymentPurposeOptions: (
-    transaction: BankStatementTransaction,
-    transactionIndex: number,
-  ) => PaymentPurposeOption[];
 }
 
 export default function BankStatementCard({
@@ -44,9 +42,10 @@ export default function BankStatementCard({
   onToggle,
   onDelete,
   onDeleteTransaction,
-  paymentPurposeLoading,
-  onPaymentPurposeChange,
-  getPaymentPurposeOptions,
+  chartAccountLoading,
+  chartAccountOptions,
+  onBankChartAccountChange,
+  onOffsetAccountChange,
 }: BankStatementCardProps) {
   const { t } = useTranslation();
   const totalDebit = item.transactions.reduce(
@@ -65,9 +64,16 @@ export default function BankStatementCard({
   const hasMissingCounterparty = item.transactions.some(
     (transaction) => !transaction.counterpartyId,
   );
-  const hasMissingPaymentPurpose = item.transactions.some(
-    (transaction) => !transaction.paymentPurposeId,
+  const hasBankChartAccount = Boolean(item.bankChartAccountId);
+  const hasMissingOffsetAccount = item.transactions.some(
+    (transaction) => !transaction.offsetAccountId,
   );
+  const getChartAccountSelectedLabel = (value: unknown) => {
+    const option = chartAccountOptions.find(
+      (item) => item.id === Number(value),
+    );
+    return option ? chartAccountSelectedLabel(option) : undefined;
+  };
   const dateFrom =
     item.dateFrom ??
     item.transactions.map((transaction) => transaction.date).find(Boolean);
@@ -111,25 +117,28 @@ export default function BankStatementCard({
       },
     },
     {
-      title: "To'lov maqsadi",
-      dataIndex: "paymentPurposeId",
+      title: "Qarama-qarshi schyot",
+      dataIndex: "offsetAccountId",
       width: 220,
       render: (_, record, index) => (
         <Select
           showSearch
-          value={record.paymentPurposeId || undefined}
-          placeholder="To'lov maqsadini tanlang"
-          loading={paymentPurposeLoading}
-          options={getPaymentPurposeOptions(record, index).map((option) => ({
+          value={record.offsetAccountId || undefined}
+          placeholder="Schyotni tanlang"
+          loading={chartAccountLoading}
+          options={chartAccountOptions.map((option) => ({
             value: option.id,
-            label: option.name,
+            label: chartAccountOptionLabel(option),
           }))}
+          labelRender={(props) =>
+            getChartAccountSelectedLabel(props.value) ?? props.label
+          }
           allowClear
           onChange={(value) => {
-            onPaymentPurposeChange(index, value ? Number(value) : null);
+            onOffsetAccountChange(index, value ? Number(value) : null);
           }}
-          onClear={() => onPaymentPurposeChange(index, null)}
-          disabled={paymentPurposeLoading}
+          onClear={() => onOffsetAccountChange(index, null)}
+          disabled={chartAccountLoading}
         />
       ),
     },
@@ -184,7 +193,10 @@ export default function BankStatementCard({
     <Card
       className={clsx(
         "overflow-hidden border",
-        hasBankAccount && !hasMissingCounterparty && !hasMissingPaymentPurpose
+        hasBankAccount &&
+          hasBankChartAccount &&
+          !hasMissingCounterparty &&
+          !hasMissingOffsetAccount
           ? "border-border"
           : "border-red-300 bg-red-50/30",
       )}
@@ -219,8 +231,11 @@ export default function BankStatementCard({
             {hasMissingCounterparty && (
               <Tag color="red">{t("bank.messages.counterpartyMissing")}</Tag>
             )}
-            {hasMissingPaymentPurpose && (
-              <Tag color="red">To'lov maqsadi belgilanmagan</Tag>
+            {!hasBankChartAccount && (
+              <Tag color="red">Bank schyoti belgilanmagan</Tag>
+            )}
+            {hasMissingOffsetAccount && (
+              <Tag color="red">Qarama-qarshi schyot belgilanmagan</Tag>
             )}
             {item.accountNumber && <Tag>{item.accountNumber}</Tag>}
             </span>
@@ -272,6 +287,26 @@ export default function BankStatementCard({
           >
             {t("common.delete")}
           </Button>
+          <Select
+            className="w-60"
+            value={item.bankChartAccountId ?? undefined}
+            placeholder="Bank schyotini tanlang"
+            loading={chartAccountLoading}
+            options={chartAccountOptions.map((option) => ({
+              value: option.id,
+              label: chartAccountOptionLabel(option),
+            }))}
+            labelRender={(props) =>
+              getChartAccountSelectedLabel(props.value) ?? props.label
+            }
+            showSearch
+            allowClear
+            onChange={(value) =>
+              onBankChartAccountChange(value ? Number(value) : null)
+            }
+            onClear={() => onBankChartAccountChange(null)}
+            disabled={chartAccountLoading}
+          />
         </div>
       </div>
 
@@ -285,7 +320,7 @@ export default function BankStatementCard({
             virtual={item.transactions.length > 50}
             scroll={{ x: "max-content", y: "calc(100vh - 200px)" }}
             rowClassName={(record) =>
-              !record.counterpartyId || !record.paymentPurposeId
+              !record.counterpartyId || !record.offsetAccountId
                 ? "[&_.ant-table-cell]:!bg-red-50 hover:[&_.ant-table-cell]:!bg-red-100"
                 : ""
             }

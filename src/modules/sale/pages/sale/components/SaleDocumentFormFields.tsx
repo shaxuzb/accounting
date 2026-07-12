@@ -7,12 +7,15 @@ import SelectDate from "@/components/fields/SelectDate";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
 import {
+  chartAccountOptionLabel,
+  chartAccountSelectedLabel,
   filterIds,
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
+import type { Contract } from "@/modules/contract/types/type";
 import { formatDateWithOutTime } from "@/utils/helpers";
 import type { SaleDocForm } from "../types/form";
 
@@ -25,6 +28,15 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  const handleContractCreated = (contract: Contract) => {
+    formik.setFieldValue("contractId", contract.id, true);
+    invalidateSelectListQuery(
+      queryClient,
+      "contractId",
+      selectListEndpoints.contractsSelectList,
+    );
+  };
 
   return (
     <div className="grid gap-x-3 border-b border-border pb-1 sm:grid-cols-2 xl:grid-cols-4">
@@ -71,13 +83,34 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
           },
         }}
       />
-      <SelectCustom
+         <SelectCustom
         label="Ombor"
         fieldName="warehouseId"
         path={selectListEndpoints.warehousesSelectList}
         formik={formik}
         required
       />
+      <SelectCustom
+        label="Mijoz schyoti"
+        fieldName="customerAccountId"
+        path={selectListEndpoints.chartAccountsSelectList}
+        formik={formik}
+        search
+        required
+        optionLabel={chartAccountOptionLabel}
+        selectedLabel={chartAccountSelectedLabel}
+      />
+      <SelectCustom
+        label="QQS schyoti"
+        fieldName="vatAccountId"
+        path={selectListEndpoints.chartAccountsSelectList}
+        formik={formik}
+        search
+        required
+        optionLabel={chartAccountOptionLabel}
+        selectedLabel={chartAccountSelectedLabel}
+      />
+   
       <div className="hidden">
         <SelectCustom
           label="Valyuta"
@@ -110,13 +143,11 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
       />
       <ContractAddEditPage
         open={contractCreateOpen}
+        contractTypeId={2}
+        initialCounterpartyId={formik.values.counterpartyId}
+        onCreated={handleContractCreated}
         onClose={() => {
           setContractCreateOpen(false);
-          invalidateSelectListQuery(
-            queryClient,
-            "contractId",
-            selectListEndpoints.contractsSelectList,
-          );
         }}
       />
     </div>

@@ -1,15 +1,21 @@
 import { Button, Col, Form, Row, Segmented, Spin } from "antd";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "@/config/dayjs";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
+import {
+  chartAccountOptionLabel,
+  chartAccountSelectedLabel,
+  filterIds,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import { formatDateWithOutTime } from "@/utils/helpers";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
@@ -20,6 +26,14 @@ import {
 import { schema } from "../types/schema";
 import type { BankOperationCreatePayload } from "../types/form";
 import Card from "@/components/ui/card/Card";
+import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
+import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
+import CounterpartyBankAccountAddEditPage from "@/modules/settings/pages/counterpartybankaccount/screens/CounterpartyBankAccountAddEditPage";
+import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
+import { counterpartybankaccountPermissions } from "@/modules/settings/pages/counterpartybankaccount/constants/permissions";
+import { contractPermissions } from "@/modules/contract/constants/permissions";
+import type { Contract } from "@/modules/contract/types/type";
+import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 
 const toPositiveNumber = (value: unknown) => {
   const numberValue = Number(value);
@@ -30,6 +44,7 @@ type BankOperationForm = Omit<
   BankOperationCreatePayload,
   | "bankAccountId"
   | "operationTypeId"
+  | "paymentTypeId"
   | "counterpartyId"
   | "currencyId"
   | "amount"
@@ -37,12 +52,12 @@ type BankOperationForm = Omit<
 > & {
   bankAccountId: number | null;
   operationTypeId: number | null;
+  paymentTypeId: number | null;
   counterpartyId: number | null;
   currencyId: number | null;
   amount: number | null;
   comment: string;
   stateId: number | null;
-  paymentPurposeId: number | null;
   counterpartyBankAccountId: number | null;
   contractId: number | null;
   exchangeRate: number | null;
@@ -50,8 +65,10 @@ type BankOperationForm = Omit<
 
 const defaultValues: BankOperationForm = {
   bankAccountId: null,
+  bankChartAccountId: null,
+  offsetAccountId: null,
   operationTypeId: 1,
-  paymentPurposeId: null,
+  paymentTypeId: null,
   counterpartyId: null,
   counterpartyBankAccountId: null,
   contractId: null,
@@ -73,18 +90,43 @@ export default function BankOperationAddEditPage() {
   const updateMutation = useUpdateBankOperation();
   const { data: record, isLoading: isDetailLoading } =
     useGetDetailBankOperation(id);
+  const queryClient = useQueryClient();
+  const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
+  const [counterpartyBankAccountCreateOpen, setCounterpartyBankAccountCreateOpen] =
+    useState(false);
+  const [contractCreateOpen, setContractCreateOpen] = useState(false);
+  const initialValues = useMemo<BankOperationForm>(
+    () => ({
+      bankAccountId: record?.bankAccountId ?? null,
+      bankChartAccountId: record?.bankChartAccountId ?? null,
+      offsetAccountId: record?.offsetAccountId ?? null,
+      operationTypeId: record?.operationTypeId ?? null,
+      paymentTypeId: record?.paymentTypeId ?? null,
+      counterpartyId: record?.counterpartyId ?? null,
+      counterpartyBankAccountId: record?.counterpartyBankAccountId ?? null,
+      contractId: record?.contractId ?? null,
+      exchangeRate: record?.exchangeRate ?? null,
+      docDate: record?.docDate ?? defaultValues.docDate,
+      currencyId: record?.currencyId ?? null,
+      amount: record?.amount ?? null,
+      comment: record?.comment ?? "",
+      stateId: record?.stateId ?? null,
+    }),
+    [record],
+  );
 
   const formik = useFormik<BankOperationForm>({
-    initialValues: defaultValues,
+    initialValues,
     enableReinitialize: true,
     validationSchema: schema,
     onSubmit: async (values, helpers) => {
       try {
-        const paymentPurposeId = toPositiveNumber(values.paymentPurposeId);
         const payload: BankOperationCreatePayload = {
           bankAccountId: Number(values.bankAccountId),
+          bankChartAccountId: Number(values.bankChartAccountId),
+          offsetAccountId: Number(values.offsetAccountId),
           operationTypeId: Number(values.operationTypeId),
-          ...(paymentPurposeId ? { paymentPurposeId } : {}),
+          paymentTypeId: Number(values.paymentTypeId),
           counterpartyId: Number(values.counterpartyId),
           counterpartyBankAccountId: Number(values.counterpartyBankAccountId),
           docDate: dayjs(values.docDate).toISOString(),
@@ -111,60 +153,39 @@ export default function BankOperationAddEditPage() {
       }
     },
   });
+  const { setFieldValue } = formik;
+
+  const handleContractCreated = (contract: Contract) => {
+    setFieldValue("contractId", contract.id, true);
+    invalidateSelectListQuery(
+      queryClient,
+      "contractId",
+      selectListEndpoints.contractsSelectList,
+    );
+  };
 
   const operationTypeId = useMemo(
     () => toPositiveNumber(formik.values.operationTypeId),
     [formik.values.operationTypeId],
   );
-  const previousOperationTypeId = useRef<number | null>(null);
   const previousCounterpartyId = useRef<number | null>(null);
   const counterpartyId = useMemo(
     () => toPositiveNumber(formik.values.counterpartyId),
     [formik.values.counterpartyId],
   );
 
-  useEffect(() => {
-    if (!record) return;
-
-    formik.setValues({
-      bankAccountId: record.bankAccountId ?? null,
-      operationTypeId: record.operationTypeId ?? null,
-      paymentPurposeId: record.paymentPurposeId ?? null,
-      counterpartyId: record.counterpartyId ?? null,
-      counterpartyBankAccountId: record.counterpartyBankAccountId ?? null,
-      contractId: record.contractId ?? null,
-      exchangeRate: record.exchangeRate ?? null,
-      docDate: record.docDate ?? defaultValues.docDate,
-      currencyId: record.currencyId ?? null,
-      amount: record.amount ?? null,
-      comment: record.comment ?? "",
-      stateId: record.stateId ?? null,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [record]);
-
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
-
-  useEffect(() => {
-    if (
-      previousOperationTypeId.current !== null &&
-      previousOperationTypeId.current !== operationTypeId
-    ) {
-      formik.setFieldValue("paymentPurposeId", null, false);
-    }
-    previousOperationTypeId.current = operationTypeId;
-  }, [formik, operationTypeId]);
 
   useEffect(() => {
     if (
       previousCounterpartyId.current !== null &&
       previousCounterpartyId.current !== counterpartyId
     ) {
-      formik.setFieldValue("counterpartyBankAccountId", null, false);
-      formik.setFieldValue("contractId", null, false);
+      setFieldValue("counterpartyBankAccountId", null, false);
+      setFieldValue("contractId", null, false);
     }
     previousCounterpartyId.current = counterpartyId;
-  }, [counterpartyId, formik]);
+  }, [counterpartyId, setFieldValue]);
 
   return (
     <div className="w-full ">
@@ -206,16 +227,31 @@ export default function BankOperationAddEditPage() {
               <Col span={8}>
                 <SelectCustom
                   formik={formik}
-                  fieldName="paymentPurposeId"
-                  label="To'lov maqsadi"
-                  path={`${selectListEndpoints.paymentPurposesSelectList}?operationTypeId=${operationTypeId ?? ""}`}
-                  enabled={Boolean(operationTypeId)}
-                  clearable
-                  search
-                  placeholder="To'lov maqsadini tanlang"
-                  // disabled={!operationTypeId}
-                  refetchSync={String(operationTypeId ?? "")}
-                  marginBottom="mb-0"
+                  fieldName="bankChartAccountId"
+                  label="Bank schyoti"
+                  path={selectListEndpoints.chartAccountsSelectList}
+                  optionLabel={chartAccountOptionLabel}
+                  selectedLabel={chartAccountSelectedLabel}
+                />
+              </Col>
+
+              <Col span={8}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="offsetAccountId"
+                  label="Qarama-qarshi schyot"
+                  path={selectListEndpoints.chartAccountsSelectList}
+                  optionLabel={chartAccountOptionLabel}
+                  selectedLabel={chartAccountSelectedLabel}
+                />
+              </Col>
+
+              <Col span={8}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="paymentTypeId"
+                  label="To'lov turi"
+                  path={selectListEndpoints.paymentTypesSelectList}
                 />
               </Col>
 
@@ -225,6 +261,11 @@ export default function BankOperationAddEditPage() {
                   fieldName="counterpartyId"
                   label="bank.fields.counterparty"
                   path={selectListEndpoints.counterpartiesSelectList}
+                  addOption={{
+                    bool: true,
+                    permissionCode: counterpartyPermissions.create,
+                    onClick: () => setCounterpartyCreateOpen(true),
+                  }}
                 />
               </Col>
 
@@ -240,6 +281,11 @@ export default function BankOperationAddEditPage() {
                   enabled={Boolean(counterpartyId)}
                   refetchSync={String(counterpartyId ?? "")}
                   disabled={!counterpartyId}
+                  addOption={{
+                    bool: true,
+                    permissionCode: counterpartybankaccountPermissions.create,
+                    onClick: () => setCounterpartyBankAccountCreateOpen(true),
+                  }}
                 />
               </Col>
 
@@ -275,8 +321,6 @@ export default function BankOperationAddEditPage() {
                   formik={formik}
                   fieldName="amount"
                   label="bank.fields.amount"
-                  min={0}
-                  precision={2}
                 />
               </Col>
 
@@ -295,6 +339,11 @@ export default function BankOperationAddEditPage() {
                   enabled={Boolean(counterpartyId)}
                   refetchSync={`${counterpartyId ?? ""}${formik.values.docDate ?? ""}`}
                   disabled={!counterpartyId}
+                  addOption={{
+                    bool: true,
+                    permissionCode: contractPermissions.create,
+                    onClick: () => setContractCreateOpen(true),
+                  }}
                 />
               </Col>
               {isEdit ? (
@@ -307,7 +356,7 @@ export default function BankOperationAddEditPage() {
                       path={selectListEndpoints.statesSelectList}
                     />
                   </Col>
-                  <Col span={16}>
+                  <Col span={8}>
                     <InputText
                       formik={formik}
                       fieldName="comment"
@@ -316,7 +365,7 @@ export default function BankOperationAddEditPage() {
                   </Col>
                 </>
               ) : (
-                <Col span={24}>
+                <Col span={16}>
                   <InputText
                     formik={formik}
                     fieldName="comment"
@@ -337,6 +386,36 @@ export default function BankOperationAddEditPage() {
           </Form>
         </Spin>
       </Card>
+      <CounterpartyAddEditPage
+        open={counterpartyCreateOpen}
+        onClose={() => {
+          setCounterpartyCreateOpen(false);
+          invalidateSelectListQuery(
+            queryClient,
+            "counterpartyId",
+            selectListEndpoints.counterpartiesSelectList,
+          );
+        }}
+      />
+      <CounterpartyBankAccountAddEditPage
+        open={counterpartyBankAccountCreateOpen}
+        onClose={() => {
+          setCounterpartyBankAccountCreateOpen(false);
+          invalidateSelectListQuery(
+            queryClient,
+            "counterpartyBankAccountId",
+            selectListEndpoints.counterPartyBankAccounts,
+          );
+        }}
+      />
+      <ContractAddEditPage
+        open={contractCreateOpen}
+        initialCounterpartyId={formik.values.counterpartyId}
+        onCreated={handleContractCreated}
+        onClose={() => {
+          setContractCreateOpen(false);
+        }}
+      />
     </div>
   );
 }

@@ -57,7 +57,7 @@ const Sidebar = () => {
       TOP: [],
       BOTTOM: [],
     };
-  }, []);
+  }, [dispatch, user]);
   // const snowflakeImages = useMemo(() => {
   //   const img = new Image();
   //   const img2 = new Image();

@@ -1,6 +1,6 @@
-import { Button, Input, Select, Table } from "antd";
+import { Button, Input, Select, Table, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -25,6 +25,9 @@ import {
   normalizeProductPriceDetails,
 } from "../utils/salePricingDetails";
 import SaleWarehouseProductsModal from "./SaleWarehouseProductsModal";
+import SaleLineAccountsDrawer, {
+  type SaleLineAccountValues,
+} from "./SaleLineAccountsModal";
 
 interface Props {
   warehouseId?: number | null;
@@ -33,6 +36,8 @@ interface Props {
   saleCondition: SaleCondition;
   onCommentChange: (value: string) => void;
   onChange: (products: SaleSelectedProduct[]) => void;
+  onCancel: () => void;
+  submitting?: boolean;
   disabled?: boolean;
 }
 
@@ -144,10 +149,15 @@ export default function SaleProductSelection({
   saleCondition,
   onCommentChange,
   onChange,
+  onCancel,
+  submitting = false,
   disabled = false,
 }: Props) {
   const [search, setSearch] = useState("");
   const [warehouseOpen, setWarehouseOpen] = useState(false);
+  const [accountLine, setAccountLine] = useState<SaleSelectedProduct | null>(
+    null,
+  );
   const [emptyRowKeys, setEmptyRowKeys] = useState<string[]>([newRowKey]);
   const [loadingProductId, setLoadingProductId] = useState<number | null>(null);
   const getProductPriceDetails = useGetProductPriceDetails();
@@ -191,6 +201,9 @@ export default function SaleProductSelection({
       costPrice: 0,
       unitId: 0,
       unitPrice: 0,
+      inventoryAccountId: null,
+      incomeAccountId: null,
+      costAccountId: null,
       vatRateId: saleCondition.vatRateId,
       markupPercent: 0,
       priceType: "costPlusPercent" as const,
@@ -283,6 +296,12 @@ export default function SaleProductSelection({
         unitId,
         unitName: detail.unitName || product.unitName,
         unitPrice: salePriceBySelection === undefined ? unitPrice : salePriceBySelection,
+        inventoryAccountId: existingLine?.inventoryAccountId ?? null,
+        incomeAccountId: existingLine?.incomeAccountId ?? null,
+        costAccountId: existingLine?.costAccountId ?? null,
+        inventoryAccountName: existingLine?.inventoryAccountName,
+        incomeAccountName: existingLine?.incomeAccountName,
+        costAccountName: existingLine?.costAccountName,
         vatRateId: existingLine?.vatRateId ?? saleCondition.vatRateId,
         markupPercent:
           salePriceBySelection === undefined
@@ -335,6 +354,45 @@ export default function SaleProductSelection({
       return rest.length ? rest : [`${newRowKey}-${Date.now()}`];
     });
   };
+
+  const handleAddEmptyRow = () => {
+    setEmptyRowKeys((current) => [
+      ...current,
+      `${newRowKey}-${Date.now()}`,
+    ]);
+  };
+
+  const applyLineAccounts = (
+    values: SaleLineAccountValues,
+    applyToAll: boolean,
+  ) => {
+    onChange(
+      products.map((item) =>
+        applyToAll || item.rowKey === accountLine?.rowKey
+          ? {
+              ...item,
+              inventoryAccountId: values.inventoryAccountId,
+              inventoryAccountName: values.inventoryAccountName,
+              incomeAccountId: values.incomeAccountId,
+              incomeAccountName: values.incomeAccountName,
+              costAccountId: values.costAccountId,
+              costAccountName: values.costAccountName,
+            }
+          : item,
+      ),
+    );
+    setAccountLine(null);
+  };
+
+  const getAccountPreview = (line: SaleSelectedProduct) =>
+    [
+      line.inventoryAccountName ||
+        (line.inventoryAccountId ? `#${line.inventoryAccountId}` : "—"),
+      line.incomeAccountName ||
+        (line.incomeAccountId ? `#${line.incomeAccountId}` : "—"),
+      line.costAccountName ||
+        (line.costAccountId ? `#${line.costAccountId}` : "—"),
+    ].join(" / ");
 
   const columns: TableColumnsType<SaleSelectedProduct> = [
     {
@@ -398,7 +456,7 @@ export default function SaleProductSelection({
       title: "Qoldiq",
       align: "right",
       width: 100,
-      render: (value) => numberSpacing(Number(value ?? 0), undefined, true),
+      render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "quantity",
@@ -434,7 +492,7 @@ export default function SaleProductSelection({
       dataIndex: "costPrice",
       title: "Tannarx",
       align: "right",
-      render: (value) => numberSpacing(Number(value ?? 0), undefined, true),
+      render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "unitPrice",
@@ -471,7 +529,7 @@ export default function SaleProductSelection({
       dataIndex: "amount",
       title: "Summa",
       align: "right",
-      render: (_, record) => numberSpacing(getLineAmount(record), undefined, true),
+      render: (_, record) => numberSpacing(getLineAmount(record)),
     },
     {
       dataIndex: "vatRateId",
@@ -506,7 +564,29 @@ export default function SaleProductSelection({
       title: "Jami",
       align: "center",
       render: (_, record) =>
-        numberSpacing(getLineTotal(record, vatRateOptions), undefined, true),
+        numberSpacing(getLineTotal(record, vatRateOptions)),
+    },
+    {
+      dataIndex: "accounts",
+      title: "Hisobvaraqlar",
+      render: (_, record) => (
+        <div className="flex min-w-30 items-center gap-1">
+          <span
+            className="min-w-0 flex-1 truncate text-xs"
+            title={getAccountPreview(record)}
+          >
+            {isNewRow(record.rowKey) ? "—" : getAccountPreview(record)}
+          </span>
+          <Button
+            type="text"
+            size="small"
+            icon={<Pencil className="size-4" />}
+            disabled={isNewRow(record.rowKey) || disabled}
+            title="Hisobvaraqlarni tanlash"
+            onClick={() => setAccountLine(record)}
+          />
+        </div>
+      ),
     },
     {
       dataIndex: "actions",
@@ -555,28 +635,28 @@ export default function SaleProductSelection({
       title: "Mavjud",
       align: "right",
       width: 120,
-      render: (value) => numberSpacing(Number(value ?? 0), undefined, true),
+      render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "writeOffQuantity",
       title: "Hisobdan chiqadi",
       align: "right",
       width: 140,
-      render: (value) => numberSpacing(Number(value ?? 0), undefined, true),
+      render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "unitPrice",
       title: "Tannarx",
       align: "right",
       width: 140,
-      render: (value) => numberSpacing(Number(value ?? 0), undefined, true),
+      render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "salePrice",
       title: "Sotuv narxi",
       align: "right",
       width: 140,
-      render: (value) => numberSpacing(Number(value ?? 0), undefined, true),
+      render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "saleAmount",
@@ -584,7 +664,7 @@ export default function SaleProductSelection({
       align: "right",
       width: 150,
       render: (_, record) =>
-        numberSpacing(getLayerSaleAmount(record), undefined, true),
+        numberSpacing(getLayerSaleAmount(record)),
     },
     {
       dataIndex: "vatAmount",
@@ -624,22 +704,49 @@ export default function SaleProductSelection({
 
   return (
     <Card className="overflow-hidden border border-border">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-3">
-        <div className="flex items-center gap-2">
+      <div className="flex w-full flex-nowrap items-center justify-between gap-3 overflow-x-auto border-b border-border p-3">
+        <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
           <Button type="primary">Tovarlar</Button>
-          <Button onClick={() => setWarehouseOpen(true)}>
+          <Button className="w-32" onClick={() => setWarehouseOpen(true)}>
             Omborxona
+          </Button>
+          <Button
+            className="w-32"
+            icon={<Plus className="size-4" />}
+            onClick={handleAddEmptyRow}
+          >
+            Tovar qo'shish
           </Button>
           {/* <Button>Qo'shimcha</Button> */}
         </div>
-        <Input
-          className="max-w-80"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Mahsulot qidirish..."
-          prefix={<Search className="size-4 text-secondary-text" />}
-          allowClear
-        />
+        <div className="flex shrink-0 items-center justify-end gap-2 whitespace-nowrap">
+          {/* <Input
+            className="w-64 max-w-none"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Mahsulot qidirish..."
+            prefix={<Search className="size-4 text-secondary-text" />}
+            allowClear
+          /> */}
+          <Button
+            className="w-32"
+            size="medium"
+            icon={<X className="size-4" />}
+            onClick={onCancel}
+          >
+            Bekor qilish
+          </Button>
+          <Button
+            className="w-42"
+            type="primary"
+            size="medium"
+            htmlType="submit"
+            icon={<Save className="size-4" />}
+            loading={submitting}
+          >
+            Rasmiylashtirish
+          </Button>
+        </div>
       </div>
       <Table<SaleSelectedProduct>
         columns={columns}
@@ -666,43 +773,48 @@ export default function SaleProductSelection({
           defaultExpandAllRows: true,
         }}
       />
-      <div className="grid gap-4 border-t border-border p-4 lg:grid-cols-[200px_minmax(240px,1fr)_160px_160px_180px]">
-        <Button
-          icon={<Plus className="size-4" />}
-          onClick={() =>
-            setEmptyRowKeys((current) => [
-              ...current,
-              `${newRowKey}-${Date.now()}`,
-            ])
-          }
-        >
-          Tovar qo'shish
-        </Button>
-        <div>
-          <div className="mb-1 text-sm text-muted-second">Kommentariya</div>
-          <Input.TextArea
-            value={comment}
-            placeholder="Kommentariya kiriting"
-            onChange={(event) => onCommentChange(event.target.value)}
-          />
-        </div>
-        <div className="text-right">
-          <div className="text-sm text-muted-second">Jami summa (QQSsiz):</div>
-          <div className="font-semibold">
-            {numberSpacing(amount, undefined, true)}
+      <div className="border-t border-border p-4">
+        <div className="mb-4">
+          <div>
+            <div className="mb-1 text-sm text-muted-second">Kommentariya</div>
+            <Input.TextArea
+              value={comment}
+              placeholder="Kommentariya kiriting"
+              onChange={(event) => onCommentChange(event.target.value)}
+            />
           </div>
         </div>
-        <div className="text-right">
-          <div className="text-sm text-muted-second">Jami QQS:</div>
-          <div className="font-semibold">
-            {numberSpacing(vatAmount, undefined, true)}
+        <div className="grid overflow-hidden rounded-lg border border-border bg-primary-bg sm:grid-cols-3">
+          <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
+            <div className="text-xs text-secondary-text">Summa (QQSsiz)</div>
+            <div className="mt-1 text-base font-semibold">
+              {numberSpacing(amount, undefined, true)}
+            </div>
+          </div>
+          <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
+            <div className="text-xs text-secondary-text">Summa QQS</div>
+            <div className="mt-1 text-base font-semibold">
+              {numberSpacing(vatAmount, undefined, true)}
+            </div>
+          </div>
+          <div className="bg-primary/5 px-4 py-3 text-center">
+            <div className="text-xs text-secondary-text">Jami</div>
+            <div className="mt-1 text-base font-bold text-primary">
+              {numberSpacing(totalAmount, undefined, true)}
+            </div>
           </div>
         </div>
-        <div className="rounded border border-border p-3 text-right">
-          <div className="text-sm font-semibold">To'lovga jami:</div>
-          <div className="text-lg font-bold">
-            {numberSpacing(totalAmount, undefined, true)}
-          </div>
+        <div className="sticky bottom-0 z-10 flex justify-center border-t border-border bg-primary-bg/95 py-2 backdrop-blur">
+          <Tooltip title="Qator qo'shish">
+            <Button
+              type="primary"
+              shape="circle"
+              size="large"
+              className="shadow-md"
+              icon={<Plus className="size-5" />}
+              onClick={handleAddEmptyRow}
+            />
+          </Tooltip>
         </div>
       </div>
       <SaleWarehouseProductsModal
@@ -723,6 +835,12 @@ export default function SaleProductSelection({
           salePrice,
         )
       }
+      />
+      <SaleLineAccountsDrawer
+        open={Boolean(accountLine)}
+        line={accountLine}
+        onClose={() => setAccountLine(null)}
+        onApply={applyLineAccounts}
       />
     </Card>
   );

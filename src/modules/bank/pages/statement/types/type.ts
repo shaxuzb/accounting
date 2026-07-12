@@ -15,7 +15,13 @@ export interface BankStatementTransaction {
   amount: number;
   currencyId?: number;
   currencyName?: string;
-  paymentPurposeId?: number;
+  offsetAccountId?: number | null;
+}
+
+export interface BankChartAccountOption {
+  id: number;
+  number?: string | number;
+  name?: string;
 }
 
 export interface BankStatementCardData {
@@ -23,6 +29,7 @@ export interface BankStatementCardData {
   fileName?: string;
   title: string;
   bankAccountId?: number | null;
+  bankChartAccountId?: number | null;
   accountNumber?: string;
   currencyId?: number | null;
   operationTypeId?: number | null;
@@ -36,10 +43,15 @@ export interface BankOperationData {
   id: number;
   docNumber?: string | null;
   bankAccountId: number;
+  bankChartAccountId?: number | null;
+  bankChartAccountNumber: number;
+  offsetAccountNumber: number;
+  offsetAccountId?: number | null;
   bankAccountName?: string;
   operationTypeId: number;
   operationTypeName?: string;
-  paymentPurposeId?: number;
+  paymentTypeId?: number | null;
+  paymentTypeName?: string | null;
   counterpartyBankAccountId?: number | null;
   contractId?: number | null;
   exchangeRate?: number | null;
@@ -54,7 +66,6 @@ export interface BankOperationData {
   stateName?: string;
   statusId?: number | null;
   statusName?: string | null;
-  paymentPurposeName?: string | null;
   counterpartyBankAccountName?: string | null;
   contractName?: string | null;
   counterpartyBankAccountNumber?: string | null;
@@ -65,10 +76,7 @@ export interface BankOperationData {
 export interface BankOperationLine {
   id: number;
   orderNumber?: number | null;
-  paymentPurposeId?: number | null;
   counterpartyId?: number | null;
   amount?: number | null;
   comment?: string | null;
-  paymentPurposeCode?: string | null;
-  paymentPurposeName?: string | null;
 }

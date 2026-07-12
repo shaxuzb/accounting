@@ -4,10 +4,23 @@ export interface ChartAccounts {
   organizationName: string;
   parentId: number | null;
   parentName: string | null;
+  number?: string;
   code: string;
   name: string;
   isGroup: boolean;
-  stateId: number;
+  accountTypeId?: number;
+  accountTypeName?: string;
+  isQuantity?: boolean;
+  isCurrency?: boolean;
+  isDepartment?: boolean;
+  isTaxAccounting?: boolean;
+  isOffBalance?: boolean;
+  subkontos?: Array<{
+    subkontoTypeId: number;
+    sortOrder: number;
+    isRequired: boolean;
+  }>;
+  stateId?: number;
   stateName: string;
   createdDate: string;
 }

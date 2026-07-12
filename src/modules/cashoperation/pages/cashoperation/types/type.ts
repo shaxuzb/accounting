@@ -2,10 +2,11 @@ export interface CashOperation {
   id: number;
   docNumber?: string | null;
   cashBoxId: number | null;
+  cashChartAccountId?: number | null;
+  offsetAccountId?: number | null;
   cashBoxName?: string | null;
   cashOperationId: number | null;
   cashOperationName?: string | null;
-  paymentPurposeId?: number | null;
   paymentPurposeName?: string | null;
   paymentTypeId?: number | null;
   paymentTypeName?: string | null;

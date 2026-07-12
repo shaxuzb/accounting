@@ -12,6 +12,7 @@ type FormValues = object;
 type SelectOptionItem = Record<string, unknown> & {
   id: number;
   name?: string;
+  number?: string | number;
 };
 
 interface SelectCustomProps {
@@ -31,6 +32,8 @@ interface SelectCustomProps {
   disabled?: boolean;
   mode?: "multiple" | "tags";
   dinamicLabel?: string;
+  optionLabel?: (item: SelectOptionItem) => React.ReactNode;
+  selectedLabel?: (item: SelectOptionItem) => React.ReactNode;
   clearable?: boolean;
   disabledValue?: string | number | null;
   getFirst?: boolean;
@@ -47,11 +50,21 @@ interface SelectCustomProps {
   allowedIds?: (number | string)[];
 }
 
-// const normalizeText = (text: unknown): string =>
-//   String(text ?? "")
-//     .normalize("NFD")
-//     .replace(/[\u0300-\u036f]/g, "")
-//     .toLowerCase();
+const normalizeText = (text: unknown): string =>
+  String(text ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+
+const toSearchText = (value: unknown): string => {
+  if (value === null || value === undefined) return "";
+  if (typeof value === "string" || typeof value === "number") {
+    return String(value);
+  }
+  if (Array.isArray(value)) return value.map(toSearchText).join(" ");
+  return "";
+};
 
 const SelectCustom: React.FC<SelectCustomProps> = (props) => {
   const { t } = useTranslation();
@@ -67,6 +80,8 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     readOnly = false,
     clearable = false,
     dinamicLabel = "name",
+    optionLabel,
+    selectedLabel,
     getCustomValue,
     placeholder = "",
     disabledValue = null,
@@ -110,7 +125,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
   const { data, isFetching, isLoading, isSuccess } = useQuery<
     SelectOptionItem[]
   >({
-    queryKey: ["selectlist", fieldName, refetchSync, path, requestParams],
+    queryKey: ["selectlist", path, refetchSync, requestParams],
     queryFn: async () => {
       const response = await $axiosPrivate.get<SelectOptionItem[]>(path, {
         params: requestParams,
@@ -125,6 +140,38 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     const allowedSet = new Set(allowedIds.map(String));
     return options.filter((item) => allowedSet.has(String(item.id)));
   }, [allowedIds, data]);
+
+  const getOptionLabel = React.useCallback(
+    (item: SelectOptionItem) =>
+      optionLabel?.(item) ?? (item[dinamicLabel] as React.ReactNode),
+    [dinamicLabel, optionLabel],
+  );
+
+  const getSelectedLabel = React.useCallback(
+    (item: SelectOptionItem) => selectedLabel?.(item) ?? getOptionLabel(item),
+    [getOptionLabel, selectedLabel],
+  );
+
+  const searchConfig = React.useMemo(() => {
+    if (!search) return undefined;
+
+    return {
+      optionFilterProp: "label",
+      filterOption: (input: string, option?: SelectOptionItem) => {
+        const searchableText = [
+          option?.label,
+          option?.id,
+          option?.name,
+          option?.number,
+          option?.[dinamicLabel],
+        ]
+          .map(toSearchText)
+          .join(" ");
+
+        return normalizeText(searchableText).includes(normalizeText(input));
+      },
+    };
+  }, [dinamicLabel, search]);
 
   const hasError = !!(
     getIn(formik.touched, fieldName) && getIn(formik.errors, fieldName)
@@ -153,7 +200,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
       if (getFieldName) {
         formik.setFieldValue(
           getFieldName,
-          selectOptions[0]?.[dinamicLabel],
+          getOptionLabel(selectOptions[0]),
           true,
         );
       }
@@ -172,6 +219,10 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     getFieldName,
     getFieldNames,
     dinamicLabel,
+    optionLabel,
+    selectedLabel,
+    getCustomValue,
+    getOptionLabel,
     getFirst,
   ]);
   return (
@@ -207,7 +258,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         mode={mode}
         open={readOnly ? false : undefined}
         loading={isFetching || isLoading}
-        showSearch={search}
+        showSearch={searchConfig}
         allowClear={clearable}
         // searchValue={searchValue}
         // onSearch={(value) => {
@@ -266,12 +317,12 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         }}
         popupRender={
           addOption.bool &&
-          user.user.permissions.includes(addOption.permissionCode)
+          user?.user?.permissions?.includes(addOption.permissionCode)
             ? (menu) => (
                 <>
                   {menu}
-                  <Divider style={{ margin: "4px 0" }}/>
-                  <div >
+                  <Divider style={{ margin: "4px 0" }} />
+                  <div>
                     <Button
                       type="primary"
                       size="small"
@@ -290,7 +341,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         options={selectOptions.map((item) => ({
           ...item,
           value: item.id,
-          label: item[dinamicLabel] as React.ReactNode,
+          label: getOptionLabel(item),
           disabled: disabledValue !== null ? item.id === disabledValue : false,
         }))}
         disabled={disabled}
@@ -299,6 +350,15 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
           height: mode === "multiple" ? "" : "38px",
           marginBottom: "0px",
         }}
+        labelRender={(option) => {
+          const item = selectOptions.find(
+            (candidate) => String(candidate.id) === String(option.value),
+          );
+          return item ? getSelectedLabel(item) : option.label;
+        }}
+        optionRender={
+          optionLabel ? (option) => getOptionLabel(option.data) : undefined
+        }
       />
     </Form.Item>
   );

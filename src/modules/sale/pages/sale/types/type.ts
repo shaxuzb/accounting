@@ -10,6 +10,8 @@ export interface SaleDoc {
   warehouseName: string;
   currencyId: number;
   currencyCode: string;
+  customerAccountId?: number | null;
+  vatAccountId?: number | null;
   currencyName?: string;
   comment: string;
   stateId: number;
@@ -36,6 +38,12 @@ export interface SaleDocProduct {
   price?: number;
   amount?: number;
   vatRateId: number | null;
+  inventoryAccountId?: number | null;
+  incomeAccountId?: number | null;
+  costAccountId?: number | null;
+  inventoryAccountName?: string;
+  incomeAccountName?: string;
+  costAccountName?: string;
   vatRateName?: string | null;
   vatAmount?: number;
   totalAmount?: number;
@@ -70,6 +78,12 @@ export interface SaleDocTable {
   amount: number;
   vatRateId: number | null;
   vatRateName: string | null;
+  inventoryAccountId?: number | null;
+  incomeAccountId?: number | null;
+  costAccountId?: number | null;
+  inventoryAccountName?: string;
+  incomeAccountName?: string;
+  costAccountName?: string;
   vatAmount: number;
   totalAmount: number;
   markingNumber: string;
@@ -138,6 +152,12 @@ export interface SaleSelectedProduct {
   costPrice: number;
   unitId: number;
   unitPrice: number;
+  inventoryAccountId: number | null;
+  incomeAccountId: number | null;
+  costAccountId: number | null;
+  inventoryAccountName?: string;
+  incomeAccountName?: string;
+  costAccountName?: string;
   unitName?: string;
   vatRateId?: number | null;
   vatRateName?: string | null;

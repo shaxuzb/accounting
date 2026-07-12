@@ -1,5 +1,5 @@
 import { Button, Form, Modal, Spin } from "antd";
-import { useEffect } from "react";
+import { useMemo } from "react";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
@@ -16,9 +16,11 @@ import CashOperationModal from "@/modules/cashoperation/pages/cashoperation/comp
 
 const defaultValues: CashOperationForm = {
   cashBoxId: null,
+  cashChartAccountId: null,
+  offsetAccountId: null,
   cashOperationId: null,
   operationTypeId: null,
-  paymentPurposeId: null,
+  paymentTypeId: null,
   counterpartyId: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   currencyId: null,
@@ -41,8 +43,25 @@ export default function CashOperationAddEditPage({
   const updateMutation = useUpdateCashOperation();
   const { data: record, isLoading: isDetailLoading } =
     useGetDetailCashOperation(id);
+  const initialValues = useMemo<CashOperationForm>(
+    () => ({
+      cashBoxId: record?.cashBoxId ?? null,
+      cashChartAccountId: record?.cashChartAccountId ?? null,
+      offsetAccountId: record?.offsetAccountId ?? null,
+      cashOperationId: record?.cashOperationId ?? null,
+      operationTypeId: record?.operationTypeId ?? null,
+      paymentTypeId: record?.paymentTypeId ?? null,
+      counterpartyId: record?.counterpartyId ?? null,
+      docDate: record?.docDate ?? defaultValues.docDate,
+      currencyId: record?.currencyId ?? null,
+      amount: record?.amount ?? null,
+      comment: record?.comment ?? "",
+      stateId: record?.stateId ?? null,
+    }),
+    [record],
+  );
   const formik = useFormik<CashOperationForm>({
-    initialValues: defaultValues,
+    initialValues,
     enableReinitialize: true,
     validationSchema: cashOperationSchema(),
     onSubmit: async (values, helpers) => {
@@ -62,23 +81,6 @@ export default function CashOperationAddEditPage({
       }
     },
   });
-  useEffect(() => {
-    if (!record) return;
-    formik.setValues({
-      cashBoxId: record.cashBoxId ?? null,
-      cashOperationId: record.cashOperationId ?? null,
-      operationTypeId: record.operationTypeId ?? null,
-      paymentPurposeId: record.paymentPurposeId ?? null,
-      counterpartyId: record.counterpartyId ?? null,
-      docDate: record.docDate ?? defaultValues.docDate,
-      currencyId: record.currencyId ?? null,
-      amount: record.amount ?? null,
-      comment: record.comment ?? "",
-      stateId: record.stateId ?? null,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [record]);
-
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
   if (!open) return null;
   return (

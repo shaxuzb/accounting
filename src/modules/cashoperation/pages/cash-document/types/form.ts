@@ -1,6 +1,5 @@
 export interface CashDocumentForm {
   cashBoxId: number | null;
-  paymentPurposeId: number | null;
   paymentTypeId: number | null;
   counterpartyId: number | null;
   docDate: string;
@@ -8,4 +7,6 @@ export interface CashDocumentForm {
   amount: number | null;
   exchangeRate: number | null;
   comment: string;
+  cashChartAccountId: number | null;
+  offsetAccountId: number | null;
 }

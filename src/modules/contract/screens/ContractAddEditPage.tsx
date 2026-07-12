@@ -15,6 +15,7 @@ import { contractSchema } from "../types/schema";
 import SelectDate from "@/components/fields/SelectDate";
 import dayjs from "dayjs";
 import { formatDate } from "@/utils/helpers";
+import type { Contract } from "../types/type";
 
 const defaultValues: ContractForm = {
   organizationId: null,
@@ -32,6 +33,8 @@ interface ContractAddEditPageProps {
   onClose: () => void;
   id?: number | null;
   contractTypeId?: number;
+  initialCounterpartyId?: number | null;
+  onCreated?: (contract: Contract) => void;
 }
 
 export default function ContractAddEditPage({
@@ -39,6 +42,8 @@ export default function ContractAddEditPage({
   onClose,
   id,
   contractTypeId,
+  initialCounterpartyId,
+  onCreated,
 }: ContractAddEditPageProps) {
   const { t } = useTranslation();
   const editId = id ?? null;
@@ -47,11 +52,19 @@ export default function ContractAddEditPage({
     useGetDetailContract(editId ?? "");
   const createMutation = useCreateContract();
   const updateMutation = useUpdateContract();
+  const isSaleContract = contractTypeId === 2;
+  const counterpartyPath = isSaleContract
+    ? selectListEndpoints.clients
+    : selectListEndpoints.suppliersSelectList;
+  const counterpartyLabel = isSaleContract
+    ? "Mijoz"
+    : "settings.fields.supplyContractor";
 
   const formik = useFormik<ContractForm>({
     initialValues: {
       ...defaultValues,
       contractTypeId: contractTypeId ?? null,
+      counterpartyId: initialCounterpartyId ?? null,
       stateId: isEdit ? null : 1,
     },
     enableReinitialize: true,
@@ -62,7 +75,8 @@ export default function ContractAddEditPage({
           await updateMutation.mutateAsync({ id: editId, payload: values });
           toast.success(t("settings.messages.updated"));
         } else {
-          await createMutation.mutateAsync(values);
+          const createdContract = await createMutation.mutateAsync(values);
+          onCreated?.(createdContract);
           toast.success(t("settings.messages.created"));
         }
         helpers.resetForm();
@@ -118,8 +132,9 @@ export default function ContractAddEditPage({
               <SelectCustom
                 formik={formik}
                 fieldName="counterpartyId"
-                label="settings.fields.supplyContractor"
-                path={selectListEndpoints.suppliersSelectList}
+                label={counterpartyLabel}
+                path={counterpartyPath}
+                disabled={!isEdit && Boolean(initialCounterpartyId)}
               />
             </Col>
             <Col span={12}>

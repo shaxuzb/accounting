@@ -21,11 +21,12 @@ const OrgSwitcher: React.FC = () => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const currentOrg = useAppSelector((state) => state.organization);
-  if (currentOrg.selectListType === "hidden") return null;
   const { data: organizations = [], isLoading } = useQuery<SelectData[]>({
     queryKey: [selectListKeys.organization],
     queryFn: fetchOrganizations,
   });
+
+  if (currentOrg.selectListType === "hidden") return null;
 
   if (!organizations.length && !isLoading) return null;
 

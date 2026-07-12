@@ -1,10 +1,9 @@
-import { Button, Form, Spin } from "antd";
+import { Form, Spin } from "antd";
 import dayjs from "dayjs";
 import { useFormik } from "formik";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
-import { Save } from "lucide-react";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useAppSelector } from "@/store/hooks";
 import { formatDate } from "@/utils/helpers";
@@ -17,7 +16,8 @@ import type {
   SaleDocForm,
   SaleDocUpdateForm,
 } from "../types/form";
-import { saleDocSchema } from "../types/schema";
+import { ValidationError } from "yup";
+import { saleDocLinesSchema, saleDocSchema } from "../types/schema";
 import type { SaleSelectedProduct } from "../types/type";
 import {
   clearSaleDraft,
@@ -37,6 +37,8 @@ const defaultValues: SaleDocForm = {
   contractId: null,
   warehouseId: null,
   currencyId: 1,
+  customerAccountId: null,
+  vatAccountId: null,
   comment: "",
   stateId: 1,
 };
@@ -80,6 +82,12 @@ export default function SaleAddEditPage() {
         unitPrice: product.unitPrice || product.amount || 0,
         unitName: product.unitName,
         vatRateId: product.vatRateId,
+        inventoryAccountId: product.inventoryAccountId ?? null,
+        incomeAccountId: product.incomeAccountId ?? null,
+        costAccountId: product.costAccountId ?? null,
+        inventoryAccountName: product.inventoryAccountName,
+        incomeAccountName: product.incomeAccountName,
+        costAccountName: product.costAccountName,
       }));
     }
 
@@ -95,6 +103,12 @@ export default function SaleAddEditPage() {
       unitPrice: line.price || line.amount || 0,
       unitName: line.unitName,
       vatRateId: line.vatRateId,
+      inventoryAccountId: line.inventoryAccountId ?? null,
+      incomeAccountId: line.incomeAccountId ?? null,
+      costAccountId: line.costAccountId ?? null,
+      inventoryAccountName: line.inventoryAccountName,
+      incomeAccountName: line.incomeAccountName,
+      costAccountName: line.costAccountName,
     }));
   }, [document?.lines, document?.products]);
 
@@ -118,28 +132,29 @@ export default function SaleAddEditPage() {
           contractId: document.contractId ?? null,
           warehouseId: document.warehouseId,
           currencyId: document.currencyId,
+          customerAccountId: document.customerAccountId ?? null,
+          vatAccountId: document.vatAccountId ?? null,
           comment: document.comment,
           stateId: document.stateId,
         }
       : initialDraft?.form ?? defaultValues,
     enableReinitialize: true,
-    validationSchema: saleDocSchema,
+    validationSchema: saleDocSchema(isEdit),
     onSubmit: async (values) => {
-      const validProducts = products.filter(
-        (product) => product.productId > 0 && product.quantity > 0,
-      );
-      if (!validProducts.length) {
-        toast.error("Kamida bitta mahsulotni miqdori bilan kiriting");
+      try {
+        await saleDocLinesSchema(isEdit).validate(products, {
+          abortEarly: false,
+        });
+      } catch (error) {
+        if (error instanceof ValidationError) {
+          toast.error(error.errors[0] || "Mahsulot ma'lumotlarini tekshiring");
+        } else {
+          toast.error("Mahsulot ma'lumotlarini tekshiring");
+        }
         return;
       }
-      if (products.some((product) => !product.productId)) {
-        toast.error("Tanlangan mahsulotlarda productId topilmadi");
-        return;
-      }
-      if (validProducts.some((product) => !product.unitId || product.unitId <= 0)) {
-        toast.error("Tanlangan mahsulotlarda birlik topilmadi");
-        return;
-      }
+
+      const validProducts = products;
 
       try {
         if (isEdit && document) {
@@ -168,6 +183,8 @@ export default function SaleAddEditPage() {
             warehouseId: values.warehouseId ?? 0,
             currencyId: values.currencyId ?? 0,
             contractId: values.contractId,
+            customerAccountId: values.customerAccountId ?? 0,
+            vatAccountId: values.vatAccountId ?? 0,
             comment: values.comment || null,
             lines: validProducts.map((product) => ({
               productId: product.productId,
@@ -176,6 +193,9 @@ export default function SaleAddEditPage() {
               unitId: product.unitId,
               unitPrice: product.unitPrice,
               vatRateId: product.vatRateId ?? null,
+              inventoryAccountId: product.inventoryAccountId ?? 0,
+              incomeAccountId: product.incomeAccountId ?? 0,
+              costAccountId: product.costAccountId ?? 0,
             })),
           };
           await createSale.mutateAsync(payload);
@@ -316,19 +336,10 @@ export default function SaleAddEditPage() {
             formik.setFieldValue("comment", comment, false)
           }
           onChange={setSelectedProducts}
+          onCancel={() => navigate(-1)}
+          submitting={createSale.isPending || updateSale.isPending}
           disabled={createSale.isPending || updateSale.isPending}
         />
-        <div className="flex justify-end">
-          <Button
-            type="primary"
-            size="large"
-            htmlType="submit"
-            icon={<Save className="size-4" />}
-            loading={createSale.isPending || updateSale.isPending}
-          >
-            Rasmiylashtirish
-          </Button>
-        </div>
       </div>
     </Form>
   );

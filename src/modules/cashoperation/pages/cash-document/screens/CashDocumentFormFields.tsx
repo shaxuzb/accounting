@@ -1,28 +1,36 @@
 import type { FormikProps } from "formik";
+import { useState } from "react";
 import { Col, Row } from "antd";
+import { useQueryClient } from "@tanstack/react-query";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
+import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
+import {
+  chartAccountOptionLabel,
+  chartAccountSelectedLabel,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
+import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import type { CashDocumentForm } from "../types/form";
-import type { CashDocumentKind } from "../types/type";
 
 interface CashDocumentFormFieldsProps {
   formik: FormikProps<CashDocumentForm>;
-  kind: CashDocumentKind;
   disabled?: boolean;
 }
 
 export default function CashDocumentFormFields({
   formik,
-  kind,
   disabled = false,
 }: CashDocumentFormFieldsProps) {
-  const operationTypeId = kind === "pko" ? 1 : 2;
+  const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   return (
-    <Row gutter={[16, 8]}>
+    <>
+      <Row gutter={[16, 8]}>
       <Col span={12}>
         <SelectCustom
           formik={formik}
@@ -32,16 +40,7 @@ export default function CashDocumentFormFields({
           disabled={disabled}
         />
       </Col>
-      <Col span={12}>
-        <SelectCustom
-          formik={formik}
-          fieldName="paymentPurposeId"
-          label="To'lov maqsadi"
-          path={selectListEndpoints.paymentPurposesSelectList}
-          queryParams={{ operationTypeId }}
-          disabled={disabled}
-        />
-      </Col>
+
       <Col span={12}>
         <SelectCustom
           formik={formik}
@@ -54,12 +53,40 @@ export default function CashDocumentFormFields({
       <Col span={12}>
         <SelectCustom
           formik={formik}
-          fieldName="counterpartyId"
-          label="bank.fields.counterparty"
-          path={selectListEndpoints.counterpartiesSelectList}
+          fieldName="cashChartAccountId"
+          label="Kassa schyoti"
+          path={selectListEndpoints.chartAccountsSelectList}
+          optionLabel={chartAccountOptionLabel}
+          selectedLabel={chartAccountSelectedLabel}
           disabled={disabled}
         />
       </Col>
+      <Col span={12}>
+        <SelectCustom
+          formik={formik}
+          fieldName="offsetAccountId"
+          label="Qarama-qarshi schyot"
+          path={selectListEndpoints.chartAccountsSelectList}
+          optionLabel={chartAccountOptionLabel}
+          selectedLabel={chartAccountSelectedLabel}
+          disabled={disabled}
+        />
+      </Col>
+      <Col span={12}>
+        <SelectCustom
+          formik={formik}
+          fieldName="counterpartyId"
+          label="bank.fields.counterparty"
+          path={selectListEndpoints.counterpartiesSelectList}
+          addOption={{
+            bool: true,
+            permissionCode: counterpartyPermissions.create,
+            onClick: () => setCounterpartyCreateOpen(true),
+          }}
+          disabled={disabled}
+        />
+      </Col>
+
       <Col span={12}>
         <SelectDate
           formik={formik}
@@ -105,6 +132,19 @@ export default function CashDocumentFormFields({
           disabled={disabled}
         />
       </Col>
-    </Row>
+      </Row>
+      <CounterpartyAddEditPage
+        open={counterpartyCreateOpen}
+        onCreated={(counterparty) => {
+          formik.setFieldValue("counterpartyId", counterparty.id, true);
+          invalidateSelectListQuery(
+            queryClient,
+            "counterpartyId",
+            selectListEndpoints.counterpartiesSelectList,
+          );
+        }}
+        onClose={() => setCounterpartyCreateOpen(false)}
+      />
+    </>
   );
 }

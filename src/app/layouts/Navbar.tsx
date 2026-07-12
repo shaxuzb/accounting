@@ -52,7 +52,7 @@ const Navbar = () => {
     if (currentRouteHandle?.backTo) {
       navigate(currentRouteHandle.backTo);
     }
-  }, [currentRouteHandle?.backTo, navigate]);
+  }, [currentRouteHandle, navigate]);
 
   return (
  <div className="bg-primary-bg top-0 sticky z-10 border-b border-b-border border-[#e5e7eb] h-16 flex items-center">
