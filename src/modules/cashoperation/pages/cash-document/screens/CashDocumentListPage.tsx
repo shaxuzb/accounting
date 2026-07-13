@@ -1,6 +1,6 @@
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { Plus, ReceiptText, RefreshCw } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useSearchParams } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
