@@ -2,6 +2,7 @@ import { purchasePermissions } from "@/modules/purchase/pages/purchase";
 import type { MenuRole } from "@/shared/types";
 import {
   Banknote,
+  BookOpen,
   Box,
   Briefcase,
   Building,
@@ -469,6 +470,15 @@ export const menuPermissions: MainMenu = {
         title: "settings.entities.chartAccounts",
         // img: role,
         description: "settings.descriptions.chartAccounts",
+      },
+    },
+    {
+      code: "CHART_ACCOUNT_VIEW",
+      iconName: <BookOpen className="size-5" />,
+      linkData: {
+        path: "document-account-settings",
+        title: "settings.entities.documentAccountSettings",
+        description: "settings.descriptions.documentAccountSettings",
       },
     },
 

@@ -4,8 +4,7 @@ export const saleEndpoints = {
     detail: (id: string | number) => `sale-docs/${id}`,
     create: "sale-docs",
     update: (id: string | number) => `sale-docs/${id}`,
-    warehouseConfirm: (id: string | number) =>
-      `sale-docs/${id}/warehouse-confirm`,
+    warehouseConfirm: (id: string | number) => `sale-docs/${id}/assembly`,
     confirm: (id: string | number) => `sale-docs/${id}/confirm`,
   },
   saleDocTable: {
@@ -18,6 +17,7 @@ export const saleEndpoints = {
     products: "product-stocks/products",
   },
   productPrice: {
-    detail: (productId: string | number) => `product-prices/${productId}/details`,
+    detail: (productId: string | number) =>
+      `product-prices/${productId}/details`,
   },
 } as const;

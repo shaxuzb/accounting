@@ -177,6 +177,32 @@ const toDraftItems = (rows: WarehouseConfirmRow[]): WarehouseConfirmDraftItem[] 
 const getScannedCount = (rows: WarehouseConfirmRow[]) =>
   rows.filter((row) => row.productTableId).length;
 
+const toAssemblyPayload = (rows: WarehouseConfirmRow[]) => {
+  const lines = new Map<
+    number,
+    {
+      id: number;
+      assembled: true;
+      items: { productTableId: number }[];
+    }
+  >();
+
+  rows.forEach((row) => {
+    if (!row.productTableId) return;
+
+    const line =
+      lines.get(row.saleDocProductId) ?? {
+        id: row.saleDocProductId,
+        assembled: true as const,
+        items: [],
+      };
+    line.items.push({ productTableId: row.productTableId });
+    lines.set(row.saleDocProductId, line);
+  });
+
+  return Array.from(lines.values());
+};
+
 export default function SaleWarehouseConfirm({ document }: Props) {
   const navigate = useNavigate();
   const confirmSale = useWarehouseConfirmSale(document.id);
@@ -248,11 +274,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     }
 
     try {
-      await confirmSale.mutateAsync({
-        items: rows.map((row) => ({
-          productTableId: row.productTableId as number,
-        })),
-      });
+      await confirmSale.mutateAsync(toAssemblyPayload(rows));
       setDraftRows([]);
       navigate("/main/sales/sale", { replace: true });
     } catch (error) {

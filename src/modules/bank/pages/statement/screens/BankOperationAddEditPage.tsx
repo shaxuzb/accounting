@@ -6,13 +6,12 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "@/config/dayjs";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import {
-  chartAccountOptionLabel,
-  chartAccountSelectedLabel,
   filterIds,
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
@@ -34,6 +33,10 @@ import { counterpartybankaccountPermissions } from "@/modules/settings/pages/cou
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 import type { Contract } from "@/modules/contract/types/type";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
+import {
+  bankDocumentAccountRoleCodes,
+  bankDocumentTypeIds,
+} from "../constants/endpoints";
 
 const toPositiveNumber = (value: unknown) => {
   const numberValue = Number(value);
@@ -168,6 +171,10 @@ export default function BankOperationAddEditPage() {
     () => toPositiveNumber(formik.values.operationTypeId),
     [formik.values.operationTypeId],
   );
+  const documentTypeId =
+    operationTypeId === 2
+      ? bankDocumentTypeIds.expense
+      : bankDocumentTypeIds.income;
   const previousCounterpartyId = useRef<number | null>(null);
   const counterpartyId = useMemo(
     () => toPositiveNumber(formik.values.counterpartyId),
@@ -205,9 +212,17 @@ export default function BankOperationAddEditPage() {
               ]}
               value={operationTypeId ?? undefined}
               disabled={isSubmitting}
-              onChange={(value) =>
-                formik.setFieldValue("operationTypeId", value)
-              }
+              onChange={(value) => {
+                formik.setValues(
+                  (previousValues) => ({
+                    ...previousValues,
+                    operationTypeId: Number(value),
+                    bankChartAccountId: null,
+                    offsetAccountId: null,
+                  }),
+                  false,
+                );
+              }}
             />
           </div>
         </div>
@@ -225,24 +240,24 @@ export default function BankOperationAddEditPage() {
               </Col>
 
               <Col span={8}>
-                <SelectCustom
+                <DocumentAccountSelect
                   formik={formik}
                   fieldName="bankChartAccountId"
                   label="Bank schyoti"
-                  path={selectListEndpoints.chartAccountsSelectList}
-                  optionLabel={chartAccountOptionLabel}
-                  selectedLabel={chartAccountSelectedLabel}
+                  documentTypeId={documentTypeId}
+                  documentRoleCode={bankDocumentAccountRoleCodes.bankAccount}
+                  getFirst
                 />
               </Col>
 
               <Col span={8}>
-                <SelectCustom
+                <DocumentAccountSelect
                   formik={formik}
                   fieldName="offsetAccountId"
                   label="Qarama-qarshi schyot"
-                  path={selectListEndpoints.chartAccountsSelectList}
-                  optionLabel={chartAccountOptionLabel}
-                  selectedLabel={chartAccountSelectedLabel}
+                  documentTypeId={documentTypeId}
+                  documentRoleCode={bankDocumentAccountRoleCodes.offsetAccount}
+                  getFirst
                 />
               </Col>
 

@@ -48,6 +48,7 @@ interface SelectCustomProps {
   isOrganizationId?: boolean;
   isPossibleBorrow?: boolean;
   allowedIds?: (number | string)[];
+  onChange?: (value: unknown) => void;
 }
 
 const normalizeText = (text: unknown): string =>
@@ -102,6 +103,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     disabled = false,
     allowedIds,
     mode,
+    onChange,
   } = props;
 
   const requestParams = React.useMemo(
@@ -280,6 +282,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         onChange={(value, option) => {
           if (mode === "multiple" || mode === "tags") {
             formik.setFieldValue(fieldName, value, true);
+            onChange?.(value);
             return;
           }
 
@@ -314,6 +317,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
             formik.setFieldValue("districtId", null, true);
           }
           formik.setFieldValue(fieldName, value, true);
+          onChange?.(value);
         }}
         popupRender={
           addOption.bool &&

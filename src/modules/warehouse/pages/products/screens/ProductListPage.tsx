@@ -9,7 +9,7 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { useAppSelector } from "@/store/hooks";
-import { generateKeyTable } from "@/utils/utils";
+import { customDate, generateKeyTable } from "@/utils/utils";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { useGetListProducts } from "../hooks";
 import { productPermissions } from "../constants/permissions";
@@ -46,15 +46,14 @@ export default function ProductListPage() {
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
+      width: 10,
       align: "center",
-      width: 70,
     },
     {
       dataIndex: "name",
       title: isService
         ? t("products.fields.serviceType")
         : t("products.fields.productType"),
-      minWidth: 180,
       render: (value, record) => (
         <Link to={`edit/${record.id}?isService=${isService}`}>{value}</Link>
       ),
@@ -62,16 +61,21 @@ export default function ProductListPage() {
     {
       dataIndex: "description",
       title: t("products.fields.description"),
-      minWidth: 180,
+    },
+     {
+      dataIndex: "createdDate",
+      title: t("Sana"),
+      align: "center",
+      render: (value) => customDate(value)
     },
     {
       dataIndex: "stateId",
       title: t("products.fields.status"),
-      width: 120,
       align: "center",
       render: (_, record) =>
-        stateStatus(record.stateId, record.state),
+        stateStatus(record.stateId, record.stateName),
     },
+   
   ];
 
   const hasActions =

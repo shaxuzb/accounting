@@ -5,8 +5,6 @@ import { useMemo } from "react";
 import { $axiosPrivate } from "@/services/AxiosService";
 import {
   chartAccountSelectedLabel,
-  selectListEndpoints,
-  selectListKeys,
 } from "@/shared/constants/selectLists";
 import { numberSpacing } from "@/utils/utils";
 import PurchaseImportEditableCell from "../components/PurchaseImportEditableCell";
@@ -17,6 +15,10 @@ import type {
   SelectOption,
 } from "../types/type";
 import type { ImportColumnConfig } from "../utils/importColumns";
+import {
+  purchaseDocumentAccountChartAccountsPath,
+  purchaseDocumentTypeIds,
+} from "../constants/endpoints";
 import {
   getNumber,
   getRowAmount,
@@ -73,15 +75,53 @@ export const usePurchaseImportColumns = ({
   unitOptions,
   vatRateOptions,
 }: UsePurchaseImportColumnsParams): TableColumnType<PurchaseImportRow>[] => {
-  const { data: chartAccounts = [] } = useQuery<PurchaseChartAccountOption[]>({
-    queryKey: ["selectlist", selectListKeys.chartAccount],
+  const documentTypeId = purchaseDocumentTypeIds[purchaseMode];
+  const chartAccountsPath =
+    purchaseDocumentAccountChartAccountsPath(purchaseMode);
+  const { data: debitAccounts = [] } = useQuery<
+    PurchaseChartAccountOption[]
+  >({
+    queryKey: [
+      "document-account-settings",
+      "chart-accounts",
+      documentTypeId,
+      "purchase_debit",
+    ],
     queryFn: async () => {
       const { data } = await $axiosPrivate.get<PurchaseChartAccountOption[]>(
-        selectListEndpoints.chartAccountsSelectList,
+        chartAccountsPath,
+        { params: { documentRoleCode: "purchase_debit" } },
       );
       return data ?? [];
     },
   });
+  const { data: vatAccounts = [] } = useQuery<PurchaseChartAccountOption[]>({
+    queryKey: [
+      "document-account-settings",
+      "chart-accounts",
+      documentTypeId,
+      "purchase_vat",
+    ],
+    queryFn: async () => {
+      const { data } = await $axiosPrivate.get<PurchaseChartAccountOption[]>(
+        chartAccountsPath,
+        { params: { documentRoleCode: "purchase_vat" } },
+      );
+      return data ?? [];
+    },
+  });
+  const chartAccounts = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          [...debitAccounts, ...vatAccounts].map((account) => [
+            Number(account.id),
+            account,
+          ]),
+        ).values(),
+      ),
+    [debitAccounts, vatAccounts],
+  );
   const chartAccountById = useMemo(
     () =>
       new Map(
@@ -240,7 +280,7 @@ export const usePurchaseImportColumns = ({
       {
         dataIndex: "unitId",
         title: "Birlik",
-        width: 140,
+        width: 120,
         align: "center",
         render: (_: unknown, record: PurchaseImportRow, rowIndex: number) =>
           getRowUnitLabel(record) ? (
@@ -264,7 +304,7 @@ export const usePurchaseImportColumns = ({
       {
         dataIndex: "qty",
         title: "Miqdor",
-        width: 120,
+        width: 100,
         align: "center",
         render: (value: unknown, record: PurchaseImportRow, rowIndex: number) => (
           <PurchaseImportEditableCell
@@ -304,12 +344,11 @@ export const usePurchaseImportColumns = ({
       {
         dataIndex: "vatRateId",
         title: "QQS (foiz va summa)",
-        width: 260,
         align: "center",
         render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => {
           const vatAmount = getRowVatAmount(record, vatRateOptions);
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center">
               <Select
                 showSearch
                 allowClear
@@ -349,7 +388,7 @@ export const usePurchaseImportColumns = ({
         title: "Hisobvaraqlar",
         align: "center",
         render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => (
-          <div className="flex min-w-30 items-center gap-1">
+          <div className="flex min-w-30 items-center">
             <span
               className="min-w-0 flex-1 truncate text-xs text-left"
               title={getAccountPreview(record)}
@@ -368,7 +407,7 @@ export const usePurchaseImportColumns = ({
       },
       {
         dataIndex: "actions",
-        title: "Amallar",
+        // title: "Amallar",
         render: (_: unknown, __: PurchaseImportRow, rowIndex: number) => (
           <Tooltip title="Qatorni o'chirish">
             <Button

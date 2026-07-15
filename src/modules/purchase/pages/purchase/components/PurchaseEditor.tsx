@@ -33,9 +33,10 @@ import {
   isCompletePurchaseLineWithAccounts,
 } from "@/modules/purchase/pages/purchase/types/schema";
 import type { PurchaseDetailLine } from "../types/type";
-import PurchaseImportHeader from "./PurchaseImportHeader";
 import ProductsCreateModal from "./ProductsCreateModal";
+import PurchaseImportHeader from "./PurchaseImportHeader";
 import PurchaseImportLinesSection from "./PurchaseImportLinesSection";
+import PurchaseImportSapActions from "./PurchaseImportSapActions";
 import PurchaseMarkingModal from "./PurchaseMarkingModal";
 import PurchaseLineAccountsModal, {
   type PurchaseLineAccountValues,
@@ -68,6 +69,7 @@ import {
   parseMarkingInput,
   toMarkingNumbers,
   toPurchaseCreatePayload,
+  toPurchaseUpdatePayload,
 } from "../utils/purchaseImport";
 
 const PURCHASE_IMPORT_DRAFT_HEADER_KEY = "purchase-import:draft:header";
@@ -558,7 +560,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
         return false;
       }
 
-      const payload = toPurchaseCreatePayload(
+      const updatePayload = toPurchaseUpdatePayload(
         values,
         completedRows,
         purchaseMode,
@@ -572,7 +574,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
         if (isEdit && purchaseId) {
           await updatePurchase.mutateAsync({
             id: purchaseId,
-            payload,
+            payload: updatePayload,
           });
           if (showSuccess) {
             toast.success("Hujjat saqlandi");
@@ -580,7 +582,9 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
           return true;
         }
 
-        await importPurchase.mutateAsync(payload);
+        await importPurchase.mutateAsync(
+          toPurchaseCreatePayload(values, completedRows, purchaseMode, 1),
+        );
         if (showSuccess) {
           toast.success("Hujjat saqlandi");
         }
@@ -1092,6 +1096,20 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
 
   const handlePurchaseModeChange = useCallback(
     (value: PurchaseMode) => {
+      formik.setValues(
+        (currentValues) => ({
+          ...currentValues,
+          supplierAccountId: null,
+          lines: currentValues.lines.map((line) => ({
+            ...line,
+            debitAccountId: null,
+            debitAccountName: "",
+            vatAccountId: null,
+            vatAccountName: "",
+          })),
+        }),
+        false,
+      );
       setPurchaseMode(value);
       setProductWithCount(value === "services");
       if (!isEdit) {
@@ -1104,7 +1122,15 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
         ),
       );
     },
-    [isEdit, setProductWithCount, setPurchaseMode, setProductWithCountDraft, setPurchaseModeDraft, withDiscount],
+    [
+      formik,
+      isEdit,
+      setProductWithCount,
+      setPurchaseMode,
+      setProductWithCountDraft,
+      setPurchaseModeDraft,
+      withDiscount,
+    ],
   );
 
   const totals = useMemo(
@@ -1209,31 +1235,37 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
 
         <PurchaseImportHeader
           formik={draftFormik}
-          hasSelectedRows={hasSelectedRows}
-          onAddManualRow={handleAddManualRow}
-          onBack={() => navigate(-1)}
-          onExcelDataChange={handleExcelDataChange}
-          onPurchaseModeChange={handlePurchaseModeChange}
           purchaseMode={purchaseMode}
-          selectBoxOptions={selectBoxOptions}
-          setSelectBoxOptions={setSelectBoxOptions}
+        />
+        <PurchaseImportSapActions
+          foundedSapCodes={foundedSapCodes}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          linesLength={formik.values.lines.length}
+          purchaseMode={purchaseMode}
+          onDeleteSapCodes={handleDeleteSapCodes}
+          onOpenMissingProductsModal={handleOpenMissingProductsModal}
         />
         <PurchaseImportLinesSection
           columns={tableColumns}
           comment={formik.values.comment}
           counterpartyId={formik.values.counterpartyId}
-          foundedSapCodes={foundedSapCodes}
           height={height}
           isFetching={isFetching}
           isLoading={isLoading}
           lines={formik.values.lines}
+          formik={draftFormik}
+          hasSelectedRows={hasSelectedRows}
           onAddManualRow={handleAddManualRow}
+          onBack={() => navigate(-1)}
+          onExcelDataChange={handleExcelDataChange}
+          onPurchaseModeChange={handlePurchaseModeChange}
           onCommentChange={(value) =>
             draftFormik.setFieldValue("comment", value, false)
           }
-          onDeleteSapCodes={handleDeleteSapCodes}
-          onOpenMissingProductsModal={handleOpenMissingProductsModal}
           purchaseMode={purchaseMode}
+          selectBoxOptions={selectBoxOptions}
+          setSelectBoxOptions={setSelectBoxOptions}
           totals={totals}
         />
         <PurchaseMarkingModal
@@ -1248,6 +1280,7 @@ export default function PurchaseEditor({ purchaseId }: PurchaseEditorProps) {
         />
         <PurchaseLineAccountsModal
           open={accountRowIndex !== null}
+          purchaseMode={purchaseMode}
           line={
             accountRowIndex === null
               ? null

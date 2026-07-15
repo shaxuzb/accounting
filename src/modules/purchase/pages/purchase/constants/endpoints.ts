@@ -9,3 +9,13 @@ export const purchaseEndpoints = {
     // importTemplate: "goods-movements/purchase-import-template",
   },
 } as const;
+
+export const purchaseDocumentTypeIds = {
+  goods: 1,
+  services: 2,
+} as const;
+
+export const purchaseDocumentAccountChartAccountsPath = (
+  purchaseMode: "goods" | "services",
+) =>
+  `document-account-settings/${purchaseDocumentTypeIds[purchaseMode]}/chart-accounts`;

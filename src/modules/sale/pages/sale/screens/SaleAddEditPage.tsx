@@ -14,6 +14,7 @@ import { useCreateSale, useGetDetailSale, useUpdateSale } from "../hooks";
 import type {
   SaleDocCreateForm,
   SaleDocForm,
+  SaleProcessingMode,
   SaleDocUpdateForm,
 } from "../types/form";
 import { ValidationError } from "yup";
@@ -25,6 +26,10 @@ import {
   getSaleConditionDraftKey,
   saveSaleDraft,
 } from "../utils/saleDraft";
+import {
+  hasRequiredSaleMarkings,
+  toSaleCreatePayload,
+} from "../utils/saleCreatePayload";
 
 const toPositiveNumber = (value: unknown) => {
   const parsed = Number(value);
@@ -33,6 +38,7 @@ const toPositiveNumber = (value: unknown) => {
 
 const defaultValues: SaleDocForm = {
   docDate: dayjs().format(formatDate),
+  exchangeRate: 0,
   counterpartyId: null,
   contractId: null,
   warehouseId: null,
@@ -55,6 +61,9 @@ export default function SaleAddEditPage() {
     SaleSelectedProduct[] | null
   >(() => initialDraft?.products ?? null);
   const [isDraftSynced, setIsDraftSynced] = useState(isEdit);
+  const [processingMode, setProcessingMode] = useState<SaleProcessingMode>(
+    () => initialDraft?.processingMode ?? 1,
+  );
 
   const { data: document, isLoading: isDocumentLoading } =
     useGetDetailSale(id);
@@ -128,6 +137,7 @@ export default function SaleAddEditPage() {
     initialValues: document
       ? {
           docDate: document.docDate,
+          exchangeRate: 0,
           counterpartyId: document.counterpartyId,
           contractId: document.contractId ?? null,
           warehouseId: document.warehouseId,
@@ -156,6 +166,15 @@ export default function SaleAddEditPage() {
 
       const validProducts = products;
 
+      if (
+        !isEdit &&
+        processingMode === 2 &&
+        !hasRequiredSaleMarkings(validProducts)
+      ) {
+        toast.error("Har bir markirovkali tovar uchun miqdoricha markirovka kiriting");
+        return;
+      }
+
       try {
         if (isEdit && document) {
           const payload: SaleDocUpdateForm = {
@@ -178,26 +197,11 @@ export default function SaleAddEditPage() {
           };
           await updateSale.mutateAsync({ id: document.id, payload });
         } else {
-          const payload: SaleDocCreateForm = {
-            counterpartyId: values.counterpartyId ?? 0,
-            warehouseId: values.warehouseId ?? 0,
-            currencyId: values.currencyId ?? 0,
-            contractId: values.contractId,
-            customerAccountId: values.customerAccountId ?? 0,
-            vatAccountId: values.vatAccountId ?? 0,
-            comment: values.comment || null,
-            lines: validProducts.map((product) => ({
-              productId: product.productId,
-              quantity: product.quantity,
-              costPrice: product.costPrice,
-              unitId: product.unitId,
-              unitPrice: product.unitPrice,
-              vatRateId: product.vatRateId ?? null,
-              inventoryAccountId: product.inventoryAccountId ?? 0,
-              incomeAccountId: product.incomeAccountId ?? 0,
-              costAccountId: product.costAccountId ?? 0,
-            })),
-          };
+          const payload: SaleDocCreateForm = toSaleCreatePayload(
+            values,
+            validProducts,
+            processingMode,
+          );
           await createSale.mutateAsync(payload);
           clearSaleDraft(organizationId);
         }
@@ -275,9 +279,10 @@ export default function SaleAddEditPage() {
     () => ({
       form: formik.values,
       products,
+      processingMode,
       saleConditionKey: saleConditionDraftKey,
     }),
-    [formik.values, products, saleConditionDraftKey],
+    [formik.values, processingMode, products, saleConditionDraftKey],
   );
   const draft = useDebounce(draftValue, 300);
   useEffect(() => {
@@ -336,6 +341,12 @@ export default function SaleAddEditPage() {
             formik.setFieldValue("comment", comment, false)
           }
           onChange={setSelectedProducts}
+          markingMode={!isEdit && processingMode === 2}
+          onMarkingModeChange={
+            isEdit
+              ? undefined
+              : (enabled) => setProcessingMode(enabled ? 2 : 1)
+          }
           onCancel={() => navigate(-1)}
           submitting={createSale.isPending || updateSale.isPending}
           disabled={createSale.isPending || updateSale.isPending}

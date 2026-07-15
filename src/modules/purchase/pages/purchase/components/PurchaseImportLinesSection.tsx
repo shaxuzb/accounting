@@ -1,22 +1,23 @@
 import { Button, Table, Tooltip, type TableColumnType } from "antd";
-import { PackagePlus, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import Card from "@/components/ui/card/Card";
 import PurchaseImportSummary from "./PurchaseImportSummary";
+import PurchaseImportActions, {
+  type PurchaseImportActionsProps,
+} from "./PurchaseImportActions";
 import type { PurchaseImportRow, PurchaseMode } from "../types/type";
 import { generateKeyTable } from "@/utils/utils";
 
-interface PurchaseImportLinesSectionProps {
+interface PurchaseImportLinesSectionProps extends PurchaseImportActionsProps {
   columns: TableColumnType<PurchaseImportRow>[];
   comment: string;
   counterpartyId: number | null;
-  foundedSapCodes: number;
   height: number;
   isFetching: boolean;
   isLoading: boolean;
   lines: PurchaseImportRow[];
   onAddManualRow: () => void;
   onCommentChange: (value: string) => void;
-  onDeleteSapCodes: () => void;
-  onOpenMissingProductsModal: () => void;
   purchaseMode: PurchaseMode;
   totals: {
     amount: number;
@@ -29,15 +30,21 @@ export default function PurchaseImportLinesSection({
   columns,
   comment,
   counterpartyId,
-  foundedSapCodes,
   isFetching,
   isLoading,
   lines,
+  formik,
+  hasSelectedRows,
   onAddManualRow,
+  onBack,
+  onSave,
+  saveLoading,
+  onExcelDataChange,
+  onPurchaseModeChange,
   onCommentChange,
-  onDeleteSapCodes,
-  onOpenMissingProductsModal,
   purchaseMode,
+  selectBoxOptions,
+  setSelectBoxOptions,
   totals,
   height,
 }: PurchaseImportLinesSectionProps) {
@@ -45,33 +52,21 @@ export default function PurchaseImportLinesSection({
   const tableHeight = Math.max(240, height - 320);
 
   return (
-    <>
-      <div className="mt-3 flex flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          {lines.length > 0 && purchaseMode === "goods" && (
-            <>
-              <Button
-                type="default"
-                htmlType="button"
-                onClick={onOpenMissingProductsModal}
-                icon={<PackagePlus className="size-4" />}
-                disabled={loading || foundedSapCodes === 0}
-              >
-                Topilmagan SAP kodlarni belgilash ({foundedSapCodes})
-              </Button>
-              <Button
-                type="primary"
-                htmlType="button"
-                danger
-                onClick={onDeleteSapCodes}
-                icon={<div>{foundedSapCodes}</div>}
-                disabled={loading || foundedSapCodes === 0}
-              >
-                Topilmagan SAP kodlarni o'chirish
-              </Button>
-            </>
-          )}
-        </div>
+    <Card className="mt-1 overflow-hidden border border-border">
+      <div className="border-b border-border p-3">
+        <PurchaseImportActions
+          formik={formik}
+          hasSelectedRows={hasSelectedRows}
+          onAddManualRow={onAddManualRow}
+          onBack={onBack}
+          onSave={onSave}
+          saveLoading={saveLoading}
+          onExcelDataChange={onExcelDataChange}
+          onPurchaseModeChange={onPurchaseModeChange}
+          purchaseMode={purchaseMode}
+          selectBoxOptions={selectBoxOptions}
+          setSelectBoxOptions={setSelectBoxOptions}
+        />
       </div>
 
       <div className="rounded-lg relative">
@@ -105,6 +100,6 @@ export default function PurchaseImportLinesSection({
           </Tooltip>
         </div>
       </div>
-    </>
+    </Card>
   );
 }

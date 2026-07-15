@@ -4,17 +4,21 @@ import { Col, Row } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
 import {
-  chartAccountOptionLabel,
-  chartAccountSelectedLabel,
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import type { CashOperationForm } from "@/modules/cashoperation/pages/cashoperation/types/form";
+import {
+  cashDocumentAccountRoleCodes,
+  cashDocumentTypeIds,
+  getCashDocumentTypeId,
+} from "@/modules/cashoperation/constants/documentAccount";
 
 interface CashOperationFormFieldsProps {
   formik: FormikProps<CashOperationForm>;
@@ -27,6 +31,8 @@ export default function CashOperationFormFields({
 }: CashOperationFormFieldsProps) {
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const queryClient = useQueryClient();
+  const documentTypeId = getCashDocumentTypeId(formik.values.operationTypeId);
+  const canUseDocumentAccounts = documentTypeId !== null;
 
   return (
     <>
@@ -41,25 +47,27 @@ export default function CashOperationFormFields({
         />
       </Col>
       <Col span={12}>
-        <SelectCustom
+        <DocumentAccountSelect
           formik={formik}
           fieldName="cashChartAccountId"
           label="Kassa schyoti"
-          path={selectListEndpoints.chartAccountsSelectList}
-          optionLabel={chartAccountOptionLabel}
-          selectedLabel={chartAccountSelectedLabel}
-          disabled={disabled}
+          documentTypeId={documentTypeId ?? cashDocumentTypeIds.income}
+          documentRoleCode={cashDocumentAccountRoleCodes.cashAccount}
+          getFirst
+          enabled={canUseDocumentAccounts && !disabled}
+          disabled={disabled || !canUseDocumentAccounts}
         />
       </Col>
       <Col span={12}>
-        <SelectCustom
+        <DocumentAccountSelect
           formik={formik}
           fieldName="offsetAccountId"
           label="Qarama-qarshi schyot"
-          path={selectListEndpoints.chartAccountsSelectList}
-          optionLabel={chartAccountOptionLabel}
-          selectedLabel={chartAccountSelectedLabel}
-          disabled={disabled}
+          documentTypeId={documentTypeId ?? cashDocumentTypeIds.income}
+          documentRoleCode={cashDocumentAccountRoleCodes.offsetAccount}
+          getFirst
+          enabled={canUseDocumentAccounts && !disabled}
+          disabled={disabled || !canUseDocumentAccounts}
         />
       </Col>
       <Col span={12}>
@@ -68,6 +76,12 @@ export default function CashOperationFormFields({
           fieldName="operationTypeId"
           label="Operatsiya turi"
           path={selectListEndpoints.operationTypes}
+          onChange={(value) => {
+            if (Number(value) === Number(formik.values.operationTypeId)) return;
+
+            formik.setFieldValue("cashChartAccountId", null, false);
+            formik.setFieldValue("offsetAccountId", null, false);
+          }}
           disabled={disabled}
         />
       </Col>

@@ -28,14 +28,17 @@ import type {
 import type {
   PurchaseImportForm,
   PurchaseImportHeaderDraft,
+  PurchaseProcessingMode,
 } from "@/modules/purchase/pages/purchase/types/form";
 import {
   purchaseValidationSchema,
   isCompletePurchaseLineWithAccounts,
 } from "@/modules/purchase/pages/purchase/types/schema";
-import PurchaseImportHeader from "../components/PurchaseImportHeader";
+import PurchaseProcessingModeModal from "../components/PurchaseProcessingModeModal";
 import ProductsCreateModal from "../components/ProductsCreateModal";
+import PurchaseImportHeader from "../components/PurchaseImportHeader";
 import PurchaseImportLinesSection from "../components/PurchaseImportLinesSection";
+import PurchaseImportSapActions from "../components/PurchaseImportSapActions";
 import PurchaseMarkingModal from "../components/PurchaseMarkingModal";
 import PurchaseLineAccountsModal, {
   type PurchaseLineAccountValues,
@@ -68,6 +71,7 @@ import {
   parseMarkingInput,
   toMarkingNumbers,
   toPurchaseCreatePayload,
+  toPurchaseUpdatePayload,
 } from "../utils/purchaseImport";
 
 const PURCHASE_IMPORT_DRAFT_HEADER_KEY = "purchase-import:draft:header";
@@ -350,11 +354,14 @@ const PurchaseImportPage = () => {
   const confirmMutation = useConfirmPurchase(purchaseId);
   const cancelMutation = useCancelPurchase(purchaseId);
   const isDraft = detailData?.statusId === 1;
+  const [processingModeModalOpen, setProcessingModeModalOpen] = useState(false);
+  const [isCreateProcessing, setIsCreateProcessing] = useState(false);
   const isSubmitting =
     importPurchase.isPending ||
     updatePurchase.isPending ||
     confirmMutation.isPending ||
-    cancelMutation.isPending;
+    cancelMutation.isPending ||
+    isCreateProcessing;
   const {
     data,
     isFetching,
@@ -495,39 +502,21 @@ const PurchaseImportPage = () => {
     enableReinitialize: isEdit,
     validationSchema: purchaseValidationSchema,
     onSubmit: async (values) => {
-      const saved = await persistPurchase(values, true);
-      if (!saved || isEdit) return;
+      if (!isEdit) {
+        setProcessingModeModalOpen(true);
+        return;
+      }
 
-      const defaultHeader = getDefaultPurchaseImportHeader();
-      const defaultDraftLines: PurchaseImportRow[] = [];
-      const defaultLines = [
-        createEmptyPurchaseRow({
-          indexId: 1,
-          counterpartyId: defaultHeader.counterpartyId,
-          currencyId: defaultHeader.currencyId,
-          purchaseMode: "goods",
-          productWithCount: false,
-        }),
-      ];
-      isDraftStorageEnabledRef.current = false;
-      setHeaderDraft(defaultHeader);
-      setExcelData(defaultDraftLines);
-      setProductWithCount(false);
-      setPurchaseMode("goods");
-      setProductWithCountDraft(false);
-      setPurchaseModeDraft("goods");
-      formik.resetForm({
-        values: {
-          ...defaultHeader,
-          lines: defaultLines,
-        },
-      });
-      navigate(-1);
+      await persistPurchase(values, true);
     },
   });
 
   const persistPurchase = useCallback(
-    async (values: PurchaseImportForm, showSuccess: boolean) => {
+    async (
+      values: PurchaseImportForm,
+      showSuccess: boolean,
+      processingMode: PurchaseProcessingMode = 1,
+    ) => {
       const errors = await formik.validateForm();
       if (Object.keys(errors).length > 0) {
         formik.setTouched(buildTouched(values));
@@ -550,11 +539,6 @@ const PurchaseImportPage = () => {
         return false;
       }
 
-      const payload = toPurchaseCreatePayload(
-        values,
-        completedRows,
-        purchaseMode,
-      );
       if (!completedRows.length) {
         toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
         return false;
@@ -564,7 +548,11 @@ const PurchaseImportPage = () => {
         if (isEdit && purchaseId) {
           await updatePurchase.mutateAsync({
             id: purchaseId,
-            payload,
+            payload: toPurchaseUpdatePayload(
+              values,
+              completedRows,
+              purchaseMode,
+            ),
           });
           if (showSuccess) {
             toast.success("Hujjat saqlandi");
@@ -572,7 +560,14 @@ const PurchaseImportPage = () => {
           return true;
         }
 
-        await importPurchase.mutateAsync(payload);
+        await importPurchase.mutateAsync(
+          toPurchaseCreatePayload(
+            values,
+            completedRows,
+            purchaseMode,
+            processingMode,
+          ),
+        );
         if (showSuccess) {
           toast.success("Hujjat saqlandi");
         }
@@ -583,6 +578,69 @@ const PurchaseImportPage = () => {
       }
     },
     [formik, importPurchase, isEdit, purchaseId, purchaseMode, updatePurchase],
+  );
+
+  const finishNewPurchase = useCallback(() => {
+    const defaultHeader = getDefaultPurchaseImportHeader();
+    const defaultDraftLines: PurchaseImportRow[] = [];
+    const defaultLines = [
+      createEmptyPurchaseRow({
+        indexId: 1,
+        counterpartyId: defaultHeader.counterpartyId,
+        currencyId: defaultHeader.currencyId,
+        purchaseMode: "goods",
+        productWithCount: false,
+      }),
+    ];
+
+    isDraftStorageEnabledRef.current = false;
+    setHeaderDraft(defaultHeader);
+    setExcelData(defaultDraftLines);
+    setProductWithCount(false);
+    setPurchaseMode("goods");
+    setProductWithCountDraft(false);
+    setPurchaseModeDraft("goods");
+    formik.resetForm({
+      values: {
+        ...defaultHeader,
+        lines: defaultLines,
+      },
+    });
+    navigate(-1);
+  }, [
+    formik,
+    navigate,
+    setExcelData,
+    setHeaderDraft,
+    setProductWithCountDraft,
+    setPurchaseModeDraft,
+  ]);
+
+  const handleCreateSave = useCallback(
+    async (processingMode: PurchaseProcessingMode) => {
+      if (isEdit || isCreateProcessing) return;
+
+      setProcessingModeModalOpen(false);
+      setIsCreateProcessing(true);
+
+      try {
+        const saved = await persistPurchase(
+          formik.values,
+          true,
+          processingMode,
+        );
+        if (saved) finishNewPurchase();
+      } finally {
+        setIsCreateProcessing(false);
+      }
+    },
+    [
+      finishNewPurchase,
+      formik.values,
+      isCreateProcessing,
+      isEdit,
+      persistPurchase,
+    ],
   );
 
   const ensureSavedBeforeAction = useCallback(async () => {
@@ -1081,6 +1139,20 @@ const PurchaseImportPage = () => {
 
   const handlePurchaseModeChange = useCallback(
     (value: PurchaseMode) => {
+      formik.setValues(
+        (currentValues) => ({
+          ...currentValues,
+          supplierAccountId: null,
+          lines: currentValues.lines.map((line) => ({
+            ...line,
+            debitAccountId: null,
+            debitAccountName: "",
+            vatAccountId: null,
+            vatAccountName: "",
+          })),
+        }),
+        false,
+      );
       setPurchaseMode(value);
       setProductWithCount(value === "services");
       if (!isEdit) {
@@ -1095,6 +1167,7 @@ const PurchaseImportPage = () => {
     },
     [
       isEdit,
+      formik,
       setProductWithCount,
       setProductWithCountDraft,
       setPurchaseMode,
@@ -1209,29 +1282,43 @@ const PurchaseImportPage = () => {
 
         <PurchaseImportHeader
           formik={draftFormik}
-          hasSelectedRows={hasSelectedRows}
-          onAddManualRow={handleAddManualRow}
-          onBack={() => navigate(-1)}
-          onExcelDataChange={handleExcelDataChange}
-          onPurchaseModeChange={handlePurchaseModeChange}
           purchaseMode={purchaseMode}
-          selectBoxOptions={selectBoxOptions}
-          setSelectBoxOptions={setSelectBoxOptions}
+        />
+        <PurchaseImportSapActions
+          foundedSapCodes={foundedSapCodes}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          linesLength={formik.values.lines.length}
+          purchaseMode={purchaseMode}
+          onDeleteSapCodes={handleDeleteSapCodes}
+          onOpenMissingProductsModal={handleOpenMissingProductsModal}
+        />
+        <PurchaseProcessingModeModal
+          open={processingModeModalOpen}
+          loading={isCreateProcessing}
+          onClose={() => setProcessingModeModalOpen(false)}
+          onSelect={(mode) => void handleCreateSave(mode)}
         />
         <PurchaseImportLinesSection
           columns={tableColumns}
           comment={formik.values.comment}
           counterpartyId={formik.values.counterpartyId}
-          foundedSapCodes={foundedSapCodes}
           height={height}
           isFetching={isFetching}
           isLoading={isLoading}
           lines={formik.values.lines}
+          formik={draftFormik}
+          hasSelectedRows={hasSelectedRows}
           onAddManualRow={handleAddManualRow}
+          onBack={() => navigate(-1)}
+          onSave={isEdit ? undefined : () => setProcessingModeModalOpen(true)}
+          saveLoading={isCreateProcessing}
+          onExcelDataChange={handleExcelDataChange}
+          onPurchaseModeChange={handlePurchaseModeChange}
           onCommentChange={handleCommentChange}
-          onDeleteSapCodes={handleDeleteSapCodes}
-          onOpenMissingProductsModal={handleOpenMissingProductsModal}
           purchaseMode={purchaseMode}
+          selectBoxOptions={selectBoxOptions}
+          setSelectBoxOptions={setSelectBoxOptions}
           totals={totals}
         />
         <PurchaseMarkingModal
@@ -1246,6 +1333,7 @@ const PurchaseImportPage = () => {
         />
         <PurchaseLineAccountsModal
           open={accountRowIndex !== null}
+          purchaseMode={purchaseMode}
           line={
             accountRowIndex === null
               ? null

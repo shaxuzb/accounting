@@ -32,11 +32,13 @@ export interface ProductType {
   id: number;
   state: string;
   stateId: number;
+  stateName: string;
   name: string;
   description?: string;
   isService?: boolean;
   products: ProductItem[];
   photoUrl?: string;
+  createdDate: string
 }
 
 export interface ProductTypeForm {

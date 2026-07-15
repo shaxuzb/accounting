@@ -2,13 +2,12 @@ import { Button, Modal, Space } from "antd";
 import { useFormik } from "formik";
 import type { FormikProps } from "formik";
 import { Check, CheckCheck } from "lucide-react";
-import SelectCustom from "@/components/fields/SelectCustom";
-import {
-  chartAccountOptionLabel,
-  chartAccountSelectedLabel,
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import type { SaleSelectedProduct } from "../types/type";
+import {
+  saleDocumentAccountRoleCodes,
+  saleDocumentTypeId,
+} from "../constants/documentAccount";
 
 export interface SaleLineAccountValues {
   inventoryAccountId: number | null;
@@ -70,7 +69,7 @@ export default function SaleLineAccountsModal({
     <Modal
       title="Satr uchun hisobvaraqlar"
       centered
-      width={540}
+      width={600}
       open={open}
       onCancel={onClose}
       destroyOnHidden
@@ -106,41 +105,41 @@ export default function SaleLineAccountsModal({
       </div>
 
       <div className="space-y-1">
-        <SelectCustom
+        <DocumentAccountSelect
           label="Tovarlar hisobvarag'i"
           fieldName="inventoryAccountId"
           getFieldName="inventoryAccountName"
-          path={selectListEndpoints.chartAccountsSelectList}
           formik={formik as unknown as FormikProps<object>}
           search
           required
           clearable
-          optionLabel={chartAccountOptionLabel}
-          selectedLabel={chartAccountSelectedLabel}
+          documentTypeId={saleDocumentTypeId}
+          documentRoleCode={saleDocumentAccountRoleCodes.inventory}
+          getFirst
         />
-        <SelectCustom
+        <DocumentAccountSelect
           label="Sotuv daromadi hisobvarag'i"
           fieldName="incomeAccountId"
           getFieldName="incomeAccountName"
-          path={selectListEndpoints.chartAccountsSelectList}
           formik={formik as unknown as FormikProps<object>}
           search
           required
           clearable
-          optionLabel={chartAccountOptionLabel}
-          selectedLabel={chartAccountSelectedLabel}
+          documentTypeId={saleDocumentTypeId}
+          documentRoleCode={saleDocumentAccountRoleCodes.income}
+          getFirst
         />
-        <SelectCustom
+        <DocumentAccountSelect
           label="Sotuv tannarxi hisobvarag'i"
           fieldName="costAccountId"
           getFieldName="costAccountName"
-          path={selectListEndpoints.chartAccountsSelectList}
           formik={formik as unknown as FormikProps<object>}
           search
           required
           clearable
-          optionLabel={chartAccountOptionLabel}
-          selectedLabel={chartAccountSelectedLabel}
+          documentTypeId={saleDocumentTypeId}
+          documentRoleCode={saleDocumentAccountRoleCodes.cost}
+          getFirst
         />
       </div>
     </Modal>

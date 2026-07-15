@@ -6,7 +6,10 @@ import type {
   PurchaseDetailData,
   PurchaseForm,
 } from "../types/type";
-import type { PurchaseCreatePayload } from "../types/form";
+import type {
+  PurchaseCreatePayload,
+  PurchaseUpdatePayload,
+} from "../types/form";
 
 type QueryParams = ListParams | URLSearchParams;
 
@@ -36,7 +39,7 @@ export const purchaseService = {
       .then((res) => res.data),
   update: (
     id: string | number,
-    payload: PurchaseCreatePayload | Partial<PurchaseForm>,
+    payload: PurchaseUpdatePayload | Partial<PurchaseForm>,
   ) =>
     $axiosPrivate
       .put<PurchaseDetailData>(endpoints.update(id), payload)

@@ -7,3 +7,4 @@ export { useGetDetailBankOperation } from "./useGetDetailBankOperation";
 export { useGetBankOperations } from "./useGetBankOperations";
 export { useParseBankStatement } from "./useParseBankStatement";
 export { useUpdateBankOperation } from "./useUpdateBankOperation";
+export { useGetBankDocumentAccountOptions } from "./useGetBankDocumentAccountOptions";

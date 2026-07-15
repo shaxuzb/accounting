@@ -27,8 +27,10 @@ export default function ContractListPage() {
     params.set("ContractTypeId", String(contractTypeId));
     return params;
   }, [contractTypeId, searchParams]);
-  const { data, refetch, isLoading, isFetching } =
-    useGetListContract(newParams,pathname);
+  const { data, refetch, isLoading, isFetching } = useGetListContract(
+    newParams,
+    pathname,
+  );
 
   const tableColumns: TableColumnsType<Contract> = [
     {
@@ -45,6 +47,7 @@ export default function ContractListPage() {
       title: t("contract.fields.counterpartyName"),
       dataIndex: "counterpartyName",
     },
+
     {
       title: t("contract.fields.contractDate"),
       dataIndex: "contractDate",

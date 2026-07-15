@@ -1,7 +1,6 @@
 import { Button, Card as AntCard, Col, Form, Row, Spin } from "antd";
 import { useFormik } from "formik";
 import {
-  ArrowLeft,
   Calendar,
   CheckCircle2,
   CircleX,
@@ -13,6 +12,7 @@ import { useEffect, useMemo, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import dayjs from "@/config/dayjs";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -21,8 +21,6 @@ import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import {
-  chartAccountOptionLabel,
-  chartAccountSelectedLabel,
   filterIds,
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
@@ -39,6 +37,10 @@ import {
 import { bankPermissions } from "../constants/permissions";
 import { schema } from "../types/schema";
 import type { BankOperationCreatePayload } from "../types/form";
+import {
+  bankDocumentAccountRoleCodes,
+  bankDocumentTypeIds,
+} from "../constants/endpoints";
 
 const toPositiveNumber = (value: unknown) => {
   const numberValue = Number(value);
@@ -72,8 +74,8 @@ type BankOperationForm = Omit<
 
 const defaultValues: BankOperationForm = {
   bankAccountId: null,
-  bankChartAccountId: 0,
-  offsetAccountId: 0,
+  bankChartAccountId: null,
+  offsetAccountId: null,
   operationTypeId: 1,
   paymentTypeId: null,
   counterpartyId: null,
@@ -100,8 +102,8 @@ export default function BankOperationDetailPage() {
   const initialValues = useMemo<BankOperationForm>(
     () => ({
       bankAccountId: record?.bankAccountId ?? null,
-      bankChartAccountId: record?.bankChartAccountId ?? 0,
-      offsetAccountId: record?.offsetAccountId ?? 0,
+      bankChartAccountId: record?.bankChartAccountId ?? null,
+      offsetAccountId: record?.offsetAccountId ?? null,
       operationTypeId: record?.operationTypeId ?? 1,
       paymentTypeId: record?.paymentTypeId ?? null,
       counterpartyId: record?.counterpartyId ?? null,
@@ -145,6 +147,10 @@ export default function BankOperationDetailPage() {
     },
   });
   const { setFieldValue } = formik;
+  const documentTypeId =
+    Number(formik.values.operationTypeId) === 2
+      ? bankDocumentTypeIds.expense
+      : bankDocumentTypeIds.income;
 
   const counterpartyId = useMemo(
     () => toPositiveNumber(formik.values.counterpartyId),
@@ -194,12 +200,12 @@ export default function BankOperationDetailPage() {
               statusId={record.statusId}
               statusName={record.statusName}
             />
-            <Button
+            {/* <Button
               icon={<ArrowLeft className="size-4" />}
               onClick={() => navigate("..")}
             >
               Orqaga
-            </Button>
+            </Button> */}
           </div>
         </div>
       </Card>
@@ -218,23 +224,23 @@ export default function BankOperationDetailPage() {
                   />
                 </Col>
                 <Col span={8}>
-                  <SelectCustom
+                  <DocumentAccountSelect
                     formik={formik}
                     fieldName="bankChartAccountId"
                     label="Bank schyoti"
-                    path={selectListEndpoints.chartAccountsSelectList}
-                    optionLabel={chartAccountOptionLabel}
-                    selectedLabel={chartAccountSelectedLabel}
+                    documentTypeId={documentTypeId}
+                    documentRoleCode={bankDocumentAccountRoleCodes.bankAccount}
+                    getFirst
                   />
                 </Col>
                 <Col span={8}>
-                  <SelectCustom
+                  <DocumentAccountSelect
                     formik={formik}
                     fieldName="offsetAccountId"
                     label="Qarama-qarshi schyot"
-                    path={selectListEndpoints.chartAccountsSelectList}
-                    optionLabel={chartAccountOptionLabel}
-                    selectedLabel={chartAccountSelectedLabel}
+                    documentTypeId={documentTypeId}
+                    documentRoleCode={bankDocumentAccountRoleCodes.offsetAccount}
+                    getFirst
                   />
                 </Col>
 

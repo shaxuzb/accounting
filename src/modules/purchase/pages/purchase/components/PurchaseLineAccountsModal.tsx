@@ -1,13 +1,10 @@
 import { Button, Modal, Space } from "antd";
 import { useFormik } from "formik";
 import { Check, CheckCheck } from "lucide-react";
-import SelectCustom from "@/components/fields/SelectCustom";
-import {
-  chartAccountOptionLabel,
-  chartAccountSelectedLabel,
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import type { PurchaseImportRow } from "../types/type";
+import type { PurchaseMode } from "../types/type";
+import { purchaseDocumentTypeIds } from "../constants/endpoints";
 
 export interface PurchaseLineAccountValues {
   debitAccountId: number | null;
@@ -19,6 +16,7 @@ export interface PurchaseLineAccountValues {
 interface Props {
   open: boolean;
   line: PurchaseImportRow | null;
+  purchaseMode: PurchaseMode;
   onClose: () => void;
   onApply: (values: PurchaseLineAccountValues, applyToAll: boolean) => void;
 }
@@ -35,6 +33,7 @@ const getInitialValues = (
 export default function PurchaseLineAccountsModal({
   open,
   line,
+  purchaseMode,
   onClose,
   onApply,
 }: Props) {
@@ -57,7 +56,7 @@ export default function PurchaseLineAccountsModal({
     <Modal
       title="Satr uchun hisobvaraqlar"
       centered
-      width={540}
+      width={600}
       open={open}
       onCancel={onClose}
       destroyOnHidden
@@ -93,29 +92,29 @@ export default function PurchaseLineAccountsModal({
       </div>
 
       <div className="space-y-1">
-        <SelectCustom
+        <DocumentAccountSelect
           label="Debet hisobvarag'i"
           fieldName="debitAccountId"
           getFieldName="debitAccountName"
-          path={selectListEndpoints.chartAccountsSelectList}
+          documentTypeId={purchaseDocumentTypeIds[purchaseMode]}
+          documentRoleCode="purchase_debit"
           formik={formik}
+          getFirst
           search
           required
           clearable
-          optionLabel={chartAccountOptionLabel}
-          selectedLabel={chartAccountSelectedLabel}
         />
-        <SelectCustom
+        <DocumentAccountSelect
           label="QQS hisobvarag'i"
           fieldName="vatAccountId"
           getFieldName="vatAccountName"
-          path={selectListEndpoints.chartAccountsSelectList}
+          documentTypeId={purchaseDocumentTypeIds[purchaseMode]}
+          documentRoleCode="purchase_vat"
           formik={formik}
+          getFirst
           search
           required
           clearable
-          optionLabel={chartAccountOptionLabel}
-          selectedLabel={chartAccountSelectedLabel}
         />
       </div>
     </Modal>

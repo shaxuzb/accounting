@@ -8,6 +8,8 @@ import OrganizationListPage from "./pages/organizations/screens/OrganizationList
 import CounterpartyListPage from "./pages/counterparty/screens/CounterpartyListPage";
 import DepartmentListPage from "./pages/departments/screens/DepartmentListPage";
 import ChartAccountListPage from "./pages/chartAccounts/screens/ChartAccountListPage";
+import DocumentAccountSettingsListPage from "./pages/documentAccountSettings/screens/DocumentAccountSettingsListPage";
+import DocumentAccountSettingsDetailPage from "./pages/documentAccountSettings/screens/DocumentAccountSettingsDetailPage";
 import BranchListPage from "./pages/branches/screens/BranchListPage";
 import CounterpartyBankAccountListPage from "./pages/counterpartybankaccount/screens/CounterpartyBankAccountListPage";
 import SettingsBankListPage from "./pages/bank/screens/SettingsBankListPage";
@@ -174,6 +176,35 @@ export const settingsRoutes: RouteObject = {
         <ChartAccountListPage />,
         chartAccountsPermissions.view,
       ),
+    },
+    {
+      path: "document-account-settings",
+      handle: {
+        title: "settings.entities.documentAccountSettings",
+        showBack: true,
+        backTo: "..",
+      },
+      children: [
+        {
+          index: true,
+          element: withPermission(
+            <DocumentAccountSettingsListPage />,
+            chartAccountsPermissions.view,
+          ),
+        },
+        {
+          path: ":documentTypeId",
+          handle: {
+            title: "settings.entities.documentAccountSettings",
+            showBack: true,
+            backTo: "..",
+          },
+          element: withPermission(
+            <DocumentAccountSettingsDetailPage />,
+            chartAccountsPermissions.view,
+          ),
+        },
+      ],
     },
     {
       path: "banks",

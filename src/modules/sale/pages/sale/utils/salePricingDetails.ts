@@ -1,7 +1,4 @@
-import type {
-  SaleProductPriceLayer,
-  SaleProductStock,
-} from "../types/type";
+import type { SaleProductPriceLayer, SaleProductStock } from "../types/type";
 
 export const COSTING_METHOD = {
   FIFO: 1,
@@ -14,7 +11,11 @@ type UnknownRecord = Record<string, unknown>;
 const isRecord = (value: unknown): value is UnknownRecord =>
   Boolean(value) && typeof value === "object" && !Array.isArray(value);
 
-const read = (value: unknown, keys: string[], fallback: unknown = undefined) => {
+const read = (
+  value: unknown,
+  keys: string[],
+  fallback: unknown = undefined,
+) => {
   if (!isRecord(value)) return fallback;
   for (const key of keys) {
     const current = value[key];
@@ -41,6 +42,7 @@ const getCollection = (value: unknown): unknown[] => {
     "salePrices",
     "items",
     "results",
+    "data",
     "details",
     "tables",
     "productTables",
@@ -72,7 +74,9 @@ const getNestedFallback = (
 
 const getLayerMatchKey = (item: unknown) => ({
   purchaseId: toNumber(read(item, ["purchaseId", "ownerId"]), 0),
-  purchaseDate: toStringValue(read(item, ["purchaseDate", "date", "docDate"], "")),
+  purchaseDate: toStringValue(
+    read(item, ["purchaseDate", "date", "docDate"], ""),
+  ),
   productTableIds: getNumberArray(read(item, ["productTableIds"])),
 });
 
@@ -83,9 +87,15 @@ const findSaleLayer = (costItem: unknown, saleItems: unknown[]) => {
   const costKey = getLayerMatchKey(costItem);
   return saleItems.find((saleItem) => {
     const saleKey = getLayerMatchKey(saleItem);
-    if (costKey.purchaseId && saleKey.purchaseId === costKey.purchaseId) return true;
-    if (hasProductTableOverlap(costKey.productTableIds, saleKey.productTableIds)) return true;
-    return Boolean(costKey.purchaseDate && saleKey.purchaseDate === costKey.purchaseDate);
+    if (costKey.purchaseId && saleKey.purchaseId === costKey.purchaseId)
+      return true;
+    if (
+      hasProductTableOverlap(costKey.productTableIds, saleKey.productTableIds)
+    )
+      return true;
+    return Boolean(
+      costKey.purchaseDate && saleKey.purchaseDate === costKey.purchaseDate,
+    );
   });
 };
 
@@ -144,7 +154,14 @@ const normalizeLayer = (
   const costPrice = toNumber(
     read(
       item,
-      ["costPrice", "averageCostPrice", "unitCost", "cost", "purchasePrice", "unitPrice"],
+      [
+        "costPrice",
+        "averageCostPrice",
+        "unitCost",
+        "cost",
+        "purchasePrice",
+        "unitPrice",
+      ],
       getProductFallback(response, product, [
         "costPrice",
         "averageCostPrice",
@@ -207,11 +224,18 @@ export const normalizeProductPriceDetails = (
   const costCollection = getCollection(cost);
   const saleCollection = getCollection(sale);
   const fallbackCollection = getCollection(response);
-  const collection = costCollection.length ? costCollection : fallbackCollection;
+  const collection = costCollection.length
+    ? costCollection
+    : fallbackCollection;
   const layers = (
     collection.length ? collection : [isRecord(response) ? response : product]
   ).map((item) =>
-    normalizeLayer(item, response, product, findSaleLayer(item, saleCollection)),
+    normalizeLayer(
+      item,
+      response,
+      product,
+      findSaleLayer(item, saleCollection),
+    ),
   );
   const availableQuantity = layers.reduce(
     (sum, layer) => sum + layer.availableQuantity,
@@ -219,14 +243,20 @@ export const normalizeProductPriceDetails = (
   );
 
   return {
-    productId: toNumber(getProductFallback(response, product, ["productId", "id"])),
+    productId: toNumber(
+      getProductFallback(response, product, ["productId", "id"]),
+    ),
     productName: toStringValue(
       getProductFallback(response, product, ["productName", "name"]),
       "-",
     ),
-    mxik: toStringValue(getProductFallback(response, product, ["mxik", "barcode"])),
+    mxik: toStringValue(
+      getProductFallback(response, product, ["mxik", "barcode"]),
+    ),
     unitId: toNumber(getUnitIdFallback(response, product, collection[0]), 0),
-    unitName: toStringValue(getUnitNameFallback(response, product, collection[0])),
+    unitName: toStringValue(
+      getUnitNameFallback(response, product, collection[0]),
+    ),
     availableQuantity: toNumber(
       getProductFallback(response, product, [
         "availableQuantity",
@@ -297,8 +327,10 @@ const weightedAverage = (
 export const getMarkupPercent = (costPrice: number, salePrice: number) =>
   costPrice > 0 ? ((salePrice - costPrice) / costPrice) * 100 : 0;
 
-export const getSalePriceByMarkup = (costPrice: number, markupPercent: number) =>
-  costPrice * (1 + markupPercent / 100);
+export const getSalePriceByMarkup = (
+  costPrice: number,
+  markupPercent: number,
+) => costPrice * (1 + markupPercent / 100);
 
 export const allocateSaleLayers = ({
   costingMethodId,
@@ -355,6 +387,9 @@ export const getCostingPrices = ({
   return {
     costPrice: averageUnitPrice,
     unitPrice:
-      averageSalePrice || defaultSalePrice || averageUnitPrice || defaultCostPrice,
+      averageSalePrice ||
+      defaultSalePrice ||
+      averageUnitPrice ||
+      defaultCostPrice,
   };
 };

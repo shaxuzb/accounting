@@ -1,5 +1,6 @@
 export interface SaleDocForm {
   docDate: string;
+  exchangeRate?: number | null;
   counterpartyId: number | null;
   contractId: number | null;
   warehouseId: number | null;
@@ -23,6 +24,18 @@ export interface SaleDocProductForm {
   costAccountId?: number;
 }
 
+export type SaleProcessingMode = 1 | 2;
+
+export interface SaleDocCreateLineItemForm {
+  productTableId: number;
+}
+
+export interface SaleDocCreateLineForm
+  extends Omit<SaleDocProductForm, "id"> {
+  assembled: true;
+  items?: SaleDocCreateLineItemForm[];
+}
+
 export interface SaleDocCreateForm {
   counterpartyId: number;
   warehouseId: number;
@@ -30,8 +43,11 @@ export interface SaleDocCreateForm {
   contractId: number | null;
   customerAccountId: number;
   vatAccountId: number;
+  docDate: string;
+  exchangeRate: number;
   comment: string | null;
-  lines: SaleDocProductForm[];
+  processingMode: SaleProcessingMode;
+  lines: SaleDocCreateLineForm[];
 }
 
 export interface SaleDocUpdateForm {
@@ -91,9 +107,13 @@ export interface SaleDocWarehouseConfirmItemForm {
   productTableId: number;
 }
 
-export interface SaleDocWarehouseConfirmForm {
+export interface SaleDocAssemblyLineForm {
+  id: number;
+  assembled: true;
   items: SaleDocWarehouseConfirmItemForm[];
 }
+
+export type SaleDocWarehouseConfirmForm = SaleDocAssemblyLineForm[];
 
 export interface SaleProductGroupForm {
   vatRateId: number | null;

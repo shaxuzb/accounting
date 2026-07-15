@@ -1,7 +1,6 @@
 import { Button, Spin } from "antd";
 import { useFormik } from "formik";
 import {
-  ArrowLeft,
   Calendar,
   CheckCircle2,
   CircleX,
@@ -52,8 +51,10 @@ export default function CashOperationDetailPage() {
   const record = detailQuery.data;
   const isDraft = record?.statusId === 1;
   const isBusy = detailQuery.isLoading || updateMutation.isPending;
-  const   isActionBusy =
-    confirmMutation.isPending || cancelMutation.isPending || updateMutation.isPending;
+  const isActionBusy =
+    confirmMutation.isPending ||
+    cancelMutation.isPending ||
+    updateMutation.isPending;
 
   const initialValues = useMemo<CashOperationForm>(
     () => ({
@@ -194,14 +195,14 @@ export default function CashOperationDetailPage() {
               />
             </div>
           </div>
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             <Button
               icon={<ArrowLeft className="size-4" />}
               onClick={() => navigate("..")}
             >
               Orqaga
             </Button>
-          </div>
+          </div> */}
         </div>
       </Card>
 
@@ -219,7 +220,6 @@ export default function CashOperationDetailPage() {
           ) : (
             record && <CashReadonlyDetailsCard record={record} />
           )}
-
         </Card>
 
         <Card className="space-y-4 p-4">
@@ -267,7 +267,8 @@ export default function CashOperationDetailPage() {
 
           {record?.statusName && (
             <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
-              Joriy holat: <span className="font-semibold">{record.statusName}</span>
+              Joriy holat:{" "}
+              <span className="font-semibold">{record.statusName}</span>
             </div>
           )}
           {record?.amount != null && (

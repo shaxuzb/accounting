@@ -11,6 +11,8 @@ import type {
   PurchaseCreatePayload,
   PurchaseImportForm,
   PurchaseImportHeaderDraft,
+  PurchaseProcessingMode,
+  PurchaseUpdatePayload,
 } from "../types/form";
 import { isCompletePurchaseLine } from "../types/schema";
 
@@ -234,11 +236,11 @@ export const getUnmarkedPieceTrackedRow = (
       toMarkingNumbers(item).length === 0,
   );
 
-export const toPurchaseCreatePayload = (
+const toPurchaseDocumentPayload = (
   values: PurchaseImportForm,
   completedRows: PurchaseImportRow[],
   purchaseMode: PurchaseMode,
-): PurchaseCreatePayload => ({
+): PurchaseUpdatePayload => ({
   docDate: values.docDate,
   counterpartyId: values.counterpartyId ?? 0,
   warehouseId: values.warehouseId ?? 0,
@@ -277,3 +279,20 @@ export const toPurchaseCreatePayload = (
     };
   }),
 });
+
+export const toPurchaseCreatePayload = (
+  values: PurchaseImportForm,
+  completedRows: PurchaseImportRow[],
+  purchaseMode: PurchaseMode,
+  processingMode: PurchaseProcessingMode,
+): PurchaseCreatePayload => ({
+  ...toPurchaseDocumentPayload(values, completedRows, purchaseMode),
+  processingMode,
+});
+
+export const toPurchaseUpdatePayload = (
+  values: PurchaseImportForm,
+  completedRows: PurchaseImportRow[],
+  purchaseMode: PurchaseMode,
+): PurchaseUpdatePayload =>
+  toPurchaseDocumentPayload(values, completedRows, purchaseMode);

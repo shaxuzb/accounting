@@ -28,7 +28,8 @@ interface BankStatementCardProps {
   onDelete: () => void;
   onDeleteTransaction: (transactionIndex: number) => void;
   chartAccountLoading: boolean;
-  chartAccountOptions: BankChartAccountOption[];
+  bankAccountOptionsByDocumentType: Record<number, BankChartAccountOption[]>;
+  offsetAccountOptionsByDocumentType: Record<number, BankChartAccountOption[]>;
   onBankChartAccountChange: (bankChartAccountId: number | null) => void;
   onOffsetAccountChange: (
     transactionIndex: number,
@@ -43,7 +44,8 @@ export default function BankStatementCard({
   onDelete,
   onDeleteTransaction,
   chartAccountLoading,
-  chartAccountOptions,
+  bankAccountOptionsByDocumentType,
+  offsetAccountOptionsByDocumentType,
   onBankChartAccountChange,
   onOffsetAccountChange,
 }: BankStatementCardProps) {
@@ -68,8 +70,23 @@ export default function BankStatementCard({
   const hasMissingOffsetAccount = item.transactions.some(
     (transaction) => !transaction.offsetAccountId,
   );
-  const getChartAccountSelectedLabel = (value: unknown) => {
-    const option = chartAccountOptions.find(
+  const getDocumentTypeId = (operationTypeId: unknown) =>
+    Number(operationTypeId) === 2 ? 6 : 5;
+  const itemOperationTypeId =
+    item.operationTypeId ||
+    item.transactions.find((transaction) => transaction.operationTypeId)
+      ?.operationTypeId;
+  const itemDocumentTypeId = getDocumentTypeId(itemOperationTypeId);
+  const bankAccountOptions =
+    bankAccountOptionsByDocumentType[itemDocumentTypeId] ?? [];
+  const getTransactionDocumentTypeId = (
+    transaction: BankStatementTransaction,
+  ) => getDocumentTypeId(transaction.operationTypeId || item.operationTypeId);
+  const getSelectedLabel = (
+    value: unknown,
+    options: BankChartAccountOption[],
+  ) => {
+    const option = options.find(
       (item) => item.id === Number(value),
     );
     return option ? chartAccountSelectedLabel(option) : undefined;
@@ -126,12 +143,21 @@ export default function BankStatementCard({
           value={record.offsetAccountId || undefined}
           placeholder="Schyotni tanlang"
           loading={chartAccountLoading}
-          options={chartAccountOptions.map((option) => ({
+          options={(
+            offsetAccountOptionsByDocumentType[
+              getTransactionDocumentTypeId(record)
+            ] ?? []
+          ).map((option) => ({
             value: option.id,
             label: chartAccountOptionLabel(option),
           }))}
           labelRender={(props) =>
-            getChartAccountSelectedLabel(props.value) ?? props.label
+            getSelectedLabel(
+              props.value,
+              offsetAccountOptionsByDocumentType[
+                getTransactionDocumentTypeId(record)
+              ] ?? [],
+            ) ?? props.label
           }
           allowClear
           onChange={(value) => {
@@ -292,12 +318,12 @@ export default function BankStatementCard({
             value={item.bankChartAccountId ?? undefined}
             placeholder="Bank schyotini tanlang"
             loading={chartAccountLoading}
-            options={chartAccountOptions.map((option) => ({
+            options={bankAccountOptions.map((option) => ({
               value: option.id,
               label: chartAccountOptionLabel(option),
             }))}
             labelRender={(props) =>
-              getChartAccountSelectedLabel(props.value) ?? props.label
+              getSelectedLabel(props.value, bankAccountOptions) ?? props.label
             }
             showSearch
             allowClear

@@ -1,9 +1,10 @@
-import type { SaleDocForm } from "../types/form";
+import type { SaleDocForm, SaleProcessingMode } from "../types/form";
 import type { SaleSelectedProduct } from "../types/type";
 
 export interface SaleDraft {
   form: SaleDocForm;
   products: SaleSelectedProduct[];
+  processingMode?: SaleProcessingMode;
   saleConditionKey?: string;
 }
 

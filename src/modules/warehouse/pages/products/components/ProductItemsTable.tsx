@@ -36,13 +36,11 @@ export default function ProductItemsTable({
     {
       dataIndex: "idIndex",
       title: t("common.rowNumber"),
-      width: 70,
       align: "center",
     },
     {
       dataIndex: "name",
       title: t("products.fields.name"),
-      minWidth: 180,
       render: (value, record) => (
         <Button
           type="link"
@@ -57,19 +55,18 @@ export default function ProductItemsTable({
     },
     {
       dataIndex: "mxik",
-      title: t("mxik code"),
-      width: 130,
+      title: t("mxik"),
+      align:"center"
     },
     {
-      dataIndex: "productTypeId",
+      dataIndex: "productTypeName",
       title: "Product type",
-      width: 160,
+      align: "center",
       render: (value) => value ?? "-",
     },
     {
       dataIndex: "isSold",
       title: "Sotiladi",
-      width: 110,
       align: "center",
       render: (value) => (
         <Tag color={value ? "green" : "default"}>{value ? "Ha" : "Yo'q"}</Tag>
@@ -78,7 +75,6 @@ export default function ProductItemsTable({
     {
       dataIndex: "isPurchased",
       title: "Xarid qilinadi",
-      width: 130,
       align: "center",
       render: (value) => (
         <Tag color={value ? "blue" : "default"}>{value ? "Ha" : "Yo'q"}</Tag>
@@ -87,11 +83,10 @@ export default function ProductItemsTable({
     {
       dataIndex: "isPieceTracked",
       title: "Markirovkali",
-      width: 120,
       align: "center",
       render: (value) => (
         <Tag color={value ? "purple" : "default"}>
-          {value ? t("common.yes") : t("common.no")}
+          {value ? t("Ha") : t("Yo'q")}
         </Tag>
       ),
     },
@@ -108,12 +103,11 @@ export default function ProductItemsTable({
     {
       dataIndex: "description",
       title: t("products.fields.description"),
-      minWidth: 180,
+      align: "center"
     },
     {
       dataIndex: "stateId",
       title: t("products.fields.status"),
-      width: 120,
       align: "center",
       render: (value, record) => (
         <Tag color={record.new ? "blue" : value === 1 ? "green" : "red"}>

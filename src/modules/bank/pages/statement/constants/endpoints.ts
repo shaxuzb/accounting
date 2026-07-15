@@ -16,3 +16,17 @@ export const bankStatementEndpoints = {
     createMany: "counterparty-cards/many",
   },
 } as const;
+
+export const bankDocumentTypeIds = {
+  income: 5,
+  expense: 6,
+} as const;
+
+export const bankDocumentAccountRoleCodes = {
+  bankAccount: "bank_account",
+  offsetAccount: "offset_account",
+} as const;
+
+export const bankDocumentAccountChartAccountsPath = (
+  documentTypeId: number,
+) => `document-account-settings/${documentTypeId}/chart-accounts`;

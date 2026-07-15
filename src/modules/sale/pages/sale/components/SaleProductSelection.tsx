@@ -1,18 +1,28 @@
-import { Button, Input, Select, Table, Tooltip } from "antd";
+import { Button, Input, Select, Switch, Table, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
-import { Pencil, Plus, Save, Trash2, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Pencil, Plus, QrCode, Save, Trash2, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import Card from "@/components/ui/card/Card";
-import { selectListEndpoints, selectListKeys } from "@/shared/constants/selectLists";
+import {
+  selectListEndpoints,
+  selectListKeys,
+} from "@/shared/constants/selectLists";
 import { $axiosPrivate } from "@/services/AxiosService";
 import type { SaleCondition } from "@/modules/settings/pages/saleCondition/types/type";
-import { generateKeyTable, numberSpacing } from "@/utils/utils";
-import { useGetProductPriceDetails, useGetSaleProductStocks } from "../hooks";
+import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
+import {
+  useGetProductByMarking,
+  useGetProductPriceDetails,
+  useGetSaleProductStocks,
+  useGetSaleDocumentAccountOptions,
+} from "../hooks";
 import type {
   SaleProductPriceLayer,
+  SaleProductMarking,
   SaleProductStock,
   SaleSelectedProduct,
 } from "../types/type";
@@ -28,6 +38,7 @@ import SaleWarehouseProductsModal from "./SaleWarehouseProductsModal";
 import SaleLineAccountsDrawer, {
   type SaleLineAccountValues,
 } from "./SaleLineAccountsModal";
+import SaleMarkingModal from "./SaleMarkingModal";
 
 interface Props {
   warehouseId?: number | null;
@@ -37,6 +48,8 @@ interface Props {
   onCommentChange: (value: string) => void;
   onChange: (products: SaleSelectedProduct[]) => void;
   onCancel: () => void;
+  markingMode?: boolean;
+  onMarkingModeChange?: (enabled: boolean) => void;
   submitting?: boolean;
   disabled?: boolean;
 }
@@ -55,7 +68,10 @@ const getStockProductId = (product: SaleProductStock) =>
 const getProductName = (product?: SaleProductStock | null) =>
   product?.productName || product?.name || "-";
 
-const getVatPercent = (vatRateId: number | null | undefined, options: VatRateOption[]) => {
+const getVatPercent = (
+  vatRateId: number | null | undefined,
+  options: VatRateOption[],
+) => {
   const option = options.find((item) => item.id === Number(vatRateId));
   const match = String(option?.name ?? "").match(/(\d+(?:[.,]\d+)?)/);
   return match ? Number(match[1].replace(",", ".")) : 0;
@@ -74,7 +90,8 @@ const getLineAmount = (line: SaleSelectedProduct) =>
   line.quantity * line.unitPrice;
 
 const getLineTotal = (line: SaleSelectedProduct, vatRates: VatRateOption[]) =>
-  getLineAmount(line) + getVatAmount(getLineAmount(line), line.vatRateId, vatRates);
+  getLineAmount(line) +
+  getVatAmount(getLineAmount(line), line.vatRateId, vatRates);
 
 const getLayerSaleAmount = (layer: SaleProductPriceLayer) =>
   layer.writeOffQuantity * layer.salePrice;
@@ -126,12 +143,12 @@ const recalculateLine = ({
     unitPrice ??
     (shouldKeepManualPrice
       ? line.unitPrice
-      : prices.unitPrice ||
-        getSalePriceByMarkup(nextCostPrice, markupPercent));
+      : prices.unitPrice || getSalePriceByMarkup(nextCostPrice, markupPercent));
 
   return {
     ...line,
     quantity,
+    markings: line.markings?.slice(0, Math.max(0, Math.round(quantity))),
     costPrice: nextCostPrice,
     unitPrice: nextUnitPrice,
     markupPercent,
@@ -150,6 +167,8 @@ export default function SaleProductSelection({
   onCommentChange,
   onChange,
   onCancel,
+  markingMode = false,
+  onMarkingModeChange,
   submitting = false,
   disabled = false,
 }: Props) {
@@ -158,23 +177,59 @@ export default function SaleProductSelection({
   const [accountLine, setAccountLine] = useState<SaleSelectedProduct | null>(
     null,
   );
+  const [markingLine, setMarkingLine] = useState<SaleSelectedProduct | null>(
+    null,
+  );
+  const [markingInput, setMarkingInput] = useState("");
   const [emptyRowKeys, setEmptyRowKeys] = useState<string[]>([newRowKey]);
   const [loadingProductId, setLoadingProductId] = useState<number | null>(null);
   const getProductPriceDetails = useGetProductPriceDetails();
-  const params = useMemo(() => {
-    const value: Record<string, string> = {
-      page: "1",
-      pageSize: "1000",
-    };
-    if (warehouseId && warehouseId > 0) {
-      value.warehouseId = String(warehouseId);
-    }
-    if (search.trim()) {
-      value.search = search.trim();
-    }
-    return value;
-  }, [search, warehouseId]);
-  const { data, isLoading, isFetching } = useGetSaleProductStocks(params);
+  const getProductByMarking = useGetProductByMarking();
+  const {
+    data: productStockData,
+    isLoading: isProductStocksLoading,
+    isFetching: isProductStocksFetching,
+  } = useGetSaleProductStocks({
+    page: 1,
+    pageSize: 1000,
+    ...(warehouseId ? { warehouseId } : {}),
+    ...(search.trim() ? { search: search.trim() } : {}),
+  });
+  const stockProducts = productStockData?.items ?? [];
+  const productById = useMemo(
+    () =>
+      new Map(
+        stockProducts.map((product) => [getStockProductId(product), product]),
+      ),
+    [stockProducts],
+  );
+
+  const getLineIsPieceTracked = (line: SaleSelectedProduct) =>
+    productById.get(line.productId)?.isPieceTracked ??
+    Boolean(line.isPieceTracked);
+
+  useEffect(() => {
+    if (!stockProducts.length || !products.length) return;
+
+    let hasChanges = false;
+    const nextProducts = products.map((line) => {
+      const stockProduct = productById.get(line.productId);
+      if (
+        !stockProduct ||
+        line.isPieceTracked === stockProduct.isPieceTracked
+      ) {
+        return line;
+      }
+
+      hasChanges = true;
+      return {
+        ...line,
+        isPieceTracked: stockProduct.isPieceTracked,
+      };
+    });
+
+    if (hasChanges) onChange(nextProducts);
+  }, [onChange, productById, products, stockProducts.length]);
   const { data: vatRateOptions = [] } = useQuery<VatRateOption[]>({
     queryKey: ["selectlist", selectListKeys.vatRate],
     queryFn: async () => {
@@ -184,11 +239,17 @@ export default function SaleProductSelection({
       return data ?? [];
     },
   });
-  const stockProducts = data?.items ?? [];
+  const { chartAccounts } = useGetSaleDocumentAccountOptions();
+  const chartAccountById = useMemo(
+    () =>
+      new Map(
+        chartAccounts.map((account) => [Number(account.id), account] as const),
+      ),
+    [chartAccounts],
+  );
   const productOptions = stockProducts.map((item) => ({
     value: getStockProductId(item),
     label: getProductName(item),
-    disabled: !getAvailableQuantity(item),
   }));
   const tableRows: SaleSelectedProduct[] = [
     ...products,
@@ -222,10 +283,20 @@ export default function SaleProductSelection({
     );
     if (!product) return;
 
+    const stockProduct = productById.get(productId);
+    if (!stockProduct) {
+      toast.error("Mahsulot ma'lumotlari hali yuklanmagan");
+      return;
+    }
+
     setLoadingProductId(productId);
     try {
       const response = await getProductPriceDetails.mutateAsync(productId);
       const detail = normalizeProductPriceDetails(response, product);
+      const availableQuantity =
+        sourceLayer?.availableQuantity ||
+        detail.availableQuantity ||
+        getAvailableQuantity(product);
       const existingLine =
         rowKey && !isNewRow(rowKey)
           ? products.find((item) => item.rowKey === rowKey)
@@ -234,19 +305,14 @@ export default function SaleProductSelection({
             : undefined;
       const requestedQuantity =
         quantityToAdd === undefined
-          ? existingLine?.quantity || 0
+          ? existingLine?.quantity || (availableQuantity > 0 ? 1 : 0)
           : existingLine && !rowKey
             ? existingLine.quantity + quantityToAdd
             : quantityToAdd;
       const salePriceBySelection =
         overrideSalePrice === undefined ? undefined : Number(overrideSalePrice);
       const priceLayers = sourceLayer ? [sourceLayer] : detail.layers;
-      const quantity = Math.min(
-        requestedQuantity,
-        sourceLayer?.availableQuantity ||
-          detail.availableQuantity ||
-          getAvailableQuantity(product),
-      );
+      const quantity = Math.min(requestedQuantity, availableQuantity);
       const allocatedLayers =
         saleCondition.costingMethodId === COSTING_METHOD.AVERAGE
           ? []
@@ -292,10 +358,12 @@ export default function SaleProductSelection({
           sourceLayer?.availableQuantity ||
           detail.availableQuantity ||
           getAvailableQuantity(product),
-        costPrice: prices.costPrice || sourceLayer?.unitPrice || detail.costPrice,
+        costPrice:
+          prices.costPrice || sourceLayer?.unitPrice || detail.costPrice,
         unitId,
         unitName: detail.unitName || product.unitName,
-        unitPrice: salePriceBySelection === undefined ? unitPrice : salePriceBySelection,
+        unitPrice:
+          salePriceBySelection === undefined ? unitPrice : salePriceBySelection,
         inventoryAccountId: existingLine?.inventoryAccountId ?? null,
         incomeAccountId: existingLine?.incomeAccountId ?? null,
         costAccountId: existingLine?.costAccountId ?? null,
@@ -303,15 +371,19 @@ export default function SaleProductSelection({
         incomeAccountName: existingLine?.incomeAccountName,
         costAccountName: existingLine?.costAccountName,
         vatRateId: existingLine?.vatRateId ?? saleCondition.vatRateId,
+        markings:
+          existingLine?.productId === productId
+            ? existingLine.markings?.slice(0, Math.max(0, Math.round(quantity)))
+            : [],
         markupPercent:
           salePriceBySelection === undefined
             ? getMarkupPercent(prices.costPrice, unitPrice)
             : nextMarkupPercent,
         priceType:
           salePriceBySelection === undefined
-            ? existingLine?.priceType ?? "costPlusPercent"
+            ? (existingLine?.priceType ?? "costPlusPercent")
             : "manual",
-        isPieceTracked: product.isPieceTracked,
+        isPieceTracked: Boolean(stockProduct.isPieceTracked),
         priceLayers,
         layers: allocatedLayers,
       };
@@ -341,9 +413,7 @@ export default function SaleProductSelection({
     updater: (line: SaleSelectedProduct) => SaleSelectedProduct,
   ) => {
     onChange(
-      products.map((item) =>
-        item.rowKey === rowKey ? updater(item) : item,
-      ),
+      products.map((item) => (item.rowKey === rowKey ? updater(item) : item)),
     );
   };
 
@@ -356,10 +426,7 @@ export default function SaleProductSelection({
   };
 
   const handleAddEmptyRow = () => {
-    setEmptyRowKeys((current) => [
-      ...current,
-      `${newRowKey}-${Date.now()}`,
-    ]);
+    setEmptyRowKeys((current) => [...current, `${newRowKey}-${Date.now()}`]);
   };
 
   const applyLineAccounts = (
@@ -384,15 +451,120 @@ export default function SaleProductSelection({
     setAccountLine(null);
   };
 
+  const getAccountNumber = (accountId: number | null | undefined) => {
+    if (!accountId) return "—";
+
+    const account = chartAccountById.get(Number(accountId));
+    const accountNumber = account?.number ?? account?.code;
+    return accountNumber ? String(accountNumber) : String(accountId);
+  };
+
   const getAccountPreview = (line: SaleSelectedProduct) =>
     [
-      line.inventoryAccountName ||
-        (line.inventoryAccountId ? `#${line.inventoryAccountId}` : "—"),
-      line.incomeAccountName ||
-        (line.incomeAccountId ? `#${line.incomeAccountId}` : "—"),
-      line.costAccountName ||
-        (line.costAccountId ? `#${line.costAccountId}` : "—"),
+      getAccountNumber(line.inventoryAccountId),
+      getAccountNumber(line.incomeAccountId),
+      getAccountNumber(line.costAccountId),
     ].join(" / ");
+
+  const activeMarkingLine = markingLine?.rowKey
+    ? (products.find((item) => item.rowKey === markingLine.rowKey) ?? null)
+    : null;
+
+  const openMarkingModal = (line: SaleSelectedProduct) => {
+    if (!getLineIsPieceTracked(line)) {
+      toast.error("Bu mahsulot markirovkasiz");
+      return;
+    }
+
+    setMarkingLine({ ...line, isPieceTracked: true });
+    setMarkingInput("");
+  };
+
+  const closeMarkingModal = () => {
+    setMarkingLine(null);
+    setMarkingInput("");
+  };
+
+  const handleAddMarking = async () => {
+    if (!activeMarkingLine) return;
+
+    const values = markingInput
+      .split(/[\s,;]+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+    if (!values.length) return;
+
+    const nextMarkings: SaleProductMarking[] = [
+      ...(activeMarkingLine.markings ?? []),
+    ];
+
+    try {
+      for (const markingNumber of values) {
+        if (nextMarkings.length >= Math.round(activeMarkingLine.quantity)) {
+          toast.error("Miqdor bo'yicha barcha markirovka kiritilgan");
+          break;
+        }
+
+        if (
+          nextMarkings.some(
+            (marking) => marking.markingNumber === markingNumber,
+          ) ||
+          products.some((product) =>
+            product.markings?.some(
+              (marking) => marking.markingNumber === markingNumber,
+            ),
+          )
+        ) {
+          toast.error("Bu markirovka avval qo'shilgan");
+          continue;
+        }
+
+        const product = await getProductByMarking.mutateAsync(markingNumber);
+        const productTableId = Number(
+          product.productTableId ?? product.id ?? 0,
+        );
+        if (!productTableId) {
+          toast.error("Product table ID topilmadi");
+          continue;
+        }
+
+        if (Number(product.productId) !== Number(activeMarkingLine.productId)) {
+          toast.error("Bu markirovka tanlangan mahsulotga tegishli emas");
+          continue;
+        }
+
+        nextMarkings.push({ markingNumber, productTableId });
+      }
+
+      onChange(
+        products.map((product) =>
+          product.rowKey === activeMarkingLine.rowKey
+            ? { ...product, markings: nextMarkings }
+            : product,
+        ),
+      );
+      setMarkingInput("");
+    } catch (error) {
+      errorHandlers(error);
+    }
+  };
+
+  const handleRemoveMarking = (productTableId: number) => {
+    if (!activeMarkingLine) return;
+
+    onChange(
+      products.map((product) =>
+        product.rowKey === activeMarkingLine.rowKey
+          ? {
+              ...product,
+              markings: (product.markings ?? []).filter(
+                (marking) => marking.productTableId !== productTableId,
+              ),
+            }
+          : product,
+      ),
+    );
+  };
 
   const columns: TableColumnsType<SaleSelectedProduct> = [
     {
@@ -411,13 +583,16 @@ export default function SaleProductSelection({
           placeholder="Mahsulot"
           value={record.productId || undefined}
           loading={
-            isLoading ||
-            isFetching ||
+            isProductStocksLoading ||
+            isProductStocksFetching ||
             loadingProductId === record.productId
           }
           options={productOptions}
-          disabled={disabled}
-          onChange={(value) => handleSelectProduct(Number(value), record.rowKey)}
+          disabled={disabled || isProductStocksLoading}
+          onChange={(value) =>
+            handleSelectProduct(Number(value), record.rowKey)
+          }
+          
         />
       ),
     },
@@ -426,26 +601,38 @@ export default function SaleProductSelection({
       title: "MXIK kod",
       render: (value) => value || "-",
     },
-    // {
-    //   dataIndex: "marking",
-    //   title: "Markirovka",
-    //   align: "center",
-    //   render: (_, record) => (
-    //     <Tooltip
-    //       title={
-    //         record.isPieceTracked
-    //           ? "Markirovka skladchi bosqichida tanlanadi"
-    //           : "Bu mahsulot markirovkasiz"
-    //       }
-    //     >
-    //       <Button
-    //         type="text"
-    //         disabled={!record.isPieceTracked}
-    //         icon={<QrCode className="size-4" />}
-    //       />
-    //     </Tooltip>
-    //   ),
-    // },
+    ...(markingMode
+      ? [
+          {
+            dataIndex: "markings",
+            title: "Markirovka",
+            align: "center" as const,
+            render: (_: unknown, record: SaleSelectedProduct) => {
+              if (isNewRow(record.rowKey)) return "-";
+
+              const quantity = Math.round(record.quantity);
+              const markingCount = record.markings?.length ?? 0;
+              const isPieceTracked = getLineIsPieceTracked(record);
+              if (isPieceTracked && markingCount === quantity) {
+                return <Tag color="success">Urilgan</Tag>;
+              }
+
+              return isPieceTracked ? (
+                <Button
+                  type="text"
+                  disabled={disabled}
+                  icon={<QrCode className="size-4" />}
+                  onClick={() => openMarkingModal(record)}
+                >
+                  {markingCount}/{quantity}
+                </Button>
+              ) : (
+                <Tag>Markirovkasiz</Tag>
+              );
+            },
+          },
+        ]
+      : []),
     {
       dataIndex: "unitName",
       title: "Birlik",
@@ -454,8 +641,7 @@ export default function SaleProductSelection({
     {
       dataIndex: "availableQuantity",
       title: "Qoldiq",
-      align: "right",
-      width: 100,
+      align: "center",
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
@@ -464,7 +650,13 @@ export default function SaleProductSelection({
       width: 100,
       render: (value, record) =>
         isNewRow(record.rowKey) ? (
-          <InputNumberFormat standalone value={0} emptyZero disabled height={30} />
+          <InputNumberFormat
+            standalone
+            value={0}
+            emptyZero
+            disabled
+            height={30}
+          />
         ) : (
           <InputNumberFormat
             standalone
@@ -491,7 +683,7 @@ export default function SaleProductSelection({
     {
       dataIndex: "costPrice",
       title: "Tannarx",
-      align: "right",
+      align: "center",
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
@@ -528,14 +720,14 @@ export default function SaleProductSelection({
     {
       dataIndex: "amount",
       title: "Summa",
-      align: "right",
+      align: "center",
       render: (_, record) => numberSpacing(getLineAmount(record)),
     },
     {
       dataIndex: "vatRateId",
       title: "QQS (foiz va summa)",
       render: (_, record) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center" >
           <Select
             showSearch
             className="min-w-28"
@@ -551,7 +743,11 @@ export default function SaleProductSelection({
           />
           <span className="min-w-24 text-right">
             {numberSpacing(
-              getVatAmount(getLineAmount(record), record.vatRateId, vatRateOptions),
+              getVatAmount(
+                getLineAmount(record),
+                record.vatRateId,
+                vatRateOptions,
+              ),
               undefined,
               true,
             )}
@@ -570,7 +766,7 @@ export default function SaleProductSelection({
       dataIndex: "accounts",
       title: "Hisobvaraqlar",
       render: (_, record) => (
-        <div className="flex min-w-30 items-center gap-1">
+        <div className="flex min-w-30 items-center">
           <span
             className="min-w-0 flex-1 truncate text-xs"
             title={getAccountPreview(record)}
@@ -590,9 +786,8 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "actions",
-      title: "Amallar",
+      // title: "Amallar",
       align: "center",
-      width: 80,
       render: (_, record) => (
         <Button
           danger
@@ -602,7 +797,9 @@ export default function SaleProductSelection({
           onClick={() =>
             isNewRow(record.rowKey)
               ? removeEmptyRow(record.rowKey)
-              : onChange(products.filter((item) => item.rowKey !== record.rowKey))
+              : onChange(
+                  products.filter((item) => item.rowKey !== record.rowKey),
+                )
           }
         />
       ),
@@ -615,61 +812,54 @@ export default function SaleProductSelection({
     {
       dataIndex: "purchaseDocNumber",
       title: "Kirim hujjati",
-      width: 180,
+      width: 100,
       render: (value) => value || "-",
     },
     {
       dataIndex: "purchaseDate",
       title: "Kirim sanasi",
-      width: 140,
-      render: (value) => value || "-",
-    },
-    {
-      dataIndex: "warehouseName",
-      title: "Ombor",
-      width: 160,
-      render: (value) => value || "-",
+      width: 100,
+      render: (value) => customDate(value)
     },
     {
       dataIndex: "availableQuantity",
       title: "Mavjud",
-      align: "right",
-      width: 120,
+      align: "center",
+      width: 75,
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "writeOffQuantity",
-      title: "Hisobdan chiqadi",
-      align: "right",
-      width: 140,
+      title: "Miqdor",
+      align: "center",
+      width: 70,
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "unitPrice",
       title: "Tannarx",
-      align: "right",
+      align: "center",
       width: 140,
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "salePrice",
       title: "Sotuv narxi",
-      align: "right",
+      align: "center",
       width: 140,
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "saleAmount",
       title: "Sotuv summasi",
-      align: "right",
+      align: "center",
       width: 150,
-      render: (_, record) =>
-        numberSpacing(getLayerSaleAmount(record)),
+      render: (_, record) => numberSpacing(getLayerSaleAmount(record)),
     },
     {
       dataIndex: "vatAmount",
       title: "QQS",
-      align: "right",
+      align: "center",
       width: 130,
       render: (_, record) =>
         numberSpacing(
@@ -681,16 +871,21 @@ export default function SaleProductSelection({
     {
       dataIndex: "totalAmount",
       title: "Jami",
-      align: "right",
+      align: "center",
       width: 140,
       render: (_, record) =>
-        numberSpacing(getLayerTotal(record, vatRateId, vatRateOptions), undefined, true),
+        numberSpacing(
+          getLayerTotal(record, vatRateId, vatRateOptions),
+          undefined,
+          true,
+        ),
     },
   ];
 
   const amount = products.reduce((sum, item) => sum + getLineAmount(item), 0);
   const vatAmount = products.reduce(
-    (sum, item) => sum + getVatAmount(getLineAmount(item), item.vatRateId, vatRateOptions),
+    (sum, item) =>
+      sum + getVatAmount(getLineAmount(item), item.vatRateId, vatRateOptions),
     0,
   );
   const totalAmount = products.reduce(
@@ -719,6 +914,16 @@ export default function SaleProductSelection({
           </Button>
           {/* <Button>Qo'shimcha</Button> */}
         </div>
+        {onMarkingModeChange && (
+          <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
+            <span className="text-sm font-medium">Markirovka bilan</span>
+            <Switch
+              checked={markingMode}
+              disabled={disabled}
+              onChange={onMarkingModeChange}
+            />
+          </div>
+        )}
         <div className="flex shrink-0 items-center justify-end gap-2 whitespace-nowrap">
           {/* <Input
             className="w-64 max-w-none"
@@ -820,27 +1025,39 @@ export default function SaleProductSelection({
       <SaleWarehouseProductsModal
         open={warehouseOpen}
         products={stockProducts}
-        loading={isLoading || isFetching}
+        loading={isProductStocksLoading || isProductStocksFetching}
         disabled={disabled}
         search={search}
         loadingProductId={loadingProductId}
         onSearch={setSearch}
         onClose={() => setWarehouseOpen(false)}
-      onAdd={(product, layer, quantity, salePrice) =>
-        handleSelectProduct(
-          getStockProductId(product),
-          undefined,
-          quantity,
-          layer,
-          salePrice,
-        )
-      }
+        onAdd={(product, layer, quantity, salePrice) =>
+          handleSelectProduct(
+            getStockProductId(product),
+            undefined,
+            quantity,
+            layer,
+            salePrice,
+          )
+        }
       />
       <SaleLineAccountsDrawer
         open={Boolean(accountLine)}
         line={accountLine}
         onClose={() => setAccountLine(null)}
         onApply={applyLineAccounts}
+      />
+      <SaleMarkingModal
+        open={Boolean(activeMarkingLine)}
+        productName={activeMarkingLine?.productName ?? ""}
+        quantity={Math.round(activeMarkingLine?.quantity ?? 0)}
+        markings={activeMarkingLine?.markings ?? []}
+        value={markingInput}
+        loading={getProductByMarking.isPending}
+        onChange={setMarkingInput}
+        onAdd={() => handleAddMarking()}
+        onRemove={handleRemoveMarking}
+        onClose={closeMarkingModal}
       />
     </Card>
   );

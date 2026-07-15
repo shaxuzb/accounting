@@ -4,9 +4,7 @@ import { Building2, Save, Trash2, UploadIcon, Users } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
 import dayjs from "@/config/dayjs";
-import { $axiosPrivate } from "@/services/AxiosService";
 import Card from "@/components/ui/card/Card";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import BankStatementCard from "../components/BankStatementCard";
@@ -14,19 +12,18 @@ import MissingBankAccountModal, {
   type BankInfoAssignment,
 } from "../components/MissingBankAccountModal";
 import MissingCounterpartyModal from "../components/MissingCounterpartyModal";
-import { useCreateBankOperations, useParseBankStatement } from "../hooks";
+import {
+  useCreateBankOperations,
+  useGetBankDocumentAccountOptions,
+  useParseBankStatement,
+} from "../hooks";
 import type {
-  BankChartAccountOption,
   BankStatementCardData,
   BankStatementTransaction,
 } from "../types/type";
 import { getMissingCounterpartyKey } from "../utils/missingCounterpartyKey";
 import { normalizeBankStatements } from "../utils/normalizeBankStatement";
 import type { BankOperationCreatePayload } from "../types/form";
-import {
-  selectListEndpoints,
-  selectListKeys,
-} from "@/shared/constants/selectLists";
 
 const toValidNumber = (value: unknown) => {
   const numberValue = Number(value);
@@ -60,17 +57,11 @@ export default function BankStatementImportPage() {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [bankAssignOpen, setBankAssignOpen] = useState(false);
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
-  const { data: chartAccountOptions = [], isLoading: chartAccountLoading } =
-    useQuery<BankChartAccountOption[]>({
-      queryKey: ["selectlist", selectListKeys.chartAccount],
-      queryFn: async () => {
-        const { data } = await $axiosPrivate.get<BankChartAccountOption[]>(
-          selectListEndpoints.chartAccountsSelectList,
-        );
-        return data ?? [];
-      },
-      enabled: true,
-    });
+  const {
+    bankAccountOptionsByDocumentType,
+    offsetAccountOptionsByDocumentType,
+    isLoading: chartAccountLoading,
+  } = useGetBankDocumentAccountOptions();
   const getTransactionOperationTypeId = useCallback(
     (card: BankStatementCardData, transaction: BankStatementTransaction) => {
       return (
@@ -470,7 +461,8 @@ export default function BankStatementImportPage() {
                 handleDeleteTransaction(item.id, transactionId)
               }
               chartAccountLoading={chartAccountLoading}
-              chartAccountOptions={chartAccountOptions}
+              bankAccountOptionsByDocumentType={bankAccountOptionsByDocumentType}
+              offsetAccountOptionsByDocumentType={offsetAccountOptionsByDocumentType}
               onBankChartAccountChange={(bankChartAccountId) =>
                 handleBankChartAccountChange(item.id, bankChartAccountId)
               }

@@ -64,6 +64,7 @@ function PurchaseImportEditableCell({
           }}
           onPressEnter={commit}
           onBlur={commit}
+          height={32}
         />
       );
     }

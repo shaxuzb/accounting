@@ -41,9 +41,9 @@ export default function SaleProductLinesTable({
       width: 280,
       render: (value) => {
         return (
-     
-            <div className="w-70 "><LineClampCell text={value}/></div>
-    
+          <div className="w-70 ">
+            <LineClampCell text={value} />
+          </div>
         );
       },
     },

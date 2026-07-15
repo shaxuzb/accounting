@@ -1,6 +1,6 @@
 import { Button, Form, Spin } from "antd";
 import { useFormik } from "formik";
-import { ArrowLeft, Calendar, CheckCircle2, CircleX, Save } from "lucide-react";
+import { Calendar, CheckCircle2, CircleX, Save } from "lucide-react";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
@@ -21,6 +21,7 @@ import {
 } from "../hooks";
 import { getCashDocumentLabels, resolveCashDocumentKind } from "../utils/kind";
 import CashDocumentFormFields from "./CashDocumentFormFields";
+import { cashDocumentTypeIds } from "@/modules/cashoperation/constants/documentAccount";
 
 const defaultValues: CashDocumentForm = {
   cashBoxId: null,
@@ -156,12 +157,12 @@ export default function CashDocumentDetailPage() {
                 statusName={record?.statusName}
               />
             )}
-            <Button
+            {/* <Button
               icon={<ArrowLeft className="size-4" />}
               onClick={() => navigate("..")}
             >
               Orqaga
-            </Button>
+            </Button> */}
           </div>
         </div>
       </Card>
@@ -170,7 +171,14 @@ export default function CashDocumentDetailPage() {
         <Card className="p-4">
           {isDraft ? (
             <Form layout="vertical" onFinish={formik.handleSubmit}>
-              <CashDocumentFormFields formik={formik} />
+              <CashDocumentFormFields
+                formik={formik}
+                documentTypeId={
+                  kind === "rko"
+                    ? cashDocumentTypeIds.expense
+                    : cashDocumentTypeIds.income
+                }
+              />
             </Form>
           ) : (
             record && <CashReadonlyDetailsCard record={record} />

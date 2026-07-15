@@ -141,6 +141,18 @@ export interface SaleProductStock {
   isPieceTracked?: boolean;
 }
 
+export interface SaleProductMarking {
+  markingNumber: string;
+  productTableId: number;
+}
+
+export interface SaleDocumentAccountOption {
+  id: number;
+  number?: string | number;
+  code?: string | number;
+  name?: string;
+}
+
 export interface SaleSelectedProduct {
   id?: number | null;
   rowKey?: string;
@@ -164,6 +176,7 @@ export interface SaleSelectedProduct {
   markupPercent?: number;
   priceType?: "costPlusPercent" | "manual";
   isPieceTracked?: boolean;
+  markings?: SaleProductMarking[];
   priceLayers?: SaleProductPriceLayer[];
   layers?: SaleProductPriceLayer[];
 }

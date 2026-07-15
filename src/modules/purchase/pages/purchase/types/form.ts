@@ -18,6 +18,19 @@ export interface PurchaseDocLineDto {
   items?: PurchaseDocLineItemDto[];
 }
 
+export type PurchaseProcessingMode = 1 | 2;
+
+export interface PurchaseDocumentPayload {
+  docDate: string;
+  counterpartyId: number;
+  warehouseId: number;
+  currencyId: number;
+  comment: string | null;
+  contractId: number | null;
+  supplierAccountId: number;
+  lines: PurchaseDocLineDto[];
+}
+
 export interface PurchaseImportForm {
   docDate: string;
   counterpartyId: number | null;
@@ -41,13 +54,8 @@ export type PurchaseImportHeaderDraft = Pick<
 >;
 
 // Swagger DTO — PurchaseDocCreateDto
-export interface PurchaseCreatePayload {
-  docDate: string;
-  counterpartyId: number;
-  warehouseId: number;
-  currencyId: number;
-  comment: string | null;
-  contractId: number | null;
-  supplierAccountId: number;
-  lines: PurchaseDocLineDto[];
+export interface PurchaseCreatePayload extends PurchaseDocumentPayload {
+  processingMode: PurchaseProcessingMode;
 }
+
+export type PurchaseUpdatePayload = PurchaseDocumentPayload;

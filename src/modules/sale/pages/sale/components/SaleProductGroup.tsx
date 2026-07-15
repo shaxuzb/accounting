@@ -142,7 +142,7 @@ function SaleProductGroup({
 
         <Form
           layout="vertical"
-          className="grid w-full gap-3 sm:grid-cols-2 xl:grid-cols-[280px_240px_190px_120px] xl:items-end 2xl:w-[860px]"
+          className="grid w-full gap-3 sm:grid-cols-2 xl:grid-cols-[280px_240px_190px_120px] xl:items-end 2xl:w-215"
         >
           <div className="min-w-0 [&_.ant-form-item]:mb-0! [&_.ant-form-item-label]:pb-1! [&_.ant-select-selector]:h-9.5!">
             <SelectCustom

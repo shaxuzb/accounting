@@ -9,6 +9,7 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { productItemSchema } from "../types/schema";
 import type { ProductItem, ProductTypeForm } from "../types/type";
 import type { FormikProps } from "formik";
+import FormItem from "antd/lib/form/FormItem";
 
 interface ProductItemModalProps {
   open: boolean;
@@ -145,11 +146,7 @@ export default function ProductItemModal({
             />
           </Col> */}
           <Col span={24} md={12}>
-            <InputText
-              label="Mxik"
-              formik={productFormik}
-              fieldName="mxik"
-            />
+            <InputText label="Mxik" formik={productFormik} fieldName="mxik" />
           </Col>
           {/* <Col span={24} md={12}>
             <InputText
@@ -192,6 +189,16 @@ export default function ProductItemModal({
               fieldName="defaultVatRateId"
             />
           </Col>
+          {editItem && (
+            <Col span={24}>
+              <SelectCustom
+                label="products.fields.status"
+                path={selectListEndpoints.statesSelectList}
+                formik={productFormik}
+                fieldName="stateId"
+              />
+            </Col>
+          )}
           {/* <Col span={24} md={12}>
             <InputNumber
               label="Min stock"
@@ -200,8 +207,8 @@ export default function ProductItemModal({
               min={0}
             />
           </Col> */}
-          <Col span={24} md={12}>
-            <div className="flex flex-wrap gap-2">
+          <Col span={12}>
+            <div className="flex flex-wrap gap-2 mb-2">
               <Button
                 type={productFormik.values.isSold ? "primary" : "default"}
                 onClick={() =>
@@ -230,31 +237,17 @@ export default function ProductItemModal({
               </Button>
             </div>
           </Col>
+
           {!isService && (
-            <Col span={24} md={12}>
-              <Form.Item label="Markirovkali">
-                <Switch
-                  checked={Boolean(productFormik.values.isPieceTracked)}
-                  checkedChildren="Ha"
-                  unCheckedChildren="Yo'q"
-                  onChange={(checked) =>
-                    productFormik.setFieldValue(
-                      "isPieceTracked",
-                      checked,
-                      true,
-                    )
-                  }
-                />
-              </Form.Item>
-            </Col>
-          )}
-          {editItem && (
-            <Col span={24} md={12}>
-              <SelectCustom
-                label="products.fields.status"
-                path={selectListEndpoints.statesSelectList}
-                formik={productFormik}
-                fieldName="stateId"
+            <Col span={12}>
+              <span>Markirovkali </span>
+              <Switch
+                checked={Boolean(productFormik.values.isPieceTracked)}
+                checkedChildren="Ha"
+                unCheckedChildren="Yo'q"
+                onChange={(checked) =>
+                  productFormik.setFieldValue("isPieceTracked", checked, true)
+                }
               />
             </Col>
           )}

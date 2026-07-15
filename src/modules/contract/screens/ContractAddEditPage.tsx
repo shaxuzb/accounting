@@ -58,7 +58,7 @@ export default function ContractAddEditPage({
     : selectListEndpoints.suppliersSelectList;
   const counterpartyLabel = isSaleContract
     ? "Mijoz"
-    : "settings.fields.supplyContractor";
+    : "Yetkazib beruvchi";
 
   const formik = useFormik<ContractForm>({
     initialValues: {

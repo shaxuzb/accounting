@@ -4,25 +4,27 @@ import { Col, Row } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
 import {
-  chartAccountOptionLabel,
-  chartAccountSelectedLabel,
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
+import { cashDocumentAccountRoleCodes } from "@/modules/cashoperation/constants/documentAccount";
 import type { CashDocumentForm } from "../types/form";
 
 interface CashDocumentFormFieldsProps {
   formik: FormikProps<CashDocumentForm>;
+  documentTypeId: number;
   disabled?: boolean;
 }
 
 export default function CashDocumentFormFields({
   formik,
+  documentTypeId,
   disabled = false,
 }: CashDocumentFormFieldsProps) {
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
@@ -51,24 +53,24 @@ export default function CashDocumentFormFields({
         />
       </Col>
       <Col span={12}>
-        <SelectCustom
+        <DocumentAccountSelect
           formik={formik}
           fieldName="cashChartAccountId"
           label="Kassa schyoti"
-          path={selectListEndpoints.chartAccountsSelectList}
-          optionLabel={chartAccountOptionLabel}
-          selectedLabel={chartAccountSelectedLabel}
+          documentTypeId={documentTypeId}
+          documentRoleCode={cashDocumentAccountRoleCodes.cashAccount}
+          getFirst
           disabled={disabled}
         />
       </Col>
       <Col span={12}>
-        <SelectCustom
+        <DocumentAccountSelect
           formik={formik}
           fieldName="offsetAccountId"
           label="Qarama-qarshi schyot"
-          path={selectListEndpoints.chartAccountsSelectList}
-          optionLabel={chartAccountOptionLabel}
-          selectedLabel={chartAccountSelectedLabel}
+          documentTypeId={documentTypeId}
+          documentRoleCode={cashDocumentAccountRoleCodes.offsetAccount}
+          getFirst
           disabled={disabled}
         />
       </Col>
