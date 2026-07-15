@@ -9,7 +9,6 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { productItemSchema } from "../types/schema";
 import type { ProductItem, ProductTypeForm } from "../types/type";
 import type { FormikProps } from "formik";
-import FormItem from "antd/lib/form/FormItem";
 
 interface ProductItemModalProps {
   open: boolean;
