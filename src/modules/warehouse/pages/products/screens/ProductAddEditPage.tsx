@@ -81,7 +81,7 @@ export default function ProductAddEditPage() {
         ...item,
         idIndex: item.idIndex ?? item.id ?? index + 1,
         // barcode: item.barcode ?? "",
-        mxik: item.mxik ?? item.barcode ?? "",
+        mxik: item.mxik,
       })),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

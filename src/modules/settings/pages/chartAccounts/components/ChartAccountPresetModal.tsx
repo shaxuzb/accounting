@@ -3,6 +3,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { Search } from "lucide-react";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import { useTranslation } from "react-i18next";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import {
   useCreateChartAccountsFromPreset,
@@ -23,6 +24,7 @@ export default function ChartAccountPresetModal({
   onClose,
   onCreated,
 }: ChartAccountPresetModalProps) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -42,7 +44,7 @@ export default function ChartAccountPresetModal({
 
   const handleSubmit = async () => {
     if (!selectedIds.length) {
-      toast.error("Kamida bitta hisobni tanlang");
+      toast.error(t("app.modals.selectAtLeastOneAccount"));
       return;
     }
 
@@ -52,7 +54,7 @@ export default function ChartAccountPresetModal({
           preset_account_id: presetAccountId,
         })),
       );
-      toast.success("Tanlangan hisoblar qo'shildi");
+      toast.success(t("app.modals.accountsAdded"));
       onCreated?.();
       onClose();
     } catch (error) {
@@ -62,7 +64,7 @@ export default function ChartAccountPresetModal({
 
   return (
     <Modal
-      title="Hisob qo'shish"
+      title={t("app.modals.addAccount")}
       open={open}
       onCancel={onClose}
       footer={null}
@@ -76,7 +78,7 @@ export default function ChartAccountPresetModal({
               allowClear
               className="max-w-sm"
               prefix={<Search className="size-4 text-muted-second" />}
-              placeholder="Raqam yoki nomi bo‘yicha qidirish"
+              placeholder={t("app.modals.searchAccount")}
               value={search}
               onChange={(event) => {
                 setSearch(event.target.value);
@@ -104,17 +106,17 @@ export default function ChartAccountPresetModal({
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
             <span className="text-sm font-medium">
-              Tanlangan hisoblar: {selectedIds.length}
+              {t("app.modals.selectedAccounts", { count: selectedIds.length })}
             </span>
             <div className="flex items-center gap-2">
-              <Button onClick={onClose}>Bekor qilish</Button>
+              <Button onClick={onClose}>{t("common.cancel")}</Button>
               <Button
                 type="primary"
                 loading={createMutation.isPending}
                 disabled={!selectedIds.length}
                 onClick={() => handleSubmit()}
               >
-                Tanlanganlarni qo'shish
+                {t("app.modals.addSelected")}
               </Button>
             </div>
           </div>

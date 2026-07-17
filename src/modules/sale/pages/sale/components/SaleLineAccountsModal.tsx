@@ -8,6 +8,7 @@ import {
   saleDocumentAccountRoleCodes,
   saleDocumentTypeId,
 } from "../constants/documentAccount";
+import { useTranslation } from "react-i18next";
 
 export interface SaleLineAccountValues {
   inventoryAccountId: number | null;
@@ -42,6 +43,7 @@ export default function SaleLineAccountsModal({
   onClose,
   onApply,
 }: Props) {
+  const { t } = useTranslation();
   const formik = useFormik<SaleLineAccountValues>({
     initialValues: getInitialValues(line),
     enableReinitialize: true,
@@ -67,7 +69,7 @@ export default function SaleLineAccountsModal({
 
   return (
     <Modal
-      title="Satr uchun hisobvaraqlar"
+      title={t("app.modals.accountSelectionTitle")}
       centered
       width={600}
       open={open}
@@ -81,7 +83,7 @@ export default function SaleLineAccountsModal({
             icon={<Check className="size-4" />}
             onClick={() => handleApply(false)}
           >
-            Faqat shu satrga qo'llash
+            {t("app.modals.applyCurrent")}
           </Button>
           <Button
             block
@@ -90,23 +92,23 @@ export default function SaleLineAccountsModal({
             icon={<CheckCheck className="size-4" />}
             onClick={() => handleApply(true)}
           >
-            Barcha satrlarga qo'llash
+            {t("app.modals.applyAll")}
           </Button>
         </Space>
       }
     >
       <div className="mb-5">
         <div className="text-sm font-semibold text-text">
-          {line?.productName || "Mahsulot satri"}
+          {line?.productName || t("app.modals.productLine")}
         </div>
         <div className="mt-1 text-xs text-secondary-text">
-          Tanlangan hisobvaraqlar sotuv hujjatiga qo'shiladi.
+          {t("app.modals.saleHint")}
         </div>
       </div>
 
       <div className="space-y-1">
         <DocumentAccountSelect
-          label="Tovarlar hisobvarag'i"
+          label="sale.fields.inventoryAccount"
           fieldName="inventoryAccountId"
           getFieldName="inventoryAccountName"
           formik={formik as unknown as FormikProps<object>}
@@ -118,7 +120,7 @@ export default function SaleLineAccountsModal({
           getFirst
         />
         <DocumentAccountSelect
-          label="Sotuv daromadi hisobvarag'i"
+          label="sale.fields.incomeAccount"
           fieldName="incomeAccountId"
           getFieldName="incomeAccountName"
           formik={formik as unknown as FormikProps<object>}
@@ -130,7 +132,7 @@ export default function SaleLineAccountsModal({
           getFirst
         />
         <DocumentAccountSelect
-          label="Sotuv tannarxi hisobvarag'i"
+          label="sale.fields.costAccount"
           fieldName="costAccountId"
           getFieldName="costAccountName"
           formik={formik as unknown as FormikProps<object>}

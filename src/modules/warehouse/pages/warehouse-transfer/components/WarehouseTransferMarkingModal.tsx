@@ -3,6 +3,7 @@ import { Button, Modal, Table } from "antd";
 import type { TableColumnsType } from "antd";
 import { generateKeyTable } from "@/utils/utils";
 import type { ProductStockSerial } from "../../warehouse/types/type";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   open: boolean;
@@ -25,21 +26,22 @@ export default function WarehouseTransferMarkingModal({
   onConfirm,
   onSelectedRowKeysChange,
 }: Props) {
+  const { t } = useTranslation();
   const columns: TableColumnsType<ProductStockSerial> = useMemo(
     () => [
-      { dataIndex: "indexId", title: "T/r", align: "center", width: 70 },
+      { dataIndex: "indexId", title: t("common.rowNumber"), align: "center", width: 70 },
       {
         dataIndex: "markingNumber",
-        title: "Markirovka",
+        title: t("app.fields.marking"),
         render: (value) => value || "-",
       },
       {
         dataIndex: "serialNumber",
-        title: "Seriya",
+        title: t("app.fields.serial"),
         render: (value) => value || "-",
       },
     ],
-    [],
+    [t],
   );
 
   return (
@@ -51,7 +53,7 @@ export default function WarehouseTransferMarkingModal({
       onCancel={onClose}
       footer={[
         <Button key="cancel" onClick={onClose}>
-          Bekor qilish
+          {t("common.cancel")}
         </Button>,
         <Button
           key="ok"
@@ -63,12 +65,12 @@ export default function WarehouseTransferMarkingModal({
             onConfirm(selected);
           }}
         >
-          Tanlanganlarni qo'shish
+          {t("app.modals.addSelected")}
         </Button>,
       ]}
     >
       <div className="mb-3 text-sm text-secondary-text">
-        Tanlangan markirovkalar transfer liniyasiga qo'shiladi.
+        {t("app.modals.warehouseHint")}
       </div>
       <Table<ProductStockSerial>
         size="small"
@@ -82,7 +84,7 @@ export default function WarehouseTransferMarkingModal({
           onChange: (keys) => onSelectedRowKeysChange(keys as number[]),
         }}
         scroll={{ x: "max-content", y: 500 }}
-        locale={{ emptyText: "Markirovka topilmadi" }}
+        locale={{ emptyText: t("app.modals.markingNotFound") }}
       />
     </Modal>
   );

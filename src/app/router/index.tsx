@@ -12,7 +12,6 @@ import { cashOperationRoutes } from "@/modules/cashoperation";
 import { accountingRoutes } from "@/modules/accounting/routes";
 import { faRoutes } from "@/modules/fa/routes";
 
-
 export const router = createBrowserRouter([
   {
     path: "/",

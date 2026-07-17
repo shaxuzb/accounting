@@ -18,16 +18,12 @@ import {
 
 export const usePurchaseImportOptions = (
   purchaseMode: PurchaseMode,
-  warehouseId: number | null | undefined,
 ) => {
-  const hasWarehouseFilter = Boolean(warehouseId);
-
   const productQuery = useQuery<ProductSelectOption[]>({
     queryKey: [
       "selectlist",
       selectListKeys.product,
       "purchase-goods-manual",
-      warehouseId,
     ],
     queryFn: async () => {
       const { data } = await $axiosPrivate.get<
@@ -35,13 +31,13 @@ export const usePurchaseImportOptions = (
       >(selectListEndpoints.productsSelectList, {
         params: {
           IsService: false,
-          ...(warehouseId ? { WarehouseId: warehouseId } : {}),
+          //  Purchase mahsulotlari warehouse bo'yicha filterlanmaydi.
           PageSize: 1000,
         },
       });
       return normalizeProductOptions(data);
     },
-    enabled: hasWarehouseFilter,
+    enabled: true,
   });
 
   const serviceQuery = useQuery<ProductSelectOption[]>({

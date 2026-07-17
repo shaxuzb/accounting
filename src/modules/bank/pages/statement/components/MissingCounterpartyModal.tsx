@@ -249,7 +249,7 @@ export default function MissingCounterpartyModal({
       );
 
       if (hasInvalidPhone) {
-        toast.error("Telefon raqamini +998 formatida kiriting");
+        toast.error(t("app.missingCounterparty.invalidPhone"));
         return;
       }
 
@@ -266,7 +266,7 @@ export default function MissingCounterpartyModal({
       );
 
       if (hasEmpty) {
-        toast.error("Kontragent ma'lumotlarini to'liq to'ldiring");
+        toast.error(t("app.missingCounterparty.requiredData"));
         return;
       }
 
@@ -298,11 +298,11 @@ export default function MissingCounterpartyModal({
         });
 
         if (Object.keys(assignments).length !== rows.length) {
-          toast.error("Yaratilgan kontragent IDlari topilmadi");
+          toast.error(t("app.missingCounterparty.idsNotFound"));
           return;
         }
 
-        toast.success("Kontragentlar muvaffaqiyatli yaratildi");
+        toast.success(t("app.missingCounterparty.created"));
         helpers.resetForm();
         onApply(assignments);
       } catch (error) {
@@ -337,20 +337,20 @@ export default function MissingCounterpartyModal({
   const columns = useMemo<TableColumnsType<CounterpartyDraftRow>>(() => {
     const result: TableColumnsType<CounterpartyDraftRow> = [
       {
-        title: "Kontragent",
+        title: t("settings.fields.counterparty"),
         dataIndex: "sourceName",
         width: 220,
         fixed: "left",
       },
       {
-        title: "Soni",
+        title: t("app.fields.count"),
         dataIndex: "count",
         width: 70,
         align: "center",
-        render: (value) => `${value} ta`,
+        render: (value) => t("app.missingCounterparty.count", { count: value }),
       },
       {
-        title: "Turi",
+        title: t("settings.fields.partyType"),
         dataIndex: "counterpartyTypeId",
         width: 190,
         render: (_, record) => (
@@ -358,7 +358,7 @@ export default function MissingCounterpartyModal({
             formik={formik}
             fieldName={getFieldName(record, "counterpartyTypeId")}
             path={selectListEndpoints.counterpartyTypesSelectList}
-            placeholder="Turi"
+            placeholder="settings.fields.partyType"
             marginBottom="mb-0"
             search
             enabled={open}
@@ -369,7 +369,7 @@ export default function MissingCounterpartyModal({
 
     if (rows.some((row) => !row.readonlyShortName)) {
       result.push({
-        title: "Qisqa nomi",
+        title: t("settings.fields.shortName"),
         dataIndex: "shortName",
         width: 190,
         render: (_, record) =>
@@ -384,7 +384,7 @@ export default function MissingCounterpartyModal({
 
     if (rows.some((row) => !row.readonlyFullName)) {
       result.push({
-        title: "To'liq nomi",
+        title: t("settings.fields.fullName"),
         dataIndex: "fullName",
         width: 220,
         render: (_, record) =>
@@ -399,7 +399,7 @@ export default function MissingCounterpartyModal({
 
     if (rows.some((row) => !row.readonlyInn)) {
       result.push({
-        title: "INN",
+        title: t("settings.fields.inn"),
         dataIndex: "inn",
         width: 160,
         render: (_, record) =>
@@ -414,7 +414,7 @@ export default function MissingCounterpartyModal({
 
     result.push(
       {
-        title: "Telefon",
+        title: t("settings.fields.phoneNumber"),
         dataIndex: "phoneNumber",
       width: 160,
       render: (_, record) => (
@@ -427,7 +427,7 @@ export default function MissingCounterpartyModal({
       ),
     },
       {
-        title: "Email",
+        title: t("settings.fields.email"),
         dataIndex: "email",
       width: 190,
       render: (_, record) => (
@@ -439,7 +439,7 @@ export default function MissingCounterpartyModal({
       ),
     },
       {
-        title: "Viloyat",
+        title: t("settings.fields.region"),
         dataIndex: "regionId",
         width: 180,
         render: (_, record) => (
@@ -447,7 +447,7 @@ export default function MissingCounterpartyModal({
             formik={formik}
             fieldName={getFieldName(record, "regionId")}
             path={selectListEndpoints.regionsSelectList}
-            placeholder="Viloyat"
+            placeholder="settings.fields.region"
             marginBottom="mb-0"
             search
             enabled={open}
@@ -455,7 +455,7 @@ export default function MissingCounterpartyModal({
         ),
       },
       {
-        title: "Tuman",
+        title: t("settings.fields.district"),
         dataIndex: "districtId",
         width: 180,
         render: (_, record) => (
@@ -469,13 +469,13 @@ export default function MissingCounterpartyModal({
         ),
       },
       {
-        title: "Manzil",
+        title: t("settings.fields.address"),
         dataIndex: "address",
       width: 220,
       render: (_, record) => (
         <CounterpartyDraftTextCell
           value={record.address}
-          placeholder="Manzil"
+          placeholder={t("settings.fields.address")}
           onCommit={(value) => updateRow(record, "address", value)}
         />
       ),
@@ -483,11 +483,11 @@ export default function MissingCounterpartyModal({
     );
 
     return result;
-  }, [formik, open, rows, updateRow]);
+  }, [formik, open, rows, t, updateRow]);
 
   return (
     <Modal
-      title="Topilmagan counterpartyIdlarni yaratish"
+      title={t("app.missingCounterparty.title")}
       open={open}
       onCancel={handleClose}
       footer={null}
@@ -496,7 +496,10 @@ export default function MissingCounterpartyModal({
       destroyOnHidden
     >
       <div className="mb-3 text-sm text-gray-500">
-        {items.length} ta transaction, {rows.length} ta kontragent
+        {t("app.missingCounterparty.summary", {
+          transactions: items.length,
+          counterparties: rows.length,
+        })}
       </div>
       <Table
         rowKey="key"

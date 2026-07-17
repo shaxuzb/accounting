@@ -11,12 +11,10 @@ export interface ProductItem {
   article?: string;
   name: string;
   unitId: number | null;
-  barcode: string;
   mxik: string;
   description: string;
   isService: boolean;
   isPieceTracked?: boolean;
-  productTypeId?: number | null;
   isSold?: boolean;
   isPurchased?: boolean;
   productGroupId?: number | null;
@@ -26,6 +24,7 @@ export interface ProductItem {
   stateId?: number | null;
   state?: string;
   new?: boolean;
+  barcode?: string;
 }
 
 export interface ProductType {

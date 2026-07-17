@@ -23,12 +23,10 @@ const emptyProductItem = (isService: boolean): ProductItem => ({
   // sku: "",
   // article: "",
   name: "",
-  barcode: "",
   mxik: "",
   description: "",
   isService,
   isPieceTracked: false,
-  productTypeId: null,
   isSold: false,
   isPurchased: false,
   productGroupId: null,
@@ -36,6 +34,7 @@ const emptyProductItem = (isService: boolean): ProductItem => ({
   minStock: null,
   stateId: 1,
   unitId: null,
+  barcode: ""
 });
 
 export default function ProductItemModal({
@@ -145,7 +144,11 @@ export default function ProductItemModal({
             />
           </Col> */}
           <Col span={24} md={12}>
-            <InputText label="Mxik" formik={productFormik} fieldName="mxik" />
+            <InputText
+              label="products.fields.mxik"
+              formik={productFormik}
+              fieldName="mxik"
+            />
           </Col>
           {/* <Col span={24} md={12}>
             <InputText
@@ -161,31 +164,36 @@ export default function ProductItemModal({
               formik={productFormik}
               fieldName="unitId"
               getFieldName="unit"
+              clearable
             />
           </Col>
-          <Col span={24} md={12}>
+          {/* <Col span={24} md={12}>
             <SelectCustom
-              label="Product type"
+              label="products.fields.productType"
               path={selectListEndpoints.productTypesSelectList}
               formik={productFormik}
               fieldName="productTypeId"
               queryParams={{ isService }}
               clearable
             />
-          </Col>
+          </Col> */}
+
           <Col span={24} md={12}>
+            <SelectCustom
+              label="products.fields.defaultVatRate"
+              path={selectListEndpoints.vatRatesSelectList}
+              formik={productFormik}
+              fieldName="defaultVatRateId"
+              search
+              clearable
+              
+            />
+          </Col>
+          <Col span={24}>
             <InputText
               label="products.fields.description"
               formik={productFormik}
               fieldName="description"
-            />
-          </Col>
-          <Col span={24} md={12}>
-            <SelectCustom
-              label="Default VAT rate ID"
-              path={selectListEndpoints.vatRatesSelectList}
-              formik={productFormik}
-              fieldName="defaultVatRateId"
             />
           </Col>
           {editItem && (
@@ -206,48 +214,56 @@ export default function ProductItemModal({
               min={0}
             />
           </Col> */}
-          <Col span={12}>
-            <div className="flex flex-wrap gap-2 mb-2">
-              <Button
-                type={productFormik.values.isSold ? "primary" : "default"}
-                onClick={() =>
-                  productFormik.setFieldValue(
-                    "isSold",
-                    !productFormik.values.isSold,
-                    true,
-                  )
-                }
-              >
-                {productFormik.values.isSold ? "Sotiladi" : "Sotilmaydi"}
-              </Button>
-              <Button
-                type={productFormik.values.isPurchased ? "primary" : "default"}
-                onClick={() =>
-                  productFormik.setFieldValue(
-                    "isPurchased",
-                    !productFormik.values.isPurchased,
-                    true,
-                  )
-                }
-              >
-                {productFormik.values.isPurchased
-                  ? "Xarid qilinadi"
-                  : "Xarid qilinmaydi"}
-              </Button>
-            </div>
-          </Col>
 
-          {!isService && (
+          {isService ? (
+            <>
+              <Col span={12}>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <Button
+                    type={productFormik.values.isSold ? "primary" : "default"}
+                    onClick={() =>
+                      productFormik.setFieldValue(
+                        "isSold",
+                        !productFormik.values.isSold,
+                        true,
+                      )
+                    }
+                  >
+                    {productFormik.values.isSold
+                      ? t("products.fields.sold")
+                      : t("products.fields.notSold")}
+                  </Button>
+                  <Button
+                    type={
+                      productFormik.values.isPurchased ? "primary" : "default"
+                    }
+                    onClick={() =>
+                      productFormik.setFieldValue(
+                        "isPurchased",
+                        !productFormik.values.isPurchased,
+                        true,
+                      )
+                    }
+                  >
+                    {productFormik.values.isPurchased
+                      ? t("products.fields.purchased")
+                      : t("products.fields.notPurchased")}
+                  </Button>
+                </div>
+              </Col>
+            </>
+          ) : (
             <Col span={12}>
-              <span>Markirovkali </span>
-              <Switch
-                checked={Boolean(productFormik.values.isPieceTracked)}
-                checkedChildren="Ha"
-                unCheckedChildren="Yo'q"
-                onChange={(checked) =>
-                  productFormik.setFieldValue("isPieceTracked", checked, true)
-                }
-              />
+              <Form.Item label={t("products.fields.pieceTracked")}>
+                <Switch
+                  checked={Boolean(productFormik.values.isPieceTracked)}
+                  checkedChildren={t("app.common.yes")}
+                  unCheckedChildren={t("app.common.no")}
+                  onChange={(checked) =>
+                    productFormik.setFieldValue("isPieceTracked", checked, true)
+                  }
+                />
+              </Form.Item>
             </Col>
           )}
         </Row>

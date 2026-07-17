@@ -2,6 +2,7 @@ import { Button, Input, Select, Switch, Table, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import { Pencil, Plus, QrCode, Save, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import InputNumberFormat from "@/components/fields/InputNumber";
@@ -27,8 +28,6 @@ import type {
   SaleSelectedProduct,
 } from "../types/type";
 import {
-  COSTING_METHOD,
-  allocateSaleLayers,
   getCostingPrices,
   getMarkupPercent,
   getSalePriceByMarkup,
@@ -46,7 +45,7 @@ interface Props {
   products: SaleSelectedProduct[];
   saleCondition: SaleCondition;
   onCommentChange: (value: string) => void;
-  onChange: (products: SaleSelectedProduct[]) => void;
+  onChange: Dispatch<SetStateAction<SaleSelectedProduct[]>>;
   onCancel: () => void;
   markingMode?: boolean;
   onMarkingModeChange?: (enabled: boolean) => void;
@@ -60,10 +59,11 @@ interface VatRateOption {
 }
 
 const newRowKey = "__new__";
+const EMPTY_STOCK_PRODUCTS: SaleProductStock[] = [];
 const isNewRow = (rowKey?: string) => Boolean(rowKey?.startsWith(newRowKey));
 
 const getStockProductId = (product: SaleProductStock) =>
-  product.productId || product.id;
+  product.productId || product.id || 0;
 
 const getProductName = (product?: SaleProductStock | null) =>
   product?.productName || product?.name || "-";
@@ -106,7 +106,43 @@ const getLayerTotal = (
 };
 
 const getAvailableQuantity = (product: SaleProductStock, fallback = 0) =>
-  Number(product.quantity || fallback || 0);
+  Number(product.availableQuantity ?? product.quantity ?? fallback ?? 0);
+
+const getLayerIdentity = (layer: SaleProductPriceLayer) =>
+  String(
+    layer.batchId ??
+      layer.productTableId ??
+      layer.purchaseId ??
+      layer.id ??
+      layer.purchaseDate ??
+      "layer",
+  );
+
+const mergeSelectedLayers = (
+  availableLayers: SaleProductPriceLayer[],
+  existingLayers: SaleProductPriceLayer[],
+  incomingLayers: SaleProductPriceLayer[],
+) => {
+  const quantities = new Map<string, number>();
+
+  existingLayers.forEach((layer) => {
+    quantities.set(getLayerIdentity(layer), layer.writeOffQuantity);
+  });
+  incomingLayers.forEach((layer) => {
+    const key = getLayerIdentity(layer);
+    quantities.set(key, (quantities.get(key) ?? 0) + layer.writeOffQuantity);
+  });
+
+  return availableLayers
+    .map((layer) => ({
+      ...layer,
+      writeOffQuantity: Math.min(
+        quantities.get(getLayerIdentity(layer)) ?? 0,
+        layer.availableQuantity,
+      ),
+    }))
+    .filter((layer) => layer.writeOffQuantity > 0);
+};
 
 const recalculateLine = ({
   line,
@@ -123,14 +159,20 @@ const recalculateLine = ({
   costingMethodId: number;
   keepManualPrice?: boolean;
 }): SaleSelectedProduct => {
-  const allocatedLayers =
-    costingMethodId === COSTING_METHOD.AVERAGE
-      ? []
-      : allocateSaleLayers({
-          costingMethodId,
-          quantity,
-          layers: line.priceLayers ?? [],
-        });
+  const allocatedLayers = line.priceLayers?.length
+    ? line.priceLayers
+        .map((layer) => ({
+          ...layer,
+          writeOffQuantity: Math.min(
+            line.layers?.find(
+              (selectedLayer) =>
+                getLayerIdentity(selectedLayer) === getLayerIdentity(layer),
+            )?.writeOffQuantity ?? 0,
+            layer.availableQuantity,
+          ),
+        }))
+        .filter((layer) => layer.writeOffQuantity > 0)
+    : [];
   const prices = getCostingPrices({
     costingMethodId,
     defaultCostPrice: line.costPrice,
@@ -195,7 +237,7 @@ export default function SaleProductSelection({
     ...(warehouseId ? { warehouseId } : {}),
     ...(search.trim() ? { search: search.trim() } : {}),
   });
-  const stockProducts = productStockData?.items ?? [];
+  const stockProducts = productStockData?.items ?? EMPTY_STOCK_PRODUCTS;
   const productById = useMemo(
     () =>
       new Map(
@@ -239,7 +281,7 @@ export default function SaleProductSelection({
       return data ?? [];
     },
   });
-  const { chartAccounts } = useGetSaleDocumentAccountOptions();
+  const { chartAccounts, defaultAccounts } = useGetSaleDocumentAccountOptions();
   const chartAccountById = useMemo(
     () =>
       new Map(
@@ -247,6 +289,45 @@ export default function SaleProductSelection({
       ),
     [chartAccounts],
   );
+
+  useEffect(() => {
+    if (!products.length) return;
+
+    let hasChanges = false;
+    const nextProducts = products.map((line) => {
+      if (!line.productId) return line;
+
+      const nextLine = { ...line };
+      if (
+        nextLine.inventoryAccountId === null &&
+        defaultAccounts.inventoryAccountId !== null
+      ) {
+        nextLine.inventoryAccountId = defaultAccounts.inventoryAccountId;
+        nextLine.inventoryAccountName = defaultAccounts.inventoryAccountName;
+        hasChanges = true;
+      }
+      if (
+        nextLine.incomeAccountId === null &&
+        defaultAccounts.incomeAccountId !== null
+      ) {
+        nextLine.incomeAccountId = defaultAccounts.incomeAccountId;
+        nextLine.incomeAccountName = defaultAccounts.incomeAccountName;
+        hasChanges = true;
+      }
+      if (
+        nextLine.costAccountId === null &&
+        defaultAccounts.costAccountId !== null
+      ) {
+        nextLine.costAccountId = defaultAccounts.costAccountId;
+        nextLine.costAccountName = defaultAccounts.costAccountName;
+        hasChanges = true;
+      }
+
+      return nextLine;
+    });
+
+    if (hasChanges) onChange(nextProducts);
+  }, [defaultAccounts, onChange, products]);
   const productOptions = stockProducts.map((item) => ({
     value: getStockProductId(item),
     label: getProductName(item),
@@ -274,8 +355,7 @@ export default function SaleProductSelection({
   const handleSelectProduct = async (
     productId: number,
     rowKey?: string,
-    quantityToAdd?: number,
-    sourceLayer?: SaleProductPriceLayer,
+    sourceLayers?: SaleProductPriceLayer[],
     overrideSalePrice?: number,
   ) => {
     const product = stockProducts.find(
@@ -291,41 +371,37 @@ export default function SaleProductSelection({
 
     setLoadingProductId(productId);
     try {
-      const response = await getProductPriceDetails.mutateAsync(productId);
+      const response = Array.isArray(product.batches)
+        ? product
+        : await getProductPriceDetails.mutateAsync(productId);
       const detail = normalizeProductPriceDetails(response, product);
-      const availableQuantity =
-        sourceLayer?.availableQuantity ||
-        detail.availableQuantity ||
-        getAvailableQuantity(product);
       const existingLine =
         rowKey && !isNewRow(rowKey)
           ? products.find((item) => item.rowKey === rowKey)
-          : !rowKey && !sourceLayer
+          : !rowKey
             ? products.find((item) => item.productId === productId)
             : undefined;
-      const requestedQuantity =
-        quantityToAdd === undefined
-          ? existingLine?.quantity || (availableQuantity > 0 ? 1 : 0)
-          : existingLine && !rowKey
-            ? existingLine.quantity + quantityToAdd
-            : quantityToAdd;
       const salePriceBySelection =
         overrideSalePrice === undefined ? undefined : Number(overrideSalePrice);
-      const priceLayers = sourceLayer ? [sourceLayer] : detail.layers;
-      const quantity = Math.min(requestedQuantity, availableQuantity);
-      const allocatedLayers =
-        saleCondition.costingMethodId === COSTING_METHOD.AVERAGE
-          ? []
-          : allocateSaleLayers({
-              costingMethodId: saleCondition.costingMethodId,
-              quantity,
-              layers: priceLayers,
-            });
+      const priceLayers = detail.layers;
+      const allocatedLayers = sourceLayers
+        ? mergeSelectedLayers(
+            priceLayers,
+            existingLine?.layers ?? [],
+            sourceLayers,
+          )
+        : existingLine?.layers?.length
+          ? mergeSelectedLayers(priceLayers, [], existingLine.layers)
+          : [];
+      const quantity = allocatedLayers.reduce(
+        (sum, layer) => sum + layer.writeOffQuantity,
+        0,
+      );
       const prices = getCostingPrices({
         costingMethodId: saleCondition.costingMethodId,
-        defaultCostPrice: sourceLayer?.unitPrice ?? detail.costPrice,
+        defaultCostPrice: detail.costPrice,
         defaultSalePrice:
-          salePriceBySelection ?? sourceLayer?.salePrice ?? detail.salePrice,
+          salePriceBySelection ?? existingLine?.unitPrice ?? detail.salePrice,
         layers: allocatedLayers,
       });
       const unitId = detail.unitId || product.unitId || 0;
@@ -335,7 +411,7 @@ export default function SaleProductSelection({
       }
       const selectedSalePrice =
         salePriceBySelection ??
-        sourceLayer?.salePrice ??
+        existingLine?.unitPrice ??
         detail.salePrice ??
         prices.unitPrice ??
         prices.costPrice ??
@@ -355,21 +431,26 @@ export default function SaleProductSelection({
         mxik: detail.mxik || product.mxik || product.barcode,
         quantity,
         availableQuantity:
-          sourceLayer?.availableQuantity ||
-          detail.availableQuantity ||
-          getAvailableQuantity(product),
-        costPrice:
-          prices.costPrice || sourceLayer?.unitPrice || detail.costPrice,
+          detail.availableQuantity || getAvailableQuantity(product),
+        costPrice: prices.costPrice || detail.costPrice,
         unitId,
         unitName: detail.unitName || product.unitName,
         unitPrice:
           salePriceBySelection === undefined ? unitPrice : salePriceBySelection,
-        inventoryAccountId: existingLine?.inventoryAccountId ?? null,
-        incomeAccountId: existingLine?.incomeAccountId ?? null,
-        costAccountId: existingLine?.costAccountId ?? null,
-        inventoryAccountName: existingLine?.inventoryAccountName,
-        incomeAccountName: existingLine?.incomeAccountName,
-        costAccountName: existingLine?.costAccountName,
+        inventoryAccountId:
+          existingLine?.inventoryAccountId ??
+          defaultAccounts.inventoryAccountId,
+        incomeAccountId:
+          existingLine?.incomeAccountId ?? defaultAccounts.incomeAccountId,
+        costAccountId:
+          existingLine?.costAccountId ?? defaultAccounts.costAccountId,
+        inventoryAccountName:
+          existingLine?.inventoryAccountName ??
+          defaultAccounts.inventoryAccountName,
+        incomeAccountName:
+          existingLine?.incomeAccountName ?? defaultAccounts.incomeAccountName,
+        costAccountName:
+          existingLine?.costAccountName ?? defaultAccounts.costAccountName,
         vatRateId: existingLine?.vatRateId ?? saleCondition.vatRateId,
         markings:
           existingLine?.productId === productId
@@ -388,14 +469,21 @@ export default function SaleProductSelection({
         layers: allocatedLayers,
       };
 
-      if (existingLine) {
-        onChange(
-          products.map((item) =>
-            item.rowKey === existingLine.rowKey ? nextLine : item,
-          ),
+      onChange((currentProducts) => {
+        const currentExistingLine = currentProducts.find((item) =>
+          existingLine
+            ? item.rowKey === existingLine.rowKey
+            : !rowKey && item.productId === productId,
         );
-      } else {
-        onChange([...products, nextLine]);
+
+        return currentExistingLine
+          ? currentProducts.map((item) =>
+              item.rowKey === currentExistingLine.rowKey ? nextLine : item,
+            )
+          : [...currentProducts, nextLine];
+      });
+
+      if (!existingLine) {
         if (isNewRow(rowKey)) {
           setEmptyRowKeys((current) => {
             const rest = current.filter((key) => key !== rowKey);
@@ -427,6 +515,53 @@ export default function SaleProductSelection({
 
   const handleAddEmptyRow = () => {
     setEmptyRowKeys((current) => [...current, `${newRowKey}-${Date.now()}`]);
+  };
+
+  const updateBatchQuantity = (
+    rowKey: string | undefined,
+    batch: SaleProductPriceLayer,
+    value: number | null,
+  ) => {
+    updateLine(rowKey, (line) => {
+      const availableLayers = line.priceLayers ?? [];
+      const nextLayers = availableLayers
+        .map((layer) => {
+          const currentQuantity =
+            line.layers?.find(
+              (selectedLayer) =>
+                getLayerIdentity(selectedLayer) === getLayerIdentity(layer),
+            )?.writeOffQuantity ?? 0;
+          const writeOffQuantity =
+            getLayerIdentity(layer) === getLayerIdentity(batch)
+              ? Math.min(Number(value ?? 0), layer.availableQuantity)
+              : currentQuantity;
+
+          return { ...layer, writeOffQuantity };
+        })
+        .filter((layer) => layer.writeOffQuantity > 0);
+      const quantity = nextLayers.reduce(
+        (sum, layer) => sum + layer.writeOffQuantity,
+        0,
+      );
+      const costPrice = quantity
+        ? nextLayers.reduce(
+            (sum, layer) => sum + layer.unitPrice * layer.writeOffQuantity,
+            0,
+          ) / quantity
+        : 0;
+      const unitPrice =
+        line.priceType === "manual"
+          ? line.unitPrice
+          : getSalePriceByMarkup(costPrice, line.markupPercent ?? 0);
+
+      return {
+        ...line,
+        quantity,
+        costPrice,
+        unitPrice,
+        layers: nextLayers.map((layer) => ({ ...layer, salePrice: unitPrice })),
+      };
+    });
   };
 
   const applyLineAccounts = (
@@ -576,6 +711,7 @@ export default function SaleProductSelection({
     {
       dataIndex: "productName",
       title: "Mahsulot",
+      width: 450,
       render: (_, record) => (
         <Select
           showSearch
@@ -587,12 +723,18 @@ export default function SaleProductSelection({
             isProductStocksFetching ||
             loadingProductId === record.productId
           }
-          options={productOptions}
+          options={productOptions.map((option) => ({
+            ...option,
+            disabled: products.some(
+              (item) =>
+                item.productId === Number(option.value) &&
+                item.rowKey !== record.rowKey,
+            ),
+          }))}
           disabled={disabled || isProductStocksLoading}
           onChange={(value) =>
             handleSelectProduct(Number(value), record.rowKey)
           }
-          
         />
       ),
     },
@@ -666,7 +808,7 @@ export default function SaleProductSelection({
             max={record.availableQuantity}
             precision={3}
             value={value}
-            disabled={disabled}
+            disabled={disabled || Boolean(record.priceLayers?.length)}
             onValueChange={(quantity) =>
               updateLine(record.rowKey, (line) =>
                 recalculateLine({
@@ -727,7 +869,7 @@ export default function SaleProductSelection({
       dataIndex: "vatRateId",
       title: "QQS (foiz va summa)",
       render: (_, record) => (
-        <div className="flex items-center" >
+        <div className="flex items-center">
           <Select
             showSearch
             className="min-w-28"
@@ -807,63 +949,80 @@ export default function SaleProductSelection({
   ];
 
   const getLayerColumns = (
-    vatRateId: number | null | undefined,
+    line: SaleSelectedProduct,
   ): TableColumnsType<SaleProductPriceLayer> => [
     {
-      dataIndex: "purchaseDocNumber",
-      title: "Kirim hujjati",
-      width: 100,
-      render: (value) => value || "-",
+      dataIndex: "batchNumber",
+      title: "Partiya raqami",
+      render: (value, record) => value || record.batchId || "-",
     },
     {
       dataIndex: "purchaseDate",
       title: "Kirim sanasi",
-      width: 100,
-      render: (value) => customDate(value)
+      render: (value) => customDate(value),
     },
     {
       dataIndex: "availableQuantity",
       title: "Mavjud",
       align: "center",
-      width: 75,
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "writeOffQuantity",
-      title: "Miqdor",
+      title: "Sotiladigan",
       align: "center",
-      width: 70,
-      render: (value) => numberSpacing(Number(value ?? 0)),
+      width: 50,
+      render: (_, record) => (
+        <InputNumberFormat
+          standalone
+          emptyZero
+          min={0}
+          max={record.availableQuantity}
+          precision={3}
+          value={
+            line.layers?.find(
+              (layer) => getLayerIdentity(layer) === getLayerIdentity(record),
+            )?.writeOffQuantity ?? 0
+          }
+          disabled={disabled}
+          onValueChange={(value) =>
+            updateBatchQuantity(line.rowKey, record, value)
+          }
+        />
+      ),
     },
     {
       dataIndex: "unitPrice",
       title: "Tannarx",
       align: "center",
-      width: 140,
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "salePrice",
       title: "Sotuv narxi",
       align: "center",
-      width: 140,
-      render: (value) => numberSpacing(Number(value ?? 0)),
+      render: () => numberSpacing(Number(line.unitPrice ?? 0)),
     },
     {
       dataIndex: "saleAmount",
       title: "Sotuv summasi",
       align: "center",
-      width: 150,
-      render: (_, record) => numberSpacing(getLayerSaleAmount(record)),
+      render: (_, record) =>
+        numberSpacing(
+          getLayerSaleAmount({ ...record, salePrice: line.unitPrice }),
+        ),
     },
     {
       dataIndex: "vatAmount",
       title: "QQS",
       align: "center",
-      width: 130,
       render: (_, record) =>
         numberSpacing(
-          getVatAmount(getLayerSaleAmount(record), vatRateId, vatRateOptions),
+          getVatAmount(
+            getLayerSaleAmount({ ...record, salePrice: line.unitPrice }),
+            line.vatRateId,
+            vatRateOptions,
+          ),
           undefined,
           true,
         ),
@@ -872,10 +1031,13 @@ export default function SaleProductSelection({
       dataIndex: "totalAmount",
       title: "Jami",
       align: "center",
-      width: 140,
       render: (_, record) =>
         numberSpacing(
-          getLayerTotal(record, vatRateId, vatRateOptions),
+          getLayerTotal(
+            { ...record, salePrice: line.unitPrice },
+            line.vatRateId,
+            vatRateOptions,
+          ),
           undefined,
           true,
         ),
@@ -892,11 +1054,6 @@ export default function SaleProductSelection({
     (sum, item) => sum + getLineTotal(item, vatRateOptions),
     0,
   );
-  const expandedTitle =
-    saleCondition.costingMethodId === COSTING_METHOD.LIFO
-      ? "LIFO hisobdan chiqarish (avto)"
-      : "FIFO hisobdan chiqarish (avto)";
-
   return (
     <Card className="overflow-hidden border border-border">
       <div className="flex w-full flex-nowrap items-center justify-between gap-3 overflow-x-auto border-b border-border p-3">
@@ -960,21 +1117,19 @@ export default function SaleProductSelection({
         scroll={{ x: "max-content" }}
         expandable={{
           expandedRowRender: (record) =>
-            record.layers?.length ? (
+            record.priceLayers?.length ? (
               <div className="px-5 py-3">
-                <div className="mb-2 font-semibold">{expandedTitle}</div>
+                <div className="mb-2 font-semibold">Partiyalar</div>
                 <Table<SaleProductPriceLayer>
                   size="small"
-                  columns={getLayerColumns(record.vatRateId)}
-                  dataSource={generateKeyTable(record.layers, "productTableId")}
+                  columns={getLayerColumns(record)}
+                  dataSource={generateKeyTable(record.priceLayers, "batchId")}
                   pagination={false}
                   scroll={{ x: "max-content" }}
                 />
               </div>
             ) : null,
-          rowExpandable: (record) =>
-            saleCondition.costingMethodId !== COSTING_METHOD.AVERAGE &&
-            Boolean(record.layers?.length),
+          rowExpandable: (record) => Boolean(record.priceLayers?.length),
           defaultExpandAllRows: true,
         }}
       />
@@ -1031,12 +1186,11 @@ export default function SaleProductSelection({
         loadingProductId={loadingProductId}
         onSearch={setSearch}
         onClose={() => setWarehouseOpen(false)}
-        onAdd={(product, layer, quantity, salePrice) =>
+        onAdd={(product, layers, salePrice) =>
           handleSelectProduct(
             getStockProductId(product),
             undefined,
-            quantity,
-            layer,
+            layers,
             salePrice,
           )
         }

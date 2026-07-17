@@ -5,6 +5,8 @@ export const saleEndpoints = {
     create: "sale-docs",
     update: (id: string | number) => `sale-docs/${id}`,
     warehouseConfirm: (id: string | number) => `sale-docs/${id}/assembly`,
+    availableProducts: (id: string | number) =>
+      `sale-docs/${id}/available-products`,
     confirm: (id: string | number) => `sale-docs/${id}/confirm`,
   },
   saleDocTable: {

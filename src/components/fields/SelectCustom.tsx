@@ -1,5 +1,6 @@
 import { $axiosPrivate } from "@/services/AxiosService";
 import { useAppSelector } from "@/store/hooks";
+import { getLocalizedLabel } from "@/shared/utils/localizedLabel";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Divider, Form, type FormProps, Select } from "antd";
 import { type FormikProps, getIn } from "formik";
@@ -69,6 +70,7 @@ const toSearchText = (value: unknown): string => {
 
 const SelectCustom: React.FC<SelectCustomProps> = (props) => {
   const { t } = useTranslation();
+  const lang = useAppSelector((state) => state.lang.lang);
   const user = useAppSelector((state) => state.auth?.user);
   const {
     label = "",
@@ -127,7 +129,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
   const { data, isFetching, isLoading, isSuccess } = useQuery<
     SelectOptionItem[]
   >({
-    queryKey: ["selectlist", path, refetchSync, requestParams],
+    queryKey: ["selectlist", lang, path, refetchSync, requestParams],
     queryFn: async () => {
       const response = await $axiosPrivate.get<SelectOptionItem[]>(path, {
         params: requestParams,
@@ -145,8 +147,11 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
 
   const getOptionLabel = React.useCallback(
     (item: SelectOptionItem) =>
-      optionLabel?.(item) ?? (item[dinamicLabel] as React.ReactNode),
-    [dinamicLabel, optionLabel],
+      optionLabel?.(item) ??
+      (dinamicLabel === "name"
+        ? getLocalizedLabel(item, lang)
+        : (item[dinamicLabel] as React.ReactNode)),
+    [dinamicLabel, lang, optionLabel],
   );
 
   const getSelectedLabel = React.useCallback(
@@ -334,7 +339,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
                       onClick={addOption.onClick}
                     >
                       <Plus className="size-4.5" />
-                      Qo'shish
+                      {t("common.add")}
                     </Button>
                   </div>
                 </>

@@ -19,7 +19,8 @@
     "total": "Jami",
     "created": "Yaratildi",
     "back": "Orqaga",
-    "next": "Keyingisi"
+    "next": "Keyingisi",
+    "refresh": "Yangilash"
   },
   "actions": {
     "deleteSuccess": "Element {{id}} muvaffaqiyatli o'chirildi",
@@ -301,7 +302,9 @@
       "markingNumber": "Markirovka raqami",
       "supplier": "Yetkazib beruvchi",
       "total": "Jami narx",
-      "uom": "Birlik"
+      "uom": "Birlik",
+      "debitAccount": "Debet hisobvarag'i",
+      "vatAccount": "QQS hisobvarag'i"
     },
 
     "messages": {
@@ -398,7 +401,14 @@
       "supplierToStockFactor": "Xariddan omborga koeffitsient",
       "stockToClientFactor": "Ombordan mijozga koeffitsient",
       "unit": "Birlik",
-      "productGroup": "Mahsulot guruhi"
+      "productGroup": "Mahsulot guruhi",
+      "mxik": "MXIK",
+      "defaultVatRate": "Standart QQS stavkasi",
+      "sold": "Sotiladi",
+      "notSold": "Sotilmaydi",
+      "purchased": "Xarid qilinadi",
+      "notPurchased": "Xarid qilinmaydi",
+      "pieceTracked": "Markirovka bilan hisobga olinadi"
     },
     "actions": {
       "addProduct": "Mahsulot yaratish",
@@ -429,6 +439,11 @@
   ,
   "sale": {
     "title": "Sotuv",
+    "fields": {
+      "inventoryAccount": "Tovarlar hisobvarag'i",
+      "incomeAccount": "Sotuv daromadi hisobvarag'i",
+      "costAccount": "Sotuv tannarxi hisobvarag'i"
+    },
     "new": "Yangi savdo",
     "edit": "Savdoni o'zgartirish",
     "document": "Savdo hujjati",
@@ -442,6 +457,123 @@
   "Purchase": {
     "excelImport": {
       "title": "Sotib olish importi"
+    }
+  },
+  "app": {
+    "accounting": {
+      "title": "Buxgalteriya",
+      "reports": "Buxgalteriya hisobotlari",
+      "balanceSheet": "Balans hisoboti",
+      "incomeStatement": "Daromadlar hisoboti",
+      "cashFlow": "Pul oqimi",
+      "accountTurnover": "Hisob aylanmasi",
+      "journal": "Operatsiyalar jurnali",
+      "accountCard": "Hisob kartochkasi",
+      "ledger": "Bosh kitob",
+      "trialBalance": "Sinov balansi",
+      "auditLog": "Audit jurnali",
+      "repost": "Qayta o'tkazish",
+      "periods": "Hisob davrlari"
+    },
+    "reports": {
+      "balance": {"title": "Balans hisoboti", "description": "Aktivlar, majburiyatlar va kapital bo'yicha to'liq hisobot.", "table": "Balans qoldiqlari", "empty": "Balans hisoboti natijasi yo'q"},
+      "income": {"title": "Daromadlar hisoboti", "description": "Daromad, tannarx va foyda / zarar bo'yicha tahlil.", "table": "Daromadlar hisoboti qatorlari", "empty": "Daromadlar hisoboti natijasi yo'q"},
+      "cashFlow": {"title": "Pul oqimi", "description": "Pul oqimi bo'yicha kirim, chiqim va sof farq.", "table": "Pul oqimi qatorlari", "empty": "Pul oqimi natijasi yo'q"},
+      "turnover": {"title": "Hisob aylanmasi", "description": "Provodkalar, jurnal raqami, hujjat va miqdorlar ro'yxati.", "table": "Hisob aylanmasi qatorlari", "empty": "Hisob aylanmasi natijasi yo'q"},
+      "journal": {"title": "Operatsiyalar jurnali", "description": "Barcha qaydlar va o'tkazmalar uchun umumiy jurnal.", "table": "Jurnal qatorlari", "empty": "Jurnal natijasi yo'q"},
+      "card": {"title": "Hisob kartochkasi", "description": "Bitta schyot bo'yicha karta va harakatlar.", "table": "Hisob kartochkasi qatorlari", "empty": "Hisob kartochkasi natijasi yo'q"}
+    },
+    "trial": {
+      "title": "Sinov balansi",
+      "refreshData": "Ma'lumotni yangilash",
+      "resultEmpty": "Sinov balansi natijasi yo'q",
+      "openingDebit": "Boshlang'ich debet",
+      "openingCredit": "Boshlang'ich kredit",
+      "periodDebit": "Davr debeti",
+      "periodCredit": "Davr krediti",
+      "closingDebit": "Yakuniy debet",
+      "closingCredit": "Yakuniy kredit",
+      "accountCode": "Hisob kodi",
+      "accountName": "Hisob nomi"
+    },
+    "menu": {
+      "warehouseGroup": "Ombor",
+      "warehouse": "Omborxona",
+      "transfers": "Omborlar orasida ko'chirish",
+      "inventory": "Inventarizatsiya",
+      "adjustment": "Qoldiqni tuzatish",
+      "cash": "Kassa",
+      "cashOperations": "Kassa amaliyotlari",
+      "incomeOrders": "Kirim orderlari",
+      "expenseOrders": "Chiqim orderlari",
+      "cashBook": "Kassa hisobi",
+      "sales": "Sotuv",
+      "salesList": "Sotuvlar",
+      "company": "HisobKitob MCHJ"
+    },
+    "routes": {
+      "warehouseTransfer": "Omborlar orasida ko'chirish",
+      "newTransfer": "Yangi ko'chirish",
+      "transferDocument": "Ko'chirish hujjati",
+      "newAdjustment": "Yangi tuzatish",
+      "adjustmentDocument": "Tuzatish hujjati",
+      "newInventory": "Yangi inventarizatsiya",
+      "inventoryEdit": "Inventarizatsiya hujjatini tahrirlash",
+      "inventoryDocument": "Inventarizatsiya hujjati",
+      "cashDocument": "Kassa hujjati",
+      "cashDocuments": "Kassa hujjatlari",
+      "accountingEntries": "Provodkalar hisoboti"
+    },
+    "fields": {
+      "organization": "Tashkilot",
+      "document": "Hujjat",
+      "postingDate": "Provodka sanasi",
+      "currency": "Valyuta",
+      "documentAmount": "Hujjat summasi",
+      "debit": "Debet",
+      "credit": "Kredit",
+      "account": "Hisob (schyot)",
+      "subkonto": "Subkonto / Analitika",
+      "amount": "Summa",
+      "quantity": "Miqdori",
+      "number": "Raqam",
+      "count": "Soni",
+      "marking": "Markirovka",
+      "serial": "Seriya"
+    },
+    "modals": {
+      "accountSelectionTitle": "Satr uchun hisobvaraqlar",
+      "applyCurrent": "Faqat shu satrga qo'llash",
+      "applyAll": "Barcha satrlarga qo'llash",
+      "purchaseHint": "Tanlangan hisobvaraqlar xarid hujjatiga qo'shiladi.",
+      "saleHint": "Tanlangan hisobvaraqlar sotuv hujjatiga qo'shiladi.",
+      "productLine": "Mahsulot satri",
+      "addAccount": "Hisob qo'shish",
+      "searchAccount": "Raqam yoki nomi bo'yicha qidirish",
+      "selectedAccounts": "Tanlangan hisoblar: {{count}}",
+      "selectAtLeastOneAccount": "Kamida bitta hisobni tanlang",
+      "accountsAdded": "Tanlangan hisoblar qo'shildi",
+      "warehouseHint": "Tanlangan markirovkalar hujjat qatoriga qo'shiladi.",
+      "markingNotFound": "Markirovka topilmadi",
+      "addSelected": "Tanlanganlarni qo'shish"
+    },
+    "missingCounterparty": {
+      "title": "Topilmagan kontragentlarni yaratish",
+      "summary": "{{transactions}} ta tranzaksiya, {{counterparties}} ta kontragent",
+      "count": "{{count}} ta",
+      "invalidPhone": "Telefon raqamini +998 formatida kiriting",
+      "requiredData": "Kontragent ma'lumotlarini to'liq to'ldiring",
+      "idsNotFound": "Yaratilgan kontragent IDlari topilmadi",
+      "created": "Kontragentlar muvaffaqiyatli yaratildi"
+    },
+    "common": {
+      "select": "Tanlang",
+      "yes": "Ha",
+      "no": "Yo'q",
+      "inProgress": "Jarayonda",
+      "completed": "Tugallangan",
+      "noData": "Ma'lumot yo'q",
+      "notFound": "Topilmadi"
     }
   }
 }

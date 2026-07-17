@@ -11,60 +11,62 @@ import type {
   TrialBalanceResult,
 } from "../types/type";
 import type { ColumnsType } from "antd/es/table";
+import { useTranslation } from "react-i18next";
 
 export default function TrialBalancePage() {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<TrialBalanceQuery | null>(null);
   const query = useGetTrialBalance(filters ?? undefined);
   const data = query.data as TrialBalanceResult | undefined;
 
   const columns: ColumnsType<TrialBalanceItem> = useMemo(
     () => [
-      { title: "Hisob kodi", dataIndex: "accountCode", width: 140 },
-      { title: "Hisob nomi", dataIndex: "accountName" },
+      { title: t("app.trial.accountCode"), dataIndex: "accountCode", width: 140 },
+      { title: t("app.trial.accountName"), dataIndex: "accountName" },
       {
-        title: "Boshlang'ich debet",
+        title: t("app.trial.openingDebit"),
         dataIndex: "openingDebit",
         align: "right", 
         width: 170,
         render: (value) => numberSpacing(value),
       },
       {
-        title: "Boshlang'ich kredit",
+        title: t("app.trial.openingCredit"),
         dataIndex: "openingCredit",
         align: "right",
         width: 170,
         render: (value) => numberSpacing(value),
       },
       {
-        title: "Davr debeti",
+        title: t("app.trial.periodDebit"),
         dataIndex: "periodDebit",
         align: "right",
         width: 160,
         render: (value) => numberSpacing(value),
       },
       {
-        title: "Davr krediti",
+        title: t("app.trial.periodCredit"),
         dataIndex: "periodCredit",
         align: "right",
         width: 160,
         render: (value) => numberSpacing(value),
       },
       {
-        title: "Yopilish debeti",
+        title: t("app.trial.closingDebit"),
         dataIndex: "closingDebit",
         align: "right",
         width: 170,
         render: (value) => numberSpacing(value),
       },
       {
-        title: "Yopilish krediti",
+        title: t("app.trial.closingCredit"),
         dataIndex: "closingCredit",
         align: "right",
         width: 170,
         render: (value) => numberSpacing(value),
       },
     ],
-    [],
+    [t],
   );
 
   const isLoading = query.isLoading || query.isFetching;
@@ -73,7 +75,7 @@ export default function TrialBalancePage() {
     <div className="space-y-4">
       <div>
         <Typography.Title level={3} className="mb-1! text-text!">
-          Trial balance
+          {t("app.trial.title")}
         </Typography.Title>
         <p className="text-sm text-secondary-text">
           Swagger endpoint: <code>/api/register/trial-balance</code>
@@ -88,13 +90,13 @@ export default function TrialBalancePage() {
       <Card className="border border-border">
         <div className="flex items-center justify-between gap-3">
           <div className="text-sm text-secondary-text">
-            Ma'lumotni yangilash
+            {t("app.trial.refreshData")}
           </div>
           <Button
             icon={<RefreshCw className="size-4" />}
             onClick={() => void query.refetch()}
           >
-            Yangilash
+            {t("common.refresh")}
           </Button>
         </div>
       </Card>
@@ -104,7 +106,7 @@ export default function TrialBalancePage() {
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             <Card className="border border-border p-4">
               <div className="text-xs text-secondary-text">
-                Boshlang'ich debet jami
+                {t("app.trial.openingDebit")} {t("common.total").toLowerCase()}
               </div>
               <div className="mt-1 text-lg font-semibold">
                 {numberSpacing(data.openingDebitTotal, undefined, true)}
@@ -112,7 +114,7 @@ export default function TrialBalancePage() {
             </Card>
             <Card className="border border-border p-4">
               <div className="text-xs text-secondary-text">
-                Boshlang'ich kredit jami
+                {t("app.trial.openingCredit")} {t("common.total").toLowerCase()}
               </div>
               <div className="mt-1 text-lg font-semibold">
                 {numberSpacing(data.openingCreditTotal, undefined, true)}
@@ -120,7 +122,7 @@ export default function TrialBalancePage() {
             </Card>
             <Card className="border border-border p-4">
               <div className="text-xs text-secondary-text">
-                Davr debeti jami
+                {t("app.trial.periodDebit")} {t("common.total").toLowerCase()}
               </div>
               <div className="mt-1 text-lg font-semibold">
                 {numberSpacing(data.periodDebitTotal, undefined, true)}
@@ -128,7 +130,7 @@ export default function TrialBalancePage() {
             </Card>
             <Card className="border border-border p-4">
               <div className="text-xs text-secondary-text">
-                Davr krediti jami
+                {t("app.trial.periodCredit")} {t("common.total").toLowerCase()}
               </div>
               <div className="mt-1 text-lg font-semibold">
                 {numberSpacing(data.periodCreditTotal, undefined, true)}
@@ -136,7 +138,7 @@ export default function TrialBalancePage() {
             </Card>
             <Card className="border border-border p-4">
               <div className="text-xs text-secondary-text">
-                Yakuniy debet jami
+                {t("app.trial.closingDebit")} {t("common.total").toLowerCase()}
               </div>
               <div className="mt-1 text-lg font-semibold">
                 {numberSpacing(data.closingDebitTotal, undefined, true)}
@@ -144,7 +146,7 @@ export default function TrialBalancePage() {
             </Card>
             <Card className="border border-border p-4">
               <div className="text-xs text-secondary-text">
-                Yakuniy kredit jami
+                {t("app.trial.closingCredit")} {t("common.total").toLowerCase()}
               </div>
               <div className="mt-1 text-lg font-semibold">
                 {numberSpacing(data.closingCreditTotal, undefined, true)}
@@ -188,14 +190,14 @@ export default function TrialBalancePage() {
 
       {!data && isLoading && (
         <Card className="border border-border p-4">
-          <div className="text-sm text-secondary-text">Yuklanmoqda...</div>
+          <div className="text-sm text-secondary-text">{t("common.loading")}...</div>
         </Card>
       )}
 
       {!data && !isLoading && (
         <Card className="border border-border p-4">
           <div className="text-sm text-secondary-text">
-            Trial balance natijasi yo'q
+            {t("app.trial.resultEmpty")}
           </div>
         </Card>
       )}

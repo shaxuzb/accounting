@@ -4,6 +4,8 @@ import { Form, type FormProps, Select } from "antd";
 import { type FormikProps, getIn } from "formik";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useAppSelector } from "@/store/hooks";
+import { getLocalizedLabel } from "@/shared/utils/localizedLabel";
 
 type FormValues = object;
 
@@ -27,6 +29,7 @@ interface SelectCustomProps {
 
 const DistrictSelect: React.FC<SelectCustomProps> = (props) => {
   const { t } = useTranslation();
+  const lang = useAppSelector((state) => state.lang.lang);
   const {
     label = "",
     formik,
@@ -44,9 +47,8 @@ const DistrictSelect: React.FC<SelectCustomProps> = (props) => {
     | number
     | null
     | undefined;
-    console.log(regionId);
   const { data, isFetching, isLoading } = useQuery<SelectItem[]>({
-    queryKey: [fieldName, regionId],
+    queryKey: [fieldName, lang, regionId],
     queryFn: async () => {
       const response = await $axiosPrivate.get<SelectItem[]>(path, {
         params: { regionId },
@@ -98,7 +100,7 @@ const DistrictSelect: React.FC<SelectCustomProps> = (props) => {
         placeholder={t(label)}
         options={data?.map((item) => ({
           value: item.id,
-          label: item.name,
+          label: getLocalizedLabel(item, lang),
         }))}
         className={`${disabled ? "disabled" : ""} mono`}
         style={{

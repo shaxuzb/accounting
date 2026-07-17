@@ -215,7 +215,6 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
                   />
                 }
                 styles={{
-                
                   content: {
                     padding: 0,
                   },
@@ -276,4 +275,3 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
     </div>
   );
 };
-

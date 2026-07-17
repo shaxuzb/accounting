@@ -7,7 +7,7 @@ import type {
   SaleDocUpdateForm,
   SaleDocWarehouseConfirmForm,
 } from "../types/form";
-import type { SaleDoc } from "../types/type";
+import type { SaleAvailableProduct, SaleDoc } from "../types/type";
 
 type QueryParams = ListParams | URLSearchParams;
 
@@ -21,6 +21,10 @@ export const saleDocService = {
   detail: (id: string | number) =>
     $axiosPrivate
       .get<SaleDoc>(endpoints.detail(id))
+      .then((res) => res.data),
+  availableProducts: (id: string | number) =>
+    $axiosPrivate
+      .get<SaleAvailableProduct[]>(endpoints.availableProducts(id))
       .then((res) => res.data),
   create: (payload: SaleDocCreateForm) =>
     $axiosPrivate

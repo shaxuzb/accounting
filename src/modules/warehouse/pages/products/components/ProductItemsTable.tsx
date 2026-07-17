@@ -56,14 +56,9 @@ export default function ProductItemsTable({
     {
       dataIndex: "mxik",
       title: t("mxik"),
-      align:"center"
-    },
-    {
-      dataIndex: "productTypeName",
-      title: "Product type",
       align: "center",
-      render: (value) => value ?? "-",
     },
+
     {
       dataIndex: "isSold",
       title: "Sotiladi",
@@ -103,7 +98,7 @@ export default function ProductItemsTable({
     {
       dataIndex: "description",
       title: t("products.fields.description"),
-      align: "center"
+      align: "center",
     },
     {
       dataIndex: "stateId",

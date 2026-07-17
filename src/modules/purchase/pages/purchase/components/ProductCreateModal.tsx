@@ -26,13 +26,13 @@ const ProductCreateModal = ({
   const formik = useFormik<ProductItem>({
     initialValues: {
       name: "",
-      barcode: "",
       mxik: "",
       description: "",
       productGroupId: null,
       isService: false,
       isPieceTracked: false,
       unitId: null,
+      barcode: ""
     },
     validationSchema: productItemSchema(false),
     onSubmit: async (values) => {

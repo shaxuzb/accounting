@@ -184,6 +184,9 @@ const normalizeLayer = (
 
   return {
     id: toNumber(read(item, ["id"]), 0) || null,
+    batchId: toNumber(read(item, ["batchId"]), 0) || null,
+    batchNumber: toStringValue(read(item, ["batchNumber"]), ""),
+    documentId: toNumber(read(item, ["documentId"]), 0) || null,
     purchaseId: toNumber(read(item, ["purchaseId", "ownerId"]), 0) || null,
     productTableId:
       toNumber(read(item, ["productTableId", "tableId", "stockTableId"]), 0) ||
@@ -191,10 +194,18 @@ const normalizeLayer = (
       null,
     productTableIds,
     purchaseDocNumber: toStringValue(
-      read(item, ["purchaseDocNumber", "docNumber", "documentNumber"], ""),
+      read(
+        item,
+        ["purchaseDocNumber", "docNumber", "documentNumber"],
+        read(item, ["documentId"], ""),
+      ),
     ),
     purchaseDate: toStringValue(
-      read(item, ["purchaseDate", "docDate", "date", "createdDate"], ""),
+      read(
+        item,
+        ["purchaseDate", "receivedDate", "docDate", "date", "createdDate"],
+        "",
+      ),
     ),
     warehouseName: toStringValue(
       read(item, ["warehouseName"], product.unitName ? "" : ""),
@@ -251,7 +262,7 @@ export const normalizeProductPriceDetails = (
       "-",
     ),
     mxik: toStringValue(
-      getProductFallback(response, product, ["mxik", "barcode"]),
+      getProductFallback(response, product, ["mxik", "productMxik", "barcode"]),
     ),
     unitId: toNumber(getUnitIdFallback(response, product, collection[0]), 0),
     unitName: toStringValue(
@@ -366,11 +377,14 @@ export const getCostingPrices = ({
   defaultSalePrice: number;
   layers: SaleProductPriceLayer[];
 }) => {
-  // AVERAGE umumiy narxlarni oladi; FIFO/LIFO cost.purchases va sale.salePrices qatlamlarini o'rtachalaydi.
+  // AVERAGE umumiy tanlangan partiyalar narxini oladi; FIFO/LIFO qatlamlar bo'yicha hisoblanadi.
   if (costingMethodId === COSTING_METHOD.AVERAGE) {
+    const averageCostPrice = weightedAverage(layers, (layer) => layer.unitPrice);
+    const averageSalePrice = weightedAverage(layers, (layer) => layer.salePrice);
+
     return {
-      costPrice: defaultCostPrice,
-      unitPrice: defaultSalePrice || defaultCostPrice,
+      costPrice: averageCostPrice || defaultCostPrice,
+      unitPrice: defaultSalePrice || averageSalePrice || averageCostPrice || defaultCostPrice,
     };
   }
 

@@ -14,7 +14,6 @@ export interface ProductGroupCreateDto {
     unitId: number;
     isPieceTracked: boolean;
     isService: boolean;
-    productTypeId?: number | null;
     isSold?: boolean;
     isPurchased?: boolean;
     productGroupId?: number | null;
@@ -40,7 +39,6 @@ export interface ProductGroupUpdateDto {
     unitId: number;
     isPieceTracked: boolean;
     isService: boolean;
-    productTypeId?: number | null;
     isSold?: boolean;
     isPurchased?: boolean;
     productGroupId?: number | null;
@@ -64,7 +62,6 @@ export const toCreatePayload = (
     unitId: p.unitId as number,
     isPieceTracked: Boolean(p.isPieceTracked),
     isService: form.isService,
-    productTypeId: p.productTypeId ?? null,
     isSold: Boolean(p.isSold),
     isPurchased: Boolean(p.isPurchased),
     productGroupId: p.productGroupId ?? null,
@@ -91,7 +88,6 @@ export const toUpdatePayload = (
     unitId: p.unitId as number,
     isPieceTracked: Boolean(p.isPieceTracked),
     isService: form.isService,
-    productTypeId: p.productTypeId ?? null,
     isSold: Boolean(p.isSold),
     isPurchased: Boolean(p.isPurchased),
     productGroupId: p.productGroupId ?? null,

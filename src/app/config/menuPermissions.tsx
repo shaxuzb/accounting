@@ -128,17 +128,17 @@ export const menuPermissions: MainMenu = {
       code: "DROPDOWN",
       iconName: <Box className="size-5" />,
       dropdown: true,
-      dropdownName: "Ombor",
+      dropdownName: "app.menu.warehouseGroup",
       linkData: {
         path: "warehouses",
-        title: "Ombor",
+        title: "app.menu.warehouseGroup",
       },
       items: [
         {
           code: productPermissions.view,
           linkData: {
             path: "warehouse",
-            title: "Omborxona",
+            title: "app.menu.warehouse",
           },
         },
         {
@@ -152,21 +152,21 @@ export const menuPermissions: MainMenu = {
           code: warehouseTransferPermissions.view,
           linkData: {
             path: "transfers",
-            title: "Omborlar orasida ko'chirish",
+            title: "app.menu.transfers",
           },
         },
         {
           code: inventoryCountPermissions.view,
           linkData: {
             path: "inventory-counts",
-            title: "Inventarizatsiya",
+            title: "app.menu.inventory",
           },
         },
         {
           code: inventoryAdjustmentPermissions.view,
           linkData: {
             path: "inventory-adjustments",
-            title: "Qoldiqni tuzatish",
+            title: "app.menu.adjustment",
           },
         },
       ],
@@ -183,39 +183,39 @@ export const menuPermissions: MainMenu = {
     {
       code: "DROPDOWN",
       dropdown: true,
-      dropdownName: "Kassa",
+      dropdownName: "app.menu.cash",
       iconName: <Banknote className="size-5" />,
       linkData: {
         path: "cash-operationses",
-        title: "Kassa",
+        title: "app.menu.cash",
       },
       items: [
         {
           code: cashOperationPermissions.view,
           linkData: {
             path: "cash-operations",
-            title: "Kassa amaliyotlari",
+            title: "app.menu.cashOperations",
           },
         },
         {
           code: cashDocumentPermissions.view,
           linkData: {
             path: "cash-documents/pko",
-            title: "Kirim orderlari",
+            title: "app.menu.incomeOrders",
           },
         },
         {
           code: cashDocumentPermissions.view,
           linkData: {
             path: "cash-documents/rko",
-            title: "Chiqim orderlari",
+            title: "app.menu.expenseOrders",
           },
         },
         {
           code: cashBookPermissions.view,
           linkData: {
             path: "cash-book",
-            title: "Kassa hisobi",
+            title: "app.menu.cashBook",
           },
         },
       ],
@@ -341,18 +341,18 @@ export const menuPermissions: MainMenu = {
     {
       code: salePermissions.view,
       dropdown: true,
-      dropdownName: "Sotuv",
+      dropdownName: "app.menu.sales",
       iconName: <ShoppingBag className="size-5" />,
       linkData: {
         path: "sales",
-        title: "Sotuv",
+        title: "app.menu.sales",
       },
       items: [
         {
           code: salePermissions.view,
           linkData: {
             path: "sale",
-            title: "Sotuvlar",
+            title: "app.menu.salesList",
           },
         },
 
@@ -396,7 +396,7 @@ export const menuPermissions: MainMenu = {
       code: "SETTINGS",
       linkData: {
         path: "settings",
-        title: "HisobKitob MCHJ",
+        title: "app.menu.company",
       },
       iconName: <Building2 className="size-5" />,
     },

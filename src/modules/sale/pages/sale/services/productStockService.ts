@@ -4,9 +4,10 @@ import { saleEndpoints } from "../constants/endpoints";
 import type { SaleProductStock } from "../types/type";
 
 type QueryParams = ListParams | URLSearchParams;
-type ProductStockListResponse = Paginated<SaleProductStock> & {
+type ProductStockListResponse = Partial<Paginated<SaleProductStock>> & {
   results?: SaleProductStock[];
   count?: number;
+  totalCount?: number;
 };
 
 const normalizeProductStocks = (
@@ -16,6 +17,7 @@ const normalizeProductStocks = (
   items: data.items ?? data.results ?? [],
   total:
     data.total ??
+    data.totalCount ??
     data.count ??
     data.items?.length ??
     data.results?.length ??

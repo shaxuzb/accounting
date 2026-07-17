@@ -19,7 +19,8 @@
     "total": "Total",
     "created": "Created",
     "back": "Back",
-    "next": "Next"
+    "next": "Next",
+    "refresh": "Refresh"
   },
   "actions": {
     "deleteSuccess": "Element {{id}} was deleted successfully",
@@ -159,7 +160,8 @@
       "warehouse": "Warehouse",
       "purchaseServices": "Purchase services",
       "pricingConditions": "Pricing conditions",
-      "saleConditions": "Sale conditions"
+      "saleConditions": "Sale conditions",
+      "documentAccountSettings": "Document account settings"
     },
     "descriptions": {
       "roles": "Manage system roles and permissions.",
@@ -179,7 +181,8 @@
       "warehouse": "Manage warehouses.",
       "purchaseServices": "Manage services used in purchases.",
       "pricingConditions": "Manage pricing methods and rounding rules.",
-      "saleConditions": "Manage costing method and VAT rate for sales."
+      "saleConditions": "Manage costing method and VAT rate for sales.",
+      "documentAccountSettings": "Configure accounts used by documents."
     },
     "fields": {
       "accountNumber": "Account number",
@@ -299,7 +302,9 @@
       "markingNumber": "Marking number",
       "supplier": "Supplier",
       "total": "Total price",
-      "uom": "Unit"
+      "uom": "Unit",
+      "debitAccount": "Debit account",
+      "vatAccount": "VAT account"
     },
     "messages": {
       "imported": "Purchase data imported"
@@ -395,7 +400,14 @@
       "supplierToStockFactor": "Purchase-to-stock factor",
       "stockToClientFactor": "Stock-to-client factor",
       "unit": "Unit",
-      "productGroup": "Product group"
+      "productGroup": "Product group",
+      "mxik": "MXIK",
+      "defaultVatRate": "Default VAT rate",
+      "sold": "Sold",
+      "notSold": "Not sold",
+      "purchased": "Purchased",
+      "notPurchased": "Not purchased",
+      "pieceTracked": "Piece-level tracking"
     },
     "actions": {
       "addProduct": "Create product",
@@ -425,6 +437,11 @@
   },
   "sale": {
     "title": "Sales",
+    "fields": {
+      "inventoryAccount": "Inventory account",
+      "incomeAccount": "Sales income account",
+      "costAccount": "Sales cost account"
+    },
     "new": "New sale",
     "edit": "Edit sale",
     "document": "Sale document",
@@ -438,6 +455,123 @@
   "Purchase": {
     "excelImport": {
       "title": "Purchase import"
+    }
+  },
+  "app": {
+    "accounting": {
+      "title": "Accounting",
+      "reports": "Accounting reports",
+      "balanceSheet": "Balance sheet",
+      "incomeStatement": "Income statement",
+      "cashFlow": "Cash flow",
+      "accountTurnover": "Account turnover",
+      "journal": "Journal",
+      "accountCard": "Account card",
+      "ledger": "General ledger",
+      "trialBalance": "Trial balance",
+      "auditLog": "Audit log",
+      "repost": "Repost",
+      "periods": "Accounting periods"
+    },
+    "reports": {
+      "balance": {"title": "Balance sheet", "description": "A complete report on assets, liabilities, and equity.", "table": "Balance sheet balances", "empty": "No balance sheet results"},
+      "income": {"title": "Income statement", "description": "Analysis of income, cost, and profit / loss.", "table": "Income statement rows", "empty": "No income statement results"},
+      "cashFlow": {"title": "Cash flow", "description": "Cash inflows, outflows, and net change.", "table": "Cash flow rows", "empty": "No cash flow results"},
+      "turnover": {"title": "Account turnover", "description": "Postings with journal numbers, documents, and quantities.", "table": "Account turnover rows", "empty": "No account turnover results"},
+      "journal": {"title": "Journal", "description": "A general journal for all records and postings.", "table": "Journal rows", "empty": "No journal results"},
+      "card": {"title": "Account card", "description": "Account card and movements for a single account.", "table": "Account card rows", "empty": "No account card results"}
+    },
+    "trial": {
+      "title": "Trial balance",
+      "refreshData": "Refresh data",
+      "resultEmpty": "No trial balance results",
+      "openingDebit": "Opening debit",
+      "openingCredit": "Opening credit",
+      "periodDebit": "Period debit",
+      "periodCredit": "Period credit",
+      "closingDebit": "Closing debit",
+      "closingCredit": "Closing credit",
+      "accountCode": "Account code",
+      "accountName": "Account name"
+    },
+    "menu": {
+      "warehouseGroup": "Warehouse",
+      "warehouse": "Warehouse",
+      "transfers": "Warehouse transfers",
+      "inventory": "Inventory count",
+      "adjustment": "Stock adjustment",
+      "cash": "Cash desk",
+      "cashOperations": "Cash operations",
+      "incomeOrders": "Cash receipt orders",
+      "expenseOrders": "Cash expense orders",
+      "cashBook": "Cash book",
+      "sales": "Sales",
+      "salesList": "Sales documents",
+      "company": "HisobKitob LLC"
+    },
+    "routes": {
+      "warehouseTransfer": "Warehouse transfers",
+      "newTransfer": "New transfer",
+      "transferDocument": "Transfer document",
+      "newAdjustment": "New adjustment",
+      "adjustmentDocument": "Adjustment document",
+      "newInventory": "New inventory count",
+      "inventoryEdit": "Edit inventory count document",
+      "inventoryDocument": "Inventory count document",
+      "cashDocument": "Cash document",
+      "cashDocuments": "Cash documents",
+      "accountingEntries": "Accounting entries report"
+    },
+    "fields": {
+      "organization": "Organization",
+      "document": "Document",
+      "postingDate": "Posting date",
+      "currency": "Currency",
+      "documentAmount": "Document amount",
+      "debit": "Debit",
+      "credit": "Credit",
+      "account": "Account",
+      "subkonto": "Subaccount / Analytics",
+      "amount": "Amount",
+      "quantity": "Quantity",
+      "number": "No.",
+      "count": "Count",
+      "marking": "Marking",
+      "serial": "Serial"
+    },
+    "modals": {
+      "accountSelectionTitle": "Accounts for line",
+      "applyCurrent": "Apply to this line only",
+      "applyAll": "Apply to all lines",
+      "purchaseHint": "Selected accounts will be added to the purchase document.",
+      "saleHint": "Selected accounts will be added to the sales document.",
+      "productLine": "Product line",
+      "addAccount": "Add account",
+      "searchAccount": "Search by number or name",
+      "selectedAccounts": "Selected accounts: {{count}}",
+      "selectAtLeastOneAccount": "Select at least one account",
+      "accountsAdded": "Selected accounts added",
+      "warehouseHint": "Selected markings will be added to the document line.",
+      "markingNotFound": "Marking not found",
+      "addSelected": "Add selected"
+    },
+    "missingCounterparty": {
+      "title": "Create missing counterparties",
+      "summary": "{{transactions}} transactions, {{counterparties}} counterparties",
+      "count": "{{count}}",
+      "invalidPhone": "Enter the phone number in +998 format",
+      "requiredData": "Complete all counterparty details",
+      "idsNotFound": "Created counterparty IDs were not found",
+      "created": "Counterparties created successfully"
+    },
+    "common": {
+      "select": "Select",
+      "yes": "Yes",
+      "no": "No",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "noData": "No data",
+      "notFound": "Not found"
     }
   }
 }

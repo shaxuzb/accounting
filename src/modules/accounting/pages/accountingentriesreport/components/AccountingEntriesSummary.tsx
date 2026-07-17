@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { customDate, numberSpacing } from "@/utils/utils";
 import type { AccountingEntriesReport } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 interface SummaryItemProps {
   icon: ReactNode;
@@ -42,33 +43,34 @@ export default function AccountingEntriesSummary({
   data,
   organizationName,
 }: Props) {
+  const { t } = useTranslation();
   const currency = data.currency || "-";
 
   return (
     <section className="grid overflow-hidden rounded-lg border border-border bg-primary-bg shadow-sm sm:grid-cols-2 lg:grid-cols-5">
       <SummaryItem
         icon={<Building2 size={24} strokeWidth={1.8} />}
-        label="Tashkilot"
+        label={t("app.fields.organization")}
         value={organizationName || "-"}
       />
       <SummaryItem
         icon={<FileText size={24} strokeWidth={1.8} />}
-        label="Hujjat"
+        label={t("app.fields.document")}
         value={data.documentNumber || "-"}
       />
       <SummaryItem
         icon={<CalendarDays size={24} strokeWidth={1.8} />}
-        label="Provodka sanasi"
+        label={t("app.fields.postingDate")}
         value={data.date ? customDate(data.date) : "-"}
       />
       <SummaryItem
         icon={<CircleDollarSign size={24} strokeWidth={1.8} />}
-        label="Valyuta"
+        label={t("app.fields.currency")}
         value={currency}
       />
       <SummaryItem
         icon={<WalletCards size={24} strokeWidth={1.8} />}
-        label="Hujjat summasi"
+        label={t("app.fields.documentAmount")}
         value={`${numberSpacing(data.totalAmount, undefined, true)} ${currency}`}
         emphasized
       />

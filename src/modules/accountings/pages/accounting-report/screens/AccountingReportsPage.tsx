@@ -3,6 +3,7 @@ import { RefreshCw } from "lucide-react";
 import { useMemo } from "react";
 import type { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router";
+import { useTranslation } from "react-i18next";
 import {
   useGetAccountCard,
   useGetAccountTurnover,
@@ -43,41 +44,40 @@ interface ReportPageConfig {
 
 const reportConfig: Record<ReportType, ReportPageConfig> = {
   "balance-sheet": {
-    title: "Balance sheet",
-    description: "Aktivlar, majburiyatlar va kapital bo'yicha to'liq hisobot.",
-    tableTitle: "Balance sheet qoldiqlari",
-    emptyText: "Balance sheet natijasi yo'q",
+    title: "app.reports.balance.title",
+    description: "app.reports.balance.description",
+    tableTitle: "app.reports.balance.table",
+    emptyText: "app.reports.balance.empty",
   },
   "income-statement": {
-    title: "Income statement",
-    description: "Daromad, tannarx va foyda / zarar bo'yicha tahlil.",
-    tableTitle: "Income statement qatorlari",
-    emptyText: "Income statement natijasi yo'q",
+    title: "app.reports.income.title",
+    description: "app.reports.income.description",
+    tableTitle: "app.reports.income.table",
+    emptyText: "app.reports.income.empty",
   },
   "cash-flow": {
-    title: "Cash flow",
-    description: "Pul oqimi bo'yicha kirim, chiqim va sof farq.",
-    tableTitle: "Cash flow qatorlari",
-    emptyText: "Cash flow natijasi yo'q",
+    title: "app.reports.cashFlow.title",
+    description: "app.reports.cashFlow.description",
+    tableTitle: "app.reports.cashFlow.table",
+    emptyText: "app.reports.cashFlow.empty",
   },
   "account-turnover": {
-    title: "Account turnover",
-    description:
-      "Provodkalar ro'yxati, jurnal raqami, hujjat va miqdorlar bilan.",
-    tableTitle: "Account turnover qatorlari",
-    emptyText: "Account turnover natijasi yo'q",
+    title: "app.reports.turnover.title",
+    description: "app.reports.turnover.description",
+    tableTitle: "app.reports.turnover.table",
+    emptyText: "app.reports.turnover.empty",
   },
   journal: {
-    title: "Journal",
-    description: "Barcha qaydlar va postlar uchun umumiy jurnal.",
-    tableTitle: "Journal qatorlari",
-    emptyText: "Journal natijasi yo'q",
+    title: "app.reports.journal.title",
+    description: "app.reports.journal.description",
+    tableTitle: "app.reports.journal.table",
+    emptyText: "app.reports.journal.empty",
   },
   "account-card": {
-    title: "Account card",
-    description: "Bitta schyot bo'yicha karta va harakatlar.",
-    tableTitle: "Account card qatorlari",
-    emptyText: "Account card natijasi yo'q",
+    title: "app.reports.card.title",
+    description: "app.reports.card.description",
+    tableTitle: "app.reports.card.table",
+    emptyText: "app.reports.card.empty",
   },
 };
 
@@ -273,6 +273,7 @@ const getReportDetailNavigation = (
 };
 
 export default function AccountingReportsPage({ reportType }: Props) {
+  const { t } = useTranslation();
   const config = reportConfig[reportType];
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -319,21 +320,21 @@ export default function AccountingReportsPage({ reportType }: Props) {
   ]);
 
   return (
-    <AccountingReportPageShell title={config.title} description={config.description}>
+    <AccountingReportPageShell title={t(config.title)} description={t(config.description)}>
       <div className="flex items-center justify-end">
         <Button
           icon={<RefreshCw className="size-4" />}
           onClick={() => void activeQuery.refetch()}
         >
-          Yangilash
+          {t("common.refresh")}
         </Button>
       </div>
 
       <AccountingReportGenericArrayTable
         data={activeQuery.data}
         loading={activeQuery.isLoading || activeQuery.isFetching}
-        title={config.tableTitle}
-        emptyText={config.emptyText}
+        title={t(config.tableTitle)}
+        emptyText={t(config.emptyText)}
         onRowClick={(record) => {
           const detailPath = getReportDetailNavigation(reportType, record);
           if (detailPath) {

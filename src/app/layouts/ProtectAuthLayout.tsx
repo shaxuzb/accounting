@@ -11,7 +11,10 @@ import type { AuthToken } from "@/shared/types";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { isLoading, logout } from "@/store/features/authSlice";
 import { authService } from "@/services/authService";
-import { menuPermissions, settingsViewPermissions } from "../config/menuPermissions";
+import {
+  menuPermissions,
+  settingsViewPermissions,
+} from "../config/menuPermissions";
 
 const ProtectAuthLayout = () => {
   const [error, setError] = useState(false);

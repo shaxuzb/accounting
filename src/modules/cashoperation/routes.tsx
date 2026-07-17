@@ -24,12 +24,12 @@ const withPermission = (
 
 export const cashOperationRoutes: RouteObject = {
   path: "cash-operationses",
-  handle: { title: "Kassa" },
+  handle: { title: "app.menu.cash" },
   element: <Outlet />,
   children: [
     {
       path: "cash-operations",
-      handle: { title: "Kassa" },
+      handle: { title: "app.menu.cash" },
       children: [
         {
           index: true,
@@ -44,13 +44,13 @@ export const cashOperationRoutes: RouteObject = {
             <CashOperationDetailPage />,
             cashOperationPermissions.detail,
           ),
-          handle: { title: "Kassa hujjati", showBack: true, backTo: ".." },
+          handle: { title: "app.routes.cashDocument", showBack: true, backTo: ".." },
         },
       ],
     },
     {
       path: "cash-documents/:kind",
-      handle: { title: "Kassa hujjatlari" },
+      handle: { title: "app.routes.cashDocuments" },
       children: [
         {
           index: true,
@@ -87,7 +87,7 @@ export const cashOperationRoutes: RouteObject = {
     },
     {
       path: "cash-book",
-      handle: { title: "Kassa hisobi" },
+      handle: { title: "app.menu.cashBook" },
       children: [
         {
           index: true,
@@ -102,7 +102,7 @@ export const cashOperationRoutes: RouteObject = {
             <CashBookDetailPage />,
             cashBookPermissions.detail,
           ),
-          handle: { title: "Kassa hisobi", showBack: true, backTo: ".." },
+          handle: { title: "app.menu.cashBook", showBack: true, backTo: ".." },
         },
       ],
     },

@@ -4,6 +4,8 @@ export const saleKeys = {
     all: ["sale", "docs"] as const,
     list: (params?: unknown) => ["sale", "docs", "list", params] as const,
     detail: (id: string | number) => ["sale", "docs", "detail", id] as const,
+    availableProducts: (id: string | number) =>
+      ["sale", "docs", "available-products", id] as const,
   },
   saleDocTable: {
     all: ["sale", "tables"] as const,

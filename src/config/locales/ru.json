@@ -19,12 +19,14 @@
     "total": "Итого",
     "created": "Создано",
     "back": "Назад",
-    "next": "Далее"
+    "next": "Далее",
+    "refresh": "Обновить"
   },
   "actions": {
     "deleteSuccess": "Элемент {{id}} успешно удалён",
     "deleteConfirmTitle": "Удалить этот элемент?",
-    "deleteConfirmContent": "Это действие нельзя отменить!"
+    "deleteConfirmContent": "Это действие нельзя отменить!",
+    "confirm": "Подтвердить"
   },
   "processStatuses": {
     "draft": "Черновик",
@@ -158,7 +160,8 @@
       "warehouse": "Склад",
       "purchaseServices": "Услуги закупки",
       "pricingConditions": "Условия ценообразования",
-      "saleConditions": "Условия продаж"
+      "saleConditions": "Условия продаж",
+      "documentAccountSettings": "Настройки счетов документов"
     },
     "descriptions": {
       "roles": "Управление ролями и правами доступа.",
@@ -178,7 +181,8 @@
       "warehouse": "Управление складами.",
       "purchaseServices": "Управление услугами, используемыми в закупках.",
       "pricingConditions": "Управление методами ценообразования и округления.",
-      "saleConditions": "Управление методами себестоимости и НДС для продаж."
+      "saleConditions": "Управление методами себестоимости и НДС для продаж.",
+      "documentAccountSettings": "Настройка счетов для документов."
     },
     "fields": {
       "accountNumber": "Номер счёта",
@@ -298,7 +302,9 @@
       "markingNumber": "Код маркировки",
       "supplier": "Поставщик",
       "total": "Итоговая сумма",
-      "uom": "Единица"
+      "uom": "Единица",
+      "debitAccount": "Дебетовый счёт",
+      "vatAccount": "Счёт НДС"
     },
     "messages": {
       "imported": "Данные закупки импортированы"
@@ -394,7 +400,14 @@
       "supplierToStockFactor": "Коэффициент закупка-склад",
       "stockToClientFactor": "Коэффициент склад-клиент",
       "unit": "Единица",
-      "productGroup": "Группа товаров"
+      "productGroup": "Группа товаров",
+      "mxik": "МХИК",
+      "defaultVatRate": "Ставка НДС по умолчанию",
+      "sold": "Продаётся",
+      "notSold": "Не продаётся",
+      "purchased": "Закупается",
+      "notPurchased": "Не закупается",
+      "pieceTracked": "Маркировочный учёт"
     },
     "actions": {
       "addProduct": "Создать товар",
@@ -424,6 +437,11 @@
   },
   "sale": {
     "title": "Продажи",
+    "fields": {
+      "inventoryAccount": "Счёт товаров",
+      "incomeAccount": "Счёт доходов от продаж",
+      "costAccount": "Счёт себестоимости продаж"
+    },
     "new": "Новая продажа",
     "edit": "Редактировать продажу",
     "document": "Документ продажи",
@@ -437,6 +455,123 @@
   "Purchase": {
     "excelImport": {
       "title": "Импорт закупки"
+    }
+  },
+  "app": {
+    "accounting": {
+      "title": "Бухгалтерия",
+      "reports": "Бухгалтерские отчёты",
+      "balanceSheet": "Бухгалтерский баланс",
+      "incomeStatement": "Отчёт о прибылях и убытках",
+      "cashFlow": "Движение денежных средств",
+      "accountTurnover": "Обороты по счету",
+      "journal": "Журнал операций",
+      "accountCard": "Карточка счета",
+      "ledger": "Главная книга",
+      "trialBalance": "Оборотно-сальдовая ведомость",
+      "auditLog": "Журнал аудита",
+      "repost": "Перепроведение",
+      "periods": "Учётные периоды"
+    },
+    "reports": {
+      "balance": {"title": "Бухгалтерский баланс", "description": "Полный отчёт по активам, обязательствам и капиталу.", "table": "Остатки баланса", "empty": "Нет данных по балансу"},
+      "income": {"title": "Отчёт о прибылях и убытках", "description": "Анализ доходов, себестоимости и прибыли / убытка.", "table": "Строки отчёта о прибылях и убытках", "empty": "Нет данных по отчёту о прибылях и убытках"},
+      "cashFlow": {"title": "Движение денежных средств", "description": "Приход, расход и чистое изменение денежных средств.", "table": "Строки движения денежных средств", "empty": "Нет данных по движению денежных средств"},
+      "turnover": {"title": "Обороты по счету", "description": "Проводки, номера журналов, документы и количества.", "table": "Строки оборотов по счету", "empty": "Нет данных по оборотам"},
+      "journal": {"title": "Журнал операций", "description": "Общий журнал всех записей и проводок.", "table": "Строки журнала", "empty": "Нет данных журнала"},
+      "card": {"title": "Карточка счета", "description": "Карточка и движения по одному счету.", "table": "Строки карточки счета", "empty": "Нет данных карточки счета"}
+    },
+    "trial": {
+      "title": "Оборотно-сальдовая ведомость",
+      "refreshData": "Обновить данные",
+      "resultEmpty": "Нет данных оборотно-сальдовой ведомости",
+      "openingDebit": "Начальный дебет",
+      "openingCredit": "Начальный кредит",
+      "periodDebit": "Дебет за период",
+      "periodCredit": "Кредит за период",
+      "closingDebit": "Конечный дебет",
+      "closingCredit": "Конечный кредит",
+      "accountCode": "Код счета",
+      "accountName": "Название счета"
+    },
+    "menu": {
+      "warehouseGroup": "Склад",
+      "warehouse": "Склад",
+      "transfers": "Перемещение между складами",
+      "inventory": "Инвентаризация",
+      "adjustment": "Корректировка остатков",
+      "cash": "Касса",
+      "cashOperations": "Кассовые операции",
+      "incomeOrders": "Приходные ордера",
+      "expenseOrders": "Расходные ордера",
+      "cashBook": "Кассовая книга",
+      "sales": "Продажи",
+      "salesList": "Продажи",
+      "company": "HisobKitob ООО"
+    },
+    "routes": {
+      "warehouseTransfer": "Перемещение между складами",
+      "newTransfer": "Новое перемещение",
+      "transferDocument": "Документ перемещения",
+      "newAdjustment": "Новая корректировка",
+      "adjustmentDocument": "Документ корректировки",
+      "newInventory": "Новая инвентаризация",
+      "inventoryEdit": "Редактирование документа инвентаризации",
+      "inventoryDocument": "Документ инвентаризации",
+      "cashDocument": "Кассовый документ",
+      "cashDocuments": "Кассовые документы",
+      "accountingEntries": "Отчёт по проводкам"
+    },
+    "fields": {
+      "organization": "Организация",
+      "document": "Документ",
+      "postingDate": "Дата проводки",
+      "currency": "Валюта",
+      "documentAmount": "Сумма документа",
+      "debit": "Дебет",
+      "credit": "Кредит",
+      "account": "Счёт",
+      "subkonto": "Субконто / Аналитика",
+      "amount": "Сумма",
+      "quantity": "Количество",
+      "number": "№",
+      "count": "Количество",
+      "marking": "Маркировка",
+      "serial": "Серия"
+    },
+    "modals": {
+      "accountSelectionTitle": "Счета для строки",
+      "applyCurrent": "Применить только к этой строке",
+      "applyAll": "Применить ко всем строкам",
+      "purchaseHint": "Выбранные счета будут добавлены в документ закупки.",
+      "saleHint": "Выбранные счета будут добавлены в документ продажи.",
+      "productLine": "Строка товара",
+      "addAccount": "Добавить счёт",
+      "searchAccount": "Поиск по номеру или названию",
+      "selectedAccounts": "Выбрано счетов: {{count}}",
+      "selectAtLeastOneAccount": "Выберите хотя бы один счёт",
+      "accountsAdded": "Выбранные счета добавлены",
+      "warehouseHint": "Выбранная маркировка будет добавлена в строку документа.",
+      "markingNotFound": "Маркировка не найдена",
+      "addSelected": "Добавить выбранные"
+    },
+    "missingCounterparty": {
+      "title": "Создание ненайденных контрагентов",
+      "summary": "Транзакций: {{transactions}}, контрагентов: {{counterparties}}",
+      "count": "{{count}}",
+      "invalidPhone": "Введите номер телефона в формате +998",
+      "requiredData": "Заполните все данные контрагента",
+      "idsNotFound": "ID созданных контрагентов не найдены",
+      "created": "Контрагенты успешно созданы"
+    },
+    "common": {
+      "select": "Выберите",
+      "yes": "Да",
+      "no": "Нет",
+      "inProgress": "В процессе",
+      "completed": "Завершено",
+      "noData": "Нет данных",
+      "notFound": "Не найдено"
     }
   }
 }

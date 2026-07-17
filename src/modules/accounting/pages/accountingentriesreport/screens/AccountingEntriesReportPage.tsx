@@ -12,6 +12,7 @@ import type {
   AccountingEntriesReportPosting,
   AccountingEntriesReportSubkontoItem,
 } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 const DetailLine = ({
   item,
@@ -45,6 +46,7 @@ const DetailLine = ({
 // };
 
 export default function AccountingEntriesReportPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const organizationName = useAppSelector((state) => state.organization.name);
   const documentIdParam = searchParams.get("documentId") ?? "";
@@ -60,7 +62,7 @@ export default function AccountingEntriesReportPage() {
     () => [
       {
         dataIndex: "indexId",
-        title: "№",
+        title: t("common.rowNumber"),
         width: 72,
         align: "center",
         render: (_, __, index) => index + 1,
@@ -72,13 +74,13 @@ export default function AccountingEntriesReportPage() {
       //   render: (value) => customDate(value),
       // },
       {
-        title: "Debet",
+        title: t("app.fields.debit"),
         className: "text-blue-500!",
         align: "center",
         children: [
           {
             dataIndex: "debitAccountCode",
-            title: "Hisob (schyot)",
+            title: t("app.fields.account"),
             width: 190,
             render: (_, record) => (
               <div>
@@ -91,7 +93,7 @@ export default function AccountingEntriesReportPage() {
           },
           {
             dataIndex: "subconto",
-            title: "Subkonto / Analitika",
+            title: t("app.fields.subkonto"),
             align: "center",
             width: 190,
             render: (_, record) => (
@@ -105,13 +107,13 @@ export default function AccountingEntriesReportPage() {
         ],
       },
       {
-        title: "Kredit",
+        title: t("app.fields.credit"),
         className: "text-blue-500!",
         align: "center",
         children: [
           {
             dataIndex: "creditAccountCode",
-            title: "Hisob (schyot)",
+            title: t("app.fields.account"),
             width: 210,
             render: (_, record) => (
               <div>
@@ -124,7 +126,7 @@ export default function AccountingEntriesReportPage() {
           },
           {
             dataIndex: "subconto",
-            title: "Subkonto / Analitika",
+            title: t("app.fields.subkonto"),
             width: 190,
             align: "center",
             render: (_, record) => (
@@ -140,7 +142,7 @@ export default function AccountingEntriesReportPage() {
 
       {
         dataIndex: "amount",
-        title: "Summa",
+        title: t("app.fields.amount"),
         width: 130,
         align: "center",
         render: (value) => (
@@ -149,13 +151,13 @@ export default function AccountingEntriesReportPage() {
       },
       {
         dataIndex: "quantity",
-        title: "Miqdori",
+        title: t("app.fields.quantity"),
         width: 110,
         align: "center",
       },
       {
         dataIndex: "currency",
-        title: "Valyuta",
+        title: t("app.fields.currency"),
         width: 110,
         align: "center",
       },
@@ -176,11 +178,11 @@ export default function AccountingEntriesReportPage() {
       // },
       {
         dataIndex: "documentNumber",
-        title: "Hujjat",
+        title: t("app.fields.document"),
         width: 190,
       },
     ],
-    [],
+    [t],
   );
 
   // const showReport = () => {

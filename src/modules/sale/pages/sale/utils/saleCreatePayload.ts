@@ -44,7 +44,16 @@ export const toSaleCreatePayload = (
       assembled: true as const,
     };
 
-    if (processingMode !== 2) return line;
+    if (processingMode !== 2) {
+      const productBatches = (product.layers ?? [])
+        .filter((layer) => layer.batchId && layer.writeOffQuantity > 0)
+        .map((layer) => ({
+          batchId: layer.batchId as number,
+          quantity: layer.writeOffQuantity,
+        }));
+
+      return productBatches.length ? { ...line, productBatches } : line;
+    }
 
     return {
       ...line,

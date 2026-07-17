@@ -42,7 +42,7 @@ export const warehouseRoutes: RouteObject = {
     },
     {
       path: "transfers",
-      handle: { title: "Warehouse transfer" },
+      handle: { title: "app.routes.warehouseTransfer" },
       children: [
         {
           index: true,
@@ -57,7 +57,7 @@ export const warehouseRoutes: RouteObject = {
             <WarehouseTransferDetailPage />,
             warehouseTransferPermissions.create,
           ),
-          handle: { title: "Yangi ko'chirish", showBack: true, backTo: ".." },
+          handle: { title: "app.routes.newTransfer", showBack: true, backTo: ".." },
         },
         {
           path: ":id",
@@ -65,13 +65,13 @@ export const warehouseRoutes: RouteObject = {
             <WarehouseTransferDetailPage />,
             warehouseTransferPermissions.detail,
           ),
-          handle: { title: "Ko'chirish hujjati", showBack: true, backTo: ".." },
+          handle: { title: "app.routes.transferDocument", showBack: true, backTo: ".." },
         },
       ],
     },
     {
       path: "inventory-adjustments",
-      handle: { title: "Qoldiqni tuzatish" },
+      handle: { title: "app.menu.adjustment" },
       children: [
         {
           index: true,
@@ -86,7 +86,7 @@ export const warehouseRoutes: RouteObject = {
             <InventoryAdjustmentDetailPage />,
             inventoryAdjustmentPermissions.create,
           ),
-          handle: { title: "Yangi tuzatish", showBack: true, backTo: ".." },
+          handle: { title: "app.routes.newAdjustment", showBack: true, backTo: ".." },
         },
         {
           path: ":id",
@@ -94,13 +94,13 @@ export const warehouseRoutes: RouteObject = {
             <InventoryAdjustmentDetailPage />,
             inventoryAdjustmentPermissions.detail,
           ),
-          handle: { title: "Tuzatish hujjati", showBack: true, backTo: ".." },
+          handle: { title: "app.routes.adjustmentDocument", showBack: true, backTo: ".." },
         },
       ],
     },
     {
       path: "inventory-counts",
-      handle: { title: "Inventarizatsiya" },
+      handle: { title: "app.menu.inventory" },
       children: [
         {
           index: true,
@@ -116,7 +116,7 @@ export const warehouseRoutes: RouteObject = {
             inventoryCountPermissions.create,
           ),
           handle: {
-            title: "Yangi inventarizatsiya",
+            title: "app.routes.newInventory",
             showBack: true,
             backTo: "..",
           },
@@ -128,7 +128,7 @@ export const warehouseRoutes: RouteObject = {
             inventoryCountPermissions.update,
           ),
           handle: {
-            title: "Inventarizatsiya hujjatini tahrirlash",
+            title: "app.routes.inventoryEdit",
             showBack: true,
             backTo: "..",
           },
@@ -140,7 +140,7 @@ export const warehouseRoutes: RouteObject = {
             inventoryCountPermissions.detail,
           ),
           handle: {
-            title: "Inventarizatsiya hujjati",
+            title: "app.routes.inventoryDocument",
             showBack: true,
             backTo: "..",
           },

@@ -2,8 +2,9 @@ import { Button, Table } from "antd";
 import type { TableColumnsType } from "antd";
 import { ArrowLeft, Menu } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import Card from "@/components/ui/card/Card";
+import { filterIds } from "@/shared/constants/selectLists";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import { ProductStockSerialModal } from "../components";
 import { useGetDetailSerialWarehouse } from "../hooks/useGetDetailSerialWarehouse";
@@ -21,15 +22,19 @@ const formatMoney = (value: number, currencyCode?: string) => {
 export default function ProductDetail() {
   const navigate = useNavigate();
   const { id = "" } = useParams();
+  const [searchParams] = useSearchParams();
   const [selectedProduct, setSelectedProduct] = useState<ProductStock | null>(
     null,
   );
 
   const productGroupId = Number(id) || null;
+  const warehouseIdParam = searchParams.get(filterIds.warehouse);
+  const warehouseId = warehouseIdParam ? Number(warehouseIdParam) : null;
   const { data, isLoading, isFetching } = useGetDetailWarehouse({
     productGroupId,
     page: 1,
     pageSize: 1000,
+    warehouseId,
   });
 
   const serialProductId =
@@ -40,7 +45,12 @@ export default function ProductDetail() {
     isFetching: isSerialFetching,
   } = useGetDetailSerialWarehouse(
     serialProductId
-      ? { productId: serialProductId, page: 1, pageSize: 1000 }
+      ? {
+          productId: serialProductId,
+          page: 1,
+          pageSize: 1000,
+          warehouseId,
+        }
       : undefined,
   );
 

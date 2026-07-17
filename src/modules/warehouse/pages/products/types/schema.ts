@@ -8,11 +8,10 @@ export const productItemSchema = (nameRequired = true) =>
     name: nameRequired
       ? Yup.string().trim().required("validation.required")
       : Yup.string().trim().notRequired(),
-    barcode: Yup.string().trim().notRequired(),
     mxik: Yup.string().trim().notRequired(),
     isService: Yup.boolean().required("validation.required"),
-    isPieceTracked: Yup.boolean().required("validation.required"),
-    productTypeId: Yup.number().nullable().required("validation.required"),
+    isPieceTracked: Yup.boolean().notRequired(),
+    productTypeId: Yup.number().nullable().notRequired(),
     isSold: Yup.boolean().required("validation.required"),
     isPurchased: Yup.boolean().required("validation.required"),
     unitId: Yup.number().nullable().required("validation.required"),

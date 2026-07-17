@@ -47,7 +47,35 @@ export interface SaleDocProduct {
   vatRateName?: string | null;
   vatAmount?: number;
   totalAmount?: number;
+  isPieceTracked?: boolean;
+  batches?: SaleDocBatch[];
   tables?: SaleDocProductTable[];
+}
+
+export interface SaleDocBatch {
+  batchId: number;
+  quantity: number;
+  batchNumber?: string | null;
+  batchDate?: string | null;
+}
+
+export interface SaleAvailableProductTable {
+  productTableId: number;
+  markingNumber: string;
+}
+
+export interface SaleAvailableProductBatch {
+  batchId: number;
+  batchNumber: string;
+  batchDate: string;
+  isRequired: boolean;
+  productTables: SaleAvailableProductTable[];
+}
+
+export interface SaleAvailableProduct {
+  saleDocProductId: number;
+  productId: number;
+  batches: SaleAvailableProductBatch[];
 }
 
 export interface SaleDocProductTable {
@@ -86,6 +114,8 @@ export interface SaleDocTable {
   costAccountName?: string;
   vatAmount: number;
   totalAmount: number;
+  isPieceTracked?: boolean;
+  batches?: SaleDocBatch[];
   markingNumber: string;
   serialNumber: string;
   unitName?: string;
@@ -123,22 +153,42 @@ export interface ProductTableByMarking {
 }
 
 export interface SaleProductStock {
-  id: number;
+  id?: number;
   productId: number;
   productName?: string;
+  productMxik?: string | null;
+  productGroupId?: number | null;
+  productGroupName?: string | null;
   name?: string;
   barcode?: string;
   sapCode?: string;
   mxik?: string;
   quantity: number;
+  reservedQuantity?: number;
+  blockedQuantity?: number;
+  availableQuantity?: number;
   unitId?: number | null;
   unitName?: string;
+  unitCode?: string;
   price?: number;
   salePrice?: number;
   costPrice?: number;
   totalAmount?: number;
   currencyCode?: string;
   isPieceTracked?: boolean;
+  batches?: SaleProductStockBatch[];
+}
+
+export interface SaleProductStockBatch {
+  batchId: number;
+  batchNumber?: string | null;
+  receivedDate?: string | null;
+  documentId?: number | null;
+  quantity: number;
+  reservedQuantity?: number;
+  blockedQuantity?: number;
+  availableQuantity: number;
+  unitCost: number;
 }
 
 export interface SaleProductMarking {
@@ -183,6 +233,9 @@ export interface SaleSelectedProduct {
 
 export interface SaleProductPriceLayer {
   id?: number | null;
+  batchId?: number | null;
+  batchNumber?: string;
+  documentId?: number | null;
   purchaseId?: number | null;
   productTableId?: number | null;
   productTableIds?: number[];

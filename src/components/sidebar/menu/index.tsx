@@ -227,13 +227,15 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
           menuClassName,
           sidebarInline.sidebar ? "w-15! p-0!" : "p-2.5!",
         )}
-        expandIcon={({ isOpen }) => (
-          <ChevronDown
-            className={`sidebar-menu-arrow size-4 transition-transform ${
-              isOpen ? "rotate-180" : ""
-            }`}
-          />
-        )}
+        expandIcon={({ isOpen }) =>
+          sidebarInline.sidebar ? null : (
+            <ChevronDown
+              className={`sidebar-menu-arrow size-4 transition-transform ${
+                isOpen ? "rotate-180" : ""
+              }`}
+            />
+          )
+        }
         forceSubMenuRender={true}
         mode="inline"
         inlineCollapsed={sidebarInline.sidebar}

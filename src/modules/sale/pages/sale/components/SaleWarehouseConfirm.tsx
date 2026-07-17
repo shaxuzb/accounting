@@ -1,4 +1,4 @@
-import { Button, Table, Tag } from "antd";
+import { Button, Checkbox, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import { CheckCircle2 } from "lucide-react";
 import { useMemo } from "react";
@@ -8,9 +8,16 @@ import useLocalStorage from "@/hooks/UseLocalStorage";
 import Card from "@/components/ui/card/Card";
 import LineClampCell from "@/components/widget/text/LineClampCell";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { generateKeyTable, numberSpacing } from "@/utils/utils";
-import { useGetProductByMarking, useWarehouseConfirmSale } from "../hooks";
-import type { SaleDoc, SaleDocProduct, SaleDocTable } from "../types/type";
+import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
+import {
+  useGetAvailableSaleProducts,
+  useWarehouseConfirmSale,
+} from "../hooks";
+import type {
+  SaleDoc,
+  SaleDocProduct,
+  SaleDocTable,
+} from "../types/type";
 import SaleBarcodeScanner from "./SaleBarcodeScanner";
 
 interface Props {
@@ -25,8 +32,15 @@ interface WarehouseConfirmRow {
   productId: number;
   productName: string;
   unitName?: string;
+  quantity: number;
+  isPieceTracked: boolean;
+  batchId: number | null;
+  batchNumber?: string | null;
+  batchDate?: string | null;
+  expectedMarkingNumber?: string | null;
   productTableId: number | null;
   markingNumber?: string | null;
+  confirmed: boolean;
 }
 
 interface WarehouseConfirmGroup {
@@ -36,27 +50,20 @@ interface WarehouseConfirmGroup {
   rows: WarehouseConfirmRow[];
 }
 
-interface WarehouseConfirmDraftItem {
-  rowId: string;
-  productTableId: number;
-  markingNumber?: string | null;
+interface WarehouseConfirmBatch {
+  key: string;
+  batchId: number | null;
+  batchNumber?: string | null;
+  batchDate?: string | null;
+  rows: WarehouseConfirmRow[];
 }
 
-type UnknownRecord = Record<string, unknown>;
-
-const isRecord = (value: unknown): value is UnknownRecord =>
-  Boolean(value) && typeof value === "object" && !Array.isArray(value);
-
-const read = (value: unknown, keys: string[]) => {
-  if (!isRecord(value)) return undefined;
-  for (const key of keys) {
-    const current = value[key];
-    if (current !== undefined && current !== null && current !== "") {
-      return current;
-    }
-  }
-  return undefined;
-};
+interface WarehouseConfirmDraftItem {
+  rowId: string;
+  productTableId?: number | null;
+  markingNumber?: string | null;
+  confirmed?: boolean;
+}
 
 const toNumber = (value: unknown, fallback = 0) => {
   const numberValue = Number(value);
@@ -66,27 +73,62 @@ const toNumber = (value: unknown, fallback = 0) => {
 const getGroupKey = (productId: number, productName: string) =>
   [productId, productName].join(":");
 
-const getProductTables = (product: SaleDocProduct) =>
-  product.tables?.length ? product.tables : [];
+const getSaleBatches = (
+  product: Pick<SaleDocProduct, "batches" | "quantity"> | Pick<SaleDocTable, "batches" | "quantity">,
+) =>
+  product.batches?.length
+    ? product.batches
+    : [{ batchId: 0, quantity: toNumber(product.quantity) }];
 
 const buildRowsFromLine = (
   line: SaleDocTable,
   index: number,
 ): WarehouseConfirmRow[] => {
-  const quantity = Math.max(1, Math.round(toNumber(line.quantity, 1)));
   const groupKey = getGroupKey(line.productId, line.productName);
+  const batches = getSaleBatches(line);
 
-  return Array.from({ length: quantity }, (_, quantityIndex) => ({
-    rowId: `line-${line.id}-${index}-${quantityIndex}`,
-    groupKey,
-    saleDocProductId: line.id,
-    expectedProductTableId: toNumber(line.productTableId) || null,
-    productId: line.productId,
-    productName: line.productName,
-    unitName: line.unitName,
-    productTableId: null,
-    markingNumber: null,
-  }));
+  if (line.isPieceTracked === false) {
+    return batches.map((batch, batchIndex) => ({
+      rowId: `line-${line.id}-${index}-batch-${batch.batchId || batchIndex}`,
+      groupKey,
+      saleDocProductId: line.id,
+      expectedProductTableId: null,
+      productId: line.productId,
+      productName: line.productName,
+      unitName: line.unitName,
+      quantity: Math.max(0, toNumber(batch.quantity)),
+      isPieceTracked: false,
+      batchId: batch.batchId || null,
+      batchNumber: batch.batchNumber,
+      batchDate: batch.batchDate,
+      productTableId: null,
+      markingNumber: null,
+      confirmed: false,
+    }));
+  }
+
+  return batches.flatMap((batch, batchIndex) =>
+    Array.from(
+      { length: Math.max(0, Math.round(toNumber(batch.quantity))) },
+      (_, quantityIndex) => ({
+        rowId: `line-${line.id}-${index}-batch-${batch.batchId || batchIndex}-${quantityIndex}`,
+        groupKey,
+        saleDocProductId: line.id,
+        expectedProductTableId: null,
+        productId: line.productId,
+        productName: line.productName,
+        unitName: line.unitName,
+        quantity: 1,
+        isPieceTracked: true,
+        batchId: batch.batchId || null,
+        batchNumber: batch.batchNumber,
+        batchDate: batch.batchDate,
+        productTableId: null,
+        markingNumber: null,
+        confirmed: false,
+      }),
+    ),
+  );
 };
 
 const buildRowsFromProduct = (
@@ -94,33 +136,60 @@ const buildRowsFromProduct = (
   index: number,
 ): WarehouseConfirmRow[] => {
   const productName = product.productName;
-  const productTables = getProductTables(product);
-  const sourceItems = productTables.length ? productTables : [product];
+  const groupKey = getGroupKey(product.productId, productName);
+  const batches = getSaleBatches(product);
 
-  return sourceItems.flatMap((item, itemIndex) => {
-    const source = item as UnknownRecord;
-    const quantity = productTables.length
-      ? 1
-      : Math.max(1, Math.round(toNumber(product.quantity, 1)));
-    const groupKey = getGroupKey(product.productId, productName);
-
-    return Array.from({ length: quantity }, (_, quantityIndex) => ({
-      rowId: `product-${product.id}-${index}-${itemIndex}-${quantityIndex}`,
+  if (product.isPieceTracked === false) {
+    return batches.map((batch, batchIndex) => ({
+      rowId: `product-${product.id}-${index}-batch-${batch.batchId || batchIndex}`,
       groupKey,
       saleDocProductId: product.id,
-      expectedProductTableId: toNumber(read(source, ["productTableId"])) || null,
+      expectedProductTableId: null,
       productId: product.productId,
       productName,
       unitName: product.unitName,
+      quantity: Math.max(0, toNumber(batch.quantity)),
+      isPieceTracked: false,
+      batchId: batch.batchId || null,
+      batchNumber: batch.batchNumber,
+      batchDate: batch.batchDate,
       productTableId: null,
       markingNumber: null,
+      confirmed: false,
     }));
-  });
+  }
+
+  return batches.flatMap((batch, batchIndex) =>
+    Array.from(
+      { length: Math.max(0, Math.round(toNumber(batch.quantity))) },
+      (_, quantityIndex) => ({
+        rowId: `product-${product.id}-${index}-batch-${batch.batchId || batchIndex}-${quantityIndex}`,
+        groupKey,
+        saleDocProductId: product.id,
+        expectedProductTableId: null,
+        productId: product.productId,
+        productName,
+        unitName: product.unitName,
+        quantity: 1,
+        isPieceTracked: true,
+        batchId: batch.batchId || null,
+        batchNumber: batch.batchNumber,
+        batchDate: batch.batchDate,
+        productTableId: null,
+        markingNumber: null,
+        confirmed: false,
+      }),
+    ),
+  );
 };
 
-const buildRows = (document: SaleDoc): WarehouseConfirmRow[] => {
+const buildRows = (
+  document: SaleDoc,
+): WarehouseConfirmRow[] => {
   if (document.lines?.length) {
-    return document.lines.flatMap((line, index) => buildRowsFromLine(line, index));
+    return document.lines.flatMap((line, index) =>
+      buildRowsFromLine(line, index),
+    );
   }
 
   return (document.products ?? []).flatMap((product, index) =>
@@ -149,6 +218,33 @@ const buildGroups = (rows: WarehouseConfirmRow[]): WarehouseConfirmGroup[] => {
   return Array.from(map.values());
 };
 
+const buildBatchGroups = (
+  rows: WarehouseConfirmRow[],
+): WarehouseConfirmBatch[] => {
+  const map = new Map<string, WarehouseConfirmBatch>();
+
+  rows.forEach((row) => {
+    const key = [row.batchId ?? "none", row.batchNumber ?? "", row.batchDate ?? ""].join(
+      ":",
+    );
+    const existing = map.get(key);
+    if (existing) {
+      existing.rows.push(row);
+      return;
+    }
+
+    map.set(key, {
+      key,
+      batchId: row.batchId,
+      batchNumber: row.batchNumber,
+      batchDate: row.batchDate,
+      rows: [row],
+    });
+  });
+
+  return Array.from(map.values());
+};
+
 const mergeDraftRows = (
   rows: WarehouseConfirmRow[],
   draft: WarehouseConfirmDraftItem[],
@@ -159,23 +255,34 @@ const mergeDraftRows = (
     return savedRow
       ? {
           ...row,
-          productTableId: savedRow.productTableId,
+          productTableId: savedRow.productTableId ?? null,
           markingNumber: savedRow.markingNumber,
+          confirmed: Boolean(savedRow.confirmed),
         }
       : row;
   });
 
 const toDraftItems = (rows: WarehouseConfirmRow[]): WarehouseConfirmDraftItem[] =>
   rows
-    .filter((row) => row.productTableId)
+    .filter((row) => row.productTableId || row.confirmed)
     .map((row) => ({
       rowId: row.rowId,
-      productTableId: row.productTableId as number,
+      productTableId: row.productTableId,
       markingNumber: row.markingNumber,
+      confirmed: row.confirmed,
     }));
 
-const getScannedCount = (rows: WarehouseConfirmRow[]) =>
-  rows.filter((row) => row.productTableId).length;
+const isRowConfirmed = (row: WarehouseConfirmRow) =>
+  row.isPieceTracked ? Boolean(row.productTableId) : row.confirmed;
+
+const getConfirmedQuantity = (rows: WarehouseConfirmRow[]) =>
+  rows.reduce(
+    (total, row) => total + (isRowConfirmed(row) ? row.quantity : 0),
+    0,
+  );
+
+const getTotalQuantity = (rows: WarehouseConfirmRow[]) =>
+  rows.reduce((total, row) => total + row.quantity, 0);
 
 const toAssemblyPayload = (rows: WarehouseConfirmRow[]) => {
   const lines = new Map<
@@ -188,7 +295,7 @@ const toAssemblyPayload = (rows: WarehouseConfirmRow[]) => {
   >();
 
   rows.forEach((row) => {
-    if (!row.productTableId) return;
+    if (!isRowConfirmed(row)) return;
 
     const line =
       lines.get(row.saleDocProductId) ?? {
@@ -196,7 +303,10 @@ const toAssemblyPayload = (rows: WarehouseConfirmRow[]) => {
         assembled: true as const,
         items: [],
       };
-    line.items.push({ productTableId: row.productTableId });
+
+    if (row.productTableId) {
+      line.items.push({ productTableId: row.productTableId });
+    }
     lines.set(row.saleDocProductId, line);
   });
 
@@ -206,27 +316,66 @@ const toAssemblyPayload = (rows: WarehouseConfirmRow[]) => {
 export default function SaleWarehouseConfirm({ document }: Props) {
   const navigate = useNavigate();
   const confirmSale = useWarehouseConfirmSale(document.id);
-  const getProductByMarking = useGetProductByMarking();
-  const baseRows = useMemo(() => buildRows(document), [document]);
+  const availableProductsQuery = useGetAvailableSaleProducts(document.id);
+  const availableProducts = useMemo(
+    () => availableProductsQuery.data ?? [],
+    [availableProductsQuery.data],
+  );
+  const baseRows = useMemo(
+    () => buildRows(document),
+    [document],
+  );
   const [draftRows, setDraftRows] = useLocalStorage<WarehouseConfirmDraftItem[]>(
     `sale:warehouse-confirm:${document.id}`,
     [],
   );
-  // Tasdiqlanmagan skanlar backendga hali ketmaydi, shuning uchun faqat shu hujjat uchun vaqtinchalik draft saqlaymiz.
   const rows = useMemo(
     () => mergeDraftRows(baseRows, draftRows),
     [baseRows, draftRows],
   );
   const groups = useMemo(() => buildGroups(rows), [rows]);
+  const hasPieceTrackedRows = rows.some((row) => row.isPieceTracked);
+
+  const handleBatchConfirm = (rowId: string, confirmed: boolean) => {
+    setDraftRows((currentDraft) => {
+      const current = mergeDraftRows(baseRows, currentDraft);
+      const nextRows = current.map((row) =>
+        row.rowId === rowId ? { ...row, confirmed } : row,
+      );
+
+      return toDraftItems(nextRows);
+    });
+  };
 
   const handleScan = async (markingNumber: string) => {
     try {
-      const product = await getProductByMarking.mutateAsync(markingNumber);
-      const productTableId = Number(product.productTableId ?? product.id ?? 0);
-      if (!productTableId) {
-        toast.error("Product table ID topilmadi");
+      if (!availableProductsQuery.isSuccess) {
+        toast.error("Ruxsat etilgan markirovkalar hali yuklanmagan");
         return;
       }
+
+      const normalizedMarkingNumber = markingNumber.trim();
+      const matchedProduct = availableProducts
+        .flatMap((product) =>
+          product.batches.flatMap((batch) =>
+            batch.productTables.map((productTable) => ({
+              ...productTable,
+              productId: product.productId,
+              batchId: batch.batchId,
+            })),
+          ),
+        )
+        .find(
+          (productTable) =>
+            productTable.markingNumber.trim() === normalizedMarkingNumber,
+        );
+
+      if (!matchedProduct) {
+        toast.error("Bu markirovka ushbu sotuvga tegishli emas");
+        return;
+      }
+
+      const productTableId = matchedProduct.productTableId;
 
       setDraftRows((currentDraft) => {
         const current = mergeDraftRows(baseRows, currentDraft);
@@ -236,14 +385,21 @@ export default function SaleWarehouseConfirm({ document }: Props) {
           return currentDraft;
         }
 
-        const exactRowIndex = current.findIndex(
+        const batchRowIndex = current.findIndex(
           (item) =>
-            item.expectedProductTableId === productTableId && !item.productTableId,
+            item.isPieceTracked &&
+            item.productId === matchedProduct.productId &&
+            item.batchId === matchedProduct.batchId &&
+            !item.productTableId,
         );
-        const fallbackRowIndex = current.findIndex(
-          (item) => item.productId === product.productId && !item.productTableId,
+        const expectedRowIndex = current.findIndex(
+          (item) =>
+            item.isPieceTracked &&
+            item.expectedProductTableId === productTableId &&
+            !item.productTableId,
         );
-        const rowIndex = exactRowIndex !== -1 ? exactRowIndex : fallbackRowIndex;
+        const rowIndex =
+          batchRowIndex !== -1 ? batchRowIndex : expectedRowIndex;
 
         if (rowIndex === -1) {
           toast.error("Bu marker hujjatdagi mahsulotlarga tegishli emas");
@@ -255,7 +411,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
             ? {
                 ...item,
                 productTableId,
-                markingNumber: product.markingNumber || markingNumber,
+                markingNumber: matchedProduct.markingNumber,
               }
             : item,
         );
@@ -268,8 +424,13 @@ export default function SaleWarehouseConfirm({ document }: Props) {
   };
 
   const handleConfirm = async () => {
-    if (rows.some((row) => !row.productTableId)) {
-      toast.error("Barcha mahsulotlar to'liq skaner qilinmagan");
+    if (hasPieceTrackedRows && !availableProductsQuery.isSuccess) {
+      toast.error("Ruxsat etilgan markirovkalar hali tekshirilmagan");
+      return;
+    }
+
+    if (rows.some((row) => !isRowConfirmed(row))) {
+      toast.error("Barcha partiyalar tasdiqlanmagan yoki skaner qilinmagan");
       return;
     }
 
@@ -282,7 +443,8 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     }
   };
 
-  const scannedCount = getScannedCount(rows);
+  const confirmedQuantity = getConfirmedQuantity(rows);
+  const totalQuantity = getTotalQuantity(rows);
 
   const columns: TableColumnsType<WarehouseConfirmRow> = [
     {
@@ -297,41 +459,80 @@ export default function SaleWarehouseConfirm({ document }: Props) {
       title: "Miqdor",
       width: 120,
       align: "center",
-      render: (_, row) => `1 ${row.unitName || "dona"}`,
+      render: (_, row) =>
+        `${numberSpacing(row.quantity, undefined, true)} ${row.unitName || "dona"}`,
+    },
+    {
+      dataIndex: "batchNumber",
+      title: "Partiya",
+      width: 130,
+      render: (value, row) => value || row.batchId || "—",
+    },
+    {
+      dataIndex: "batchDate",
+      title: "Kirim sanasi",
+      width: 120,
+      render: (value) => (value ? customDate(value) : "—"),
     },
     {
       dataIndex: "markingNumber",
       title: "Markirovka",
       minWidth: 240,
-      render: (value) => <LineClampCell text={value || null} />,
+      render: (value, row) =>
+        row.isPieceTracked ? <LineClampCell text={value || null} /> : "—",
     },
     {
       dataIndex: "status",
       title: "Holati",
-      width: 140,
+      width: 180,
       align: "center",
       render: (_, row) =>
-        row.productTableId ? (
-          <Tag color="success">Urildi</Tag>
+        row.isPieceTracked ? (
+          row.productTableId ? (
+            <Tag color="success">Urildi</Tag>
+          ) : (
+            <Tag>Urilmagan</Tag>
+          )
         ) : (
-          <Tag>Urilmagan</Tag>
+          <Checkbox
+            checked={row.confirmed}
+            onChange={(event) =>
+              handleBatchConfirm(row.rowId, event.target.checked)
+            }
+          >
+            Tasdiqlash
+          </Checkbox>
         ),
     },
   ];
 
+  const batchColumns = columns.filter(
+    (column) =>
+      !(
+        "dataIndex" in column &&
+        (column.dataIndex === "batchNumber" || column.dataIndex === "batchDate")
+      ),
+  );
+
   return (
     <div className="space-y-3">
-      <SaleBarcodeScanner onScan={handleScan} />
+      {hasPieceTrackedRows && availableProductsQuery.isSuccess && (
+        <SaleBarcodeScanner onScan={handleScan} />
+      )}
       <div className="flex items-center justify-between rounded-md border border-border bg-white px-3 py-2">
-        <span className="font-semibold text-text">Skan qilinadigan tovarlar</span>
+        <span className="font-semibold text-text">
+          Ombordan chiqariladigan tovarlar
+        </span>
         <span className="text-sm text-secondary-text">
-          {numberSpacing(scannedCount, undefined, true)} /{" "}
-          {numberSpacing(rows.length, undefined, true)}
+          {numberSpacing(confirmedQuantity, undefined, true)} /{" "}
+          {numberSpacing(totalQuantity, undefined, true)}
         </span>
       </div>
       <div className="space-y-3">
         {groups.map((group) => {
-          const groupScannedCount = getScannedCount(group.rows);
+          const groupConfirmedQuantity = getConfirmedQuantity(group.rows);
+          const groupTotalQuantity = getTotalQuantity(group.rows);
+          const batches = buildBatchGroups(group.rows);
           return (
             <Card
               key={group.key}
@@ -345,25 +546,74 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                 <div className="text-right">
                   <div className="text-xs text-secondary-text">Miqdor</div>
                   <div>
-                    {numberSpacing(group.rows.length, undefined, true)}{" "}
+                    {numberSpacing(groupTotalQuantity, undefined, true)}{" "}
                     {group.unitName || "dona"}
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-secondary-text">Holati</div>
                   <div>
-                    {numberSpacing(groupScannedCount, undefined, true)} /{" "}
-                    {numberSpacing(group.rows.length, undefined, true)}
+                    {numberSpacing(groupConfirmedQuantity, undefined, true)} /{" "}
+                    {numberSpacing(groupTotalQuantity, undefined, true)}
                   </div>
                 </div>
               </div>
-              <Table<WarehouseConfirmRow>
-                size="small"
-                columns={columns}
-                dataSource={generateKeyTable(group.rows, "rowId")}
-                pagination={false}
-                scroll={{ x: "max-content" }}
-              />
+              <div className="space-y-2 p-2">
+                {batches.map((batch) => {
+                  const batchConfirmedQuantity = getConfirmedQuantity(batch.rows);
+                  const batchTotalQuantity = getTotalQuantity(batch.rows);
+                  const isPieceTracked = batch.rows.some(
+                    (row) => row.isPieceTracked,
+                  );
+                  const visibleRows = isPieceTracked
+                    ? batch.rows.filter((row) => row.productTableId)
+                    : batch.rows;
+
+                  return (
+                    <div
+                      key={batch.key}
+                      className="overflow-hidden rounded-md border border-border bg-white"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-slate-50 px-3 py-2">
+                        <div>
+                          <div className="text-sm font-semibold text-text">
+                            Partiya {batch.batchNumber || batch.batchId || "—"}
+                          </div>
+                          <div className="text-xs text-secondary-text">
+                            Hujjat raqami: {batch.batchNumber || batch.batchId || "—"}
+                            {batch.batchDate
+                              ? ` · Kirim sanasi: ${customDate(batch.batchDate)}`
+                              : ""}
+                          </div>
+                        </div>
+                        <div className="text-right text-sm text-secondary-text">
+                          <div>
+                            Miqdor: {numberSpacing(batchTotalQuantity, undefined, true)}{" "}
+                            {group.unitName || "dona"}
+                          </div>
+                          <div className="font-medium text-text">
+                            Tasdiqlangan: {numberSpacing(batchConfirmedQuantity, undefined, true)} /{" "}
+                            {numberSpacing(batchTotalQuantity, undefined, true)}
+                          </div>
+                        </div>
+                      </div>
+                      {isPieceTracked && !visibleRows.length ? (
+                        <div className="px-3 py-3 text-sm text-secondary-text">
+                          Markirovka hali skaner qilinmagan
+                        </div>
+                      ) : (
+                        <Table<WarehouseConfirmRow>
+                          size="small"
+                          columns={batchColumns}
+                          dataSource={generateKeyTable(visibleRows, "rowId")}
+                          pagination={false}
+                          scroll={{ x: "max-content" }}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </Card>
           );
         })}

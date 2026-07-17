@@ -30,10 +30,16 @@ export interface SaleDocCreateLineItemForm {
   productTableId: number;
 }
 
+export interface SaleDocCreateProductBatchForm {
+  batchId: number;
+  quantity: number;
+}
+
 export interface SaleDocCreateLineForm
   extends Omit<SaleDocProductForm, "id"> {
   assembled: true;
   items?: SaleDocCreateLineItemForm[];
+  productBatches?: SaleDocCreateProductBatchForm[];
 }
 
 export interface SaleDocCreateForm {

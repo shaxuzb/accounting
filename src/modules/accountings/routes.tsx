@@ -31,11 +31,11 @@ const withAccess = (element: ReactElement, permission: string) => (
 export const accountingsRoutes: RouteObject = {
   path: "accountings",
   element: <Outlet />,
-  handle: { title: "Accounting" },
+  handle: { title: "app.accounting.title" },
   children: [
     {
       path: "reports",
-      handle: { title: "Accounting reports" },
+      handle: { title: "app.accounting.reports" },
       element: <Outlet />,
       children: [
         {
@@ -44,7 +44,7 @@ export const accountingsRoutes: RouteObject = {
         },
         {
           path: "balance-sheet",
-          handle: { title: "Balance sheet" },
+          handle: { title: "app.accounting.balanceSheet" },
           element: withAccess(
             <BalanceSheetPage />,
             accountingReportPermissions.balanceSheet,
@@ -52,7 +52,7 @@ export const accountingsRoutes: RouteObject = {
         },
         {
           path: "income-statement",
-          handle: { title: "Income statement" },
+          handle: { title: "app.accounting.incomeStatement" },
           element: withAccess(
             <IncomeStatementPage />,
             accountingReportPermissions.incomeStatement,
@@ -60,7 +60,7 @@ export const accountingsRoutes: RouteObject = {
         },
         {
           path: "cash-flow",
-          handle: { title: "Cash flow" },
+          handle: { title: "app.accounting.cashFlow" },
           element: withAccess(
             <CashFlowPage />,
             accountingReportPermissions.cashFlow,
@@ -68,7 +68,7 @@ export const accountingsRoutes: RouteObject = {
         },
         {
           path: "account-turnover",
-          handle: { title: "Account turnover" },
+          handle: { title: "app.accounting.accountTurnover" },
           element: withAccess(
             <AccountTurnoverPage />,
             accountingReportPermissions.accountTurnover,
@@ -76,7 +76,7 @@ export const accountingsRoutes: RouteObject = {
         },
         {
           path: "journal",
-          handle: { title: "Journal" },
+          handle: { title: "app.accounting.journal" },
           element: withAccess(
             <JournalPage />,
             accountingReportPermissions.journal,
@@ -84,7 +84,7 @@ export const accountingsRoutes: RouteObject = {
         },
         {
           path: "account-card",
-          handle: { title: "Account card" },
+          handle: { title: "app.accounting.accountCard" },
           element: withAccess(
             <AccountCardPage />,
             accountingReportPermissions.accountCard,
@@ -94,27 +94,27 @@ export const accountingsRoutes: RouteObject = {
     },
     {
       path: "ledger",
-      handle: { title: "Ledger" },
+      handle: { title: "app.accounting.ledger" },
       element: withAccess(<LedgerPage />, ledgerPermissions.view),
     },
     {
       path: "trial-balance",
-      handle: { title: "Trial balance" },
+      handle: { title: "app.accounting.trialBalance" },
       element: withAccess(<TrialBalancePage />, trialBalancePermissions.view),
     },
     {
       path: "audit-log",
-      handle: { title: "Audit log" },
+      handle: { title: "app.accounting.auditLog" },
       element: withAccess(<AuditLogPage />, auditLogPermissions.view),
     },
     {
       path: "repost",
-      handle: { title: "Repost" },
+      handle: { title: "app.accounting.repost" },
       element: withAccess(<RepostPage />, repostPermissions.update),
     },
     {
       path: "accounting-periods",
-      handle: { title: "Accounting periods" },
+      handle: { title: "app.accounting.periods" },
       element: withAccess(
         <AccountingPeriodsPage />,
         accountingPeriodsPermissions.close,

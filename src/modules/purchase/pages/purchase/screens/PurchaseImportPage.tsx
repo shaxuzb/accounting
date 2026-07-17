@@ -56,6 +56,7 @@ import { useCreatePurchase } from "../hooks/useCreatePurchase";
 import { useGetDetailPurchase } from "../hooks/useGetDetailPurchase";
 import { usePurchaseImportOptions } from "../hooks/usePurchaseImportOptions";
 import { usePurchaseImportColumns } from "../hooks/usePurchaseImportColumns";
+import { useGetPurchaseDocumentAccountDefaults } from "../hooks/useGetPurchaseDocumentAccountDefaults";
 import { useUpdatePurchase } from "../hooks/useUpdatePurchase";
 import useLocalStorage from "@/hooks/UseLocalStorage";
 import {
@@ -344,9 +345,6 @@ const PurchaseImportPage = () => {
   );
   const isDraftStorageEnabledRef = useRef(true);
   const { height } = useWindowSize();
-  const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(
-    () => (isEdit ? null : headerDraft.warehouseId ?? null),
-  );
   const importPurchase = useCreatePurchase();
   const updatePurchase = useUpdatePurchase();
   const detailQuery = useGetDetailPurchase(purchaseId);
@@ -376,7 +374,10 @@ const PurchaseImportPage = () => {
     unitOptions,
     vatRateOptions,
     serviceOptions,
-  } = usePurchaseImportOptions(purchaseMode, selectedWarehouseId);
+  } = usePurchaseImportOptions(purchaseMode);
+  const { defaultAccounts } = useGetPurchaseDocumentAccountDefaults(
+    purchaseMode,
+  );
 
   const itemOptionsById = useMemo(
     () => new Map(itemOptions.map((item) => [item.id, item])),
@@ -708,10 +709,6 @@ const PurchaseImportPage = () => {
     [formik, setDraftFieldValue],
   );
 
-  useEffect(() => {
-    setSelectedWarehouseId(formik.values.warehouseId);
-  }, [formik.values.warehouseId]);
-
   const resolveProductIds = useCallback(
     (rows: PurchaseImportRow[]) => {
       let hasChanges = false;
@@ -852,9 +849,24 @@ const PurchaseImportPage = () => {
           ? currentRows[rowIndex]?.markingNumber
           : "",
         markingNumbers: isPieceTracked ? currentMarkings : [],
+        debitAccountId:
+          currentRows[rowIndex]?.debitAccountId ??
+          defaultAccounts.debitAccountId,
+        debitAccountName:
+          currentRows[rowIndex]?.debitAccountName ||
+          (currentRows[rowIndex]?.debitAccountId == null
+            ? defaultAccounts.debitAccountName
+            : ""),
+        vatAccountId:
+          currentRows[rowIndex]?.vatAccountId ?? defaultAccounts.vatAccountId,
+        vatAccountName:
+          currentRows[rowIndex]?.vatAccountName ||
+          (currentRows[rowIndex]?.vatAccountId == null
+            ? defaultAccounts.vatAccountName
+            : ""),
       });
     },
-    [handleRowValueChange, itemOptions, purchaseMode],
+    [defaultAccounts, handleRowValueChange, itemOptions, purchaseMode],
   );
 
   const openMarkingModal = useCallback(
@@ -1048,6 +1060,18 @@ const PurchaseImportPage = () => {
         } else {
           targetRow.qty = toMarkingNumbers(targetRow).length;
         }
+        targetRow.debitAccountId =
+          targetRow.debitAccountId ?? defaultAccounts.debitAccountId;
+        targetRow.debitAccountName =
+          targetRow.debitAccountName ||
+          (targetRow.debitAccountId == null
+            ? defaultAccounts.debitAccountName
+            : "");
+        targetRow.vatAccountId =
+          targetRow.vatAccountId ?? defaultAccounts.vatAccountId;
+        targetRow.vatAccountName =
+          targetRow.vatAccountName ||
+          (targetRow.vatAccountId == null ? defaultAccounts.vatAccountName : "");
       }
 
       const previousValue = (currentRows[rowIndex] as Record<string, unknown>)[
@@ -1061,7 +1085,7 @@ const PurchaseImportPage = () => {
       nextRows[rowIndex] = targetRow;
       commitRows(nextRows);
     },
-    [commitRows, productByCode, purchaseMode],
+    [commitRows, defaultAccounts, productByCode, purchaseMode],
   );
 
   const isSapCodeValid = useCallback(
@@ -1095,6 +1119,39 @@ const PurchaseImportPage = () => {
     unitOptions,
     vatRateOptions,
   });
+
+  useEffect(() => {
+    if (!linesRef.current.some((item) => item.productId)) return;
+
+    const updated = linesRef.current.map((item) => {
+      if (!item.productId) return item;
+
+      return {
+        ...item,
+        debitAccountId:
+          item.debitAccountId ?? defaultAccounts.debitAccountId,
+        debitAccountName:
+          item.debitAccountName ||
+          (item.debitAccountId == null ? defaultAccounts.debitAccountName : ""),
+        vatAccountId: item.vatAccountId ?? defaultAccounts.vatAccountId,
+        vatAccountName:
+          item.vatAccountName ||
+          (item.vatAccountId == null ? defaultAccounts.vatAccountName : ""),
+      };
+    });
+
+    const changed = updated.some((item, index) => {
+      const current = linesRef.current[index];
+      return (
+        item.debitAccountId !== current.debitAccountId ||
+        item.debitAccountName !== current.debitAccountName ||
+        item.vatAccountId !== current.vatAccountId ||
+        item.vatAccountName !== current.vatAccountName
+      );
+    });
+
+    if (changed) commitRows(updated);
+  }, [commitRows, defaultAccounts]);
 
   useEffect(() => {
     const hasLoadedOptions =
