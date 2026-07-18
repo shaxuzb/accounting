@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useMatches, useNavigate } from "react-router";
 
 type NavbarRouteHandle = {
-  title?: string;
+  title?: string | ((params: Record<string, string | undefined>) => string);
   showBack?: boolean;
   backTo?: string;
   hideNavbarTitle?: boolean;
@@ -24,7 +24,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const currentRouteHandle = [...matches].reverse().find((item) => {
+  const currentRouteMatch = [...matches].reverse().find((item) => {
     const handle = item.handle as NavbarRouteHandle | undefined;
     return (
       handle?.title ||
@@ -32,11 +32,16 @@ const Navbar = () => {
       handle?.backTo ||
       handle?.hideNavbarTitle
     );
-  })?.handle as NavbarRouteHandle | undefined;
+  });
+  const currentRouteHandle = currentRouteMatch?.handle as
+    | NavbarRouteHandle
+    | undefined;
+  const titleKey =
+    typeof currentRouteHandle?.title === "function"
+      ? currentRouteHandle.title(currentRouteMatch?.params ?? {})
+      : currentRouteHandle?.title;
 
-  const pageTitle = currentRouteHandle?.title
-    ? t(currentRouteHandle.title)
-    : "";
+  const pageTitle = titleKey ? t(titleKey) : "";
   const showBack = !!currentRouteHandle?.showBack;
   const hideNavbarTitle = !!currentRouteHandle?.hideNavbarTitle;
 

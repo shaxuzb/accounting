@@ -65,6 +65,7 @@ const bankAccountIdKeys = ["bankAccountId", "accountId", "orgBankAccountId"];
 const operationTypeIdKeys = ["operationTypeId", "operationId"];
 const currencyIdKeys = ["currencyId"];
 const counterpartyIdKeys = ["counterpartyId"];
+const contractIdKeys = ["contractId"];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -140,6 +141,7 @@ const normalizeTransaction = (
     amount: amount ?? 0,
     currencyId: getNumberByKeys(fields, currencyIdKeys) ?? undefined,
     currencyName: getStringByKeys(fields, ["currencyName", "currency"]) ?? undefined,
+    contractId: getNumberByKeys(fields, contractIdKeys) ?? null,
   };
 };
 

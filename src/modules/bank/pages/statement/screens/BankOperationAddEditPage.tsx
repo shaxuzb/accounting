@@ -32,6 +32,8 @@ import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/c
 import { counterpartybankaccountPermissions } from "@/modules/settings/pages/counterpartybankaccount/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 import type { Contract } from "@/modules/contract/types/type";
+import type { Counterparty } from "@/modules/settings/pages/counterparty/types/type";
+import type { Counterpartybankaccount } from "@/modules/settings/pages/counterpartybankaccount/types/type";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import {
   bankDocumentAccountRoleCodes,
@@ -164,6 +166,22 @@ export default function BankOperationAddEditPage() {
       queryClient,
       "contractId",
       selectListEndpoints.contractsSelectList,
+    );
+  };
+
+  const handleCounterpartyCreated = (counterparty: Counterparty) => {
+    setFieldValue("counterpartyId", counterparty.id, true);
+    setCounterpartyBankAccountCreateOpen(true);
+  };
+
+  const handleCounterpartyBankAccountCreated = (
+    account: Counterpartybankaccount,
+  ) => {
+    setFieldValue("counterpartyBankAccountId", account.id, true);
+    invalidateSelectListQuery(
+      queryClient,
+      "counterpartyBankAccountId",
+      selectListEndpoints.counterPartyBankAccounts,
     );
   };
 
@@ -403,6 +421,7 @@ export default function BankOperationAddEditPage() {
       </Card>
       <CounterpartyAddEditPage
         open={counterpartyCreateOpen}
+        onCreated={handleCounterpartyCreated}
         onClose={() => {
           setCounterpartyCreateOpen(false);
           invalidateSelectListQuery(
@@ -414,6 +433,8 @@ export default function BankOperationAddEditPage() {
       />
       <CounterpartyBankAccountAddEditPage
         open={counterpartyBankAccountCreateOpen}
+        initialCounterpartyId={counterpartyId}
+        onCreated={handleCounterpartyBankAccountCreated}
         onClose={() => {
           setCounterpartyBankAccountCreateOpen(false);
           invalidateSelectListQuery(

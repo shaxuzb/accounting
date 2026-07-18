@@ -41,14 +41,17 @@ const Root = () => {
     ...localeMap[lang],
     week: 1,
   };
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false,
-        retry: false,
-      },
-    },
-  });
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            retry: false,
+          },
+        },
+      }),
+  );
   useEffect(() => {
     dayjs.locale(lang);
   }, [lang]);

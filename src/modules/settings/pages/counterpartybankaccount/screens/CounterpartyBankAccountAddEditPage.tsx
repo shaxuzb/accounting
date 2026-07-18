@@ -8,6 +8,7 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import InputText from "@/components/fields/InputText";
 import type { CounterpartybankaccountForm } from "../types/form";
+import type { Counterpartybankaccount } from "../types/type";
 import { useGetDetailCounterpartybankaccount } from "../hooks";
 import { useCreateCounterpartybankaccount } from "../hooks";
 import { useUpdateCounterpartybankaccount } from "../hooks";
@@ -27,12 +28,20 @@ interface counterpartybankaccountModalProps {
   open: boolean;
   onClose: () => void;
   id?: number | null;
+  initialCounterpartyId?: number | null;
+  initialOrganizationId?: number | null;
+  initialAccountNumber?: string | null;
+  onCreated?: (account: Counterpartybankaccount) => void;
 }
 
 export default function CounterpartyBankAccountAddEditPage({
   open,
   onClose,
   id,
+  initialCounterpartyId,
+  initialOrganizationId,
+  initialAccountNumber,
+  onCreated,
 }: counterpartybankaccountModalProps) {
   const { t } = useTranslation();
   const editId = id ?? null;
@@ -45,6 +54,9 @@ export default function CounterpartyBankAccountAddEditPage({
   const formik = useFormik<CounterpartybankaccountForm>({
     initialValues: {
       ...defaultValues,
+      counterpartyId: initialCounterpartyId ?? null,
+      organizationId: initialOrganizationId ?? null,
+      accountNumber: initialAccountNumber ?? null,
       stateId: isEdit ? null : 1,
       isMain: true,
     },
@@ -56,7 +68,8 @@ export default function CounterpartyBankAccountAddEditPage({
           await updateMutation.mutateAsync({ id: editId, payload: values });
           toast.success(t("settings.messages.updated"));
         } else {
-          await createMutation.mutateAsync(values);
+          const createdAccount = await createMutation.mutateAsync(values);
+          onCreated?.(createdAccount);
           toast.success(t("settings.messages.created"));
         }
         helpers.resetForm();

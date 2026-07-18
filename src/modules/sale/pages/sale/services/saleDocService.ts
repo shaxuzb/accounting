@@ -26,6 +26,15 @@ export const saleDocService = {
     $axiosPrivate
       .get<SaleAvailableProduct[]>(endpoints.availableProducts(id))
       .then((res) => res.data),
+  availableProductsByWarehouse: (
+    productId: string | number,
+    warehouseId: string | number,
+  ) =>
+    $axiosPrivate
+      .get<SaleAvailableProduct[]>(endpoints.availableProductsByWarehouse, {
+        params: { productId, warehouseId },
+      })
+      .then((res) => res.data),
   create: (payload: SaleDocCreateForm) =>
     $axiosPrivate
       .post<SaleDoc>(endpoints.create, payload)
@@ -44,5 +53,9 @@ export const saleDocService = {
   confirm: (id: string | number, payload: SaleDocConfirmForm) =>
     $axiosPrivate
       .put<SaleDoc>(endpoints.confirm(id), payload)
+      .then((res) => res.data),
+  cancel: (id: string | number) =>
+    $axiosPrivate
+      .put<SaleDoc>(endpoints.cancel(id))
       .then((res) => res.data),
 };

@@ -6,7 +6,7 @@ export const invalidateSelectListQuery = (
   path: string,
 ) => {
   queryClient.invalidateQueries({
-    queryKey: ["selectlist", path],
-    exact: false,
+    predicate: (query) =>
+      query.queryKey[0] === "selectlist" && query.queryKey.includes(path),
   });
 };

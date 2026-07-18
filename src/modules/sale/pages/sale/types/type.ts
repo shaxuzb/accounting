@@ -194,6 +194,7 @@ export interface SaleProductStockBatch {
 export interface SaleProductMarking {
   markingNumber: string;
   productTableId: number;
+  batchId?: number;
 }
 
 export interface SaleDocumentAccountOption {

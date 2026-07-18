@@ -1,6 +1,6 @@
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { Plus, RefreshCw } from "lucide-react";
+import { Plus, ReceiptText, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useSearchParams } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -46,18 +46,18 @@ export default function CashDocumentListPage() {
         </Link>
       ),
     },
-    // {
-    //   dataIndex: "accountingEntriesReport",
-    //   title: "Provodka",
-    //   align: "center",
-    //   render: (_, record) => (
-    //     <Link
-    //       to={`/main/accountingentriesreport?documentTypeId=4&documentId=${record.id}`}
-    //     >
-    //       <Button icon={<ReceiptText className="size-4" />} />
-    //     </Link>
-    //   ),
-    // },
+    {
+      dataIndex: "accountingEntriesReport",
+      title: t("app.routes.accountingEntries"),
+      align: "center",
+      render: (_, record) => (
+        <Link
+          to={`/main/accountingentriesreport?documentTypeId=4&documentId=${record.id}`}
+        >
+          <Button icon={<ReceiptText className="size-4" />} />
+        </Link>
+      ),
+    },
     {
       dataIndex: "docDate",
       title: t("bank.fields.date"),
@@ -65,7 +65,7 @@ export default function CashDocumentListPage() {
     },
     {
       dataIndex: "cashBoxName",
-      title: "Kassa",
+      title: t("settings.entities.cashBox"),
       render: (_, record) => record.cashBoxName ?? record.cashBoxId,
     },
     {
@@ -127,13 +127,12 @@ export default function CashDocumentListPage() {
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
-        {/* <div className="text-lg font-semibold">{labels.listTitle}</div> */}
         <SearchFilter />
         <Space>
           <PermissionCard permission={cashDocumentPermissions.create}>
             <Link to={`/main/cash-operationses/cash-documents/${kind}/add`}>
               <Button type="primary" icon={<Plus className="size-4" />}>
-                {labels.addTitle}
+              {t(labels.addTitle)}
               </Button>
             </Link>
           </PermissionCard>

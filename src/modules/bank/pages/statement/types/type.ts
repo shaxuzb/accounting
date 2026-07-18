@@ -16,6 +16,8 @@ export interface BankStatementTransaction {
   currencyId?: number;
   currencyName?: string;
   offsetAccountId?: number | null;
+  contractId?: number | null;
+  counterpartyBankAccountId?: number | null;
 }
 
 export interface BankChartAccountOption {

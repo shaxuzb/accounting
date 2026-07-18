@@ -10,6 +10,13 @@ import { useTranslation } from "react-i18next";
 
 type FormValues = object;
 
+type SelectValue =
+  | string
+  | number
+  | null
+  | undefined
+  | (string | number)[];
+
 type SelectOptionItem = Record<string, unknown> & {
   id: number;
   name?: string;
@@ -18,8 +25,11 @@ type SelectOptionItem = Record<string, unknown> & {
 
 interface SelectCustomProps {
   label?: string;
-  formik: FormikProps<FormValues>;
-  fieldName: string;
+  formik?: FormikProps<FormValues>;
+  fieldName?: string;
+  value?: SelectValue;
+  autoSelectValue?: string | number | null;
+  autoSelectKeys?: string[];
   refetchSync?: string;
   queryParams?: Record<string, unknown>;
   getFieldName?: string | null;
@@ -38,6 +48,7 @@ interface SelectCustomProps {
   clearable?: boolean;
   disabledValue?: string | number | null;
   getFirst?: boolean;
+  getFirstOnlyWhenSingle?: boolean;
   marginBottom?: string;
   addOption?: {
     bool: boolean;
@@ -94,6 +105,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     marginBottom = "mb-6",
     refetchSync,
     getFirst = false,
+    getFirstOnlyWhenSingle = false,
     path,
     enabled = true,
     isOrganizationId = false,
@@ -106,6 +118,9 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     allowedIds,
     mode,
     onChange,
+    value,
+    autoSelectValue = null,
+    autoSelectKeys = ["id"],
   } = props;
 
   const requestParams = React.useMemo(
@@ -137,6 +152,9 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
       return response.data;
     },
     enabled,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
   });
   const selectOptions = React.useMemo(() => {
     const options = data ?? [];
@@ -180,40 +198,68 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     };
   }, [dinamicLabel, search]);
 
-  const hasError = !!(
-    getIn(formik.touched, fieldName) && getIn(formik.errors, fieldName)
+  const currentValue = formik ? getIn(formik.values, fieldName) : value;
+  const hasError = Boolean(
+    formik &&
+      getIn(formik.touched, fieldName) &&
+      getIn(formik.errors, fieldName),
   );
   useEffect(() => {
+    const normalizedAutoSelectValue = String(autoSelectValue ?? "")
+      .replace(/\s/g, "")
+      .trim();
+    const autoSelectedOption = normalizedAutoSelectValue
+      ? selectOptions.find((option) =>
+          autoSelectKeys.some(
+            (key) =>
+              String(option[key] ?? "")
+                .replace(/\s/g, "")
+                .trim() === normalizedAutoSelectValue,
+          ),
+        )
+      : undefined;
+    const firstOption = autoSelectedOption ?? selectOptions[0];
+    const shouldAutoSelect = autoSelectedOption
+        ? true
+      : formik
+        ? selectOptions.length < 2 || getFirst
+        : getFirstOnlyWhenSingle
+          ? selectOptions.length === 1
+          : getFirst;
+
     if (
       isSuccess &&
-      (selectOptions?.length < 2 || getFirst) &&
+      shouldAutoSelect &&
+      firstOption &&
       mode !== "multiple" &&
       mode !== "tags" &&
-      getIn(formik.values, fieldName) === null
+      (currentValue === null || currentValue === undefined)
     ) {
-      formik.setFieldValue(fieldName, selectOptions[0]?.id, true);
+      const firstValue = firstOption.id;
+      formik?.setFieldValue(fieldName, firstValue, true);
+      if (!formik) onChange?.(firstValue);
       if (
+        formik &&
         getCustomValue &&
-        selectOptions[0] &&
-        !Array.isArray(selectOptions[0]) &&
-        getCustomValue in selectOptions[0]
+        !Array.isArray(firstOption) &&
+        getCustomValue in firstOption
       ) {
         formik.setFieldValue(
           `${String(getCustomValue)}Static`,
-          selectOptions[0][getCustomValue],
+          firstOption[getCustomValue],
           true,
         );
       }
-      if (getFieldName) {
+      if (formik && getFieldName) {
         formik.setFieldValue(
           getFieldName,
-          getOptionLabel(selectOptions[0]),
+          getOptionLabel(firstOption),
           true,
         );
       }
-      if (getFieldNames) {
+      if (formik && getFieldNames) {
         getFieldNames.forEach((item) => {
-          formik.setFieldValue(item, selectOptions[0]?.[item], true);
+          formik.setFieldValue(item, firstOption[item], true);
         });
       }
     }
@@ -231,6 +277,11 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     getCustomValue,
     getOptionLabel,
     getFirst,
+    getFirstOnlyWhenSingle,
+    currentValue,
+    onChange,
+    autoSelectValue,
+    autoSelectKeys,
   ]);
   return (
     <Form.Item<FormProps>
@@ -247,21 +298,14 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
       }
       validateStatus={hasError ? "error" : ""}
       help={
-        hasError
+        hasError && formik
           ? (getIn(formik.errors, fieldName) as React.ReactNode)
           : undefined
       }
       rules={[{ required: true, message: "Please input your password!" }]}
     >
       <Select
-        value={
-          getIn(formik.values, fieldName) as
-            | string
-            | number
-            | null
-            | undefined
-            | (string | number)[]
-        }
+        value={currentValue as SelectValue}
         mode={mode}
         open={readOnly ? false : undefined}
         loading={isFetching || isLoading}
@@ -271,13 +315,11 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         // onSearch={(value) => {
         //   setSearchValue(value);
         // }}
-        onClear={() =>
-          formik.setFieldValue(
-            fieldName,
-            mode === "multiple" || mode === "tags" ? [] : null,
-            true,
-          )
-        }
+        onClear={() => {
+          const clearedValue = mode === "multiple" || mode === "tags" ? [] : null;
+          formik?.setFieldValue(fieldName, clearedValue, true);
+          onChange?.(clearedValue);
+        }}
         // optionFilterProp="children"
         // filterOption={(input, option) => {
         //   const normalizedInput = normalizeText(input);
@@ -286,12 +328,15 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         // }}
         onChange={(value, option) => {
           if (mode === "multiple" || mode === "tags") {
-            formik.setFieldValue(fieldName, value, true);
+            formik?.setFieldValue(fieldName, value, true);
             onChange?.(value);
             return;
           }
 
+          const nextValue = formik ? value : value ?? null;
+
           if (
+            formik &&
             getFieldName &&
             option &&
             !Array.isArray(option) &&
@@ -299,7 +344,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
           ) {
             formik.setFieldValue(getFieldName, option.label, true);
           }
-          if (getFieldNames) {
+          if (formik && getFieldNames) {
             getFieldNames.forEach((item) => {
               if (option && !Array.isArray(option) && item in option) {
                 formik.setFieldValue(item, option[item], true);
@@ -307,6 +352,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
             });
           }
           if (
+            formik &&
             getCustomValue &&
             option &&
             !Array.isArray(option) &&
@@ -318,11 +364,15 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
               true,
             );
           }
-          if (getIn(formik.values, "regionId") && fieldName === "regionId") {
+          if (
+            formik &&
+            getIn(formik.values, "regionId") &&
+            fieldName === "regionId"
+          ) {
             formik.setFieldValue("districtId", null, true);
           }
-          formik.setFieldValue(fieldName, value, true);
-          onChange?.(value);
+          formik?.setFieldValue(fieldName, nextValue, true);
+          onChange?.(nextValue);
         }}
         popupRender={
           addOption.bool &&

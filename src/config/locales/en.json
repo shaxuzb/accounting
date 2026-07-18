@@ -365,11 +365,18 @@
   },
   "contract": {
     "title": "Contract",
+    "purchaseTitle": "Purchase contracts",
+    "saleTitle": "Sales contracts",
+    "createTitle": "Create contract",
+    "editTitle": "Edit contract",
     "fields": {
       "counterpartyName": "Counterparty name",
+      "customerName": "Customer",
+      "supplierName": "Supplier",
       "contractType": "Contract type",
       "contractNumber": "Contract number",
       "stateName": "Status",
+      "comment": "Comment",
       "startDate": "Start date",
       "endDate": "End date",
       "contractDate": "Contract date"
@@ -520,6 +527,10 @@
       "inventoryDocument": "Inventory count document",
       "cashDocument": "Cash document",
       "cashDocuments": "Cash documents",
+      "newIncomeOrder": "New cash receipt order",
+      "incomeOrder": "Cash receipt order",
+      "newExpenseOrder": "New cash expense order",
+      "expenseOrder": "Cash expense order",
       "accountingEntries": "Accounting entries report"
     },
     "fields": {

@@ -11,7 +11,6 @@ import CashDocumentListPage from "./pages/cash-document/screens/CashDocumentList
 import CashDocumentDetailPage from "./pages/cash-document/screens/CashDocumentDetailPage";
 import CashBookListPage from "./pages/cash-book/screens/CashBookListPage";
 import CashBookDetailPage from "./pages/cash-book/screens/CashBookDetailPage";
-import { getCashDocumentLabels } from "./pages/cash-document/utils/kind";
 
 const withPermission = (
   element: ReactElement,
@@ -29,7 +28,7 @@ export const cashOperationRoutes: RouteObject = {
   children: [
     {
       path: "cash-operations",
-      handle: { title: "app.menu.cash" },
+      handle: { title: "app.menu.cashOperations" },
       children: [
         {
           index: true,
@@ -50,7 +49,12 @@ export const cashOperationRoutes: RouteObject = {
     },
     {
       path: "cash-documents/:kind",
-      handle: { title: "app.routes.cashDocuments" },
+      handle: {
+        title: (params: Record<string, string | undefined>) =>
+          params.kind === "rko"
+            ? "app.menu.expenseOrders"
+            : "app.menu.incomeOrders",
+      },
       children: [
         {
           index: true,
@@ -66,7 +70,10 @@ export const cashOperationRoutes: RouteObject = {
             cashDocumentPermissions.create,
           ),
           handle: {
-            title: getCashDocumentLabels("pko").addTitle,
+            title: (params: Record<string, string | undefined>) =>
+              params.kind === "rko"
+                ? "app.routes.newExpenseOrder"
+                : "app.routes.newIncomeOrder",
             showBack: true,
             backTo: "..",
           },
@@ -78,7 +85,10 @@ export const cashOperationRoutes: RouteObject = {
             cashDocumentPermissions.detail,
           ),
           handle: {
-            title: getCashDocumentLabels("pko").detailTitle,
+            title: (params: Record<string, string | undefined>) =>
+              params.kind === "rko"
+                ? "app.routes.expenseOrder"
+                : "app.routes.incomeOrder",
             showBack: true,
             backTo: "..",
           },

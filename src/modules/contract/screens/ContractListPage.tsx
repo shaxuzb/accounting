@@ -22,6 +22,7 @@ export default function ContractListPage() {
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
   const contractTypeId = pathname.startsWith("/main/sales/contracts") ? 2 : 1;
+  const isSaleContract = contractTypeId === 2;
   const newParams = useMemo(() => {
     const params = new URLSearchParams(searchParams);
     params.set("ContractTypeId", String(contractTypeId));
@@ -44,7 +45,11 @@ export default function ContractListPage() {
       dataIndex: "contractNumber",
     },
     {
-      title: t("contract.fields.counterpartyName"),
+      title: t(
+        isSaleContract
+          ? "contract.fields.customerName"
+          : "contract.fields.supplierName",
+      ),
       dataIndex: "counterpartyName",
     },
 

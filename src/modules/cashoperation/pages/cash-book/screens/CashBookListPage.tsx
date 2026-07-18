@@ -24,7 +24,7 @@ export default function CashBookListPage() {
     },
     {
       dataIndex: "name",
-      title: "Kassa",
+      title: t("settings.entities.cashBox"),
       render: (value, record) => <Link to={`${record.id}`}>{value}</Link>,
     },
     {
@@ -39,12 +39,12 @@ export default function CashBookListPage() {
     },
     {
       dataIndex: "currencyName",
-      title: "Valyuta",
+      title: t("settings.fields.currency"),
       render: (value) => value ?? "-",
     },
     {
       dataIndex: "createdDate",
-      title: "Yaratilgan sana",
+      title: t("settings.fields.createdDate"),
       render: (value) => customDate(value),
     },
   ];

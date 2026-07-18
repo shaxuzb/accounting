@@ -1,10 +1,11 @@
-import { Button, Empty, Spin } from "antd";
+import { Button, Empty, Popconfirm, Spin } from "antd";
 import {
   Boxes,
   CheckCircle2,
   PackageCheck,
   Sigma,
   UserRound,
+  XCircle,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
@@ -13,9 +14,12 @@ import useLocalStorage from "@/hooks/UseLocalStorage";
 import Card from "@/components/ui/card/Card";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { numberSpacing } from "@/utils/utils";
-import { useConfirmSale } from "../hooks";
+import { useCancelSale, useConfirmSale } from "../hooks";
 import type { SaleDoc, SaleDocTable, SalePricingLine } from "../types/type";
-import type { SaleDocConfirmLineForm } from "../types/form";
+import type {
+  SaleDocConfirmLineForm,
+  SaleDocConfirmLineItemForm,
+} from "../types/form";
 import {
   createSalePricingLine,
   getMarginBySalePrice,
@@ -45,6 +49,22 @@ interface SalePricingDraftLine {
   marginPercent: number;
 }
 
+interface SaleConfirmAggregate extends SaleDocConfirmLineForm {
+  productId: number;
+  productName: string;
+  productMxik?: string | null;
+  isService: boolean;
+  quantity: number;
+  unitId?: number | null;
+  unitName?: string | null;
+  amount: number;
+  vatRateId: number;
+  vatRateName?: string | null;
+  vatAmount: number;
+  totalAmount: number;
+  items: SaleDocConfirmLineItemForm[];
+}
+
 export default function SalePricingEditor({
   document,
   lines: sourceLines,
@@ -53,6 +73,7 @@ export default function SalePricingEditor({
 }: Props) {
   const navigate = useNavigate();
   const confirmSale = useConfirmSale(document.id);
+  const cancelSale = useCancelSale(document.id);
   const [draftLines, setDraftLines] = useLocalStorage<SalePricingDraftLine[]>(
     `sale:pricing:${document.id}`,
     [],
@@ -297,14 +318,23 @@ export default function SalePricingEditor({
       const lineAmount = roundMoney(line.amount || 0);
       const lineVatAmount = roundMoney(line.vatAmount || 0);
       const lineTotalAmount = roundMoney(line.totalAmount || 0);
-
-      existingLine.quantity += lineQuantity;
-      existingLine.costPrice = roundMoney(
-        existingLine.costPrice + lineCostPrice * lineQuantity,
-      );
-      existingLine.amount = roundMoney(
+      const nextQuantity = existingLine.quantity + lineQuantity;
+      const nextAmount = roundMoney(
         existingLine.amount + lineAmount * lineQuantity,
       );
+      const existingCostTotal = existingLine.costPrice * existingLine.quantity;
+      const nextCostTotal = roundMoney(
+        existingCostTotal + lineCostPrice * lineQuantity,
+      );
+
+      existingLine.quantity = nextQuantity;
+      existingLine.costPrice = nextQuantity
+        ? roundMoney(nextCostTotal / nextQuantity)
+        : 0;
+      existingLine.unitPrice = nextQuantity
+        ? roundMoney(nextAmount / nextQuantity)
+        : 0;
+      existingLine.amount = nextAmount;
       existingLine.vatAmount = roundMoney(
         existingLine.vatAmount + lineVatAmount,
       );
@@ -332,7 +362,7 @@ export default function SalePricingEditor({
       }
 
       return acc;
-    }, {} as Record<number, SaleDocConfirmLineForm>);
+    }, {} as Record<number, SaleConfirmAggregate>);
 
     const payloadLines = Object.values(groupedLines).filter((line) => line.id > 0);
 
@@ -343,9 +373,24 @@ export default function SalePricingEditor({
 
     try {
       await confirmSale.mutateAsync({
-        lines: payloadLines,
+        lines: payloadLines.map(({ id, costPrice, unitPrice }) => ({
+          id,
+          costPrice,
+          unitPrice,
+        })),
       });
       setDraftLines([]);
+      navigate("/main/sales/sale", { replace: true });
+    } catch (error) {
+      errorHandlers(error);
+    }
+  };
+
+  const handleCancel = async () => {
+    try {
+      await cancelSale.mutateAsync();
+      setDraftLines([]);
+      toast.success("Sotuv hujjati bekor qilindi");
       navigate("/main/sales/sale", { replace: true });
     } catch (error) {
       errorHandlers(error);
@@ -385,18 +430,35 @@ export default function SalePricingEditor({
           emphasized
           iconClassName="text-violet-600"
         />
-        <div className="flex min-h-20 items-center border-b border-border px-5 py-3 lg:border-b-0">
+        <div className="flex min-h-20 items-center gap-2 border-b border-border px-5 py-3 lg:border-b-0">
           <Button
             type="primary"
             size="large"
-            block
+            className="flex-1"
             icon={<CheckCircle2 size={18} />}
-            loading={confirmSale.isPending}
-            disabled={!lines.length}
+            loading={confirmSale.isPending || cancelSale.isPending}
+            disabled={!lines.length || cancelSale.isPending}
             onClick={handleConfirm}
           >
             Tasdiqlash
           </Button>
+          <Popconfirm
+            title="Hujjatni bekor qilish"
+            description="Sotuv hujjatini bekor qilishni tasdiqlaysizmi?"
+            okText="Bekor qilish"
+            cancelText="Yo‘q"
+            okButtonProps={{ danger: true, loading: cancelSale.isPending }}
+            onConfirm={handleCancel}
+          >
+            <Button
+              danger
+              size="large"
+              icon={<XCircle size={18} />}
+              disabled={confirmSale.isPending || cancelSale.isPending}
+            >
+              Bekor qilish
+            </Button>
+          </Popconfirm>
         </div>
       </section>
 

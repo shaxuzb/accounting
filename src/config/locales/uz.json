@@ -366,11 +366,18 @@
   },
   "contract": {
     "title": "Shartnoma",
+    "purchaseTitle": "Xarid shartnomalari",
+    "saleTitle": "Sotuv shartnomalari",
+    "createTitle": "Shartnoma yaratish",
+    "editTitle": "Shartnomani tahrirlash",
     "fields": {
-      "counterpartyName": "counterpartyName",
-      "contractType": "contractType",
-      "contractNumber": "contractNumber",
+      "counterpartyName": "Kontragent nomi",
+      "customerName": "Mijoz",
+      "supplierName": "Yetkazib beruvchi",
+      "contractType": "Shartnoma turi",
+      "contractNumber": "Shartnoma raqami",
       "stateName": "Holati",
+      "comment": "Izoh",
       "startDate": "Boshlanish sanasi",
       "endDate": "Tugash sanasi",
       "contractDate": "Shartnoma sanasi"
@@ -522,6 +529,10 @@
       "inventoryDocument": "Inventarizatsiya hujjati",
       "cashDocument": "Kassa hujjati",
       "cashDocuments": "Kassa hujjatlari",
+      "newIncomeOrder": "Yangi kirim orderi",
+      "incomeOrder": "Kirim orderi",
+      "newExpenseOrder": "Yangi chiqim orderi",
+      "expenseOrder": "Chiqim orderi",
       "accountingEntries": "Provodkalar hisoboti"
     },
     "fields": {

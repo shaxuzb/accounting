@@ -9,11 +9,40 @@ export const getSaleMarkingCount = (product: SaleSelectedProduct) =>
   product.markings?.length ?? 0;
 
 export const hasRequiredSaleMarkings = (products: SaleSelectedProduct[]) =>
-  products.every(
-    (product) =>
-      !product.isPieceTracked ||
-      getSaleMarkingCount(product) === Math.round(product.quantity),
-  );
+  products.every((product) => {
+    if (!product.isPieceTracked) return true;
+
+    const quantity = Math.max(0, Math.round(product.quantity));
+    if (getSaleMarkingCount(product) !== quantity) return false;
+    if (!quantity) return true;
+
+    const selectedLayers = (product.layers ?? []).filter(
+      (layer) => layer.batchId && layer.writeOffQuantity > 0,
+    );
+    if (!selectedLayers.length) return false;
+
+    const markingsByBatch = new Map<number, number>();
+    product.markings?.forEach((marking) => {
+      if (!marking.batchId) return;
+      markingsByBatch.set(
+        marking.batchId,
+        (markingsByBatch.get(marking.batchId) ?? 0) + 1,
+      );
+    });
+
+    return (
+      selectedLayers.every(
+        (layer) =>
+          markingsByBatch.get(layer.batchId as number) ===
+          Math.round(layer.writeOffQuantity),
+      ) &&
+      product.markings?.every((marking) =>
+        selectedLayers.some(
+          (layer) => layer.batchId === marking.batchId,
+        ),
+      )
+    );
+  });
 
 export const toSaleCreatePayload = (
   values: SaleDocForm,
@@ -44,19 +73,20 @@ export const toSaleCreatePayload = (
       assembled: true as const,
     };
 
-    if (processingMode !== 2) {
-      const productBatches = (product.layers ?? [])
-        .filter((layer) => layer.batchId && layer.writeOffQuantity > 0)
-        .map((layer) => ({
-          batchId: layer.batchId as number,
-          quantity: layer.writeOffQuantity,
-        }));
+    const productBatches = (product.layers ?? [])
+      .filter((layer) => layer.batchId && layer.writeOffQuantity > 0)
+      .map((layer) => ({
+        batchId: layer.batchId as number,
+        quantity: layer.writeOffQuantity,
+      }));
 
+    if (processingMode !== 2) {
       return productBatches.length ? { ...line, productBatches } : line;
     }
 
     return {
       ...line,
+      ...(productBatches.length ? { productBatches } : {}),
       items: (product.markings ?? []).map(({ productTableId }) => ({
         productTableId,
       })),

@@ -1,7 +1,7 @@
 import { Button, Checkbox, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
-import { CheckCircle2 } from "lucide-react";
-import { useMemo } from "react";
+import { CheckCircle2, ChevronDown, ChevronRight } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import useLocalStorage from "@/hooks/UseLocalStorage";
@@ -334,6 +334,9 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     [baseRows, draftRows],
   );
   const groups = useMemo(() => buildGroups(rows), [rows]);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
+    {},
+  );
   const hasPieceTrackedRows = rows.some((row) => row.isPieceTracked);
 
   const handleBatchConfirm = (rowId: string, confirmed: boolean) => {
@@ -532,13 +535,48 @@ export default function SaleWarehouseConfirm({ document }: Props) {
         {groups.map((group) => {
           const groupConfirmedQuantity = getConfirmedQuantity(group.rows);
           const groupTotalQuantity = getTotalQuantity(group.rows);
+          const isGroupComplete =
+            groupTotalQuantity > 0 &&
+            groupConfirmedQuantity === groupTotalQuantity;
+          const isGroupPartial =
+            groupConfirmedQuantity > 0 && !isGroupComplete;
+          const isExpanded = expandedGroups[group.key] ?? false;
           const batches = buildBatchGroups(group.rows);
           return (
             <Card
               key={group.key}
-              className="overflow-hidden border border-border"
+              className={`overflow-hidden border ${
+                isGroupComplete
+                  ? "border-green-300 bg-green-50/40"
+                  : isGroupPartial
+                    ? "border-amber-300 bg-amber-50/30"
+                    : "border-border"
+              }`}
             >
-              <div className="grid gap-3 border-b border-border bg-muted/30 px-3 py-3 md:grid-cols-[minmax(260px,1fr)_140px_140px]">
+              <button
+                type="button"
+                className={`grid w-full gap-3 border-b px-3 py-3 text-left transition-colors md:grid-cols-[auto_minmax(260px,1fr)_140px_140px] ${
+                  isGroupComplete
+                    ? "border-green-200 bg-green-100/70 hover:bg-green-100"
+                    : isGroupPartial
+                      ? "border-amber-200 bg-amber-100/60 hover:bg-amber-100"
+                      : "border-border bg-muted/30 hover:bg-muted/50"
+                }`}
+                aria-expanded={isExpanded}
+                onClick={() =>
+                  setExpandedGroups((current) => ({
+                    ...current,
+                    [group.key]: !isExpanded,
+                  }))
+                }
+              >
+                <span className="flex items-center justify-center text-secondary-text">
+                  {isExpanded ? (
+                    <ChevronDown className="size-5" />
+                  ) : (
+                    <ChevronRight className="size-5" />
+                  )}
+                </span>
                 <div>
                   <div className="text-xs text-secondary-text">Mahsulot</div>
                   <div className="font-semibold text-text">{group.productName}</div>
@@ -552,13 +590,16 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-secondary-text">Holati</div>
-                  <div>
+                  <div className={isGroupComplete ? "font-semibold text-green-700" : undefined}>
                     {numberSpacing(groupConfirmedQuantity, undefined, true)} /{" "}
                     {numberSpacing(groupTotalQuantity, undefined, true)}
+                    {isGroupComplete && (
+                      <CheckCircle2 className="ml-1 inline-block size-4 text-green-600" />
+                    )}
                   </div>
                 </div>
-              </div>
-              <div className="space-y-2 p-2">
+              </button>
+              {isExpanded && <div className="space-y-2 p-2">
                 {batches.map((batch) => {
                   const batchConfirmedQuantity = getConfirmedQuantity(batch.rows);
                   const batchTotalQuantity = getTotalQuantity(batch.rows);
@@ -613,7 +654,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                     </div>
                   );
                 })}
-              </div>
+              </div>}
             </Card>
           );
         })}

@@ -43,7 +43,7 @@ export default function CashOperationListPage() {
     },
     {
       dataIndex: "accountingEntriesReport",
-      title: "Provodka",
+      title: t("app.routes.accountingEntries"),
       align: "center",
       render: (_, record) => (
         <Link
@@ -61,7 +61,7 @@ export default function CashOperationListPage() {
 
     {
       dataIndex: "cashBoxName",
-      title: "Kassa",
+      title: t("settings.entities.cashBox"),
       render: (_, record) => record.cashBoxName ?? record.cashBoxId,
     },
     // {

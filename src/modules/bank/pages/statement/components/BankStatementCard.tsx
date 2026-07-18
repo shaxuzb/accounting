@@ -2,6 +2,7 @@ import { Button, Select, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import clsx from "clsx";
+import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import type {
@@ -14,6 +15,9 @@ import {
   chartAccountSelectedLabel,
 } from "@/shared/constants/selectLists";
 import { customDate, numberSpacing } from "@/utils/utils";
+import BankTransactionContractSelect from "./BankTransactionContractSelect";
+import BankTransactionCounterpartyAccountSelect from "./BankTransactionCounterpartyAccountSelect";
+import BankTransactionOffsetAccountSelect from "./BankTransactionOffsetAccountSelect";
 
 const stringifyValue = (value: unknown) => {
   if (value === null || value === undefined || value === "") return "-";
@@ -35,9 +39,25 @@ interface BankStatementCardProps {
     transactionIndex: number,
     offsetAccountId: number | null,
   ) => void;
+  onContractChange: (
+    transactionIndex: number,
+    contractId: number | null,
+  ) => void;
+  onAddContract: (
+    transactionIndex: number,
+    transaction: BankStatementTransaction,
+  ) => void;
+  onCounterpartyBankAccountChange: (
+    transactionIndex: number,
+    accountId: number | null,
+  ) => void;
+  onAddCounterpartyBankAccount: (
+    transactionIndex: number,
+    transaction: BankStatementTransaction,
+  ) => void;
 }
 
-export default function BankStatementCard({
+function BankStatementCard({
   item,
   expanded,
   onToggle,
@@ -48,6 +68,10 @@ export default function BankStatementCard({
   offsetAccountOptionsByDocumentType,
   onBankChartAccountChange,
   onOffsetAccountChange,
+  onContractChange,
+  onAddContract,
+  onCounterpartyBankAccountChange,
+  onAddCounterpartyBankAccount,
 }: BankStatementCardProps) {
   const { t } = useTranslation();
   const totalDebit = item.transactions.reduce(
@@ -70,6 +94,12 @@ export default function BankStatementCard({
   const hasMissingOffsetAccount = item.transactions.some(
     (transaction) => !transaction.offsetAccountId,
   );
+  const hasMissingContract = item.transactions.some(
+    (transaction) => !transaction.contractId,
+  );
+  const hasMissingCounterpartyBankAccount = item.transactions.some(
+    (transaction) => !transaction.counterpartyBankAccountId,
+  );
   const getDocumentTypeId = (operationTypeId: unknown) =>
     Number(operationTypeId) === 2 ? 6 : 5;
   const itemOperationTypeId =
@@ -86,9 +116,7 @@ export default function BankStatementCard({
     value: unknown,
     options: BankChartAccountOption[],
   ) => {
-    const option = options.find(
-      (item) => item.id === Number(value),
-    );
+    const option = options.find((item) => item.id === Number(value));
     return option ? chartAccountSelectedLabel(option) : undefined;
   };
   const dateFrom =
@@ -121,6 +149,23 @@ export default function BankStatementCard({
       render: (value) => stringifyValue(value),
     },
     {
+      title: "Hisob raqami",
+      dataIndex: "counterpartyBankAccountId",
+      width: 240,
+      render: (_, record, index) => (
+        <BankTransactionCounterpartyAccountSelect
+          counterpartyId={record.counterpartyId}
+          importedAccountNumber={record.counterpartyAccount}
+          value={record.counterpartyBankAccountId}
+          onChange={(accountId) =>
+            onCounterpartyBankAccountChange(index, accountId)
+          }
+          onAdd={() => onAddCounterpartyBankAccount(index, record)}
+        />
+      ),
+    },
+
+    {
       title: t("bank.fields.comment"),
       dataIndex: "purpose",
       width: 300,
@@ -138,33 +183,15 @@ export default function BankStatementCard({
       dataIndex: "offsetAccountId",
       width: 220,
       render: (_, record, index) => (
-        <Select
-          showSearch
-          value={record.offsetAccountId || undefined}
-          placeholder="Schyotni tanlang"
-          loading={chartAccountLoading}
-          options={(
+        <BankTransactionOffsetAccountSelect
+          options={
             offsetAccountOptionsByDocumentType[
               getTransactionDocumentTypeId(record)
             ] ?? []
-          ).map((option) => ({
-            value: option.id,
-            label: chartAccountOptionLabel(option),
-          }))}
-          labelRender={(props) =>
-            getSelectedLabel(
-              props.value,
-              offsetAccountOptionsByDocumentType[
-                getTransactionDocumentTypeId(record)
-              ] ?? [],
-            ) ?? props.label
           }
-          allowClear
-          onChange={(value) => {
-            onOffsetAccountChange(index, value ? Number(value) : null);
-          }}
-          onClear={() => onOffsetAccountChange(index, null)}
-          disabled={chartAccountLoading}
+          value={record.offsetAccountId}
+          loading={chartAccountLoading}
+          onChange={(accountId) => onOffsetAccountChange(index, accountId)}
         />
       ),
     },
@@ -181,6 +208,20 @@ export default function BankStatementCard({
     //     </Tooltip>
     //   ),
     // },
+    {
+      title: "Shartnoma",
+      dataIndex: "contractId",
+      width: 220,
+      render: (_, record, index) => (
+        <BankTransactionContractSelect
+          counterpartyId={record.counterpartyId}
+          transactionDate={record.date}
+          value={record.contractId}
+          onChange={(contractId) => onContractChange(index, contractId)}
+          onAdd={() => onAddContract(index, record)}
+        />
+      ),
+    },
     {
       title: t("bank.fields.debit"),
       dataIndex: "debit",
@@ -222,7 +263,9 @@ export default function BankStatementCard({
         hasBankAccount &&
           hasBankChartAccount &&
           !hasMissingCounterparty &&
-          !hasMissingOffsetAccount
+          !hasMissingOffsetAccount &&
+          !hasMissingContract &&
+          !hasMissingCounterpartyBankAccount
           ? "border-border"
           : "border-red-300 bg-red-50/30",
       )}
@@ -254,16 +297,22 @@ export default function BankStatementCard({
                   ? `${t("bank.fields.bankAccount")}: ${item.bankAccountId}`
                   : t("bank.messages.bankAccountMissing")}
               </Tag>
-            {hasMissingCounterparty && (
-              <Tag color="red">{t("bank.messages.counterpartyMissing")}</Tag>
+              {hasMissingCounterparty && (
+                <Tag color="red">{t("bank.messages.counterpartyMissing")}</Tag>
+              )}
+              {!hasBankChartAccount && (
+                <Tag color="red">Bank schyoti belgilanmagan</Tag>
+              )}
+              {hasMissingOffsetAccount && (
+                <Tag color="red">Qarama-qarshi schyot belgilanmagan</Tag>
+              )}
+            {hasMissingContract && (
+              <Tag color="red">Shartnoma belgilanmagan</Tag>
             )}
-            {!hasBankChartAccount && (
-              <Tag color="red">Bank schyoti belgilanmagan</Tag>
+            {hasMissingCounterpartyBankAccount && (
+              <Tag color="red">Hisob raqami belgilanmagan</Tag>
             )}
-            {hasMissingOffsetAccount && (
-              <Tag color="red">Qarama-qarshi schyot belgilanmagan</Tag>
-            )}
-            {item.accountNumber && <Tag>{item.accountNumber}</Tag>}
+              {item.accountNumber && <Tag>{item.accountNumber}</Tag>}
             </span>
           </span>
         </button>
@@ -336,24 +385,42 @@ export default function BankStatementCard({
         </div>
       </div>
 
-      {expanded && (
-        <div className="border-t border-border p-4">
-          <Table<BankStatementTransaction>
-            rowKey={(_, index) => `${item.id}-${index ?? 0}`}
-            columns={columns}
-            dataSource={item.transactions}
-            pagination={false}
-            virtual={item.transactions.length > 50}
-            scroll={{ x: "max-content", y: "calc(100vh - 200px)" }}
-            rowClassName={(record) =>
-              !record.counterpartyId || !record.offsetAccountId
-                ? "[&_.ant-table-cell]:!bg-red-50 hover:[&_.ant-table-cell]:!bg-red-100"
-                : ""
-            }
-            locale={{ emptyText: t("bank.messages.noTransactions") }}
-          />
-        </div>
-      )}
+      <div
+        className={clsx(
+          "border-t border-border p-4",
+          !expanded && "hidden",
+        )}
+      >
+        <Table<BankStatementTransaction>
+          rowKey={(_, index) => `${item.id}-${index ?? 0}`}
+          columns={columns}
+          dataSource={item.transactions}
+          pagination={false}
+          virtual={item.transactions.length > 50}
+          scroll={{ x: "max-content", y: "calc(100vh - 200px)" }}
+          rowClassName={(record) =>
+            !record.counterpartyId ||
+            !record.offsetAccountId ||
+            !record.contractId ||
+            !record.counterpartyBankAccountId
+              ? "[&_.ant-table-cell]:!bg-red-50 hover:[&_.ant-table-cell]:!bg-red-100"
+              : ""
+          }
+          locale={{ emptyText: t("bank.messages.noTransactions") }}
+        />
+      </div>
     </Card>
   );
 }
+
+export default memo(
+  BankStatementCard,
+  (previous, next) =>
+    previous.item === next.item &&
+    previous.expanded === next.expanded &&
+    previous.chartAccountLoading === next.chartAccountLoading &&
+    previous.bankAccountOptionsByDocumentType ===
+      next.bankAccountOptionsByDocumentType &&
+    previous.offsetAccountOptionsByDocumentType ===
+      next.offsetAccountOptionsByDocumentType,
+);

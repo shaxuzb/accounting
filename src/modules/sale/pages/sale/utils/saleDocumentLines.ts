@@ -118,9 +118,7 @@ const normalizeDocumentLine = (
     amount,
     price: firstPositiveNumber(detail.price, detail.unitPrice, amount),
     costPrice: firstPositiveNumber(
-      quantity > 1 && detail.costPrice
-        ? toNumber(detail.costPrice) / quantity
-        : detail.costPrice,
+      detail.costPrice,
       detail.unitPrice,
       detail.price,
     ),

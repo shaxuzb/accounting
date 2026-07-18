@@ -13,10 +13,9 @@ import {
 } from "@/shared/constants/selectLists";
 import { $axiosPrivate } from "@/services/AxiosService";
 import type { SaleCondition } from "@/modules/settings/pages/saleCondition/types/type";
-import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
 import {
-  useGetProductByMarking,
+  useGetAvailableSaleProductMarkings,
   useGetProductPriceDetails,
   useGetSaleProductStocks,
   useGetSaleDocumentAccountOptions,
@@ -115,8 +114,33 @@ const getLayerIdentity = (layer: SaleProductPriceLayer) =>
       layer.purchaseId ??
       layer.id ??
       layer.purchaseDate ??
-      "layer",
+    "layer",
   );
+
+const trimMarkingsForLayers = (
+  markings: SaleProductMarking[] | undefined,
+  layers: SaleProductPriceLayer[],
+  quantity: number,
+) => {
+  if (!markings?.length) return [];
+  if (!layers.length) return markings.slice(0, Math.max(0, Math.round(quantity)));
+
+  const remainingByBatch = new Map<number, number>();
+  layers.forEach((layer) => {
+    if (layer.batchId && layer.writeOffQuantity > 0) {
+      remainingByBatch.set(layer.batchId, layer.writeOffQuantity);
+    }
+  });
+
+  return markings.filter((marking) => {
+    const batchId = Number(marking.batchId ?? 0);
+    const remaining = remainingByBatch.get(batchId) ?? 0;
+    if (!batchId || remaining <= 0) return false;
+
+    remainingByBatch.set(batchId, remaining - 1);
+    return true;
+  });
+};
 
 const mergeSelectedLayers = (
   availableLayers: SaleProductPriceLayer[],
@@ -190,7 +214,7 @@ const recalculateLine = ({
   return {
     ...line,
     quantity,
-    markings: line.markings?.slice(0, Math.max(0, Math.round(quantity))),
+    markings: trimMarkingsForLayers(line.markings, allocatedLayers, quantity),
     costPrice: nextCostPrice,
     unitPrice: nextUnitPrice,
     markupPercent,
@@ -222,11 +246,17 @@ export default function SaleProductSelection({
   const [markingLine, setMarkingLine] = useState<SaleSelectedProduct | null>(
     null,
   );
-  const [markingInput, setMarkingInput] = useState("");
   const [emptyRowKeys, setEmptyRowKeys] = useState<string[]>([newRowKey]);
   const [loadingProductId, setLoadingProductId] = useState<number | null>(null);
   const getProductPriceDetails = useGetProductPriceDetails();
-  const getProductByMarking = useGetProductByMarking();
+  const {
+    data: availableMarkingProducts = [],
+    isFetching: isAvailableMarkingsFetching,
+  } = useGetAvailableSaleProductMarkings(
+    markingLine?.productId,
+    warehouseId,
+    Boolean(markingMode && markingLine?.productId),
+  );
   const {
     data: productStockData,
     isLoading: isProductStocksLoading,
@@ -454,7 +484,11 @@ export default function SaleProductSelection({
         vatRateId: existingLine?.vatRateId ?? saleCondition.vatRateId,
         markings:
           existingLine?.productId === productId
-            ? existingLine.markings?.slice(0, Math.max(0, Math.round(quantity)))
+            ? trimMarkingsForLayers(
+                existingLine.markings,
+                allocatedLayers,
+                quantity,
+              )
             : [],
         markupPercent:
           salePriceBySelection === undefined
@@ -557,6 +591,7 @@ export default function SaleProductSelection({
       return {
         ...line,
         quantity,
+        markings: trimMarkingsForLayers(line.markings, nextLayers, quantity),
         costPrice,
         unitPrice,
         layers: nextLayers.map((layer) => ({ ...layer, salePrice: unitPrice })),
@@ -604,6 +639,21 @@ export default function SaleProductSelection({
   const activeMarkingLine = markingLine?.rowKey
     ? (products.find((item) => item.rowKey === markingLine.rowKey) ?? null)
     : null;
+  const markingBatchSummary = (activeMarkingLine?.layers ?? [])
+    .filter((layer) => layer.batchId && layer.writeOffQuantity > 0)
+    .map((layer) => ({
+      batchId: layer.batchId as number,
+      batchNumber: layer.batchNumber || String(layer.batchId),
+      batchDate: layer.purchaseDate,
+      documentId: layer.documentId,
+      documentNumber:
+        layer.purchaseDocNumber ||
+        (layer.documentId ? String(layer.documentId) : undefined),
+      quantity: layer.writeOffQuantity,
+      selectedQuantity: (activeMarkingLine.markings ?? []).filter(
+        (marking) => marking.batchId === layer.batchId,
+      ).length,
+    }));
 
   const openMarkingModal = (line: SaleSelectedProduct) => {
     if (!getLineIsPieceTracked(line)) {
@@ -611,19 +661,41 @@ export default function SaleProductSelection({
       return;
     }
 
+    if (!(line.layers ?? []).some((layer) => layer.batchId && layer.writeOffQuantity > 0)) {
+      toast.error("Avval partiya bo'yicha sotiladigan miqdorni kiriting");
+      return;
+    }
+
     setMarkingLine({ ...line, isPieceTracked: true });
-    setMarkingInput("");
   };
 
   const closeMarkingModal = () => {
     setMarkingLine(null);
-    setMarkingInput("");
   };
 
-  const handleAddMarking = async () => {
+  const confirmMarkingModal = () => {
     if (!activeMarkingLine) return;
 
-    const values = markingInput
+    if (
+      (activeMarkingLine.markings?.length ?? 0) !==
+      Math.round(activeMarkingLine.quantity)
+    ) {
+      toast.error("Har bir dona uchun markirovka kiritilishi kerak");
+      return;
+    }
+
+    closeMarkingModal();
+  };
+
+  const handleAddMarking = (inputValue: string) => {
+    if (!activeMarkingLine) return;
+
+    if (isAvailableMarkingsFetching) {
+      toast("Markirovkalar tekshirilmoqda");
+      return;
+    }
+
+    const values = inputValue
       .split(/[\s,;]+/)
       .map((item) => item.trim())
       .filter(Boolean);
@@ -633,44 +705,83 @@ export default function SaleProductSelection({
       ...(activeMarkingLine.markings ?? []),
     ];
 
-    try {
-      for (const markingNumber of values) {
-        if (nextMarkings.length >= Math.round(activeMarkingLine.quantity)) {
-          toast.error("Miqdor bo'yicha barcha markirovka kiritilgan");
-          break;
-        }
+    const availableProduct = availableMarkingProducts.find(
+      (product) => Number(product.productId) === Number(activeMarkingLine.productId),
+    );
+    const availableBatches = availableProduct?.batches ?? [];
+    const remainingByBatch = new Map<number, number>();
 
-        if (
-          nextMarkings.some(
-            (marking) => marking.markingNumber === markingNumber,
-          ) ||
-          products.some((product) =>
-            product.markings?.some(
-              (marking) => marking.markingNumber === markingNumber,
-            ),
-          )
-        ) {
-          toast.error("Bu markirovka avval qo'shilgan");
-          continue;
-        }
+    (activeMarkingLine.layers ?? []).forEach((layer) => {
+      if (layer.batchId && layer.writeOffQuantity > 0) {
+        remainingByBatch.set(layer.batchId, layer.writeOffQuantity);
+      }
+    });
 
-        const product = await getProductByMarking.mutateAsync(markingNumber);
-        const productTableId = Number(
-          product.productTableId ?? product.id ?? 0,
-        );
-        if (!productTableId) {
-          toast.error("Product table ID topilmadi");
-          continue;
-        }
+    if (!remainingByBatch.size) {
+      toast.error("Avval partiya bo'yicha sotiladigan miqdorni kiriting");
+      return;
+    }
 
-        if (Number(product.productId) !== Number(activeMarkingLine.productId)) {
-          toast.error("Bu markirovka tanlangan mahsulotga tegishli emas");
-          continue;
-        }
+    nextMarkings.forEach((marking) => {
+      if (!marking.batchId) return;
+      remainingByBatch.set(
+        marking.batchId,
+        Math.max(0, (remainingByBatch.get(marking.batchId) ?? 0) - 1),
+      );
+    });
 
-        nextMarkings.push({ markingNumber, productTableId });
+    let hasNewMarkings = false;
+    for (const markingNumber of values) {
+      if (nextMarkings.length >= Math.round(activeMarkingLine.quantity)) {
+        toast.error("Miqdor bo'yicha barcha markirovka kiritilgan");
+        break;
       }
 
+      if (
+        nextMarkings.some(
+          (marking) => marking.markingNumber === markingNumber,
+        ) ||
+        products.some((product) =>
+          product.rowKey !== activeMarkingLine.rowKey &&
+          product.markings?.some(
+            (marking) => marking.markingNumber === markingNumber,
+          ),
+        )
+      ) {
+        toast.error("Bu markirovka avval qo'shilgan");
+        continue;
+      }
+
+      const availableBatch = availableBatches.find((batch) =>
+        batch.productTables.some(
+          (table) => table.markingNumber === markingNumber,
+        ),
+      );
+      const availableTable = availableBatch?.productTables.find(
+        (table) => table.markingNumber === markingNumber,
+      );
+
+      if (!availableBatch || !availableTable) {
+        toast.error("Markirovka mavjud mahsulotlar ro'yxatida topilmadi");
+        continue;
+      }
+
+      const remainingQuantity = remainingByBatch.get(availableBatch.batchId) ?? 0;
+      if (remainingQuantity <= 0) {
+        toast.error("Bu partiya uchun kiritilgan miqdor to'ldi");
+        continue;
+      }
+
+      nextMarkings.push({
+        markingNumber,
+        productTableId: availableTable.productTableId,
+        batchId: availableBatch.batchId,
+      });
+      remainingByBatch.set(availableBatch.batchId, remainingQuantity - 1);
+      hasNewMarkings = true;
+    }
+
+    if (hasNewMarkings) {
       onChange(
         products.map((product) =>
           product.rowKey === activeMarkingLine.rowKey
@@ -678,27 +789,7 @@ export default function SaleProductSelection({
             : product,
         ),
       );
-      setMarkingInput("");
-    } catch (error) {
-      errorHandlers(error);
     }
-  };
-
-  const handleRemoveMarking = (productTableId: number) => {
-    if (!activeMarkingLine) return;
-
-    onChange(
-      products.map((product) =>
-        product.rowKey === activeMarkingLine.rowKey
-          ? {
-              ...product,
-              markings: (product.markings ?? []).filter(
-                (marking) => marking.productTableId !== productTableId,
-              ),
-            }
-          : product,
-      ),
-    );
   };
 
   const columns: TableColumnsType<SaleSelectedProduct> = [
@@ -1206,11 +1297,10 @@ export default function SaleProductSelection({
         productName={activeMarkingLine?.productName ?? ""}
         quantity={Math.round(activeMarkingLine?.quantity ?? 0)}
         markings={activeMarkingLine?.markings ?? []}
-        value={markingInput}
-        loading={getProductByMarking.isPending}
-        onChange={setMarkingInput}
-        onAdd={() => handleAddMarking()}
-        onRemove={handleRemoveMarking}
+        batches={markingBatchSummary}
+        loading={isAvailableMarkingsFetching}
+        onScan={handleAddMarking}
+        onConfirm={confirmMarkingModal}
         onClose={closeMarkingModal}
       />
     </Card>

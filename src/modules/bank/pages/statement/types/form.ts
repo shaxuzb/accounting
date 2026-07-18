@@ -14,8 +14,14 @@ export interface BankOperationCreatePayload {
   comment: string | null;
   stateId?: number;
 }
+
+export type BankStatementOperationCreatePayload = Omit<
+  BankOperationCreatePayload,
+  "paymentTypeId"
+>;
+
 export interface BankOperationsCreatePayload {
-  operations: BankOperationCreatePayload[];
+  operations: BankStatementOperationCreatePayload[];
 }
 
 export interface BankCounterpartyCreatePayload {

@@ -88,21 +88,8 @@ export interface SaleDocConfirmLineItemForm {
 
 export interface SaleDocConfirmLineForm {
   id: number;
-  productId: number;
-  productName: string;
-  productMxik?: string | null;
-  isService?: boolean;
-  quantity: number;
-  unitId?: number | null;
-  unitName?: string | null;
   costPrice: number;
   unitPrice: number;
-  amount: number;
-  vatRateId: number;
-  vatRateName?: string | null;
-  vatAmount: number;
-  totalAmount: number;
-  items: SaleDocConfirmLineItemForm[];
 }
 
 export interface SaleDocConfirmForm {

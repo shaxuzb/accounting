@@ -68,7 +68,7 @@ export const purchaseRoutes: RouteObject = {
     },
     {
       path: "contracts",
-      handle: "purchase.contract",
+      handle: { title: "contract.purchaseTitle" },
       element: <ContractListPage />,
     },
   ],

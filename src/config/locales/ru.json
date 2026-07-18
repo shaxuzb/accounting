@@ -365,11 +365,18 @@
   },
   "contract": {
     "title": "Договор",
+    "purchaseTitle": "Договоры закупки",
+    "saleTitle": "Договоры продажи",
+    "createTitle": "Создание договора",
+    "editTitle": "Редактирование договора",
     "fields": {
       "counterpartyName": "Название контрагента",
+      "customerName": "Покупатель",
+      "supplierName": "Поставщик",
       "contractType": "Тип договора",
       "contractNumber": "Номер договора",
       "stateName": "Статус",
+      "comment": "Комментарий",
       "startDate": "Дата начала",
       "endDate": "Дата окончания",
       "contractDate": "Дата договора"
@@ -520,6 +527,10 @@
       "inventoryDocument": "Документ инвентаризации",
       "cashDocument": "Кассовый документ",
       "cashDocuments": "Кассовые документы",
+      "newIncomeOrder": "Новый приходный ордер",
+      "incomeOrder": "Приходный ордер",
+      "newExpenseOrder": "Новый расходный ордер",
+      "expenseOrder": "Расходный ордер",
       "accountingEntries": "Отчёт по проводкам"
     },
     "fields": {

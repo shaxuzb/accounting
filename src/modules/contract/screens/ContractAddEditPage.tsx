@@ -34,6 +34,7 @@ interface ContractAddEditPageProps {
   id?: number | null;
   contractTypeId?: number;
   initialCounterpartyId?: number | null;
+  initialContractDate?: string;
   onCreated?: (contract: Contract) => void;
 }
 
@@ -43,6 +44,7 @@ export default function ContractAddEditPage({
   id,
   contractTypeId,
   initialCounterpartyId,
+  initialContractDate,
   onCreated,
 }: ContractAddEditPageProps) {
   const { t } = useTranslation();
@@ -57,14 +59,16 @@ export default function ContractAddEditPage({
     ? selectListEndpoints.clients
     : selectListEndpoints.suppliersSelectList;
   const counterpartyLabel = isSaleContract
-    ? "Mijoz"
-    : "Yetkazib beruvchi";
+    ? "contract.fields.customerName"
+    : "contract.fields.supplierName";
 
   const formik = useFormik<ContractForm>({
     initialValues: {
       ...defaultValues,
       contractTypeId: contractTypeId ?? null,
       counterpartyId: initialCounterpartyId ?? null,
+      contractDate: initialContractDate ?? defaultValues.contractDate,
+      startDate: initialContractDate ?? defaultValues.startDate,
       stateId: isEdit ? null : 1,
     },
     enableReinitialize: true,
@@ -106,7 +110,7 @@ export default function ContractAddEditPage({
   return (
     <Modal
       title={
-        isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
+        isEdit ? t("contract.editTitle") : t("contract.createTitle")
       }
       open={open}
       onCancel={() => {
@@ -151,14 +155,14 @@ export default function ContractAddEditPage({
               <SelectDate
                 formik={formik}
                 fieldName="contractDate"
-                label="contractDate"
+                label="contract.fields.contractDate"
               />
             </Col>
             <Col span={12}>
               <SelectDate
                 formik={formik}
                 fieldName="startDate"
-                label="startDate"
+                label="contract.fields.startDate"
                 maxDate={
                   formik.values.endDate
                     ? dayjs(formik.values.endDate)
@@ -175,11 +179,15 @@ export default function ContractAddEditPage({
                     ? dayjs(formik.values.startDate)
                     : undefined
                 }
-                label="endDate"
+                label="contract.fields.endDate"
               />
             </Col>
             <Col span={12}>
-              <InputText formik={formik} fieldName="comment" label="comment" />
+              <InputText
+                formik={formik}
+                fieldName="comment"
+                label="contract.fields.comment"
+              />
             </Col>
             <Col span={12}>
               {isEdit && (

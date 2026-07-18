@@ -123,7 +123,7 @@ function SaleProductGroup({
               {group.productName}
             </h3>
             <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-secondary-text">
-              <span>Product ID: {group.productId || "-"}</span>
+              {/* <span>Product ID: {group.productId || "-"}</span> */}
               {productMxik && <span>MXIK: {productMxik}</span>}
               <span>Itemlar: {group.lines.length}</span>
               <span>Markirovka: {group.markingCount || 0}</span>
@@ -160,8 +160,8 @@ function SaleProductGroup({
               block
               value={formik.values.priceMode}
               options={[
-                { label: "Marja, %", value: "marginPercent" },
-                { label: "Marja summa", value: "marginAmount" },
+                { label: "Marja %", value: "marginPercent" },
+                { label: "Marja", value: "marginAmount" },
                 { label: "Sotuv narxi", value: "salePrice" },
               ]}
               onChange={(value) => {

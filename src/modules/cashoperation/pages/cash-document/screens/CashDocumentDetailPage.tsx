@@ -4,6 +4,7 @@ import { Calendar, CheckCircle2, CircleX, Save } from "lucide-react";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
@@ -37,6 +38,7 @@ const defaultValues: CashDocumentForm = {
 };
 
 export default function CashDocumentDetailPage() {
+  const { t } = useTranslation();
   const { id = "", kind: rawKind } = useParams();
   const navigate = useNavigate();
   const kind = resolveCashDocumentKind(rawKind);
@@ -135,10 +137,10 @@ export default function CashDocumentDetailPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="text-sm text-muted-foreground">
-              {labels.detailTitle}
+              {t(labels.detailTitle)}
             </div>
             <div className="text-lg font-semibold">
-              {record?.docNumber ?? (isCreate ? labels.addTitle : "Hujjat")}
+              {record?.docNumber ?? (isCreate ? t(labels.addTitle) : "Hujjat")}
             </div>
           </div>
           <div className="space-y-1">

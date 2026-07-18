@@ -6,6 +6,17 @@ export const saleKeys = {
     detail: (id: string | number) => ["sale", "docs", "detail", id] as const,
     availableProducts: (id: string | number) =>
       ["sale", "docs", "available-products", id] as const,
+    availableProductsByWarehouse: (
+      productId: string | number,
+      warehouseId: string | number,
+    ) =>
+      [
+        "sale",
+        "docs",
+        "available-products-by-warehouse",
+        productId,
+        warehouseId,
+      ] as const,
   },
   saleDocTable: {
     all: ["sale", "tables"] as const,

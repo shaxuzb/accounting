@@ -6,7 +6,6 @@ import SaleListPage from "./pages/sale/screens/SaleListPage";
 import { salePermissions } from "./pages/sale/constants/permissions";
 import ContractListPage from "../contract/screens/ContractListPage";
 
-
 const withPermission = (element: React.ReactElement, permission: string) => (
   <PermissionCard permission={permission} mode="redirect">
     {element}
@@ -40,15 +39,11 @@ export const saleRoutes: RouteObject = {
           element: withPermission(<SaleDetailPage />, salePermissions.detail),
           handle: { title: "sale.document", showBack: true, backTo: ".." },
         },
-        {
-          path: ""
-        }
-      
       ],
     },
     {
       path: "contracts",
-      handle: "purchase.contract",
+      handle: { title: "contract.saleTitle" },
       element: <ContractListPage />,
     },
   ],

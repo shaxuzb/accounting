@@ -69,7 +69,12 @@ export default function BankOperationListPage() {
     {
       dataIndex: "counterpartyName",
       title: t("bank.fields.counterparty"),
-      render: (_, record) => record.counterpartyName ?? record.counterpartyId,
+      width: 200,
+      render: (_, record) => {
+        return (
+          <Tooltip>{record.counterpartyName ?? record.counterpartyId} </Tooltip>
+        );
+      },
     },
     {
       dataIndex: "amount",
@@ -80,7 +85,7 @@ export default function BankOperationListPage() {
     {
       dataIndex: "comment",
       title: t("bank.fields.comment"),
-      // width: 400,
+      width: 400,
       render: (value) => {
         return (
           <Tooltip title={value}>
