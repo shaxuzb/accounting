@@ -27,6 +27,41 @@ export const getDefaultPurchaseImportHeader =
     comment: "",
   });
 
+let purchaseRowKeySequence = 0;
+
+const createPurchaseRowKey = () => {
+  purchaseRowKeySequence = (purchaseRowKeySequence + 1) % 1000;
+  return Date.now() * 1000 + purchaseRowKeySequence;
+};
+
+export const ensureStablePurchaseRowKeys = (
+  rows: PurchaseImportRow[],
+): PurchaseImportRow[] => {
+  const usedKeys = new Set<number>();
+  let changed = false;
+
+  const normalizedRows = rows.map((row, index) => {
+    const candidateKey = Number(row.key);
+    const hasStableKey =
+      Number.isSafeInteger(candidateKey) &&
+      candidateKey > 0 &&
+      !usedKeys.has(candidateKey);
+    const key = hasStableKey ? candidateKey : createPurchaseRowKey();
+    const indexId = index + 1;
+
+    usedKeys.add(key);
+
+    if (row.key === key && row.indexId === indexId) {
+      return row;
+    }
+
+    changed = true;
+    return { ...row, key, indexId };
+  });
+
+  return changed ? normalizedRows : rows;
+};
+
 const hasPositiveNumericValue = (value: unknown) => {
   const numberValue = Number(value);
   return Number.isFinite(numberValue) && numberValue > 0;
@@ -58,6 +93,8 @@ export const isServiceDetailLine = (line: unknown): line is Record<string, unkno
 export const getPurchaseModeFromDetail = (
   detail:
     | {
+        isService?: boolean | null;
+        purchaseMode?: PurchaseMode | null;
         serviceLines?: unknown[] | null;
         lines?: unknown[] | null;
       }
@@ -66,6 +103,12 @@ export const getPurchaseModeFromDetail = (
   serviceProductIds?: Iterable<number | string> | null,
 ): PurchaseMode => {
   if (!detail) return "goods";
+  if (detail.purchaseMode === "goods" || detail.purchaseMode === "services") {
+    return detail.purchaseMode;
+  }
+  if (typeof detail.isService === "boolean") {
+    return detail.isService ? "services" : "goods";
+  }
   if (detail.serviceLines?.length) return "services";
 
   const serviceLineIds = new Set(
@@ -114,7 +157,7 @@ export const createEmptyPurchaseRow = ({
   purchaseMode: PurchaseMode;
   productWithCount: boolean;
 }): PurchaseImportRow => ({
-  key: Date.now() + indexId,
+  key: createPurchaseRowKey(),
   id: 0,
   indexId,
   name: "",
@@ -122,7 +165,6 @@ export const createEmptyPurchaseRow = ({
   product: "",
   productId: null,
   productName: "",
-  sapCode: "",
   qty: null,
   serialNumber: "",
   currencyId: currencyId ?? 1,
@@ -156,15 +198,19 @@ export const getVatPercent = (vatRateId: unknown, options: SelectOption[]) => {
   return match ? Number(match[1].replace(",", ".")) : 0;
 };
 
-export const getProductCode = (
+export const getProductMxik = (
   item?: ProductSelectOption | SelectOption | null,
-) =>
-  String(
-    (item as ProductSelectOption | undefined)?.mxik ??
-      (item as ProductSelectOption | undefined)?.code ??
-      (item as ProductSelectOption | undefined)?.barcode ??
-      "",
-  );
+) => String((item as ProductSelectOption | undefined)?.mxik ?? "").trim();
+
+export const getRowMxik = (
+  row?: Pick<PurchaseImportRow, "mxik" | "sapCode"> | null,
+) => {
+  const mxik = String(row?.mxik ?? "").trim();
+  if (mxik) return mxik;
+
+  // Oldingi versiyada saqlangan local draftlar uchun bir martalik fallback.
+  return String(row?.sapCode ?? "").trim();
+};
 
 export const getProductPrice = (item?: ProductSelectOption | null) =>
   Number(item?.purchasePrice ?? item?.pricePerUom ?? item?.price ?? 0);
@@ -205,18 +251,37 @@ export const getPurchaseImportTotals = (
     },
   );
 
-export const toMarkingNumbers = (row?: PurchaseImportRow) => {
-  if (!row) return [];
-  if (Array.isArray(row.markingNumbers)) return row.markingNumbers;
-  const marking = String(row.markingNumber ?? "").trim();
-  return marking ? [marking] : [];
-};
-
 export const parseMarkingInput = (value: string) =>
   value
     .split(/[\s,;]+/)
     .map((item) => item.trim())
     .filter(Boolean);
+
+export const toMarkingNumbers = (row?: PurchaseImportRow) => {
+  if (!row) return [];
+  if (Array.isArray(row.markingNumbers)) {
+    const markingNumbers = row.markingNumbers
+      .map((item) => item.trim())
+      .filter(Boolean);
+    if (markingNumbers.length) return markingNumbers;
+  }
+  return parseMarkingInput(String(row.markingNumber ?? ""));
+};
+
+export const buildMarkingQuantityPatch = (markingNumbers: string[]) => {
+  const normalizedMarkingNumbers = markingNumbers
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  return {
+    markingNumber: normalizedMarkingNumbers.join("\n"),
+    markingNumbers: normalizedMarkingNumbers,
+    qty: normalizedMarkingNumbers.length,
+  } satisfies Pick<
+    PurchaseImportRow,
+    "markingNumber" | "markingNumbers" | "qty"
+  >;
+};
 
 export const normalizeProductOptions = (
   response: ProductSelectOption[] | ProductListResponse | null | undefined,
@@ -236,6 +301,23 @@ export const getUnmarkedPieceTrackedRow = (
       toMarkingNumbers(item).length === 0,
   );
 
+export const getDuplicateMarkingNumber = (rows: PurchaseImportRow[]) => {
+  const seen = new Set<string>();
+
+  for (const row of rows) {
+    for (const markingNumber of toMarkingNumbers(row)) {
+      const normalizedMarkingNumber = markingNumber.trim();
+      if (!normalizedMarkingNumber) continue;
+      if (seen.has(normalizedMarkingNumber)) {
+        return normalizedMarkingNumber;
+      }
+      seen.add(normalizedMarkingNumber);
+    }
+  }
+
+  return null;
+};
+
 const toPurchaseDocumentPayload = (
   values: PurchaseImportForm,
   completedRows: PurchaseImportRow[],
@@ -250,11 +332,8 @@ const toPurchaseDocumentPayload = (
   comment: values.comment || null,
   lines: completedRows.map((item) => {
     const markingNumbers = toMarkingNumbers(item);
-    const hasMarking =
-      purchaseMode === "goods" &&
-      item.isPieceTracked &&
-      markingNumbers.length > 0;
-    const quantity = item.isPieceTracked
+    const hasMarking = purchaseMode === "goods" && markingNumbers.length > 0;
+    const quantity = hasMarking || item.isPieceTracked
       ? markingNumbers.length
       : Number(item.qty ?? 1);
 

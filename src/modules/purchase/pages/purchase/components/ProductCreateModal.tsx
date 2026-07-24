@@ -1,124 +1,153 @@
-import InputText from "@/components/fields/InputText";
-import SelectCustom from "@/components/fields/SelectCustom";
-import type { PurchaseImportRow } from "@/modules/purchase/pages/purchase/types/type";
-import { productItemSchema } from "@/modules/warehouse/pages/products/types/schema";
-import type { ProductItem } from "@/modules/warehouse/pages/products/types/type";
-import { $axiosPrivate } from "@/services/AxiosService";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { Button, Col, Form, Modal, Row, Switch } from "antd";
 import { useFormik } from "formik";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import * as Yup from "yup";
+import InputText from "@/components/fields/InputText";
+import SelectCustom from "@/components/fields/SelectCustom";
+import { $axiosPrivate } from "@/services/AxiosService";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
+import type { PurchaseImportRow } from "../types/type";
+import { getRowMxik } from "../utils/purchaseImport";
 
 interface ProductCreateModalProps {
   open: boolean;
+  initialRow?: PurchaseImportRow | null;
   onClose: () => void;
   onCreated: () => void;
-  initialRow?: PurchaseImportRow | null;
 }
 
-const ProductCreateModal = ({
+interface ProductCreateForm {
+  name: string;
+  mxik: string;
+  productGroupId: number | null;
+  unitId: number | null;
+  isPieceTracked: boolean;
+}
+
+const productCreateSchema = Yup.object({
+  name: Yup.string().trim().required("Mahsulot nomi majburiy"),
+  mxik: Yup.string().trim().required("MXIK kodi majburiy"),
+  productGroupId: Yup.number()
+    .nullable()
+    .required("Mahsulot turi majburiy"),
+  unitId: Yup.number().nullable().required("Birlik majburiy"),
+  isPieceTracked: Yup.boolean().defined(),
+});
+
+const getInitialValues = (
+  initialRow?: PurchaseImportRow | null,
+): ProductCreateForm => ({
+  name:
+    initialRow?.productName ||
+    initialRow?.name ||
+    initialRow?.product ||
+    "",
+  mxik: getRowMxik(initialRow),
+  productGroupId: null,
+  unitId: initialRow?.unitId ?? null,
+  isPieceTracked: Boolean(initialRow?.isPieceTracked),
+});
+
+export default function ProductCreateModal({
   open,
+  initialRow,
   onClose,
   onCreated,
-  initialRow,
-}: ProductCreateModalProps) => {
-  const formik = useFormik<ProductItem>({
-    initialValues: {
-      name: "",
-      mxik: "",
-      description: "",
-      productGroupId: null,
-      isService: false,
-      isPieceTracked: false,
-      unitId: null,
-      barcode: ""
-    },
-    validationSchema: productItemSchema(false),
+}: ProductCreateModalProps) {
+  const formik = useFormik<ProductCreateForm>({
+    initialValues: getInitialValues(initialRow),
+    validationSchema: productCreateSchema,
     onSubmit: async (values) => {
-      await $axiosPrivate.post("products", values);
-      toast.success("Mahsulot muvaffaqiyatli yaratildi");
-      handleClose();
-      onCreated();
+      try {
+        await $axiosPrivate.post("products", {
+          productGroupId: values.productGroupId,
+          unitId: values.unitId,
+          name: values.name.trim(),
+          mxik: values.mxik.trim(),
+          barcode: null,
+          description: "",
+          isService: false,
+          isPieceTracked: values.isPieceTracked,
+        });
+        toast.success("Mahsulot muvaffaqiyatli yaratildi");
+        formik.resetForm();
+        onClose();
+        onCreated();
+      } catch {
+        toast.error("Mahsulotni yaratishda xatolik yuz berdi");
+      }
     },
   });
+  const setFormValues = formik.setValues;
+
+  useEffect(() => {
+    if (!open) return;
+    void setFormValues(getInitialValues(initialRow), false);
+  }, [initialRow, open, setFormValues]);
 
   const handleClose = () => {
     formik.resetForm();
     onClose();
   };
 
-  useEffect(() => {
-    if (initialRow) {
-      formik.setValues({
-        productGroupId: null,
-        name:
-          initialRow.productName ||
-          initialRow.name ||
-          initialRow.product ||
-          "",
-        mxik: initialRow.mxik.toString(),
-        barcode: initialRow.sapCode || "",
-        unitId: null,
-        isService: false,
-        isPieceTracked: Boolean(initialRow.isPieceTracked),
-        description: "",
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialRow]);
-
   return (
     <Modal
-      title={"Mahsulot yaratish"}
-      footer={false}
+      title="Mahsulot yaratish"
+      footer={null}
       open={open}
       width={500}
+      destroyOnHidden
       onCancel={handleClose}
     >
       <Form onFinish={formik.handleSubmit} layout="vertical" className="mt-3!">
         <Row gutter={10}>
           <Col span={24}>
+            <InputText
+              label="Mahsulot nomi"
+              fieldName="name"
+              formik={formik}
+            />
+          </Col>
+          <Col span={24}>
+            <InputText label="MXIK kodi" fieldName="mxik" formik={formik} />
+          </Col>
+          <Col span={24} className="relative">
             <SelectCustom
               path={selectListEndpoints.productGroupsSelectList}
               label="Mahsulot turi"
+              fieldName="productGroupId"
               formik={formik}
               search
-              fieldName="productGroupId"
+              required
             />
-          </Col>
-          <Col span={24} className="relative">
-            <InputText label="Sab kod" formik={formik} fieldName="barcode" />
             <div className="absolute right-2 top-0">
               <span>Markirovkali: </span>
               <Switch
-                checked={Boolean(formik.values.isPieceTracked)}
-                onChange={(e) => {
-                  formik.setFieldValue("isPieceTracked", e, true);
+                checked={formik.values.isPieceTracked}
+                onChange={(value) => {
+                  void formik.setFieldValue("isPieceTracked", value, true);
                 }}
                 size="small"
               />
             </div>
           </Col>
-          {/* {!formik.values.isSerial && (
-            <> */}
           <Col span={24}>
             <SelectCustom
-              label="Birlik"
               path={selectListEndpoints.unitsSelectList}
-              search
-              formik={formik}
+              label="Birlik"
               fieldName="unitId"
+              formik={formik}
+              search
+              required
             />
           </Col>
-          {/* </>
-          )} */}
           <Col span={24}>
             <Button
-              loading={formik.isSubmitting}
-              htmlType="submit"
-              className="w-full py-4!"
               type="primary"
+              htmlType="submit"
+              loading={formik.isSubmitting}
+              block
             >
               Qo'shish
             </Button>
@@ -127,6 +156,4 @@ const ProductCreateModal = ({
       </Form>
     </Modal>
   );
-};
-
-export default ProductCreateModal;
+}

@@ -93,14 +93,14 @@ function PurchaseImportEditableCell({
     <div
       className={`flex min-h-8 items-center gap-1 rounded border px-1 transition-colors ${
         isInvalid
-          ? "border-red-300 bg-red-50"
-          : "border-transparent hover:border-slate-300"
+          ? "border-danger bg-danger-soft"
+          : "border-transparent hover:border-border"
       }`}
     >
       <button
         type="button"
         className={`w-full bg-transparent px-1 py-1 text-left text-sm outline-none ${
-          isInvalid ? "text-red-600" : "text-inherit"
+          isInvalid ? "text-danger" : "text-inherit"
         }`}
         disabled={disabled}
         onClick={startEditing}

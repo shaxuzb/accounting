@@ -6,7 +6,6 @@ import PurchaseImportActions, {
   type PurchaseImportActionsProps,
 } from "./PurchaseImportActions";
 import type { PurchaseImportRow, PurchaseMode } from "../types/type";
-import { generateKeyTable } from "@/utils/utils";
 
 interface PurchaseImportLinesSectionProps extends PurchaseImportActionsProps {
   columns: TableColumnType<PurchaseImportRow>[];
@@ -29,7 +28,7 @@ interface PurchaseImportLinesSectionProps extends PurchaseImportActionsProps {
 export default function PurchaseImportLinesSection({
   columns,
   comment,
-  counterpartyId,
+  // counterpartyId,
   isFetching,
   isLoading,
   lines,
@@ -40,6 +39,7 @@ export default function PurchaseImportLinesSection({
   onSave,
   saveLoading,
   onExcelDataChange,
+  onClearExcelData,
   onPurchaseModeChange,
   onCommentChange,
   purchaseMode,
@@ -62,6 +62,7 @@ export default function PurchaseImportLinesSection({
           onSave={onSave}
           saveLoading={saveLoading}
           onExcelDataChange={onExcelDataChange}
+          onClearExcelData={onClearExcelData}
           onPurchaseModeChange={onPurchaseModeChange}
           purchaseMode={purchaseMode}
           selectBoxOptions={selectBoxOptions}
@@ -74,7 +75,7 @@ export default function PurchaseImportLinesSection({
           // className="sm={12} lg={8} xl={4} [&_.ant-table-tbody>tr>td]:py-3! "
           loading={loading}
           columns={columns}
-          dataSource={generateKeyTable(lines)}
+          dataSource={lines}
           rowKey="key"
           scroll={{ y: tableHeight, x: "max-content" }}
           pagination={false}
@@ -83,7 +84,6 @@ export default function PurchaseImportLinesSection({
           comment={comment}
           totals={totals}
           onCommentChange={onCommentChange}
-        
         />
         <div className="sticky bottom-0 z-10 flex justify-center border-t border-border bg-primary-bg/95 py-2 backdrop-blur">
           <Tooltip title="Qator qo'shish">
@@ -94,7 +94,6 @@ export default function PurchaseImportLinesSection({
               size="large"
               className="shadow-md"
               icon={<Plus className="size-5" />}
-              disabled={!counterpartyId}
               onClick={onAddManualRow}
             />
           </Tooltip>

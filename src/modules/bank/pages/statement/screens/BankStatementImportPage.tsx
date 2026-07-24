@@ -630,7 +630,7 @@ export default function BankStatementImportPage() {
               missingOffsetAccountCount > 0 ||
               missingContractCount > 0 ||
               missingCounterpartyBankAccountCount > 0) && (
-              <div className="text-xs text-red-600">
+              <div className="text-xs text-danger">
                 Tanlanmagan: {missingBankChartAccountCount} ta bank schyoti, {missingOffsetAccountCount} ta qarama-qarshi schyot, {missingContractCount} ta shartnoma, {missingCounterpartyBankAccountCount} ta hisob raqami
               </div>
             )}

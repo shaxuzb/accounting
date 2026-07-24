@@ -15,6 +15,8 @@ export const purchaseDocumentTypeIds = {
   services: 2,
 } as const;
 
+export const purchaseAccountingEntriesReportDocumentTypeId = 1;
+
 export const purchaseDocumentAccountChartAccountsPath = (
   purchaseMode: "goods" | "services",
 ) =>

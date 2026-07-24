@@ -27,17 +27,25 @@ interface ProductsCreateModalProps {
 }
 
 const schemaAuth = yup.object({
-  products: yup.array().required("Login majburiy"),
-  productGroupId: yup.number().required("Login majburiy"),
-  unitId: yup.number().required("Majburiy"),
-  isService: yup.boolean().required("Yetkazib beruvchi majburiy"),
-  isPieceTracked: yup.boolean().required("Majburiy"),
+  products: yup
+    .array()
+    .of(
+      yup.object({
+        mxik: yup.string().trim().required("MXIK kodi majburiy"),
+      }),
+    )
+    .min(1, "Kamida bitta mahsulot bo'lishi kerak")
+    .required("Mahsulotlar majburiy"),
+  productGroupId: yup.number().nullable().required("Mahsulot turi majburiy"),
+  unitId: yup.number().nullable().required("Birlik majburiy"),
+  isService: yup.boolean().defined(),
+  isPieceTracked: yup.boolean().defined(),
 });
 
 interface Products {
   name: string;
   product: string;
-  sapCode: string;
+  mxik: string;
   description: string;
 }
 
@@ -72,7 +80,8 @@ const ProductsCreateModal = ({
             productGroupId: values.productGroupId,
             unitId: values.unitId,
             name: item.product || item.name,
-            barcode: item.sapCode.toString(),
+            mxik: String(item.mxik ?? "").trim(),
+            barcode: null,
             description: "",
             isService: values.isService,
             isPieceTracked: values.isPieceTracked,
@@ -92,8 +101,8 @@ const ProductsCreateModal = ({
     },
   });
 
-  const handleDelete = (id: number) => {
-    const filtered = rows.filter((item) => item.indexId !== id);
+  const handleDelete = (rowIndex: number) => {
+    const filtered = rows.filter((_, index) => index !== rowIndex);
     onRowsChange(filtered);
     formik.setFieldValue("products", filtered, true);
   };
@@ -104,6 +113,7 @@ const ProductsCreateModal = ({
       title: "T/r",
       width: 50,
       align: "center",
+      render: (_, __, rowIndex) => rowIndex + 1,
     },
     {
       dataIndex: "product",
@@ -114,8 +124,8 @@ const ProductsCreateModal = ({
       },
     },
     {
-      dataIndex: "sapCode",
-      title: "Sab kodi",
+      dataIndex: "mxik",
+      title: "MXIK kodi",
       width: 200,
       align: "center",
     },
@@ -125,13 +135,13 @@ const ProductsCreateModal = ({
       width: 100,
       fixed: "right",
       align: "center",
-      render(_, record) {
+      render(_, __, rowIndex) {
         return (
           <div>
             <Button
-              onClick={() => handleDelete(record.indexId)}
+              onClick={() => handleDelete(rowIndex)}
               type="text"
-              icon={<Trash className="text-red-800! size-4" />}
+              icon={<Trash className="size-4 text-danger!" />}
             />
           </div>
         );
@@ -145,9 +155,11 @@ const ProductsCreateModal = ({
     onClose();
   };
 
+  const setFormValues = formik.setValues;
+
   useEffect(() => {
     if (rows.length > 0) {
-      formik.setValues({
+      setFormValues({
         productGroupId: null,
         products: rows as unknown as Products[],
         isService: false,
@@ -155,8 +167,7 @@ const ProductsCreateModal = ({
         unitId: null,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows]);
+  }, [rows, setFormValues]);
 
   return (
     <Modal
@@ -206,10 +217,8 @@ const ProductsCreateModal = ({
             <Table
               columns={tableColumnLabels}
               bordered
-              dataSource={rows.map((item, index) => ({
-                ...item,
-                indexId: index + 1,
-              }))}
+              dataSource={rows}
+              rowKey="key"
             />
           </Col>
           <Col span={24}>

@@ -77,7 +77,9 @@ export interface PurchaseDetailProductData {
   productId: number;
   productName: string;
   name?: string;
-  sapCode: string;
+  mxik: string;
+  /** Eski local draftlarni o'qish uchun. Yangi oqim bu maydonga yozmaydi. */
+  sapCode?: string;
   qty: number;
   quantity?: number;
   counterpartyId: number | null;
@@ -99,7 +101,8 @@ export interface PurchaseImportRow {
   product: string;
   productId: number | null;
   productName: string;
-  sapCode: string;
+  /** Eski local draftlarni o'qish uchun. Yangi oqim bu maydonga yozmaydi. */
+  sapCode?: string;
   qty: number | null;
   serialNumber: string;
   currencyId: number;
@@ -111,7 +114,7 @@ export interface PurchaseImportRow {
   unitId?: number | null;
   unitCode?: string | null;
   unitName?: string | null;
-  mxik?: string | null;
+  mxik: string;
   vatRateId: number | null;
   vatRates: number | null;
   debitAccountId?: number | null;
@@ -170,7 +173,9 @@ export interface PurchaseDetailServiceLine {
 
 export interface PurchaseDetailData extends PurchaseData {
   comment: string;
+  isService?: boolean;
   lines: PurchaseDetailLine[];
+  purchaseMode?: PurchaseMode;
   serviceLines?: PurchaseDetailServiceLine[];
   organizationName: string;
   vatAmount: number;

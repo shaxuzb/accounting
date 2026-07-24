@@ -7,12 +7,13 @@ import { ProfilePopoverContent } from "./components/ProfilePopoverContent";
 import { logout } from "@/store/features/authSlice";
 import { setMode } from "@/store/features/modeSlice";
 import toast from "react-hot-toast";
+import { useEffectiveTheme } from "@/shared/hooks/useEffectiveTheme";
 const ProfileNav: React.FC = () => {
   const navigate = useNavigate();
   // const loading = useAppSelector((state) => state.auth.loading);
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth?.user);
-  const themeMode = useAppSelector((state) => state.mode.mode);
+  const effectiveTheme = useEffectiveTheme();
   const [mainPopover, setMainPopover] = useState(false);
   const handleLogout = async () => {
     await navigate("/login", { replace: true });
@@ -26,7 +27,7 @@ const ProfileNav: React.FC = () => {
       phone={user?.user?.phoneNumber || "+998 -- --- -- --"}
       onProfileClick={() => navigate("/profile")}
       onThemeClick={() =>
-        dispatch(setMode(themeMode === "dark" ? "light" : "dark"))
+        dispatch(setMode(effectiveTheme === "dark" ? "light" : "dark"))
       }
       onSecurityClick={() => navigate("/settings/security")}
       onLanguageClick={() => {}}

@@ -6,11 +6,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectCustom from "@/components/fields/SelectCustom";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
+import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import Card from "@/components/ui/card/Card";
-import {
-  filterIds,
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
+import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
 import { formatDateWithOutTime } from "@/utils/helpers";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import type { PurchaseImportForm } from "../types/form";
@@ -34,6 +32,13 @@ export default function PurchaseImportHeader({
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
   const queryClient = useQueryClient();
+  const hasCounterparty = Boolean(formik.values.counterpartyId);
+
+  const clearContract = () => {
+    if (formik.values.contractId !== null) {
+      formik.setFieldValue("contractId", null, false);
+    }
+  };
 
   const handleContractCreated = (contract: Contract) => {
     formik.setFieldValue("contractId", contract.id, true);
@@ -60,17 +65,22 @@ export default function PurchaseImportHeader({
       <div className="mt-1">
         <Row gutter={24}>
           <Col span={24} sm={12} lg={8} xl={4}>
-            <SelectDate label="Sana" formik={formik} fieldName="docDate" />
+            <SelectDate
+              label="Sana"
+              formik={formik}
+              fieldName="docDate"
+              onChange={clearContract}
+            />
           </Col>
           <Col span={24} sm={12} lg={8} xl={4}>
-            <SelectCustom
+            <CounterpartySelect
+              kind="supplier"
               fieldName="counterpartyId"
               label={
                 purchaseMode === "services" ? "Ijrochi" : "Yetkazib beruvchi"
               }
-              path={selectListEndpoints.suppliersSelectList}
-              getFirst
               formik={formik}
+              onChange={clearContract}
               addOption={{
                 bool: true,
                 permissionCode: counterpartyPermissions.create,
@@ -78,6 +88,7 @@ export default function PurchaseImportHeader({
                   setCounterpartyCreateOpen(true);
                 },
               }}
+              required
             />
           </Col>
           <Col span={24} sm={12} lg={8} xl={4}>
@@ -89,7 +100,8 @@ export default function PurchaseImportHeader({
                 ),
                 [filterIds.counterparty]: formik.values.counterpartyId,
               }}
-              disabled={!formik.values.counterpartyId}
+              enabled={hasCounterparty}
+              disabled={!hasCounterparty}
               label="Shartnoma"
               fieldName="contractId"
               formik={formik}
@@ -111,6 +123,7 @@ export default function PurchaseImportHeader({
               label="Ombor"
               fieldName="warehouseId"
               formik={formik}
+              required
             />
           </Col>
           {/* <Col span={24} sm={12} lg={8} xl={4}>

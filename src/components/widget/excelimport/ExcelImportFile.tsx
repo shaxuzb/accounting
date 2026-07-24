@@ -18,6 +18,7 @@ interface WorkbookWithMeta extends XLSX.WorkBook {
 
 interface ExcelImportFileProps {
   setData: React.Dispatch<React.SetStateAction<ExcelRow[]>>;
+  onClearData?: () => void;
   formik: FormikProps<FormValues>;
   setSelectBoxOptions: React.Dispatch<React.SetStateAction<SelectBoxOptions[]>>;
   selectBoxOptions: SelectBoxOptions[];
@@ -28,6 +29,7 @@ interface ExcelImportFileProps {
 const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
   const {
     setData,
+    onClearData,
     formik,
     selectBoxOptions,
     disabled = false,
@@ -79,12 +81,35 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
     },
   };
 
-  const handleDeleteFile = () => {
+  const resetSelectBoxOptions = () => {
+    setSelectBoxOptions((prev) =>
+      prev.map((item) => ({
+        ...item,
+        disabled: false,
+      })),
+    );
+  };
+
+  const resetWorkbook = () => {
     setSheetData(null);
     setValue("");
-    setData([]);
     setCurrent(0);
     setModalOpen(false);
+  };
+
+  const handleCancelImport = () => {
+    resetWorkbook();
+    resetSelectBoxOptions();
+  };
+
+  const handleDeleteFile = () => {
+    resetWorkbook();
+    resetSelectBoxOptions();
+    if (onClearData) {
+      onClearData();
+      return;
+    }
+    setData([]);
   };
 
   const sheetJson =
@@ -147,16 +172,7 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
                 <Button
                   type="text"
                   icon={<X />}
-                  onClick={() => {
-                    handleDeleteFile();
-                    setSelectBoxOptions((prev) =>
-                      prev.map((item) => ({
-                        ...item,
-                        disabled: false,
-                      })),
-                    );
-                    setModalOpen(false);
-                  }}
+                  onClick={handleCancelImport}
                 />
               </div>
             }

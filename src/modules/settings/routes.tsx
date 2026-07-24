@@ -42,6 +42,9 @@ import { pricingConditionPermissions } from "./pages/pricingCondition/constants/
 import { saleConditionPermissions } from "./pages/saleCondition/constants/permissions";
 import { purchasePermissions } from "../purchase/pages/purchase/constants/permissions";
 import { bankPermissions } from "../bank";
+import OpeningBalancePage from "./pages/openingBalance/screens/OpeningBalancePage";
+import OpeningBalanceAccountPage from "./pages/openingBalance/screens/OpeningBalanceAccountPage";
+import { openingBalancePermissions } from "./pages/openingBalance/constants/permissions";
 
 const settingsPermissions = [
   rolePermissions.view,
@@ -64,6 +67,7 @@ const settingsPermissions = [
   purchasePermissions.view,
   pricingConditionPermissions.view,
   saleConditionPermissions.view,
+  openingBalancePermissions.view,
 ];
 
 const withPermission = (
@@ -202,6 +206,35 @@ export const settingsRoutes: RouteObject = {
           element: withPermission(
             <DocumentAccountSettingsDetailPage />,
             chartAccountsPermissions.view,
+          ),
+        },
+      ],
+    },
+    {
+      path: "opening-balances",
+      handle: {
+        title: "openingBalance.title",
+        showBack: true,
+        backTo: "..",
+      },
+      children: [
+        {
+          index: true,
+          element: withPermission(
+            <OpeningBalancePage />,
+            openingBalancePermissions.view,
+          ),
+        },
+        {
+          path: ":id/accounts/:accountId",
+          handle: {
+            title: "openingBalance.accountDetail",
+            showBack: true,
+            backTo: "../../..",
+          },
+          element: withPermission(
+            <OpeningBalanceAccountPage />,
+            openingBalancePermissions.view,
           ),
         },
       ],

@@ -45,12 +45,12 @@ export default function PurchaseMarkingModal({
           Qo'shish
         </Button>
       </div>
-      <div className="mt-3 flex max-h-64 flex-col gap-2 overflow-auto rounded border border-border p-2">
+      <div className="mt-3 flex max-h-64 flex-col gap-2 overflow-auto rounded border border-border bg-card p-2">
         {markings.length ? (
           markings.map((marking) => (
             <div
               key={marking}
-              className="flex items-center justify-between gap-3 rounded bg-gray-50 px-3 py-2 text-sm"
+              className="flex items-center justify-between gap-3 rounded bg-surface-muted px-3 py-2 text-sm text-text"
             >
               <span className="break-all">{marking}</span>
               <Button
@@ -62,7 +62,7 @@ export default function PurchaseMarkingModal({
             </div>
           ))
         ) : (
-          <div className="py-6 text-center text-sm text-gray-500">
+          <div className="py-6 text-center text-sm text-secondary-text">
             Markirovka kiritilmagan
           </div>
         )}

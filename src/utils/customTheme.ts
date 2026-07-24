@@ -1,167 +1,174 @@
 import type { ThemeConfig } from "antd";
-import { color } from "@/shared/constants/colors";
-import { hexToRgb } from "./utils";
 
-const customTheme: ThemeConfig = {
-  token: {
-    fontSize: 14,
-    fontSizeSM: 14,
-    fontSizeLG: 18,
-    borderRadius: 8,
-    fontFamily: '"Inter", sans-serif',
-    colorPrimary: color.baseColor,
-    colorBgBase: "#f6f7fb",
-    colorBgContainer: "#ffffff",
-    colorBgElevated: "#ffffff",
-    colorText: "#111827",
-    colorTextSecondary: "#64748b",
-    colorBorder: "#e5e7eb",
+export type EffectiveTheme = "light" | "dark";
+
+const themePalettes = {
+  light: {
+    brand: "#005cf3",
+    brandHover: "#004acc",
+    brandSoft: "#e7f0ff",
+    page: "#f6f7fb",
+    card: "#ffffff",
+    elevated: "#ffffff",
+    muted: "#f8fafc",
+    hover: "#eef5ff",
+    active: "#dbeafe",
+    text: "#111827",
+    heading: "#0f172a",
+    textSecondary: "#64748b",
+    textDisabled: "#9ca3af",
+    border: "#e2e8f0",
+    success: "#15803d",
+    warning: "#b45309",
+    danger: "#b91c1c",
+    shadow: "0 1px 3px rgba(15, 23, 42, 0.08)",
+    shadowElevated: "0 18px 45px rgba(15, 23, 42, 0.14)",
   },
-  components: {
-    Button: {
-      algorithm: true,
-      colorPrimary: color.baseColor,
-      colorPrimaryBg: color.baseColor,
-      colorPrimaryText: "#fff",
-      colorPrimaryBgHover: `rgba(${hexToRgb(color.baseColor)}, 0.9)`,
-    },
-    Select: {},
-    Input: {
-      colorBgContainer: "#ffffff",
-      colorBorder: "#e5e7eb",
-    },
-    DatePicker: {
-      colorBgContainer: "#ffffff",
-      colorBorder: "#e5e7eb",
-    },
-    Table: {
-      cellPaddingBlock: 6,
-      borderColor: "#E2E8F0",
-      cellPaddingInline: 10,
-      fontWeightStrong: 600,
-      headerBg: "#F7F9FE",
-      headerColor: color.textColor,
-      colorText: color.textColor,
-      fontSize: 16,
+  dark: {
+    brand: "#3b82f6",
+    brandHover: "#2563eb",
+    brandSoft: "#172554",
+    page: "#0f172a",
+    card: "#111827",
+    elevated: "#182235",
+    muted: "#1f2937",
+    hover: "#1e293b",
+    active: "#172554",
+    text: "#e5e7eb",
+    heading: "#f8fafc",
+    textSecondary: "#94a3b8",
+    textDisabled: "#64748b",
+    border: "#334155",
+    success: "#4ade80",
+    warning: "#fbbf24",
+    danger: "#f87171",
+    shadow: "0 1px 3px rgba(0, 0, 0, 0.24)",
+    shadowElevated: "0 18px 45px rgba(0, 0, 0, 0.35)",
+  },
+} as const;
+
+const createThemeConfig = (mode: EffectiveTheme): ThemeConfig => {
+  const palette = themePalettes[mode];
+
+  return {
+    token: {
+      fontSize: 14,
+      fontSizeSM: 14,
+      fontSizeLG: 18,
       borderRadius: 8,
-      cellFontSize: 15,
+      fontFamily: '"Google Sans Flex", "Inter", sans-serif',
+      colorPrimary: palette.brand,
+      colorPrimaryHover: palette.brandHover,
+      colorPrimaryBg: palette.brandSoft,
+      colorBgBase: palette.page,
+      colorBgLayout: palette.page,
+      colorBgContainer: palette.card,
+      colorBgElevated: palette.elevated,
+      colorFillAlter: palette.muted,
+      colorFillSecondary: palette.muted,
+      colorText: palette.text,
+      colorTextHeading: palette.heading,
+      colorTextSecondary: palette.textSecondary,
+      colorTextDisabled: palette.textDisabled,
+      colorBorder: palette.border,
+      colorBorderSecondary: palette.border,
+      colorSuccess: palette.success,
+      colorWarning: palette.warning,
+      colorError: palette.danger,
+      boxShadow: palette.shadow,
+      boxShadowSecondary: palette.shadowElevated,
     },
-    Pagination: {
-      itemActiveBg: color.baseColor,
-      colorPrimary: "white",
-      colorPrimaryHover: "white",
+    components: {
+      Button: {
+        algorithm: true,
+        colorPrimary: palette.brand,
+        colorPrimaryBg: palette.brand,
+        colorPrimaryText: "#ffffff",
+        colorPrimaryHover: palette.brandHover,
+        colorPrimaryActive: palette.brandHover,
+        primaryShadow: "none",
+      },
+      Select: {
+        colorBgContainer: palette.muted,
+        colorBorder: palette.border,
+        colorText: palette.text,
+        optionActiveBg: palette.hover,
+        optionSelectedBg: palette.active,
+      },
+      Input: {
+        colorBgContainer: palette.muted,
+        colorBorder: palette.border,
+        colorText: palette.text,
+      },
+      InputNumber: {
+        colorBgContainer: palette.muted,
+        colorBorder: palette.border,
+        colorText: palette.text,
+      },
+      DatePicker: {
+        colorBgContainer: palette.muted,
+        colorBorder: palette.border,
+        colorText: palette.text,
+      },
+      Table: {
+        cellPaddingBlock: mode === "dark" ? 8 : 6,
+        cellPaddingInline: 10,
+        fontWeightStrong: 600,
+        headerBg: palette.muted,
+        headerColor: palette.heading,
+        colorText: palette.text,
+        borderColor: palette.border,
+        rowHoverBg: palette.hover,
+        fontSize: 16,
+        borderRadius: 8,
+        cellFontSize: 15,
+      },
+      Pagination: {
+        itemActiveBg: palette.brand,
+        colorPrimary: "#ffffff",
+        colorPrimaryHover: "#ffffff",
+      },
+      Card: {
+        padding: 0,
+        bodyPadding: 0,
+        colorBgContainer: palette.card,
+        colorBorderSecondary: palette.border,
+      },
+      Segmented: {
+        itemSelectedBg: palette.brand,
+        itemSelectedColor: "#ffffff",
+        itemColor: palette.textSecondary,
+        trackBg: palette.muted,
+      },
+      Tag: {
+        colorBorder: "transparent",
+      },
+      Menu: {
+        itemColor: palette.textSecondary,
+        fontWeightStrong: 900,
+        itemHoverBg: palette.hover,
+        itemHoverColor: palette.brand,
+        itemSelectedBg: palette.active,
+        itemSelectedColor: palette.brand,
+        subMenuItemBg: "transparent",
+      },
+      Drawer: {
+        colorBgElevated: palette.card,
+      },
+      Modal: {
+        contentBg: palette.card,
+        headerBg: palette.card,
+        titleColor: palette.heading,
+      },
+      Popover: {
+        colorBgElevated: palette.elevated,
+      },
     },
-    Card: {
-      padding: 0,
-      bodyPadding: 0,
-    },
-    Segmented: {
-      itemSelectedBg: color.baseColor,
-      itemSelectedColor: "white",
-    },
-    Tag: {
-      colorBorder: "transparent",
-    },
-    Menu: {
-      itemColor: color.mutedColor,
-      fontWeightStrong: 900,
-      itemHoverBg: color.menuBg,
-      itemHoverColor: color.baseColor,
-    },
-    Drawer: {
-      colorBgElevated: "#ffffff",
-    },
-    Modal: {
-      contentBg: "#ffffff",
-      headerBg: "#ffffff",
-    },
-  },
+  };
 };
 
-const darkCustomTheme: ThemeConfig = {
-  token: {
-    fontSize: 14,
-    fontSizeSM: 14,
-    fontSizeLG: 18,
-    borderRadius: 8,
-    fontFamily: '"Inter", sans-serif',
-    colorPrimary: color.baseColor,
-    colorBgBase: "#0f172a",
-    colorBgContainer: "#111827",
-    colorBgElevated: "#111827",
-    colorText: "#e5e7eb",
-    colorTextSecondary: "#94a3b8",
-    colorBorder: "#334155",
-  },
-  components: {
-    Button: {
-      algorithm: true,
-      colorPrimary: color.baseColor,
-      colorPrimaryBg: color.baseColor,
-      boxShadow: "",
-      primaryShadow: "",
-      colorPrimaryText: "#fff",
-      colorPrimaryBgHover: `rgba(${hexToRgb(color.baseColor)}, 0.9)`,
-      colorPrimaryActive: "",
-    },
-    Select: {
-      colorBgContainer: "#1f2937",
-      colorBorder: "#334155",
-      colorText: "#e5e7eb",
-    },
-    Input: {
-      colorBgContainer: "#1f2937",
-      colorBorder: "#334155",
-      colorText: "#e5e7eb",
-    },
-    DatePicker: {
-      colorBgContainer: "#1f2937",
-      colorBorder: "#334155",
-      colorText: "#e5e7eb",
-    },
-    Table: {
-      cellPaddingBlock: 8,
-      cellPaddingInline: 10,
-      fontWeightStrong: 600,
-      headerBg: "#1f2937",
-      headerColor: "#f8fafc",
-      colorText: "#e5e7eb",
-      borderColor: "#334155",
-      rowHoverBg: "#172554",
-      fontSize: 16,
-      borderRadius: 8,
-      cellFontSize: 15,
-    },
-    Pagination: {
-      itemActiveBg: color.baseColor,
-      colorPrimary: "white",
-      colorPrimaryHover: "white",
-    },
-    Card: {
-      padding: 0,
-      bodyPadding: 0,
-    },
-    Segmented: {
-      itemSelectedBg: color.baseColor,
-      itemSelectedColor: "white",
-      itemColor: "#cbd5e1",
-      trackBg: "#1f2937",
-    },
-    Menu: {
-      itemColor: "#cbd5e1",
-      itemHoverBg: "#172554",
-      itemHoverColor: "#93c5fd",
-      itemSelectedBg: "#172554",
-      itemSelectedColor: "#93c5fd",
-      subMenuItemBg: "transparent",
-    },
-    Drawer: {
-      colorBgElevated: "#111827",
-    },
-    Modal: {
-      contentBg: "#111827",
-      headerBg: "#111827",
-    },
-  },
-};
+const customTheme = createThemeConfig("light");
+const darkCustomTheme = createThemeConfig("dark");
+
+export { createThemeConfig, themePalettes };
 export default { customTheme, darkCustomTheme };

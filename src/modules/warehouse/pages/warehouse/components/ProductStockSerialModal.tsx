@@ -49,7 +49,7 @@ export default function ProductStockSerialModal({
     // },
     {
       dataIndex: "markingNumber",
-      title: "Marker raqami",
+      title: "Markirovka raqami",
       render: (value) => <CopyableText value={value} />,
     },
   ];
@@ -70,7 +70,7 @@ export default function ProductStockSerialModal({
         dataSource={generateKeyTable(items, "id")}
         pagination={false}
         scroll={{ x: "max-content", y: 500 }}
-        locale={{ emptyText: "Seriya va marker raqamlari topilmadi" }}
+        locale={{ emptyText: "Markirovkalar topilmadi" }}
       />
     </Modal>
   );

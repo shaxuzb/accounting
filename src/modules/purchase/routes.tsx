@@ -4,7 +4,8 @@ import { purchasePermissions } from "./pages/purchase/constants/permissions";
 import PurchaseListPage from "./pages/purchase/screens/PurchaseListPage";
 import PurchaseDetailPage from "./pages/purchase/screens/PurchaseDetailPage";
 import ContractListPage from "../contract/screens/ContractListPage";
-import PurchaseImportPage from "./pages/purchase/screens/PurchaseImportPage";
+import { contractPermissions } from "../contract/constants/permissions";
+import PurchaseEditor from "./pages/purchase/screens/PurchaseEditorPage";
 
 
 const withPermission = (element: React.ReactElement, permission: string) => (
@@ -31,7 +32,7 @@ export const purchaseRoutes: RouteObject = {
         {
           path: "import",
           element: withPermission(
-            <PurchaseImportPage />,
+            <PurchaseEditor />,
             purchasePermissions.create,
           ),
           handle: {
@@ -43,7 +44,7 @@ export const purchaseRoutes: RouteObject = {
         {
           path: "edit/:id",
           element: withPermission(
-            <PurchaseImportPage />,
+            <PurchaseEditor />,
             purchasePermissions.update,
           ),
           handle: {
@@ -69,7 +70,10 @@ export const purchaseRoutes: RouteObject = {
     {
       path: "contracts",
       handle: { title: "contract.purchaseTitle" },
-      element: <ContractListPage />,
+      element: withPermission(
+        <ContractListPage />,
+        contractPermissions.view,
+      ),
     },
   ],
 };

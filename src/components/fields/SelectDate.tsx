@@ -31,6 +31,7 @@ interface SelectDateProps {
   disabled?: boolean;
   marginBottom?: string;
   checkCurrencyExchange?: CheckCurrencyExchange;
+  onChange?: (value: string) => void;
 }
 
 const DEFAULT_EXCHANGE: CheckCurrencyExchange = {
@@ -89,6 +90,7 @@ const SelectDate: React.FC<SelectDateProps> = ({
   maxDate,
   disabled = false,
   checkCurrencyExchange = DEFAULT_EXCHANGE,
+  onChange,
 }) => {
   const { t } = useTranslation();
   const todayRef = useRef(dayjs());
@@ -105,8 +107,9 @@ const SelectDate: React.FC<SelectDateProps> = ({
             .format(DATE_FORMAT)
         : "";
       formik.setFieldValue(fieldName, value, true);
+      onChange?.(value);
     },
-    [formik, fieldName],
+    [formik, fieldName, onChange],
   );
 
   // const paymentDate =

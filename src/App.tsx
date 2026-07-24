@@ -14,24 +14,14 @@ import dayjs from "dayjs";
 import { router } from "./app/router";
 import customTheme from "./utils/customTheme";
 import { useAppSelector } from "./store/hooks";
-import { getEffectiveTheme } from "./utils/utils";
+import { useEffectiveTheme } from "./shared/hooks/useEffectiveTheme";
 import "react-custom-scroller/dist/index.css";
-// import { useEffect } from "react";
-// import { sinchronius } from "./store/features/modeSlice";
 dayjs.extend(isoWeek);
 dayjs.locale("uz");
 
 const Root = () => {
-  const themeMode = useAppSelector((state) => state.mode.mode);
   const lang = useAppSelector((state) => state.lang.lang);
-  const [systemTheme, setSystemTheme] = useState<"light" | "dark">(() =>
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light",
-  );
-  const effectiveTheme =
-    themeMode === "system" ? systemTheme : getEffectiveTheme(themeMode);
-  // const dispatch = useAppDispatch();
+  const effectiveTheme = useEffectiveTheme();
   const localeMap = {
     uz: uzUz,
     ru: ruRU,
@@ -57,18 +47,12 @@ const Root = () => {
   }, [lang]);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const handleSystemThemeChange = () => {
-      if (themeMode === "system") {
-        setSystemTheme(mediaQuery.matches ? "dark" : "light");
-      }
-    };
-
-    mediaQuery.addEventListener?.("change", handleSystemThemeChange);
-    return () =>
-      mediaQuery.removeEventListener?.("change", handleSystemThemeChange);
-  }, [themeMode]);
+    const root = document.documentElement;
+    root.dataset.theme = effectiveTheme;
+    root.classList.toggle("dark", effectiveTheme === "dark");
+    root.classList.toggle("light", effectiveTheme === "light");
+    root.style.colorScheme = effectiveTheme;
+  }, [effectiveTheme]);
 
   return (
     <ConfigProvider
@@ -85,7 +69,16 @@ const Root = () => {
     >
       <div className={`theme-${effectiveTheme} ${effectiveTheme}`}>
         <App>
-          <Toaster />
+          <Toaster
+            toastOptions={{
+              style: {
+                background: "var(--theme-bg-elevated)",
+                color: "var(--theme-text-primary)",
+                border: "1px solid var(--theme-border)",
+                boxShadow: "var(--theme-shadow-elevated)",
+              },
+            }}
+          />
           <QueryClientProvider client={queryClient}>
             <RouterProvider router={router} />
           </QueryClientProvider>

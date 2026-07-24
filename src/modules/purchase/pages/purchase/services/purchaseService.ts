@@ -12,6 +12,7 @@ import type {
 } from "../types/form";
 
 type QueryParams = ListParams | URLSearchParams;
+type UnknownRecord = Record<string, unknown>;
 
 const endpoints = purchaseEndpoints.purchase;
 
@@ -20,15 +21,42 @@ const normalizeParams = (params?: QueryParams) =>
     ? Object.fromEntries(params)
     : (params ?? {});
 
+const toRecord = (value: unknown): UnknownRecord =>
+  value && typeof value === "object" && !Array.isArray(value)
+    ? (value as UnknownRecord)
+    : {};
+
+const toNumber = (value: unknown, fallback: number) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const normalizePurchaseList = (
+  value: unknown,
+): Paginated<PurchaseData> => {
+  const response = toRecord(value);
+  const nested = toRecord(response.data ?? response.result);
+  const root = Object.keys(nested).length ? nested : response;
+  const rawItems = root.items ?? root.results ?? root.rows;
+  const items = Array.isArray(rawItems) ? (rawItems as PurchaseData[]) : [];
+
+  return {
+    items,
+    total: toNumber(root.total ?? root.count ?? root.totalCount, items.length),
+    page: toNumber(root.page ?? root.pageNumber, 1),
+    pageSize: toNumber(root.pageSize, items.length),
+  };
+};
+
 export const purchaseService = {
   list: (params?: QueryParams) =>
     $axiosPrivate
-      .get<Paginated<PurchaseData>>(endpoints.list, {
+      .get<unknown>(endpoints.list, {
         params: {
           ...normalizeParams(params),
         },
       })
-      .then((res) => res.data),
+      .then((res) => normalizePurchaseList(res.data)),
   detail: (id: string | number) =>
     $axiosPrivate
       .get<PurchaseDetailData>(endpoints.detail(id))

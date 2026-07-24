@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
 import {
@@ -34,6 +35,12 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
   const queryClient = useQueryClient();
 
+  const clearContract = () => {
+    if (formik.values.contractId !== null) {
+      formik.setFieldValue("contractId", null, false);
+    }
+  };
+
   const handleContractCreated = (contract: Contract) => {
     formik.setFieldValue("contractId", contract.id, true);
     invalidateSelectListQuery(
@@ -52,16 +59,17 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
             label="Sana"
             fieldName="docDate"
             formik={formik}
+            onChange={clearContract}
             required
           />
         </Col>
         <Col span={4}>
-          <SelectCustom
+          <CounterpartySelect
+            kind="client"
             label="Mijoz"
             fieldName="counterpartyId"
-            path={selectListEndpoints.clients}
             formik={formik}
-            search
+            onChange={clearContract}
             required
             addOption={{
               bool: true,

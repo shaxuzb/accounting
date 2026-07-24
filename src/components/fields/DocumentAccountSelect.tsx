@@ -1,15 +1,16 @@
 import type { ComponentProps } from "react";
 import SelectCustom from "./SelectCustom";
-import {
-  chartAccountOptionLabel,
-  chartAccountSelectedLabel,
-} from "@/shared/constants/selectLists";
+import { chartAccountSelectDisplayConfig } from "@/shared/constants/selectLists";
 
 type SelectCustomProps = ComponentProps<typeof SelectCustom>;
 
 type DocumentAccountSelectProps = Omit<
   SelectCustomProps,
-  "path" | "queryParams" | "optionLabel" | "selectedLabel"
+  | "path"
+  | "queryParams"
+  | "displayConfig"
+  | "optionLabel"
+  | "selectedLabel"
 > & {
   documentTypeId: string | number;
   documentRoleCode: string;
@@ -25,8 +26,7 @@ export default function DocumentAccountSelect({
       {...props}
       path={`document-account-settings/${documentTypeId}/chart-accounts`}
       queryParams={{ documentRoleCode }}
-      optionLabel={chartAccountOptionLabel}
-      selectedLabel={chartAccountSelectedLabel}
+      displayConfig={chartAccountSelectDisplayConfig}
     />
   );
 }

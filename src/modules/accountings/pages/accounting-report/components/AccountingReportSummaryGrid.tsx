@@ -13,9 +13,9 @@ interface Props {
 
 const toneClass: Record<NonNullable<SummaryItem["tone"]>, string> = {
   default: "text-text",
-  primary: "text-primary",
-  success: "text-emerald-600",
-  danger: "text-red-600",
+  primary: "text-brand-text",
+  success: "text-success",
+  danger: "text-danger",
 };
 
 export default function AccountingReportSummaryGrid({ items }: Props) {

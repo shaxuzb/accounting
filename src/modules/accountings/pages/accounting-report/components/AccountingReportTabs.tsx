@@ -22,8 +22,8 @@ export default function AccountingReportTabs() {
           className={({ isActive }) =>
             `rounded-lg px-3 py-2 text-sm font-medium transition ${
               isActive
-                ? "bg-primary text-white"
-                : "bg-transparent text-secondary-text hover:bg-muted hover:text-text"
+                ? "bg-brand text-on-brand"
+                : "bg-transparent text-secondary-text hover:bg-surface-hover hover:text-text"
             }`
           }
         >

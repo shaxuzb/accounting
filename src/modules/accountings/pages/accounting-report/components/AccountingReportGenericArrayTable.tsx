@@ -79,7 +79,7 @@ export default function AccountingReportGenericArrayTable({
   const handleRow: TableProps<Record<string, unknown>>["onRow"] = onRowClick
     ? (record) => ({
         onClick: () => onRowClick(record),
-        className: "cursor-pointer hover:bg-muted/30",
+        className: "cursor-pointer hover:bg-surface-hover",
       })
     : undefined;
 

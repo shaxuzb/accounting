@@ -20,7 +20,8 @@
     "created": "Yaratildi",
     "back": "Orqaga",
     "next": "Keyingisi",
-    "refresh": "Yangilash"
+    "refresh": "Yangilash",
+    "create": "Yaratish"
   },
   "actions": {
     "deleteSuccess": "Element {{id}} muvaffaqiyatli o'chirildi",
@@ -151,6 +152,7 @@
       "branches": "Filiallar",
       "chartAccounts": "Schyotlar rejasi",
       "documentAccountSettings": "Hujjat hisob sozlamalari",
+      "openingBalance": "Boshlang'ich balans",
       "banks": "Banklar",
       "bankAccounts": "Bank hisoblari",
       "orgBankAccounts": "Tashkilot bank hisoblari",
@@ -172,6 +174,7 @@
       "branches": "Filiallar ro'yxatini boshqarish.",
       "chartAccounts": "Schyotlar rejasini boshqarish.",
       "documentAccountSettings": "Hujjat turlari uchun debet va kredit hisoblarini biriktirish.",
+      "openingBalance": "Tashkilotning schyotlar bo'yicha boshlang'ich qoldiqlarini kiritish.",
       "banks": "Banklar ro'yxatini boshqarish.",
       "bankAccounts": "Kontragent bank hisoblarini boshqarish.",
       "orgBankAccounts": "Tashkilot bank hisoblarini boshqarish.",
@@ -279,6 +282,73 @@
       "activeDescription": "Hozirgi paytda amal qilayotgan faol sotuv shartining ma'lumotlari ko'rsatilmoqda.",
       "infoTitle": "Ma'lumot",
       "infoDescription": "Ushbu sotuv sharti tashkilotda ko'rsatilgan davr ichida barcha sotuv operatsiyalariga qo'llaniladi."
+    }
+  },
+  "openingBalance": {
+    "title": "Boshlang'ich balans",
+    "form": {
+      "createTitle": "Boshlang'ich balans qo'shish",
+      "editTitle": "Boshlang'ich balansni tahrirlash"
+    },
+    "subtitle": "Tashkilotning boshlang'ich qoldiqlari va schyotlar kesimi",
+    "emptySubtitle": "Avval balans sanasi va izohini kiriting",
+    "accountsTitle": "Schyotlar bo'yicha qoldiqlar",
+    "accountDetail": "Schyot detalizatsiyasi",
+    "detailsTitle": "Detallash satrlari",
+    "detailsSubtitle": "Debet yoki kredit qoldiqni analitika kesimida kiriting",
+    "subkontosTitle": "Subkonto (analitika)",
+    "selectedDetail": "{{row}}-satr uchun analitika",
+    "fields": {
+      "balanceDate": "Balans sanasi",
+      "description": "Izoh",
+      "account": "Schyot",
+      "accountName": "Schyot nomi",
+      "debit": "Debet",
+      "credit": "Kredit",
+      "totalDebit": "Jami debet",
+      "totalCredit": "Jami kredit",
+      "accountsCount": "Schyotlar soni",
+      "balance": "Saldo",
+      "analytics": "Analitika",
+      "quantity": "Miqdor",
+      "currency": "Valyuta",
+      "currencyAmount": "Valyutadagi summa",
+      "exchangeRate": "Kurs"
+    },
+    "analytics": {
+      "complete": "To'liq",
+      "incomplete": "To'ldirilmagan",
+      "notRequired": "Talab qilinmaydi"
+    },
+    "actions": {
+      "addAccount": "Schyot qo'shish",
+      "addDetail": "Satr qo'shish",
+      "deleteTitle": "Boshlang'ich balans o'chirilsinmi?",
+      "deleteDescription": "Balans bilan birga barcha schyot, detal va subkonto ma'lumotlari o'chadi."
+    },
+    "messages": {
+      "created": "Boshlang'ich balans yaratildi",
+      "updated": "Boshlang'ich balans yangilandi",
+      "deleted": "Boshlang'ich balans o'chirildi",
+      "loadError": "Boshlang'ich balansni yuklashda xatolik yuz berdi",
+      "noAccounts": "Hali schyot qo'shilmagan",
+      "accountSaved": "Schyot qoldiqlari saqlandi",
+      "accountLoadError": "Schyot detalini yuklashda xatolik yuz berdi",
+      "loadingAccountMeta": "Schyot xususiyatlari yuklanmoqda...",
+      "noDetails": "Detallash satrlari mavjud emas",
+      "selectDetail": "Subkontolarni ko'rish uchun satrni tanlang"
+    },
+    "states": {
+      "notCreated": "Yaratilmagan"
+    },
+    "validation": {
+      "accountRequired": "Schyotni tanlang",
+      "detailRequired": "Kamida bitta detal satri kiriting",
+      "groupAccount": "Guruh schyotiga qoldiq kiritib bo'lmaydi",
+      "singleSide": "{{row}}-satrda faqat debet yoki kreditdan bittasini kiriting",
+      "quantityRequired": "{{row}}-satrda miqdorni kiriting",
+      "currencyRequired": "{{row}}-satrda valyuta, summa va kursni to'liq kiriting",
+      "subkontoRequired": "{{row}}-satrda {{name}} subkontosini tanlang"
     }
   },
   "purchase": {

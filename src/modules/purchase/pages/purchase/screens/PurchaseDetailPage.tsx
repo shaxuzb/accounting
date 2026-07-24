@@ -1,11 +1,13 @@
 import { useParams } from "react-router";
 import Card from "@/components/ui/card/Card";
 import {
-  Calendar,
-  ChartPie,
+  Building2,
+  CalendarDays,
+  CircleDollarSign,
   FileText,
   Menu,
   Package,
+  WalletCards,
   Wrench,
 } from "lucide-react";
 
@@ -17,10 +19,10 @@ import PermissionCard from "@/components/ui/card/PermissionCard";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import type {
   PurchaseDetailLine,
+  PurchaseDetailLineItem,
   PurchaseDetailServiceLine,
 } from "@/modules/purchase/pages/purchase/types/type";
 import { ProductStockSerialModal } from "@/modules/warehouse/pages/warehouse/components";
-import { useGetDetailSerialWarehouse } from "@/modules/warehouse/pages/warehouse/hooks/useGetDetailSerialWarehouse";
 import type { ProductStockSerial } from "@/modules/warehouse/pages/warehouse/types/type";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
@@ -29,11 +31,26 @@ import { useCancelPurchase } from "../hooks/useCancelPurchase";
 import { useConfirmPurchase } from "../hooks/useConfirmPurchase";
 import { useGetDetailPurchase } from "../hooks/useGetDetailPurchase";
 import LineClampCell from "@/components/widget/text/LineClampCell";
-import PurchaseEditor from "../components/PurchaseEditor";
+import PurchaseEditor from "./PurchaseEditorPage";
+import { useAppSelector } from "@/store/hooks";
+import {
+  DocumentSummary,
+  DocumentSummaryItem,
+} from "@/components/ui/card/DocumentSummary";
+
+const getMarkedLineItems = (
+  line?: PurchaseDetailLine | null,
+): PurchaseDetailLineItem[] =>
+  (line?.items ?? []).filter((item) => Boolean(item.markingNumber?.trim()));
 
 const PurchaseDetailPage = () => {
   const params = useParams();
   const { t } = useTranslation();
+  const canUpdate = useAppSelector((state) =>
+    (state.auth.user?.user.permissions ?? []).includes(
+      purchasePermissions.update,
+    ),
+  );
   const [selectedLine, setSelectedLine] = useState<PurchaseDetailLine | null>(
     null,
   );
@@ -43,55 +60,45 @@ const PurchaseDetailPage = () => {
   const confirmMutation = useConfirmPurchase(Number(params.id));
   const cancelMutation = useCancelPurchase(Number(params.id));
   const isDraft = data?.statusId === 1;
-  const shouldFetchSerials =
-    Boolean(selectedLine?.productId) && !selectedLine?.items?.length;
-  const serialParams = shouldFetchSerials
-    ? {
-        productId: selectedLine?.productId,
-        page: 1,
-        pageSize: 1000,
-      }
-    : undefined;
-  const {
-    data: serialData,
-    isLoading: isSerialLoading,
-    isFetching: isSerialFetching,
-  } = useGetDetailSerialWarehouse(serialParams);
+  const currency = data?.currencyName || "UZS";
+  const documentAmount = data?.finalAmount || data?.totalAmount || 0;
 
   const selectedLineItems = useMemo<ProductStockSerial[]>(() => {
-    if (selectedLine?.items?.length) {
-      return selectedLine.items.map((item, index) => ({
-        id: item.id ?? index + 1,
-        productId:
-          item.productId ??
-          selectedLine.productId ??
-          selectedLine.productTableId,
-        productName: selectedLine.productName,
-        serialNumber: item.serialNumber,
-        markingNumber: item.markingNumber,
-      }));
-    }
+    if (!selectedLine) return [];
 
-    return serialData?.items ?? [];
-  }, [selectedLine, serialData?.items]);
+    return getMarkedLineItems(selectedLine).map((item, index) => ({
+      id: item.id ?? index + 1,
+      productId:
+        item.productId ??
+        selectedLine.productId ??
+        selectedLine.productTableId,
+      productName: selectedLine.productName,
+      serialNumber: item.serialNumber,
+      markingNumber: item.markingNumber,
+    }));
+  }, [selectedLine]);
   const tableColumnLabels: TableColumnType<PurchaseDetailLine>[] = [
     {
       dataIndex: "indexId",
-      title: "CH",
+      title: "Markirovka",
       align: "center",
-      width: 70,
+      width: 110,
       render: (_, record) => {
-        const hasMarkingInfo = Boolean(record.items?.length);
+        const canLoadMarkings = getMarkedLineItems(record).length > 0;
         return (
           <Button
             shape="circle"
             icon={<Menu className="size-4" />}
-            disabled={!hasMarkingInfo}
+            disabled={!canLoadMarkings}
             onClick={() => {
-              if (!hasMarkingInfo) return;
+              if (!canLoadMarkings) return;
               setSelectedLine(record);
             }}
-            title={hasMarkingInfo ? "Markirovkalarni ko'rish" : "Markirovkasiz tovar"}
+            title={
+              canLoadMarkings
+                ? "Markirovkalarni ko'rish"
+                : "Markirovka ma'lumoti yo'q"
+            }
           />
         );
       },
@@ -102,7 +109,7 @@ const PurchaseDetailPage = () => {
     },
     // {
     //   dataIndex: "markingNumber",
-    //   title: t("purchase.fields.sapCode"),
+    //   title: t("purchase.fields.mxik"),
     //   width: 10,
     //   render: (value) => <LineClampCell text={value} />,
     // },
@@ -113,31 +120,31 @@ const PurchaseDetailPage = () => {
     },
     {
       dataIndex: "price",
-      title: t("Dona narxi"),
+      title: "Dona narxi",
       align: "center",
       render: (_, record) => numberSpacing(record.unitPrice),
     },
     {
       dataIndex: "amount",
-      title: t("purchase.fields.price"),
+      title: "Summa",
       align: "center",
       render: (val) => numberSpacing(val),
     },
     {
       dataIndex: "vatRateName",
-      title: t("QQS"),
+      title: "QQS stavkasi",
       align: "center",
     },
     {
       dataIndex: "vatAmount",
-      title: t("QQS summasi"),
+      title: "QQS summasi",
       align: "center",
       render: (val) => numberSpacing(val),
     },
 
     {
       dataIndex: "totalAmount",
-      title: t("purchase.fields.price"),
+      title: "Jami",
       align: "center",
       render: (val) => numberSpacing(val),
     },
@@ -151,106 +158,84 @@ const PurchaseDetailPage = () => {
     },
     {
       dataIndex: "serviceName",
-      title: "Nomi",
-      render: (value) => <LineClampCell text={value} />,
+      title: "Xizmat nomi",
+      render: (value, record) => (
+        <LineClampCell text={value || record.name} />
+      ),
     },
     {
       dataIndex: "expenseAccountName",
-      title: "expenseAccountName",
+      title: "Xarajat schyoti",
       width: 180,
       render: (value, record) => (
-        <LineClampCell text={value || record.accountId} />
+        <LineClampCell text={value || record.accountName || record.accountId} />
       ),
     },
     {
       dataIndex: "price",
-      title: t("purchase.fields.price"),
+      title: "Summa",
       align: "right",
       width: 160,
       render: (value) => numberSpacing(value, undefined, true),
     },
   ];
   // useChangeSelectType("disabled");
-  if (isDraft) {
+  if (isDraft && canUpdate) {
     return <PurchaseEditor purchaseId={Number(params.id)} />;
   }
   return (
     <div className="">
       <div className="mt-2 space-y-4">
-        {/* Document Information Card */}
-        <Card className="border-border/50 overflow-hidden bg-gradient-card animate-scale-in transition-all duration-300">
-          <Card className="p-3">
-            <div className="flex justify-start items-center gap-8 flex-wrap">
-              <div className="space-y-1 group animate-slide-in">
-                <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
-                  <div className="p-1.5 bg-primary/10 rounded-md group-hover:bg-primary/20 transition-colors">
-                    <FileText className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="font-semibold">Hujjat raqami</span>
-                </div>
-                <p className="text-sm text-center font-bold text-foreground pl-1">
-                  {data?.docNumber}
-                </p>
+        <DocumentSummary>
+          <DocumentSummaryItem
+            icon={<Building2 size={24} strokeWidth={1.8} />}
+            label="Tashkilot"
+            value={data?.organizationName || "-"}
+          />
+          <DocumentSummaryItem
+            icon={<FileText size={24} strokeWidth={1.8} />}
+            label="Hujjat"
+            value={data?.docNumber || `#${data?.id ?? "-"}`}
+          />
+          <DocumentSummaryItem
+            icon={<CalendarDays size={24} strokeWidth={1.8} />}
+            label="Hujjat sanasi"
+            value={data?.docDate ? customDate(data.docDate) : "-"}
+          />
+          <DocumentSummaryItem
+            icon={<CircleDollarSign size={24} strokeWidth={1.8} />}
+            label="Valyuta"
+            value={currency}
+          />
+          <DocumentSummaryItem
+            icon={<WalletCards size={24} strokeWidth={1.8} />}
+            label="Hujjat summasi"
+            value={`${numberSpacing(documentAmount, undefined, true)} ${currency}`}
+            emphasized
+          />
+        </DocumentSummary>
+
+        <Card className="border border-border p-3">
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+            <div className="min-w-0">
+              <div className="text-xs text-secondary-text">
+                Yetkazib beruvchi
               </div>
-              <div
-                className="space-y-1 group animate-slide-in"
-                style={{ animationDelay: "0.1s" }}
-              >
-                <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
-                  <div className="p-1.5 bg-primary/10 rounded-md group-hover:bg-primary/20 transition-colors">
-                    <Calendar className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="font-semibold">Qabul qilingan sana</span>
-                </div>
-                <p className="text-sm text-center font-bold text-foreground pl-1">
-                  {customDate(data?.docDate)}
-                </p>
+              <div className="truncate text-sm font-semibold text-text">
+                {data?.counterpartyName || "-"}
               </div>
-              <div
-                className="space-y-1 group animate-slide-in"
-                style={{ animationDelay: "0.2s" }}
-              >
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <div className="p-1.5 bg-primary/10 rounded-md group-hover:bg-primary/20 transition-colors">
-                    <Package className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="font-semibold">Yetkazib beruvchi</span>
-                </div>
-                <p className="text-sm text-center font-bold text-foreground pl-1">
-                  {data?.counterpartyName}
-                </p>
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-xs text-secondary-text">Tavsif</div>
+              <div className="truncate text-sm text-text">
+                {data?.comment || "Ma'lumot yo'q"}
               </div>
-              <div
-                className="space-y-1 group animate-slide-in"
-                style={{ animationDelay: "0.3s" }}
-              >
-                <div className="flex items-center gap-1 justify-center text-sm text-muted-foreground">
-                  <div className="p-1.5 bg-primary/10 rounded-md group-hover:bg-primary/20 transition-colors">
-                    <FileText className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="font-semibold">Tavsif</span>
-                </div>
-                <p className="text-sm text-center text-foreground/90 pl-1">
-                  {data?.comment ?? "Ma'lumot yuq"}
-                </p>
-              </div>
-              <div
-                className="space-y-1 group animate-slide-in flex flex-col items-center justify-center"
-                style={{ animationDelay: "0.3s" }}
-              >
-                <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
-                  <div className="p-1.5 bg-primary/10 rounded-md group-hover:bg-primary/20 transition-colors">
-                    <ChartPie className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="font-semibold">Holati</span>
-                </div>
-                <p className="text-sm w-fit flex justify-center items-center">
-                  <ProcessStatusBadge
-                    statusId={data?.statusId}
-                    statusName={data?.statusName}
-                  />
-                </p>
-              </div>
+            </div>
+            <ProcessStatusBadge
+              statusId={data?.statusId}
+              statusName={data?.statusName}
+            />
+            <div className="ml-auto flex items-center gap-2">
               {isDraft && (
                 <PermissionCard permission={purchasePermissions.confirm}>
                   <Button
@@ -287,42 +272,19 @@ const PurchaseDetailPage = () => {
                   </Button>
                 </PermissionCard>
               )}
-              {/* {params.id && (
-                <Link to={`/main/accountingentriesreport?documentId=${params.id}`}>
-                  <Button type="primary">Accounting entries report</Button>
-                </Link>
-              )} */}
-              {/* <div
-                className="space-y-1 animate-slide-in"
-                style={{ animationDelay: "0.4s" }}
-              >
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span className="font-medium">Umumiy summa</span>
-                </div>
-                <div className="relative">
-                  <p className="text-base font-bold">
-                    {numberSpacingWithCurrency(
-                      data?.goodsMovementProducts.reduce(
-                        (a, b) => a + b.pricePerUom * b.qty,
-                        0
-                      ) ?? 0,
-                      data?.goodsMovementProducts[0]?.currencyId ?? 1
-                    )}
-                  </p>
-                </div>
-              </div> */}
             </div>
-          </Card>
+          </div>
         </Card>
 
         {/* Products List Card */}
         <Card className="">
           <div className="mb-3 flex items-center gap-2 px-1 text-sm font-semibold text-text">
             <Package className="size-4 text-primary" />
-            <span>Mahsulot va Xizmatlar</span>
+            <span>Mahsulotlar</span>
           </div>
           <Table
-            dataSource={generateKeyTable(data?.lines)}
+            dataSource={generateKeyTable(data?.lines, "id")}
+            rowKey="key"
             pagination={false}
             scroll={{
               x: "max-content",
@@ -436,7 +398,7 @@ const PurchaseDetailPage = () => {
           <Card className="">
             <div className="mb-3 flex items-center gap-2 px-1 text-sm font-semibold text-text">
               <Wrench className="size-4 text-primary" />
-              <span>Serinkasiz mahsulotlar</span>
+              <span>Xizmatlar</span>
             </div>
             <Table
               dataSource={generateKeyTable(data.serviceLines)}
@@ -453,7 +415,7 @@ const PurchaseDetailPage = () => {
         open={Boolean(selectedLine)}
         title={selectedLine?.productName || "Markirovkalar"}
         items={selectedLineItems}
-        loading={isSerialLoading || isSerialFetching}
+        loading={false}
         onClose={() => setSelectedLine(null)}
       />
     </div>

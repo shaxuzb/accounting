@@ -4,7 +4,8 @@ export interface Contract {
   organizationName: string;
   counterpartyId: number;
   counterpartyName: string;
-  contractType: string;
+  contractType?: string;
+  contractTypeName: string;
   contractTypeId: number;
   contractNumber: string;
   contractDate: string;

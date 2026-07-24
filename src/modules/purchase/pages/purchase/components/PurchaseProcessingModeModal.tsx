@@ -4,6 +4,7 @@ import type { PurchaseProcessingMode } from "../types/form";
 interface PurchaseProcessingModeModalProps {
   open: boolean;
   loading?: boolean;
+  canConfirm?: boolean;
   onClose: () => void;
   onSelect: (mode: PurchaseProcessingMode) => void;
 }
@@ -11,6 +12,7 @@ interface PurchaseProcessingModeModalProps {
 export default function PurchaseProcessingModeModal({
   open,
   loading = false,
+  canConfirm = false,
   onClose,
   onSelect,
 }: PurchaseProcessingModeModalProps) {
@@ -32,9 +34,11 @@ export default function PurchaseProcessingModeModal({
         <Button disabled={loading} onClick={() => onSelect(1)}>
           Saqlash
         </Button>
-        <Button type="primary" loading={loading} onClick={() => onSelect(2)}>
-          Saqlash va tasdiqlash
-        </Button>
+        {canConfirm && (
+          <Button type="primary" loading={loading} onClick={() => onSelect(2)}>
+            Saqlash va tasdiqlash
+          </Button>
+        )}
       </Space>
     </Modal>
   );

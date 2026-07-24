@@ -12,6 +12,10 @@ import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import useLocalStorage from "@/hooks/UseLocalStorage";
 import Card from "@/components/ui/card/Card";
+import {
+  DocumentSummary,
+  DocumentSummaryItem,
+} from "@/components/ui/card/DocumentSummary";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { numberSpacing } from "@/utils/utils";
 import { useCancelSale, useConfirmSale } from "../hooks";
@@ -28,9 +32,7 @@ import {
   getVatAmount,
   roundMoney,
 } from "../utils/pricing";
-import SaleDocumentSummary, {
-  SaleSummaryItem,
-} from "./SaleDocumentSummary";
+import SaleDocumentSummary from "./SaleDocumentSummary";
 import SaleProductGroupList from "./SaleProductGroupList";
 
 interface Props {
@@ -406,24 +408,24 @@ export default function SalePricingEditor({
         organizationName={organizationName}
         totalAmount={totals.totalAmount}
       />
-      <section className="grid overflow-hidden rounded-lg border border-border bg-primary-bg shadow-sm sm:grid-cols-2 lg:grid-cols-5">
-        <SaleSummaryItem
+      <DocumentSummary>
+        <DocumentSummaryItem
           icon={<UserRound size={24} strokeWidth={1.8} />}
           label="Kontragent"
           value={document.counterpartyName || "-"}
         />
-        <SaleSummaryItem
+        <DocumentSummaryItem
           icon={<Boxes size={24} strokeWidth={1.8} />}
           label="Mahsulot turlari"
           value={totals.productCount}
         />
-        <SaleSummaryItem
+        <DocumentSummaryItem
           icon={<PackageCheck size={24} strokeWidth={1.8} />}
           label="Umumiy miqdor"
           value={`${totals.totalQuantity} dona`}
           iconClassName="text-green-600"
         />
-        <SaleSummaryItem
+        <DocumentSummaryItem
           icon={<Sigma size={24} strokeWidth={1.8} />}
           label="Umumiy summa"
           value={`${numberSpacing(totals.totalAmount, undefined, true)} ${currencyCode}`}
@@ -460,7 +462,7 @@ export default function SalePricingEditor({
             </Button>
           </Popconfirm>
         </div>
-      </section>
+      </DocumentSummary>
 
       {loading ? (
         <div className="flex justify-center p-10">

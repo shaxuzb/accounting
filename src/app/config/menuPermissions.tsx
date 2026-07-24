@@ -14,6 +14,7 @@ import {
   Landmark,
   // LayoutDashboard,
   ReceiptText,
+  Scale,
   Settings,
   ShieldCheck,
   ShoppingBag,
@@ -38,6 +39,7 @@ import { settingsBankPermissions } from "@/modules/settings/pages/bank/constants
 import { pricingConditionPermissions } from "@/modules/settings/pages/pricingCondition/constants/permissions";
 import { saleConditionPermissions } from "@/modules/settings/pages/saleCondition/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
+import { openingBalancePermissions } from "@/modules/settings/pages/openingBalance/constants/permissions";
 import {
   cashBookPermissions,
   cashDocumentPermissions,
@@ -84,6 +86,7 @@ export const settingsViewPermissions = [
   purchasePermissions.view,
   pricingConditionPermissions.view,
   saleConditionPermissions.view,
+  openingBalancePermissions.view,
 ] as const;
 
 export const menuPermissions: MainMenu = {
@@ -479,6 +482,15 @@ export const menuPermissions: MainMenu = {
         path: "document-account-settings",
         title: "settings.entities.documentAccountSettings",
         description: "settings.descriptions.documentAccountSettings",
+      },
+    },
+    {
+      code: openingBalancePermissions.view,
+      iconName: <Scale className="size-5" />,
+      linkData: {
+        path: "opening-balances",
+        title: "settings.entities.openingBalance",
+        description: "settings.descriptions.openingBalance",
       },
     },
 

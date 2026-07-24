@@ -1,25 +1,25 @@
 import { Button } from "antd";
 import { PackagePlus } from "lucide-react";
 
-interface PurchaseImportSapActionsProps {
-  foundedSapCodes: number;
+interface PurchaseImportMxikActionsProps {
+  missingMxikCount: number;
   isLoading: boolean;
   isFetching: boolean;
   linesLength: number;
   purchaseMode: "goods" | "services";
-  onDeleteSapCodes: () => void;
+  onDeleteMissingMxiks: () => void;
   onOpenMissingProductsModal: () => void;
 }
 
-export default function PurchaseImportSapActions({
-  foundedSapCodes,
+export default function PurchaseImportMxikActions({
+  missingMxikCount,
   isLoading,
   isFetching,
   linesLength,
   purchaseMode,
-  onDeleteSapCodes,
+  onDeleteMissingMxiks,
   onOpenMissingProductsModal,
-}: PurchaseImportSapActionsProps) {
+}: PurchaseImportMxikActionsProps) {
   if (linesLength === 0 || purchaseMode !== "goods") return null;
 
   const loading = isLoading || isFetching;
@@ -31,19 +31,19 @@ export default function PurchaseImportSapActions({
         htmlType="button"
         onClick={onOpenMissingProductsModal}
         icon={<PackagePlus className="size-4" />}
-        disabled={loading || foundedSapCodes === 0}
+        disabled={loading || missingMxikCount === 0}
       >
-        Topilmagan SAP kodlarni belgilash ({foundedSapCodes})
+        Topilmagan MXIK kodlarni belgilash ({missingMxikCount})
       </Button>
       <Button
         type="primary"
         htmlType="button"
         danger
-        onClick={onDeleteSapCodes}
-        icon={<div>{foundedSapCodes}</div>}
-        disabled={loading || foundedSapCodes === 0}
+        onClick={onDeleteMissingMxiks}
+        icon={<div>{missingMxikCount}</div>}
+        disabled={loading || missingMxikCount === 0}
       >
-        Topilmagan SAP kodlarni o'chirish
+        Topilmagan MXIK kodlarni o'chirish
       </Button>
     </div>
   );

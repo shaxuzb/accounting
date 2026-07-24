@@ -4,9 +4,10 @@ import { queryKeys } from "../constants/queryKeys";
 
 export const useGetDetailDocumentAccountSettings = (
   documentTypeId: string | number,
+  enabled = true,
 ) =>
   useQuery({
     queryKey: queryKeys.detail(documentTypeId),
     queryFn: () => documentAccountSettingsService.detail(documentTypeId),
-    enabled: Boolean(documentTypeId),
+    enabled: enabled && Boolean(documentTypeId),
   });

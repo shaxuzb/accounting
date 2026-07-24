@@ -17,11 +17,17 @@ type SelectValue =
   | undefined
   | (string | number)[];
 
-type SelectOptionItem = Record<string, unknown> & {
+export type SelectOptionItem = Record<string, unknown> & {
   id: number;
   name?: string;
   number?: string | number;
 };
+
+export interface SelectCustomDisplayConfig {
+  optionLabel?: (item: SelectOptionItem) => React.ReactNode;
+  selectedLabel?: (item: SelectOptionItem) => React.ReactNode;
+  searchFields?: readonly string[];
+}
 
 interface SelectCustomProps {
   label?: string;
@@ -43,7 +49,10 @@ interface SelectCustomProps {
   disabled?: boolean;
   mode?: "multiple" | "tags";
   dinamicLabel?: string;
+  displayConfig?: SelectCustomDisplayConfig;
+  /** @deprecated Yangi kodda displayConfig.optionLabel ishlating. */
   optionLabel?: (item: SelectOptionItem) => React.ReactNode;
+  /** @deprecated Yangi kodda displayConfig.selectedLabel ishlating. */
   selectedLabel?: (item: SelectOptionItem) => React.ReactNode;
   clearable?: boolean;
   disabledValue?: string | number | null;
@@ -79,6 +88,14 @@ const toSearchText = (value: unknown): string => {
   return "";
 };
 
+const defaultSearchFields = [
+  "name",
+  "fullName",
+  "shortName",
+  "inn",
+  "number",
+] as const;
+
 const SelectCustom: React.FC<SelectCustomProps> = (props) => {
   const { t } = useTranslation();
   const lang = useAppSelector((state) => state.lang.lang);
@@ -94,8 +111,9 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     readOnly = false,
     clearable = false,
     dinamicLabel = "name",
-    optionLabel,
-    selectedLabel,
+    displayConfig,
+    optionLabel: legacyOptionLabel,
+    selectedLabel: legacySelectedLabel,
     getCustomValue,
     placeholder = "",
     disabledValue = null,
@@ -122,6 +140,10 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     autoSelectValue = null,
     autoSelectKeys = ["id"],
   } = props;
+
+  const optionLabel = legacyOptionLabel ?? displayConfig?.optionLabel;
+  const selectedLabel = legacySelectedLabel ?? displayConfig?.selectedLabel;
+  const searchFields = displayConfig?.searchFields ?? defaultSearchFields;
 
   const requestParams = React.useMemo(
     () =>
@@ -186,9 +208,8 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         const searchableText = [
           option?.label,
           option?.id,
-          option?.name,
-          option?.number,
           option?.[dinamicLabel],
+          ...searchFields.map((field) => option?.[field]),
         ]
           .map(toSearchText)
           .join(" ");
@@ -196,7 +217,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         return normalizeText(searchableText).includes(normalizeText(input));
       },
     };
-  }, [dinamicLabel, search]);
+  }, [dinamicLabel, search, searchFields]);
 
   const currentValue = formik ? getIn(formik.values, fieldName) : value;
   const hasError = Boolean(
@@ -228,6 +249,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
           : getFirst;
 
     if (
+      enabled &&
       isSuccess &&
       shouldAutoSelect &&
       firstOption &&
@@ -265,6 +287,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     }
   }, [
     isSuccess,
+    enabled,
     selectOptions,
     formik,
     fieldName,

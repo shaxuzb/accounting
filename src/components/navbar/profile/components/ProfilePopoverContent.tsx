@@ -15,6 +15,7 @@ import { UzbFlagIcon } from "@/components/widget/customicons/UzbFlagIcon";
 import { RusFlagIcon } from "@/components/widget/customicons/RusFlagIcon";
 import { EngFlagIcon } from "@/components/widget/customicons/EngFlagIcon";
 import { setLang, type Lang } from "@/store/features/langSlice";
+import { useEffectiveTheme } from "@/shared/hooks/useEffectiveTheme";
 
 type ProfilePopoverContentProps = {
   fullName?: string;
@@ -141,18 +142,18 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
   phone = "+998 90 123 45 67",
   onProfileClick,
   onThemeClick,
-  onSecurityClick,
-  onWallpaperClick,
+  // onSecurityClick,
+  // onWallpaperClick,
   // onDesktopDownload,
   // onMobileDownload,
   onLogout,
 }) => {
   const { t } = useTranslation();
   const lang = useAppSelector((state) => state.lang.lang);
-  const themeMode = useAppSelector((state) => state.mode.mode);
+  const effectiveTheme = useEffectiveTheme();
   const [langPopover, setLangPopover] = useState(false);
   const langTriggerRef = useRef<HTMLDivElement | null>(null);
-  const isDarkMode = themeMode === "dark";
+  const isDarkMode = effectiveTheme === "dark";
 
   return (
     <div className="rounded-lg bg-primary-bg p-0">
@@ -191,7 +192,7 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
             <MenuCard
               icon={<ShieldCheck className="size-5" />}
               label={t("profile.security")}
-              onClick={onSecurityClick}
+              // onClick={onSecurityClick}
             />
 
             <div
@@ -240,7 +241,7 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
             <MenuCard
               icon={<Palette className="size-5" />}
               label={t("profile.wallpaper")}
-              onClick={onWallpaperClick}
+              // onClick={onWallpaperClick}
             />
           </div>
         </div>

@@ -15,12 +15,16 @@ import ContractAddEditPage from "./ContractAddEditPage";
 import { useGetListContract } from "../hooks/useGetListContract";
 import type { Contract } from "../types/type";
 import { contractPermissions } from "../constants/permissions";
+import ContractDetailModal from "./ContractDetailModal";
 
 export default function ContractListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
+  const [detailId, setDetailId] = useState<number | null>(null);
   const contractTypeId = pathname.startsWith("/main/sales/contracts") ? 2 : 1;
   const isSaleContract = contractTypeId === 2;
   const newParams = useMemo(() => {
@@ -30,8 +34,10 @@ export default function ContractListPage() {
   }, [contractTypeId, searchParams]);
   const { data, refetch, isLoading, isFetching } = useGetListContract(
     newParams,
-    pathname,
+    contractTypeId,
   );
+  const permissions = user?.user.permissions ?? [];
+  const canViewDetail = permissions.includes(contractPermissions.detail);
 
   const tableColumns: TableColumnsType<Contract> = [
     {
@@ -43,6 +49,18 @@ export default function ContractListPage() {
     {
       title: t("contract.fields.contractNumber"),
       dataIndex: "contractNumber",
+      render: (value, record) =>
+        canViewDetail ? (
+          <Button
+            type="link"
+            className="h-auto! p-0!"
+            onClick={() => setDetailId(record.id)}
+          >
+            {value || record.id}
+          </Button>
+        ) : (
+          value || record.id
+        ),
     },
     {
       title: t(
@@ -64,6 +82,8 @@ export default function ContractListPage() {
     {
       title: t("contract.fields.contractType"),
       dataIndex: "contractTypeName",
+      render: (_, record) =>
+        record.contractTypeName || record.contractType || "-",
     },
     {
       title: t("contract.fields.stateName"),
@@ -72,7 +92,6 @@ export default function ContractListPage() {
       render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
   ];
-  const permissions = user?.user.permissions ?? [];
   const hasActions =
     permissions.includes(contractPermissions.update) ||
     permissions.includes(contractPermissions.delete);
@@ -108,10 +127,6 @@ export default function ContractListPage() {
         },
       ]
     : tableColumns;
-
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
-
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -154,6 +169,11 @@ export default function ContractListPage() {
         }}
         id={editId}
         contractTypeId={contractTypeId}
+      />
+      <ContractDetailModal
+        id={detailId}
+        contractTypeId={contractTypeId}
+        onClose={() => setDetailId(null)}
       />
     </div>
   );

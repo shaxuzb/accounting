@@ -119,8 +119,8 @@ export default function SaleMarkingModal({
       }
     >
       <div className="space-y-3">
-        <div className="rounded-md border border-dashed border-blue-400 bg-blue-50/40 p-3">
-          <div className="mb-2 text-sm font-semibold text-blue-700">
+        <div className="rounded-md border border-dashed border-info/50 bg-info-soft/50 p-3">
+          <div className="mb-2 text-sm font-semibold text-info">
             Markirovka kodini skaner qiling yoki kiriting
           </div>
           <BarcodeScannerInput
@@ -132,7 +132,7 @@ export default function SaleMarkingModal({
         <div
           className={`overflow-hidden rounded-md border ${
             isComplete
-              ? "border-green-300 bg-green-50/40"
+              ? "border-success/50 bg-success-soft/40"
               : "border-border"
           }`}
         >
@@ -140,8 +140,8 @@ export default function SaleMarkingModal({
             type="button"
             className={`grid w-full gap-3 border-b px-3 py-3 text-left transition-colors md:grid-cols-[auto_minmax(260px,1fr)_160px_160px] ${
               isComplete
-                ? "border-green-200 bg-green-100/70 hover:bg-green-100"
-                : "border-border bg-muted/30 hover:bg-muted/50"
+                ? "border-success/40 bg-success-soft/70 hover:bg-success-soft"
+                : "border-border bg-surface-muted hover:bg-surface-hover"
             }`}
             aria-expanded={isProductExpanded}
             onClick={() => setIsProductExpanded((current) => !current)}
@@ -165,10 +165,10 @@ export default function SaleMarkingModal({
             </div>
             <div className="text-right">
               <div className="text-xs text-secondary-text">Holati</div>
-              <div className={isComplete ? "font-semibold text-green-700" : undefined}>
+              <div className={isComplete ? "font-semibold text-success" : undefined}>
                 {numberSpacing(markings.length, undefined, true)} / {numberSpacing(quantity, undefined, true)}
                 {isComplete && (
-                  <CheckCircle2 className="ml-1 inline-block size-4 text-green-600" />
+                  <CheckCircle2 className="ml-1 inline-block size-4 text-success" />
                 )}
               </div>
             </div>
@@ -187,16 +187,16 @@ export default function SaleMarkingModal({
                     key={batch.batchId}
                     className={`overflow-hidden rounded-md border ${
                       isBatchComplete
-                        ? "border-green-300 bg-green-50/40"
-                        : "border-border bg-white"
+                        ? "border-success/50 bg-success-soft/40"
+                        : "border-border bg-card"
                     }`}
                   >
                     <button
                       type="button"
                       className={`flex w-full flex-wrap items-center justify-between gap-3 border-b px-3 py-2 text-left ${
                         isBatchComplete
-                          ? "border-green-200 bg-green-100/70"
-                          : "border-border bg-slate-50"
+                          ? "border-success/40 bg-success-soft/70"
+                          : "border-border bg-surface-muted"
                       }`}
                       aria-expanded={isBatchExpanded}
                       onClick={() =>
@@ -228,7 +228,7 @@ export default function SaleMarkingModal({
                         <span className="block">
                           Miqdor: {numberSpacing(batch.quantity, undefined, true)} Dona
                         </span>
-                        <span className={isBatchComplete ? "font-medium text-green-700" : "font-medium text-text"}>
+                        <span className={isBatchComplete ? "font-medium text-success" : "font-medium text-text"}>
                           Urilgan: {numberSpacing(batch.selectedQuantity, undefined, true)} / {numberSpacing(batch.quantity, undefined, true)}
                         </span>
                       </span>

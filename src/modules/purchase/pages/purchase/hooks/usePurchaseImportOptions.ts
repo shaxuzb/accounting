@@ -12,52 +12,51 @@ import type {
   SelectOption,
 } from "../types/type";
 import {
-  getProductCode,
+  getProductMxik,
   normalizeProductOptions,
 } from "../utils/purchaseImport";
 
-export const usePurchaseImportOptions = (
+export const getPurchaseProductOptionsQueryKey = (purchaseMode: PurchaseMode) =>
+  [
+    "selectlist",
+    selectListKeys.product,
+    purchaseMode === "services"
+      ? "purchase-services-manual"
+      : "purchase-goods-manual",
+  ] as const;
+
+export const fetchPurchaseProductOptions = async (
   purchaseMode: PurchaseMode,
 ) => {
-  const productQuery = useQuery<ProductSelectOption[]>({
-    queryKey: [
-      "selectlist",
-      selectListKeys.product,
-      "purchase-goods-manual",
-    ],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<
-        ProductSelectOption[] | ProductListResponse
-      >(selectListEndpoints.productsSelectList, {
-        params: {
-          IsService: false,
-          //  Purchase mahsulotlari warehouse bo'yicha filterlanmaydi.
-          PageSize: 1000,
-        },
-      });
-      return normalizeProductOptions(data);
+  const { data } = await $axiosPrivate.get<
+    ProductSelectOption[] | ProductListResponse
+  >(selectListEndpoints.productsSelectList, {
+    params: {
+      IsService: purchaseMode === "services",
+      // Purchase mahsulotlari warehouse bo'yicha filterlanmaydi.
+      PageSize: 1000,
     },
-    enabled: true,
+  });
+
+  return normalizeProductOptions(data);
+};
+
+export const usePurchaseImportOptions = (
+  purchaseMode: PurchaseMode,
+  enabled = true,
+) => {
+  const productQuery = useQuery<ProductSelectOption[]>({
+    queryKey: getPurchaseProductOptionsQueryKey("goods"),
+    queryFn: () => fetchPurchaseProductOptions("goods"),
+    enabled: enabled && purchaseMode === "goods",
+    staleTime: 5 * 60 * 1000,
   });
 
   const serviceQuery = useQuery<ProductSelectOption[]>({
-    queryKey: [
-      "selectlist",
-      selectListKeys.product,
-      "purchase-services-manual",
-    ],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<
-        ProductSelectOption[] | ProductListResponse
-      >(selectListEndpoints.productsSelectList, {
-        params: {
-          IsService: true,
-          PageSize: 1000,
-        },
-      });
-      return normalizeProductOptions(data);
-    },
-    enabled: true,
+    queryKey: getPurchaseProductOptionsQueryKey("services"),
+    queryFn: () => fetchPurchaseProductOptions("services"),
+    enabled: enabled && purchaseMode === "services",
+    staleTime: 5 * 60 * 1000,
   });
 
   const unitQuery = useQuery<SelectOption[]>({
@@ -68,7 +67,8 @@ export const usePurchaseImportOptions = (
       );
       return data ?? [];
     },
-    enabled: true,
+    enabled,
+    staleTime: 5 * 60 * 1000,
   });
 
   const vatRateQuery = useQuery<SelectOption[]>({
@@ -79,99 +79,56 @@ export const usePurchaseImportOptions = (
       );
       return data ?? [];
     },
-    enabled: true,
+    enabled,
+    staleTime: 5 * 60 * 1000,
   });
 
-  const productQueryData = productQuery.data ?? [];
-  const serviceQueryData = serviceQuery.data ?? [];
-  const allProductOptions = useMemo(
-    () => [...productQueryData, ...serviceQueryData],
-    [productQueryData, serviceQueryData],
-  );
-
-  const productLookupOptions = useMemo(
-    () => {
-      const map = new Map<number, ProductSelectOption>();
-      allProductOptions.forEach((item) => {
-        if (!map.has(Number(item.id))) {
-          map.set(Number(item.id), item);
-        }
-      });
-
-      return [...map.values()];
-    },
-    [allProductOptions],
-  );
-
-  const serviceProductOptions = useMemo(() => {
-    if (serviceQueryData.length) return serviceQueryData;
-
-    const hasServiceFlag = allProductOptions.some(
-      (item) => item.isService === true,
-    );
-
-    if (!hasServiceFlag) return [];
-
-    return allProductOptions.filter((item) => item.isService === true);
-  }, [allProductOptions, serviceQueryData]);
-
-  const goodsProductOptions = useMemo(() => {
-    if (productQueryData.length) return productQueryData;
-
-    const hasProductFlag = allProductOptions.some(
-      (item) => item.isService === false,
-    );
-
-    if (!hasProductFlag) return [];
-
-    return allProductOptions.filter((item) => item.isService === false);
-  }, [allProductOptions, productQueryData]);
-
-  const productIdBySapCode = useMemo(() => {
-    const map = new Map<string, number>();
-    productLookupOptions.forEach((item) => {
-      const codes = [item.code, item.barcode, item.mxik].filter(Boolean);
-      codes.forEach((code) => {
-        map.set(String(code).trim(), Number(item.id));
-      });
-    });
-    return map;
-  }, [productLookupOptions]);
-
-  const productByCode = useMemo(() => {
-    const map = new Map<string, ProductSelectOption>();
-    productLookupOptions.forEach((item) => {
-      const codes = [item.code, item.barcode, item.mxik].filter(Boolean);
-      codes.forEach((code) => {
-        map.set(String(code).trim(), item);
-      });
-    });
-    return map;
-  }, [productLookupOptions]);
-
+  const activeQuery = purchaseMode === "services" ? serviceQuery : productQuery;
   const itemOptions = useMemo<ProductSelectOption[]>(
-    () =>
-      purchaseMode === "services"
-        ? serviceProductOptions
-        : goodsProductOptions.map((item) => ({
-            ...item,
-            code: getProductCode(item),
-          })),
-    [goodsProductOptions, purchaseMode, serviceProductOptions],
+    () => activeQuery.data ?? [],
+    [activeQuery.data],
   );
+
+  const productMxikLookup = useMemo(() => {
+    const groupedProducts = new Map<string, ProductSelectOption[]>();
+    const uniqueProducts = new Map(
+      itemOptions.map((item) => [Number(item.id), item] as const),
+    );
+
+    uniqueProducts.forEach((item) => {
+      const mxik = getProductMxik(item);
+      if (!mxik) return;
+
+      const products = groupedProducts.get(mxik) ?? [];
+      products.push(item);
+      groupedProducts.set(mxik, products);
+    });
+
+    const productByMxik = new Map<string, ProductSelectOption>();
+    const ambiguousMxiks = new Set<string>();
+    groupedProducts.forEach((products, mxik) => {
+      if (products.length === 1) {
+        productByMxik.set(mxik, products[0]);
+      } else {
+        ambiguousMxiks.add(mxik);
+      }
+    });
+
+    return {
+      productByMxik,
+      knownMxiks: new Set(groupedProducts.keys()),
+      ambiguousMxiks,
+    };
+  }, [itemOptions]);
 
   return {
-    data: productQuery.data,
-    isFetching: productQuery.isFetching,
-    isLoading: productQuery.isLoading,
-    isSuccess: productQuery.isSuccess,
-    refetchProducts: productQuery.refetch,
-    isServicesLoading: serviceQuery.isLoading,
-    isServicesSuccess: serviceQuery.isSuccess,
+    data: activeQuery.data,
+    isFetching: activeQuery.isFetching,
+    isLoading: activeQuery.isLoading,
+    isSuccess: activeQuery.isSuccess,
+    refetchProducts: activeQuery.refetch,
     itemOptions,
-    productByCode,
-    productIdBySapCode,
-    serviceOptions: serviceProductOptions,
+    ...productMxikLookup,
     unitOptions: unitQuery.data ?? [],
     vatRateOptions: vatRateQuery.data ?? [],
   };

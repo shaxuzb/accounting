@@ -20,7 +20,8 @@
     "created": "Created",
     "back": "Back",
     "next": "Next",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "create": "Create"
   },
   "actions": {
     "deleteSuccess": "Element {{id}} was deleted successfully",
@@ -161,7 +162,8 @@
       "purchaseServices": "Purchase services",
       "pricingConditions": "Pricing conditions",
       "saleConditions": "Sale conditions",
-      "documentAccountSettings": "Document account settings"
+      "documentAccountSettings": "Document account settings",
+      "openingBalance": "Opening balance"
     },
     "descriptions": {
       "roles": "Manage system roles and permissions.",
@@ -182,7 +184,8 @@
       "purchaseServices": "Manage services used in purchases.",
       "pricingConditions": "Manage pricing methods and rounding rules.",
       "saleConditions": "Manage costing method and VAT rate for sales.",
-      "documentAccountSettings": "Configure accounts used by documents."
+      "documentAccountSettings": "Configure accounts used by documents.",
+      "openingBalance": "Enter the organization's opening balances by account."
     },
     "fields": {
       "accountNumber": "Account number",
@@ -279,6 +282,73 @@
       "activeDescription": "Showing the data of the active sale condition currently in effect.",
       "infoTitle": "Information",
       "infoDescription": "This sale condition applies to all sale operations in the specified period for the current organization."
+    }
+  },
+  "openingBalance": {
+    "title": "Opening balance",
+    "form": {
+      "createTitle": "Add opening balance",
+      "editTitle": "Edit opening balance"
+    },
+    "subtitle": "Opening balances by organization and account",
+    "emptySubtitle": "Enter the balance date and description first",
+    "accountsTitle": "Balances by account",
+    "accountDetail": "Account details",
+    "detailsTitle": "Detail lines",
+    "detailsSubtitle": "Enter debit or credit balances by analytics",
+    "subkontosTitle": "Subkonto (analytics)",
+    "selectedDetail": "Analytics for row {{row}}",
+    "fields": {
+      "balanceDate": "Balance date",
+      "description": "Description",
+      "account": "Account",
+      "accountName": "Account name",
+      "debit": "Debit",
+      "credit": "Credit",
+      "totalDebit": "Total debit",
+      "totalCredit": "Total credit",
+      "accountsCount": "Accounts count",
+      "balance": "Balance",
+      "analytics": "Analytics",
+      "quantity": "Quantity",
+      "currency": "Currency",
+      "currencyAmount": "Currency amount",
+      "exchangeRate": "Exchange rate"
+    },
+    "analytics": {
+      "complete": "Complete",
+      "incomplete": "Incomplete",
+      "notRequired": "Not required"
+    },
+    "actions": {
+      "addAccount": "Add account",
+      "addDetail": "Add line",
+      "deleteTitle": "Delete the opening balance?",
+      "deleteDescription": "All account, detail, and subkonto data will be deleted with it."
+    },
+    "messages": {
+      "created": "Opening balance created",
+      "updated": "Opening balance updated",
+      "deleted": "Opening balance deleted",
+      "loadError": "Failed to load the opening balance",
+      "noAccounts": "No accounts have been added",
+      "accountSaved": "Account balances saved",
+      "accountLoadError": "Failed to load account details",
+      "loadingAccountMeta": "Loading account properties...",
+      "noDetails": "No detail lines",
+      "selectDetail": "Select a row to view subkontos"
+    },
+    "states": {
+      "notCreated": "Not created"
+    },
+    "validation": {
+      "accountRequired": "Select an account",
+      "detailRequired": "Enter at least one detail line",
+      "groupAccount": "A balance cannot be entered for a group account",
+      "singleSide": "Enter either debit or credit in row {{row}}",
+      "quantityRequired": "Enter quantity in row {{row}}",
+      "currencyRequired": "Enter currency, amount, and rate in row {{row}}",
+      "subkontoRequired": "Select the {{name}} subkonto in row {{row}}"
     }
   },
   "purchase": {

@@ -522,7 +522,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
       {hasPieceTrackedRows && availableProductsQuery.isSuccess && (
         <SaleBarcodeScanner onScan={handleScan} />
       )}
-      <div className="flex items-center justify-between rounded-md border border-border bg-white px-3 py-2">
+      <div className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2">
         <span className="font-semibold text-text">
           Ombordan chiqariladigan tovarlar
         </span>
@@ -547,9 +547,9 @@ export default function SaleWarehouseConfirm({ document }: Props) {
               key={group.key}
               className={`overflow-hidden border ${
                 isGroupComplete
-                  ? "border-green-300 bg-green-50/40"
+                  ? "border-success/50 bg-success-soft/40!"
                   : isGroupPartial
-                    ? "border-amber-300 bg-amber-50/30"
+                    ? "border-warning/50 bg-warning-soft/40!"
                     : "border-border"
               }`}
             >
@@ -557,10 +557,10 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                 type="button"
                 className={`grid w-full gap-3 border-b px-3 py-3 text-left transition-colors md:grid-cols-[auto_minmax(260px,1fr)_140px_140px] ${
                   isGroupComplete
-                    ? "border-green-200 bg-green-100/70 hover:bg-green-100"
+                    ? "border-success/40 bg-success-soft/70 hover:bg-success-soft"
                     : isGroupPartial
-                      ? "border-amber-200 bg-amber-100/60 hover:bg-amber-100"
-                      : "border-border bg-muted/30 hover:bg-muted/50"
+                      ? "border-warning/40 bg-warning-soft/70 hover:bg-warning-soft"
+                      : "border-border bg-surface-muted hover:bg-surface-hover"
                 }`}
                 aria-expanded={isExpanded}
                 onClick={() =>
@@ -590,11 +590,11 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-secondary-text">Holati</div>
-                  <div className={isGroupComplete ? "font-semibold text-green-700" : undefined}>
+                  <div className={isGroupComplete ? "font-semibold text-success" : undefined}>
                     {numberSpacing(groupConfirmedQuantity, undefined, true)} /{" "}
                     {numberSpacing(groupTotalQuantity, undefined, true)}
                     {isGroupComplete && (
-                      <CheckCircle2 className="ml-1 inline-block size-4 text-green-600" />
+                      <CheckCircle2 className="ml-1 inline-block size-4 text-success" />
                     )}
                   </div>
                 </div>
@@ -613,9 +613,9 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                   return (
                     <div
                       key={batch.key}
-                      className="overflow-hidden rounded-md border border-border bg-white"
+                      className="overflow-hidden rounded-md border border-border bg-card"
                     >
-                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-slate-50 px-3 py-2">
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-muted px-3 py-2">
                         <div>
                           <div className="text-sm font-semibold text-text">
                             Partiya {batch.batchNumber || batch.batchId || "—"}

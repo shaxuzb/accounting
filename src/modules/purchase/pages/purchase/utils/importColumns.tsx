@@ -17,7 +17,7 @@ const renderClamp = (value: unknown) => (
 );
 
 export const getBaseColumnConfig = (
-  _productWithCount: boolean,
+  productWithCount: boolean,
   withDiscount: boolean,
 ): ImportColumnConfig[] => {
   const baseColumns: ImportColumnConfig[] = [
@@ -39,21 +39,41 @@ export const getBaseColumnConfig = (
     },
   ];
 
+  const mxikColumns: ImportColumnConfig[] = productWithCount
+    ? []
+    : [
+        {
+          dataIndex: "mxik",
+          title: "MXIK kod",
+          align: "center",
+          width: 160,
+          code: "mxik",
+        },
+      ];
+
+  const quantityOrMarkingColumns: ImportColumnConfig[] = productWithCount
+    ? [
+        {
+          dataIndex: "qty",
+          title: "Miqdori",
+          align: "center",
+          width: 120,
+          code: "qty",
+        },
+      ]
+    : [
+        {
+          dataIndex: "markingNumber",
+          title: "Markirovka",
+          align: "center",
+          width: 180,
+          code: "markingNumber",
+        },
+      ];
+
   const modeColumns: ImportColumnConfig[] = [
-    {
-      dataIndex: "sapCode",
-      title: "MXIK kod",
-      align: "center",
-      width: 160,
-      code: "sapCode",
-    },
-    {
-      dataIndex: "qty",
-      title: "Miqdori",
-      align: "center",
-      width: 120,
-      code: "qty",
-    },
+    ...mxikColumns,
+    ...quantityOrMarkingColumns,
     {
       dataIndex: "price",
       title: "Narxi",

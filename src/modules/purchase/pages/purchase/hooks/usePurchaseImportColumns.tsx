@@ -37,6 +37,7 @@ interface PurchaseChartAccountOption {
 
 interface UsePurchaseImportColumnsParams {
   columnConfig: ImportColumnConfig[];
+  enabled?: boolean;
   handleCellCommit: (
     rowIndex: number,
     dataIndex: string,
@@ -49,8 +50,7 @@ interface UsePurchaseImportColumnsParams {
     patch: Partial<PurchaseImportRow>,
   ) => void;
   isLoading: boolean;
-  isSapCodeValid: (value: unknown) => boolean;
-  isServicesLoading: boolean;
+  isMxikValid: (value: unknown) => boolean;
   itemOptions: ProductSelectOption[];
   openMarkingModal: (rowIndex: number) => void;
   openAccountModal: (rowIndex: number) => void;
@@ -61,13 +61,13 @@ interface UsePurchaseImportColumnsParams {
 
 export const usePurchaseImportColumns = ({
   columnConfig,
+  enabled = true,
   handleCellCommit,
   handleDeleteRow,
   handleItemSelect,
   handleRowValueChange,
   isLoading,
-  isSapCodeValid,
-  isServicesLoading,
+  isMxikValid,
   itemOptions,
   openMarkingModal,
   openAccountModal,
@@ -94,6 +94,7 @@ export const usePurchaseImportColumns = ({
       );
       return data ?? [];
     },
+    enabled,
   });
   const { data: vatAccounts = [] } = useQuery<PurchaseChartAccountOption[]>({
     queryKey: [
@@ -109,6 +110,7 @@ export const usePurchaseImportColumns = ({
       );
       return data ?? [];
     },
+    enabled,
   });
   const chartAccounts = useMemo(
     () =>
@@ -168,7 +170,7 @@ export const usePurchaseImportColumns = ({
             ? purchaseMode === "services"
               ? "Xizmat"
               : "Tovar"
-            : col.code === "sapCode"
+            : col.code === "mxik"
               ? "MXIK"
               : col.title,
         width: col.width,
@@ -190,6 +192,7 @@ export const usePurchaseImportColumns = ({
           render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => (
             <Select
               showSearch
+              optionFilterProp="label"
               className="w-full"
               placeholder={
                 record.product
@@ -199,7 +202,7 @@ export const usePurchaseImportColumns = ({
                     : "Tovar"
               }
               value={record.productId ?? undefined}
-              loading={isLoading || isServicesLoading}
+              loading={isLoading}
               options={itemOptions.map((item) => ({
                 value: item.id,
                 label: item.name,
@@ -218,10 +221,10 @@ export const usePurchaseImportColumns = ({
           record: PurchaseImportRow,
           rowIndex: number,
         ) => {
-          const isSapCodeCell = col.code === "sapCode";
-          const hasSapCodeValue = String(value ?? "").trim().length > 0;
-          const invalidSapCode =
-            isSapCodeCell && hasSapCodeValue && !isSapCodeValid(value);
+          const isMxikCell = col.code === "mxik";
+          const hasMxikValue = String(value ?? "").trim().length > 0;
+          const invalidMxik =
+            isMxikCell && hasMxikValue && !isMxikValid(value);
 
           return (
             <PurchaseImportEditableCell
@@ -229,8 +232,8 @@ export const usePurchaseImportColumns = ({
               dataIndex={String(col.dataIndex)}
               rowIndex={rowIndex ?? 0}
               onCommit={handleCellCommit}
-              isInvalid={invalidSapCode}
-              disabled={isSapCodeCell && Boolean(record.productId)}
+              isInvalid={invalidMxik}
+              disabled={isMxikCell && Boolean(record.productId)}
             />
           );
         },
@@ -270,7 +273,7 @@ export const usePurchaseImportColumns = ({
     };
 
     const orderedEditableColumns = editableColumns.flatMap((column) =>
-      purchaseMode === "goods" && column.dataIndex === "sapCode"
+      purchaseMode === "goods" && column.dataIndex === "mxik"
         ? [column, markingColumn]
         : [column],
     );
@@ -288,6 +291,7 @@ export const usePurchaseImportColumns = ({
           ) : (
             <Select
               showSearch
+              optionFilterProp="label"
               className="w-full"
               placeholder="Birlik"
               value={(record.unitId as number | null) ?? undefined}
@@ -351,6 +355,7 @@ export const usePurchaseImportColumns = ({
             <div className="flex items-center">
               <Select
                 showSearch
+                optionFilterProp="label"
                 allowClear
                 className="min-w-28"
                 placeholder="QQS"
@@ -427,8 +432,7 @@ export const usePurchaseImportColumns = ({
     handleItemSelect,
     handleRowValueChange,
     isLoading,
-    isSapCodeValid,
-    isServicesLoading,
+    isMxikValid,
     itemOptions,
     openAccountModal,
     openMarkingModal,

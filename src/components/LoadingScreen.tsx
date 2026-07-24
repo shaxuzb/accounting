@@ -12,18 +12,12 @@ import {
   ClipboardList,
   Layers,
 } from "lucide-react";
-import { useAppSelector } from "@/store/hooks";
 import { useTranslation } from "react-i18next";
+import { useEffectiveTheme } from "@/shared/hooks/useEffectiveTheme";
 
 const LoadingScreen = () => {
   const { t } = useTranslation();
-  const themeMode = useAppSelector((state) => state.mode.mode); // "dark" | "light"
-  const isDark =
-    themeMode === "dark"
-      ? true
-      : themeMode === "light"
-        ? window.matchMedia("(prefers-color-scheme: dark)").matches
-        : false;
+  const isDark = useEffectiveTheme() === "dark";
 
   const SIZE = 640;
   const RADIUS = 205;

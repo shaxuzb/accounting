@@ -19,12 +19,12 @@ interface SummaryItemProps {
 
 const SummaryItem = ({ icon, label, value, emphasized }: SummaryItemProps) => (
   <div className="flex min-h-20 min-w-0 items-center gap-3 border-b border-border px-5 py-3 lg:border-r lg:border-b-0 last:border-r-0 last:border-b-0">
-    <div className="shrink-0 text-primary">{icon}</div>
+    <div className="shrink-0 text-brand-text">{icon}</div>
     <div className="min-w-0">
       <div className="text-xs text-secondary-text">{label}</div>
       <div
         className={`mt-0.5 truncate text-sm font-semibold ${
-          emphasized ? "text-primary" : "text-text"
+          emphasized ? "text-brand-text" : "text-text"
         }`}
         title={typeof value === "string" ? value : undefined}
       >

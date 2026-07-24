@@ -33,9 +33,11 @@ const getDefaultAccount = (
 
 export const useGetPurchaseDocumentAccountDefaults = (
   purchaseMode: PurchaseMode,
+  enabled = true,
 ) => {
   const settingsQuery = useGetDetailDocumentAccountSettings(
     purchaseDocumentTypeIds[purchaseMode],
+    enabled,
   );
 
   return useMemo(() => {

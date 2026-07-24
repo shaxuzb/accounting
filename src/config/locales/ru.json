@@ -20,7 +20,8 @@
     "created": "Создано",
     "back": "Назад",
     "next": "Далее",
-    "refresh": "Обновить"
+    "refresh": "Обновить",
+    "create": "Создать"
   },
   "actions": {
     "deleteSuccess": "Элемент {{id}} успешно удалён",
@@ -161,7 +162,8 @@
       "purchaseServices": "Услуги закупки",
       "pricingConditions": "Условия ценообразования",
       "saleConditions": "Условия продаж",
-      "documentAccountSettings": "Настройки счетов документов"
+      "documentAccountSettings": "Настройки счетов документов",
+      "openingBalance": "Начальный баланс"
     },
     "descriptions": {
       "roles": "Управление ролями и правами доступа.",
@@ -182,7 +184,8 @@
       "purchaseServices": "Управление услугами, используемыми в закупках.",
       "pricingConditions": "Управление методами ценообразования и округления.",
       "saleConditions": "Управление методами себестоимости и НДС для продаж.",
-      "documentAccountSettings": "Настройка счетов для документов."
+      "documentAccountSettings": "Настройка счетов для документов.",
+      "openingBalance": "Ввод начальных остатков организации по счетам."
     },
     "fields": {
       "accountNumber": "Номер счёта",
@@ -279,6 +282,73 @@
       "activeDescription": "Отображаются данные активного условия продаж, действующего в текущий момент.",
       "infoTitle": "Информация",
       "infoDescription": "Это условие продаж применяется ко всем операциям продаж в указанный период для текущей организации."
+    }
+  },
+  "openingBalance": {
+    "title": "Начальный баланс",
+    "form": {
+      "createTitle": "Добавить начальный баланс",
+      "editTitle": "Редактировать начальный баланс"
+    },
+    "subtitle": "Начальные остатки организации по счетам",
+    "emptySubtitle": "Сначала укажите дату баланса и описание",
+    "accountsTitle": "Остатки по счетам",
+    "accountDetail": "Детализация счета",
+    "detailsTitle": "Позиции детализации",
+    "detailsSubtitle": "Введите дебетовый или кредитовый остаток по аналитике",
+    "subkontosTitle": "Субконто (аналитика)",
+    "selectedDetail": "Аналитика для строки {{row}}",
+    "fields": {
+      "balanceDate": "Дата баланса",
+      "description": "Описание",
+      "account": "Счет",
+      "accountName": "Наименование счета",
+      "debit": "Дебет",
+      "credit": "Кредит",
+      "totalDebit": "Итого дебет",
+      "totalCredit": "Итого кредит",
+      "accountsCount": "Количество счетов",
+      "balance": "Сальдо",
+      "analytics": "Аналитика",
+      "quantity": "Количество",
+      "currency": "Валюта",
+      "currencyAmount": "Сумма в валюте",
+      "exchangeRate": "Курс"
+    },
+    "analytics": {
+      "complete": "Заполнено",
+      "incomplete": "Не заполнено",
+      "notRequired": "Не требуется"
+    },
+    "actions": {
+      "addAccount": "Добавить счет",
+      "addDetail": "Добавить позицию",
+      "deleteTitle": "Удалить начальный баланс?",
+      "deleteDescription": "Вместе с балансом будут удалены все счета, позиции и субконто."
+    },
+    "messages": {
+      "created": "Начальный баланс создан",
+      "updated": "Начальный баланс обновлен",
+      "deleted": "Начальный баланс удален",
+      "loadError": "Не удалось загрузить начальный баланс",
+      "noAccounts": "Счета еще не добавлены",
+      "accountSaved": "Остатки по счету сохранены",
+      "accountLoadError": "Не удалось загрузить детализацию счета",
+      "loadingAccountMeta": "Загрузка параметров счета...",
+      "noDetails": "Позиции детализации отсутствуют",
+      "selectDetail": "Выберите строку для просмотра субконто"
+    },
+    "states": {
+      "notCreated": "Не создан"
+    },
+    "validation": {
+      "accountRequired": "Выберите счет",
+      "detailRequired": "Добавьте хотя бы одну позицию",
+      "groupAccount": "Нельзя вводить остаток по групповому счету",
+      "singleSide": "В строке {{row}} укажите только дебет или кредит",
+      "quantityRequired": "Укажите количество в строке {{row}}",
+      "currencyRequired": "Укажите валюту, сумму и курс в строке {{row}}",
+      "subkontoRequired": "Выберите субконто {{name}} в строке {{row}}"
     }
   },
   "purchase": {

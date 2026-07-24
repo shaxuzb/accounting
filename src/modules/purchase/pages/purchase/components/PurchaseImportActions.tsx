@@ -19,6 +19,7 @@ export interface PurchaseImportActionsProps {
   onSave?: () => void;
   saveLoading?: boolean;
   onExcelDataChange: Dispatch<SetStateAction<PurchaseImportRow[]>>;
+  onClearExcelData: () => void;
   onPurchaseModeChange: (value: PurchaseMode) => void;
   purchaseMode: PurchaseMode;
   selectBoxOptions: SelectBoxOptions[];
@@ -33,6 +34,7 @@ export default function PurchaseImportActions({
   onSave,
   saveLoading,
   onExcelDataChange,
+  onClearExcelData,
   onPurchaseModeChange,
   purchaseMode,
   selectBoxOptions,
@@ -57,8 +59,8 @@ export default function PurchaseImportActions({
           selectBoxOptions={selectBoxOptions}
           setSelectBoxOptions={setSelectBoxOptions}
           setData={onExcelDataChange}
+          onClearData={onClearExcelData}
           formik={formik}
-          disabled={!formik.values.counterpartyId}
         />
         <Button
           type="default"

@@ -68,6 +68,37 @@ export const chartAccountSelectedLabel = (item: {
   name?: unknown;
 }) => String(item.number ?? item.code ?? item.name ?? "").trim();
 
+export const chartAccountSelectDisplayConfig = {
+  optionLabel: chartAccountOptionLabel,
+  selectedLabel: chartAccountSelectedLabel,
+  searchFields: ["number", "code", "name"],
+} as const;
+
+type CounterpartySelectItem = {
+  name?: unknown;
+  fullName?: unknown;
+  shortName?: unknown;
+  inn?: unknown;
+};
+
+const getCounterpartyName = (item: CounterpartySelectItem) =>
+  String(item.name ?? item.fullName ?? item.shortName ?? "").trim();
+
+export const counterpartyOptionLabel = (item: CounterpartySelectItem) => {
+  const name = getCounterpartyName(item);
+  const inn = String(item.inn ?? "").trim();
+  return [name, inn].filter(Boolean).join(" - ") || name || inn;
+};
+
+export const counterpartySelectedLabel = (item: CounterpartySelectItem) =>
+  getCounterpartyName(item) || String(item.inn ?? "").trim();
+
+export const counterpartySelectDisplayConfig = {
+  optionLabel: counterpartyOptionLabel,
+  selectedLabel: counterpartySelectedLabel,
+  searchFields: ["name", "fullName", "shortName", "inn"],
+} as const;
+
 export const selectListKeys = {
   state: "selectListStates",
   region: "selectListRegions",

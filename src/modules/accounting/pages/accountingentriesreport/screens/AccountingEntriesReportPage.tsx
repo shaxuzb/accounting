@@ -21,8 +21,8 @@ const DetailLine = ({
 }) => {
   const labelClassName =
     item.side === "credit"
-      ? "font-semibold text-red-600"
-      : "font-semibold text-blue-600";
+      ? "font-semibold text-danger"
+      : "font-semibold text-brand-text";
   const fallbackLabel = /^(purchase|sale)(doc|document)?$/i.test(
     item.label.trim(),
   )
@@ -75,7 +75,7 @@ export default function AccountingEntriesReportPage() {
       // },
       {
         title: t("app.fields.debit"),
-        className: "text-blue-500!",
+        className: "text-brand-text!",
         align: "center",
         children: [
           {
@@ -85,7 +85,7 @@ export default function AccountingEntriesReportPage() {
             render: (_, record) => (
               <div>
                 <div className="font-semibold">{record.debitAccountCode}</div>
-                <div className="font-semibold text-slate-600 ">
+                <div className="font-semibold text-secondary-text">
                   {record.debitAccountNumber}
                 </div>
               </div>
@@ -108,7 +108,7 @@ export default function AccountingEntriesReportPage() {
       },
       {
         title: t("app.fields.credit"),
-        className: "text-blue-500!",
+        className: "text-brand-text!",
         align: "center",
         children: [
           {
@@ -118,7 +118,7 @@ export default function AccountingEntriesReportPage() {
             render: (_, record) => (
               <div>
                 <div className="font-semibold">{record.creditAccountCode}</div>
-                <div className="font-semibold text-slate-600">
+                <div className="font-semibold text-secondary-text">
                   {record.creditAccountNumber}
                 </div>
               </div>

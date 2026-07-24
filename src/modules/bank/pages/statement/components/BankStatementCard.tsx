@@ -267,7 +267,7 @@ function BankStatementCard({
           !hasMissingContract &&
           !hasMissingCounterpartyBankAccount
           ? "border-border"
-          : "border-red-300 bg-red-50/30",
+          : "border-danger/40 bg-danger-soft/40!",
       )}
     >
       <div className="flex flex-wrap items-start justify-between gap-3 p-4">
@@ -276,7 +276,7 @@ function BankStatementCard({
           className="flex min-w-0 flex-1 items-start gap-3 text-left"
           onClick={onToggle}
         >
-          <span className="mt-1 text-gray-500">
+          <span className="mt-1 text-secondary-text">
             {expanded ? (
               <ChevronDown className="size-5" />
             ) : (
@@ -284,10 +284,10 @@ function BankStatementCard({
             )}
           </span>
           <span className="min-w-0">
-            <span className="block truncate text-base font-semibold text-gray-900">
+            <span className="block truncate text-base font-semibold text-text">
               {item.title}
             </span>
-            <span className="mt-1 flex flex-wrap gap-2 text-sm text-gray-500">
+            <span className="mt-1 flex flex-wrap gap-2 text-sm text-secondary-text">
               {item.fileName && <span>{item.fileName}</span>}
               <Tag color="blue">
                 {item.transactions.length} {t("bank.import.transactions")}
@@ -318,39 +318,39 @@ function BankStatementCard({
         </button>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="rounded-lg bg-gray-50 px-3 py-2">
-            <div className="text-xs text-gray-500">{t("bank.fields.date")}</div>
+          <div className="rounded-lg bg-surface-muted px-3 py-2">
+            <div className="text-xs text-secondary-text">{t("bank.fields.date")}</div>
             <div className="font-semibold">
               {customDate(dateFrom)}
               {dateTo && dateTo !== dateFrom ? ` - ${customDate(dateTo)}` : ""}
             </div>
           </div>
-          <div className="rounded-lg bg-gray-50 px-3 py-2 text-right">
-            <div className="text-xs text-gray-500">
+          <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
+            <div className="text-xs text-secondary-text">
               {t("bank.fields.currencyId")}
             </div>
             <div className="font-semibold">{item.currencyId ?? "-"}</div>
           </div>
-          <div className="rounded-lg bg-gray-50 px-3 py-2 text-right">
-            <div className="text-xs text-gray-500">
+          <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
+            <div className="text-xs text-secondary-text">
               {t("bank.fields.operationType")}
             </div>
             <div className="font-semibold">{item.operationTypeId ?? "-"}</div>
           </div>
-          <div className="rounded-lg bg-gray-50 px-3 py-2 text-right">
-            <div className="text-xs text-gray-500">
+          <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
+            <div className="text-xs text-secondary-text">
               {t("bank.fields.debit")}
             </div>
             <div className="font-semibold">{numberSpacing(totalDebit)}</div>
           </div>
-          <div className="rounded-lg bg-gray-50 px-3 py-2 text-right">
-            <div className="text-xs text-gray-500">
+          <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
+            <div className="text-xs text-secondary-text">
               {t("bank.fields.credit")}
             </div>
             <div className="font-semibold">{numberSpacing(totalCredit)}</div>
           </div>
-          <div className="rounded-lg bg-gray-50 px-3 py-2 text-right">
-            <div className="text-xs text-gray-500">
+          <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
+            <div className="text-xs text-secondary-text">
               {t("bank.fields.amount")}
             </div>
             <div className="font-semibold">{numberSpacing(totalAmount)}</div>
@@ -403,7 +403,7 @@ function BankStatementCard({
             !record.offsetAccountId ||
             !record.contractId ||
             !record.counterpartyBankAccountId
-              ? "[&_.ant-table-cell]:!bg-red-50 hover:[&_.ant-table-cell]:!bg-red-100"
+              ? "[&_.ant-table-cell]:!bg-danger-soft [&_.ant-table-cell]:!text-text hover:[&_.ant-table-cell]:!bg-danger-soft"
               : ""
           }
           locale={{ emptyText: t("bank.messages.noTransactions") }}
