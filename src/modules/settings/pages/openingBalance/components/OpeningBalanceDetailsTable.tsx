@@ -61,6 +61,7 @@ function OpeningBalanceDetailsTable({
   onRemove,
 }: OpeningBalanceDetailsTableProps) {
   const { t } = useTranslation();
+  console.log(definitions);
 
   const columns = useMemo<TableColumnsType<OpeningBalanceDetailForm>>(
     () => [
@@ -85,67 +86,80 @@ function OpeningBalanceDetailsTable({
           />
         ),
       },
-      {
-        title: t("openingBalance.fields.debit"),
-        width: 165,
-        align: "right",
-        render: (_value, record) => (
-          <InputNumberFormat
-            standalone
-            emptyZero
-            min={0}
-            precision={2}
-            value={record.debitAmount}
-            onValueChange={(value) => {
-              const debitAmount = Number(value ?? 0);
-              const creditAmount =
-                debitAmount > 0 ? 0 : Number(record.creditAmount ?? 0);
-              onChange(record.clientKey, {
-                debitAmount,
-                creditAmount,
-                currencyId: 1,
-                currencyAmount: debitAmount || creditAmount,
-                exchangeRate: 1,
-              });
-            }}
-          />
-        ),
-      },
-      {
-        title: t("openingBalance.fields.credit"),
-        width: 165,
-        align: "right",
-        render: (_value, record) => (
-          <InputNumberFormat
-            standalone
-            emptyZero
-            min={0}
-            precision={2}
-            value={record.creditAmount}
-            onValueChange={(value) => {
-              const creditAmount = Number(value ?? 0);
-              const debitAmount =
-                creditAmount > 0 ? 0 : Number(record.debitAmount ?? 0);
-              onChange(record.clientKey, {
-                debitAmount,
-                creditAmount,
-                currencyId: 1,
-                currencyAmount: creditAmount || debitAmount,
-                exchangeRate: 1,
-              });
-            }}
-          />
-        ),
-      },
+      ...(definitions[0]?.accountTypeCode === "active"
+        ? [
+            {
+              title: t("openingBalance.fields.debit"),
+              align: "center" as any,
+              width: 165,
+              render: (
+                _value: any,
+                record: {
+                  debitAmount: number;
+                  creditAmount: any;
+                  clientKey: string;
+                },
+              ) => (
+                <InputNumberFormat
+                  standalone
+                  emptyZero
+                  min={0}
+                  precision={2}
+                  value={record.debitAmount}
+                  onValueChange={(value) => {
+                    const debitAmount = Number(value ?? 0);
+                    const creditAmount =
+                      debitAmount > 0 ? 0 : Number(record.creditAmount ?? 0);
+                    onChange(record.clientKey, {
+                      debitAmount,
+                      creditAmount,
+                      currencyId: 1,
+                      currencyAmount: debitAmount || creditAmount,
+                      exchangeRate: 1,
+                    });
+                  }}
+                />
+              ),
+            },
+          ]
+        : []),
+      ...(definitions[0]?.accountTypeCode === "passive"
+        ? [
+            {
+              title: t("openingBalance.fields.credit"),
+              width: 165,
+              align: "center",
+              render: (_value, record) => (
+                <InputNumberFormat
+                  standalone
+                  emptyZero
+                  min={0}
+                  precision={2}
+                  value={record.creditAmount}
+                  onValueChange={(value) => {
+                    const creditAmount = Number(value ?? 0);
+                    const debitAmount =
+                      creditAmount > 0 ? 0 : Number(record.debitAmount ?? 0);
+                    onChange(record.clientKey, {
+                      debitAmount,
+                      creditAmount,
+                      currencyId: 1,
+                      currencyAmount: creditAmount || debitAmount,
+                      exchangeRate: 1,
+                    });
+                  }}
+                />
+              ),
+            },
+          ]
+        : []),
       ...(isQuantity
         ? [
             {
               title: t("openingBalance.fields.quantity"),
+              align: "center",
               width: 130,
-              render: (
-                _value: unknown,
-                record: OpeningBalanceDetailForm,
-              ) => (
+              render: (_value: unknown, record: OpeningBalanceDetailForm) => (
                 <InputNumberFormat
                   standalone
                   emptyZero

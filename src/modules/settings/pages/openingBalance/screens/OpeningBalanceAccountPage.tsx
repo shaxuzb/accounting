@@ -79,6 +79,7 @@ const buildSubkontoDefinitions = (
         code: type?.code ?? responseDefinition?.subkontoTypeCode,
         sortOrder: definition.sortOrder,
         isRequired: definition.isRequired,
+        accountTypeCode: chartAccount?.accountTypeCode
       };
     })
     .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0));
@@ -223,6 +224,7 @@ export default function OpeningBalanceAccountPage() {
     subkontoTypes ?? [],
     accountData,
   );
+  
   const totals = calculateOpeningBalanceTotals(formik.values.details);
 
   const updateDetail = (
@@ -273,7 +275,7 @@ export default function OpeningBalanceAccountPage() {
           <Alert
             showIcon
             type="error"
-            message={t("openingBalance.messages.accountLoadError")}
+            title={t("openingBalance.messages.accountLoadError")}
             action={
               <Button size="small" onClick={() => void refetchAccount()}>
                 {t("common.refresh")}

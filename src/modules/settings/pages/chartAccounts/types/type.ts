@@ -14,6 +14,7 @@ export interface ChartAccounts {
   isCurrency?: boolean;
   isDepartment?: boolean;
   isTaxAccounting?: boolean;
+  accountTypeCode: string
   isOffBalance?: boolean;
   subkontos?: Array<{
     subkontoTypeId: number;
