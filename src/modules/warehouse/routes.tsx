@@ -36,7 +36,11 @@ export const warehouseRoutes: RouteObject = {
         },
         {
           path: ":id",
-          element: withPermission(<ProductDetail />, warehousePermissions.products),
+          element: withPermission(
+            <ProductDetail />,
+            warehousePermissions.products,
+          ),
+          handle: { title: "warehouses.title", showBack: true, backTo: ".." },
         },
       ],
     },
@@ -57,7 +61,11 @@ export const warehouseRoutes: RouteObject = {
             <WarehouseTransferDetailPage />,
             warehouseTransferPermissions.create,
           ),
-          handle: { title: "app.routes.newTransfer", showBack: true, backTo: ".." },
+          handle: {
+            title: "app.routes.newTransfer",
+            showBack: true,
+            backTo: "..",
+          },
         },
         {
           path: ":id",
@@ -65,7 +73,11 @@ export const warehouseRoutes: RouteObject = {
             <WarehouseTransferDetailPage />,
             warehouseTransferPermissions.detail,
           ),
-          handle: { title: "app.routes.transferDocument", showBack: true, backTo: ".." },
+          handle: {
+            title: "app.routes.transferDocument",
+            showBack: true,
+            backTo: "..",
+          },
         },
       ],
     },
@@ -86,7 +98,11 @@ export const warehouseRoutes: RouteObject = {
             <InventoryAdjustmentDetailPage />,
             inventoryAdjustmentPermissions.create,
           ),
-          handle: { title: "app.routes.newAdjustment", showBack: true, backTo: ".." },
+          handle: {
+            title: "app.routes.newAdjustment",
+            showBack: true,
+            backTo: "..",
+          },
         },
         {
           path: ":id",
@@ -94,7 +110,11 @@ export const warehouseRoutes: RouteObject = {
             <InventoryAdjustmentDetailPage />,
             inventoryAdjustmentPermissions.detail,
           ),
-          handle: { title: "app.routes.adjustmentDocument", showBack: true, backTo: ".." },
+          handle: {
+            title: "app.routes.adjustmentDocument",
+            showBack: true,
+            backTo: "..",
+          },
         },
       ],
     },

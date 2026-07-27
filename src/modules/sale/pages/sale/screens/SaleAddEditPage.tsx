@@ -30,6 +30,7 @@ import {
   hasRequiredSaleMarkings,
   toSaleCreatePayload,
 } from "../utils/saleCreatePayload";
+import { getSaleCostingValidationError } from "../utils/saleCostingValidation";
 
 const toPositiveNumber = (value: unknown) => {
   const parsed = Number(value);
@@ -161,6 +162,15 @@ export default function SaleAddEditPage() {
         } else {
           toast.error("Mahsulot ma'lumotlarini tekshiring");
         }
+        return;
+      }
+
+      const costingValidationError = getSaleCostingValidationError({
+        costingMethodId: activeSaleCondition.costingMethodId,
+        products,
+      });
+      if (costingValidationError) {
+        toast.error(costingValidationError);
         return;
       }
 

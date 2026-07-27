@@ -112,14 +112,14 @@ export default function ProductDetail() {
 
   return (
     <div className="w-full space-y-3">
-      <div className="flex items-center gap-3">
+      {/* <div className="flex items-center gap-3">
         <Button
           icon={<ArrowLeft className="size-4" />}
           onClick={() => navigate(-1)}
         >
           Orqaga
         </Button>
-      </div>
+      </div> */}
 
       <Card className="overflow-hidden border border-border">
         <Table<ProductStock>

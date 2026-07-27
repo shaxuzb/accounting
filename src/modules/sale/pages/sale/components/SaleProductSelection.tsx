@@ -23,6 +23,7 @@ import {
 import type {
   SaleProductPriceLayer,
   SaleProductMarking,
+  SaleAvailableProduct,
   SaleProductStock,
   SaleSelectedProduct,
 } from "../types/type";
@@ -32,6 +33,7 @@ import {
   getSalePriceByMarkup,
   normalizeProductPriceDetails,
 } from "../utils/salePricingDetails";
+import { getLayerCostValidationError } from "../utils/saleCostingValidation";
 import SaleWarehouseProductsModal from "./SaleWarehouseProductsModal";
 import SaleLineAccountsDrawer, {
   type SaleLineAccountValues,
@@ -59,6 +61,8 @@ interface VatRateOption {
 
 const newRowKey = "__new__";
 const EMPTY_STOCK_PRODUCTS: SaleProductStock[] = [];
+const EMPTY_VAT_RATE_OPTIONS: VatRateOption[] = [];
+const EMPTY_MARKING_PRODUCTS: SaleAvailableProduct[] = [];
 const isNewRow = (rowKey?: string) => Boolean(rowKey?.startsWith(newRowKey));
 
 const getStockProductId = (product: SaleProductStock) =>
@@ -250,13 +254,15 @@ export default function SaleProductSelection({
   const [loadingProductId, setLoadingProductId] = useState<number | null>(null);
   const getProductPriceDetails = useGetProductPriceDetails();
   const {
-    data: availableMarkingProducts = [],
+    data: availableMarkingProductsData,
     isFetching: isAvailableMarkingsFetching,
   } = useGetAvailableSaleProductMarkings(
     markingLine?.productId,
     warehouseId,
     Boolean(markingMode && markingLine?.productId),
   );
+  const availableMarkingProducts =
+    availableMarkingProductsData ?? EMPTY_MARKING_PRODUCTS;
   const {
     data: productStockData,
     isLoading: isProductStocksLoading,
@@ -266,7 +272,7 @@ export default function SaleProductSelection({
     pageSize: 1000,
     ...(warehouseId ? { warehouseId } : {}),
     ...(search.trim() ? { search: search.trim() } : {}),
-  });
+  }, Boolean(warehouseId));
   const stockProducts = productStockData?.items ?? EMPTY_STOCK_PRODUCTS;
   const productById = useMemo(
     () =>
@@ -302,7 +308,7 @@ export default function SaleProductSelection({
 
     if (hasChanges) onChange(nextProducts);
   }, [onChange, productById, products, stockProducts.length]);
-  const { data: vatRateOptions = [] } = useQuery<VatRateOption[]>({
+  const { data: vatRateData } = useQuery<VatRateOption[]>({
     queryKey: ["selectlist", selectListKeys.vatRate],
     queryFn: async () => {
       const { data } = await $axiosPrivate.get<VatRateOption[]>(
@@ -311,6 +317,7 @@ export default function SaleProductSelection({
       return data ?? [];
     },
   });
+  const vatRateOptions = vatRateData ?? EMPTY_VAT_RATE_OPTIONS;
   const { chartAccounts, defaultAccounts } = useGetSaleDocumentAccountOptions();
   const chartAccountById = useMemo(
     () =>
@@ -358,29 +365,40 @@ export default function SaleProductSelection({
 
     if (hasChanges) onChange(nextProducts);
   }, [defaultAccounts, onChange, products]);
-  const productOptions = stockProducts.map((item) => ({
-    value: getStockProductId(item),
-    label: getProductName(item),
-  }));
-  const tableRows: SaleSelectedProduct[] = [
-    ...products,
-    ...emptyRowKeys.map((rowKey) => ({
-      rowKey,
-      productId: 0,
-      productName: "",
-      quantity: 0,
-      availableQuantity: 0,
-      costPrice: 0,
-      unitId: 0,
-      unitPrice: 0,
-      inventoryAccountId: null,
-      incomeAccountId: null,
-      costAccountId: null,
-      vatRateId: saleCondition.vatRateId,
-      markupPercent: 0,
-      priceType: "costPlusPercent" as const,
-    })),
-  ];
+  const productOptions = useMemo(
+    () =>
+      stockProducts.map((item) => ({
+        value: getStockProductId(item),
+        label: getProductName(item),
+      })),
+    [stockProducts],
+  );
+  const tableRows = useMemo<SaleSelectedProduct[]>(
+    () => [
+      ...products,
+      ...emptyRowKeys.map((rowKey) => ({
+        rowKey,
+        productId: 0,
+        productName: "",
+        quantity: 0,
+        availableQuantity: 0,
+        costPrice: 0,
+        unitId: 0,
+        unitPrice: 0,
+        inventoryAccountId: null,
+        incomeAccountId: null,
+        costAccountId: null,
+        vatRateId: saleCondition.vatRateId,
+        markupPercent: 0,
+        priceType: "costPlusPercent" as const,
+      })),
+    ],
+    [emptyRowKeys, products, saleCondition.vatRateId],
+  );
+  const tableData = useMemo(
+    () => generateKeyTable(tableRows, "rowKey") ?? [],
+    [tableRows],
+  );
 
   const handleSelectProduct = async (
     productId: number,
@@ -388,16 +406,8 @@ export default function SaleProductSelection({
     sourceLayers?: SaleProductPriceLayer[],
     overrideSalePrice?: number,
   ) => {
-    const product = stockProducts.find(
-      (item) => getStockProductId(item) === productId,
-    );
+    const product = productById.get(productId);
     if (!product) return;
-
-    const stockProduct = productById.get(productId);
-    if (!stockProduct) {
-      toast.error("Mahsulot ma'lumotlari hali yuklanmagan");
-      return;
-    }
 
     setLoadingProductId(productId);
     try {
@@ -423,6 +433,15 @@ export default function SaleProductSelection({
         : existingLine?.layers?.length
           ? mergeSelectedLayers(priceLayers, [], existingLine.layers)
           : [];
+      const layerCostValidationError = getLayerCostValidationError({
+        costingMethodId: saleCondition.costingMethodId,
+        productName: detail.productName || getProductName(product),
+        layers: allocatedLayers,
+      });
+      if (layerCostValidationError) {
+        toast.error(layerCostValidationError);
+        return;
+      }
       const quantity = allocatedLayers.reduce(
         (sum, layer) => sum + layer.writeOffQuantity,
         0,
@@ -498,7 +517,7 @@ export default function SaleProductSelection({
           salePriceBySelection === undefined
             ? (existingLine?.priceType ?? "costPlusPercent")
             : "manual",
-        isPieceTracked: Boolean(stockProduct.isPieceTracked),
+        isPieceTracked: Boolean(product.isPieceTracked),
         priceLayers,
         layers: allocatedLayers,
       };
@@ -558,13 +577,16 @@ export default function SaleProductSelection({
   ) => {
     updateLine(rowKey, (line) => {
       const availableLayers = line.priceLayers ?? [];
+      const selectedQuantityByLayer = new Map(
+        (line.layers ?? []).map((selectedLayer) => [
+          getLayerIdentity(selectedLayer),
+          selectedLayer.writeOffQuantity,
+        ]),
+      );
       const nextLayers = availableLayers
         .map((layer) => {
           const currentQuantity =
-            line.layers?.find(
-              (selectedLayer) =>
-                getLayerIdentity(selectedLayer) === getLayerIdentity(layer),
-            )?.writeOffQuantity ?? 0;
+            selectedQuantityByLayer.get(getLayerIdentity(layer)) ?? 0;
           const writeOffQuantity =
             getLayerIdentity(layer) === getLayerIdentity(batch)
               ? Math.min(Number(value ?? 0), layer.availableQuantity)
@@ -577,6 +599,15 @@ export default function SaleProductSelection({
         (sum, layer) => sum + layer.writeOffQuantity,
         0,
       );
+      const layerCostValidationError = getLayerCostValidationError({
+        costingMethodId: saleCondition.costingMethodId,
+        productName: line.productName,
+        layers: nextLayers,
+      });
+      if (layerCostValidationError) {
+        toast.error(layerCostValidationError);
+        return line;
+      }
       const costPrice = quantity
         ? nextLayers.reduce(
             (sum, layer) => sum + layer.unitPrice * layer.writeOffQuantity,
@@ -1135,22 +1166,37 @@ export default function SaleProductSelection({
     },
   ];
 
-  const amount = products.reduce((sum, item) => sum + getLineAmount(item), 0);
-  const vatAmount = products.reduce(
-    (sum, item) =>
-      sum + getVatAmount(getLineAmount(item), item.vatRateId, vatRateOptions),
-    0,
-  );
-  const totalAmount = products.reduce(
-    (sum, item) => sum + getLineTotal(item, vatRateOptions),
-    0,
+  const totals = useMemo(
+    () =>
+      products.reduce(
+        (summary, item) => {
+          const lineAmount = getLineAmount(item);
+          const lineVatAmount = getVatAmount(
+            lineAmount,
+            item.vatRateId,
+            vatRateOptions,
+          );
+
+          return {
+            amount: summary.amount + lineAmount,
+            vatAmount: summary.vatAmount + lineVatAmount,
+            totalAmount: summary.totalAmount + lineAmount + lineVatAmount,
+          };
+        },
+        { amount: 0, vatAmount: 0, totalAmount: 0 },
+      ),
+    [products, vatRateOptions],
   );
   return (
     <Card className="overflow-hidden border border-border">
       <div className="flex w-full flex-nowrap items-center justify-between gap-3 overflow-x-auto border-b border-border p-3">
         <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
           <Button type="primary">Tovarlar</Button>
-          <Button className="w-32" onClick={() => setWarehouseOpen(true)}>
+          <Button
+            className="w-32"
+            disabled={disabled || !warehouseId}
+            onClick={() => setWarehouseOpen(true)}
+          >
             Omborxona
           </Button>
           <Button
@@ -1203,7 +1249,7 @@ export default function SaleProductSelection({
       </div>
       <Table<SaleSelectedProduct>
         columns={columns}
-        dataSource={generateKeyTable(tableRows, "rowKey")}
+        dataSource={tableData}
         pagination={false}
         scroll={{ x: "max-content" }}
         expandable={{
@@ -1221,7 +1267,7 @@ export default function SaleProductSelection({
               </div>
             ) : null,
           rowExpandable: (record) => Boolean(record.priceLayers?.length),
-          defaultExpandAllRows: true,
+          defaultExpandAllRows: false,
         }}
       />
       <div className="border-t border-border p-4">
@@ -1239,19 +1285,19 @@ export default function SaleProductSelection({
           <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
             <div className="text-xs text-secondary-text">Summa (QQSsiz)</div>
             <div className="mt-1 text-base font-semibold">
-              {numberSpacing(amount, undefined, true)}
+              {numberSpacing(totals.amount, undefined, true)}
             </div>
           </div>
           <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
             <div className="text-xs text-secondary-text">Summa QQS</div>
             <div className="mt-1 text-base font-semibold">
-              {numberSpacing(vatAmount, undefined, true)}
+              {numberSpacing(totals.vatAmount, undefined, true)}
             </div>
           </div>
           <div className="bg-primary/5 px-4 py-3 text-center">
             <div className="text-xs text-secondary-text">Jami</div>
             <div className="mt-1 text-base font-bold text-primary">
-              {numberSpacing(totalAmount, undefined, true)}
+              {numberSpacing(totals.totalAmount, undefined, true)}
             </div>
           </div>
         </div>

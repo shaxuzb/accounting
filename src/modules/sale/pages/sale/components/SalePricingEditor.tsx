@@ -90,12 +90,21 @@ export default function SalePricingEditor({
       totalAmount: roundMoney(line.amount * line.quantity),
     };
   }, []);
+  const draftLineByKey = useMemo(() => {
+    const result = new Map<string | number, SalePricingDraftLine>();
+
+    draftLines.forEach((draftLine) => {
+      result.set(draftLine.rowKey, draftLine);
+      result.set(draftLine.id, draftLine);
+    });
+
+    return result;
+  }, [draftLines]);
   const initialLines = useMemo(
     () =>
       sourceLines.map(createSalePricingLine).map((line) => {
-        const draftLine = draftLines.find(
-          (item) => item.rowKey === line.rowKey || item.id === line.id,
-        );
+        const draftLine =
+          draftLineByKey.get(line.rowKey) ?? draftLineByKey.get(line.id);
         if (!draftLine) return line;
 
         return updateLineAmounts({
@@ -106,7 +115,7 @@ export default function SalePricingEditor({
           marginPercent: draftLine.marginPercent,
         });
       }),
-    [draftLines, sourceLines, updateLineAmounts],
+    [draftLineByKey, sourceLines, updateLineAmounts],
   );
   const lines = editedLines ?? initialLines;
 

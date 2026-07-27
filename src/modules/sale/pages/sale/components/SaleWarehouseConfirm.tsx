@@ -1,7 +1,7 @@
 import { Button, Checkbox, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import { CheckCircle2, ChevronDown, ChevronRight } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import useLocalStorage from "@/hooks/UseLocalStorage";
@@ -248,9 +248,11 @@ const buildBatchGroups = (
 const mergeDraftRows = (
   rows: WarehouseConfirmRow[],
   draft: WarehouseConfirmDraftItem[],
-) =>
-  rows.map((row) => {
-    const savedRow = draft.find((item) => item.rowId === row.rowId);
+) => {
+  const draftByRowId = new Map(draft.map((item) => [item.rowId, item]));
+
+  return rows.map((row) => {
+    const savedRow = draftByRowId.get(row.rowId);
 
     return savedRow
       ? {
@@ -261,6 +263,7 @@ const mergeDraftRows = (
         }
       : row;
   });
+};
 
 const toDraftItems = (rows: WarehouseConfirmRow[]): WarehouseConfirmDraftItem[] =>
   rows
@@ -321,6 +324,30 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     () => availableProductsQuery.data ?? [],
     [availableProductsQuery.data],
   );
+  const availableMarkingByNumber = useMemo(() => {
+    const index = new Map<
+      string,
+      { productId: number; batchId: number; productTableId: number; markingNumber: string }
+    >();
+
+    availableProducts.forEach((product) => {
+      product.batches.forEach((batch) => {
+        batch.productTables.forEach((productTable) => {
+          const markingKey = productTable.markingNumber.trim();
+          if (index.has(markingKey)) return;
+
+          index.set(markingKey, {
+            productId: product.productId,
+            batchId: batch.batchId,
+            productTableId: productTable.productTableId,
+            markingNumber: productTable.markingNumber,
+          });
+        });
+      });
+    });
+
+    return index;
+  }, [availableProducts]);
   const baseRows = useMemo(
     () => buildRows(document),
     [document],
@@ -334,12 +361,19 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     [baseRows, draftRows],
   );
   const groups = useMemo(() => buildGroups(rows), [rows]);
+  const batchGroupsByGroup = useMemo(
+    () =>
+      new Map(
+        groups.map((group) => [group.key, buildBatchGroups(group.rows)]),
+      ),
+    [groups],
+  );
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
     {},
   );
   const hasPieceTrackedRows = rows.some((row) => row.isPieceTracked);
 
-  const handleBatchConfirm = (rowId: string, confirmed: boolean) => {
+  const handleBatchConfirm = useCallback((rowId: string, confirmed: boolean) => {
     setDraftRows((currentDraft) => {
       const current = mergeDraftRows(baseRows, currentDraft);
       const nextRows = current.map((row) =>
@@ -348,9 +382,9 @@ export default function SaleWarehouseConfirm({ document }: Props) {
 
       return toDraftItems(nextRows);
     });
-  };
+  }, [baseRows, setDraftRows]);
 
-  const handleScan = async (markingNumber: string) => {
+  const handleScan = useCallback(async (markingNumber: string) => {
     try {
       if (!availableProductsQuery.isSuccess) {
         toast.error("Ruxsat etilgan markirovkalar hali yuklanmagan");
@@ -358,20 +392,9 @@ export default function SaleWarehouseConfirm({ document }: Props) {
       }
 
       const normalizedMarkingNumber = markingNumber.trim();
-      const matchedProduct = availableProducts
-        .flatMap((product) =>
-          product.batches.flatMap((batch) =>
-            batch.productTables.map((productTable) => ({
-              ...productTable,
-              productId: product.productId,
-              batchId: batch.batchId,
-            })),
-          ),
-        )
-        .find(
-          (productTable) =>
-            productTable.markingNumber.trim() === normalizedMarkingNumber,
-        );
+      const matchedProduct = availableMarkingByNumber.get(
+        normalizedMarkingNumber,
+      );
 
       if (!matchedProduct) {
         toast.error("Bu markirovka ushbu sotuvga tegishli emas");
@@ -424,9 +447,9 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     } catch (error) {
       errorHandlers(error);
     }
-  };
+  }, [availableMarkingByNumber, availableProductsQuery.isSuccess, baseRows, setDraftRows]);
 
-  const handleConfirm = async () => {
+  const handleConfirm = useCallback(async () => {
     if (hasPieceTrackedRows && !availableProductsQuery.isSuccess) {
       toast.error("Ruxsat etilgan markirovkalar hali tekshirilmagan");
       return;
@@ -444,12 +467,13 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     } catch (error) {
       errorHandlers(error);
     }
-  };
+  }, [availableProductsQuery.isSuccess, confirmSale, hasPieceTrackedRows, navigate, rows, setDraftRows]);
 
   const confirmedQuantity = getConfirmedQuantity(rows);
   const totalQuantity = getTotalQuantity(rows);
 
-  const columns: TableColumnsType<WarehouseConfirmRow> = [
+  const columns = useMemo<TableColumnsType<WarehouseConfirmRow>>(
+    () => [
     {
       dataIndex: "indexId",
       title: "T/r",
@@ -507,14 +531,21 @@ export default function SaleWarehouseConfirm({ document }: Props) {
           </Checkbox>
         ),
     },
-  ];
+    ],
+    [handleBatchConfirm],
+  );
 
-  const batchColumns = columns.filter(
-    (column) =>
-      !(
-        "dataIndex" in column &&
-        (column.dataIndex === "batchNumber" || column.dataIndex === "batchDate")
+  const batchColumns = useMemo(
+    () =>
+      columns.filter(
+        (column) =>
+          !(
+            "dataIndex" in column &&
+            (column.dataIndex === "batchNumber" ||
+              column.dataIndex === "batchDate")
+          ),
       ),
+    [columns],
   );
 
   return (
@@ -541,7 +572,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
           const isGroupPartial =
             groupConfirmedQuantity > 0 && !isGroupComplete;
           const isExpanded = expandedGroups[group.key] ?? false;
-          const batches = buildBatchGroups(group.rows);
+          const batches = batchGroupsByGroup.get(group.key) ?? [];
           return (
             <Card
               key={group.key}
@@ -647,7 +678,15 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                           size="small"
                           columns={batchColumns}
                           dataSource={generateKeyTable(visibleRows, "rowId")}
-                          pagination={false}
+                          pagination={
+                            isPieceTracked
+                              ? {
+                                  defaultPageSize: 50,
+                                  showSizeChanger: true,
+                                  pageSizeOptions: [25, 50, 100],
+                                }
+                              : false
+                          }
                           scroll={{ x: "max-content" }}
                         />
                       )}

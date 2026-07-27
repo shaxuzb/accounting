@@ -50,9 +50,7 @@ const contractDisplayConfig: SelectCustomDisplayConfig = {
     return [number, name].filter(Boolean).join(" - ") || String(item.id);
   },
   selectedLabel: (item) =>
-    String(
-      item.contractNumber ?? item.number ?? item.name ?? item.id,
-    ).trim(),
+    String(item.contractNumber ?? item.number ?? item.name ?? item.id).trim(),
   searchFields: ["contractNumber", "number", "name"],
 };
 
@@ -96,9 +94,7 @@ export default function OpeningBalanceSubkontoEditor({
   }
 
   const counterpartyDefinition = definitions.find((definition) =>
-    ["counterparties", "counterparty"].includes(
-      normalizeCode(definition.code),
-    ),
+    ["counterparties", "counterparty"].includes(normalizeCode(definition.code)),
   );
   const counterpartyId = value.find(
     (item) => item.subkontoTypeId === counterpartyDefinition?.id,

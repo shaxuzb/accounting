@@ -48,9 +48,7 @@ export default function OpeningBalanceAccountsTable({
       dataIndex: "chartAccountNumber",
       width: 140,
       render: (value, record) => (
-        <span
-          className="font-semibold text-primary"
-        >
+        <span className="font-semibold text-primary">
           {value || record.chartAccountCode || record.chartAccountId}
         </span>
       ),
@@ -135,7 +133,7 @@ export default function OpeningBalanceAccountsTable({
         </PermissionCard>
       </div>
 
-      <Table<OpeningBalanceAccountSummary>
+      <Table
         rowKey="id"
         columns={columns}
         dataSource={accounts}
@@ -171,9 +169,7 @@ export default function OpeningBalanceAccountsTable({
               image={Empty.PRESENTED_IMAGE_SIMPLE}
               description={t("openingBalance.messages.noAccounts")}
             >
-              <PermissionCard
-                permission={openingBalancePermissions.update}
-              >
+              <PermissionCard permission={openingBalancePermissions.update}>
                 <Button type="primary" onClick={onAddAccount}>
                   {t("openingBalance.actions.addAccount")}
                 </Button>

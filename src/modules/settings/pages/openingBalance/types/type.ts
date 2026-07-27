@@ -47,8 +47,7 @@ export interface OpeningBalanceDetail {
   subkontos: OpeningBalanceSubkonto[];
 }
 
-export interface OpeningBalanceAccountDetail
-  extends OpeningBalanceAccountSummary {
+export interface OpeningBalanceAccountDetail extends OpeningBalanceAccountSummary {
   details: OpeningBalanceDetail[];
 }
 

@@ -46,9 +46,7 @@ export const mapOpeningBalanceAccountToForm = (
       quantity: detail.quantity ?? null,
       currencyId: 1,
       currencyAmount:
-        currencyAmount > 0
-          ? currencyAmount
-          : debitAmount || creditAmount,
+        currencyAmount > 0 ? currencyAmount : debitAmount || creditAmount,
       exchangeRate: 1,
       description: detail.description ?? "",
       subkontos: (detail.subkontos ?? []).map((subkonto) => ({
@@ -106,7 +104,11 @@ export const calculateOpeningBalanceTotals = (
     debit,
     credit,
     balanceSide:
-      difference > 0 ? ("debit" as const) : difference < 0 ? ("credit" as const) : null,
+      difference > 0
+        ? ("debit" as const)
+        : difference < 0
+          ? ("credit" as const)
+          : null,
     balance: Math.abs(difference),
   };
 };

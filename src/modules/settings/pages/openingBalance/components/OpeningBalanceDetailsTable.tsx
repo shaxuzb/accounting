@@ -142,10 +142,7 @@ function OpeningBalanceDetailsTable({
             {
               title: t("openingBalance.fields.quantity"),
               width: 130,
-              render: (
-                _value: unknown,
-                record: OpeningBalanceDetailForm,
-              ) => (
+              render: (_value: unknown, record: OpeningBalanceDetailForm) => (
                 <InputNumberFormat
                   standalone
                   emptyZero

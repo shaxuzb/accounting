@@ -17,11 +17,18 @@ import type { Contract } from "../types/type";
 import { contractPermissions } from "../constants/permissions";
 import ContractDetailModal from "./ContractDetailModal";
 
+const toPositiveInteger = (value: string | null, fallback: number) => {
+  const numberValue = Number(value);
+  return Number.isInteger(numberValue) && numberValue > 0
+    ? numberValue
+    : fallback;
+};
+
 export default function ContractListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const { pathname } = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [detailId, setDetailId] = useState<number | null>(null);
@@ -36,6 +43,27 @@ export default function ContractListPage() {
     newParams,
     contractTypeId,
   );
+  const currentPage = toPositiveInteger(
+    searchParams.get("page"),
+    data?.page ?? 1,
+  );
+  const pageSize = toPositiveInteger(
+    searchParams.get("pageSize"),
+    data?.pageSize ?? 20,
+  );
+  const tableData = generateKeyTable(data?.items ?? [], "id")?.map(
+    (item, index) => ({
+      ...item,
+      indexId: (currentPage - 1) * pageSize + index + 1,
+    }),
+  );
+
+  const handlePaginationChange = (page: number, nextPageSize: number) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("page", String(nextPageSize === pageSize ? page : 1));
+    nextParams.set("pageSize", String(nextPageSize));
+    setSearchParams(nextParams, { replace: true });
+  };
   const permissions = user?.user.permissions ?? [];
   const canViewDetail = permissions.includes(contractPermissions.detail);
 
@@ -136,7 +164,7 @@ export default function ContractListPage() {
         <Space>
           <Button
             icon={<RefreshCw className="size-4" />}
-            onClick={() => void refetch()}
+            onClick={() => refetch()}
           />
           <PermissionCard permission={contractPermissions.create}>
             <Button
@@ -150,15 +178,25 @@ export default function ContractListPage() {
         </Space>
       </div>
       <Card className="overflow-hidden border border-border">
-        <Table<Contract>
+        <Table
           loading={isLoading || isFetching}
           columns={columns}
           scroll={{
             x: "max-content",
-            y: "calc(100vh - 350px)",
+            y: "calc(100vh - 230px)",
           }}
-          dataSource={generateKeyTable(data?.items ?? [], "id")}
-          pagination={false}
+          dataSource={tableData}
+          rowKey="id"
+          pagination={{
+            current: currentPage,
+            pageSize,
+            total: data?.total ?? 0,
+            showSizeChanger: true,
+            pageSizeOptions: [10, 20, 50, 100],
+            showTotal: (total, range) =>
+              `${range[0]}-${range[1]} / ${total} ta`,
+            onChange: handlePaginationChange,
+          }}
         />
       </Card>
       <ContractAddEditPage

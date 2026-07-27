@@ -32,23 +32,17 @@ export const openingBalanceService = {
   },
   create: (payload: OpeningBalanceHeaderForm) =>
     $axiosPrivate
-      .post<OpeningBalance>(
-        openingBalanceEndpoints.create,
-        {
-          ...normalizeHeaderPayload(payload),
-          stateId: 1,
-        },
-      )
+      .post<OpeningBalance>(openingBalanceEndpoints.create, {
+        ...normalizeHeaderPayload(payload),
+        stateId: 1,
+      })
       .then((response) => response.data),
   update: (id: string | number, payload: OpeningBalanceHeaderForm) =>
     $axiosPrivate
-      .put<OpeningBalance>(
-        openingBalanceEndpoints.update(id),
-        {
-          ...normalizeHeaderPayload(payload),
-          stateId: Number(payload.stateId),
-        },
-      )
+      .put<OpeningBalance>(openingBalanceEndpoints.update(id), {
+        ...normalizeHeaderPayload(payload),
+        stateId: Number(payload.stateId),
+      })
       .then((response) => response.data),
   delete: (id: string | number) =>
     $axiosPrivate

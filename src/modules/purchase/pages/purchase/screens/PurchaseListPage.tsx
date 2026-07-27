@@ -175,13 +175,13 @@ export default function PurchaseListPage() {
             className="m-3"
             message="Purchase hujjatlarini yuklashda xatolik yuz berdi"
             action={
-              <Button size="small" onClick={() => void refetch()}>
+              <Button size="small" onClick={() => refetch()}>
                 Qayta urinish
               </Button>
             }
           />
         )}
-        <Table<PurchaseData>
+        <Table
           loading={isLoading || isFetching}
           columns={columns}
           dataSource={tableData}

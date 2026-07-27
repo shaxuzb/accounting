@@ -17,9 +17,11 @@ const normalizeParams = (params?: ListParams | URLSearchParams) => {
 
 export const useGetSaleProductStocks = (
   params?: ListParams | URLSearchParams,
+  enabled = true,
 ) =>
   useQuery({
     queryKey: saleKeys.productStock.products(normalizeParams(params)),
     queryFn: () => productStockService.products(normalizeParams(params)),
     placeholderData: keepPreviousData,
+    enabled,
   });

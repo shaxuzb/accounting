@@ -67,9 +67,7 @@ const buildSubkontoDefinitions = (
       );
       const responseDefinition = accountData?.details
         ?.flatMap((detail) => detail.subkontos)
-        .find(
-          (item) => item.subkontoTypeId === definition.subkontoTypeId,
-        );
+        .find((item) => item.subkontoTypeId === definition.subkontoTypeId);
       return {
         id: definition.subkontoTypeId,
         name:
@@ -95,8 +93,7 @@ const buildSubkontoDefinitions = (
     })
     .map((subkonto) => ({
       id: subkonto.subkontoTypeId,
-      name:
-        subkonto.subkontoTypeName ?? `Subkonto #${subkonto.subkontoTypeId}`,
+      name: subkonto.subkontoTypeName ?? `Subkonto #${subkonto.subkontoTypeId}`,
       code: subkonto.subkontoTypeCode,
       sortOrder: subkonto.sortOrder,
       isRequired: true,
@@ -156,10 +153,7 @@ export default function OpeningBalanceAccountPage() {
           );
           return;
         }
-        if (
-          chartAccount?.isQuantity &&
-          Number(detail.quantity ?? 0) <= 0
-        ) {
+        if (chartAccount?.isQuantity && Number(detail.quantity ?? 0) <= 0) {
           toast.error(
             t("openingBalance.validation.quantityRequired", {
               row: index + 1,
@@ -188,9 +182,7 @@ export default function OpeningBalanceAccountPage() {
       }
 
       try {
-        await saveMutation.mutateAsync(
-          toOpeningBalanceAccountPayload(values),
-        );
+        await saveMutation.mutateAsync(toOpeningBalanceAccountPayload(values));
         toast.success(t("openingBalance.messages.accountSaved"));
         navigate("/main/settings/opening-balances");
       } catch (error: unknown) {
@@ -204,7 +196,7 @@ export default function OpeningBalanceAccountPage() {
     queryKey: ["chart-accounts", "detail", chartAccountId],
     queryFn: () => chartAccountsService.detail(Number(chartAccountId)),
     enabled: Boolean(chartAccountId),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,     
   });
   const { data: subkontoTypes } = useQuery({
     queryKey: ["selectlist", selectListEndpoints.subkontoTypes],
@@ -229,7 +221,7 @@ export default function OpeningBalanceAccountPage() {
     clientKey: string,
     changes: Partial<OpeningBalanceDetailForm>,
   ) => {
-    void formik.setFieldValue(
+    formik.setFieldValue(
       "details",
       formik.values.details.map((detail) =>
         detail.clientKey === clientKey ? { ...detail, ...changes } : detail,
@@ -240,11 +232,7 @@ export default function OpeningBalanceAccountPage() {
 
   const addDetail = () => {
     const detail = createEmptyOpeningBalanceDetail();
-    void formik.setFieldValue(
-      "details",
-      [...formik.values.details, detail],
-      false,
-    );
+    formik.setFieldValue("details", [...formik.values.details, detail], false);
     setExpandedDetailKey(detail.clientKey);
   };
 
@@ -335,8 +323,8 @@ export default function OpeningBalanceAccountPage() {
               marginBottom="mb-0"
               onChange={() => {
                 const detail = createEmptyOpeningBalanceDetail();
-                void formik.setFieldValue("id", null, false);
-                void formik.setFieldValue("details", [detail], false);
+                formik.setFieldValue("id", null, false);
+                formik.setFieldValue("details", [detail], false);
                 setExpandedDetailKey(detail.clientKey);
               }}
             />

@@ -1,8 +1,9 @@
 import { Button, Checkbox, Input, Modal, Select, Table } from "antd";
 import type { TableColumnsType } from "antd";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import InputNumberFormat from "@/components/fields/InputNumber";
+import { useDebounce } from "@/shared/hooks/useDebounce";
 import { formatDate, numberSpacing } from "@/utils/utils";
 import type { SaleProductPriceLayer, SaleProductStock } from "../types/type";
 import { normalizeProductPriceDetails } from "../utils/salePricingDetails";
@@ -71,6 +72,12 @@ export default function SaleWarehouseProductsModal({
   const [groupFilter, setGroupFilter] = useState<string>();
   const [onlyAvailable, setOnlyAvailable] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
+  const [searchValue, setSearchValue] = useState(search);
+  const debouncedSearch = useDebounce(searchValue.trim(), 300);
+
+  useEffect(() => {
+    if (debouncedSearch !== search) onSearch(debouncedSearch);
+  }, [debouncedSearch, onSearch, search]);
 
   const groupOptions = useMemo(() => {
     const groups = new Map<string, string>();
@@ -99,13 +106,15 @@ export default function SaleWarehouseProductsModal({
   const layersByProductId = useMemo(() => {
     const result = new Map<number, SaleProductPriceLayer[]>();
 
+    if (!open) return result;
+
     visibleProducts.forEach((product) => {
       const details = normalizeProductPriceDetails(product, product);
       result.set(getStockProductId(product), details.layers);
     });
 
     return result;
-  }, [visibleProducts]);
+  }, [open, visibleProducts]);
 
   const getSelectedLayers = (product: SaleProductStock) => {
     const productId = getStockProductId(product);
@@ -319,8 +328,8 @@ export default function SaleWarehouseProductsModal({
       <div className="mb-3 flex flex-wrap items-center gap-3">
         <Input
           className="min-w-64 max-w-80"
-          value={search}
-          onChange={(event) => onSearch(event.target.value)}
+          value={searchValue}
+          onChange={(event) => setSearchValue(event.target.value)}
           placeholder="Mahsulot qidirish..."
           prefix={<Search className="size-4 text-secondary-text" />}
           allowClear
@@ -345,7 +354,12 @@ export default function SaleWarehouseProductsModal({
         columns={productColumns}
         dataSource={visibleProducts}
         rowKey={(product) => getStockProductId(product)}
-        pagination={false}
+        pagination={{
+          defaultPageSize: 50,
+          showSizeChanger: true,
+          pageSizeOptions: [25, 50, 100],
+          showTotal: (total, range) => `${range[0]}-${range[1]} / ${total} ta`,
+        }}
         scroll={{ x: "max-content", y: 560 }}
         expandable={{
           defaultExpandAllRows: false,
