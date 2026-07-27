@@ -57,4 +57,5 @@ export interface SubkontoTypeOption {
   code?: string;
   sortOrder?: number;
   isRequired?: boolean;
+  accountTypeCode?: string;
 }
