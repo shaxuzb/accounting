@@ -40,11 +40,6 @@ export default function CashBookDetailPage() {
         render: (value) => value ?? "-",
       },
       {
-        dataIndex: "paymentPurposeName",
-        title: "To'lov maqsadi",
-        render: (value) => value ?? "-",
-      },
-      {
         dataIndex: "counterpartyName",
         title: "Kontragent",
         render: (value) => value ?? "-",

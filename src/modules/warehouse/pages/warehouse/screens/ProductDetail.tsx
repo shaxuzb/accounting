@@ -1,8 +1,8 @@
 import { Button, Table } from "antd";
 import type { TableColumnsType } from "antd";
-import { ArrowLeft, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 import Card from "@/components/ui/card/Card";
 import { filterIds } from "@/shared/constants/selectLists";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
@@ -20,7 +20,7 @@ const formatMoney = (value: number, currencyCode?: string) => {
 };
 
 export default function ProductDetail() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { id = "" } = useParams();
   const [searchParams] = useSearchParams();
   const [selectedProduct, setSelectedProduct] = useState<ProductStock | null>(

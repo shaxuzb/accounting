@@ -106,6 +106,7 @@ export default function OpeningBalanceSubkontoEditor({
         console.log(definition);
 
         const code = normalizeCode(definition.code);
+        console.log(definition);
         const current = value.find(
           (item) => item.subkontoTypeId === definition.id,
         );
