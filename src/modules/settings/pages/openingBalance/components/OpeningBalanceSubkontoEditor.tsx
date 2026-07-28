@@ -103,6 +103,8 @@ export default function OpeningBalanceSubkontoEditor({
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
       {definitions.map((definition) => {
+        console.log(definition);
+
         const code = normalizeCode(definition.code);
         const current = value.find(
           (item) => item.subkontoTypeId === definition.id,

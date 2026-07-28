@@ -61,7 +61,6 @@ function OpeningBalanceDetailsTable({
   onRemove,
 }: OpeningBalanceDetailsTableProps) {
   const { t } = useTranslation();
-  console.log(definitions);
 
   const columns = useMemo<TableColumnsType<OpeningBalanceDetailForm>>(
     () => [

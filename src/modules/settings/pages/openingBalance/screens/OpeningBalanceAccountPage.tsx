@@ -77,7 +77,7 @@ const buildSubkontoDefinitions = (
         code: type?.code ?? responseDefinition?.subkontoTypeCode,
         sortOrder: definition.sortOrder,
         isRequired: definition.isRequired,
-        accountTypeCode: chartAccount?.accountTypeCode
+        accountTypeCode: chartAccount?.accountTypeCode,
       };
     })
     .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0));
@@ -122,6 +122,7 @@ export default function OpeningBalanceAccountPage() {
     refetch: refetchAccount,
   } = useGetOpeningBalanceAccount(id, accountId, Boolean(id) && !isNew);
   const saveMutation = useSaveOpeningBalanceAccount(id);
+  console.log(accountData);
 
   const initialValues = accountData
     ? mapOpeningBalanceAccountToForm(accountData)
@@ -197,7 +198,7 @@ export default function OpeningBalanceAccountPage() {
     queryKey: ["chart-accounts", "detail", chartAccountId],
     queryFn: () => chartAccountsService.detail(Number(chartAccountId)),
     enabled: Boolean(chartAccountId),
-    staleTime: 5 * 60 * 1000,     
+    staleTime: 5 * 60 * 1000,
   });
   const { data: subkontoTypes } = useQuery({
     queryKey: ["selectlist", selectListEndpoints.subkontoTypes],
@@ -216,7 +217,7 @@ export default function OpeningBalanceAccountPage() {
     subkontoTypes ?? [],
     accountData,
   );
-  
+
   const totals = calculateOpeningBalanceTotals(formik.values.details);
 
   const updateDetail = (
