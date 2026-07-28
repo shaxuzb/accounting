@@ -98,6 +98,8 @@ export default function ProductSummaryListPage() {
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <SearchFilter />
+        </div>
+        <Space>
           <Select
             allowClear
             loading={isWarehousesLoading}
@@ -111,8 +113,6 @@ export default function ProductSummaryListPage() {
             className="min-w-48"
             popupMatchSelectWidth={false}
           />
-        </div>
-        <Space>
           <Button
             icon={<RefreshCw className="size-4" />}
             onClick={() => void refetch()}
