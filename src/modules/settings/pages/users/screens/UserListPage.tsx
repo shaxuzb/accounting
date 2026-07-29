@@ -28,7 +28,7 @@ function UserListPage() {
   const [isCrudModalOpen, setIsCrudModalOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [searchParams] = useSearchParams();
- 
+
   const { data, isLoading, isFetching, refetch } =
     useGetListUsers(searchParams);
   const tableColumns: TableColumnsType<Users> = [
@@ -98,7 +98,7 @@ function UserListPage() {
         <Space>
           <Button
             icon={<RefreshCw className="size-4" />}
-            onClick={() => void refetch()}
+            onClick={() => refetch()}
           />
           <PermissionCard permission={userPermissions.create}>
             <Button
@@ -117,7 +117,7 @@ function UserListPage() {
           columns={columns}
           scroll={{
             x: "max-content",
-            y: "calc(100vh - 350px)",
+            y: "calc(100vh - 200px)",
           }}
           dataSource={generateKeyTable(data?.items ?? [])}
           pagination={false}

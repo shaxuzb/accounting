@@ -126,7 +126,7 @@ export default function ChartAccountListPage() {
           columns={columns}
           scroll={{
             x: "max-content",
-            y: "calc(100vh - 350px)",
+            y: "calc(100vh - 200px)",
           }}
           dataSource={generateKeyTable(data?.items ?? [], "id")}
           pagination={false}

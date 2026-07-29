@@ -64,15 +64,19 @@ export default function BankOperationListPage() {
       dataIndex: "operationTypeName",
       title: t("bank.fields.operationType"),
       render: (_, record) => record.operationTypeName ?? record.operationTypeId,
+      align: "center",
     },
 
     {
       dataIndex: "counterpartyName",
       title: t("bank.fields.counterparty"),
       width: 200,
-      render: (_, record) => {
+      align: "center",
+      render: (value) => {
         return (
-          <Tooltip>{record.counterpartyName ?? record.counterpartyId} </Tooltip>
+          <Tooltip title={value}>
+            <span className="line-clamp-2">{value}</span>
+          </Tooltip>
         );
       },
     },
@@ -93,6 +97,7 @@ export default function BankOperationListPage() {
           </Tooltip>
         );
       },
+      align: "center",
     },
     {
       dataIndex: "statusName",
