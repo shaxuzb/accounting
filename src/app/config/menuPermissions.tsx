@@ -27,6 +27,7 @@ import {
   Warehouse,
   Wrench,
   PlugZap,
+  Boxes,
 } from "lucide-react";
 import { salePermissions } from "@/modules/sale";
 import { productPermissions } from "@/modules/warehouse/pages/products/constants/permissions";
@@ -47,14 +48,14 @@ import {
   cashDocumentPermissions,
   cashOperationPermissions,
 } from "@/modules/cashoperation";
-// import {
-//   faAssetPermissions,
-// } from "@/modules/fa/pages/faAsset/constants/permissions";
-// import { faDisposalPermissions } from "@/modules/fa/pages/faDisposal/constants/permissions";
-// import { faDepreciationPermissions } from "@/modules/fa/pages/faDepreciation/constants/permissions";
-// import { faMovementPermissions } from "@/modules/fa/pages/faMovement/constants/permissions";
-// import { faReceiptPermissions } from "@/modules/fa/pages/faReceipt/constants/permissions";
-// import { faRevaluationPermissions } from "@/modules/fa/pages/faRevaluation/constants/permissions";
+import {
+  faAssetPermissions,
+} from "@/modules/fa/pages/faAsset/constants/permissions";
+import { faDisposalPermissions } from "@/modules/fa/pages/faDisposal/constants/permissions";
+import { faDepreciationPermissions } from "@/modules/fa/pages/faDepreciation/constants/permissions";
+import { faMovementPermissions } from "@/modules/fa/pages/faMovement/constants/permissions";
+import { faReceiptPermissions } from "@/modules/fa/pages/faReceipt/constants/permissions";
+import { faRevaluationPermissions } from "@/modules/fa/pages/faRevaluation/constants/permissions";
 // import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
 // import { accountingPeriodsPermissions } from "@/modules/accountings/pages/accounting-periods/constants/permissions";
 // import { ledgerPermissions } from "@/modules/accountings/pages/ledger/constants/permissions";
@@ -289,60 +290,60 @@ export const menuPermissions: MainMenu = {
     //     },
     //   ],
     // },
-    // {
-    //   code: "DROPDOWN",
-    //   dropdown: true,
-    //   dropdownName: "fa.title",
-    //   iconName: <Boxes className="size-5" />,
-    //   linkData: {
-    //     path: "fa",
-    //     title: "fa.title",
-    //   },
-    //   items: [
-    //     {
-    //       code: faAssetPermissions.view,
-    //       linkData: {
-    //         path: "assets",
-    //         title: "fa.entities.assets",
-    //       },
-    //     },
-    //     {
-    //       code: faReceiptPermissions.view,
-    //       linkData: {
-    //         path: "receipts",
-    //         title: "fa.entities.receipts",
-    //       },
-    //     },
-    //     {
-    //       code: faMovementPermissions.view,
-    //       linkData: {
-    //         path: "movements",
-    //         title: "fa.entities.movements",
-    //       },
-    //     },
-    //     {
-    //       code: faRevaluationPermissions.view,
-    //       linkData: {
-    //         path: "revaluations",
-    //         title: "fa.entities.revaluations",
-    //       },
-    //     },
-    //     {
-    //       code: faDisposalPermissions.view,
-    //       linkData: {
-    //         path: "disposals",
-    //         title: "fa.entities.disposals",
-    //       },
-    //     },
-    //     {
-    //       code: faDepreciationPermissions.view,
-    //       linkData: {
-    //         path: "depreciation",
-    //         title: "fa.entities.depreciation",
-    //       },
-    //     },
-    //   ],
-    // },
+    {
+      code: "DROPDOWN",
+      dropdown: true,
+      dropdownName: "fa.title",
+      iconName: <Boxes className="size-5" />,
+      linkData: {
+        path: "fa",
+        title: "fa.title",
+      },
+      items: [
+        {
+          code: faAssetPermissions.view,
+          linkData: {
+            path: "assets",
+            title: "fa.entities.assets",
+          },
+        },
+        {
+          code: faReceiptPermissions.view,
+          linkData: {
+            path: "receipts",
+            title: "fa.entities.receipts",
+          },
+        },
+        {
+          code: faMovementPermissions.view,
+          linkData: {
+            path: "movements",
+            title: "fa.entities.movements",
+          },
+        },
+        {
+          code: faRevaluationPermissions.view,
+          linkData: {
+            path: "revaluations",
+            title: "fa.entities.revaluations",
+          },
+        },
+        {
+          code: faDisposalPermissions.view,
+          linkData: {
+            path: "disposals",
+            title: "fa.entities.disposals",
+          },
+        },
+        {
+          code: faDepreciationPermissions.view,
+          linkData: {
+            path: "depreciation",
+            title: "fa.entities.depreciation",
+          },
+        },
+      ],
+    },
 
     {
       code: salePermissions.view,
