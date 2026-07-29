@@ -1,5 +1,6 @@
 {
   "common": {
+    "selected": "Выбрано",
     "add": "Добавить",
     "save": "Сохранить",
     "submit": "Подтвердить",
@@ -104,6 +105,7 @@
   "fa": {
     "title": "Основные средства",
     "entities": {
+      "integrations": "Интеграции",
       "assets": "Основные средства",
       "receipts": "Приход",
       "movements": "Перемещение",
@@ -139,6 +141,70 @@
     }
   },
   "settings": {
+    "integrations": {
+      "filters": {
+        "all": "Все интеграции",
+        "documents": "Документы",
+        "communication": "Коммуникации",
+        "marking": "Маркировка"
+      },
+      "searchPlaceholder": "Поиск интеграций",
+      "noResults": "Подходящие интеграции не найдены",
+      "comingSoon": "Скоро",
+      "title": "Интеграции",
+      "description": "Подключение и управление сервисами электронного документооборота и маркировки.",
+      "connected": "Интеграция подключена",
+      "status": {
+        "disconnected": "Не подключено",
+        "connecting": "Подключение",
+        "connected": "Подключено",
+        "error": "Ошибка"
+      },
+      "actions": {
+        "connect": "Подключить",
+        "manage": "Управление",
+        "replaceKey": "Заменить ключ",
+        "disconnect": "Отключить интеграцию",
+        "save": "Сохранить"
+      },
+      "certificate": {
+        "serial": "Серийный номер",
+        "validTo": "Действителен до"
+      },
+      "eimzo": {
+        "notInstalled": "E-IMZO не запущен",
+        "loadingCertificates": "Загрузка сертификатов...",
+        "noCertificates": "Действующие сертификаты не найдены",
+        "selectCertificate": "Выберите сертификат для подключения",
+        "error": "Ошибка работы с E-IMZO"
+      },
+      "items": {
+        "telegram": {
+          "name": "Telegram",
+          "description": "Отправка уведомлений и сообщений через Telegram."
+        },
+        "instagram": {
+          "name": "Instagram",
+          "description": "Управление сообщениями и общением с клиентами в соцсети."
+        },
+        "email": {
+          "name": "Email",
+          "description": "Управление email-уведомлениями и системными сообщениями."
+        },
+        "ddocs": {
+          "name": "dDocs",
+          "description": "Сервис подписания и обмена электронными документами."
+        },
+        "aslBelgi": {
+          "name": "Asl Belgisi",
+          "description": "Сервис маркировки и отслеживания товаров."
+        }
+      },
+      "messages": {
+        "connected": "Интеграция успешно подключена",
+        "disconnected": "Интеграция отключена"
+      }
+    },
     "title": "Настройки",
     "description": "Параметры системы",
     "entities": {
@@ -166,6 +232,7 @@
       "openingBalance": "Начальный баланс"
     },
     "descriptions": {
+      "integrations": "Управление интеграциями dDocs и Asl Belgisi.",
       "roles": "Управление ролями и правами доступа.",
       "users": "Управление пользователями и их ролями.",
       "organizations": "Управление данными организаций.",

@@ -45,6 +45,9 @@ import { bankPermissions } from "../bank";
 import OpeningBalancePage from "./pages/openingBalance/screens/OpeningBalancePage";
 import OpeningBalanceAccountPage from "./pages/openingBalance/screens/OpeningBalanceAccountPage";
 import { openingBalancePermissions } from "./pages/openingBalance/constants/permissions";
+import { EimzoProvider } from "@islom929/react-eimzo";
+import IntegrationsPage from "./pages/integrations/screens/IntegrationsPage";
+import { integrationPermissions } from "./pages/integrations/constants/permissions";
 
 const settingsPermissions = [
   rolePermissions.view,
@@ -68,6 +71,7 @@ const settingsPermissions = [
   pricingConditionPermissions.view,
   saleConditionPermissions.view,
   openingBalancePermissions.view,
+  integrationPermissions.view,
 ];
 
 const withPermission = (
@@ -86,6 +90,30 @@ export const settingsRoutes: RouteObject = {
     {
       index: true,
       element: withPermission(<SettingsListPage />, settingsPermissions),
+    },
+    {
+      path: "integrations",
+      handle: {
+        title: "settings.integrations.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <EimzoProvider
+          apiKeys={
+            import.meta.env.VITE_EIMZO_DOMAIN &&
+            import.meta.env.VITE_EIMZO_API_KEY
+              ? [
+                  import.meta.env.VITE_EIMZO_DOMAIN,
+                  import.meta.env.VITE_EIMZO_API_KEY,
+                ]
+              : undefined
+          }
+        >
+          <IntegrationsPage />
+        </EimzoProvider>,
+        integrationPermissions.view,
+      ),
     },
     {
       path: "users",

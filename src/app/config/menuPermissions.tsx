@@ -26,6 +26,7 @@ import {
   Wallet,
   Warehouse,
   Wrench,
+  PlugZap,
 } from "lucide-react";
 import { salePermissions } from "@/modules/sale";
 import { productPermissions } from "@/modules/warehouse/pages/products/constants/permissions";
@@ -40,6 +41,7 @@ import { pricingConditionPermissions } from "@/modules/settings/pages/pricingCon
 import { saleConditionPermissions } from "@/modules/settings/pages/saleCondition/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 import { openingBalancePermissions } from "@/modules/settings/pages/openingBalance/constants/permissions";
+import { integrationPermissions } from "@/modules/settings/pages/integrations/constants/permissions";
 import {
   cashBookPermissions,
   cashDocumentPermissions,
@@ -87,6 +89,7 @@ export const settingsViewPermissions = [
   pricingConditionPermissions.view,
   saleConditionPermissions.view,
   openingBalancePermissions.view,
+  integrationPermissions.view,
 ] as const;
 
 export const menuPermissions: MainMenu = {
@@ -598,6 +601,15 @@ export const menuPermissions: MainMenu = {
         path: "sale-conditions",
         title: "settings.entities.saleConditions",
         description: "settings.descriptions.saleConditions",
+      },
+    },
+    {
+      code: integrationPermissions.view,
+      iconName: <PlugZap className="size-5" />,
+      linkData: {
+        path: "integrations",
+        title: "settings.integrations.title",
+        description: "settings.integrations.description",
       },
     },
   ],

@@ -21,6 +21,7 @@
     "back": "Orqaga",
     "next": "Keyingisi",
     "refresh": "Yangilash",
+    "selected": "Tanlangan",
     "create": "Yaratish"
   },
   "actions": {
@@ -163,7 +164,8 @@
       "warehouse": "Ombor",
       "purchaseServices": "Xarid xizmatlari",
       "pricingConditions": "Narxlash shartlari",
-      "saleConditions": "Sotuv shartlari"
+      "saleConditions": "Sotuv shartlari",
+      "integrations": "Integratsiyalar"
     },
     "descriptions": {
       "roles": "Tizimdagi rollar va ularning huquqlarini boshqarish.",
@@ -185,7 +187,8 @@
       "warehouse": "Omborlar ro'yxatini boshqarish.",
       "purchaseServices": "Xaridda ishlatiladigan xizmatlar ro'yxatini boshqarish.",
       "pricingConditions": "Narxlash usuli va yaxlitlash shartlarini boshqarish.",
-      "saleConditions": "Sotuv tannarx va NDS shartlarini boshqarish."
+      "saleConditions": "Sotuv tannarx va NDS shartlarini boshqarish.",
+      "integrations": "dDocs va Asl Belgisi integratsiyalarini boshqarish."
     },
     "fields": {
       "accountNumber": "Hisob raqami",
@@ -282,6 +285,70 @@
       "activeDescription": "Hozirgi paytda amal qilayotgan faol sotuv shartining ma'lumotlari ko'rsatilmoqda.",
       "infoTitle": "Ma'lumot",
       "infoDescription": "Ushbu sotuv sharti tashkilotda ko'rsatilgan davr ichida barcha sotuv operatsiyalariga qo'llaniladi."
+    },
+    "integrations": {
+      "filters": {
+        "all": "Barchasi",
+        "documents": "Hujjatlar",
+        "communication": "Aloqa",
+        "marking": "Markirovka"
+      },
+      "searchPlaceholder": "Integratsiyalarni qidirish",
+      "noResults": "Mos integratsiya topilmadi",
+      "comingSoon": "Tez orada",
+      "title": "Integratsiyalar",
+      "description": "Elektron hujjatlar va markirovka xizmatlarini ulash va boshqarish.",
+      "connected": "Integratsiya ulangan",
+      "status": {
+        "disconnected": "Ulanmagan",
+        "connecting": "Ulanmoqda",
+        "connected": "Ulangan",
+        "error": "Xatolik"
+      },
+      "actions": {
+        "connect": "Ulash",
+        "manage": "Boshqarish",
+        "replaceKey": "Kalitni almashtirish",
+        "disconnect": "Integratsiyani uzish",
+        "save": "Saqlash"
+      },
+      "certificate": {
+        "serial": "Seriya raqami",
+        "validTo": "Amal qilish muddati"
+      },
+      "eimzo": {
+        "notInstalled": "E-IMZO ishga tushmagan",
+        "loadingCertificates": "Sertifikatlar yuklanmoqda...",
+        "noCertificates": "Faol sertifikatlar topilmadi",
+        "selectCertificate": "Ulash uchun sertifikatni tanlang",
+        "error": "E-IMZO bilan ishlashda xatolik"
+      },
+      "items": {
+        "telegram": {
+          "name": "Telegram",
+          "description": "Bildirishnomalar va xabarlarni Telegram orqali yuborish."
+        },
+        "instagram": {
+          "name": "Instagram",
+          "description": "Ijtimoiy tarmoq xabarlari va mijozlar bilan aloqa."
+        },
+        "email": {
+          "name": "Email",
+          "description": "Email xabarnomalari va tizim xatlarini boshqarish."
+        },
+        "ddocs": {
+          "name": "dDocs",
+          "description": "Elektron hujjatlarni imzolash va almashish xizmati."
+        },
+        "aslBelgi": {
+          "name": "Asl Belgisi",
+          "description": "Markirovka va tovarlarni kuzatish xizmati."
+        }
+      },
+      "messages": {
+        "connected": "Integratsiya muvaffaqiyatli ulandi",
+        "disconnected": "Integratsiya uzildi"
+      }
     }
   },
   "openingBalance": {

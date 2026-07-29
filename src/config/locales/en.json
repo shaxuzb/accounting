@@ -21,6 +21,7 @@
     "back": "Back",
     "next": "Next",
     "refresh": "Refresh",
+    "selected": "Selected",
     "create": "Create"
   },
   "actions": {
@@ -162,6 +163,7 @@
       "purchaseServices": "Purchase services",
       "pricingConditions": "Pricing conditions",
       "saleConditions": "Sale conditions",
+      "integrations": "Integrations",
       "documentAccountSettings": "Document account settings",
       "openingBalance": "Opening balance"
     },
@@ -185,7 +187,8 @@
       "pricingConditions": "Manage pricing methods and rounding rules.",
       "saleConditions": "Manage costing method and VAT rate for sales.",
       "documentAccountSettings": "Configure accounts used by documents.",
-      "openingBalance": "Enter the organization's opening balances by account."
+      "openingBalance": "Enter the organization's opening balances by account.",
+      "integrations": "Manage dDocs and Asl Belgisi integrations."
     },
     "fields": {
       "accountNumber": "Account number",
@@ -282,6 +285,70 @@
       "activeDescription": "Showing the data of the active sale condition currently in effect.",
       "infoTitle": "Information",
       "infoDescription": "This sale condition applies to all sale operations in the specified period for the current organization."
+    },
+    "integrations": {
+      "filters": {
+        "all": "All integrations",
+        "documents": "Documents",
+        "communication": "Communication",
+        "marking": "Product marking"
+      },
+      "searchPlaceholder": "Search integrations",
+      "noResults": "No matching integrations found",
+      "comingSoon": "Coming soon",
+      "title": "Integrations",
+      "description": "Connect and manage electronic document and product marking services.",
+      "connected": "Integration connected",
+      "status": {
+        "disconnected": "Disconnected",
+        "connecting": "Connecting",
+        "connected": "Connected",
+        "error": "Error"
+      },
+      "actions": {
+        "connect": "Connect",
+        "manage": "Manage",
+        "replaceKey": "Replace key",
+        "disconnect": "Disconnect integration",
+        "save": "Save"
+      },
+      "certificate": {
+        "serial": "Serial number",
+        "validTo": "Valid until"
+      },
+      "eimzo": {
+        "notInstalled": "E-IMZO is not running",
+        "loadingCertificates": "Loading certificates...",
+        "noCertificates": "No active certificates found",
+        "selectCertificate": "Select a certificate to connect",
+        "error": "E-IMZO error"
+      },
+      "items": {
+        "telegram": {
+          "name": "Telegram",
+          "description": "Send notifications and messages through Telegram."
+        },
+        "instagram": {
+          "name": "Instagram",
+          "description": "Manage social inbox messages and customer conversations."
+        },
+        "email": {
+          "name": "Email",
+          "description": "Manage email notifications and system messages."
+        },
+        "ddocs": {
+          "name": "dDocs",
+          "description": "Electronic document signing and exchange service."
+        },
+        "aslBelgi": {
+          "name": "Asl Belgisi",
+          "description": "Product marking and tracking service."
+        }
+      },
+      "messages": {
+        "connected": "Integration connected successfully",
+        "disconnected": "Integration disconnected"
+      }
     }
   },
   "openingBalance": {
