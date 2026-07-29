@@ -28,6 +28,9 @@ import {
   Wrench,
   PlugZap,
   Boxes,
+  BadgeDollarSign,
+  UserCog,
+  SlidersHorizontal,
 } from "lucide-react";
 import { salePermissions } from "@/modules/sale";
 import { productPermissions } from "@/modules/warehouse/pages/products/constants/permissions";
@@ -44,13 +47,20 @@ import { contractPermissions } from "@/modules/contract/constants/permissions";
 import { openingBalancePermissions } from "@/modules/settings/pages/openingBalance/constants/permissions";
 import { integrationPermissions } from "@/modules/settings/pages/integrations/constants/permissions";
 import {
+  payrollDocumentPermissions,
+  payrollPaymentPermissions,
+  payrollPeriodPermissions,
+  payrollReportPermissions,
+  payrollTimesheetPermissions,
+} from "@/modules/payroll/constants/permissions";
+import { payrollEmployeePermissions } from "@/modules/settings/pages/payrollEmployees/constants/permissions";
+import { payrollComponentPermissions } from "@/modules/settings/pages/payrollComponents/constants/permissions";
+import {
   cashBookPermissions,
   cashDocumentPermissions,
   cashOperationPermissions,
 } from "@/modules/cashoperation";
-import {
-  faAssetPermissions,
-} from "@/modules/fa/pages/faAsset/constants/permissions";
+import { faAssetPermissions } from "@/modules/fa/pages/faAsset/constants/permissions";
 import { faDisposalPermissions } from "@/modules/fa/pages/faDisposal/constants/permissions";
 import { faDepreciationPermissions } from "@/modules/fa/pages/faDepreciation/constants/permissions";
 import { faMovementPermissions } from "@/modules/fa/pages/faMovement/constants/permissions";
@@ -91,6 +101,8 @@ export const settingsViewPermissions = [
   saleConditionPermissions.view,
   openingBalancePermissions.view,
   integrationPermissions.view,
+  payrollEmployeePermissions.view,
+  payrollComponentPermissions.view,
 ] as const;
 
 export const menuPermissions: MainMenu = {
@@ -373,14 +385,60 @@ export const menuPermissions: MainMenu = {
       ],
     },
 
-    // {
-    //   code: "S",
-    //   linkData: {
-    //     path: "dashboard/financ",
-    //     title: "Ish haqi",
-    //   },
-    //   iconName: <Users className="size-5" />,
-    // },
+    {
+      code: "DROPDOWN",
+      dropdown: true,
+      dropdownName: "payroll.title",
+      iconName: <BadgeDollarSign className="size-5" />,
+      linkData: {
+        path: "payroll",
+        title: "payroll.title",
+      },
+      items: [
+        {
+          code: payrollPeriodPermissions.view,
+          linkData: {
+            path: "periods",
+            title: "payroll.periods.title",
+          },
+        },
+        {
+          code: payrollTimesheetPermissions.view,
+          linkData: {
+            path: "timesheets",
+            title: "payroll.timesheets.title",
+          },
+        },
+        {
+          code: payrollDocumentPermissions.view,
+          linkData: {
+            path: "documents",
+            title: "payroll.documents.title",
+          },
+        },
+        {
+          code: payrollPaymentPermissions.view,
+          linkData: {
+            path: "payments",
+            title: "payroll.payments.title",
+          },
+        },
+        {
+          code: payrollReportPermissions.view,
+          linkData: {
+            path: "reports/register",
+            title: "payroll.reports.registerTitle",
+          },
+        },
+        {
+          code: payrollReportPermissions.view,
+          linkData: {
+            path: "reports/payslip",
+            title: "payroll.reports.payslipTitle",
+          },
+        },
+      ],
+    },
     // {
     //   code: "Ss",
     //   linkData: {
@@ -602,6 +660,24 @@ export const menuPermissions: MainMenu = {
         path: "sale-conditions",
         title: "settings.entities.saleConditions",
         description: "settings.descriptions.saleConditions",
+      },
+    },
+    {
+      code: payrollEmployeePermissions.view,
+      iconName: <UserCog className="size-5" />,
+      linkData: {
+        path: "payroll-employees",
+        title: "payroll.employees.title",
+        description: "payroll.employees.description",
+      },
+    },
+    {
+      code: payrollComponentPermissions.view,
+      iconName: <SlidersHorizontal className="size-5" />,
+      linkData: {
+        path: "payroll-components",
+        title: "payroll.components.title",
+        description: "payroll.components.description",
       },
     },
     {

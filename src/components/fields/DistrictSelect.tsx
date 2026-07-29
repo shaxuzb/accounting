@@ -42,7 +42,6 @@ const DistrictSelect: React.FC<SelectCustomProps> = (props) => {
     disabled = false,
   } = props;
 
-
   const regionId = getIn(formik.values, regionFieldName) as
     | number
     | null

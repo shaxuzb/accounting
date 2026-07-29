@@ -1,0 +1,106 @@
+import {
+  componentTypeColor,
+  type PayrollComponentType,
+} from "@/modules/payroll/constants/options";
+import { money } from "@/modules/payroll/utils/format";
+import { Empty, Table, Tag } from "antd";
+import type { TableColumnsType } from "antd";
+import { useTranslation } from "react-i18next";
+import type { PayrollCalcLine } from "../types/type";
+
+interface Props {
+  lines?: PayrollCalcLine[];
+}
+
+/** Xodim bo'yicha hisoblash tafsiloti (komponentlar kesimi). */
+export default function PayrollCalcLinesTable({ lines }: Props) {
+  const { t } = useTranslation();
+
+  const columns: TableColumnsType<PayrollCalcLine> = [
+    {
+      dataIndex: "componentCode",
+      title: t("payroll.fields.componentCode"),
+      width: 120,
+      render: (value: string | null) => value ?? "—",
+    },
+    {
+      dataIndex: "componentName",
+      title: t("payroll.fields.componentName"),
+      minWidth: 200,
+      render: (value: string | null) => value ?? "—",
+    },
+    {
+      dataIndex: "componentType",
+      title: t("payroll.fields.componentType"),
+      align: "center",
+      width: 150,
+      render: (value: PayrollComponentType | null) =>
+        value ? (
+          <Tag className="m-0!" color={componentTypeColor[value] ?? "default"}>
+            {t(`payroll.enums.componentType.${value}`, { defaultValue: value })}
+          </Tag>
+        ) : (
+          "—"
+        ),
+    },
+    {
+      dataIndex: "baseAmount",
+      title: t("payroll.fields.baseAmount"),
+      align: "right",
+      width: 150,
+      render: (value: number | null) => money(value),
+    },
+    {
+      dataIndex: "rate",
+      title: t("payroll.fields.rate"),
+      align: "center",
+      width: 100,
+      render: (value: number | null) => (value == null ? "—" : value),
+    },
+    {
+      dataIndex: "amount",
+      title: t("payroll.fields.amount"),
+      align: "right",
+      width: 160,
+      render: (value: number, record) => (
+        <span
+          className={
+            record.componentType === "DEDUCTION"
+              ? "font-semibold text-red-500"
+              : "font-semibold"
+          }
+        >
+          {record.componentType === "DEDUCTION" ? "−" : ""}
+          {money(value)}
+        </span>
+      ),
+    },
+    {
+      dataIndex: "note",
+      title: t("payroll.fields.note"),
+      minWidth: 140,
+      render: (value: string | null) => value ?? "—",
+    },
+  ];
+
+  return (
+    <Table<PayrollCalcLine>
+      columns={columns}
+      dataSource={(lines ?? []).map((line, index) => ({
+        ...line,
+        key: line.id ?? index,
+      }))}
+      pagination={false}
+      size="small"
+      scroll={{ x: "max-content" }}
+      locale={{
+        emptyText: (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={t("payroll.documents.noCalcLines")}
+          />
+        ),
+      }}
+    />
+  );
+}

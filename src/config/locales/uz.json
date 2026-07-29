@@ -443,7 +443,6 @@
       "debitAccount": "Debet hisobvarag'i",
       "vatAccount": "QQS hisobvarag'i"
     },
-
     "messages": {
       "imported": "Sotib olish ma'lumotlari import qilindi"
     },
@@ -579,8 +578,7 @@
       "serviceItemCreated": "Servis qo'shildi",
       "serviceItemUpdated": "Servis o'zgartirildi"
     }
-  }
-  ,
+  },
   "sale": {
     "title": "Sotuv",
     "fields": {
@@ -620,12 +618,42 @@
       "periods": "Hisob davrlari"
     },
     "reports": {
-      "balance": {"title": "Balans hisoboti", "description": "Aktivlar, majburiyatlar va kapital bo'yicha to'liq hisobot.", "table": "Balans qoldiqlari", "empty": "Balans hisoboti natijasi yo'q"},
-      "income": {"title": "Daromadlar hisoboti", "description": "Daromad, tannarx va foyda / zarar bo'yicha tahlil.", "table": "Daromadlar hisoboti qatorlari", "empty": "Daromadlar hisoboti natijasi yo'q"},
-      "cashFlow": {"title": "Pul oqimi", "description": "Pul oqimi bo'yicha kirim, chiqim va sof farq.", "table": "Pul oqimi qatorlari", "empty": "Pul oqimi natijasi yo'q"},
-      "turnover": {"title": "Hisob aylanmasi", "description": "Provodkalar, jurnal raqami, hujjat va miqdorlar ro'yxati.", "table": "Hisob aylanmasi qatorlari", "empty": "Hisob aylanmasi natijasi yo'q"},
-      "journal": {"title": "Operatsiyalar jurnali", "description": "Barcha qaydlar va o'tkazmalar uchun umumiy jurnal.", "table": "Jurnal qatorlari", "empty": "Jurnal natijasi yo'q"},
-      "card": {"title": "Hisob kartochkasi", "description": "Bitta schyot bo'yicha karta va harakatlar.", "table": "Hisob kartochkasi qatorlari", "empty": "Hisob kartochkasi natijasi yo'q"}
+      "balance": {
+        "title": "Balans hisoboti",
+        "description": "Aktivlar, majburiyatlar va kapital bo'yicha to'liq hisobot.",
+        "table": "Balans qoldiqlari",
+        "empty": "Balans hisoboti natijasi yo'q"
+      },
+      "income": {
+        "title": "Daromadlar hisoboti",
+        "description": "Daromad, tannarx va foyda / zarar bo'yicha tahlil.",
+        "table": "Daromadlar hisoboti qatorlari",
+        "empty": "Daromadlar hisoboti natijasi yo'q"
+      },
+      "cashFlow": {
+        "title": "Pul oqimi",
+        "description": "Pul oqimi bo'yicha kirim, chiqim va sof farq.",
+        "table": "Pul oqimi qatorlari",
+        "empty": "Pul oqimi natijasi yo'q"
+      },
+      "turnover": {
+        "title": "Hisob aylanmasi",
+        "description": "Provodkalar, jurnal raqami, hujjat va miqdorlar ro'yxati.",
+        "table": "Hisob aylanmasi qatorlari",
+        "empty": "Hisob aylanmasi natijasi yo'q"
+      },
+      "journal": {
+        "title": "Operatsiyalar jurnali",
+        "description": "Barcha qaydlar va o'tkazmalar uchun umumiy jurnal.",
+        "table": "Jurnal qatorlari",
+        "empty": "Jurnal natijasi yo'q"
+      },
+      "card": {
+        "title": "Hisob kartochkasi",
+        "description": "Bitta schyot bo'yicha karta va harakatlar.",
+        "table": "Hisob kartochkasi qatorlari",
+        "empty": "Hisob kartochkasi natijasi yo'q"
+      }
     },
     "trial": {
       "title": "Sinov balansi",
@@ -722,6 +750,346 @@
       "completed": "Tugallangan",
       "noData": "Ma'lumot yo'q",
       "notFound": "Topilmadi"
+    }
+  },
+  "payroll": {
+    "title": "Oylik maosh",
+    "description": "Xodimlar, tabel, maosh hisoblash va to'lovlar",
+    "common": {
+      "newDocument": "Yangi hujjat",
+      "noNumber": "Raqamsiz",
+      "info": "Ma'lumot"
+    },
+    "units": {
+      "hour": "soat",
+      "day": "kun"
+    },
+    "filters": {
+      "active": "Faol",
+      "inactive": "Faol emas"
+    },
+    "actions": {
+      "confirm": "Tasdiqlash",
+      "confirmAndPost": "Tasdiqlash va provodka qilish",
+      "confirmAndPay": "Tasdiqlash va to'lash",
+      "cancel": "Bekor qilish"
+    },
+    "placeholders": {
+      "selectEmployee": "Xodimni tanlang",
+      "selectComponent": "Komponentni tanlang",
+      "selectPeriod": "Davrni tanlang",
+      "selectDocument": "Hujjatni tanlang",
+      "searchEmployee": "Xodim bo'yicha qidirish"
+    },
+    "months": {
+      "1": "Yanvar",
+      "2": "Fevral",
+      "3": "Mart",
+      "4": "Aprel",
+      "5": "May",
+      "6": "Iyun",
+      "7": "Iyul",
+      "8": "Avgust",
+      "9": "Sentabr",
+      "10": "Oktabr",
+      "11": "Noyabr",
+      "12": "Dekabr"
+    },
+    "fields": {
+      "employee": "Xodim",
+      "employeeNumber": "Tabel raqami",
+      "middleName": "Otasining ismi",
+      "pinfl": "JShShIR",
+      "tin": "STIR",
+      "birthDate": "Tug'ilgan sana",
+      "bankAccountNumber": "Hisob raqami / karta",
+      "department": "Bo'lim",
+      "position": "Lavozim",
+      "employmentType": "Ish turi",
+      "startDate": "Boshlanish sanasi",
+      "endDate": "Tugash sanasi",
+      "now": "hozirgacha",
+      "monthlySalary": "Oylik maosh",
+      "employmentRate": "Stavka",
+      "weeklyHours": "Haftalik soat",
+      "currency": "Valyuta",
+      "expenseAccount": "Xarajat schyoti",
+      "expenseAccountOverride": "Xarajat schyoti (individual)",
+      "liabilityAccount": "Majburiyat schyoti",
+      "accounts": "Schyotlar",
+      "component": "Komponent",
+      "componentCode": "Kod",
+      "componentName": "Komponent nomi",
+      "componentType": "Turi",
+      "calculationMethod": "Hisoblash usuli",
+      "defaultAmount": "Standart summa",
+      "defaultRate": "Standart stavka",
+      "defaultRatePercent": "Foiz (%)",
+      "defaultRateHourly": "Soatlik stavka",
+      "defaultValue": "Standart qiymat",
+      "value": "Qiymati",
+      "isMandatory": "Majburiy komponent",
+      "isMandatoryHint": "Barcha mos xodimlarga avtomatik qo'llanadi",
+      "effectiveFrom": "Amal qilish boshlanishi",
+      "effectiveTo": "Amal qilish tugashi",
+      "effectivePeriod": "Amal qilish davri",
+      "sortOrder": "Tartib raqami",
+      "year": "Yil",
+      "month": "Oy",
+      "period": "Hisoblash davri",
+      "periodRange": "Davr oralig'i",
+      "normWorkDays": "Me'yoriy ish kunlari",
+      "normWorkHours": "Me'yoriy ish soatlari",
+      "closedDate": "Yopilgan sana",
+      "docNumber": "Hujjat raqami",
+      "docDate": "Hujjat sanasi",
+      "note": "Izoh",
+      "workedDays": "Ishlangan kun",
+      "workedHours": "Ishlangan soat",
+      "leaveDays": "Ta'til kuni",
+      "sickDays": "Kasallik kuni",
+      "absentDays": "Sababsiz yo'qlik",
+      "overtimeHours": "Ortiqcha soat",
+      "employeeCount": "Xodimlar soni",
+      "totalWorkedDays": "Jami ish kuni",
+      "totalWorkedHours": "Jami ish soati",
+      "documentKind": "Hujjat turi",
+      "correctionOfDoc": "Tuzatilayotgan hujjat",
+      "payrollDocument": "Maosh hujjati",
+      "baseAmount": "Baza summa",
+      "rate": "Stavka",
+      "amount": "Summa",
+      "grossAmount": "Brutto",
+      "deductionAmount": "Ushlanmalar",
+      "employerTaxAmount": "Ish beruvchi solig'i",
+      "advanceAmount": "Avans",
+      "netAmount": "Net (qo'lga)",
+      "payableAmount": "To'lanishi kerak",
+      "paidAmount": "To'langan",
+      "outstandingAmount": "Qoldiq",
+      "totalAmount": "Jami summa",
+      "paymentKind": "To'lov turi",
+      "sourceType": "To'lov manbasi",
+      "source": "Manba",
+      "bankAccount": "Bank hisobi",
+      "cashBox": "Kassa",
+      "sourceChartAccount": "Pul chiqadigan schyot",
+      "bankOperation": "Bank operatsiyasi",
+      "cashOperation": "Kassa operatsiyasi"
+    },
+    "enums": {
+      "employmentType": {
+        "PRIMARY": "Asosiy ish joyi",
+        "PRIMARY_HINT": "To'liq stavkadagi asosiy xodim",
+        "PART_TIME": "O'rindoshlik",
+        "PART_TIME_HINT": "Qisman stavkada ishlaydi",
+        "CONTRACT": "Shartnoma asosida",
+        "CONTRACT_HINT": "Fuqarolik-huquqiy shartnoma bo'yicha"
+      },
+      "componentType": {
+        "EARNING": "Hisoblash",
+        "EARNING_HINT": "Oylik, bonus, qo'shimcha haq",
+        "DEDUCTION": "Ushlanma",
+        "DEDUCTION_HINT": "JShDS, aliment va boshqa ushlanmalar",
+        "EMPLOYER_TAX": "Ish beruvchi solig'i",
+        "EMPLOYER_TAX_HINT": "Xodim net summasidan ayrilmaydi"
+      },
+      "calculationMethod": {
+        "SALARY_PRORATED": "Ishlangan vaqtga mutanosib",
+        "SALARY_PRORATED_HINT": "Oylik ishlangan kun/soatga bo'lib hisoblanadi",
+        "FIXED": "Qat'iy summa",
+        "FIXED_HINT": "Belgilangan summa to'g'ridan-to'g'ri qo'llanadi",
+        "PERCENT_OF_GROSS": "Bruttodan foiz",
+        "PERCENT_OF_GROSS_HINT": "Brutto summadan foiz hisoblanadi",
+        "PER_HOUR": "Soat bo'yicha",
+        "PER_HOUR_HINT": "Ishlangan soat × stavka"
+      },
+      "periodStatus": {
+        "OPEN": "Ochiq",
+        "CLOSED": "Yopilgan"
+      },
+      "documentKind": {
+        "REGULAR": "Asosiy hisob-kitob",
+        "REGULAR_HINT": "Oyning asosiy maosh hujjati",
+        "CORRECTION": "Tuzatish",
+        "CORRECTION_HINT": "Tasdiqlangan hujjatga tuzatish kiritish"
+      },
+      "paymentKind": {
+        "ADVANCE": "Avans",
+        "ADVANCE_HINT": "Oylikdan oldingi to'lov",
+        "FINAL": "Yakuniy to'lov",
+        "FINAL_HINT": "Tasdiqlangan maosh hujjati bo'yicha to'lov"
+      },
+      "sourceType": {
+        "BANK": "Bank",
+        "BANK_HINT": "Bank hisobidan o'tkaziladi",
+        "CASH": "Kassa",
+        "CASH_HINT": "Kassadan naqd beriladi"
+      }
+    },
+    "employees": {
+      "title": "Xodimlar",
+      "description": "Xodim kartochkasi, ish shartlari va komponentlari",
+      "detailTitle": "Xodim kartochkasi",
+      "createTitle": "Yangi xodim",
+      "editTitle": "Xodimni tahrirlash",
+      "employmentSection": "Birinchi ish sharti",
+      "employmentHint": "Xodim yaratilgach ushbu ish sharti avtomatik faollashadi. Keyinchalik yangi shart qo'shish mumkin.",
+      "editEmploymentHint": "Ish sharti va maosh xodim kartochkasidagi «Ish shartlari» bo'limidan o'zgartiriladi.",
+      "employmentsTitle": "Ish shartlari",
+      "employmentsHint": "Lavozim, stavka va maosh tarixi",
+      "componentsTitle": "Biriktirilgan komponentlar",
+      "componentsHint": "Shu xodimga qo'llanadigan individual hisoblashlar",
+      "assignComponent": "Komponent biriktirish",
+      "assignComponentTitle": "Komponent biriktirish",
+      "assignComponentHint": "Bu yerda faqat shu xodimga tegishli qiymat kiritiladi. Umumiy sozlama komponent kartochkasida turadi.",
+      "removeComponentTitle": "Komponentni olib tashlaysizmi?",
+      "noEmployment": "Ish sharti kiritilmagan",
+      "noComponents": "Komponent biriktirilmagan",
+      "notFound": "Xodim topilmadi"
+    },
+    "components": {
+      "title": "Hisoblash komponentlari",
+      "description": "Oylik, bonus, soliq va ushlanma sozlamalari",
+      "createTitle": "Yangi komponent",
+      "editTitle": "Komponentni tahrirlash",
+      "hintTitle": "Komponent — hisoblashning bir elementi",
+      "hintText": "Turi summani qanday ta'sir qilishini, hisoblash usuli esa qanday hisoblanishini belgilaydi. Buxgalteriya schyotlari provodka uchun ishlatiladi.",
+      "employerTaxNote": "Ish beruvchi solig'i xodimning qo'lga oladigan summasidan ayrilmaydi, faqat tashkilot xarajati sifatida hisobga olinadi."
+    },
+    "periods": {
+      "title": "Hisoblash davrlari",
+      "create": "Davr ochish",
+      "createTitle": "Yangi hisoblash davri",
+      "createHint": "Har oy uchun bitta davr ochiladi. Ish kunlari taxminiy hisoblanadi — bayramlarni hisobga olib to'g'rilang.",
+      "close": "Yopish",
+      "reopen": "Qayta ochish",
+      "closeConfirmTitle": "Davrni yopasizmi?",
+      "closeConfirmText": "Yopilgan davrga yangi tabel, hisoblash va to'lov kiritib bo'lmaydi.",
+      "reopenConfirmTitle": "Davrni qayta ochasizmi?",
+      "reopenConfirmText": "Davr yana tahrirlash uchun ochiladi."
+    },
+    "timesheets": {
+      "title": "Tabel",
+      "create": "Tabel yaratish",
+      "createTitle": "Yangi tabel",
+      "detailTitle": "Tabel",
+      "headerTitle": "Tabel ma'lumotlari",
+      "headerHint": "Davr va hujjat sanasini tanlang",
+      "linesTitle": "Xodimlar bo'yicha vaqt hisobi",
+      "linesHint": "Ishlangan kun va soatni kiriting",
+      "addLine": "Xodim qo'shish",
+      "fillAll": "Barcha xodimlar",
+      "fillAllTitle": "Barcha xodimlarni qo'shasizmi?",
+      "fillAllText": "{{count}} ta xodim me'yor bo'yicha to'ldiriladi.",
+      "noLines": "Hozircha xodim qo'shilmagan",
+      "confirmTitle": "Tabelni tasdiqlaysizmi?",
+      "confirmText": "Tasdiqlangan tabel maosh hisoblash uchun asos bo'ladi va tahrirlab bo'lmaydi.",
+      "confirmHint": "Maosh hisoblashdan oldin tabel tasdiqlanishi kerak",
+      "cancelTitle": "Tabelni bekor qilasizmi?",
+      "cancelText": "Hujjat bekor qilingan holatga o'tadi."
+    },
+    "documents": {
+      "title": "Maosh hisoblash",
+      "detailTitle": "Hisoblash hujjati",
+      "calculate": "Maoshni hisoblash",
+      "calculateTitle": "Maoshni hisoblash",
+      "calculateHintTitle": "Hisob-kitobni backend bajaradi",
+      "calculateHintText": "Tasdiqlangan tabel, faol ish shartlari va komponentlar asosida qoralama hujjat yaratiladi. Natijani ko'rib chiqib, so'ng tasdiqlang.",
+      "adjustmentsTitle": "Tuzatishlar",
+      "adjustmentsHint": "Xodim va komponent kesimida qo'shimcha summa kiriting",
+      "noAdjustments": "Tuzatish qatori qo'shilmagan",
+      "employeesTitle": "Xodimlar kesimida hisob-kitob",
+      "employeesHint": "Tafsilotni ko'rish uchun qatorni oching",
+      "noEmployees": "Xodimlar topilmadi",
+      "noCalcLines": "Hisoblash qatorlari yo'q",
+      "correctionOf": "{{docNumber}} hujjatiga tuzatish",
+      "draftWarning": "Hujjat qoralama holatida — hisob-kitob hali provodka qilinmagan.",
+      "confirmTitle": "Hujjatni tasdiqlaysizmi?",
+      "confirmText": "Tasdiqlangach hisob-kitob provodka qilinadi va faqat tuzatish hujjati bilan o'zgartiriladi.",
+      "confirmHint": "Provodkalar backendda avtomatik yaratiladi",
+      "cancelTitle": "Hujjatni bekor qilasizmi?",
+      "cancelText": "Provodkalar bekor qilinadi.",
+      "deleteTitle": "Qoralama hujjatni o'chirasizmi?",
+      "deleteText": "Bu amalni orqaga qaytarib bo'lmaydi.",
+      "notFound": "Hujjat topilmadi"
+    },
+    "payments": {
+      "title": "Maosh to'lovlari",
+      "create": "To'lov yaratish",
+      "createTitle": "Yangi to'lov",
+      "detailTitle": "To'lov paketi",
+      "save": "To'lovni saqlash",
+      "headerTitle": "To'lov ma'lumotlari",
+      "headerHint": "To'lov turi, manbasi va schyotni tanlang",
+      "linesTitle": "Xodimlar bo'yicha to'lov",
+      "linesHint": "Har bir xodimga to'lanadigan summani kiriting",
+      "addLine": "Xodim qo'shish",
+      "fillFromDocument": "Hujjatdan to'ldirish",
+      "fillFromDocumentTitle": "Maosh hujjatidan to'ldirasizmi?",
+      "fillFromDocumentText": "{{count}} ta xodimning qolgan summasi qatorlarga ko'chiriladi.",
+      "noLines": "Hozircha xodim qo'shilmagan",
+      "postedInfo": "To'lov tasdiqlangan va bank/kassa operatsiyasi yaratilgan",
+      "openPayrollDocument": "Maosh hujjatini ochish",
+      "confirmTitle": "To'lovni tasdiqlaysizmi?",
+      "confirmText": "Tasdiqlangach pul chiqim operatsiyasi yaratiladi va bekor qilish uchun alohida amal kerak bo'ladi.",
+      "confirmHint": "Bank yoki kassa operatsiyasi avtomatik yaratiladi",
+      "cancelTitle": "To'lovni bekor qilasizmi?",
+      "cancelText": "Bog'liq pul operatsiyasi ham bekor qilinadi."
+    },
+    "reports": {
+      "registerTitle": "Umumiy vedomost",
+      "registerHint": "Davr bo'yicha barcha xodimlar hisob-kitobi",
+      "payslipTitle": "Hisob varaqasi",
+      "componentsTitle": "Hisoblash tarkibi",
+      "componentsHint": "Komponentlar kesimida tafsilot",
+      "totalsTitle": "Yakuniy summalar",
+      "exportExcel": "Excelga yuklash",
+      "print": "Chop etish",
+      "selectPeriodFirst": "Avval hisoblash davrini tanlang",
+      "selectPeriodAndEmployee": "Davr va xodimni tanlang",
+      "noData": "Ma'lumot topilmadi"
+    },
+    "messages": {
+      "notNegative": "Qiymat manfiy bo'lmasligi kerak",
+      "positiveNumber": "Qiymat 0 dan katta bo'lishi kerak",
+      "amountPositive": "Summa 0 dan katta bo'lishi kerak",
+      "amountOverPayable": "Summa qolgan summadan oshib ketdi",
+      "rateRange": "Stavka 0 dan katta va 2 dan katta bo'lmasligi kerak",
+      "weeklyHoursRange": "Haftalik soat 0 dan 168 gacha bo'lishi kerak",
+      "daysRange": "Kunlar soni 31 dan oshmasligi kerak",
+      "yearRange": "Yil 2000 va 2200 oralig'ida bo'lishi kerak",
+      "monthRange": "Oy 1 dan 12 gacha bo'lishi kerak",
+      "sortOrderMin": "Tartib raqami 1 dan kichik bo'lmasligi kerak",
+      "pinflLength": "JShShIR 14 ta raqamdan iborat bo'lishi kerak",
+      "employeeNumberMax": "Tabel raqami 50 belgidan oshmasligi kerak",
+      "effectiveRangeInvalid": "Tugash sanasi boshlanish sanasidan oldin bo'lmasin",
+      "dateRangeInvalid": "Tugash sanasi boshlanish sanasidan oldin bo'lmasin",
+      "atLeastOneLine": "Kamida bitta qator kiritilishi kerak",
+      "correctionDocRequired": "Tuzatilayotgan hujjatni tanlang",
+      "payrollDocRequired": "Maosh hujjatini tanlang",
+      "bankAccountRequired": "Bank hisobini tanlang",
+      "cashBoxRequired": "Kassani tanlang",
+      "fillRequired": "Iltimos, majburiy maydonlarni to'ldiring",
+      "periodClosedWarning": "Tanlangan davr yopilgan. Yangi hujjat kiritish uchun davrni qayta oching.",
+      "periodCreated": "Hisoblash davri ochildi",
+      "periodClosed": "Davr yopildi",
+      "periodReopened": "Davr qayta ochildi",
+      "employmentCreated": "Ish sharti qo'shildi",
+      "employmentUpdated": "Ish sharti yangilandi",
+      "componentAssigned": "Komponent biriktirildi",
+      "componentRemoved": "Komponent olib tashlandi",
+      "timesheetCreated": "Tabel yaratildi",
+      "timesheetSaved": "Tabel saqlandi",
+      "timesheetConfirmed": "Tabel tasdiqlandi",
+      "timesheetCancelled": "Tabel bekor qilindi",
+      "documentCalculated": "Maosh hisoblandi",
+      "documentConfirmed": "Hujjat tasdiqlandi",
+      "documentCancelled": "Hujjat bekor qilindi",
+      "documentDeleted": "Hujjat o'chirildi",
+      "paymentCreated": "To'lov yaratildi",
+      "paymentConfirmed": "To'lov tasdiqlandi",
+      "paymentCancelled": "To'lov bekor qilindi"
     }
   }
 }
