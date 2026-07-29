@@ -48,6 +48,11 @@ import { openingBalancePermissions } from "./pages/openingBalance/constants/perm
 import { EimzoProvider } from "@islom929/react-eimzo";
 import IntegrationsPage from "./pages/integrations/screens/IntegrationsPage";
 import { integrationPermissions } from "./pages/integrations/constants/permissions";
+import PayrollEmployeeListPage from "./pages/payrollEmployees/screens/PayrollEmployeeListPage";
+import PayrollEmployeeDetailPage from "./pages/payrollEmployees/screens/PayrollEmployeeDetailPage";
+import { payrollEmployeePermissions } from "./pages/payrollEmployees/constants/permissions";
+import PayrollComponentListPage from "./pages/payrollComponents/screens/PayrollComponentListPage";
+import { payrollComponentPermissions } from "./pages/payrollComponents/constants/permissions";
 
 const settingsPermissions = [
   rolePermissions.view,
@@ -72,6 +77,8 @@ const settingsPermissions = [
   saleConditionPermissions.view,
   openingBalancePermissions.view,
   integrationPermissions.view,
+  payrollEmployeePermissions.view,
+  payrollComponentPermissions.view,
 ];
 
 const withPermission = (
@@ -374,6 +381,47 @@ export const settingsRoutes: RouteObject = {
         backTo: "..",
       },
       element: withPermission(<SettingsBankListPage />, bankPermissions.view),
+    },
+    {
+      path: "payroll-employees",
+      handle: {
+        title: "payroll.employees.title",
+        showBack: true,
+        backTo: "..",
+      },
+      children: [
+        {
+          index: true,
+          element: withPermission(
+            <PayrollEmployeeListPage />,
+            payrollEmployeePermissions.view,
+          ),
+        },
+        {
+          path: ":id",
+          handle: {
+            title: "payroll.employees.detailTitle",
+            showBack: true,
+            backTo: "..",
+          },
+          element: withPermission(
+            <PayrollEmployeeDetailPage />,
+            payrollEmployeePermissions.view,
+          ),
+        },
+      ],
+    },
+    {
+      path: "payroll-components",
+      handle: {
+        title: "payroll.components.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <PayrollComponentListPage />,
+        payrollComponentPermissions.view,
+      ),
     },
     {
       path: "pricing-conditions",

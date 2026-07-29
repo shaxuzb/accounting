@@ -4,6 +4,10 @@ import * as Yup from "yup";
 const t = (key: string, options?: Record<string, unknown>) =>
   String(i18n.t(key, options));
 
+/** Yup xabarlari uchun i18n matnini o'qiydi (lazy chaqiriladi). */
+export const tMessage = (key: string, options?: Record<string, unknown>) =>
+  t(key, options);
+
 export const validationMessage = {
   required: (fieldKey: string) =>
     t("validation.required", { field: t(fieldKey) }),

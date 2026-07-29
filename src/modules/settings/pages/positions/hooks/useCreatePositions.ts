@@ -9,6 +9,7 @@ export const useCreatePositions = () => {
     mutationFn: (payload: PositionsForm) => positionsService.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["selectlist"] });
     },
   });
 };

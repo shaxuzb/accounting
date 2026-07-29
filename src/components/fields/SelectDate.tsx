@@ -31,6 +31,10 @@ interface SelectDateProps {
   disabled?: boolean;
   marginBottom?: string;
   checkCurrencyExchange?: CheckCurrencyExchange;
+  /** Formikda saqlanadigan format. DateOnly maydonlar uchun "YYYY-MM-DD". */
+  valueFormat?: string;
+  /** Ixtiyoriy sanalarni (endDate, effectiveTo) tozalash imkoni */
+  clearable?: boolean;
   onChange?: (value: string) => void;
 }
 
@@ -90,6 +94,8 @@ const SelectDate: React.FC<SelectDateProps> = ({
   maxDate,
   disabled = false,
   checkCurrencyExchange = DEFAULT_EXCHANGE,
+  valueFormat = DATE_FORMAT,
+  clearable = false,
   onChange,
 }) => {
   const { t } = useTranslation();
@@ -104,12 +110,12 @@ const SelectDate: React.FC<SelectDateProps> = ({
         ? dayjs(event)
             .set("hour", todayRef.current.hour())
             .set("minute", todayRef.current.minute())
-            .format(DATE_FORMAT)
+            .format(valueFormat)
         : "";
       formik.setFieldValue(fieldName, value, true);
       onChange?.(value);
     },
-    [formik, fieldName, onChange],
+    [formik, fieldName, onChange, valueFormat],
   );
 
   // const paymentDate =
@@ -222,7 +228,7 @@ const SelectDate: React.FC<SelectDateProps> = ({
         onChange={handleChangeDate}
         minDate={minDate}
         maxDate={maxDate}
-        allowClear={false}
+        allowClear={clearable}
         placeholder={placeholder ? t(placeholder) : ""}
         disabled={disabled}
         className={`${disabled ? "disabled" : ""} w-full!`}

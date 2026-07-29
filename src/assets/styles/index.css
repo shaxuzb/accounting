@@ -38,6 +38,7 @@
   --theme-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   --theme-shadow-elevated: 0 18px 45px rgba(15, 23, 42, 0.14);
   --side-bg-linear: linear-gradient(#334556, #2c4257), #2a3f54;
+  --color-green-400: green;
 }
 
 :root[data-theme="dark"],
@@ -310,3 +311,4 @@ body {
     height: 32px !important;
   }
 } */
+
