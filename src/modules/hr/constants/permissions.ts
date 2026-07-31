@@ -1,6 +1,6 @@
 export const hrEmployeePermissions = {
   // Eski employee API va view huquqi migratsiya davrida saqlanadi.
-  view: "PAYROLL_EMPLOYEE_VIEW",
+  view: "HR_EMPLOYEE_VIEW",
   create: "HR_EMPLOYEE_CREATE",
   update: "HR_EMPLOYEE_UPDATE",
   delete: "HR_EMPLOYEE_DELETE",
