@@ -2,31 +2,40 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { endpoints } from "./constants/endpoints";
-import type { FaAssetFormValues } from "./types/form";
-import type { FaAssetValues } from "./types/type";
+import type { FaAssetForm } from "./types/form";
+import type { FaAsset } from "./types/type";
 
 export const faAssetService = {
-  list: (searchParams?: QueryParams) =>
+  list: (params?: QueryParams) =>
     $axiosPrivate
-      .get<Paginated<FaAssetValues>>(endpoints.list, { params: searchParams })
+      .get<Paginated<FaAsset>>(endpoints.list, { params })
       .then((res) => res.data),
 
   detail: (id: string | number) =>
     $axiosPrivate
-      .get<FaAssetValues>(endpoints.detail(id))
+      .get<FaAsset>(endpoints.detail(id))
       .then((res) => res.data),
 
-  create: (payload: FaAssetFormValues) =>
+  create: (payload: FaAssetForm) =>
     $axiosPrivate
-      .post<FaAssetValues>(endpoints.list, payload as FaAssetFormValues)
+      .post<FaAsset>(endpoints.create, payload)
       .then((res) => res.data),
 
-  update: (id: string | number, payload: FaAssetFormValues) =>
+  update: (id: string | number, payload: Partial<FaAssetForm>) =>
     $axiosPrivate
-      .put<FaAssetValues>(endpoints.detail(id), payload as FaAssetFormValues)
+      .put<FaAsset>(endpoints.update(id), payload)
+      .then((res) => res.data),
+
+  confirm: (id: string | number) =>
+    $axiosPrivate
+      .put<FaAsset>(`${endpoints.detail(id)}/confirm`)
+      .then((res) => res.data),
+
+  cancel: (id: string | number) =>
+    $axiosPrivate
+      .put<FaAsset>(`${endpoints.detail(id)}/cancel`)
       .then((res) => res.data),
 
   remove: (id: string | number) =>
-    $axiosPrivate.delete<FaAssetValues>(endpoints.detail(id)).then((res) => res.data),
+    $axiosPrivate.delete<FaAsset>(endpoints.detail(id)).then((res) => res.data),
 };
-

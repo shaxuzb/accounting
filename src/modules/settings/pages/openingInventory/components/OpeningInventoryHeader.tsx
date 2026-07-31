@@ -1,0 +1,137 @@
+import { Col, Row } from "antd";
+import dayjs from "dayjs";
+import { useState } from "react";
+import type { FormikProps } from "formik";
+import { useQueryClient } from "@tanstack/react-query";
+import SelectDate from "@/components/fields/SelectDate";
+import SelectCustom from "@/components/fields/SelectCustom";
+import CounterpartySelect from "@/components/fields/CounterpartySelect";
+import Card from "@/components/ui/card/Card";
+import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
+import { formatDateWithOutTime } from "@/utils/helpers";
+import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
+import type { OpeningInventoryForm } from "../types/form";
+import type { OpeningInventoryMode } from "../types/type";
+import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
+import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
+import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
+import { contractPermissions } from "@/modules/contract/constants/permissions";
+import type { Contract } from "@/modules/contract/types/type";
+
+interface OpeningInventoryHeaderProps {
+  formik: FormikProps<OpeningInventoryForm>;
+  mode: OpeningInventoryMode;
+}
+
+export default function OpeningInventoryHeader({
+  formik,
+  mode,
+}: OpeningInventoryHeaderProps) {
+  const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
+  const [contractCreateOpen, setContractCreateOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const hasCounterparty = Boolean(formik.values.counterpartyId);
+
+  const clearContract = () => {
+    if (formik.values.contractId !== null) {
+      formik.setFieldValue("contractId", null, false);
+    }
+  };
+
+  const handleContractCreated = (contract: Contract) => {
+    formik.setFieldValue("contractId", contract.id, true);
+    invalidateSelectListQuery(
+      queryClient,
+      "contractId",
+      selectListEndpoints.contractsSelectList,
+    );
+  };
+
+  return (
+    <Card className="p-3">
+      <div className="mt-1">
+        <Row gutter={[24, 16]}>
+          <Col span={24} sm={12} lg={8} xl={4}>
+            <SelectDate
+              label="Sana"
+              formik={formik}
+              fieldName="docDate"
+              onChange={clearContract}
+            />
+          </Col>
+          <Col span={24} sm={12} lg={8} xl={4}>
+            <CounterpartySelect
+              kind="supplier"
+              fieldName="counterpartyId"
+              label={mode === "services" ? "Ijrochi" : "Yetkazib beruvchi"}
+              formik={formik}
+              onChange={clearContract}
+              addOption={{
+                bool: true,
+                permissionCode: counterpartyPermissions.create,
+                onClick: () => {
+                  setCounterpartyCreateOpen(true);
+                },
+              }}
+              required
+            />
+          </Col>
+          <Col span={24} sm={12} lg={8} xl={4}>
+            <SelectCustom
+              path={selectListEndpoints.contractsSelectList}
+              queryParams={{
+                choosedDate: dayjs(formik.values.docDate).format(
+                  formatDateWithOutTime,
+                ),
+                [filterIds.counterparty]: formik.values.counterpartyId,
+              }}
+              enabled={hasCounterparty}
+              disabled={!hasCounterparty}
+              label="Shartnoma"
+              fieldName="contractId"
+              formik={formik}
+              getFirst
+              required
+              addOption={{
+                bool: true,
+                permissionCode: contractPermissions.create,
+                onClick: () => {
+                  setContractCreateOpen(true);
+                },
+              }}
+            />
+          </Col>
+          <Col span={24} sm={12} lg={8} xl={4}>
+            <SelectCustom
+              path={selectListEndpoints.warehousesSelectList}
+              label="Ombor"
+              fieldName="warehouseId"
+              formik={formik}
+              required
+            />
+          </Col>
+        </Row>
+      </div>
+      <CounterpartyAddEditPage
+        open={counterpartyCreateOpen}
+        onClose={() => {
+          setCounterpartyCreateOpen(false);
+          invalidateSelectListQuery(
+            queryClient,
+            "counterpartyId",
+            selectListEndpoints.suppliersSelectList,
+          );
+        }}
+      />
+      <ContractAddEditPage
+        open={contractCreateOpen}
+        contractTypeId={1}
+        initialCounterpartyId={formik.values.counterpartyId}
+        onCreated={handleContractCreated}
+        onClose={() => {
+          setContractCreateOpen(false);
+        }}
+      />
+    </Card>
+  );
+}

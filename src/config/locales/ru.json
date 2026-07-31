@@ -131,7 +131,32 @@
       "sourceProductTable": "Таблица исходного товара",
       "department": "Отдел",
       "responsibleUser": "Ответственный пользователь",
-      "state": "Статус"
+      "state": "Статус",
+      "docDate": "Дата документа",
+      "sourceProductId": "Исходный продукт",
+      "quantity": "Количество",
+      "price": "Цена",
+      "vatRateId": "Ставка НДС",
+      "faGroupId": "Группа ОС",
+      "okofId": "ОКОФ",
+      "depreciationMethodId": "Метод начисления амортизации",
+      "departmentId": "Отдел",
+      "responsibleUserId": "Ответственный пользователь",
+      "assets": "Активы",
+      "counterpartyId": "Контрагент",
+      "warehouseId": "Склад",
+      "currencyId": "Валюта",
+      "receiptType": "Тип поступления",
+      "toDepartmentId": "В отдел",
+      "toResponsibleUserId": "Ответственному лицу",
+      "note": "Примечание",
+      "faAssetId": "Основное средство",
+      "revaluationDate": "Дата переоценки",
+      "reason": "Причина",
+      "newValue": "Новая стоимость",
+      "disposalDate": "Дата выбытия",
+      "disposalType": "Тип выбытия",
+      "saleAmount": "Сумма реализации"
     },
     "form": {
       "create": "Создать документ ОФ",
@@ -229,7 +254,8 @@
       "pricingConditions": "Условия ценообразования",
       "saleConditions": "Условия продаж",
       "documentAccountSettings": "Настройки счетов документов",
-      "openingBalance": "Начальный баланс"
+      "openingBalance": "Начальный баланс",
+      "openingInventory": "Ввод начальных остатков (ТМЗ)"
     },
     "descriptions": {
       "integrations": "Управление интеграциями dDocs и Asl Belgisi.",
@@ -252,7 +278,8 @@
       "pricingConditions": "Управление методами ценообразования и округления.",
       "saleConditions": "Управление методами себестоимости и НДС для продаж.",
       "documentAccountSettings": "Настройка счетов для документов.",
-      "openingBalance": "Ввод начальных остатков организации по счетам."
+      "openingBalance": "Ввод начальных остатков организации по счетам.",
+      "openingInventory": "Управление начальными остатками ТМЗ."
     },
     "fields": {
       "accountNumber": "Номер счёта",

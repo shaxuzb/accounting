@@ -45,6 +45,9 @@ import { bankPermissions } from "../bank";
 import OpeningBalancePage from "./pages/openingBalance/screens/OpeningBalancePage";
 import OpeningBalanceAccountPage from "./pages/openingBalance/screens/OpeningBalanceAccountPage";
 import { openingBalancePermissions } from "./pages/openingBalance/constants/permissions";
+import OpeningInventoryListPage from "./pages/openingInventory/screens/OpeningInventoryListPage";
+import OpeningInventoryEditorPage from "./pages/openingInventory/screens/OpeningInventoryEditorPage";
+import { openingInventoryPermissions } from "./pages/openingInventory/constants/permissions";
 import { EimzoProvider } from "@islom929/react-eimzo";
 import IntegrationsPage from "./pages/integrations/screens/IntegrationsPage";
 import { integrationPermissions } from "./pages/integrations/constants/permissions";
@@ -73,6 +76,7 @@ const settingsPermissions = [
   pricingConditionPermissions.view,
   saleConditionPermissions.view,
   openingBalancePermissions.view,
+  openingInventoryPermissions.view,
   integrationPermissions.view,
   payrollComponentPermissions.view,
 ];
@@ -413,6 +417,47 @@ export const settingsRoutes: RouteObject = {
         <SaleConditionListPage />,
         saleConditionPermissions.view,
       ),
+    },
+    {
+      path: "opening-inventory",
+      handle: {
+        title: "Boshlang'ich qoldiqlar",
+        showBack: true,
+        backTo: "..",
+      },
+      children: [
+        {
+          index: true,
+          element: withPermission(
+            <OpeningInventoryListPage />,
+            openingInventoryPermissions.view,
+          ),
+        },
+        {
+          path: "add",
+          handle: {
+            title: "Qo'shish",
+            showBack: true,
+            backTo: "..",
+          },
+          element: withPermission(
+            <OpeningInventoryEditorPage />,
+            openingInventoryPermissions.create,
+          ),
+        },
+        {
+          path: "edit/:id",
+          handle: {
+            title: "Tahrirlash",
+            showBack: true,
+            backTo: "..",
+          },
+          element: withPermission(
+            <OpeningInventoryEditorPage />,
+            openingInventoryPermissions.update,
+          ),
+        },
+      ],
     },
   ],
 };

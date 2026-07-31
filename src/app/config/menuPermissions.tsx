@@ -45,6 +45,7 @@ import { pricingConditionPermissions } from "@/modules/settings/pages/pricingCon
 import { saleConditionPermissions } from "@/modules/settings/pages/saleCondition/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 import { openingBalancePermissions } from "@/modules/settings/pages/openingBalance/constants/permissions";
+import { openingInventoryPermissions } from "@/modules/settings/pages/openingInventory/constants/permissions";
 import { integrationPermissions } from "@/modules/settings/pages/integrations/constants/permissions";
 import {
   payrollDocumentPermissions,
@@ -63,12 +64,14 @@ import {
   cashDocumentPermissions,
   cashOperationPermissions,
 } from "@/modules/cashoperation";
-import { faAssetPermissions } from "@/modules/fa/pages/faAsset/constants/permissions";
-import { faDisposalPermissions } from "@/modules/fa/pages/faDisposal/constants/permissions";
-import { faDepreciationPermissions } from "@/modules/fa/pages/faDepreciation/constants/permissions";
-import { faMovementPermissions } from "@/modules/fa/pages/faMovement/constants/permissions";
-import { faReceiptPermissions } from "@/modules/fa/pages/faReceipt/constants/permissions";
-import { faRevaluationPermissions } from "@/modules/fa/pages/faRevaluation/constants/permissions";
+import {
+  faAssetPermissions,
+  faDisposalPermissions,
+  faDepreciationPermissions,
+  faMovementPermissions,
+  faReceiptPermissions,
+  faRevaluationPermissions,
+} from "@/modules/fa";
 // import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
 // import { accountingPeriodsPermissions } from "@/modules/accountings/pages/accounting-periods/constants/permissions";
 // import { ledgerPermissions } from "@/modules/accountings/pages/ledger/constants/permissions";
@@ -103,6 +106,7 @@ export const settingsViewPermissions = [
   pricingConditionPermissions.view,
   saleConditionPermissions.view,
   openingBalancePermissions.view,
+  openingInventoryPermissions.view,
   integrationPermissions.view,
   payrollComponentPermissions.view,
 ] as const;
@@ -582,6 +586,15 @@ export const menuPermissions: MainMenu = {
         path: "opening-balances",
         title: "settings.entities.openingBalance",
         description: "settings.descriptions.openingBalance",
+      },
+    },
+    {
+      code: openingInventoryPermissions.view,
+      iconName: <Box className="size-5" />,
+      linkData: {
+        path: "opening-inventory",
+        title: "settings.entities.openingInventory",
+        description: "settings.descriptions.openingInventory",
       },
     },
 

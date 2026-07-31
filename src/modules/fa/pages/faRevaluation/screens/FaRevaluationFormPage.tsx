@@ -1,17 +1,22 @@
-import { Button, Col, Form, Row, Spin } from "antd";
+import { Button, Col, Form, Row, Spin, Typography, Space } from "antd";
 import { useEffect } from "react";
 import { useFormik } from "formik";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
+import { ArrowLeft, Save, Trash2, Plus } from "lucide-react";
 import dayjs from "@/config/dayjs";
 import InputText from "@/components/fields/InputText";
 import SelectDate from "@/components/fields/SelectDate";
+import SelectCustom from "@/components/fields/SelectCustom";
+import InputNumber from "@/components/fields/InputNumber";
 import Card from "@/components/ui/card/Card";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { faGenericDocumentSchema } from "../types/schema";
+import { faRevaluationSchema } from "../types/schema";
 import type { FaRevaluationFormValues } from "../types/form";
 import {
   useCancelFaRevaluation,
@@ -22,41 +27,51 @@ import {
 } from "../hooks";
 import { faRevaluationPermissions } from "../constants/permissions";
 
+const { Text } = Typography;
+
 const defaultValues: FaRevaluationFormValues = {
-  documentNumber: "",
-  documentDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
-  comment: "",
+  revaluationDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
+  reason: "",
+  stateId: 0,
+  lines: [
+    {
+      faAssetId: null,
+      newValue: 0,
+      note: "",
+    }
+  ]
 };
 
 export default function FaRevaluationFormPage() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
   const navigate = useNavigate();
-  const isEdit = Boolean(id);
+  const isCreate = !id;
+
   const { user } = useAppSelector((state) => state.auth);
   const permissions = user?.user.permissions ?? [];
-  const canSubmit = isEdit
-    ? permissions.includes(faRevaluationPermissions.update)
-    : permissions.includes(faRevaluationPermissions.create);
-  const submitPermission = isEdit
-    ? faRevaluationPermissions.update
-    : faRevaluationPermissions.create;
+  const canCreate = permissions.includes(faRevaluationPermissions.create);
+  const canUpdate = permissions.includes(faRevaluationPermissions.update);
+  const canView = permissions.includes(faRevaluationPermissions.view);
+  const canSubmit = isCreate ? canCreate : canUpdate;
+
   const detailQuery = useGetDetailFaRevaluation(id);
   const createMutation = useCreateFaRevaluation();
   const updateMutation = useUpdateFaRevaluation();
   const confirmMutation = useConfirmFaRevaluation(id);
   const cancelMutation = useCancelFaRevaluation(id);
+
   const record = detailQuery.data;
   const stateId = record?.stateId ?? 1;
-  const isDraft = !isEdit || stateId === 1;
+  const isDraft = isCreate || stateId === 1;
 
   const formik = useFormik<FaRevaluationFormValues>({
     initialValues: defaultValues,
     enableReinitialize: true,
-    validationSchema: faGenericDocumentSchema,
+    validationSchema: faRevaluationSchema,
     onSubmit: async (values, helpers) => {
       try {
-        if (isEdit && id) {
+        if (!isCreate && id) {
           await updateMutation.mutateAsync({ id, payload: values });
           toast.success(t("settings.messages.updated"));
         } else {
@@ -77,107 +92,237 @@ export default function FaRevaluationFormPage() {
   });
 
   useEffect(() => {
-    if (!detailQuery.data) return;
+    if (!detailQuery.data || isCreate) return;
     formik.setValues({
-      documentNumber: detailQuery.data.documentNumber ?? "",
-      documentDate: detailQuery.data.documentDate ?? defaultValues.documentDate,
-      comment: detailQuery.data.comment ?? "",
+      revaluationDate: detailQuery.data.revaluationDate ?? defaultValues.revaluationDate,
+      reason: detailQuery.data.reason ?? "",
+      stateId: detailQuery.data.stateId ?? 0,
+      lines: detailQuery.data.lines?.length
+        ? detailQuery.data.lines.map(line => ({
+            faAssetId: line.faAssetId,
+            newValue: line.newValue ?? 0,
+            note: line.note ?? "",
+          }))
+        : defaultValues.lines,
     });
-  }, [detailQuery.data]);
+  }, [detailQuery.data, isCreate, formik]);
 
   const isSubmitting =
     createMutation.isPending ||
     updateMutation.isPending ||
     detailQuery.isLoading;
 
+  const handleAddLine = () => {
+    const newLines = [
+      ...formik.values.lines,
+      { faAssetId: null, newValue: 0, note: "" },
+    ];
+    formik.setFieldValue("lines", newLines);
+  };
+
+  const handleRemoveLine = (index: number) => {
+    const newLines = formik.values.lines.filter((_, i) => i !== index);
+    formik.setFieldValue("lines", newLines);
+  };
+
+  if (!canView) {
+    return null;
+  }
+
   return (
-    <Card className="border border-border p-4">
-      <div className="mb-4 text-xl font-semibold">
-        {isEdit ? t("fa.form.edit") : t("fa.form.create")}
-      </div>
-      <Spin spinning={detailQuery.isLoading && isEdit}>
-        <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <Row gutter={[20, 8]}>
-            <Col span={8}>
-              <InputText
-                formik={formik}
-                fieldName="documentNumber"
-                label="fa.fields.documentNumber"
-                disabled={!isDraft}
-              />
-            </Col>
-            <Col span={8}>
-              <SelectDate
-                formik={formik}
-                fieldName="documentDate"
-                label="fa.fields.documentDate"
-                disabled={!isDraft}
-              />
-            </Col>
-            <Col span={24}>
-              <InputText
-                formik={formik}
-                fieldName="comment"
-                label="fa.fields.comment"
-                disabled={!isDraft}
-              />
-            </Col>
-          </Row>
-          <div className="mt-4 flex flex-wrap gap-3">
-            {canSubmit && (
-              <PermissionCard permission={submitPermission}>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={isSubmitting}
-                  disabled={!isDraft}
-                >
-                  {t("common.submit")}
-                </Button>
-              </PermissionCard>
-            )}
-            {isEdit && isDraft && permissions.includes(faRevaluationPermissions.confirm) && (
-              <PermissionCard permission={faRevaluationPermissions.confirm}>
-                <Button
-                  htmlType="button"
-                  loading={confirmMutation.isPending}
-                  onClick={async () => {
-                    try {
-                      await confirmMutation.mutateAsync();
-                      toast.success(t("common.submit"));
-                      navigate("/main/fa/revaluations");
-                    } catch (error) {
-                      errorHandlers(error);
-                    }
-                  }}
-                >
-                  {t("actions.confirm")}
-                </Button>
-              </PermissionCard>
-            )}
-            {isEdit && isDraft && permissions.includes(faRevaluationPermissions.cancel) && (
-              <PermissionCard permission={faRevaluationPermissions.cancel}>
-                <Button
-                  htmlType="button"
-                  danger
-                  loading={cancelMutation.isPending}
-                  onClick={async () => {
-                    try {
-                      await cancelMutation.mutateAsync();
-                      toast.success(t("common.cancel"));
-                      navigate("/main/fa/revaluations");
-                    } catch (error) {
-                      errorHandlers(error);
-                    }
-                  }}
-                >
-                  {t("common.cancel")}
-                </Button>
-              </PermissionCard>
+    <div className="w-full">
+      <Form layout="vertical" onFinish={formik.handleSubmit}>
+        <Space direction="vertical" size="large" className="w-full">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link to="/main/fa/revaluations">
+                <Button icon={<ArrowLeft className="size-4" />} />
+              </Link>
+              <Text className="text-xl font-semibold">
+                {isCreate ? t("fa.form.create") : t("fa.form.edit")}
+              </Text>
+            </div>
+            <div className="flex items-center gap-2">
+              {!isCreate && (
+                <ProcessStatusBadge
+                  statusId={record?.stateId}
+                  statusName={record?.stateName}
+                />
               )}
+            </div>
           </div>
-        </Form>
-      </Spin>
-    </Card>
+
+          <Spin spinning={detailQuery.isLoading && !isCreate}>
+            <Row gutter={24}>
+              <Col span={16}>
+                <Space direction="vertical" size="large" className="w-full">
+                  <Card className="border border-border p-6 shadow-sm">
+                    <div className="mb-4 text-lg font-medium">
+                      {t("fa.form.revaluationDetails")}
+                    </div>
+                    <Row gutter={[16, 16]}>
+                      <Col span={12}>
+                        <SelectDate
+                          formik={formik}
+                          fieldName="revaluationDate"
+                          label="fa.fields.revaluationDate"
+                          disabled={!isDraft}
+                        />
+                      </Col>
+                      <Col span={24}>
+                        <InputText
+                          formik={formik}
+                          fieldName="reason"
+                          label="fa.fields.reason"
+                          disabled={!isDraft}
+                        />
+                      </Col>
+                    </Row>
+                  </Card>
+
+                  <Card className="border border-border p-6 shadow-sm">
+                    <div className="mb-4 flex items-center justify-between">
+                      <div className="text-lg font-medium">
+                        {t("fa.form.assets")}
+                      </div>
+                      {isDraft && (
+                        <Button
+                          type="dashed"
+                          onClick={handleAddLine}
+                          icon={<Plus className="size-4" />}
+                        >
+                          {t("common.add")}
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {formik.values.lines.map((_, lineIndex) => (
+                      <div
+                        key={`line-${lineIndex}`}
+                        className="mb-4 rounded-lg border border-border p-4 bg-gray-50/50 relative group"
+                      >
+                        {isDraft && formik.values.lines.length > 1 && (
+                          <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                              type="text"
+                              danger
+                              icon={<Trash2 className="size-4" />}
+                              onClick={() => handleRemoveLine(lineIndex)}
+                            />
+                          </div>
+                        )}
+                        <Row gutter={[16, 16]}>
+                          <Col span={8}>
+                            <SelectCustom
+                              path={selectListEndpoints.faAssetsSelectList}
+                              formik={formik}
+                              fieldName={`lines[${lineIndex}].faAssetId`}
+                              label="fa.fields.faAssetId"
+                              disabled={!isDraft}
+                            />
+                          </Col>
+                          <Col span={8}>
+                            <InputNumber
+                              formik={formik}
+                              fieldName={`lines[${lineIndex}].newValue`}
+                              label="fa.fields.newValue"
+                              disabled={!isDraft}
+                            />
+                          </Col>
+                          <Col span={8}>
+                            <InputText
+                              formik={formik}
+                              fieldName={`lines[${lineIndex}].note`}
+                              label="fa.fields.note"
+                              disabled={!isDraft}
+                            />
+                          </Col>
+                        </Row>
+                      </div>
+                    ))}
+                    {typeof formik.errors.lines === "string" && (
+                      <div className="text-sm text-error">
+                        {formik.errors.lines}
+                      </div>
+                    )}
+                  </Card>
+                </Space>
+              </Col>
+
+              
+              <Col span={8}>
+                <Card className="border border-border p-6 shadow-sm sticky top-6">
+                  <div className="text-lg font-medium mb-4">
+                    {t("fa.form.actions")}
+                  </div>
+                  <Space direction="vertical" className="w-full">
+                    {canSubmit && isDraft && (
+                      <PermissionCard permission={isCreate ? faRevaluationPermissions.create : faRevaluationPermissions.update}>
+                        <Button
+                          type="primary"
+                          htmlType="submit"
+                          loading={isSubmitting}
+                          icon={<Save className="size-4" />}
+                          className="w-full"
+                          size="large"
+                        >
+                          {t("common.save")}
+                        </Button>
+                      </PermissionCard>
+                    )}
+
+                    {!isCreate && isDraft && permissions.includes(faRevaluationPermissions.confirm) && (
+                      <PermissionCard permission={faRevaluationPermissions.confirm}>
+                        <Button
+                          type="default"
+                          className="w-full border-primary text-primary"
+                          size="large"
+                          loading={confirmMutation.isPending}
+                          onClick={async () => {
+                            try {
+                              await confirmMutation.mutateAsync();
+                              toast.success(t("common.submit"));
+                              navigate("/main/fa/revaluations");
+                            } catch (error) {
+                              errorHandlers(error);
+                            }
+                          }}
+                        >
+                          {t("actions.confirm")}
+                        </Button>
+                      </PermissionCard>
+                    )}
+
+                    {!isCreate && isDraft && permissions.includes(faRevaluationPermissions.cancel) && (
+                      <PermissionCard permission={faRevaluationPermissions.cancel}>
+                        <Button
+                          danger
+                          className="w-full"
+                          size="large"
+                          loading={cancelMutation.isPending}
+                          onClick={async () => {
+                            try {
+                              await cancelMutation.mutateAsync();
+                              toast.success(t("common.cancel"));
+                              navigate("/main/fa/revaluations");
+                            } catch (error) {
+                              errorHandlers(error);
+                            }
+                          }}
+                        >
+                          {t("actions.cancel")}
+                        </Button>
+                      </PermissionCard>
+                    )}
+                  </Space>
+                </Card>
+              </Col>
+            </Row>
+          </Spin>
+        </Space>
+      </Form>
+    </div>
   );
 }
+

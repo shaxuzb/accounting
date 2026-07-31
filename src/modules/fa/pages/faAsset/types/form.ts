@@ -1,4 +1,4 @@
-export interface FaAssetFormValues {
+export interface FaAssetForm {
   inventoryNumber: string;
   name: string;
   faGroupId: number | null;
@@ -13,5 +13,6 @@ export interface FaAssetFormValues {
   sourceProductTableId: number | null;
   departmentId: number | null;
   responsibleUserId: number | null;
+  stateId?: number;
+  statusId?: number;
 }
-

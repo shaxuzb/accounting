@@ -5,4 +5,3 @@ export const faGenericDocumentSchema = Yup.object({
   documentDate: Yup.string().trim().required("Document date is required"),
   comment: Yup.string().trim(),
 });
-

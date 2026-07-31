@@ -1,19 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../constants/queryKeys";
 import { faAssetService } from "../api";
-import type { FaAssetFormValues } from "../types/form";
+import type { FaAssetForm } from "../types/form";
 
 interface UpdateArgs {
   id: string | number;
-  payload: FaAssetFormValues;
+  payload: FaAssetForm;
 }
 
-export const useUpdateFaAsset = () => {
+export function useUpdateFaAsset() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, payload }: UpdateArgs) =>
-      faAssetService.update(id, payload as FaAssetFormValues),
+      faAssetService.update(id, payload as FaAssetForm),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.all });
       queryClient.invalidateQueries({
@@ -21,4 +21,4 @@ export const useUpdateFaAsset = () => {
       });
     },
   });
-};
+}

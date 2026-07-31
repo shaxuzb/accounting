@@ -3,4 +3,3 @@ export interface FaGenericDocumentForm {
   documentDate: string;
   comment: string;
 }
-

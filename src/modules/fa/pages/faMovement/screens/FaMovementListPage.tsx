@@ -14,6 +14,8 @@ import { endpoints } from "../constants/endpoints";
 import { faMovementPermissions } from "../constants/permissions";
 import { useGetListFaMovements } from "../hooks";
 
+import type { FaMovement } from "../types/type";
+
 export default function FaMovementListPage() {
   const { t } = useTranslation();
   const permissions = useAppSelector(
@@ -22,8 +24,8 @@ export default function FaMovementListPage() {
   const [searchParams] = useSearchParams();
   const { data, isLoading, isFetching, refetch } =
     useGetListFaMovements(searchParams);
-  //any quyilgan to'g'irlash kerak
-  const tableColumns: TableColumnsType<any> = [
+  
+  const tableColumns: TableColumnsType<FaMovement> = [
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
@@ -62,7 +64,7 @@ export default function FaMovementListPage() {
     permissions.includes(faMovementPermissions.update) ||
     permissions.includes(faMovementPermissions.delete);
 
-  const columns: TableColumnType<any>[] = //any quyilgan to'g'irlash kerak
+  const columns: TableColumnType<FaMovement>[] =
     hasActions
       ? [
           ...tableColumns,
@@ -109,7 +111,7 @@ export default function FaMovementListPage() {
       </div>
 
       <Card className="overflow-hidden border border-border">
-        <Table<any>//any quyilgan to'g'irlash kerak
+        <Table<FaMovement>
           loading={isLoading || isFetching}
           columns={columns}
           dataSource={generateKeyTable(data?.items ?? [], "id")}

@@ -10,7 +10,7 @@ import { warehouseRoutes } from "@/modules/warehouse";
 import { bankRoutes } from "@/modules/bank";
 import { cashOperationRoutes } from "@/modules/cashoperation";
 import { accountingRoutes } from "@/modules/accounting/routes";
-import { faRoutes } from "@/modules/fa/routes";
+import { faRoutes } from "@/modules/fa";
 import { payrollRoutes } from "@/modules/payroll";
 import { hrRoutes } from "@/modules/hr";
 

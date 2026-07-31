@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../constants/queryKeys";
 import { faAssetService } from "../api";
 
-export const useDeleteFaAsset = () => {
+export function useDeleteFaAsset() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -11,4 +11,4 @@ export const useDeleteFaAsset = () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.all });
     },
   });
-};
+}

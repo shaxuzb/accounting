@@ -25,9 +25,11 @@ const SwitchField = <T extends object>({
 
   return (
     <Form.Item className={`flex! flex-col! ${marginBottom}`} label={false}>
-      <div className="flex min-h-[38px] items-center justify-between gap-3 rounded-lg border border-border px-3 py-2">
+      <div className="flex min-h-9.5 items-center justify-between gap-3 rounded-lg border border-border px-3 py-2">
         <div className="min-w-0">
-          {label && <div className="text-sm font-medium text-text">{t(label)}</div>}
+          {label && (
+            <div className="text-sm font-medium text-text">{t(label)}</div>
+          )}
           {description && (
             <div className="text-xs text-secondary-text">{t(description)}</div>
           )}

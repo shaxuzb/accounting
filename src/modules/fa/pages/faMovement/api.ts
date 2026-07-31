@@ -2,7 +2,7 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { endpoints } from "./constants/endpoints";
-import type { FaMovement } from "./types/type";
+import type { FaMovement, FaMovementPayload } from "./types/type";
 
 export const faMovementService = {
   list: (searchParams?: QueryParams) =>
@@ -15,10 +15,10 @@ export const faMovementService = {
       .get<FaMovement>(endpoints.detail(id))
       .then((res) => res.data),
 
-  create: (payload: Record<string, unknown>) =>
+  create: (payload: FaMovementPayload) =>
     $axiosPrivate.post<FaMovement>(endpoints.list, payload).then((res) => res.data),
 
-  update: (id: string | number, payload: Record<string, unknown>) =>
+  update: (id: string | number, payload: FaMovementPayload) =>
     $axiosPrivate
       .put<FaMovement>(endpoints.detail(id), payload)
       .then((res) => res.data),

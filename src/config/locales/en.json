@@ -130,7 +130,32 @@
       "sourceProductTable": "Source product table",
       "department": "Department",
       "responsibleUser": "Responsible user",
-      "state": "Status"
+      "state": "Status",
+      "docDate": "Document date",
+      "sourceProductId": "Source product",
+      "quantity": "Quantity",
+      "price": "Price",
+      "vatRateId": "VAT Rate",
+      "faGroupId": "FA Group",
+      "okofId": "OKOF",
+      "depreciationMethodId": "Depreciation method",
+      "departmentId": "Department",
+      "responsibleUserId": "Responsible user",
+      "assets": "Assets",
+      "counterpartyId": "Counterparty",
+      "warehouseId": "Warehouse",
+      "currencyId": "Currency",
+      "receiptType": "Receipt type",
+      "toDepartmentId": "To department",
+      "toResponsibleUserId": "To responsible user",
+      "note": "Note",
+      "faAssetId": "Fixed asset",
+      "revaluationDate": "Revaluation date",
+      "reason": "Reason",
+      "newValue": "New value",
+      "disposalDate": "Disposal date",
+      "disposalType": "Disposal type",
+      "saleAmount": "Sale amount"
     },
     "form": {
       "create": "Create fixed asset document",
@@ -165,7 +190,8 @@
       "saleConditions": "Sale conditions",
       "integrations": "Integrations",
       "documentAccountSettings": "Document account settings",
-      "openingBalance": "Opening balance"
+      "openingBalance": "Opening balance",
+      "openingInventory": "Opening inventory"
     },
     "descriptions": {
       "roles": "Manage system roles and permissions.",
@@ -188,6 +214,7 @@
       "saleConditions": "Manage costing method and VAT rate for sales.",
       "documentAccountSettings": "Configure accounts used by documents.",
       "openingBalance": "Enter the organization's opening balances by account.",
+      "openingInventory": "Manage opening inventory.",
       "integrations": "Manage dDocs and Asl Belgisi integrations."
     },
     "fields": {

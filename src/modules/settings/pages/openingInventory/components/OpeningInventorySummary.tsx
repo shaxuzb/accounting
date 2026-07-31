@@ -1,0 +1,51 @@
+import { Form, Input } from "antd";
+import { numberSpacing } from "@/utils/utils";
+
+interface OpeningInventorySummaryProps {
+  comment: string;
+  totals: {
+    amount: number;
+    vatAmount: number;
+    totalAmount: number;
+  };
+  onCommentChange: (value: string) => void;
+}
+
+export default function OpeningInventorySummary({
+  comment,
+  totals,
+  onCommentChange,
+}: OpeningInventorySummaryProps) {
+  return (
+    <div className="flex flex-col gap-4 border-x border-b border-border bg-primary-bg p-4">
+      <div className="grid overflow-hidden rounded-lg border border-border bg-primary-bg sm:grid-cols-3">
+        <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
+          <div className="text-xs text-secondary-text">Summa (QQSsiz)</div>
+          <div className="mt-1 text-base font-semibold">
+            {numberSpacing(totals.amount)}
+          </div>
+        </div>
+        <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
+          <div className="text-xs text-secondary-text">Summa QQS</div>
+          <div className="mt-1 text-base font-semibold">
+            {numberSpacing(totals.vatAmount)}
+          </div>
+        </div>
+        <div className="bg-primary/5 px-4 py-3 text-center">
+          <div className="text-xs text-secondary-text">Jami</div>
+          <div className="mt-1 text-base font-bold text-primary">
+            {numberSpacing(totals.totalAmount)}
+          </div>
+        </div>
+      </div>
+      <Form.Item label="Kommentariya" className="mb-0!">
+        <Input.TextArea
+          rows={2}
+          value={comment}
+          placeholder="Kommentariya kiriting..."
+          onChange={(event) => onCommentChange(event.target.value)}
+        />
+      </Form.Item>
+    </div>
+  );
+}

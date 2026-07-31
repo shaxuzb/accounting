@@ -7,13 +7,14 @@ import SearchFilter from "@/components/ui/filters/SearchFilter";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { useAppSelector } from "@/store/hooks";
 import { generateKeyTable} from "@/utils/utils";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { endpoints } from "../constants/endpoints";
 import { faAssetPermissions } from "../constants/permissions";
 import { useGetListFaAssets } from "../hooks";
-import type { FaAssetValues } from "../types/type";
+import type { FaAsset } from "../types/type";
 
 export default function FaAssetListPage() {
   const { t } = useTranslation();
@@ -23,7 +24,7 @@ export default function FaAssetListPage() {
   const { data, isLoading, isFetching, refetch } = useGetListFaAssets(searchParams);
   const permissions = user?.user.permissions ?? [];
 
-  const tableColumns: TableColumnsType<FaAssetValues> = [
+  const tableColumns: TableColumnsType<FaAsset> = [
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
@@ -67,6 +68,17 @@ export default function FaAssetListPage() {
       width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
+    {
+      dataIndex: "statusName",
+      title: t("settings.fields.status"),
+      align: "center",
+      render: (_, record) => (
+        <ProcessStatusBadge
+          statusId={record.statusId}
+          statusName={record.statusName}
+        />
+      ),
+    },
     // {
     //   title: t("settings.fields.createdDate"),
     //   dataIndex: "createdDate",
@@ -76,7 +88,7 @@ export default function FaAssetListPage() {
     // },
   ];
 
-  const columns: TableColumnType<FaAssetValues>[] =
+  const columns: TableColumnType<FaAsset>[] =
     permissions.includes(faAssetPermissions.delete) ||
     permissions.includes(faAssetPermissions.update)
       ? [
@@ -124,7 +136,7 @@ export default function FaAssetListPage() {
       </div>
 
       <Card className="overflow-hidden border border-border">
-        <Table<FaAssetValues>
+        <Table<FaAsset>
           loading={isLoading || isFetching}
           columns={columns}
           dataSource={generateKeyTable(data?.items ?? [], "id")}

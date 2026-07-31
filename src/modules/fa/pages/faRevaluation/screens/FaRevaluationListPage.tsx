@@ -13,7 +13,7 @@ import { stateStatus } from "@/utils/helpers/statusHelper";
 import { endpoints } from "../constants/endpoints";
 import { faRevaluationPermissions } from "../constants/permissions";
 import { useGetListFaRevaluations } from "../hooks";
-import type { FaRevaluationRecord } from "../types/type";
+import type { FaRevaluation } from "../types/type";
 
 export default function FaRevaluationListPage() {
   const { t } = useTranslation();
@@ -23,7 +23,7 @@ export default function FaRevaluationListPage() {
     searchParams,
   );
 
-  const tableColumns: TableColumnsType<FaRevaluationRecord> = [
+  const tableColumns: TableColumnsType<FaRevaluation> = [
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
@@ -64,7 +64,7 @@ export default function FaRevaluationListPage() {
     permissions.includes(faRevaluationPermissions.update) ||
     permissions.includes(faRevaluationPermissions.delete);
 
-  const columns: TableColumnType<FaRevaluationRecord>[] = hasActions
+  const columns: TableColumnType<FaRevaluation>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -110,7 +110,7 @@ export default function FaRevaluationListPage() {
       </div>
 
       <Card className="overflow-hidden border border-border">
-        <Table<FaRevaluationRecord>
+        <Table<FaRevaluation>
           loading={isLoading || isFetching}
           columns={columns}
           dataSource={generateKeyTable(data?.items ?? [], "id")}

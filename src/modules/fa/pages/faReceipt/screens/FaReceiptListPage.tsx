@@ -13,18 +13,17 @@ import { endpoints } from "../constants/endpoints";
 import { faReceiptPermissions } from "../constants/permissions";
 import { useGetListFaReceipts } from "../hooks";
 import { stateStatus } from "@/utils/helpers/statusHelper";
-import type { FaReceiptRecord } from "../types/type";
+import type { FaReceiptResponse } from "../types/type";
 
 export default function FaReceiptListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
   const permissions = user?.user.permissions ?? [];
-  const { data, isLoading, isFetching, refetch } = useGetListFaReceipts(
-    searchParams,
-  );
+  const { data, isLoading, isFetching, refetch } =
+    useGetListFaReceipts(searchParams);
 
-  const tableColumns: TableColumnsType<FaReceiptRecord> = [
+  const tableColumns: TableColumnsType<FaReceiptResponse> = [
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
@@ -34,7 +33,9 @@ export default function FaReceiptListPage() {
     {
       dataIndex: "documentNumber",
       title: t("fa.fields.documentNumber"),
-      render: (_, record) => <Link to={`${record.id}`}>{record.documentNumber}</Link>,
+      render: (value, record) => (
+        <Link to={`${record.id}`}>{value || record.id}</Link>
+      ),
       minWidth: 180,
     },
     {
@@ -56,7 +57,7 @@ export default function FaReceiptListPage() {
     },
   ];
 
-  const columns: TableColumnType<FaReceiptRecord>[] =
+  const columns: TableColumnType<FaReceiptResponse>[] =
     permissions.includes(faReceiptPermissions.delete) ||
     permissions.includes(faReceiptPermissions.update)
       ? [
@@ -104,7 +105,7 @@ export default function FaReceiptListPage() {
       </div>
 
       <Card className="overflow-hidden border border-border">
-        <Table<FaReceiptRecord>
+        <Table
           loading={isLoading || isFetching}
           columns={columns}
           dataSource={generateKeyTable(data?.items ?? [], "id")}
@@ -115,4 +116,3 @@ export default function FaReceiptListPage() {
     </div>
   );
 }
-

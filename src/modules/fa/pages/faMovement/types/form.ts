@@ -1,9 +1,3 @@
-import type { FaGenericDocumentForm } from "../../shared/types/form";
+import type { FaMovementPayload } from "./type";
 
-export interface FaMovementFormValues extends FaGenericDocumentForm {
-  [key: string]: unknown;
-  stateId?: number;
-  documentNumber: string;
-  documentDate: string;
-  comment: string;
-}
+export type FaMovementFormValues = FaMovementPayload;
