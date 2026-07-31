@@ -168,10 +168,14 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
   >({
     queryKey: ["selectlist", lang, path, refetchSync, requestParams],
     queryFn: async () => {
-      const response = await $axiosPrivate.get<SelectOptionItem[]>(path, {
+      const response = await $axiosPrivate.get<any>(path, {
         params: requestParams,
       });
-      return response.data;
+      const data = response.data;
+      if (data && typeof data === "object" && !Array.isArray(data) && "items" in data) {
+        return data.items as SelectOptionItem[];
+      }
+      return data as SelectOptionItem[];
     },
     enabled,
     staleTime: 5 * 60 * 1000,

@@ -3,36 +3,48 @@ import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { endpoints } from "./constants/endpoints";
 import type { FaRevaluationFormValues } from "./types/form";
+import type { FaRevaluation, FaRevaluationPayload } from "./types/type";
+
+const transformPayload = (payload: FaRevaluationFormValues): FaRevaluationPayload => ({
+  revaluationDate: payload.revaluationDate,
+  reason: payload.reason || "",
+  stateId: payload.stateId ?? 0,
+  lines: payload.lines.map(line => ({
+    faAssetId: Number(line.faAssetId),
+    newValue: Number(line.newValue),
+    note: line.note || "",
+  }))
+});
 
 export const faRevaluationService = {
   list: (searchParams?: QueryParams) =>
     $axiosPrivate
-      .get<Paginated<FaRevaluationFormValues>>(endpoints.list, { params: searchParams })
+      .get<Paginated<FaRevaluation>>(endpoints.list, { params: searchParams })
       .then((res) => res.data),
 
   detail: (id: string | number) =>
     $axiosPrivate
-      .get<FaRevaluationFormValues>(endpoints.detail(id))
+      .get<FaRevaluation>(endpoints.detail(id))
       .then((res) => res.data),
 
-  create: (payload: Record<string, unknown>) =>
+  create: (payload: FaRevaluationFormValues) =>
     $axiosPrivate
-      .post<FaRevaluationFormValues>(endpoints.list, payload)
+      .post<FaRevaluation>(endpoints.list, transformPayload(payload))
       .then((res) => res.data),
 
-  update: (id: string | number, payload: Record<string, unknown>) =>
+  update: (id: string | number, payload: FaRevaluationFormValues) =>
     $axiosPrivate
-      .put<FaRevaluationFormValues>(endpoints.detail(id), payload)
+      .put<FaRevaluation>(endpoints.detail(id), transformPayload(payload))
       .then((res) => res.data),
 
   confirm: (id: string | number) =>
     $axiosPrivate
-      .put<FaRevaluationFormValues>(`${endpoints.detail(id)}/confirm`)
+      .put<FaRevaluation>(`${endpoints.detail(id)}/confirm`)
       .then((res) => res.data),
 
   cancel: (id: string | number) =>
     $axiosPrivate
-      .put<FaRevaluationFormValues>(`${endpoints.detail(id)}/cancel`)
+      .put<FaRevaluation>(`${endpoints.detail(id)}/cancel`)
       .then((res) => res.data),
 };
 

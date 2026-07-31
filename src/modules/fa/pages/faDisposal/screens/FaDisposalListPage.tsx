@@ -9,11 +9,11 @@ import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
 import { useAppSelector } from "@/store/hooks";
 import { customDate, generateKeyTable } from "@/utils/utils";
-import { stateStatus } from "@/utils/helpers/statusHelper";
 import { endpoints } from "../constants/endpoints";
 import { faDisposalPermissions } from "../constants/permissions";
 import { useGetListFaDisposals } from "../hooks";
-// import type { FaDisposalRecord } from "../types/type";
+import type { FaDisposalResponse } from "../types/type";
+import { ProcessStatusBadge } from "@/components/ui/status";
 
 export default function FaDisposalListPage() {
   const { t } = useTranslation();
@@ -24,8 +24,7 @@ export default function FaDisposalListPage() {
   const { data, isLoading, isFetching, refetch } =
     useGetListFaDisposals(searchParams);
 
-  //any quyilgan to'g'irlash kerak
-  const tableColumns: TableColumnsType<any> = [
+  const tableColumns: TableColumnsType<FaDisposalResponse> = [
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
@@ -33,30 +32,39 @@ export default function FaDisposalListPage() {
       width: 80,
     },
     {
-      title: t("fa.fields.documentNumber"),
-      dataIndex: "documentNumber",
+      title: "ID",
+      dataIndex: "id",
       render: (_, record) => (
-        <Link to={`${record.id}`}>{record.documentNumber ?? record.id}</Link>
+        <Link to={`/main/fa/disposals/edit/${record.id}`}>{record.id}</Link>
       ),
-      minWidth: 180,
+      minWidth: 100,
     },
     {
-      title: t("fa.fields.documentDate"),
-      dataIndex: "documentDate",
+      title: t("fa.fields.disposalDate"),
+      dataIndex: "disposalDate",
       render: (value) => customDate(value),
       width: 180,
     },
     {
-      title: t("fa.fields.comment"),
-      dataIndex: "comment",
+      title: t("fa.fields.disposalType"),
+      dataIndex: "disposalType",
+      minWidth: 200,
+    },
+    {
+      title: t("fa.fields.reason"),
+      dataIndex: "reason",
       minWidth: 240,
     },
     {
-      dataIndex: "stateName",
-      title: t("fa.fields.state"),
+      dataIndex: "statusName",
+      title: t("settings.fields.status"),
       align: "center",
-      width: 130,
-      render: (_, record) => stateStatus(record.stateId, record.stateName),
+      render: (_, record) => (
+        <ProcessStatusBadge
+          statusId={record.statusId}
+          statusName={record.statusName}
+        />
+      ),
     },
   ];
 
@@ -64,8 +72,7 @@ export default function FaDisposalListPage() {
     permissions.includes(faDisposalPermissions.update) ||
     permissions.includes(faDisposalPermissions.delete);
 
-  // const tableColumns: TableColumnsType<any> = [
-  const columns: TableColumnType<any>[] = hasActions
+  const columns: TableColumnType<FaDisposalResponse>[] = hasActions
     ? [
         ...tableColumns,
         {
@@ -111,7 +118,7 @@ export default function FaDisposalListPage() {
       </div>
 
       <Card className="overflow-hidden border border-border">
-        <Table<any> //any quyilgan to'g'irlash kerak
+        <Table<FaDisposalResponse>
           loading={isLoading || isFetching}
           columns={columns}
           dataSource={generateKeyTable(data?.items ?? [], "id")}

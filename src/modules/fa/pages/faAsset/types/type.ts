@@ -1,10 +1,18 @@
-export interface FaAssetValues {
+export interface FaAsset {
   id: number;
+  organizationId: number;
+  organizationName: string;
   inventoryNumber: string;
   name: string;
   faGroupId: number | null;
+  faGroupCode?: string | null;
+  faGroupName?: string | null;
   okofId: number | null;
+  okofCode?: string | null;
+  okofName?: string | null;
   depreciationMethodId: number | null;
+  depreciationMethodCode?: string | null;
+  depreciationMethodName?: string | null;
   usefulLifeMonths: number | null;
   initialCost: number | null;
   salvageValue: number | null;
@@ -12,8 +20,17 @@ export interface FaAssetValues {
   deprStartDate: string;
   plannedUnitsTotal: number | null;
   sourceProductTableId: number | null;
+  sourceProductTableSerialNumber?: string | null;
+  sourceProductTableMarkingNumber?: string | null;
   departmentId: number | null;
+  departmentName?: string | null;
   responsibleUserId: number | null;
+  responsibleUserName?: string | null;
+  statusId: number;
+  statusCode?: string | null;
+  statusName?: string | null;
   stateId: number;
   stateName: string;
+  createdDate?: string;
+  updatedDate?: string;
 }

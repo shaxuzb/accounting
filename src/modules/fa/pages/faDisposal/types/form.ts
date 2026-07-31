@@ -1,5 +1,9 @@
-import type { FaGenericDocumentForm } from "../../shared/types/form";
+import type { FaDisposalLineItem } from "./type";
 
-export interface FaDisposalFormValues extends FaGenericDocumentForm {
-  [key: string]: unknown;
+export interface FaDisposalFormValues {
+  disposalDate: string;
+  disposalType: string;
+  reason: string;
+  stateId: number;
+  lines: FaDisposalLineItem[];
 }

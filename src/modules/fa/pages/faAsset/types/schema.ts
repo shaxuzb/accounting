@@ -37,5 +37,7 @@ export const faAssetSchema = Yup.object({
   responsibleUserId: Yup.number()
     .nullable()
     .required("Responsible user is required"),
+  stateId: Yup.number().nullable(),
+  statusId: Yup.number().nullable(),
 });
 

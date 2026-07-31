@@ -1,5 +1,4 @@
-import type { FaGenericDocumentForm } from "../../shared/types/form";
+import type { FaRevaluationPayload } from "./type";
 
-export interface FaRevaluationFormValues extends FaGenericDocumentForm {
-  [key: string]: unknown;
-}
+export type FaRevaluationFormValues = FaRevaluationPayload;
+

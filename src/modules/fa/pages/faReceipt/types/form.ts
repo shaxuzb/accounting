@@ -1,5 +1,7 @@
-import type { FaGenericDocumentForm } from "../../shared/types/form";
+import type { FaReceiptPayload, FaReceiptLineItem, FaReceiptAsset } from "./type";
 
-export interface FaReceiptFormValues extends FaGenericDocumentForm {
-  [key: string]: unknown;
+export type FaReceiptLineValues = FaReceiptLineItem;
+export type FaReceiptAssetValues = FaReceiptAsset;
+export interface FaReceiptFormValues extends Omit<FaReceiptPayload, 'lines'> {
+  lines: FaReceiptLineValues[];
 }

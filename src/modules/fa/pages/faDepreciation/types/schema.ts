@@ -1,1 +1,1 @@
-export { faGenericDocumentSchema } from "../../shared/types/schema";
+export { faGenericDocumentSchema } from "../../../shared/types/schema";

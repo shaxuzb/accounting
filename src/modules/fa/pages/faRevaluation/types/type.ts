@@ -1,4 +1,22 @@
-// import type { FaRevaluation } from "@/modules/fa/types/fa";
+export interface FaRevaluationLine {
+  faAssetId: number | null;
+  newValue: number | string;
+  note: string;
+}
 
-export type FaRevaluationRecord = any;//any quyilgan to'g'irlash kerak
+export interface FaRevaluationPayload {
+  revaluationDate: string;
+  reason: string;
+  stateId: number;
+  lines: FaRevaluationLine[];
+}
+
+export interface FaRevaluation extends Omit<FaRevaluationPayload, "stateId"> {
+  id: number;
+  stateId?: number;
+  stateName?: string;
+  documentNumber?: string;
+  documentDate?: string;
+  comment?: string;
+}
 

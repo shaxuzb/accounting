@@ -1,6 +1,7 @@
-export { useCreateFaAsset } from "./useCreateFaAsset";
-export { useDeleteFaAsset } from "./useDeleteFaAsset";
-export { useGetDetailFaAsset } from "./useGetDetailFaAsset";
-export { useGetListFaAssets } from "./useGetListFaAssets";
-export { useUpdateFaAsset } from "./useUpdateFaAsset";
-
+export * from "./useCreateFaAsset";
+export * from "./useDeleteFaAsset";
+export * from "./useGetDetailFaAsset";
+export * from "./useGetListFaAssets";
+export * from "./useUpdateFaAsset";
+export * from "./useConfirmFaAsset";
+export * from "./useCancelFaAsset";

@@ -13,7 +13,7 @@ export const selectListEndpoints = {
   documentTypesSelectList: "manuals/document-types",
   productTypesSelectList: "manuals/product-types",
   organizationsSelectList: "manuals/organizations",
-  operationTypesSelectList: "manuals/organizations",
+  operationTypesSelectList: "manuals/operation-types",
   bankOperationTypesSelectList: "manuals/operation-types",
   taxTypesSelectList: "manuals/tax-types",
   vatRatesSelectList: "manuals/vat-rates",
@@ -50,6 +50,10 @@ export const selectListEndpoints = {
   clients: "manuals/clients",
   subkontoTypes: "manuals/subkonto-types",
   accountType: "manuals/account-types",
+  inventoryAdjustmentTypes: "manuals/inventory-adjustment-types",
+  moduleSubGroups: "manuals/module-sub-groups",
+  accountingPolicies: "manuals/accounting-policies",
+  faAssetsSelectList: "fa-assets",
 };
 
 export const chartAccountOptionLabel = (item: {
@@ -144,7 +148,9 @@ export const selectListKeys = {
   paymentPurposes: "selectListPaymentPurposes",
   operationTypes: "selectListOperationTypes",
   vatRates: "selectListVatRates",
-  
+  inventoryAdjustmentTypes: "selectListInventoryAdjustmentTypes",
+  moduleSubGroups: "selectListModuleSubGroups",
+  accountingPolicies: "selectListAccountingPolicies",
 };
 
 export const filterIds = {
@@ -190,4 +196,7 @@ export const filterIds = {
   paymentPurposes: "paymentPurposeId",
   operationTypes: "operationTypeId",
   vatRates: "vatRateId",
+  inventoryAdjustmentTypes: "inventoryAdjustmentTypeId",
+  moduleSubGroups: "moduleSubGroupId",
+  accountingPolicies: "accountingPolicyId",
 };
