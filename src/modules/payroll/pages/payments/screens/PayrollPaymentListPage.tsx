@@ -40,7 +40,6 @@ export default function PayrollPaymentListPage() {
     {
       dataIndex: "docNumber",
       title: t("payroll.fields.docNumber"),
-      width: 150,
       render: (value: string | null, record) => (
         <Link to={`${LIST_PATH}/${record.id}`} className="font-medium">
           {value ?? record.id}
@@ -58,6 +57,7 @@ export default function PayrollPaymentListPage() {
       dataIndex: "periodId",
       title: t("payroll.fields.period"),
       width: 160,
+      align: "center",
       render: (_, record) =>
         record.periodMonth
           ? `${t(`payroll.months.${record.periodMonth}`, {
@@ -85,6 +85,7 @@ export default function PayrollPaymentListPage() {
       dataIndex: "sourceType",
       title: t("payroll.fields.source"),
       width: 200,
+      align: "center",
       render: (_, record) => (
         <div className="flex flex-col">
           <span>
@@ -102,6 +103,7 @@ export default function PayrollPaymentListPage() {
       dataIndex: "payrollDocNumber",
       title: t("payroll.fields.payrollDocument"),
       width: 150,
+      align: "center",
       render: (value: string | null, record) =>
         record.payrollDocId ? (
           <Link to={`/main/payroll/documents/${record.payrollDocId}`}>
@@ -122,7 +124,7 @@ export default function PayrollPaymentListPage() {
     {
       dataIndex: "totalAmount",
       title: t("payroll.fields.totalAmount"),
-      align: "right",
+      align: "center",
       width: 170,
       render: (value: number | null, record) => (
         <span className="font-semibold">

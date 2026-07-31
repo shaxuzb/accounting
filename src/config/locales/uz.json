@@ -752,6 +752,112 @@
       "notFound": "Topilmadi"
     }
   },
+  "hr": {
+    "title": "Kadrlar",
+    "description": "Xodimlar, ish grafiklari va yo'qliklarni boshqarish",
+    "employees": {
+      "title": "Xodimlar",
+      "detailTitle": "Xodim kartochkasi",
+      "workTimeTitle": "Ish vaqti",
+      "workTimeHint": "Shaxsiy ish grafiklari va kunlik HR kalendari"
+    },
+    "absences": {
+      "title": "Ta'til va yo'qliklar",
+      "create": "Yo'qlik kiritish",
+      "createTitle": "Yangi ta'til yoki yo'qlik",
+      "editTitle": "Ta'til yoki yo'qlikni tahrirlash",
+      "deleteTitle": "Ushbu yozuvni o'chirasizmi?",
+      "attachmentsTitle": "Biriktirilgan hujjatlar",
+      "attachmentsEmpty": "Hujjatlar biriktirilmagan",
+      "viewDocuments": "Hujjatlarni ko'rish",
+      "viewDocument": "Hujjatni ko'rish",
+      "downloadDocument": "Hujjatni yuklab olish",
+      "deleteDocument": "Hujjatni o'chirish",
+      "deleteDocumentTitle": "Ushbu hujjatni o'chirasizmi?",
+      "file": "Fayl",
+      "chooseFiles": "Hujjatlarni tanlash",
+      "filesHint": "Bir nechta tasdiqlovchi hujjat biriktirish mumkin."
+    },
+    "schedules": {
+      "title": "Shaxsiy ish grafiklari",
+      "description": "Grafik davri va har bir ish kunidagi soatlarni belgilang.",
+      "add": "Grafik qo'shish",
+      "createTitle": "Yangi ish grafigi",
+      "editTitle": "Ish grafigini tahrirlash",
+      "deleteTitle": "Ish grafigini o'chirasizmi?",
+      "weekDays": "Hafta kunlari",
+      "workDays": "Ish kunlari",
+      "empty": "Shaxsiy ish grafigi kiritilmagan"
+    },
+    "calendar": {
+      "title": "Xodim kalendari",
+      "empty": "Tanlangan oy uchun kalendar ma'lumoti yo'q",
+      "status": {
+        "WORKED": "Ishlangan",
+        "PLANNED_WORK": "Rejadagi ish",
+        "DAY_OFF": "Dam olish",
+        "ANNUAL_LEAVE": "Mehnat ta'tili",
+        "SICK_LEAVE": "Kasallik",
+        "UNPAID_LEAVE": "Ish haqi saqlanmagan",
+        "UNEXCUSED_ABSENCE": "Sababsiz yo'qlik"
+      }
+    },
+    "fields": {
+      "employee": "Xodim",
+      "absenceType": "Yo'qlik turi",
+      "dateFrom": "Boshlanish sanasi",
+      "dateTo": "Tugash sanasi",
+      "daysCount": "Kunlar",
+      "calendarDays": "Kalendar kunlari",
+      "docNumber": "Hujjat raqami",
+      "documentDate": "Hujjat sanasi",
+      "note": "Izoh",
+      "status": "Holati",
+      "attachments": "Tasdiqlovchi hujjatlar",
+      "scheduleName": "Grafik nomi",
+      "effectiveFrom": "Amal qilish boshlanishi",
+      "effectiveTo": "Amal qilish tugashi",
+      "effectivePeriod": "Amal qilish davri",
+      "indefinite": "muddatsiz",
+      "dayOfWeek": "Hafta kuni",
+      "workHours": "Ish soati"
+    },
+    "weekDays": {
+      "1": "Dushanba",
+      "2": "Seshanba",
+      "3": "Chorshanba",
+      "4": "Payshanba",
+      "5": "Juma",
+      "6": "Shanba",
+      "7": "Yakshanba"
+    },
+    "weekDaysShort": {
+      "1": "Du",
+      "2": "Se",
+      "3": "Ch",
+      "4": "Pa",
+      "5": "Ju",
+      "6": "Sh",
+      "7": "Ya"
+    },
+    "units": {
+      "hour": "soat"
+    },
+    "messages": {
+      "dateRangeInvalid": "Tugash sanasi boshlanish sanasidan oldin bo'lmasin",
+      "scheduleDayRequired": "Kamida bitta ish kunini tanlang",
+      "scheduleCreated": "Ish grafigi yaratildi",
+      "scheduleUpdated": "Ish grafigi yangilandi",
+      "scheduleDeleted": "Ish grafigi o'chirildi",
+      "absenceCreated": "Ta'til yoki yo'qlik kiritildi",
+      "absenceUpdated": "Ta'til yoki yo'qlik yangilandi",
+      "absenceDeleted": "Ta'til yoki yo'qlik o'chirildi",
+      "attachmentDeleted": "Hujjat o'chirildi",
+      "calendarLoaded": "HR kalendari bo'yicha to'ldirildi",
+      "calendarLoadFailed": "HR kalendari ma'lumotini olishda xato yuz berdi",
+      "selectPeriodFirst": "Avval hisoblash davrini tanlang"
+    }
+  },
   "payroll": {
     "title": "Oylik maosh",
     "description": "Xodimlar, tabel, maosh hisoblash va to'lovlar",
@@ -979,6 +1085,7 @@
       "linesTitle": "Xodimlar bo'yicha vaqt hisobi",
       "linesHint": "Ishlangan kun va soatni kiriting",
       "addLine": "Xodim qo'shish",
+      "syncCalendar": "HR kalendaridan to'ldirish",
       "fillAll": "Barcha xodimlar",
       "fillAllTitle": "Barcha xodimlarni qo'shasizmi?",
       "fillAllText": "{{count}} ta xodim me'yor bo'yicha to'ldiriladi.",

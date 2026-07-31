@@ -32,9 +32,9 @@ export interface PayrollRegisterReport {
 }
 
 export interface PayrollPayslipComponent {
-  componentId: number;
-  componentCode?: string | null;
-  componentName?: string | null;
+  componentId?: number | null;
+  code?: string | null;
+  name?: string | null;
   componentType?: PayrollComponentType | null;
   baseAmount?: number | null;
   rate?: number | null;

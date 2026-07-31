@@ -42,7 +42,6 @@ export default function PayrollTimesheetListPage() {
     {
       dataIndex: "docNumber",
       title: t("payroll.fields.docNumber"),
-      width: 150,
       render: (value: string | null, record) => (
         <Link to={`${LIST_PATH}/${record.id}`} className="font-medium">
           {value ?? record.id}
@@ -60,6 +59,7 @@ export default function PayrollTimesheetListPage() {
       dataIndex: "periodId",
       title: t("payroll.fields.period"),
       width: 170,
+      align: "center",
       render: (_, record) =>
         record.periodMonth
           ? `${t(`payroll.months.${record.periodMonth}`, {

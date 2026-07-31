@@ -5,6 +5,8 @@ import {
 } from "@/components/ui/card/DocumentSummary";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SectionCard from "@/components/ui/card/SectionCard";
+import EmployeeCalendarPanel from "@/modules/hr/pages/employees/components/EmployeeCalendarPanel";
+import EmployeeWorkSchedulesPanel from "@/modules/hr/pages/employees/components/EmployeeWorkSchedulesPanel";
 import {
   componentTypeColor,
   methodUsesRate,
@@ -17,13 +19,14 @@ import {
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { stateStatus } from "@/utils/helpers/statusHelper";
-import { App, Button, Empty, Spin, Table, Tag } from "antd";
+import { App, Button, Empty, Spin, Table, Tabs, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import {
   Banknote,
   BriefcaseBusiness,
   Building2,
   CalendarClock,
+  CalendarDays,
   IdCard,
   Pencil,
   Plus,
@@ -93,11 +96,13 @@ export default function PayrollEmployeeDetailPage() {
     {
       dataIndex: "startDate",
       title: t("payroll.fields.period"),
-      width: 200,
+      align: "center",
       render: (_, record) => (
         <span>
           {displayDate(record.startDate)} —{" "}
-          {record.endDate ? displayDate(record.endDate) : t("payroll.fields.now")}
+          {record.endDate
+            ? displayDate(record.endDate)
+            : t("payroll.fields.now")}
         </span>
       ),
     },
@@ -117,19 +122,22 @@ export default function PayrollEmployeeDetailPage() {
     {
       dataIndex: "departmentName",
       title: t("payroll.fields.department"),
+      align: "center",
       minWidth: 150,
       render: (value: string | null) => value ?? "—",
     },
     {
       dataIndex: "positionName",
       title: t("payroll.fields.position"),
+      align: "center",
       minWidth: 150,
       render: (value: string | null) => value ?? "—",
     },
     {
       dataIndex: "monthlySalary",
       title: t("payroll.fields.monthlySalary"),
-      align: "right",
+      align: "center",
+
       width: 160,
       render: (_, record) => (
         <span className="font-medium">
@@ -150,7 +158,7 @@ export default function PayrollEmployeeDetailPage() {
       dataIndex: "weeklyHours",
       title: t("payroll.fields.weeklyHours"),
       align: "center",
-      width: 110,
+      width: 130,
     },
   ];
 
@@ -159,12 +167,14 @@ export default function PayrollEmployeeDetailPage() {
       dataIndex: "componentCode",
       title: t("payroll.fields.componentCode"),
       width: 120,
+      align: "center",
       render: (value: string | null) => value ?? "—",
     },
     {
       dataIndex: "componentName",
       title: t("payroll.fields.componentName"),
       minWidth: 200,
+      align: "center",
       render: (value: string | null) => value ?? "—",
     },
     {
@@ -189,7 +199,7 @@ export default function PayrollEmployeeDetailPage() {
     {
       dataIndex: "amount",
       title: t("payroll.fields.value"),
-      align: "right",
+      align: "center",
       width: 140,
       render: (_, record) =>
         methodUsesRate(record.calculationMethod)
@@ -204,7 +214,7 @@ export default function PayrollEmployeeDetailPage() {
       align: "center",
       width: 190,
       render: (_, record) => (
-        <span className="text-xs">
+        <span className="text-sm">
           {displayDate(record.effectiveFrom)} —{" "}
           {record.effectiveTo ? displayDate(record.effectiveTo) : "∞"}
         </span>
@@ -280,7 +290,7 @@ export default function PayrollEmployeeDetailPage() {
         </div>
       </Card>
 
-      <DocumentSummary>
+      <DocumentSummary className="lg:grid-cols-3 2xl:grid-cols-5">
         <DocumentSummaryItem
           icon={<Building2 className="size-5" />}
           label={t("payroll.fields.department")}
@@ -358,7 +368,9 @@ export default function PayrollEmployeeDetailPage() {
           size="middle"
           scroll={{ x: "max-content" }}
           locale={{
-            emptyText: <Empty description={t("payroll.employees.noEmployment")} />,
+            emptyText: (
+              <Empty description={t("payroll.employees.noEmployment")} />
+            ),
           }}
         />
       </SectionCard>
@@ -386,8 +398,33 @@ export default function PayrollEmployeeDetailPage() {
           size="middle"
           scroll={{ x: "max-content" }}
           locale={{
-            emptyText: <Empty description={t("payroll.employees.noComponents")} />,
+            emptyText: (
+              <Empty description={t("payroll.employees.noComponents")} />
+            ),
           }}
+        />
+      </SectionCard>
+
+      <SectionCard
+        title="hr.employees.workTimeTitle"
+        description="hr.employees.workTimeHint"
+        icon={<CalendarDays className="size-4" />}
+        bodyClassName="pt-2!"
+      >
+        <Tabs
+          destroyOnHidden
+          items={[
+            {
+              key: "schedules",
+              label: t("hr.schedules.title"),
+              children: <EmployeeWorkSchedulesPanel employeeId={employee.id} />,
+            },
+            {
+              key: "calendar",
+              label: t("hr.calendar.title"),
+              children: <EmployeeCalendarPanel employeeId={employee.id} />,
+            },
+          ]}
         />
       </SectionCard>
 

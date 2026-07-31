@@ -1,4 +1,5 @@
 import { payrollComponentService } from "@/modules/settings/pages/payrollComponents/api";
+import { payrollComponentKeys } from "@/modules/settings/pages/payrollComponents/constants/queryKeys";
 import { useQuery } from "@tanstack/react-query";
 
 const LOOKUP_PARAMS = { page: 1, pageSize: 500, stateId: 1 };
@@ -6,7 +7,10 @@ const LOOKUP_PARAMS = { page: 1, pageSize: 500, stateId: 1 };
 /** Tanlash uchun faol hisoblash komponentlari. */
 export const usePayrollComponentLookup = (componentType?: string) =>
   useQuery({
-    queryKey: ["payroll", "components", "lookup", componentType ?? "all"],
+    queryKey: [
+      ...payrollComponentKeys.lookup,
+      componentType ?? "all",
+    ],
     queryFn: () =>
       payrollComponentService.list(
         componentType ? { ...LOOKUP_PARAMS, componentType } : LOOKUP_PARAMS,

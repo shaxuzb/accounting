@@ -6,11 +6,13 @@ export const useConfirmPayrollTimesheet = (id: string | number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => payrollTimesheetService.confirm(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: payrollTimesheetKeys.all });
-      queryClient.invalidateQueries({
-        queryKey: payrollTimesheetKeys.detail(id),
-      });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: payrollTimesheetKeys.all }),
+        queryClient.invalidateQueries({
+          queryKey: payrollTimesheetKeys.detail(id),
+        }),
+      ]);
     },
   });
 };

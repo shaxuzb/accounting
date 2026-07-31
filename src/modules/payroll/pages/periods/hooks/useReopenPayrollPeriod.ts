@@ -6,8 +6,8 @@ export const useReopenPayrollPeriod = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string | number) => payrollPeriodService.reopen(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: payrollPeriodKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: payrollPeriodKeys.all });
     },
   });
 };

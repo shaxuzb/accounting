@@ -60,7 +60,7 @@ export default function PaymentLinesEditor({
 
   /** Maosh hujjatidagi qolgan summalar bilan to'ldiradi. */
   const fillFromDocument = () => {
-    const documentEmployees = payrollDocument?.employees ?? [];
+    const documentEmployees = payrollDocument?.lines ?? [];
     if (!documentEmployees.length) return;
 
     modal.confirm({
@@ -220,14 +220,15 @@ export default function PaymentLinesEditor({
 
   return (
     <SectionCard
+      className="min-w-0 overflow-hidden"
       title="payroll.payments.linesTitle"
       description="payroll.payments.linesHint"
       icon={<Wallet className="size-4" />}
-      bodyClassName="p-0!"
+      bodyClassName="min-w-0 overflow-hidden p-0!"
       extra={
         !disabled && (
           <>
-            {Boolean(payrollDocument?.employees?.length) && (
+            {Boolean(payrollDocument?.lines?.length) && (
               <Button
                 icon={<Wallet className="size-4" />}
                 onClick={fillFromDocument}
@@ -251,7 +252,7 @@ export default function PaymentLinesEditor({
         dataSource={dataSource}
         pagination={false}
         size="small"
-        scroll={{ x: "max-content", y: 460 }}
+        scroll={{ x: 980, y: 460 }}
         locale={{
           emptyText: <Empty description={t("payroll.payments.noLines")} />,
         }}

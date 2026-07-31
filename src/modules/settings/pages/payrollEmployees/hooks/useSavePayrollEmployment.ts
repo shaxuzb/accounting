@@ -20,11 +20,13 @@ export const useSavePayrollEmployment = (employeeId: string | number) => {
             payload,
           )
         : payrollEmployeeService.createEmployment(employeeId, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: payrollEmployeeKeys.detail(employeeId),
-      });
-      queryClient.invalidateQueries({ queryKey: payrollEmployeeKeys.all });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: payrollEmployeeKeys.detail(employeeId),
+        }),
+        queryClient.invalidateQueries({ queryKey: payrollEmployeeKeys.all }),
+      ]);
     },
   });
 };

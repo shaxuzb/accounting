@@ -26,7 +26,7 @@ import {
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { Alert, Col, Form, Row, Select, Spin, Tag } from "antd";
+import { Col, Form, Row, Select, Spin, Tag } from "antd";
 import { useFormik } from "formik";
 import {
   Banknote,
@@ -189,7 +189,7 @@ export default function PayrollPaymentDetailPage() {
         }
       />
 
-      {!isCreate && !isDraft && (
+      {/* {!isCreate && !isDraft && (
         <Alert
           type="success"
           showIcon
@@ -204,10 +204,10 @@ export default function PayrollPaymentDetailPage() {
             ) : undefined
           }
         />
-      )}
+      )} */}
 
-      <div className="grid gap-4 xl:grid-cols-[1fr_320px]">
-        <div className="space-y-4">
+      <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 space-y-4">
           <SectionCard
             title="payroll.payments.headerTitle"
             description="payroll.payments.headerHint"

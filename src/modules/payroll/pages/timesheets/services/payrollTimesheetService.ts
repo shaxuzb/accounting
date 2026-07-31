@@ -3,7 +3,10 @@ import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { payrollTimesheetEndpoints as endpoints } from "../constants/endpoints";
 import type { PayrollTimesheetForm } from "../types/form";
-import type { PayrollTimesheet } from "../types/type";
+import type {
+  PayrollTimesheet,
+  PayrollTimesheetCalendar,
+} from "../types/type";
 
 export const payrollTimesheetService = {
   list: (params?: QueryParams) =>
@@ -19,9 +22,17 @@ export const payrollTimesheetService = {
       .post<PayrollTimesheet>(endpoints.create, payload)
       .then((res) => res.data),
   update: (id: string | number, payload: PayrollTimesheetForm) =>
-    $axiosPrivate.put(endpoints.update(id), payload).then((res) => res.data),
+    $axiosPrivate
+      .put<PayrollTimesheet>(endpoints.update(id), payload)
+      .then((res) => res.data),
   confirm: (id: string | number) =>
     $axiosPrivate.put(endpoints.confirm(id)).then((res) => res.data),
   cancel: (id: string | number) =>
     $axiosPrivate.put(endpoints.cancel(id)).then((res) => res.data),
+  calendar: (periodId: number, employeeId: number) =>
+    $axiosPrivate
+      .get<PayrollTimesheetCalendar>(endpoints.calendar, {
+        params: { periodId, employeeId },
+      })
+      .then((res) => res.data),
 };

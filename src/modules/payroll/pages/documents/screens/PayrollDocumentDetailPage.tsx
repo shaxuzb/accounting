@@ -34,7 +34,7 @@ import {
   useDeletePayrollDocument,
   useGetDetailPayrollDocument,
 } from "../hooks";
-import type { PayrollDocumentEmployee } from "../types/type";
+import type { PayrollDocumentLine } from "../types/type";
 
 const LIST_PATH = "/main/payroll/documents";
 
@@ -55,7 +55,7 @@ export default function PayrollDocumentDetailPage() {
   const currency = record?.currencyName ?? "";
 
   const employees = useMemo(() => {
-    const list = record?.employees ?? [];
+    const list = record?.lines ?? [];
     if (!search.trim()) return list;
     const query = search.trim().toLowerCase();
     return list.filter((employee) =>
@@ -65,7 +65,7 @@ export default function PayrollDocumentDetailPage() {
         .toLowerCase()
         .includes(query),
     );
-  }, [record?.employees, search]);
+  }, [record?.lines, search]);
 
   const runMutation = async (
     action: () => Promise<unknown>,
@@ -81,7 +81,7 @@ export default function PayrollDocumentDetailPage() {
     }
   };
 
-  const columns: TableColumnsType<PayrollDocumentEmployee> = [
+  const columns: TableColumnsType<PayrollDocumentLine> = [
     {
       dataIndex: "employeeName",
       title: t("payroll.fields.employee"),
@@ -115,14 +115,14 @@ export default function PayrollDocumentDetailPage() {
     {
       dataIndex: "grossAmount",
       title: t("payroll.fields.grossAmount"),
-      align: "right",
+      align: "center",
       width: 150,
       render: (value: number) => money(value),
     },
     {
       dataIndex: "deductionAmount",
       title: t("payroll.fields.deductionAmount"),
-      align: "right",
+      align: "center",
       width: 150,
       render: (value: number) => (
         <span className="text-red-500">−{money(value)}</span>
@@ -131,7 +131,7 @@ export default function PayrollDocumentDetailPage() {
     {
       dataIndex: "employerTaxAmount",
       title: t("payroll.fields.employerTaxAmount"),
-      align: "right",
+      align: "center",
       width: 160,
       render: (value: number) => money(value),
     },
@@ -231,13 +231,13 @@ export default function PayrollDocumentDetailPage() {
         />
       )}
 
-      <div className="grid gap-4 xl:grid-cols-[1fr_320px]">
-        <div className="space-y-4">
+      <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 space-y-4">
           <DocumentSummary>
             <DocumentSummaryItem
               icon={<Users className="size-5" />}
               label={t("payroll.fields.employeeCount")}
-              value={record.employeeCount ?? record.employees?.length ?? "—"}
+              value={record.employeeCount ?? record.lines?.length ?? "—"}
             />
             <DocumentSummaryItem
               icon={<Banknote className="size-5" />}
@@ -264,10 +264,11 @@ export default function PayrollDocumentDetailPage() {
           </DocumentSummary>
 
           <SectionCard
+            className="min-w-0 overflow-hidden"
             title="payroll.documents.employeesTitle"
             description="payroll.documents.employeesHint"
             icon={<Receipt className="size-4" />}
-            bodyClassName="p-0!"
+            bodyClassName="min-w-0 overflow-hidden p-0!"
             extra={
               <Input.Search
                 allowClear
@@ -277,7 +278,7 @@ export default function PayrollDocumentDetailPage() {
               />
             }
           >
-            <Table<PayrollDocumentEmployee>
+            <Table<PayrollDocumentLine>
               columns={columns}
               dataSource={employees.map((employee, index) => ({
                 ...employee,
@@ -285,10 +286,10 @@ export default function PayrollDocumentDetailPage() {
               }))}
               pagination={false}
               size="small"
-              scroll={{ x: "max-content", y: 520 }}
+              scroll={{ x: 1500, y: 520 }}
               expandable={{
                 expandedRowRender: (employee) => (
-                  <div className="rounded-lg border border-border p-2">
+                  <div className="min-w-0 overflow-hidden rounded-lg border border-border p-2">
                     <PayrollCalcLinesTable lines={employee.calcLines} />
                   </div>
                 ),

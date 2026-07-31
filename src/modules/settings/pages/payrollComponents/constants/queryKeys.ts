@@ -4,4 +4,5 @@ export const payrollComponentKeys = {
     ["settings", "payrollComponents", "list", params] as const,
   detail: (id: string | number) =>
     ["settings", "payrollComponents", "detail", id] as const,
+  lookup: ["settings", "payrollComponents", "lookup"] as const,
 };

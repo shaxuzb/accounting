@@ -8,10 +8,11 @@ export const useUpdatePayrollTimesheet = (id: string | number) => {
   return useMutation({
     mutationFn: (payload: PayrollTimesheetForm) =>
       payrollTimesheetService.update(id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: payrollTimesheetKeys.all });
-      queryClient.invalidateQueries({
-        queryKey: payrollTimesheetKeys.detail(id),
+    onSuccess: async () => {
+      const updated = await payrollTimesheetService.detail(id);
+      queryClient.setQueryData(payrollTimesheetKeys.detail(id), updated);
+      await queryClient.invalidateQueries({
+        queryKey: payrollTimesheetKeys.list(),
       });
     },
   });

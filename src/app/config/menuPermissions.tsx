@@ -7,6 +7,7 @@ import {
   Briefcase,
   Building,
   Building2,
+  CalendarOff,
   ContactRound,
   CreditCard,
   GitBranch,
@@ -29,7 +30,6 @@ import {
   PlugZap,
   Boxes,
   BadgeDollarSign,
-  UserCog,
   SlidersHorizontal,
 } from "lucide-react";
 import { salePermissions } from "@/modules/sale";
@@ -53,7 +53,10 @@ import {
   payrollReportPermissions,
   payrollTimesheetPermissions,
 } from "@/modules/payroll/constants/permissions";
-import { payrollEmployeePermissions } from "@/modules/settings/pages/payrollEmployees/constants/permissions";
+import {
+  hrAbsencePermissions,
+  hrEmployeePermissions,
+} from "@/modules/hr/constants/permissions";
 import { payrollComponentPermissions } from "@/modules/settings/pages/payrollComponents/constants/permissions";
 import {
   cashBookPermissions,
@@ -101,7 +104,6 @@ export const settingsViewPermissions = [
   saleConditionPermissions.view,
   openingBalancePermissions.view,
   integrationPermissions.view,
-  payrollEmployeePermissions.view,
   payrollComponentPermissions.view,
 ] as const;
 
@@ -388,6 +390,33 @@ export const menuPermissions: MainMenu = {
     {
       code: "DROPDOWN",
       dropdown: true,
+      dropdownName: "hr.title",
+      iconName: <ContactRound className="size-5" />,
+      linkData: {
+        path: "hr",
+        title: "hr.title",
+      },
+      items: [
+        {
+          code: hrEmployeePermissions.view,
+          linkData: {
+            path: "employees",
+            title: "hr.employees.title",
+          },
+        },
+        {
+          code: hrAbsencePermissions.view,
+          iconName: <CalendarOff className="size-4" />,
+          linkData: {
+            path: "absences",
+            title: "hr.absences.title",
+          },
+        },
+      ],
+    },
+    {
+      code: "DROPDOWN",
+      dropdown: true,
       dropdownName: "payroll.title",
       iconName: <BadgeDollarSign className="size-5" />,
       linkData: {
@@ -660,15 +689,6 @@ export const menuPermissions: MainMenu = {
         path: "sale-conditions",
         title: "settings.entities.saleConditions",
         description: "settings.descriptions.saleConditions",
-      },
-    },
-    {
-      code: payrollEmployeePermissions.view,
-      iconName: <UserCog className="size-5" />,
-      linkData: {
-        path: "payroll-employees",
-        title: "payroll.employees.title",
-        description: "payroll.employees.description",
       },
     },
     {

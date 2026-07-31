@@ -6,8 +6,8 @@ export const useClosePayrollPeriod = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string | number) => payrollPeriodService.close(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: payrollPeriodKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: payrollPeriodKeys.all });
     },
   });
 };

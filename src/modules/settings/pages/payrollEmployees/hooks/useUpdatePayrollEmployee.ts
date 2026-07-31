@@ -13,11 +13,13 @@ export const useUpdatePayrollEmployee = () => {
   return useMutation({
     mutationFn: ({ id, payload }: UpdateArgs) =>
       payrollEmployeeService.update(id, payload),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: payrollEmployeeKeys.all });
-      queryClient.invalidateQueries({
-        queryKey: payrollEmployeeKeys.detail(variables.id),
-      });
+    onSuccess: async (_data, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: payrollEmployeeKeys.all }),
+        queryClient.invalidateQueries({
+          queryKey: payrollEmployeeKeys.detail(variables.id),
+        }),
+      ]);
     },
   });
 };

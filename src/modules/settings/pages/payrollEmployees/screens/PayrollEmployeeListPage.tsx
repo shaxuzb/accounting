@@ -9,6 +9,7 @@ import { employeeFullName, money } from "@/modules/payroll/utils/format";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { usePaginationParams } from "@/shared/hooks/usePaginationParams";
 import { useAppSelector } from "@/store/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { Button, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
@@ -18,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 import { payrollEmployeeEndpoints } from "../constants/endpoints";
 import { payrollEmployeePermissions } from "../constants/permissions";
+import { payrollEmployeeKeys } from "../constants/queryKeys";
 import { useGetListPayrollEmployees } from "../hooks";
 import type { PayrollEmployee } from "../types/type";
 import PayrollEmployeeAddEditPage from "./PayrollEmployeeAddEditPage";
@@ -28,6 +30,7 @@ export default function PayrollEmployeeListPage() {
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
+  const queryClient = useQueryClient();
   const { withRowNumbers, paginationProps } = usePaginationParams();
   const { data, isLoading, isFetching, refetch } =
     useGetListPayrollEmployees(searchParams);
@@ -45,10 +48,11 @@ export default function PayrollEmployeeListPage() {
     {
       dataIndex: "employeeNumber",
       title: t("payroll.fields.employeeNumber"),
-      width: 130,
+      width: 150,
+      align: "center",
       render: (value: string, record) => (
         <Link
-          to={`/main/settings/payroll-employees/${record.id}`}
+          to={`/main/hr/employees/${record.id}`}
           className="font-medium"
         >
           {value || record.id}
@@ -58,9 +62,8 @@ export default function PayrollEmployeeListPage() {
     {
       dataIndex: "fullName",
       title: t("payroll.fields.employee"),
-      minWidth: 220,
       render: (_, record) => (
-        <Link to={`/main/settings/payroll-employees/${record.id}`}>
+        <Link to={`/main/hr/employees/${record.id}`}>
           {employeeFullName(record)}
         </Link>
       ),
@@ -68,12 +71,14 @@ export default function PayrollEmployeeListPage() {
     {
       dataIndex: "departmentName",
       title: t("payroll.fields.department"),
+      align: "center",
       minWidth: 160,
       render: (value: string | null) => value ?? "—",
     },
     {
       dataIndex: "positionName",
       title: t("payroll.fields.position"),
+      align: "center",
       minWidth: 160,
       render: (value: string | null) => value ?? "—",
     },
@@ -96,7 +101,7 @@ export default function PayrollEmployeeListPage() {
     {
       dataIndex: "monthlySalary",
       title: t("payroll.fields.monthlySalary"),
-      align: "right",
+      align: "center",
       width: 160,
       render: (_, record) => (
         <span className="font-medium">
@@ -110,6 +115,7 @@ export default function PayrollEmployeeListPage() {
     {
       dataIndex: "phoneNumber",
       title: t("settings.fields.phoneNumber"),
+      align: "center",
       width: 160,
       render: (value: string | null) => value ?? "—",
     },
@@ -145,6 +151,11 @@ export default function PayrollEmployeeListPage() {
                 editCode: payrollEmployeePermissions.update,
               }}
               refetch={() => void refetch()}
+              onDeleteSuccess={() =>
+                queryClient.invalidateQueries({
+                  queryKey: payrollEmployeeKeys.all,
+                })
+              }
               editModal={{
                 isModal: true,
                 setOpenEditModal: setIsFormOpen,

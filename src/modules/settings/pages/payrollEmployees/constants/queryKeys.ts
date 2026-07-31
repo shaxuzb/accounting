@@ -1,7 +1,9 @@
 export const payrollEmployeeKeys = {
-  all: ["settings", "payrollEmployees"] as const,
+  // Shared by HR employee screens and payroll employee lookup queries.
+  all: ["hr", "employees"] as const,
   list: (params?: unknown) =>
-    ["settings", "payrollEmployees", "list", params] as const,
+    ["hr", "employees", "list", params] as const,
   detail: (id: string | number) =>
-    ["settings", "payrollEmployees", "detail", id] as const,
+    ["hr", "employees", "detail", id] as const,
+  lookup: ["hr", "employees", "lookup"] as const,
 };

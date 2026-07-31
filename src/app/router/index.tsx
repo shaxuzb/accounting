@@ -12,6 +12,7 @@ import { cashOperationRoutes } from "@/modules/cashoperation";
 import { accountingRoutes } from "@/modules/accounting/routes";
 import { faRoutes } from "@/modules/fa/routes";
 import { payrollRoutes } from "@/modules/payroll";
+import { hrRoutes } from "@/modules/hr";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,7 @@ export const router = createBrowserRouter([
           cashOperationRoutes,
           saleRoutes,
           faRoutes,
+          hrRoutes,
           payrollRoutes,
           accountingsRoutes,
           accountingRoutes,

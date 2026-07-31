@@ -16,6 +16,8 @@ export const payrollTimesheetSchema = Yup.object({
     .of(
       Yup.object({
         employeeId: requiredNumber("payroll.fields.employee"),
+        normWorkDays: nonNegative("payroll.fields.normWorkDays").max(31),
+        normWorkHours: nonNegative("payroll.fields.normWorkHours"),
         workedDays: nonNegative("payroll.fields.workedDays").max(31, () =>
           tMessage("payroll.messages.daysRange"),
         ),

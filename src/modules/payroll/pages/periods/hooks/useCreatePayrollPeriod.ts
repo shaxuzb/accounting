@@ -8,8 +8,8 @@ export const useCreatePayrollPeriod = () => {
   return useMutation({
     mutationFn: (payload: PayrollPeriodForm) =>
       payrollPeriodService.create(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: payrollPeriodKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: payrollPeriodKeys.all });
     },
   });
 };

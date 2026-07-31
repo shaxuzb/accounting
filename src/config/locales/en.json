@@ -752,6 +752,112 @@
       "notFound": "Not found"
     }
   },
+  "hr": {
+    "title": "Human resources",
+    "description": "Employees, work schedules and absences",
+    "employees": {
+      "title": "Employees",
+      "detailTitle": "Employee profile",
+      "workTimeTitle": "Working time",
+      "workTimeHint": "Personal work schedules and daily HR calendar"
+    },
+    "absences": {
+      "title": "Leave and absences",
+      "create": "Add absence",
+      "createTitle": "New leave or absence",
+      "editTitle": "Edit leave or absence",
+      "deleteTitle": "Delete this record?",
+      "attachmentsTitle": "Attached documents",
+      "attachmentsEmpty": "No documents attached",
+      "viewDocuments": "View documents",
+      "viewDocument": "View document",
+      "downloadDocument": "Download document",
+      "deleteDocument": "Delete document",
+      "deleteDocumentTitle": "Delete this document?",
+      "file": "File",
+      "chooseFiles": "Choose documents",
+      "filesHint": "You can attach multiple supporting documents."
+    },
+    "schedules": {
+      "title": "Personal work schedules",
+      "description": "Set the schedule period and hours for each working day.",
+      "add": "Add schedule",
+      "createTitle": "New work schedule",
+      "editTitle": "Edit work schedule",
+      "deleteTitle": "Delete work schedule?",
+      "weekDays": "Week days",
+      "workDays": "Work days",
+      "empty": "No personal work schedule has been added"
+    },
+    "calendar": {
+      "title": "Employee calendar",
+      "empty": "No calendar data for the selected month",
+      "status": {
+        "WORKED": "Worked",
+        "PLANNED_WORK": "Planned work",
+        "DAY_OFF": "Day off",
+        "ANNUAL_LEAVE": "Annual leave",
+        "SICK_LEAVE": "Sick leave",
+        "UNPAID_LEAVE": "Unpaid leave",
+        "UNEXCUSED_ABSENCE": "Unexcused absence"
+      }
+    },
+    "fields": {
+      "employee": "Employee",
+      "absenceType": "Absence type",
+      "dateFrom": "Start date",
+      "dateTo": "End date",
+      "daysCount": "Days",
+      "calendarDays": "Calendar days",
+      "docNumber": "Document number",
+      "documentDate": "Document date",
+      "note": "Note",
+      "status": "Status",
+      "attachments": "Supporting documents",
+      "scheduleName": "Schedule name",
+      "effectiveFrom": "Effective from",
+      "effectiveTo": "Effective to",
+      "effectivePeriod": "Effective period",
+      "indefinite": "indefinite",
+      "dayOfWeek": "Day of week",
+      "workHours": "Work hours"
+    },
+    "weekDays": {
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday",
+      "7": "Sunday"
+    },
+    "weekDaysShort": {
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat",
+      "7": "Sun"
+    },
+    "units": {
+      "hour": "hr"
+    },
+    "messages": {
+      "dateRangeInvalid": "End date cannot be earlier than start date",
+      "scheduleDayRequired": "Select at least one work day",
+      "scheduleCreated": "Work schedule created",
+      "scheduleUpdated": "Work schedule updated",
+      "scheduleDeleted": "Work schedule deleted",
+      "absenceCreated": "Leave or absence added",
+      "absenceUpdated": "Leave or absence updated",
+      "absenceDeleted": "Leave or absence deleted",
+      "attachmentDeleted": "Document deleted",
+      "calendarLoaded": "Filled from the HR calendar",
+      "calendarLoadFailed": "Could not load HR calendar data",
+      "selectPeriodFirst": "Select a payroll period first"
+    }
+  },
   "payroll": {
     "title": "Payroll",
     "description": "Employees, timesheets, payroll calculation and payments",
@@ -979,6 +1085,7 @@
       "linesTitle": "Time tracking by employee",
       "linesHint": "Enter worked days and hours",
       "addLine": "Add employee",
+      "syncCalendar": "Fill from HR calendar",
       "fillAll": "All employees",
       "fillAllTitle": "Add all employees?",
       "fillAllText": "{{count}} employees will be filled in with the norm.",

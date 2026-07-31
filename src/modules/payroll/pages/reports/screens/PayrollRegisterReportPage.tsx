@@ -67,7 +67,7 @@ export default function PayrollRegisterReportPage() {
     XLSX.utils.book_append_sheet(book, sheet, "Register");
     XLSX.writeFile(
       book,
-      `payroll-register-${data.periodYear ?? ""}-${data.periodMonth ?? ""}.xlsx`,
+      `payroll-register-${data.periodName ?? data.periodId}.xlsx`,
     );
   };
 
@@ -224,8 +224,6 @@ export default function PayrollRegisterReportPage() {
           </DocumentSummary>
 
           <SectionCard
-            title="payroll.reports.registerTitle"
-            description="payroll.reports.registerHint"
             bodyClassName="p-0!"
           >
             <Table<PayrollRegisterEmployee>

@@ -8,8 +8,8 @@ export const useCreatePayrollEmployee = () => {
   return useMutation({
     mutationFn: (payload: PayrollEmployeeForm) =>
       payrollEmployeeService.create(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: payrollEmployeeKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: payrollEmployeeKeys.all });
     },
   });
 };

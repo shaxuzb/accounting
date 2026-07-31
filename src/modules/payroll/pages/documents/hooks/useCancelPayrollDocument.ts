@@ -6,11 +6,13 @@ export const useCancelPayrollDocument = (id: string | number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => payrollDocumentService.cancel(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: payrollDocumentKeys.all });
-      queryClient.invalidateQueries({
-        queryKey: payrollDocumentKeys.detail(id),
-      });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: payrollDocumentKeys.all }),
+        queryClient.invalidateQueries({
+          queryKey: payrollDocumentKeys.detail(id),
+        }),
+      ]);
     },
   });
 };

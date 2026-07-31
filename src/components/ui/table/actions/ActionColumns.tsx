@@ -15,6 +15,7 @@ interface Props {
   };
   permissions: string[];
   refetch: () => void;
+  onDeleteSuccess?: () => void | Promise<void>;
   permissionsCode?: {
     editCode?: string;
     deleteCode?: string;
@@ -44,6 +45,7 @@ const ActionColumn: React.FC<Props> = ({
   refetch,
   permissionsCode,
   deletePath,
+  onDeleteSuccess,
   customPath,
   editModal = {
     isModal: false,
@@ -60,6 +62,7 @@ const ActionColumn: React.FC<Props> = ({
       if (response) {
         toast.success(t("actions.deleteSuccess", { id }));
         refetch();
+        await onDeleteSuccess?.();
       }
     } catch (err: unknown) {
       errorHandlers(err);

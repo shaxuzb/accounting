@@ -76,6 +76,8 @@ export default function PayrollTimesheetDetailPage() {
         ...values,
         lines: values.lines.map((line) => ({
           ...line,
+          normWorkDays: line.normWorkDays ?? 0,
+          normWorkHours: line.normWorkHours ?? 0,
           workedDays: line.workedDays ?? 0,
           workedHours: line.workedHours ?? 0,
           leaveDays: line.leaveDays ?? 0,
@@ -167,8 +169,8 @@ export default function PayrollTimesheetDetailPage() {
         />
       )}
 
-      <div className="grid gap-4 xl:grid-cols-[1fr_320px]">
-        <div className="space-y-4">
+      <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 space-y-4">
           <SectionCard
             title="payroll.timesheets.headerTitle"
             description="payroll.timesheets.headerHint"
@@ -241,6 +243,7 @@ export default function PayrollTimesheetDetailPage() {
             disabled={!isDraft}
             normWorkDays={selectedPeriod?.normWorkDays}
             normWorkHours={selectedPeriod?.normWorkHours}
+            periodId={formik.values.periodId}
           />
         </div>
 

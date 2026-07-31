@@ -104,7 +104,7 @@ export default function PayrollPeriodListPage() {
       dataIndex: "startDate",
       title: t("payroll.fields.periodRange"),
       align: "center",
-      width: 200,
+      width: 220,
       render: (_, record) =>
         record.startDate
           ? `${displayDate(record.startDate)} — ${displayDate(record.endDate)}`

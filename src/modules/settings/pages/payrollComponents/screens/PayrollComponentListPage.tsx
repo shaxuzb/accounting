@@ -11,6 +11,7 @@ import {
 } from "@/modules/payroll/constants/options";
 import { usePaginationParams } from "@/shared/hooks/usePaginationParams";
 import { useAppSelector } from "@/store/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { numberSpacing } from "@/utils/utils";
 import { Button, Table, Tag, Tooltip } from "antd";
@@ -22,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { payrollComponentEndpoints } from "../constants/endpoints";
 import { payrollComponentPermissions } from "../constants/permissions";
+import { payrollComponentKeys } from "../constants/queryKeys";
 import { useGetListPayrollComponents } from "../hooks";
 import type { PayrollComponent } from "../types/type";
 import PayrollComponentAddEditPage from "./PayrollComponentAddEditPage";
@@ -35,6 +37,7 @@ export default function PayrollComponentListPage() {
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
+  const queryClient = useQueryClient();
   const { withRowNumbers, paginationProps } = usePaginationParams();
   const { data, isLoading, isFetching, refetch } =
     useGetListPayrollComponents(searchParams);
@@ -196,6 +199,11 @@ export default function PayrollComponentListPage() {
                 editCode: payrollComponentPermissions.update,
               }}
               refetch={() => void refetch()}
+              onDeleteSuccess={() =>
+                queryClient.invalidateQueries({
+                  queryKey: payrollComponentKeys.all,
+                })
+              }
               editModal={{
                 isModal: true,
                 setOpenEditModal: setIsFormOpen,

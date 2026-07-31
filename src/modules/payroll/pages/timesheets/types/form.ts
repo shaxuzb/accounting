@@ -3,6 +3,8 @@ export interface PayrollTimesheetLineForm {
   employeeName?: string | null;
   employeeNumber?: string | null;
   departmentName?: string | null;
+  normWorkDays: number | null;
+  normWorkHours: number | null;
   workedDays: number | null;
   workedHours: number | null;
   leaveDays: number | null;

@@ -44,11 +44,29 @@ export default function PayrollCalcLinesTable({ lines }: Props) {
         ),
     },
     {
+      dataIndex: "calculationMethod",
+      title: t("payroll.fields.calculationMethod"),
+      width: 190,
+      render: (value: string | null) =>
+        value
+          ? t(`payroll.enums.calculationMethod.${value}`, {
+              defaultValue: value,
+            })
+          : "—",
+    },
+    {
       dataIndex: "baseAmount",
       title: t("payroll.fields.baseAmount"),
-      align: "right",
+      align: "center",
       width: 150,
       render: (value: number | null) => money(value),
+    },
+    {
+      dataIndex: "quantity",
+      title: t("payroll.fields.quantity"),
+      align: "center",
+      width: 110,
+      render: (value: number | null) => (value == null ? "—" : value),
     },
     {
       dataIndex: "rate",
@@ -60,7 +78,7 @@ export default function PayrollCalcLinesTable({ lines }: Props) {
     {
       dataIndex: "amount",
       title: t("payroll.fields.amount"),
-      align: "right",
+      align: "center",
       width: 160,
       render: (value: number, record) => (
         <span
@@ -90,9 +108,10 @@ export default function PayrollCalcLinesTable({ lines }: Props) {
         ...line,
         key: line.id ?? index,
       }))}
+      className="[&_.ant-table]:ml-0!"
       pagination={false}
       size="small"
-      scroll={{ x: "max-content" }}
+      scroll={{ x: 1380 }}
       locale={{
         emptyText: (
           <Empty

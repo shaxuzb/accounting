@@ -12,12 +12,14 @@ export interface PayrollCalcLine {
   componentType?: PayrollComponentType | null;
   calculationMethod?: PayrollCalculationMethod | null;
   baseAmount?: number | null;
+  quantity?: number | null;
   rate?: number | null;
   amount: number;
+  isManual?: boolean;
   note?: string | null;
 }
 
-export interface PayrollDocumentEmployee {
+export interface PayrollDocumentLine {
   id?: number;
   employeeId: number;
   employeeName?: string | null;
@@ -39,6 +41,7 @@ export interface PayrollDocumentEmployee {
 
 export interface PayrollDocument {
   id: number;
+  organizationId?: number | null;
   docNumber?: string | null;
   docDate: string;
   periodId: number;
@@ -48,6 +51,7 @@ export interface PayrollDocument {
   documentKind: PayrollDocumentKind;
   correctionOfDocId?: number | null;
   correctionOfDocNumber?: string | null;
+  currencyId?: number | null;
   note?: string | null;
   employeeCount?: number | null;
   grossAmount?: number | null;
@@ -61,6 +65,9 @@ export interface PayrollDocument {
   currencyName?: string | null;
   statusId?: number | null;
   statusName?: string | null;
+  stateId?: number | null;
   createdDate?: string | null;
-  employees?: PayrollDocumentEmployee[];
+  postedAt?: string | null;
+  cancelledAt?: string | null;
+  lines?: PayrollDocumentLine[];
 }

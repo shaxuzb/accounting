@@ -48,13 +48,13 @@ export default function PayrollPayslipReportPage() {
 
   const columns: TableColumnsType<PayrollPayslipComponent> = [
     {
-      dataIndex: "componentCode",
+      dataIndex: "code",
       title: t("payroll.fields.componentCode"),
       width: 120,
       render: (value: string | null) => value ?? "—",
     },
     {
-      dataIndex: "componentName",
+      dataIndex: "name",
       title: t("payroll.fields.componentName"),
       minWidth: 220,
       render: (value: string | null) => value ?? "—",
@@ -219,7 +219,7 @@ export default function PayrollPayslipReportPage() {
                 dataSource={(data.components ?? []).map(
                   (component, index) => ({
                     ...component,
-                    key: component.componentId ?? index,
+                    key: component.componentId ?? component.code ?? index,
                   }),
                 )}
                 pagination={false}

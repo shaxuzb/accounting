@@ -8,8 +8,8 @@ export const useCreatePayrollComponent = () => {
   return useMutation({
     mutationFn: (payload: PayrollComponentForm) =>
       payrollComponentService.create(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: payrollComponentKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: payrollComponentKeys.all });
     },
   });
 };
