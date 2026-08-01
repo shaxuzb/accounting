@@ -1,6 +1,7 @@
 import { Button, Checkbox, Form, Input, InputNumber, Space } from "antd";
 import Card from "@/components/ui/card/Card";
 import type { TrialBalanceQuery } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   loading?: boolean;
@@ -11,6 +12,7 @@ export default function TrialBalanceFilters({
   loading = false,
   onSubmit,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <Card className="border border-border p-4">
       <Form<TrialBalanceQuery>
@@ -25,26 +27,26 @@ export default function TrialBalanceFilters({
         onFinish={onSubmit}
       >
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <Form.Item label="Period ID" name="periodId">
+          <Form.Item label={t("accountings.fields.periodId")} name="periodId">
             <InputNumber className="w-full" min={1} />
           </Form.Item>
-          <Form.Item label="Date from" name="dateFrom">
+          <Form.Item label={t("accountings.fields.dateFrom")} name="dateFrom">
             <Input placeholder="2026-07-01T00:00:00" />
           </Form.Item>
-          <Form.Item label="Date to" name="dateTo">
+          <Form.Item label={t("accountings.fields.dateTo")} name="dateTo">
             <Input placeholder="2026-07-31T23:59:59" />
           </Form.Item>
-          <Form.Item label="Currency ID" name="currencyId">
+          <Form.Item label={t("accountings.fields.currencyId")} name="currencyId">
             <InputNumber className="w-full" min={1} />
           </Form.Item>
           <Form.Item name="includeZeroBalance" valuePropName="checked">
-            <Checkbox>Include zero balance</Checkbox>
+            <Checkbox>{t("accountings.fields.includeZeroBalance")}</Checkbox>
           </Form.Item>
         </div>
 
         <Space className="mt-2">
           <Button type="primary" htmlType="submit" loading={loading}>
-            Hisoblash
+            {t("accountings.actions.calculate")}
           </Button>
         </Space>
       </Form>

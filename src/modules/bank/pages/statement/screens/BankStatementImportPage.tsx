@@ -496,23 +496,23 @@ export default function BankStatementImportPage() {
 
   const handleSave = async () => {
     if (missingBankChartAccountCount) {
-      toast.error("Barcha cardlar uchun bank schyotini tanlang");
+      toast.error(t("bank.messages.selectAllBankAccounts"));
       return;
     }
 
     if (missingOffsetAccountCount) {
-      toast.error("Barcha tranzaksiyalar uchun qarama-qarshi schyotni tanlang");
+      toast.error(t("bank.messages.selectAllOffsetAccounts"));
       return;
     }
 
     if (missingContractCount) {
-      toast.error("Barcha tranzaksiyalar uchun shartnomani tanlang");
+      toast.error(t("bank.messages.selectAllContracts"));
       return;
     }
 
     if (missingCounterpartyBankAccountCount) {
       toast.error(
-        "Barcha tranzaksiyalar uchun counterparty hisob raqamini tanlang",
+        t("bank.messages.selectAllCounterpartyAccounts"),
       );
       return;
     }
@@ -631,7 +631,12 @@ export default function BankStatementImportPage() {
               missingContractCount > 0 ||
               missingCounterpartyBankAccountCount > 0) && (
               <div className="text-xs text-danger">
-                Tanlanmagan: {missingBankChartAccountCount} ta bank schyoti, {missingOffsetAccountCount} ta qarama-qarshi schyot, {missingContractCount} ta shartnoma, {missingCounterpartyBankAccountCount} ta hisob raqami
+                {t("bank.import.missingSummary", {
+                  bankAccounts: missingBankChartAccountCount,
+                  offsetAccounts: missingOffsetAccountCount,
+                  contracts: missingContractCount,
+                  counterpartyAccounts: missingCounterpartyBankAccountCount,
+                })}
               </div>
             )}
             <div className="flex flex-wrap items-center gap-2">
@@ -640,14 +645,14 @@ export default function BankStatementImportPage() {
                 disabled={!missingBankInfoCount}
                 onClick={() => setBankAssignOpen(true)}
               >
-                Topilmagan bank ma'lumotlarini belgilash ({missingBankInfoCount})
+                {t("bank.import.assignMissingBankInfo")} ({missingBankInfoCount})
               </Button>
               <Button
                 icon={<Users className="size-4" />}
                 disabled={!missingCounterpartyRows.length}
                 onClick={() => setCounterpartyCreateOpen(true)}
               >
-                Topilmagan counterpartyIdlarni belgilash (
+                {t("bank.import.assignMissingCounterparties")} (
                 {missingCounterpartyRows.length})
               </Button>
             </div>

@@ -4,6 +4,7 @@ import type { FormikProps } from "formik";
 import type { SelectBoxOptions } from "@/modules/purchase/pages/purchase";
 import { useState, type FC } from "react";
 import LineClampCell from "../../text/LineClampCell";
+import { useTranslation } from "react-i18next";
 
 type ExcelRow = Record<string, unknown>;
 type FormValues = object;
@@ -18,6 +19,7 @@ interface SelectableSheetDataProps {
 }
 
 const SelectableSheetData: FC<SelectableSheetDataProps> = (props) => {
+  const { t } = useTranslation();
   const {
     excelData,
     setData,
@@ -151,7 +153,7 @@ const SelectableSheetData: FC<SelectableSheetDataProps> = (props) => {
           size="large"
           onClick={() => handleSaveData()}
         >
-          Saqlash
+          {t("common.save")}
         </Button>
       </div>
     </div>

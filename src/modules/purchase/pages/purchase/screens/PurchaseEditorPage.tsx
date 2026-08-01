@@ -12,6 +12,7 @@ import {
 } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 import { CheckCircle2, CircleX } from "lucide-react";
 import useWindowSize from "@/shared/hooks/useWindowSize";
 import Card from "@/components/ui/card/Card";
@@ -33,7 +34,7 @@ import type {
   PurchaseProcessingMode,
 } from "@/modules/purchase/pages/purchase/types/form";
 import {
-  purchaseValidationSchema,
+  createPurchaseValidationSchema,
   isCompletePurchaseLineWithAccounts,
 } from "@/modules/purchase/pages/purchase/types/schema";
 import PurchaseProcessingModeModal from "../components/PurchaseProcessingModeModal";
@@ -327,6 +328,7 @@ export interface PurchaseEditorProps {
 export const PurchaseEditor = ({
   purchaseId: purchaseIdProp,
 }: PurchaseEditorProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
   const userPermissions = useAppSelector(
@@ -444,8 +446,8 @@ export const PurchaseEditor = ({
   ]);
 
   const baseColumnConfig = useMemo(
-    () => getBaseColumnConfig(productWithCount, withDiscount),
-    [productWithCount, withDiscount],
+    () => getBaseColumnConfig(productWithCount, withDiscount, t),
+    [productWithCount, t, withDiscount],
   );
 
   const [selectBoxOptions, setSelectBoxOptions] = useState<SelectBoxOptions[]>(
@@ -523,10 +525,15 @@ export const PurchaseEditor = ({
     [detailData, headerDraft, initialLines, isEdit],
   );
 
+  const validationSchema = useMemo(
+    () => createPurchaseValidationSchema(t),
+    [t],
+  );
+
   const formik = useFormik<PurchaseImportForm>({
     initialValues,
     enableReinitialize: isEdit,
-    validationSchema: purchaseValidationSchema,
+    validationSchema,
     onSubmit: async (values) => {
       if (!isEdit) {
         setProcessingModeModalOpen(true);
@@ -547,7 +554,7 @@ export const PurchaseEditor = ({
       const errors = await formik.validateForm();
       if (Object.keys(errors).length > 0) {
         formik.setTouched(buildTouched());
-        toast.error("Majburiy maydonlarni to'ldiring");
+        toast.error(t("purchase.messages.fillRequired"));
         return false;
       }
 
@@ -557,7 +564,11 @@ export const PurchaseEditor = ({
       const duplicateMarkingNumber = getDuplicateMarkingNumber(completedRows);
 
       if (duplicateMarkingNumber) {
-        toast.error(`Markirovka takrorlangan: ${duplicateMarkingNumber}`);
+        toast.error(
+          t("purchase.messages.duplicateMarking", {
+            marking: duplicateMarkingNumber,
+          }),
+        );
         return false;
       }
 
@@ -568,13 +579,18 @@ export const PurchaseEditor = ({
 
       if (unmarkedRow) {
         toast.error(
-          `${unmarkedRow.product || unmarkedRow.productName || "Mahsulot"} uchun markirovka kiriting`,
+          t("purchase.messages.markingRequired", {
+            product:
+              unmarkedRow.product ||
+              unmarkedRow.productName ||
+              t("purchase.fields.product"),
+          }),
         );
         return false;
       }
 
       if (!completedRows.length) {
-        toast.error("Kamida bitta mahsulot yoki xizmat kiriting");
+        toast.error(t("purchase.messages.lineRequired"));
         return false;
       }
 
@@ -592,7 +608,7 @@ export const PurchaseEditor = ({
           });
           formik.resetForm({ values });
           if (showSuccess) {
-            toast.success("Hujjat saqlandi");
+            toast.success(t("purchase.messages.saved"));
           }
           return true;
         }
@@ -606,7 +622,7 @@ export const PurchaseEditor = ({
           ),
         );
         if (showSuccess) {
-          toast.success("Hujjat saqlandi");
+          toast.success(t("purchase.messages.saved"));
         }
         return true;
       } catch (error) {
@@ -614,7 +630,7 @@ export const PurchaseEditor = ({
         return false;
       }
     },
-    [formik, importPurchase, isEdit, purchaseId, purchaseMode, updatePurchase],
+    [formik, importPurchase, isEdit, purchaseId, purchaseMode, t, updatePurchase],
   );
 
   const finishNewPurchase = useCallback(() => {
@@ -657,7 +673,7 @@ export const PurchaseEditor = ({
     async (processingMode: PurchaseProcessingMode) => {
       if (isEdit || isCreateProcessing) return;
       if (processingMode === 2 && !canConfirm) {
-        toast.error("Hujjatni tasdiqlash uchun ruxsat yetarli emas");
+        toast.error(t("purchase.messages.confirmPermissionDenied"));
         return;
       }
 
@@ -682,6 +698,7 @@ export const PurchaseEditor = ({
       isCreateProcessing,
       isEdit,
       persistPurchase,
+      t,
     ],
   );
 
@@ -934,13 +951,13 @@ export const PurchaseEditor = ({
   const openMarkingModal = useCallback(
     (rowIndex: number) => {
       if (!linesRef.current[rowIndex]?.isPieceTracked) {
-        toast.error("Bu mahsulot markirovkasiz");
+        toast.error(t("purchase.messages.notPieceTracked"));
         return;
       }
       setMarkingRowIndex(rowIndex);
       setMarkingInput("");
     },
-    [],
+    [t],
   );
 
   const closeMarkingModal = useCallback(() => {
@@ -972,13 +989,13 @@ export const PurchaseEditor = ({
     });
 
     if (!uniqueMarkings.length) {
-      toast.error("Kiritilgan markirovkalar avval qo'shilgan");
+      toast.error(t("purchase.messages.duplicateMarkings"));
       return;
     }
 
     updateRowMarkings(markingRowIndex, [...current, ...uniqueMarkings]);
     setMarkingInput("");
-  }, [markingInput, markingRowIndex, updateRowMarkings]);
+  }, [markingInput, markingRowIndex, t, updateRowMarkings]);
 
   const handleMarkingPaste = useCallback(
     (event: ClipboardEvent<HTMLInputElement>) => {
@@ -1235,12 +1252,12 @@ export const PurchaseEditor = ({
       })
       .map((item, index) => ({ ...item, indexId: index + 1 }));
     commitRows(nextRows);
-    toast.success("Topilmagan MXIK kodlar o'chirildi");
-  }, [commitRows, knownMxiks]);
+    toast.success(t("purchase.messages.missingMxiksDeleted"));
+  }, [commitRows, knownMxiks, t]);
 
   const handleOpenMissingProductsModal = useCallback(() => {
     if (!isSuccess) {
-      toast.error("Mahsulotlar ro'yxati yuklanmadi. Qayta urinib ko'ring.");
+      toast.error(t("purchase.messages.productListLoadError"));
       return;
     }
 
@@ -1260,14 +1277,14 @@ export const PurchaseEditor = ({
 
     if (ambiguousCount) {
       toast.error(
-        `${ambiguousCount} ta MXIK bir nechta mahsulotga tegishli. Mahsulotni select orqali tanlang.`,
+        t("purchase.messages.ambiguousMxik", { count: ambiguousCount }),
       );
     }
     if (!rows.length) return;
 
     setMissingProductRows(rows);
     setProductCreateOpen(true);
-  }, [ambiguousMxiks, isSuccess, knownMxiks]);
+  }, [ambiguousMxiks, isSuccess, knownMxiks, t]);
 
   const closeProductsCreateModal = useCallback(() => {
     setProductCreateOpen(false);
@@ -1317,7 +1334,7 @@ export const PurchaseEditor = ({
       }
       setSelectBoxOptions(
         toSelectBoxOptions(
-          getBaseColumnConfig(value === "services", withDiscount),
+          getBaseColumnConfig(value === "services", withDiscount, t),
         ),
       );
     },
@@ -1328,6 +1345,7 @@ export const PurchaseEditor = ({
       setProductWithCountDraft,
       setPurchaseMode,
       setPurchaseModeDraft,
+      t,
       withDiscount,
     ],
   );
@@ -1353,12 +1371,12 @@ export const PurchaseEditor = ({
 
     try {
       await confirmMutation.mutateAsync();
-      toast.success("Hujjat tasdiqlandi");
+      toast.success(t("purchase.messages.confirmed"));
       navigate(-1);
     } catch (error) {
       errorHandlers(error);
     }
-  }, [confirmMutation, ensureSavedBeforeConfirm, isDraft, navigate, purchaseId]);
+  }, [confirmMutation, ensureSavedBeforeConfirm, isDraft, navigate, purchaseId, t]);
 
   const handleCommentChange = useCallback(
     (value: string) => draftFormik.setFieldValue("comment", value, false),
@@ -1370,12 +1388,12 @@ export const PurchaseEditor = ({
 
     try {
       await cancelMutation.mutateAsync();
-      toast.success("Hujjat bekor qilindi");
+      toast.success(t("purchase.messages.cancelled"));
       navigate(-1);
     } catch (error) {
       errorHandlers(error);
     }
-  }, [cancelMutation, isDraft, navigate, purchaseId]);
+  }, [cancelMutation, isDraft, navigate, purchaseId, t]);
 
   if (
     isEdit &&
@@ -1400,7 +1418,7 @@ export const PurchaseEditor = ({
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-1">
                 <div className="text-sm text-muted-foreground">
-                  Hujjat raqami
+                  {t("purchase.fields.docNumber")}
                 </div>
                 <div className="text-lg font-semibold">
                   {detailData.docNumber || detailData.id}
@@ -1419,7 +1437,7 @@ export const PurchaseEditor = ({
                     disabled={!isDraft || isSubmitting}
                     onClick={() => void handleCancelDocument()}
                   >
-                    Bekor qilish
+                    {t("common.cancel")}
                   </Button>
                 </PermissionCard>
                 <PermissionCard permission={purchasePermissions.confirm}>
@@ -1430,7 +1448,7 @@ export const PurchaseEditor = ({
                     disabled={!isDraft || isSubmitting}
                     onClick={() => void handleConfirm()}
                   >
-                    Tasdiqlash
+                    {t("common.confirm")}
                   </Button>
                 </PermissionCard>
               </div>

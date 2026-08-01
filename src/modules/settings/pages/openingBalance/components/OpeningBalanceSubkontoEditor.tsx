@@ -9,6 +9,7 @@ import {
 import type { SelectCustomDisplayConfig } from "@/components/fields/SelectCustom";
 import type { OpeningBalanceSubkontoForm } from "../types/form";
 import type { SubkontoTypeOption } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 interface OpeningBalanceSubkontoEditorProps {
   definitions: SubkontoTypeOption[];
@@ -71,6 +72,7 @@ export default function OpeningBalanceSubkontoEditor({
   value,
   onChange,
 }: OpeningBalanceSubkontoEditorProps) {
+  const { t } = useTranslation();
   const sortSubkontos = useMemo(() => {
     const order = new Map(
       definitions.map((definition, index) => [definition.id, index]),
@@ -88,7 +90,7 @@ export default function OpeningBalanceSubkontoEditor({
     return (
       <Empty
         image={Empty.PRESENTED_IMAGE_SIMPLE}
-        description="Bu schyot uchun subkonto talab qilinmaydi"
+        description={t("settings.openingBalance.noSubkontoRequired")}
       />
     );
   }

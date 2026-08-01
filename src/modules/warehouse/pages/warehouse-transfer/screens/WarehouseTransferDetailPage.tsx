@@ -22,8 +22,10 @@ import {
   createDefaultTransferForm,
   mapTransferDetailToForm,
 } from "../utils/transfer";
+import { useTranslation } from "react-i18next";
 
 export default function WarehouseTransferDetailPage() {
+  const { t } = useTranslation();
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const isCreate = !id;
@@ -50,13 +52,13 @@ export default function WarehouseTransferDetailPage() {
       try {
         if (isCreate) {
           await createMutation.mutateAsync(values);
-          toast.success("Hujjat yaratildi");
+          toast.success(t("warehouse.messages.created"));
           navigate(`/main/warehouses/transfers`, { replace: true });
           return;
         }
 
         await updateMutation.mutateAsync(values);
-        toast.success("Hujjat saqlandi");
+        toast.success(t("warehouse.messages.saved"));
       } catch (error) {
         errorHandlers(error);
       }
@@ -66,7 +68,7 @@ export default function WarehouseTransferDetailPage() {
   const saveDraft = async () => {
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
-      toast.error("Iltimos, majburiy maydonlarni to'ldiring");
+      toast.error(t("warehouse.messages.fillRequired"));
       return false;
     }
     await formik.submitForm();
@@ -105,7 +107,7 @@ export default function WarehouseTransferDetailPage() {
             onConfirm={async () => {
               try {
                 await confirmMutation.mutateAsync();
-                toast.success("Hujjat tasdiqlandi");
+                toast.success(t("warehouse.messages.confirmed"));
               } catch (error) {
                 errorHandlers(error);
               }
@@ -113,7 +115,7 @@ export default function WarehouseTransferDetailPage() {
             onCancel={async () => {
               try {
                 await cancelMutation.mutateAsync();
-                toast.success("Hujjat bekor qilindi");
+                toast.success(t("warehouse.messages.cancelled"));
               } catch (error) {
                 errorHandlers(error);
               }
@@ -122,10 +124,12 @@ export default function WarehouseTransferDetailPage() {
 
           {!isCreate && (
             <Card className="p-4">
-              <div className="text-sm font-semibold">Qo'shimcha</div>
+              <div className="text-sm font-semibold">
+                {t("warehouse.transfer.additional")}
+              </div>
               <div className="mt-3 space-y-2">
                 <Link to={`/main/accountingentriesreport?documentId=${id}`}>
-                  <Button block>Provodka</Button>
+                  <Button block>{t("app.routes.accountingEntries")}</Button>
                 </Link>
               </div>
             </Card>

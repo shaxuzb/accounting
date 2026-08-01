@@ -433,7 +433,7 @@ export default function MissingCounterpartyModal({
       render: (_, record) => (
         <CounterpartyDraftTextCell
           value={record.email}
-          placeholder="Email"
+          placeholder={t("settings.fields.email")}
           onCommit={(value) => updateRow(record, "email", value)}
         />
       ),

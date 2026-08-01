@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import InputNumber from "@/components/fields/InputNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
@@ -23,6 +24,7 @@ const initialValues: AccountCardQuery = {
 };
 
 export default function AccountCardPage() {
+  const { t } = useTranslation();
   const [submitted, setSubmitted] = useState<AccountCardQuery | null>(null);
   const query = useGetAccountCard(submitted?.accountId ? submitted : undefined);
 
@@ -31,7 +33,7 @@ export default function AccountCardPage() {
     validate: (values) => {
       const errors: Partial<Record<keyof AccountCardQuery, string>> = {};
       if (!values.accountId) {
-        errors.accountId = "Schyotni tanlang";
+        errors.accountId = t("openingBalance.validation.accountRequired");
       }
       return errors;
     },
@@ -40,8 +42,8 @@ export default function AccountCardPage() {
 
   return (
     <AccountingReportPageShell
-      title="Account card"
-      description="Bitta schyot bo'yicha karta va harakatlar."
+      title={t("app.reports.card.title")}
+      description={t("app.reports.card.description")}
     >
       <AccountingReportFiltersCard
         formik={formik}
@@ -55,19 +57,19 @@ export default function AccountCardPage() {
           <SelectCustom
             formik={formik}
             fieldName="accountId"
-            label="Account"
+            label={t("app.reports.fields.account")}
             path={selectListEndpoints.chartAccountsSelectList}
             clearable
             optionLabel={chartAccountOptionLabel}
             selectedLabel={chartAccountSelectedLabel}
           />
-          <InputNumber formik={formik} fieldName="periodId" label="Period ID" min={1} />
-          <SelectDate formik={formik} fieldName="dateFrom" label="Date from" />
-          <SelectDate formik={formik} fieldName="dateTo" label="Date to" />
+          <InputNumber formik={formik} fieldName="periodId" label={t("app.reports.fields.periodId")} min={1} />
+          <SelectDate formik={formik} fieldName="dateFrom" label={t("app.reports.fields.dateFrom")} />
+          <SelectDate formik={formik} fieldName="dateTo" label={t("app.reports.fields.dateTo")} />
           <SelectCustom
             formik={formik}
             fieldName="currencyId"
-            label="Currency"
+            label={t("app.reports.fields.currency")}
             path={selectListEndpoints.currenciesSelectList}
             clearable
           />
@@ -76,8 +78,8 @@ export default function AccountCardPage() {
 
       <AccountingReportGenericArrayTable
         data={query.data}
-        title="Account card rows"
-        emptyText="Account card rows topilmadi"
+        title={t("app.reports.card.table")}
+        emptyText={t("app.reports.card.empty")}
       />
 
     </AccountingReportPageShell>

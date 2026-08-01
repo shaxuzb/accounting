@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
+import i18n from "@/config/i18n";
 
 export const errorHandlers = (err: unknown): void => {
   if (err instanceof AxiosError) {
@@ -10,7 +11,7 @@ export const errorHandlers = (err: unknown): void => {
     toast.error(err.message);
     
   } else {
-    toast.error("Unknown error occurred");
+    toast.error(i18n.t("error.unknown"));
   }
   return;
 };

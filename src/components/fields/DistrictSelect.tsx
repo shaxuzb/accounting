@@ -79,7 +79,6 @@ const DistrictSelect: React.FC<SelectCustomProps> = (props) => {
           ? (getIn(formik.errors, fieldName) as React.ReactNode)
           : undefined
       }
-      rules={[{ required: true, message: "Please input your password!" }]}
     >
       <Select
         value={getIn(formik.values, fieldName) as number | null | undefined}

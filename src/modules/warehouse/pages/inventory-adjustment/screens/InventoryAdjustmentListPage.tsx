@@ -38,12 +38,12 @@ export default function InventoryAdjustmentListPage() {
     },
     {
       dataIndex: "warehouseName",
-      title: "Ombor",
+      title: t("menu.warehouse"),
       render: (_, record) => record.warehouseName ?? record.warehouseId,
     },
     {
       dataIndex: "adjustmentType",
-      title: "Tuzatish turi",
+      title: t("warehouse.fields.adjustmentType"),
       render: (value) => (
         <Tag color={String(value).toLowerCase() === "increase" ? "green" : "red"}>
           {value}

@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 // import InputNumber from "@/components/fields/InputNumber";
 // import SelectCustom from "@/components/fields/SelectCustom";
 // import SelectDate from "@/components/fields/SelectDate";
@@ -21,6 +22,7 @@ const initialValues: JournalQuery = {
 };
 
 export default function JournalPage() {
+  const { t } = useTranslation();
   const [submitted, setSubmitted] = useState<JournalQuery | null>(null);
   const query = useGetJournal(submitted ?? undefined);
 
@@ -31,8 +33,8 @@ export default function JournalPage() {
 
   return (
     <AccountingReportPageShell
-      title="Journal"
-      description="Barcha qaydlar va postlar uchun umumiy jurnal."
+      title={t("app.reports.journal.title")}
+      description={t("app.reports.journal.description")}
     >
       <AccountingReportFiltersCard
         formik={formik}
@@ -87,8 +89,8 @@ export default function JournalPage() {
 
       <AccountingReportGenericArrayTable
         data={query.data}
-        title="Journal rows"
-        emptyText="Journal rows topilmadi"
+        title={t("app.reports.journal.table")}
+        emptyText={t("app.reports.journal.empty")}
       />
     </AccountingReportPageShell>
   );

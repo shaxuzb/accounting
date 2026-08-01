@@ -36,7 +36,7 @@ export default function WarehouseTransferListPage() {
     },
     {
       dataIndex: "accountingEntriesReport",
-      title: "Provodka",
+      title: t("app.routes.accountingEntries"),
       align: "center",
       render: (_, record) => (
         <Link to={`/main/accountingentriesreport?documentId=${record.id}`}>
@@ -51,13 +51,13 @@ export default function WarehouseTransferListPage() {
     },
     {
       dataIndex: "sourceWarehouseName",
-      title: "Manba ombor",
+      title: t("warehouse.fields.sourceWarehouse"),
       render: (_, record) =>
         record.sourceWarehouseName ?? record.sourceWarehouseId,
     },
     {
       dataIndex: "destinationWarehouseName",
-      title: "Qabul ombor",
+      title: t("warehouse.fields.destinationWarehouse"),
       render: (_, record) =>
         record.destinationWarehouseName ?? record.destinationWarehouseId,
     },

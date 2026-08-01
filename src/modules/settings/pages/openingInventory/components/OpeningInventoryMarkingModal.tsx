@@ -1,6 +1,7 @@
 import type { ClipboardEvent } from "react";
 import { Button, Input, Modal } from "antd";
 import { Plus, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface OpeningInventoryMarkingModalProps {
   open: boolean;
@@ -23,9 +24,11 @@ export default function OpeningInventoryMarkingModal({
   onRemove,
   onClose,
 }: OpeningInventoryMarkingModalProps) {
+  const { t } = useTranslation();
+
   return (
     <Modal
-      title="Markirovkalarni kiritish"
+      title={t("openingInventory.actions.enterMarkings")}
       open={open}
       onCancel={onClose}
       footer={null}
@@ -36,13 +39,13 @@ export default function OpeningInventoryMarkingModal({
         <Input
           autoFocus
           value={value}
-          placeholder="Markirovkalarni kiriting yoki Exceldan paste qiling"
+          placeholder={t("openingInventory.messages.markingInputHint")}
           onChange={(event) => onChange(event.target.value)}
           onPaste={onPaste}
           onPressEnter={onAdd}
         />
         <Button type="primary" icon={<Plus className="size-4" />} onClick={onAdd}>
-          Qo'shish
+          {t("common.add")}
         </Button>
       </div>
       <div className="mt-3 flex max-h-64 flex-col gap-2 overflow-auto rounded border border-border bg-card p-2">
@@ -63,7 +66,7 @@ export default function OpeningInventoryMarkingModal({
           ))
         ) : (
           <div className="py-6 text-center text-sm text-secondary-text">
-            Markirovka kiritilmagan
+            {t("openingInventory.messages.noMarkings")}
           </div>
         )}
       </div>

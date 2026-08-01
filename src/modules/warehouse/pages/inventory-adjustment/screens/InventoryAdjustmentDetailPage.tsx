@@ -21,8 +21,10 @@ import {
   mapAdjustmentDetailToForm,
 } from "../utils/inventoryAdjustment";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import { useTranslation } from "react-i18next";
 
 export default function InventoryAdjustmentDetailPage() {
+  const { t } = useTranslation();
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const isCreate = !id;
@@ -51,7 +53,7 @@ export default function InventoryAdjustmentDetailPage() {
       try {
         if (isCreate) {
           const created = await createMutation.mutateAsync(values);
-          toast.success("Hujjat yaratildi");
+          toast.success(t("warehouse.messages.created"));
           navigate(`/main/warehouses/inventory-adjustments/${created.id}`, {
             replace: true,
           });
@@ -59,7 +61,7 @@ export default function InventoryAdjustmentDetailPage() {
         }
 
         await updateMutation.mutateAsync(values);
-        toast.success("Hujjat saqlandi");
+        toast.success(t("warehouse.messages.saved"));
       } catch (error) {
         errorHandlers(error);
       }
@@ -69,7 +71,7 @@ export default function InventoryAdjustmentDetailPage() {
   const saveDraft = async () => {
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
-      toast.error("Iltimos, majburiy maydonlarni to'ldiring");
+      toast.error(t("warehouse.messages.fillRequired"));
       return false;
     }
     await formik.submitForm();
@@ -114,7 +116,7 @@ export default function InventoryAdjustmentDetailPage() {
             onConfirm={async () => {
               try {
                 await confirmMutation.mutateAsync();
-                toast.success("Hujjat tasdiqlandi");
+                toast.success(t("warehouse.messages.confirmed"));
               } catch (error) {
                 errorHandlers(error);
               }
@@ -122,7 +124,7 @@ export default function InventoryAdjustmentDetailPage() {
             onCancel={async () => {
               try {
                 await cancelMutation.mutateAsync();
-                toast.success("Hujjat bekor qilindi");
+                toast.success(t("warehouse.messages.cancelled"));
               } catch (error) {
                 errorHandlers(error);
               }
@@ -134,7 +136,7 @@ export default function InventoryAdjustmentDetailPage() {
               block
               onClick={() => navigate(`/main/accountingentriesreport?documentId=${id}`)}
             >
-              Provodka
+              {t("app.routes.accountingEntries")}
             </Button>
           )}
         </div>

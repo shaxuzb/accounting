@@ -1,8 +1,13 @@
 import * as Yup from "yup";
+import i18n from "@/config/i18n";
 
-export const requiredString = (message = "Required") => Yup.string().required(message);
-
-export const loginSchema = Yup.object({
-  username: Yup.string().required("Username is required"),
-  password: Yup.string().min(4, "Min 4 character").required("Password is required"),
-});
+export const requiredString = (fieldKey = "common.required") =>
+  Yup.string()
+    .trim()
+    .required(
+      String(
+        i18n.t("validation.required", {
+          field: i18n.t(fieldKey),
+        }),
+      ),
+    );

@@ -11,6 +11,7 @@ import {
 import { getIn, type FormikProps } from "formik";
 import { Plus } from "lucide-react";
 import { useRef, useState, type FC, type SetStateAction } from "react";
+import { useTranslation } from "react-i18next";
 
 type FormValues = object;
 
@@ -26,6 +27,7 @@ interface SelectKeySheetProps {
 }
 
 const SelectKeySheet: FC<SelectKeySheetProps> = (props) => {
+  const { t } = useTranslation();
   const {
     selectBoxOptions,
     handleChangeSelectBox,
@@ -67,7 +69,7 @@ const SelectKeySheet: FC<SelectKeySheetProps> = (props) => {
     <Select
       size="middle"
       value={value}
-      placeholder="Kalitni tanlang"
+      placeholder={t("excelImport.selectKey")}
       allowClear
       style={{ width: 200 }}
       onClear={() => {
@@ -89,7 +91,7 @@ const SelectKeySheet: FC<SelectKeySheetProps> = (props) => {
                 <Divider style={{ margin: "8px 0" }} />
                 <Space style={{ padding: "0 8px 4px" }}>
                   <Input
-                    placeholder="Yangi tavsif"
+                    placeholder={t("excelImport.newDescription")}
                     ref={inputRef}
                     value={name}
                     onChange={onNameChange}

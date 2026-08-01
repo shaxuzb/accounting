@@ -5,6 +5,7 @@ import { useState } from "react";
 import { customDate, numberSpacing } from "@/utils/utils";
 import type { SaleProductMarking } from "../types/type";
 import BarcodeScannerInput from "./BarcodeScannerInput";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   open: boolean;
@@ -45,6 +46,7 @@ export default function SaleMarkingModal({
   onConfirm,
   onClose,
 }: Props) {
+  const { t } = useTranslation();
   const [isProductExpanded, setIsProductExpanded] = useState(false);
   const [expandedBatches, setExpandedBatches] = useState<Record<number, boolean>>(
     {},
@@ -66,32 +68,32 @@ export default function SaleMarkingModal({
   };
   const columns: TableColumnsType<MarkingRow> = [
     {
-      title: "T/r",
+      title: t("common.rowNumber"),
       width: 56,
       align: "center",
       render: (_, __, index) => index + 1,
     },
     {
-      title: "Miqdor",
+      title: t("openingInventory.fields.quantity"),
       width: 100,
       align: "center",
-      render: () => "1 Dona",
+      render: () => `1 ${t("sale.fields.piece")}`,
     },
     {
       dataIndex: "markingNumber",
-      title: "Markirovka",
+      title: t("app.fields.marking"),
       ellipsis: true,
       render: (value: string | null) => value || "-",
     },
     {
-      title: "Holati",
+      title: t("sale.fields.status"),
       width: 140,
       align: "center",
       render: (_, row) =>
         row.selected ? (
-          <Tag color="success">Urildi</Tag>
+          <Tag color="success">{t("sale.fields.marked")}</Tag>
         ) : (
-          <Tag>Urilmagan</Tag>
+          <Tag>{t("sale.fields.notMarked")}</Tag>
         ),
     },
   ];
@@ -99,21 +101,21 @@ export default function SaleMarkingModal({
   return (
     <Modal
       open={open}
-      title="Mahsulot markirovkasini tasdiqlash"
+      title={t("sale.actions.confirmMarking")}
       destroyOnHidden
       closable={!loading}
       onCancel={onClose}
       width={1100}
       footer={
         <div className="flex justify-end gap-2">
-          <Button onClick={onClose}>Yopish</Button>
+          <Button onClick={onClose}>{t("common.close")}</Button>
           <Button
             type="primary"
             icon={<CheckCircle2 className="size-4" />}
             disabled={loading || !isComplete}
             onClick={onConfirm}
           >
-            Tasdiqlash
+            {t("common.confirm")}
           </Button>
         </div>
       }
@@ -121,7 +123,7 @@ export default function SaleMarkingModal({
       <div className="space-y-3">
         <div className="rounded-md border border-dashed border-info/50 bg-info-soft/50 p-3">
           <div className="mb-2 text-sm font-semibold text-info">
-            Markirovka kodini skaner qiling yoki kiriting
+            {t("sale.messages.scanOrEnterMarking")}
           </div>
           <BarcodeScannerInput
             disabled={isComplete}
@@ -154,17 +156,23 @@ export default function SaleMarkingModal({
               )}
             </span>
             <div>
-              <div className="text-xs text-secondary-text">Mahsulot</div>
+              <div className="text-xs text-secondary-text">
+                {t("purchase.fields.product")}
+              </div>
               <div className="font-semibold text-text">{productName}</div>
             </div>
             <div className="text-right">
-              <div className="text-xs text-secondary-text">Miqdor</div>
+              <div className="text-xs text-secondary-text">
+                {t("openingInventory.fields.quantity")}
+              </div>
               <div>
-                {numberSpacing(quantity, undefined, true)} Dona
+                {numberSpacing(quantity, undefined, true)} {t("sale.fields.piece")}
               </div>
             </div>
             <div className="text-right">
-              <div className="text-xs text-secondary-text">Holati</div>
+              <div className="text-xs text-secondary-text">
+                {t("sale.fields.status")}
+              </div>
               <div className={isComplete ? "font-semibold text-success" : undefined}>
                 {numberSpacing(markings.length, undefined, true)} / {numberSpacing(quantity, undefined, true)}
                 {isComplete && (
@@ -214,22 +222,22 @@ export default function SaleMarkingModal({
                         )}
                         <span>
                           <span className="block text-sm font-semibold text-text">
-                            Partiya {batch.batchNumber}
+                            {t("sale.fields.batch")} {batch.batchNumber}
                           </span>
                           <span className="block text-xs text-secondary-text">
-                            Hujjat raqami: {batch.documentNumber || batch.documentId || "-"}
+                            {t("warehouse.fields.documentNumber")}: {batch.documentNumber || batch.documentId || "-"}
                             {batch.batchDate
-                              ? ` · Kirim sanasi: ${customDate(batch.batchDate)}`
+                              ? ` · ${t("sale.fields.receiptDate")}: ${customDate(batch.batchDate)}`
                               : ""}
                           </span>
                         </span>
                       </span>
                       <span className="text-right text-sm text-secondary-text">
                         <span className="block">
-                          Miqdor: {numberSpacing(batch.quantity, undefined, true)} Dona
+                          {t("openingInventory.fields.quantity")}: {numberSpacing(batch.quantity, undefined, true)} {t("sale.fields.piece")}
                         </span>
                         <span className={isBatchComplete ? "font-medium text-success" : "font-medium text-text"}>
-                          Urilgan: {numberSpacing(batch.selectedQuantity, undefined, true)} / {numberSpacing(batch.quantity, undefined, true)}
+                          {t("sale.fields.marked")}: {numberSpacing(batch.selectedQuantity, undefined, true)} / {numberSpacing(batch.quantity, undefined, true)}
                         </span>
                       </span>
                     </button>

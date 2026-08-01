@@ -48,7 +48,7 @@ export default function CashOperationFormFields({
           <SelectCustom
             formik={formik}
             fieldName="operationTypeId"
-            label="Operatsiya turi"
+            label="cash.fields.operationType"
             path={selectListEndpoints.operationTypes}
             onChange={(value) => {
               if (Number(value) === Number(formik.values.operationTypeId))
@@ -64,7 +64,7 @@ export default function CashOperationFormFields({
           <DocumentAccountSelect
             formik={formik}
             fieldName="cashChartAccountId"
-            label="Kassa schyoti"
+            label="cash.fields.cashChartAccount"
             documentTypeId={documentTypeId ?? cashDocumentTypeIds.income}
             documentRoleCode={cashDocumentAccountRoleCodes.cashAccount}
             getFirst
@@ -76,7 +76,7 @@ export default function CashOperationFormFields({
           <DocumentAccountSelect
             formik={formik}
             fieldName="offsetAccountId"
-            label="Qarama-qarshi schyot"
+            label="cash.fields.offsetAccount"
             documentTypeId={documentTypeId ?? cashDocumentTypeIds.income}
             documentRoleCode={cashDocumentAccountRoleCodes.offsetAccount}
             getFirst
@@ -89,7 +89,7 @@ export default function CashOperationFormFields({
           <SelectCustom
             formik={formik}
             fieldName="paymentTypeId"
-            label="To'lov turi"
+            label="cash.fields.paymentType"
             path={selectListEndpoints.paymentTypesSelectList}
             disabled={disabled}
           />

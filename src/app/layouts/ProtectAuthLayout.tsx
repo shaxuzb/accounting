@@ -15,8 +15,10 @@ import {
   menuPermissions,
   settingsViewPermissions,
 } from "../config/menuPermissions";
+import { useTranslation } from "react-i18next";
 
 const ProtectAuthLayout = () => {
+  const { t } = useTranslation();
   const [error, setError] = useState(false);
   const [load, setLoad] = useState(true);
 
@@ -41,10 +43,10 @@ const ProtectAuthLayout = () => {
       }
 
       if (showMessage) {
-        toast.error("Sessiya vaqti tugadi!");
+        toast.error(t("auth.sessionExpired"));
       }
     },
-    [dispatch, navigate, pathname],
+    [dispatch, navigate, pathname, t],
   );
 
   const getFirstAllowedPath = useCallback(() => {

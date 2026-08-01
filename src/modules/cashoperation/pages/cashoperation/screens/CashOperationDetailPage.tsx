@@ -24,6 +24,7 @@ import type { CashOperationForm } from "../types/form";
 import { useCancelCashOperation, useConfirmCashOperation } from "../hooks";
 import { useGetDetailCashOperation } from "../hooks";
 import { useUpdateCashOperation } from "../hooks";
+import { useTranslation } from "react-i18next";
 
 const buildTouched = (values: CashOperationForm) => ({
   cashBoxId: values.cashBoxId !== null,
@@ -40,6 +41,7 @@ const buildTouched = (values: CashOperationForm) => ({
 });
 
 export default function CashOperationDetailPage() {
+  const { t } = useTranslation();
   const { id = "" } = useParams();
   const navigate = useNavigate();
 
@@ -77,13 +79,13 @@ export default function CashOperationDetailPage() {
   const formik = useFormik<CashOperationForm>({
     initialValues,
     enableReinitialize: true,
-    validationSchema: cashOperationSchema(),
+    validationSchema: cashOperationSchema(t),
     onSubmit: async (values) => {
       if (!id) return;
 
       try {
         await updateMutation.mutateAsync({ id, payload: values });
-        toast.success("Hujjat saqlandi");
+        toast.success(t("cash.messages.documentSaved"));
       } catch (error) {
         errorHandlers(error);
       }
@@ -101,7 +103,7 @@ export default function CashOperationDetailPage() {
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
       formik.setTouched(buildTouched(formik.values));
-      toast.error("Iltimos, majburiy maydonlarni to'ldiring");
+      toast.error(t("cash.messages.fillRequired"));
       return false;
     }
 
@@ -110,7 +112,7 @@ export default function CashOperationDetailPage() {
         id,
         payload: formik.values,
       });
-      toast.success("Hujjat saqlandi");
+      toast.success(t("cash.messages.documentSaved"));
       return true;
     } catch (error) {
       errorHandlers(error);
@@ -131,7 +133,7 @@ export default function CashOperationDetailPage() {
 
     try {
       await confirmMutation.mutateAsync();
-      toast.success("Kassa amaliyoti tasdiqlandi");
+      toast.success(t("cash.messages.operationConfirmed"));
       navigate("..");
     } catch (error) {
       errorHandlers(error);
@@ -146,7 +148,7 @@ export default function CashOperationDetailPage() {
 
     try {
       await cancelMutation.mutateAsync();
-      toast.success("Kassa amaliyoti bekor qilindi");
+      toast.success(t("cash.messages.operationCancelled"));
       navigate("..");
     } catch (error) {
       errorHandlers(error);
@@ -168,7 +170,7 @@ export default function CashOperationDetailPage() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <FileText className="size-4 text-primary" />
-              <span className="font-semibold">Hujjat raqami</span>
+              <span className="font-semibold">{t("cash.fields.documentNumber")}</span>
             </div>
             <p className="text-lg font-bold text-foreground">
               {record?.docNumber ?? record?.id ?? "-"}
@@ -177,7 +179,7 @@ export default function CashOperationDetailPage() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="size-4 text-primary" />
-              <span className="font-semibold">Sana</span>
+              <span className="font-semibold">{t("cash.fields.date")}</span>
             </div>
             <p className="font-semibold text-foreground">
               {customDate(record?.docDate)}
@@ -186,7 +188,7 @@ export default function CashOperationDetailPage() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Wallet className="size-4 text-primary" />
-              <span className="font-semibold">Holati</span>
+              <span className="font-semibold">{t("cash.fields.status")}</span>
             </div>
             <div>
               <ProcessStatusBadge
@@ -210,7 +212,7 @@ export default function CashOperationDetailPage() {
         <Card className="space-y-4 p-4">
           <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <Landmark className="size-4 text-primary" />
-            <span>Document ma'lumotlari</span>
+            <span>{t("cash.operation.documentInfo")}</span>
           </div>
 
           {isDraft ? (
@@ -225,7 +227,7 @@ export default function CashOperationDetailPage() {
         <Card className="space-y-4 p-4">
           <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <MessagesSquare className="size-4 text-primary" />
-            <span>Amallar</span>
+            <span>{t("common.actions")}</span>
           </div>
 
           {isDraft && (
@@ -238,7 +240,7 @@ export default function CashOperationDetailPage() {
                 disabled={isActionBusy || !isDraft}
                 onClick={() => void saveDraft()}
               >
-                Saqlash
+                {t("common.save")}
               </Button>
               <Button
                 type="primary"
@@ -249,7 +251,7 @@ export default function CashOperationDetailPage() {
                 disabled={isActionBusy || !isDraft}
                 onClick={() => void handleConfirm()}
               >
-                Tasdiqlash
+                {t("common.confirm")}
               </Button>
               <Button
                 danger
@@ -260,20 +262,20 @@ export default function CashOperationDetailPage() {
                 disabled={isActionBusy || !isDraft}
                 onClick={() => void handleCancel()}
               >
-                Bekor qilish
+                {t("common.cancel")}
               </Button>
             </div>
           )}
 
           {record?.statusName && (
             <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
-              Joriy holat:{" "}
+              {t("cash.fields.currentStatus")}: {" "}
               <span className="font-semibold">{record.statusName}</span>
             </div>
           )}
           {record?.amount != null && (
             <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
-              Summa:{" "}
+              {t("cash.fields.amount")}: {" "}
               <span className="font-semibold">
                 {numberSpacing(record.amount)} UZS
               </span>

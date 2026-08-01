@@ -12,6 +12,9 @@ export interface FaReceiptAsset {
   plannedUnitsTotal: number;
   departmentId: number;
   responsibleUserId: number;
+  assetAccountId: number;
+  accumulatedDepreciationAccountId: number;
+  depreciationExpenseAccountId: number;
 }
 
 export interface FaReceiptLineItem {
@@ -20,6 +23,8 @@ export interface FaReceiptLineItem {
   quantity: number;
   price: number;
   vatRateId: number;
+  capitalInvestmentAccountId: number;
+  vatAccountId: number;
   assets: FaReceiptAsset[];
 }
 
@@ -29,6 +34,7 @@ export interface FaReceiptPayload {
   warehouseId: number;
   currencyId: number;
   receiptType: string;
+  supplierAccountId: number;
   lines: FaReceiptLineItem[];
 }
 

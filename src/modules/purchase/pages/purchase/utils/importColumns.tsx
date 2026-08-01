@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { TFunction } from "i18next";
 import LineClampCell from "@/components/widget/text/LineClampCell";
 import type { SelectBoxOptions } from "@/modules/purchase/pages/purchase/types/type";
 
@@ -19,11 +20,12 @@ const renderClamp = (value: unknown) => (
 export const getBaseColumnConfig = (
   productWithCount: boolean,
   withDiscount: boolean,
+  t: TFunction,
 ): ImportColumnConfig[] => {
   const baseColumns: ImportColumnConfig[] = [
     {
       dataIndex: "indexId",
-      title: "T/r",
+      title: t("common.rowNumber"),
       width: 50,
       align: "center",
       code: "indexId",
@@ -31,7 +33,7 @@ export const getBaseColumnConfig = (
     },
     {
       dataIndex: "product",
-      title: "Mahsulot nomi",
+      title: t("purchase.fields.productName"),
       ellipsis: true,
       width: 220,
       code: "product",
@@ -44,7 +46,7 @@ export const getBaseColumnConfig = (
     : [
         {
           dataIndex: "mxik",
-          title: "MXIK kod",
+          title: t("purchase.fields.mxik"),
           align: "center",
           width: 160,
           code: "mxik",
@@ -55,7 +57,7 @@ export const getBaseColumnConfig = (
     ? [
         {
           dataIndex: "qty",
-          title: "Miqdori",
+          title: t("purchase.fields.quantity"),
           align: "center",
           width: 120,
           code: "qty",
@@ -64,7 +66,7 @@ export const getBaseColumnConfig = (
     : [
         {
           dataIndex: "markingNumber",
-          title: "Markirovka",
+          title: t("app.fields.marking"),
           align: "center",
           width: 180,
           code: "markingNumber",
@@ -76,7 +78,7 @@ export const getBaseColumnConfig = (
     ...quantityOrMarkingColumns,
     {
       dataIndex: "price",
-      title: "Narxi",
+      title: t("purchase.fields.price"),
       align: "center",
       width: 140,
       code: "price",
@@ -88,7 +90,7 @@ export const getBaseColumnConfig = (
     ? [
         {
           dataIndex: "discount",
-          title: "Chegirma",
+          title: t("purchase.fields.discount"),
           width: 140,
           align: "center",
           code: "discount",

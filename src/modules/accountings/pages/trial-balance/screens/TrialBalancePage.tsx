@@ -78,7 +78,7 @@ export default function TrialBalancePage() {
           {t("app.trial.title")}
         </Typography.Title>
         <p className="text-sm text-secondary-text">
-          Swagger endpoint: <code>/api/register/trial-balance</code>
+          {t("accountings.endpoint")}: <code>/api/register/trial-balance</code>
         </p>
       </div>
 
@@ -157,19 +157,19 @@ export default function TrialBalancePage() {
           <Card className="border border-border p-4">
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <div>
-                <div className="text-xs text-secondary-text">Period ID</div>
+                <div className="text-xs text-secondary-text">{t("accountings.fields.periodId")}</div>
                 <div className="font-semibold">{data.periodId ?? "-"}</div>
               </div>
               <div>
-                <div className="text-xs text-secondary-text">Date from</div>
+                <div className="text-xs text-secondary-text">{t("accountings.fields.dateFrom")}</div>
                 <div className="font-semibold">{data.dateFrom ?? "-"}</div>
               </div>
               <div>
-                <div className="text-xs text-secondary-text">Date to</div>
+                <div className="text-xs text-secondary-text">{t("accountings.fields.dateTo")}</div>
                 <div className="font-semibold">{data.dateTo ?? "-"}</div>
               </div>
               <div>
-                <div className="text-xs text-secondary-text">Currency ID</div>
+                <div className="text-xs text-secondary-text">{t("bank.fields.currencyId")}</div>
                 <div className="font-semibold">{data.currencyId ?? "-"}</div>
               </div>
             </div>

@@ -68,7 +68,7 @@ export default function PurchaseListPage() {
     },
     {
       dataIndex: "accountingEntriesReport",
-      title: "Provodka",
+      title: t("common.accountingEntries"),
       align: "center",
       render: (_, record) => (
         <Link
@@ -173,10 +173,10 @@ export default function PurchaseListPage() {
             showIcon
             type="error"
             className="m-3"
-            message="Purchase hujjatlarini yuklashda xatolik yuz berdi"
+            message={t("purchase.messages.listLoadError")}
             action={
               <Button size="small" onClick={() => refetch()}>
-                Qayta urinish
+                {t("purchase.actions.retry")}
               </Button>
             }
           />
@@ -190,7 +190,7 @@ export default function PurchaseListPage() {
             emptyText: (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description="Purchase hujjatlari topilmadi"
+                description={t("purchase.messages.listEmpty")}
               />
             ),
           }}

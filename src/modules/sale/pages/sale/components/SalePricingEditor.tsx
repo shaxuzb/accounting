@@ -34,6 +34,7 @@ import {
 } from "../utils/pricing";
 import SaleDocumentSummary from "./SaleDocumentSummary";
 import SaleProductGroupList from "./SaleProductGroupList";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   document: SaleDoc;
@@ -73,6 +74,7 @@ export default function SalePricingEditor({
   loading,
   organizationName,
 }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const confirmSale = useConfirmSale(document.id);
   const cancelSale = useCancelSale(document.id);
@@ -227,23 +229,23 @@ export default function SalePricingEditor({
 
   const handleConfirm = async () => {
     if (!lines.length) {
-      toast.error("Tasdiqlash uchun mahsulotlar topilmadi");
+      toast.error(t("sale.messages.noProductsToConfirm"));
       return;
     }
     if (lines.some((line) => line.amount <= 0)) {
-      toast.error("Barcha mahsulotlar uchun sotuv narxini kiriting");
+      toast.error(t("sale.messages.salePriceRequired"));
       return;
     }
     if (lines.some((line) => line.costPrice <= 0)) {
-      toast.error("Barcha mahsulotlar uchun tannarx topilmadi");
+      toast.error(t("sale.messages.costPriceMissing"));
       return;
     }
     if (lines.some((line) => line.vatRateId === null)) {
-      toast.error("Barcha mahsulotlar uchun QQS stavkasini tanlang");
+      toast.error(t("sale.messages.vatRateRequired"));
       return;
     }
     if (lines.some((line) => !line.id)) {
-      toast.error("Mahsulotlarda sale-doc-table id topilmadi");
+      toast.error(t("sale.messages.saleDocTableIdMissing"));
       return;
     }
 
@@ -378,7 +380,7 @@ export default function SalePricingEditor({
     const payloadLines = Object.values(groupedLines).filter((line) => line.id > 0);
 
     if (!payloadLines.length) {
-      toast.error("Tasdiqlash uchun to'g'ri mahsulot satrlari tuzilmadi");
+      toast.error(t("sale.messages.invalidConfirmLines"));
       return;
     }
 
@@ -401,7 +403,7 @@ export default function SalePricingEditor({
     try {
       await cancelSale.mutateAsync();
       setDraftLines([]);
-      toast.success("Sotuv hujjati bekor qilindi");
+      toast.success(t("sale.messages.documentCancelled"));
       navigate("/main/sales/sale", { replace: true });
     } catch (error) {
       errorHandlers(error);
@@ -420,23 +422,23 @@ export default function SalePricingEditor({
       <DocumentSummary>
         <DocumentSummaryItem
           icon={<UserRound size={24} strokeWidth={1.8} />}
-          label="Kontragent"
+          label={t("app.reports.fields.counterparty")}
           value={document.counterpartyName || "-"}
         />
         <DocumentSummaryItem
           icon={<Boxes size={24} strokeWidth={1.8} />}
-          label="Mahsulot turlari"
+          label={t("sale.fields.productTypes")}
           value={totals.productCount}
         />
         <DocumentSummaryItem
           icon={<PackageCheck size={24} strokeWidth={1.8} />}
-          label="Umumiy miqdor"
-          value={`${totals.totalQuantity} dona`}
+          label={t("sale.fields.totalQuantity")}
+          value={`${totals.totalQuantity} ${t("sale.fields.piece")}`}
           iconClassName="text-green-600"
         />
         <DocumentSummaryItem
           icon={<Sigma size={24} strokeWidth={1.8} />}
-          label="Umumiy summa"
+          label={t("sale.fields.totalAmount")}
           value={`${numberSpacing(totals.totalAmount, undefined, true)} ${currencyCode}`}
           emphasized
           iconClassName="text-violet-600"
@@ -451,13 +453,13 @@ export default function SalePricingEditor({
             disabled={!lines.length || cancelSale.isPending}
             onClick={handleConfirm}
           >
-            Tasdiqlash
+            {t("common.confirm")}
           </Button>
           <Popconfirm
-            title="Hujjatni bekor qilish"
-            description="Sotuv hujjatini bekor qilishni tasdiqlaysizmi?"
-            okText="Bekor qilish"
-            cancelText="Yo‘q"
+            title={t("sale.actions.cancelDocument")}
+            description={t("sale.messages.cancelDocumentQuestion")}
+            okText={t("common.cancel")}
+            cancelText={t("app.common.no")}
             okButtonProps={{ danger: true, loading: cancelSale.isPending }}
             onConfirm={handleCancel}
           >
@@ -467,7 +469,7 @@ export default function SalePricingEditor({
               icon={<XCircle size={18} />}
               disabled={confirmSale.isPending || cancelSale.isPending}
             >
-              Bekor qilish
+              {t("common.cancel")}
             </Button>
           </Popconfirm>
         </div>
@@ -490,7 +492,7 @@ export default function SalePricingEditor({
         />
       ) : (
         <Card className="border border-border p-8">
-          <Empty description="Mahsulotlar topilmadi" />
+          <Empty description={t("sale.messages.productsNotFound")} />
         </Card>
       )}
     </div>

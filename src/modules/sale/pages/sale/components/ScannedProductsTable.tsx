@@ -2,6 +2,7 @@ import { Button, Popconfirm, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import { LoaderCircle, Trash2 } from "lucide-react";
 import type { SaleScannedProduct } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   products: SaleScannedProduct[];
@@ -14,27 +15,28 @@ export default function ScannedProductsTable({
   loading = false,
   onDelete,
 }: Props) {
+  const { t } = useTranslation();
   const columns: TableColumnsType<SaleScannedProduct> = [
     {
       dataIndex: "indexId",
-      title: "№",
+      title: t("common.rowNumber"),
       width: 60,
       align: "center",
       render: (_, __, index) => index + 1,
     },
     {
       dataIndex: "markingNumber",
-      title: "Markirovka",
+      title: t("app.fields.marking"),
       width: 220,
     },
     {
       dataIndex: "productName",
-      title: "Mahsulot",
+      title: t("purchase.fields.product"),
       minWidth: 240,
     },
     {
       dataIndex: "scanStatus",
-      title: "Holat",
+      title: t("settings.fields.status"),
       width: 120,
       align: "center",
       render: (status) =>
@@ -43,10 +45,10 @@ export default function ScannedProductsTable({
             icon={<LoaderCircle className="size-3 animate-spin" />}
             color="processing"
           >
-            Kutilmoqda
+            {t("processStatuses.pending")}
           </Tag>
         ) : (
-          <Tag color="success">Tasdiqlandi</Tag>
+          <Tag color="success">{t("sale.messages.scanConfirmed")}</Tag>
         ),
     },
     {
@@ -57,9 +59,9 @@ export default function ScannedProductsTable({
       fixed: "right",
       render: (_, product) => (
         <Popconfirm
-          title="Mahsulotni o'chirasizmi?"
-          okText="Ha"
-          cancelText="Yo'q"
+          title={t("sale.messages.deleteProductQuestion")}
+          okText={t("app.common.yes")}
+          cancelText={t("app.common.no")}
           onConfirm={() => onDelete(product)}
         >
           <Button danger type="text" icon={<Trash2 className="size-4" />} />
@@ -76,7 +78,7 @@ export default function ScannedProductsTable({
       loading={loading}
       pagination={false}
       scroll={{ x: "max-content", y: "calc(100vh - 430px)" }}
-      locale={{ emptyText: "Barcode orqali mahsulot qo'shing" }}
+      locale={{ emptyText: t("sale.messages.addByBarcode") }}
     />
   );
 }

@@ -2,6 +2,7 @@ import { Button, Select, Tooltip, type TableColumnType } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { Pencil, QrCode, Trash2 } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { $axiosPrivate } from "@/services/AxiosService";
 import { chartAccountSelectedLabel } from "@/shared/constants/selectLists";
 import { numberSpacing } from "@/utils/utils";
@@ -67,6 +68,8 @@ export const useOpeningInventoryColumns = ({
   unitOptions,
   vatRateOptions,
 }: UseOpeningInventoryColumnsParams): TableColumnType<OpeningInventoryRow>[] => {
+  const { t } = useTranslation();
+
   const { data: debitAccounts = [] } = useQuery<ChartAccountOption[]>({
     queryKey: ["document-account-settings", "chart-accounts", mode, "debit"],
     queryFn: async () => {
@@ -118,14 +121,17 @@ export const useOpeningInventoryColumns = ({
     const columns: TableColumnType<OpeningInventoryRow>[] = [
       {
         dataIndex: "indexId",
-        title: "T/r",
+        title: t("common.rowNumber"),
         width: 50,
         align: "center",
         render: (value) => String(value ?? ""),
       },
       {
         dataIndex: "product",
-        title: mode === "services" ? "Xizmat nomi" : "Tovar nomi",
+        title:
+          mode === "services"
+            ? t("openingInventory.fields.serviceName")
+            : t("openingInventory.fields.goodsName"),
         width: 280,
         render: (_: unknown, record: OpeningInventoryRow, rowIndex: number) => (
           <Select
@@ -134,7 +140,9 @@ export const useOpeningInventoryColumns = ({
             className="w-full"
             placeholder={
               record.product ||
-              (mode === "services" ? "Xizmatni tanlang" : "Tovarni tanlang")
+              (mode === "services"
+                ? t("openingInventory.messages.selectService")
+                : t("openingInventory.messages.selectGoods"))
             }
             value={record.productId ?? undefined}
             loading={isLoading}
@@ -154,7 +162,7 @@ export const useOpeningInventoryColumns = ({
       ...(mode === "goods"
         ? ([{
         dataIndex: "mxik",
-        title: "MXIK",
+        title: t("purchase.fields.mxik"),
         width: 160,
         align: "center",
         render: (value: unknown, record: OpeningInventoryRow, rowIndex: number) => (
@@ -168,7 +176,7 @@ export const useOpeningInventoryColumns = ({
         ),
       }, {
         dataIndex: "markingNumber",
-        title: "Markirovka",
+        title: t("app.fields.marking"),
         width: 130,
         align: "center",
         render: (_: unknown, record: OpeningInventoryRow, rowIndex: number) => {
@@ -179,9 +187,11 @@ export const useOpeningInventoryColumns = ({
               title={
                 isTracked
                   ? markingCount
-                    ? `${markingCount} ta markirovka`
-                    : "Markirovka kiritish"
-                  : "Bu mahsulot markirovkasiz"
+                    ? t("openingInventory.messages.markingCount", {
+                        count: markingCount,
+                      })
+                    : t("openingInventory.messages.enterMarking")
+                  : t("openingInventory.messages.notPieceTracked")
               }
             >
               <Button
@@ -200,7 +210,7 @@ export const useOpeningInventoryColumns = ({
         : []),
       {
         dataIndex: "unitId",
-        title: "Birlik",
+        title: t("openingInventory.fields.unit"),
         width: 120,
         align: "center",
         render: (_: unknown, record: OpeningInventoryRow, rowIndex: number) =>
@@ -211,7 +221,7 @@ export const useOpeningInventoryColumns = ({
               showSearch
               optionFilterProp="label"
               className="w-full"
-              placeholder="Birlik"
+              placeholder={t("openingInventory.fields.unit")}
               value={(record.unitId as number | null) ?? undefined}
               options={unitOptions.map((item) => ({
                 value: item.id,
@@ -225,7 +235,7 @@ export const useOpeningInventoryColumns = ({
       },
       {
         dataIndex: "qty",
-        title: "Miqdor",
+        title: t("openingInventory.fields.quantity"),
         width: 100,
         align: "center",
         render: (value: unknown, record: OpeningInventoryRow, rowIndex: number) => (
@@ -240,7 +250,7 @@ export const useOpeningInventoryColumns = ({
       },
       {
         dataIndex: "price",
-        title: "Narx",
+        title: t("openingInventory.fields.price"),
         width: 140,
         align: "center",
         render: (_: unknown, record: OpeningInventoryRow, rowIndex: number) => (
@@ -254,7 +264,7 @@ export const useOpeningInventoryColumns = ({
       },
       {
         dataIndex: "amount",
-        title: "Summa",
+        title: t("openingInventory.fields.amount"),
         width: 140,
         align: "center",
         render: (_: unknown, record: OpeningInventoryRow) => {
@@ -265,7 +275,7 @@ export const useOpeningInventoryColumns = ({
       },
       {
         dataIndex: "vatRateId",
-        title: "QQS (foiz va summa)",
+        title: t("openingInventory.fields.vatRateAndAmount"),
         align: "center",
         render: (_: unknown, record: OpeningInventoryRow, rowIndex: number) => {
           const vatAmount = getRowVatAmount(record, vatRateOptions);
@@ -276,7 +286,7 @@ export const useOpeningInventoryColumns = ({
                 optionFilterProp="label"
                 allowClear
                 className="min-w-28"
-                placeholder="QQS"
+                placeholder={t("settings.fields.vatRate")}
                 value={record.vatRateId ?? undefined}
                 options={vatRateOptions.map((item) => ({
                   value: item.id,
@@ -297,7 +307,7 @@ export const useOpeningInventoryColumns = ({
       },
       {
         dataIndex: "totalAmount",
-        title: "Jami",
+        title: t("common.total"),
         width: 140,
         align: "center",
         render: (_: unknown, record: OpeningInventoryRow) => {
@@ -308,7 +318,7 @@ export const useOpeningInventoryColumns = ({
       },
       {
         dataIndex: "accounts",
-        title: "Hisobvaraqlar",
+        title: t("openingInventory.fields.accounts"),
         align: "center",
         render: (_: unknown, record: OpeningInventoryRow, rowIndex: number) => (
           <div className="flex min-w-30 items-center">
@@ -322,7 +332,7 @@ export const useOpeningInventoryColumns = ({
               type="text"
               size="small"
               icon={<Pencil className="size-4" />}
-              title="Hisobvaraqlarni tanlash"
+              title={t("openingInventory.actions.selectAccounts")}
               onClick={() => openAccountModal(rowIndex)}
             />
           </div>
@@ -331,7 +341,7 @@ export const useOpeningInventoryColumns = ({
       {
         dataIndex: "actions",
         render: (_: unknown, __: OpeningInventoryRow, rowIndex: number) => (
-          <Tooltip title="Qatorni o'chirish">
+          <Tooltip title={t("openingInventory.actions.deleteLine")}>
             <Button
               danger
               type="text"
@@ -358,5 +368,6 @@ export const useOpeningInventoryColumns = ({
     unitOptions,
     vatRateOptions,
     chartAccountById,
+    t,
   ]);
 };

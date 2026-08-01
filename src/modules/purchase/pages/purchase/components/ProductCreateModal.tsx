@@ -1,6 +1,7 @@
 import { Button, Col, Form, Modal, Row, Switch } from "antd";
 import { useFormik } from "formik";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
 import InputText from "@/components/fields/InputText";
@@ -25,16 +26,6 @@ interface ProductCreateForm {
   isPieceTracked: boolean;
 }
 
-const productCreateSchema = Yup.object({
-  name: Yup.string().trim().required("Mahsulot nomi majburiy"),
-  mxik: Yup.string().trim().required("MXIK kodi majburiy"),
-  productGroupId: Yup.number()
-    .nullable()
-    .required("Mahsulot turi majburiy"),
-  unitId: Yup.number().nullable().required("Birlik majburiy"),
-  isPieceTracked: Yup.boolean().defined(),
-});
-
 const getInitialValues = (
   initialRow?: PurchaseImportRow | null,
 ): ProductCreateForm => ({
@@ -55,6 +46,16 @@ export default function ProductCreateModal({
   onClose,
   onCreated,
 }: ProductCreateModalProps) {
+  const { t } = useTranslation();
+  const productCreateSchema = Yup.object({
+    name: Yup.string().trim().required(t("purchase.messages.productNameRequired")),
+    mxik: Yup.string().trim().required(t("purchase.messages.mxikRequired")),
+    productGroupId: Yup.number()
+      .nullable()
+      .required(t("purchase.messages.productTypeRequired")),
+    unitId: Yup.number().nullable().required(t("purchase.messages.unitRequired")),
+    isPieceTracked: Yup.boolean().defined(),
+  });
   const formik = useFormik<ProductCreateForm>({
     initialValues: getInitialValues(initialRow),
     validationSchema: productCreateSchema,
@@ -70,12 +71,12 @@ export default function ProductCreateModal({
           isService: false,
           isPieceTracked: values.isPieceTracked,
         });
-        toast.success("Mahsulot muvaffaqiyatli yaratildi");
+        toast.success(t("purchase.messages.productCreated"));
         formik.resetForm();
         onClose();
         onCreated();
       } catch {
-        toast.error("Mahsulotni yaratishda xatolik yuz berdi");
+        toast.error(t("purchase.messages.productCreateError"));
       }
     },
   });
@@ -93,7 +94,7 @@ export default function ProductCreateModal({
 
   return (
     <Modal
-      title="Mahsulot yaratish"
+      title={t("products.modal.createProduct")}
       footer={null}
       open={open}
       width={500}
@@ -104,25 +105,25 @@ export default function ProductCreateModal({
         <Row gutter={10}>
           <Col span={24}>
             <InputText
-              label="Mahsulot nomi"
+              label="purchase.fields.productName"
               fieldName="name"
               formik={formik}
             />
           </Col>
           <Col span={24}>
-            <InputText label="MXIK kodi" fieldName="mxik" formik={formik} />
+            <InputText label="purchase.fields.mxik" fieldName="mxik" formik={formik} />
           </Col>
           <Col span={24} className="relative">
             <SelectCustom
               path={selectListEndpoints.productGroupsSelectList}
-              label="Mahsulot turi"
+              label="purchase.fields.productType"
               fieldName="productGroupId"
               formik={formik}
               search
               required
             />
             <div className="absolute right-2 top-0">
-              <span>Markirovkali: </span>
+              <span>{t("purchase.fields.pieceTracked")}: </span>
               <Switch
                 checked={formik.values.isPieceTracked}
                 onChange={(value) => {
@@ -135,7 +136,7 @@ export default function ProductCreateModal({
           <Col span={24}>
             <SelectCustom
               path={selectListEndpoints.unitsSelectList}
-              label="Birlik"
+              label="purchase.fields.unit"
               fieldName="unitId"
               formik={formik}
               search
@@ -149,7 +150,7 @@ export default function ProductCreateModal({
               loading={formik.isSubmitting}
               block
             >
-              Qo'shish
+              {t("common.add")}
             </Button>
           </Col>
         </Row>

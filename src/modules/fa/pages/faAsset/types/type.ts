@@ -26,6 +26,9 @@ export interface FaAsset {
   departmentName?: string | null;
   responsibleUserId: number | null;
   responsibleUserName?: string | null;
+  assetAccountId: number | null;
+  accumulatedDepreciationAccountId: number | null;
+  depreciationExpenseAccountId: number | null;
   statusId: number;
   statusCode?: string | null;
   statusName?: string | null;

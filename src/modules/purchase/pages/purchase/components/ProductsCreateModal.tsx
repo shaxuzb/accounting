@@ -15,6 +15,7 @@ import {
 import { useFormik } from "formik";
 import { Trash } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import * as yup from "yup";
 
@@ -25,22 +26,6 @@ interface ProductsCreateModalProps {
   onCreated: () => void;
   onRowsChange: (rows: PurchaseImportRow[]) => void;
 }
-
-const schemaAuth = yup.object({
-  products: yup
-    .array()
-    .of(
-      yup.object({
-        mxik: yup.string().trim().required("MXIK kodi majburiy"),
-      }),
-    )
-    .min(1, "Kamida bitta mahsulot bo'lishi kerak")
-    .required("Mahsulotlar majburiy"),
-  productGroupId: yup.number().nullable().required("Mahsulot turi majburiy"),
-  unitId: yup.number().nullable().required("Birlik majburiy"),
-  isService: yup.boolean().defined(),
-  isPieceTracked: yup.boolean().defined(),
-});
 
 interface Products {
   name: string;
@@ -64,6 +49,18 @@ const ProductsCreateModal = ({
   onCreated,
   onRowsChange,
 }: ProductsCreateModalProps) => {
+  const { t } = useTranslation();
+  const schemaAuth = yup.object({
+    products: yup
+      .array()
+      .of(yup.object({ mxik: yup.string().trim().required(t("purchase.messages.mxikRequired")) }))
+      .min(1, t("purchase.messages.atLeastOneProduct"))
+      .required(t("purchase.messages.productsRequired")),
+    productGroupId: yup.number().nullable().required(t("purchase.messages.productTypeRequired")),
+    unitId: yup.number().nullable().required(t("purchase.messages.unitRequired")),
+    isService: yup.boolean().defined(),
+    isPieceTracked: yup.boolean().defined(),
+  });
   const formik = useFormik<ProductInitialValues>({
     initialValues: {
       products: rows as unknown as Products[],
@@ -89,14 +86,14 @@ const ProductsCreateModal = ({
         });
 
         if (response) {
-          toast.success("Mahsulot muvaffaqiyatli yaratildi");
+          toast.success(t("purchase.messages.productCreated"));
           formik.resetForm();
           onRowsChange([]);
           onClose();
           onCreated();
         }
       } catch {
-        toast.error("Mahsulotlarni yaratishda xatolik yuz berdi");
+        toast.error(t("purchase.messages.productsCreateError"));
       }
     },
   });
@@ -110,14 +107,14 @@ const ProductsCreateModal = ({
   const tableColumnLabels: TableColumnType<PurchaseImportRow>[] = [
     {
       dataIndex: "indexId",
-      title: "T/r",
+      title: t("common.rowNumber"),
       width: 50,
       align: "center",
       render: (_, __, rowIndex) => rowIndex + 1,
     },
     {
       dataIndex: "product",
-      title: "Mahsulot nomi",
+      title: t("purchase.fields.productName"),
       width: 200,
       render: (value, record) => {
         return record.name || value;
@@ -125,13 +122,13 @@ const ProductsCreateModal = ({
     },
     {
       dataIndex: "mxik",
-      title: "MXIK kodi",
+      title: t("purchase.fields.mxik"),
       width: 200,
       align: "center",
     },
     {
       dataIndex: "actions",
-      title: "Amallar",
+      title: t("common.actions"),
       width: 100,
       fixed: "right",
       align: "center",
@@ -171,7 +168,7 @@ const ProductsCreateModal = ({
 
   return (
     <Modal
-      title={"Mahsulot yaratish"}
+      title={t("products.modal.createProduct")}
       footer={false}
       open={open}
       width={600}
@@ -187,14 +184,14 @@ const ProductsCreateModal = ({
           >
             <SelectCustom
               path={selectListEndpoints.productGroupsSelectList}
-              label="Mahsulot turi"
+              label="purchase.fields.productType"
               search
               formik={formik}
               fieldName="productGroupId"
             />
 
             <div className="absolute right-2 top-0">
-              <span>Markirovkali: </span>
+              <span>{t("purchase.fields.pieceTracked")}: </span>
               <Switch
                 checked={formik.values.isPieceTracked}
                 onChange={(e) => {
@@ -207,7 +204,7 @@ const ProductsCreateModal = ({
           <Col span={24} sm={{ span: 12 }} md={{ span: 12 }}>
             <SelectCustom
               fieldName="unitId"
-              label="Birlik"
+              label="purchase.fields.unit"
               path={selectListEndpoints.unitsSelectList}
               formik={formik}
               search
@@ -228,7 +225,7 @@ const ProductsCreateModal = ({
               className="w-full py-4!"
               type="primary"
             >
-              Saqlash
+              {t("common.save")}
             </Button>
           </Col>
         </Row>

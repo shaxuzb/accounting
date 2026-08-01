@@ -22,7 +22,7 @@ import {
   useGetDetailBankOperation,
   useUpdateBankOperation,
 } from "../hooks";
-import { schema } from "../types/schema";
+import { createBankOperationSchema } from "../types/schema";
 import type { BankOperationCreatePayload } from "../types/form";
 import Card from "@/components/ui/card/Card";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
@@ -123,7 +123,7 @@ export default function BankOperationAddEditPage() {
   const formik = useFormik<BankOperationForm>({
     initialValues,
     enableReinitialize: true,
-    validationSchema: schema,
+    validationSchema: createBankOperationSchema(t),
     onSubmit: async (values, helpers) => {
       try {
         const payload: BankOperationCreatePayload = {
@@ -225,8 +225,8 @@ export default function BankOperationAddEditPage() {
             <Segmented
               block
               options={[
-                { label: "Kirim", value: 1 },
-                { label: "Chiqim", value: 2 },
+                { label: t("bank.operation.income"), value: 1 },
+                { label: t("bank.operation.expense"), value: 2 },
               ]}
               value={operationTypeId ?? undefined}
               disabled={isSubmitting}
@@ -261,7 +261,7 @@ export default function BankOperationAddEditPage() {
                 <DocumentAccountSelect
                   formik={formik}
                   fieldName="bankChartAccountId"
-                  label="Bank schyoti"
+                  label="bank.fields.bankChartAccount"
                   documentTypeId={documentTypeId}
                   documentRoleCode={bankDocumentAccountRoleCodes.bankAccount}
                   getFirst
@@ -272,7 +272,7 @@ export default function BankOperationAddEditPage() {
                 <DocumentAccountSelect
                   formik={formik}
                   fieldName="offsetAccountId"
-                  label="Qarama-qarshi schyot"
+                  label="bank.fields.offsetAccount"
                   documentTypeId={documentTypeId}
                   documentRoleCode={bankDocumentAccountRoleCodes.offsetAccount}
                   getFirst
@@ -283,7 +283,7 @@ export default function BankOperationAddEditPage() {
                 <SelectCustom
                   formik={formik}
                   fieldName="paymentTypeId"
-                  label="To'lov turi"
+                  label={t("payroll.fields.paymentKind")}
                   path={selectListEndpoints.paymentTypesSelectList}
                 />
               </Col>
@@ -306,7 +306,7 @@ export default function BankOperationAddEditPage() {
                 <SelectCustom
                   formik={formik}
                   fieldName="counterpartyBankAccountId"
-                  label="Counterparty bank hisob raqami"
+                  label="bank.fields.counterpartyBankAccount"
                   path={selectListEndpoints.counterPartyBankAccounts}
                   queryParams={{
                     [filterIds.counterparty]: counterpartyId,
@@ -326,7 +326,7 @@ export default function BankOperationAddEditPage() {
                 <InputNumberFormat
                   formik={formik}
                   fieldName="exchangeRate"
-                  label="Kurs"
+                  label={t("openingBalance.fields.exchangeRate")}
                   min={0}
                   precision={6}
                 />
@@ -361,7 +361,7 @@ export default function BankOperationAddEditPage() {
                 <SelectCustom
                   formik={formik}
                   fieldName="contractId"
-                  label="Shartnoma"
+                  label={t("purchase.fields.contract")}
                   path={selectListEndpoints.contractsSelectList}
                   queryParams={{
                     choosedDate: dayjs(formik.values.docDate).format(

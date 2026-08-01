@@ -1,4 +1,5 @@
 import EndpointResultCard from "@/modules/accountings/components/EndpointResultCard";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   title?: string;
@@ -9,19 +10,20 @@ interface Props {
 }
 
 export default function AccountingReportRawCard({
-  title = "Raw response",
-  description = "Endpoint dan qaytgan to'liq data.",
+  title,
+  description,
   data,
   isLoading = false,
-  emptyText = "Natija yo'q",
+  emptyText,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <EndpointResultCard
-      title={title}
-      description={description}
+      title={title ?? t("accountings.result.rawTitle")}
+      description={description ?? t("accountings.result.rawDescription")}
       data={data}
       isLoading={isLoading}
-      emptyText={emptyText}
+      emptyText={emptyText ?? t("accountings.result.empty")}
     />
   );
 }

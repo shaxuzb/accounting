@@ -4,8 +4,10 @@ import EndpointResultCard from "@/modules/accountings/components/EndpointResultC
 import { useGetLedger } from "../hooks";
 import LedgerFilters from "../components/LedgerFilters";
 import type { LedgerQuery } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 export default function LedgerPage() {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<LedgerQuery | null>(null);
   const query = useGetLedger(filters ?? undefined);
 
@@ -13,21 +15,21 @@ export default function LedgerPage() {
     <div className="space-y-4">
       <div>
         <Typography.Title level={3} className="mb-1! text-text!">
-          Ledger
+          {t("accountings.ledger.title")}
         </Typography.Title>
         <p className="text-sm text-secondary-text">
-          Swagger endpoint: <code>/api/register/ledger</code>
+          {t("accountings.endpoint")}: <code>/api/register/ledger</code>
         </p>
       </div>
 
       <LedgerFilters loading={query.isFetching} onSubmit={(values) => setFilters(values)} />
 
       <EndpointResultCard
-        title="Response"
-        description="Ledger response data."
+        title={t("accountings.result.title")}
+        description={t("accountings.ledger.resultDescription")}
         data={query.data}
         isLoading={query.isLoading || query.isFetching}
-        emptyText="Ledger natijasi yo'q"
+        emptyText={t("accountings.ledger.empty")}
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import type { TFunction } from "i18next";
 
 const requiredId = (message: string) =>
   Yup.number()
@@ -6,39 +7,39 @@ const requiredId = (message: string) =>
     .required(message)
     .moreThan(0, message);
 
-export const saleDocSchema = (isEdit = false) =>
+export const saleDocSchema = (t: TFunction, isEdit = false) =>
   Yup.object({
-    docDate: Yup.string().required("Sana majburiy"),
-    counterpartyId: requiredId("Kontragentni tanlang"),
-    contractId: requiredId("Shartnomani tanlang"),
-    warehouseId: requiredId("Omborni tanlang"),
-    currencyId: requiredId("Valyutani tanlang"),
+    docDate: Yup.string().required(t("sale.messages.dateRequired")),
+    counterpartyId: requiredId(t("sale.messages.selectCounterparty")),
+    contractId: requiredId(t("sale.messages.selectContract")),
+    warehouseId: requiredId(t("sale.messages.selectWarehouse")),
+    currencyId: requiredId(t("sale.messages.selectCurrency")),
     customerAccountId: isEdit
       ? Yup.number().nullable()
-      : requiredId("Mijoz schyotini tanlang"),
+      : requiredId(t("sale.messages.selectCustomerAccount")),
     vatAccountId: isEdit
       ? Yup.number().nullable()
-      : requiredId("QQS schyotini tanlang"),
+      : requiredId(t("sale.messages.selectVatAccount")),
     comment: Yup.string().trim().default(""),
   });
 
-export const saleDocLinesSchema = (isEdit = false) =>
+export const saleDocLinesSchema = (t: TFunction, isEdit = false) =>
   Yup.array()
     .of(
       Yup.object({
-        productId: requiredId("Mahsulotni tanlang"),
-        quantity: requiredId("Mahsulot miqdorini kiriting"),
-        unitId: requiredId("Mahsulot birligini tanlang"),
+        productId: requiredId(t("sale.messages.selectProduct")),
+        quantity: requiredId(t("sale.messages.enterQuantity")),
+        unitId: requiredId(t("sale.messages.selectUnit")),
         inventoryAccountId: isEdit
           ? Yup.number().nullable()
-          : requiredId("Tovarlar hisobvarag'ini tanlang"),
+          : requiredId(t("sale.messages.selectInventoryAccount")),
         incomeAccountId: isEdit
           ? Yup.number().nullable()
-          : requiredId("Sotuv daromadi hisobvarag'ini tanlang"),
+          : requiredId(t("sale.messages.selectIncomeAccount")),
         costAccountId: isEdit
           ? Yup.number().nullable()
-          : requiredId("Sotuv tannarxi hisobvarag'ini tanlang"),
+          : requiredId(t("sale.messages.selectCostAccount")),
       }),
     )
-    .min(1, "Kamida bitta mahsulot tanlang")
-    .required("Kamida bitta mahsulot tanlang");
+    .min(1, t("sale.messages.atLeastOneProduct"))
+    .required(t("sale.messages.atLeastOneProduct"));

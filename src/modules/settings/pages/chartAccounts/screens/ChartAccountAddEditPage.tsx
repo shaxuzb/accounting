@@ -156,7 +156,7 @@ export default function ChartAccountAddEditPage({
                   <SelectCustom
                     formik={formik}
                     fieldName="stateId"
-                    label="Holati"
+                    label={t("products.fields.status")}
                     path={selectListEndpoints.statesSelectList}
                   />
                 </Col>
@@ -174,7 +174,7 @@ export default function ChartAccountAddEditPage({
                   <SelectCustom
                     formik={formik}
                     fieldName="accountTypeId"
-                    label="accountTypeId"
+                    label="settings.fields.accountType"
                     path={selectListEndpoints.accountType}
                     clearable
                   />

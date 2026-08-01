@@ -10,6 +10,7 @@ import type {
   SaleDocumentLineGroup,
 } from "../types/type";
 import { groupSaleDocumentLines } from "../utils/saleDocumentGroups";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   lines: SaleDocTable[];
@@ -24,6 +25,7 @@ export default function SaleConfirmedLinesTable({
   loading,
   currency,
 }: Props) {
+  const { t } = useTranslation();
   const [expandedRowKeys, setExpandedRowKeys] = useState<Key[]>([]);
   const groups = useMemo(() => groupSaleDocumentLines(lines), [lines]);
 
@@ -37,47 +39,47 @@ export default function SaleConfirmedLinesTable({
 
   const itemColumns: TableColumnsType<SaleDocTable> = [
     {
-      title: "T/r",
+      title: t("common.rowNumber"),
       width: 60,
       align: "center",
       render: (_, __, index) => index + 1,
     },
     {
-      title: "Markirovka",
+      title: t("app.fields.marking"),
       dataIndex: "markingNumber",
       minWidth: 260,
       render: (value) => <LineClampCell text={value ? String(value) : null} />,
     },
     {
-      title: "Tannarx",
+      title: t("warehouse.fields.costPrice"),
       dataIndex: "costPrice",
       width: 140,
       align: "right",
       render: (value: number) => `${getNumber(value)} ${currency}`,
     },
     {
-      title: "Sotuv narxi",
+      title: t("sale.fields.salePrice"),
       dataIndex: "amount",
       width: 150,
       align: "right",
       render: (value: number) => `${getNumber(value)} ${currency}`,
     },
     {
-      title: "QQS",
+      title: t("settings.fields.vatRate"),
       dataIndex: "vatRateName",
       width: 120,
       align: "center",
       render: (value) => value || "-",
     },
     {
-      title: "QQS summasi",
+      title: t("sale.fields.vatAmount"),
       dataIndex: "vatAmount",
       width: 150,
       align: "right",
       render: (value: number) => `${getNumber(value)} ${currency}`,
     },
     {
-      title: "Jami",
+      title: t("common.total"),
       dataIndex: "totalAmount",
       width: 160,
       align: "right",
@@ -106,7 +108,7 @@ export default function SaleConfirmedLinesTable({
       ),
     },
     {
-      title: "Mahsulot",
+      title: t("purchase.fields.product"),
       dataIndex: "productName",
       minWidth: 280,
       render: (value, record) => (
@@ -121,42 +123,43 @@ export default function SaleConfirmedLinesTable({
       ),
     },
     {
-      title: "Miqdori",
+      title: t("purchase.fields.quantity"),
       dataIndex: "quantity",
       width: 120,
       align: "center",
-      render: (value: number, record) => `${value} ${record.unitName || "dona"}`,
+      render: (value: number, record) =>
+        `${value} ${record.unitName || t("sale.fields.piece")}`,
     },
     {
-      title: "Dona narxi",
+      title: t("sale.fields.unitPrice"),
       dataIndex: "unitPrice",
       width: 160,
       align: "right",
       render: (value: number) => `${getNumber(value)} ${currency}`,
     },
     {
-      title: "Narxi",
+      title: t("openingInventory.fields.price"),
       dataIndex: "amount",
       width: 160,
       align: "right",
       render: (value: number) => `${getNumber(value)} ${currency}`,
     },
     {
-      title: "QQS",
+      title: t("settings.fields.vatRate"),
       dataIndex: "vatRateName",
       width: 120,
       align: "center",
       render: (value) => value || "-",
     },
     {
-      title: "QQS summasi",
+      title: t("sale.fields.vatAmount"),
       dataIndex: "vatAmount",
       width: 160,
       align: "right",
       render: (value: number) => `${getNumber(value)} ${currency}`,
     },
     {
-      title: "Jami",
+      title: t("common.total"),
       dataIndex: "totalAmount",
       width: 170,
       align: "right",

@@ -8,6 +8,7 @@ import type { FormikProps } from "formik";
 import type { SelectBoxOptions } from "@/modules/purchase/pages/purchase";
 import { useState, type FC } from "react";
 import LineClampCell from "../text/LineClampCell";
+import { useTranslation } from "react-i18next";
 
 type ExcelRow = Record<string, unknown>;
 type FormValues = object;
@@ -27,6 +28,7 @@ interface ExcelImportFileProps {
 }
 
 const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
+  const { t } = useTranslation();
   const {
     setData,
     onClearData,
@@ -125,7 +127,7 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
         variant === "button" ? (
           <Upload disabled={disabled} {...props}>
             <Button icon={<UploadIcon className="size-4" />} disabled={disabled}>
-              Excel import
+              {t("excelImport.button")}
             </Button>
           </Upload>
         ) : (
@@ -134,14 +136,8 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
               <div className="flex justify-center items-center my-3">
                 <UploadIcon fontSize={40} />
               </div>
-              <p className="ant-upload-text">
-                Faylni yuklash uchun bu hududga bosing yoki sudrab olib keling
-              </p>
-              <p className="ant-upload-hint">
-                Yagona yoki ko'p faylni yuklashni qo'llab-quvvatlaydi. Kompaniya
-                ma'lumotlari yoki taqiqlangan fayllarni yuklash qat'iyan man
-                etiladi.
-              </p>
+              <p className="ant-upload-text">{t("excelImport.dropzone")}</p>
+              <p className="ant-upload-hint">{t("excelImport.securityHint")}</p>
             </Dragger>
           </Card>
         )
@@ -149,10 +145,10 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
         <Card className={variant === "button" ? "inline-block p-2" : "inline-block min-w-75 p-3 mb-4"}>
           <div className="flex gap-4 justify-between items-center w-auto">
             <h1 className="font-semibold text-base text-wrap w-full max-w-60">
-              Yuklangan fayl: <LineClampCell text={sheetData.fileName ?? ""} />
+              {t("excelImport.uploadedFile")}: <LineClampCell text={sheetData.fileName ?? ""} />
             </h1>
             <Button type="primary" danger onClick={handleDeleteFile}>
-              Faylni o'chirish
+              {t("excelImport.deleteFile")}
             </Button>
           </div>
         </Card>
@@ -168,7 +164,7 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
             closable={false}
             title={
               <div className="flex justify-between items-center">
-                <h1 className="font-semibold text-lg">Excel import</h1>
+                <h1 className="font-semibold text-lg">{t("excelImport.title")}</h1>
                 <Button
                   type="text"
                   icon={<X />}
@@ -182,13 +178,13 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
               current={current}
               items={[
                 {
-                  title: "Sheet tanlash",
+                  title: t("excelImport.steps.selectSheet"),
                 },
                 {
-                  title: "Ma'lumotlarni ko'chirish",
+                  title: t("excelImport.steps.mapData"),
                 },
                 {
-                  title: "Kalitni belgilash",
+                  title: t("excelImport.steps.assignKey"),
                 },
               ]}
             />
@@ -197,7 +193,7 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
                 <div className="flex justify-center items-center flex-col w-full">
                   <div>
                     <h1 className="font-semibold text-2xl mb-4!">
-                      Sheetni tanlang:
+                      {t("excelImport.selectSheet")}:
                     </h1>
                   </div>
                   <div className="flex justify-center items-center w-full">
@@ -220,7 +216,7 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
                       disabled={!value}
                       onClick={() => setCurrent(current + 1)}
                     >
-                      Keyingisi
+                      {t("common.next")}
                     </Button>
                   </div>
                 </div>
@@ -235,7 +231,7 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
                       size="large"
                       onClick={() => setCurrent(current + 1)}
                     >
-                      Keyingisi
+                      {t("common.next")}
                     </Button>
                   </div>
                 </div>

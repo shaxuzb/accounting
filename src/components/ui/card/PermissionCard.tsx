@@ -2,6 +2,7 @@ import { useAppSelector } from "@/store/hooks";
 import { useEffect, type ReactNode } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
 const PermissionCard = ({
   children,
@@ -19,6 +20,7 @@ const PermissionCard = ({
 }) => {
   const user = useAppSelector((state) => state.auth?.user);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const userPermissions = [
     ...(user?.user.permissions ?? []),
@@ -58,9 +60,9 @@ const PermissionCard = ({
   useEffect(() => {
     if (!hasAccess && shouldRedirect) {
       navigate(-1);
-      toast.error("Sizda bu sahifaga kirish uchun ruxsat yo'q");
+      toast.error(t("error.noPermission"));
     }
-  }, [hasAccess, navigate, shouldRedirect]);
+  }, [hasAccess, navigate, shouldRedirect, t]);
 
   return hasAccess ? <>{children}</> : null;
 };

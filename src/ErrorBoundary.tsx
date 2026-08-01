@@ -1,6 +1,7 @@
 import { Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { Button, Result } from "antd";
+import i18n from "@/config/i18n";
 
 interface Props {
   children: ReactNode;
@@ -26,11 +27,11 @@ export default class ErrorBoundary extends Component<Props, State> {
       return (
         <Result
           status="error"
-          title="Something went wrong"
+          title={i18n.t("error.title")}
           subTitle={this.state.message}
           extra={
             <Button type="primary" onClick={() => window.location.reload()}>
-              Reload
+              {i18n.t("error.reload")}
             </Button>
           }
         />

@@ -80,7 +80,7 @@ const PurchaseDetailPage = () => {
   const tableColumnLabels: TableColumnType<PurchaseDetailLine>[] = [
     {
       dataIndex: "indexId",
-      title: "Markirovka",
+      title: t("app.fields.marking"),
       align: "center",
       width: 110,
       render: (_, record) => {
@@ -96,8 +96,8 @@ const PurchaseDetailPage = () => {
             }}
             title={
               canLoadMarkings
-                ? "Markirovkalarni ko'rish"
-                : "Markirovka ma'lumoti yo'q"
+                ? t("purchase.actions.viewMarkings")
+                : t("purchase.actions.noMarkingData")
             }
           />
         );
@@ -120,31 +120,31 @@ const PurchaseDetailPage = () => {
     },
     {
       dataIndex: "price",
-      title: "Dona narxi",
+      title: t("purchase.fields.unitPrice"),
       align: "center",
       render: (_, record) => numberSpacing(record.unitPrice),
     },
     {
       dataIndex: "amount",
-      title: "Summa",
+      title: t("app.fields.amount"),
       align: "center",
       render: (val) => numberSpacing(val),
     },
     {
       dataIndex: "vatRateName",
-      title: "QQS stavkasi",
+      title: t("settings.fields.vatRate"),
       align: "center",
     },
     {
       dataIndex: "vatAmount",
-      title: "QQS summasi",
+      title: t("purchase.fields.vatAmount"),
       align: "center",
       render: (val) => numberSpacing(val),
     },
 
     {
       dataIndex: "totalAmount",
-      title: "Jami",
+      title: t("common.total"),
       align: "center",
       render: (val) => numberSpacing(val),
     },
@@ -152,20 +152,20 @@ const PurchaseDetailPage = () => {
   const serviceLineColumns: TableColumnType<PurchaseDetailServiceLine>[] = [
     {
       dataIndex: "indexId",
-      title: "T/r",
+      title: t("common.rowNumber"),
       align: "center",
       width: 70,
     },
     {
       dataIndex: "serviceName",
-      title: "Xizmat nomi",
+      title: t("purchase.fields.serviceName"),
       render: (value, record) => (
         <LineClampCell text={value || record.name} />
       ),
     },
     {
       dataIndex: "expenseAccountName",
-      title: "Xarajat schyoti",
+      title: t("purchase.fields.expenseAccount"),
       width: 180,
       render: (value, record) => (
         <LineClampCell text={value || record.accountName || record.accountId} />
@@ -173,7 +173,7 @@ const PurchaseDetailPage = () => {
     },
     {
       dataIndex: "price",
-      title: "Summa",
+      title: t("app.fields.amount"),
       align: "right",
       width: 160,
       render: (value) => numberSpacing(value, undefined, true),
@@ -189,27 +189,27 @@ const PurchaseDetailPage = () => {
         <DocumentSummary>
           <DocumentSummaryItem
             icon={<Building2 size={24} strokeWidth={1.8} />}
-            label="Tashkilot"
+            label={t("app.fields.organization")}
             value={data?.organizationName || "-"}
           />
           <DocumentSummaryItem
             icon={<FileText size={24} strokeWidth={1.8} />}
-            label="Hujjat"
+            label={t("app.fields.document")}
             value={data?.docNumber || `#${data?.id ?? "-"}`}
           />
           <DocumentSummaryItem
             icon={<CalendarDays size={24} strokeWidth={1.8} />}
-            label="Hujjat sanasi"
+            label={t("payroll.fields.docDate")}
             value={data?.docDate ? customDate(data.docDate) : "-"}
           />
           <DocumentSummaryItem
             icon={<CircleDollarSign size={24} strokeWidth={1.8} />}
-            label="Valyuta"
+            label={t("app.fields.currency")}
             value={currency}
           />
           <DocumentSummaryItem
             icon={<WalletCards size={24} strokeWidth={1.8} />}
-            label="Hujjat summasi"
+            label={t("app.fields.documentAmount")}
             value={`${numberSpacing(documentAmount, undefined, true)} ${currency}`}
             emphasized
           />
@@ -219,16 +219,15 @@ const PurchaseDetailPage = () => {
           <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
             <div className="min-w-0">
               <div className="text-xs text-secondary-text">
-                Yetkazib beruvchi
-              </div>
+                {t("products.fields.supplier")}</div>
               <div className="truncate text-sm font-semibold text-text">
                 {data?.counterpartyName || "-"}
               </div>
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-xs text-secondary-text">Tavsif</div>
+              <div className="text-xs text-secondary-text">{t("settings.fields.description")}</div>
               <div className="truncate text-sm text-text">
-                {data?.comment || "Ma'lumot yo'q"}
+                {data?.comment || t("app.common.noData")}
               </div>
             </div>
             <ProcessStatusBadge
@@ -244,14 +243,13 @@ const PurchaseDetailPage = () => {
                     onClick={async () => {
                       try {
                         await confirmMutation.mutateAsync();
-                        toast.success("Hujjat tasdiqlandi");
+                        toast.success(t("purchase.messages.confirmed"));
                       } catch (error) {
                         errorHandlers(error);
                       }
                     }}
                   >
-                    Tasdiqlash
-                  </Button>
+                    {t("common.confirm")}</Button>
                 </PermissionCard>
               )}
               {isDraft && (
@@ -262,14 +260,13 @@ const PurchaseDetailPage = () => {
                     onClick={async () => {
                       try {
                         await cancelMutation.mutateAsync();
-                        toast.success("Hujjat bekor qilindi");
+                        toast.success(t("purchase.messages.cancelled"));
                       } catch (error) {
                         errorHandlers(error);
                       }
                     }}
                   >
-                    Bekor qilish
-                  </Button>
+                    {t("common.cancel")}</Button>
                 </PermissionCard>
               )}
             </div>
@@ -280,7 +277,7 @@ const PurchaseDetailPage = () => {
         <Card className="">
           <div className="mb-3 flex items-center gap-2 px-1 text-sm font-semibold text-text">
             <Package className="size-4 text-primary" />
-            <span>Mahsulotlar</span>
+            <span>{t("products.title")}</span>
           </div>
           <Table
             dataSource={generateKeyTable(data?.lines, "id")}
@@ -335,7 +332,7 @@ const PurchaseDetailPage = () => {
             //           index={0}
             //         />
             //         <Table.Summary.Cell colSpan={3} align="center" index={1}>
-            //           {t("Jami narx")}
+            //           {t("purchase.fields.total")}
             //         </Table.Summary.Cell>
             //         <Table.Summary.Cell
             //           className="text-center"
@@ -343,7 +340,7 @@ const PurchaseDetailPage = () => {
             //           colSpan={3}
             //           index={3}
             //         >
-            //           {t("Jami chegirmadagi narx")}
+            //           {t("purchase.fields.discount")}
             //         </Table.Summary.Cell>
             //         <Table.Summary.Cell className="text-center" index={2} />
             //       </Table.Summary.Row>
@@ -398,7 +395,7 @@ const PurchaseDetailPage = () => {
           <Card className="">
             <div className="mb-3 flex items-center gap-2 px-1 text-sm font-semibold text-text">
               <Wrench className="size-4 text-primary" />
-              <span>Xizmatlar</span>
+              <span>{t("loading.services")}</span>
             </div>
             <Table
               dataSource={generateKeyTable(data.serviceLines)}
@@ -413,7 +410,7 @@ const PurchaseDetailPage = () => {
       </div>
       <ProductStockSerialModal
         open={Boolean(selectedLine)}
-        title={selectedLine?.productName || "Markirovkalar"}
+        title={selectedLine?.productName || t("app.fields.marking")}
         items={selectedLineItems}
         loading={false}
         onClose={() => setSelectedLine(null)}

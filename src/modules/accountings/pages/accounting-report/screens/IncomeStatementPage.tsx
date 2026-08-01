@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ColumnsType } from "antd/es/table";
 import InputNumber from "@/components/fields/InputNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -24,6 +25,7 @@ const initialValues: IncomeStatementQuery = {
 };
 
 export default function IncomeStatementPage() {
+  const { t } = useTranslation();
   const [submitted, setSubmitted] = useState<IncomeStatementQuery | null>(null);
   const query = useGetIncomeStatement(submitted ?? undefined);
 
@@ -36,10 +38,10 @@ export default function IncomeStatementPage() {
 
   const columns = useMemo<ColumnsType<IncomeStatementRow>>(
     () => [
-      { title: "Account code", dataIndex: "accountCode", width: 140 },
-      { title: "Account name", dataIndex: "accountName" },
+      { title: t("app.reports.fields.accountCode"), dataIndex: "accountCode", width: 140 },
+      { title: t("app.reports.fields.accountName"), dataIndex: "accountName" },
       {
-        title: "Amount",
+        title: t("app.reports.fields.amount"),
         dataIndex: "amount",
         align: "right",
         width: 160,
@@ -50,13 +52,13 @@ export default function IncomeStatementPage() {
         ),
       },
     ],
-    [],
+    [t],
   );
 
   return (
     <AccountingReportPageShell
-      title="Income statement"
-      description="Daromad, tannarx va foyda / zarar bo'yicha tahlil."
+      title={t("app.reports.income.title")}
+      description={t("app.reports.income.description")}
     >
       <AccountingReportFiltersCard
         formik={formik}
@@ -70,15 +72,15 @@ export default function IncomeStatementPage() {
           <InputNumber
             formik={formik}
             fieldName="periodId"
-            label="Period ID"
+            label={t("app.reports.fields.periodId")}
             min={1}
           />
-          <SelectDate formik={formik} fieldName="dateFrom" label="Date from" />
-          <SelectDate formik={formik} fieldName="dateTo" label="Date to" />
+          <SelectDate formik={formik} fieldName="dateFrom" label={t("app.reports.fields.dateFrom")} />
+          <SelectDate formik={formik} fieldName="dateTo" label={t("app.reports.fields.dateTo")} />
           <SelectCustom
             formik={formik}
             fieldName="currencyId"
-            label="Currency"
+            label={t("app.reports.fields.currency")}
             path={selectListEndpoints.currenciesSelectList}
             clearable
           />
@@ -89,10 +91,10 @@ export default function IncomeStatementPage() {
         <>
           <AccountingReportSummaryGrid
             items={[
-              { label: "Revenue", value: numberSpacing(data.revenueTotal, undefined, true), tone: "primary" },
-              { label: "Cost of sales", value: numberSpacing(data.costOfSalesTotal, undefined, true), tone: "danger" },
-              { label: "Operating expense", value: numberSpacing(data.operatingExpenseTotal, undefined, true), tone: "danger" },
-              { label: "Net profit", value: numberSpacing(data.netProfit, undefined, true), tone: "success" },
+              { label: t("app.reports.summary.revenue"), value: numberSpacing(data.revenueTotal, undefined, true), tone: "primary" },
+              { label: t("app.reports.summary.costOfSales"), value: numberSpacing(data.costOfSalesTotal, undefined, true), tone: "danger" },
+              { label: t("app.reports.summary.operatingExpense"), value: numberSpacing(data.operatingExpenseTotal, undefined, true), tone: "danger" },
+              { label: t("app.reports.summary.netProfit"), value: numberSpacing(data.netProfit, undefined, true), tone: "success" },
             ]}
           />
 

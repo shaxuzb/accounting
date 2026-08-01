@@ -12,8 +12,10 @@ import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { inventoryCountPermissions } from "../constants/permissions";
 import { useDeleteInventoryCount, useGetInventoryCounts } from "../hooks";
 import type { InventoryCountDocument } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 export default function InventoryCountListPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
@@ -27,7 +29,7 @@ export default function InventoryCountListPage() {
       { dataIndex: "indexId", title: "#", align: "center" },
       {
         dataIndex: "docNumber",
-        title: "Hujjat raqami",
+        title: t("warehouse.fields.documentNumber"),
         render: (value, record) => (
           <Link to={`/main/warehouses/inventory-counts/${record.id}`}>
             {value ?? record.id}
@@ -36,17 +38,17 @@ export default function InventoryCountListPage() {
       },
       {
         dataIndex: "docDate",
-        title: "Sana",
+        title: t("bank.fields.date"),
         render: (value) => customDate(value),
       },
       {
         dataIndex: "warehouseName",
-        title: "Ombor",
+        title: t("menu.warehouse"),
         render: (_, record) => record.warehouseName ?? record.warehouseId,
       },
       {
         dataIndex: "statusName",
-        title: "Status",
+        title: t("settings.fields.status"),
         align: "center",
         render: (_, record) => (
           <ProcessStatusBadge
@@ -57,23 +59,26 @@ export default function InventoryCountListPage() {
       },
       {
         dataIndex: "stateName",
-        title: "Holat",
+        title: t("warehouse.count.state"),
         align: "center",
       },
       {
         dataIndex: "isCountCompleted",
-        title: "Sanoq",
+        title: t("warehouse.count.count"),
         align: "center",
-        render: (value) => (value ? "Tugallangan" : "Jarayonda"),
+        render: (value) =>
+          value
+            ? t("warehouse.count.completed")
+            : t("warehouse.count.inProgress"),
       },
       {
         dataIndex: "createdDate",
-        title: "Yaratilgan sana",
+        title: t("warehouse.fields.createdDate"),
         render: (value) => (value ? customDate(value) : "-"),
       },
       {
         dataIndex: "positiveAdjustmentDocId",
-        title: "Musbat tuzatish",
+        title: t("warehouse.count.positiveAdjustment"),
         align: "center",
         render: (_, record) =>
           record.positiveAdjustmentDocId ? (
@@ -83,12 +88,12 @@ export default function InventoryCountListPage() {
               {record.positiveAdjustmentDocId}
             </Link>
           ) : (
-            "yaratilmagan"
+            t("warehouse.count.notCreated")
           ),
       },
       {
         dataIndex: "negativeAdjustmentDocId",
-        title: "Manfiy tuzatish",
+        title: t("warehouse.count.negativeAdjustment"),
         align: "center",
         render: (_, record) =>
           record.negativeAdjustmentDocId ? (
@@ -98,12 +103,12 @@ export default function InventoryCountListPage() {
               {record.negativeAdjustmentDocId}
             </Link>
           ) : (
-            "yaratilmagan"
+            t("warehouse.count.notCreated")
           ),
       },
       {
         dataIndex: "id",
-        title: "Amallar",
+        title: t("common.actions"),
         fixed: "right",
         align: "center",
         render: (_, record) => {
@@ -140,7 +145,7 @@ export default function InventoryCountListPage() {
               {permissions.includes(inventoryCountPermissions.detail) && (
                 <Link to={`/main/warehouses/inventory-counts/${record.id}`}>
                   <Button type="link" size="small">
-                    Ko'rish
+                    {t("common.view")}
                   </Button>
                 </Link>
               )}
@@ -149,7 +154,7 @@ export default function InventoryCountListPage() {
                   to={`/main/warehouses/inventory-counts/${record.id}/edit${buildQuery({ tab: "products" })}`}
                 >
                   <Button type="link" size="small">
-                    Tahrirlash
+                    {t("common.edit")}
                   </Button>
                 </Link>
               )}
@@ -160,7 +165,7 @@ export default function InventoryCountListPage() {
                   })}`}
                 >
                   <Button type="link" size="small">
-                    Farqlar
+                    {t("warehouse.count.differences")}
                   </Button>
                 </Link>
               )}
@@ -172,7 +177,7 @@ export default function InventoryCountListPage() {
                   })}`}
                 >
                   <Button type="link" size="small">
-                    Tasdiqlash
+                    {t("common.confirm")}
                   </Button>
                 </Link>
               )}
@@ -184,16 +189,16 @@ export default function InventoryCountListPage() {
                   })}`}
                 >
                   <Button type="link" size="small">
-                    Bekor qilish
+                    {t("common.cancel")}
                   </Button>
                 </Link>
               )}
               {canDelete && (
                 <Popconfirm
-                  title="Hujjatni o'chirish"
-                  description="Rostdan ham hujjatni o'chirmoqchimisiz?"
-                  okText="O'chirish"
-                  cancelText="Bekor qilish"
+                  title={t("warehouse.count.deleteTitle")}
+                  description={t("warehouse.count.deleteQuestion")}
+                  okText={t("common.delete")}
+                  cancelText={t("common.cancel")}
                   okButtonProps={{ danger: true }}
                   onConfirm={async () => {
                     try {
@@ -209,7 +214,7 @@ export default function InventoryCountListPage() {
                     danger
                     loading={deleteMutation.isPending}
                   >
-                    O'chirish
+                    {t("common.delete")}
                   </Button>
                 </Popconfirm>
               )}
@@ -218,7 +223,7 @@ export default function InventoryCountListPage() {
         },
       },
     ],
-    [deleteMutation, permissions],
+    [deleteMutation, permissions, t],
   );
 
   return (
@@ -229,7 +234,7 @@ export default function InventoryCountListPage() {
           <PermissionCard permission={inventoryCountPermissions.create}>
             <Link to="add">
               <Button type="primary" icon={<Plus className="size-4" />}>
-                Yangi inventarizatsiya
+                {t("warehouse.count.new")}
               </Button>
             </Link>
           </PermissionCard>

@@ -421,7 +421,7 @@ export const settingsRoutes: RouteObject = {
     {
       path: "opening-inventory",
       handle: {
-        title: "Boshlang'ich qoldiqlar",
+        title: "settings.entities.openingInventory",
         showBack: true,
         backTo: "..",
       },
@@ -436,7 +436,7 @@ export const settingsRoutes: RouteObject = {
         {
           path: "add",
           handle: {
-            title: "Qo'shish",
+            title: "common.add",
             showBack: true,
             backTo: "..",
           },
@@ -448,7 +448,7 @@ export const settingsRoutes: RouteObject = {
         {
           path: "edit/:id",
           handle: {
-            title: "Tahrirlash",
+            title: "common.edit",
             showBack: true,
             backTo: "..",
           },

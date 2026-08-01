@@ -1,5 +1,6 @@
 import { Button } from "antd";
 import { PackagePlus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface PurchaseImportMxikActionsProps {
   missingMxikCount: number;
@@ -20,6 +21,7 @@ export default function PurchaseImportMxikActions({
   onDeleteMissingMxiks,
   onOpenMissingProductsModal,
 }: PurchaseImportMxikActionsProps) {
+  const { t } = useTranslation();
   if (linesLength === 0 || purchaseMode !== "goods") return null;
 
   const loading = isLoading || isFetching;
@@ -33,7 +35,7 @@ export default function PurchaseImportMxikActions({
         icon={<PackagePlus className="size-4" />}
         disabled={loading || missingMxikCount === 0}
       >
-        Topilmagan MXIK kodlarni belgilash ({missingMxikCount})
+        {t("purchase.actions.selectMissingMxik")} ({missingMxikCount})
       </Button>
       <Button
         type="primary"
@@ -43,7 +45,7 @@ export default function PurchaseImportMxikActions({
         icon={<div>{missingMxikCount}</div>}
         disabled={loading || missingMxikCount === 0}
       >
-        Topilmagan MXIK kodlarni o'chirish
+        {t("purchase.actions.deleteMissingMxik")}
       </Button>
     </div>
   );

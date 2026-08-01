@@ -1,5 +1,6 @@
 import { Button, Table, Tooltip, type TableColumnType } from "antd";
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import PurchaseImportSummary from "./PurchaseImportSummary";
 import PurchaseImportActions, {
@@ -48,6 +49,7 @@ export default function PurchaseImportLinesSection({
   totals,
   height,
 }: PurchaseImportLinesSectionProps) {
+  const { t } = useTranslation();
   const loading = isLoading || isFetching;
   const tableHeight = Math.max(240, height - 320);
 
@@ -86,7 +88,7 @@ export default function PurchaseImportLinesSection({
           onCommentChange={onCommentChange}
         />
         <div className="sticky bottom-0 z-10 flex justify-center border-t border-border bg-primary-bg/95 py-2 backdrop-blur">
-          <Tooltip title="Qator qo'shish">
+          <Tooltip title={t("purchase.actions.addLine")}>
             <Button
               type="primary"
               htmlType="button"

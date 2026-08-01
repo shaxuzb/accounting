@@ -1,4 +1,5 @@
 import { Table, type TableProps } from "antd";
+import { useTranslation } from "react-i18next";
 
 type CustomTableProps<T> = TableProps<T>;
 
@@ -10,6 +11,7 @@ function CustomTable<T extends object>({
   pagination,
   ...props 
 }: CustomTableProps<T>) {
+  const { t } = useTranslation();
   return (
     <div className="w-full bg-white rounded-xl border border-gray-200/70 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
       <Table<T>
@@ -29,7 +31,7 @@ function CustomTable<T extends object>({
                 className: "px-6 py-10 border-gray-100 !m-0 flex items-center justify-between bg-white",
                 showTotal: (total) => (
                   <span className="text-[#4e5969] font-normal text-sm">
-                    Jami <strong className="font-semibold text-[#1d2129]">{total}</strong> ta natija
+                    {t("common.resultCount", { count: total })}
                   </span>
                 ),
                 ...pagination,

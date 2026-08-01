@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import type { TFunction } from "i18next";
 import type { OpeningInventoryForm } from "./form";
 import type { OpeningInventoryRow } from "./type";
 
@@ -17,11 +18,11 @@ export const isCompleteOpeningInventoryLineWithAccounts = (
   isCompleteOpeningInventoryLine(line) &&
   Boolean(line.debitAccountId);
 
-export const openingInventorySchema = Yup.object<OpeningInventoryForm>({
-  docDate: Yup.string().trim().required("Sanani tanlang"),
-  counterpartyId: Yup.number().required("Kontragentni tanlang"),
-  contractId: Yup.number().required("Shartnomani tanlang"),
-  warehouseId: Yup.number().required("Omborni tanlang"),
+export const createOpeningInventorySchema = (t: TFunction) => Yup.object<OpeningInventoryForm>({
+  docDate: Yup.string().trim().required(t("openingInventory.messages.selectDate")),
+  counterpartyId: Yup.number().required(t("openingInventory.messages.selectCounterparty")),
+  contractId: Yup.number().required(t("openingInventory.messages.selectContract")),
+  warehouseId: Yup.number().required(t("openingInventory.messages.selectWarehouse")),
   comment: Yup.string().trim().notRequired(),
   lines: Yup.array()
     .of(
@@ -33,10 +34,10 @@ export const openingInventorySchema = Yup.object<OpeningInventoryForm>({
         debitAccountId: Yup.number().nullable(),
       }),
     )
-    .required("Kamida bitta mahsulot kiriting"),
+    .required(t("openingInventory.messages.addAtLeastOneProduct")),
 }).test(
   "has-lines",
-  "Kamida bitta mahsulot kiriting",
+  t("openingInventory.messages.addAtLeastOneProduct"),
   (value: unknown) => {
     const form = value as OpeningInventoryForm | undefined;
     return Boolean(

@@ -6,22 +6,24 @@ import Card from "@/components/ui/card/Card";
 import { useGetListDocumentAccountSettings } from "../hooks";
 import type { DocumentAccountSettingsListItem } from "../types/type";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
+import { useTranslation } from "react-i18next";
 
 export default function DocumentAccountSettingsListPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data, isLoading, isFetching, refetch } =
     useGetListDocumentAccountSettings();
 
   const columns: TableColumnsType<DocumentAccountSettingsListItem> = [
     {
-      title: "T/r",
+      title: t("common.rowNumber"),
       key: "index",
       width: 70,
       align: "center",
       render: (_value, _record, index) => index + 1,
     },
     {
-      title: "Hujjat turi",
+      title: t("settings.documentAccounts.documentType"),
       dataIndex: "documentTypeName",
       render: (value: string, record) => (
         <Button
@@ -38,17 +40,17 @@ export default function DocumentAccountSettingsListPage() {
       ),
     },
     {
-      title: "Kod",
+      title: t("settings.fields.code"),
       dataIndex: "documentTypeCode",
       width: 220,
     },
     {
-      title: "Tavsif",
+      title: t("settings.fields.description"),
       dataIndex: "documentTypeDescription",
       render: (value?: string) => value || "—",
     },
     {
-      title: "Holati",
+      title: t("settings.fields.status"),
       dataIndex: "stateName",
       width: 120,
       align: "center",
@@ -56,7 +58,7 @@ export default function DocumentAccountSettingsListPage() {
         value ? <Tag color="green">{value}</Tag> : <span>—</span>,
     },
     {
-      title: "Amallar",
+      title: t("common.actions"),
       key: "action",
       width: 110,
       align: "center",
@@ -69,7 +71,7 @@ export default function DocumentAccountSettingsListPage() {
             )
           }
         >
-          Ko'rish
+          {t("common.view")}
         </Button>
       ),
     },
@@ -86,7 +88,7 @@ export default function DocumentAccountSettingsListPage() {
             icon={<RefreshCw className="size-4" />}
             onClick={() => refetch()}
           >
-            Yangilash
+            {t("common.refresh")}
           </Button>
         </Space>
       </div>

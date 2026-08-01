@@ -22,13 +22,29 @@
     "next": "Next",
     "refresh": "Refresh",
     "selected": "Selected",
-    "create": "Create"
+    "create": "Create",
+    "confirm": "Confirm",
+    "optional": "Optional",
+    "requiredFields": "Fill in the required fields",
+    "deleteConfirm": "Are you sure you want to delete this?",
+    "resultRange": "{{from}}–{{to}} / {{total}}",
+    "close": "Close",
+    "required": "Required",
+    "home": "Go home",
+    "reload": "Reload",
+    "resultCount": "Total results: {{count}}",
+    "accountingEntries": "Accounting entries",
+    "piece": "pcs",
+    "and": "and"
   },
   "actions": {
     "deleteSuccess": "Element {{id}} was deleted successfully",
     "deleteConfirmTitle": "Do you want to delete this element?",
     "deleteConfirmContent": "This action cannot be undone!",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "confirmSuccess": "Document confirmed",
+    "cancelSuccess": "Document cancelled"
   },
   "processStatuses": {
     "draft": "Draft",
@@ -39,11 +55,18 @@
   "error": {
     "title": "An error occurred",
     "subtitle": "Sorry, there was a problem loading the page or processing requests.",
-    "reload": "Reload page"
+    "reload": "Reload page",
+    "pageNotFound": "Page not found",
+    "unknown": "An unknown error occurred",
+    "noPermission": "You do not have permission to access this page"
   },
   "profile": {
     "defaultUser": "User",
     "theme": "Theme",
+    "themeModes": {
+      "dark": "dark",
+      "light": "light"
+    },
     "security": "Security",
     "language": "Language",
     "wallpaper": "Wallpaper",
@@ -93,7 +116,27 @@
     "login": "Sign in",
     "loginSuccess": "Signed in successfully!",
     "noPermissions": "No permissions have been granted to access the system!",
-    "copyright": "© 2026 HisobKitob. All rights reserved."
+    "copyright": "© 2026 HisobKitob. All rights reserved.",
+    "loggedOut": "You have signed out!",
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "validation": {
+      "userNameRequired": "Enter your username",
+      "passwordRequired": "Enter your password"
+    },
+    "features": {
+      "convenient": {
+        "title": "Built for accountants",
+        "description": "Save time with an intuitive interface and automated workflows."
+      },
+      "secure": {
+        "title": "Secure and reliable",
+        "description": "Your data is protected with robust security controls."
+      },
+      "allInOne": {
+        "title": "Everything in one system",
+        "description": "Manage all accounting processes from a single platform."
+      }
+    }
   },
   "validation": {
     "required": "{{field}} is required",
@@ -118,7 +161,7 @@
       "comment": "Comment",
       "inventoryNumber": "Inventory number",
       "name": "Name",
-      "faGroup": "FA Group",
+      "faGroup": "Fixed asset group",
       "okof": "OKOF",
       "depreciationMethod": "Depreciation method",
       "usefulLifeMonths": "Useful life (months)",
@@ -136,7 +179,7 @@
       "quantity": "Quantity",
       "price": "Price",
       "vatRateId": "VAT Rate",
-      "faGroupId": "FA Group",
+      "faGroupId": "Fixed asset group",
       "okofId": "OKOF",
       "depreciationMethodId": "Depreciation method",
       "departmentId": "Department",
@@ -155,13 +198,89 @@
       "newValue": "New value",
       "disposalDate": "Disposal date",
       "disposalType": "Disposal type",
-      "saleAmount": "Sale amount"
+      "saleAmount": "Sale amount",
+      "currentStatus": "Current status",
+      "amount": "Amount",
+      "assetAccount": "Fixed asset account",
+      "accumulatedDepreciationAccount": "Accumulated depreciation account",
+      "depreciationExpenseAccount": "Depreciation expense account",
+      "supplierAccount": "Supplier account",
+      "capitalInvestmentAccount": "Capital investment account",
+      "vatAccount": "VAT account",
+      "revaluationReserveAccount": "Revaluation reserve account",
+      "revaluationLossAccount": "Revaluation loss account",
+      "disposalAccount": "Disposal account",
+      "customerAccount": "Customer account",
+      "gainAccount": "Gain account",
+      "lossAccount": "Loss account"
     },
     "form": {
       "create": "Create fixed asset document",
       "edit": "Edit fixed asset document",
       "run": "Run depreciation",
-      "detail": "Fixed asset document"
+      "detail": "Fixed asset document",
+      "revaluationDetails": "Revaluation details",
+      "assets": "Fixed assets",
+      "actions": "Actions"
+    },
+    "validation": {
+      "inventoryNumberRequired": "Enter an inventory number",
+      "nameRequired": "Enter a name",
+      "groupRequired": "Select a fixed asset group",
+      "okofRequired": "Select an OKOF code",
+      "depreciationMethodRequired": "Select a depreciation method",
+      "usefulLifeMin": "Useful life must be at least 1 month",
+      "usefulLifeRequired": "Enter the useful life",
+      "initialCostNonNegative": "Initial cost cannot be negative",
+      "initialCostRequired": "Enter the initial cost",
+      "salvageValueNonNegative": "Salvage value cannot be negative",
+      "salvageValueRequired": "Enter the salvage value",
+      "commissioningDateRequired": "Enter the commissioning date",
+      "depreciationStartRequired": "Enter the depreciation start date",
+      "plannedUnitsNonNegative": "Planned units cannot be negative",
+      "plannedUnitsRequired": "Enter the planned units",
+      "sourceProductRequired": "Select a source product",
+      "departmentRequired": "Select a department",
+      "responsibleUserRequired": "Select a responsible person",
+      "dateRequired": "Enter a date",
+      "disposalTypeRequired": "Select a disposal type",
+      "reasonRequired": "Enter a reason",
+      "assetRequired": "Select a fixed asset",
+      "saleAmountRequired": "Enter the sale amount",
+      "nonNegative": "The value cannot be negative",
+      "atLeastOneLine": "Add at least one line",
+      "atLeastOneAsset": "Add at least one fixed asset",
+      "newValueRequired": "Enter the new value",
+      "quantityMin": "Quantity must be at least 1",
+      "quantityRequired": "Enter a quantity",
+      "priceRequired": "Enter a price",
+      "vatRateRequired": "Select a VAT rate",
+      "counterpartyRequired": "Select a counterparty",
+      "warehouseRequired": "Select a warehouse",
+      "currencyRequired": "Select a currency",
+      "receiptTypeRequired": "Select a receipt type",
+      "documentNumberRequired": "Enter a document number",
+      "assetAccountRequired": "Select a fixed asset account",
+      "accumulatedDepreciationAccountRequired": "Select an accumulated depreciation account",
+      "depreciationExpenseAccountRequired": "Select a depreciation expense account",
+      "supplierAccountRequired": "Select a supplier account",
+      "capitalInvestmentAccountRequired": "Select a capital investment account",
+      "vatAccountRequired": "Select a VAT account",
+      "revaluationReserveAccountRequired": "Select a revaluation reserve account",
+      "revaluationLossAccountRequired": "Select a revaluation loss account",
+      "disposalAccountRequired": "Select a disposal account",
+      "customerAccountRequired": "Select a customer account",
+      "gainAccountRequired": "Select a gain account",
+      "lossAccountRequired": "Select a loss account"
+    },
+    "sections": {
+      "disposalDetails": "Disposal details",
+      "movementDetails": "Movement details",
+      "lineNumber": "Line {{number}}",
+      "totalSaleAmount": "Total sale amount",
+      "productsAndServices": "Products and services",
+      "productNumber": "Product {{number}}",
+      "assetNumber": "Fixed asset {{number}}"
     }
   },
   "settings": {
@@ -376,6 +495,27 @@
         "connected": "Integration connected successfully",
         "disconnected": "Integration disconnected"
       }
+    },
+    "chartAccounts": {
+      "accountsNotFound": "No accounts found",
+      "selectCurrentPage": "Select current page",
+      "clearCurrentPage": "Clear selection on current page"
+    },
+    "documentAccounts": {
+      "addAccount": "Add account",
+      "selectFromManual": "Select an account from the directory",
+      "removeAccount": "Remove account",
+      "noAccount": "No account assigned",
+      "saved": "Account settings saved",
+      "noRole": "No roles available",
+      "documentType": "Document type",
+      "assignDescription": "Assign accounts to the document type",
+      "defaultAccount": "Default account",
+      "additionalAccount": "Additional account",
+      "accountWithId": "Account #{{id}}"
+    },
+    "openingBalance": {
+      "noSubkontoRequired": "No subaccount is required for this account"
     }
   },
   "openingBalance": {
@@ -442,7 +582,10 @@
       "singleSide": "Enter either debit or credit in row {{row}}",
       "quantityRequired": "Enter quantity in row {{row}}",
       "currencyRequired": "Enter currency, amount, and rate in row {{row}}",
-      "subkontoRequired": "Select the {{name}} subkonto in row {{row}}"
+      "subkontoRequired": "Select the {{name}} subkonto in row {{row}}",
+      "balanceDateRequired": "Enter the opening balance date",
+      "descriptionMax": "Comment must not exceed 500 characters",
+      "stateRequired": "Select a state"
     }
   },
   "purchase": {
@@ -468,10 +611,57 @@
       "total": "Total price",
       "uom": "Unit",
       "debitAccount": "Debit account",
-      "vatAccount": "VAT account"
+      "vatAccount": "VAT account",
+      "productName": "Product name",
+      "mxik": "MXIK code",
+      "productType": "Product type",
+      "pieceTracked": "Marked",
+      "unit": "Unit",
+      "supplierAccount": "Supplier account",
+      "amountWithoutVat": "Amount excluding VAT",
+      "vatAmount": "VAT amount",
+      "comment": "Comment",
+      "vatRateAndAmount": "VAT (rate and amount)",
+      "unitPrice": "Unit price",
+      "serviceName": "Service name",
+      "expenseAccount": "Expense account",
+      "executor": "Contractor",
+      "goods": "Product",
+      "service": "Service",
+      "accounts": "Accounts"
     },
     "messages": {
-      "imported": "Purchase data imported"
+      "imported": "Purchase data imported",
+      "productNameRequired": "Product name is required",
+      "mxikRequired": "MXIK code is required",
+      "unitRequired": "Unit is required",
+      "productTypeRequired": "Product type is required",
+      "atLeastOneProduct": "Add at least one product",
+      "productsRequired": "Products are required",
+      "productCreated": "Product created successfully",
+      "productCreateError": "Failed to create product",
+      "productsCreateError": "Failed to create products",
+      "markingInputHint": "Enter markings or paste them from Excel",
+      "noMarkings": "No markings entered",
+      "chooseSaveMode": "How would you like to save the document?",
+      "fillRequired": "Fill in the required fields",
+      "lineRequired": "Add at least one product or service",
+      "saved": "Document saved",
+      "confirmPermissionDenied": "You do not have permission to confirm this document",
+      "notPieceTracked": "This product is not marked",
+      "duplicateMarkings": "The entered markings have already been added",
+      "missingMxiksDeleted": "Missing MXIK codes deleted",
+      "productListLoadError": "Failed to load the product list. Please try again.",
+      "listLoadError": "Failed to load purchase documents",
+      "listEmpty": "No purchase documents found",
+      "confirmed": "Document confirmed",
+      "cancelled": "Document cancelled",
+      "commentPlaceholder": "Enter a comment...",
+      "markingCount": "Markings: {{count}}",
+      "duplicateMarking": "Duplicate marking: {{marking}}",
+      "markingRequired": "Enter a marking for {{product}}",
+      "ambiguousMxik": "{{count}} MXIK code(s) match multiple products. Select a product from the list.",
+      "supplierAccountRequired": "Select the supplier account"
     },
     "import": {
       "nonSerial": "Non-serial",
@@ -485,6 +675,24 @@
       "previewStep": "Preview data",
       "mappingStep": "Map columns",
       "selectField": "Select field"
+    },
+    "actions": {
+      "goodsReceipt": "Goods receipt",
+      "serviceReceipt": "Service receipt",
+      "addLine": "Add line",
+      "selectMissingMxik": "Select missing MXIK codes",
+      "deleteMissingMxik": "Delete missing MXIK codes",
+      "enterMarkings": "Enter markings",
+      "saveDocument": "Save document",
+      "saveAndConfirm": "Save and confirm",
+      "selectAccounts": "Select accounts",
+      "deleteLine": "Delete line",
+      "retry": "Retry",
+      "addProduct": "Add product",
+      "addService": "Add service",
+      "enterMarking": "Enter marking",
+      "viewMarkings": "View markings",
+      "noMarkingData": "No marking data"
     }
   },
   "bank": {
@@ -501,30 +709,76 @@
       "credit": "Credit",
       "currencyId": "Currency ID",
       "counterpartyId": "Counterparty ID",
-      "accountNumber": "Account number"
+      "accountNumber": "Account number",
+      "bankChartAccount": "Bank ledger account",
+      "offsetAccount": "Offset account",
+      "counterpartyBankAccount": "Counterparty bank account",
+      "exchangeRate": "Exchange rate",
+      "contract": "Contract",
+      "paymentType": "Payment type",
+      "card": "Card",
+      "accountingEntries": "Accounting entries",
+      "status": "Status",
+      "currentAmount": "Current amount"
     },
     "messages": {
       "imported": "Bank statement imported",
       "saved": "Bank operations saved",
-      "partialSaved": "{{saved}} transactions saved, {{skipped}} skipped",
-      "noValidTransactions": "No complete transactions found to save",
-      "saveNextStep": "Saving will be connected to the BankOperation API in the next step",
-      "missingRequired": "{{count}} transactions are missing required data",
+      "partialSaved": "{{saved}} operations saved, {{skipped}} skipped",
+      "noValidTransactions": "No complete operations found to save",
+      "saveNextStep": "Saving will be connected to the bank operations API in the next step",
+      "missingRequired": "{{count}} operations are missing required data",
       "noData": "No imported bank statements yet",
-      "noTransactions": "No transactions found",
+      "noTransactions": "No operations found",
       "counterpartyMissing": "Counterparty not found",
-      "bankAccountMissing": "No bank account",
-      "bankAccountMissingDescription": "Transactions in this card will not be sent because bankAccountId was not found."
+      "bankAccountMissing": "Bank account not found",
+      "bankAccountMissingDescription": "Operations in this card will not be saved because the bank account was not found.",
+      "bankChartAccountMissing": "Bank ledger account not selected",
+      "offsetAccountMissing": "Offset account not selected",
+      "contractMissing": "Contract not selected",
+      "counterpartyAccountMissing": "Counterparty bank account not selected",
+      "selectCompleteBankInfo": "Complete all bank information",
+      "selectAllBankAccounts": "Select a bank ledger account for every card",
+      "selectAllOffsetAccounts": "Select an offset account for every operation",
+      "selectAllContracts": "Select a contract for every operation",
+      "selectAllCounterpartyAccounts": "Select a counterparty bank account for every operation",
+      "documentSaved": "Document saved",
+      "documentConfirmed": "Document confirmed",
+      "documentCancelled": "Document cancelled"
     },
     "import": {
       "title": "Bank statement import",
-      "description": "Upload an Excel file and the parser will extract the data.",
+      "description": "Upload an Excel file and the system will extract its data automatically.",
       "uploadText": "Click to upload a file or drag it here",
-      "uploadHint": "XLS or XLSX bank statement files are supported.",
-      "statements": "Statements",
-      "transactions": "Transactions",
+      "uploadHint": "XLS and XLSX bank statements are supported.",
+      "statements": "Bank statements",
+      "transactions": "Operations",
       "status": "Status",
-      "readyToSave": "Ready to save"
+      "readyToSave": "Ready to save",
+      "assignMissingBankInfo": "Assign missing bank information",
+      "assignMissingCounterparties": "Assign unmatched counterparties",
+      "missingSummary": "Not selected: {{bankAccounts}} bank accounts, {{offsetAccounts}} offset accounts, {{contracts}} contracts, {{counterpartyAccounts}} counterparty bank accounts"
+    },
+    "operation": {
+      "title": "Bank operation",
+      "income": "Receipt",
+      "expense": "Expense"
+    },
+    "placeholders": {
+      "selectAccount": "Select an account",
+      "selectBankChartAccount": "Select a bank ledger account",
+      "selectContract": "Select a contract",
+      "selectCounterpartyFirst": "Select a counterparty first",
+      "selectCounterpartyAccount": "Select a counterparty bank account"
+    },
+    "validation": {
+      "bankAccountRequired": "Select a bank account",
+      "bankChartAccountRequired": "Select a bank ledger account",
+      "offsetAccountRequired": "Select an offset account",
+      "operationTypeRequired": "Select an operation type",
+      "paymentTypeRequired": "Select a payment type",
+      "counterpartyRequired": "Select a counterparty",
+      "currencyRequired": "Select a currency"
     }
   },
   "contract": {
@@ -609,15 +863,130 @@
   "sale": {
     "title": "Sales",
     "fields": {
+      "product": "Product",
+      "quantity": "Quantity",
       "inventoryAccount": "Inventory account",
       "incomeAccount": "Sales income account",
-      "costAccount": "Sales cost account"
+      "costAccount": "Sales cost account",
+      "barcodeScanner": "Barcode scanner",
+      "salePrice": "Sale price",
+      "vatAmount": "VAT amount",
+      "unitPrice": "Unit price",
+      "customerAccount": "Customer account",
+      "vatAccount": "VAT account",
+      "documentDate": "Document date",
+      "documentAmount": "Document amount",
+      "totalPositions": "Total positions",
+      "totalQuantity": "Total quantity",
+      "totalAmount": "Total amount",
+      "productTypes": "Product types",
+      "margin": "Margin, %",
+      "mxik": "MXIK code",
+      "batchNumber": "Batch number",
+      "receiptDate": "Receipt date",
+      "saleAmount": "Sale amount",
+      "quantityToSell": "Quantity to sell",
+      "amountWithoutVat": "Amount before VAT",
+      "vatRateAndAmount": "VAT (rate and amount)",
+      "comment": "Comment",
+      "customer": "Customer",
+      "piece": "pcs",
+      "status": "Status",
+      "marked": "Entered",
+      "notMarked": "Not entered",
+      "batch": "Batch",
+      "allVat": "VAT for all",
+      "marginAmount": "Margin amount",
+      "countSuffix": "{{count}} items",
+      "available": "Available",
+      "batches": "Batches",
+      "selected": "Selected",
+      "ungrouped": "Ungrouped"
     },
     "new": "New sale",
     "edit": "Edit sale",
     "document": "Sale document",
     "selection": {
       "selectedProducts": "Selected products (document)"
+    },
+    "actions": {
+      "scanMarking": "Scan marking code",
+      "confirmMarking": "Confirm product marking",
+      "selectAccounts": "Select accounts",
+      "addGoods": "Add goods",
+      "withMarking": "With marking",
+      "addLine": "Add line",
+      "apply": "Apply",
+      "cancelDocument": "Cancel document",
+      "addSelected": "Add selected",
+      "formalize": "Complete"
+    },
+    "messages": {
+      "scanOrEnter": "Scan or enter the code and press Enter",
+      "scanOrEnterMarking": "Scan or enter the marking code",
+      "noProductsToConfirm": "No products found to confirm",
+      "salePriceRequired": "Enter a sale price for every product",
+      "costPriceMissing": "Cost price is missing for one or more products",
+      "vatRateRequired": "Select a VAT rate for every product",
+      "saleDocTableIdMissing": "Sale document line ID is missing",
+      "invalidConfirmLines": "No valid product lines could be prepared for confirmation",
+      "documentCancelled": "Sale document cancelled",
+      "cancelDocumentQuestion": "Confirm cancellation of the sale document?",
+      "productsNotFound": "No products found",
+      "unitMissing": "The selected product has no unit",
+      "notPieceTracked": "This product is not marking-tracked",
+      "enterBatchQuantityFirst": "Enter the quantity to sell for the batch first",
+      "markingPerPieceRequired": "Enter one marking code for each item",
+      "allMarkingsEntered": "All marking codes for the quantity have been entered",
+      "duplicateMarking": "This marking code has already been added",
+      "markingProductNotFound": "No available product matches this marking code",
+      "batchQuantityFull": "The quantity for this batch is already complete",
+      "allowedMarkingsNotLoaded": "Allowed marking codes have not loaded yet",
+      "markingNotForSale": "This marking code does not belong to this sale",
+      "markerDuplicate": "This code has already been added",
+      "markerNotForDocument": "This code does not belong to the document products",
+      "allowedMarkingsNotChecked": "Allowed marking codes have not been checked yet",
+      "batchesNotConfirmed": "Not all batches are confirmed or scanned",
+      "markingNotScanned": "The marking code has not been scanned yet",
+      "warehouseStockEmpty": "No stock found in the warehouse",
+      "deleteProductQuestion": "Delete this product?",
+      "addByBarcode": "Add a product by barcode",
+      "checkProductData": "Check the product data",
+      "markingQuantityRequired": "Enter marking codes matching the quantity for every marked product",
+      "saleRuleMissing": "No sale rule is configured",
+      "dateRequired": "Date is required",
+      "atLeastOneProduct": "Select at least one product",
+      "commentPlaceholder": "Enter a comment...",
+      "createDocumentFirst": "Create the sale document first",
+      "scanBarcodeOrEnter": "Scan a barcode or enter it manually",
+      "scanConfirmed": "Confirmed",
+      "selectCounterparty": "Select a counterparty",
+      "selectContract": "Select a contract",
+      "selectWarehouse": "Select a warehouse",
+      "selectCurrency": "Select a currency",
+      "selectCustomerAccount": "Select a customer account",
+      "selectVatAccount": "Select a VAT account",
+      "selectProduct": "Select a product",
+      "enterQuantity": "Enter the product quantity",
+      "selectUnit": "Select the product unit",
+      "selectInventoryAccount": "Select the inventory account",
+      "selectIncomeAccount": "Select the sales income account",
+      "selectCostAccount": "Select the cost of sales account",
+      "differentBatchCosts": "For {{product}}, FIFO/LIFO batches with different costs cannot be sold in one document: {{costs}}",
+      "productWithId": "Product #{{id}}",
+      "collapseTable": "Collapse table",
+      "expandTable": "Expand table",
+      "markingsChecking": "Marking codes are being checked"
+    },
+    "warehouse": {
+      "goodsToDispatch": "Goods to dispatch from warehouse",
+      "searchProduct": "Search products...",
+      "allGroups": "All groups",
+      "availableOnly": "Available only",
+      "productBatches": "Product batches",
+      "selectedProduct": "Selected product",
+      "totalCost": "Total cost",
+      "totalSale": "Total sale"
     }
   },
   "warehouses": {
@@ -680,6 +1049,54 @@
         "description": "Account card and movements for a single account.",
         "table": "Account card rows",
         "empty": "No account card results"
+      },
+      "fields": {
+        "account": "Account",
+        "periodId": "Period ID",
+        "dateFrom": "Date from",
+        "dateTo": "Date to",
+        "currency": "Currency",
+        "currencyId": "Currency ID",
+        "documentType": "Document type",
+        "page": "Page",
+        "pageSize": "Page size",
+        "postingDate": "Posting date",
+        "journalNumber": "Journal number",
+        "documentNumber": "Document number",
+        "description": "Description",
+        "debitAccount": "Debit account",
+        "creditAccount": "Credit account",
+        "amount": "Amount",
+        "organization": "Organization",
+        "counterparty": "Counterparty",
+        "warehouse": "Warehouse",
+        "accountCode": "Account code",
+        "accountName": "Account name",
+        "balance": "Balance",
+        "counterpartAccount": "Counterpart account",
+        "inflow": "Inflow",
+        "outflow": "Outflow",
+        "net": "Net change",
+        "value": "Value"
+      },
+      "summary": {
+        "totalCount": "Total records",
+        "totalPages": "Total pages",
+        "hasPreviousPage": "Has previous page",
+        "hasNextPage": "Has next page",
+        "totalAssets": "Total assets",
+        "totalLiabilities": "Total liabilities",
+        "totalEquity": "Total equity",
+        "liabilitiesAndEquity": "Liabilities and equity",
+        "revenue": "Revenue",
+        "costOfSales": "Cost of sales",
+        "operatingExpense": "Operating expense",
+        "netProfit": "Net profit",
+        "openingCashBalance": "Opening cash balance",
+        "closingCashBalance": "Closing cash balance"
+      },
+      "actions": {
+        "show": "Show report"
       }
     },
     "trial": {
@@ -725,7 +1142,11 @@
       "incomeOrder": "Cash receipt order",
       "newExpenseOrder": "New cash expense order",
       "expenseOrder": "Cash expense order",
-      "accountingEntries": "Accounting entries report"
+      "accountingEntries": "Accounting entries report",
+      "faAssets": "Fixed assets",
+      "faReceipts": "Fixed asset receipts",
+      "faMovements": "Fixed asset movements",
+      "faDisposals": "Fixed asset disposals"
     },
     "fields": {
       "organization": "Organization",
@@ -1027,7 +1448,8 @@
       "cashBox": "Cash box",
       "sourceChartAccount": "Source account",
       "bankOperation": "Bank operation",
-      "cashOperation": "Cash operation"
+      "cashOperation": "Cash operation",
+      "quantity": "Quantity"
     },
     "enums": {
       "employmentType": {
@@ -1247,6 +1669,311 @@
       "paymentCreated": "Payment created",
       "paymentConfirmed": "Payment confirmed",
       "paymentCancelled": "Payment cancelled"
+    },
+    "employments": {
+      "createTitle": "Add employment",
+      "editTitle": "Edit employment",
+      "createHint": "Enter the employee's position, department, and employment terms.",
+      "add": "Add workplace"
+    }
+  },
+  "openingInventory": {
+    "modes": {
+      "goodsReceipt": "Goods receipt",
+      "serviceReceipt": "Service receipt"
+    },
+    "fields": {
+      "productName": "Product name",
+      "goodsName": "Goods name",
+      "serviceName": "Service name",
+      "unit": "Unit",
+      "quantity": "Quantity",
+      "price": "Price",
+      "amount": "Amount",
+      "amountWithoutVat": "Amount before VAT",
+      "vatAmount": "VAT amount",
+      "vatRateAndAmount": "VAT (rate and amount)",
+      "accounts": "Accounts",
+      "debitAccount": "Debit account",
+      "comment": "Comment"
+    },
+    "actions": {
+      "addGoods": "Add goods",
+      "addService": "Add service",
+      "addLine": "Add line",
+      "selectAccounts": "Select accounts",
+      "applyLine": "Apply to this line only",
+      "applyAll": "Apply to all lines",
+      "enterMarkings": "Enter marking codes",
+      "deleteLine": "Delete line",
+      "retry": "Retry"
+    },
+    "messages": {
+      "atLeastOneCompletedLine": "Add at least one completed {{type}} line",
+      "fillAccountsAndPrices": "Fill in the accounts and prices on every line",
+      "saved": "Document saved successfully",
+      "updated": "Document updated successfully",
+      "markingRequired": "{{product}} is marking-tracked, but no marking code was entered",
+      "duplicateMarking": "Marking code {{marking}} was entered more than once",
+      "duplicateProduct": "The same product cannot be selected twice",
+      "markingAlreadyAdded": "This marking code has already been added",
+      "markingInputHint": "Enter marking codes or paste them from Excel",
+      "noMarkings": "No marking codes entered",
+      "markingCount": "{{count}} marking codes",
+      "enterMarking": "Enter a marking code",
+      "notPieceTracked": "This product is not marking-tracked",
+      "serviceAccountHint": "Select an account for this service line",
+      "goodsAccountHint": "Select a debit account for this goods line",
+      "selectDate": "Select a date",
+      "selectGoods": "Select goods",
+      "selectService": "Select a service",
+      "selectCounterparty": "Select a counterparty",
+      "selectContract": "Select a contract",
+      "selectWarehouse": "Select a warehouse",
+      "addAtLeastOneProduct": "Add at least one product",
+      "loadError": "Failed to load opening inventory balances",
+      "empty": "No opening inventory balances found",
+      "commentPlaceholder": "Enter a comment..."
+    }
+  },
+  "warehouse": {
+    "fields": {
+      "documentNumber": "Document number",
+      "documentDate": "Document date",
+      "createdDate": "Created date",
+      "productName": "Product name",
+      "productType": "Product type",
+      "mxik": "MXIK code",
+      "salesPrice": "Sales price",
+      "totalSalesPrice": "Total sales price",
+      "totalPrice": "Total price",
+      "productTableId": "Product table ID",
+      "serialNumber": "Serial number",
+      "markingNumber": "Marking number",
+      "costPrice": "Cost price",
+      "defaultCost": "Default cost",
+      "sourceWarehouse": "Source warehouse",
+      "destinationWarehouse": "Destination warehouse",
+      "adjustmentType": "Adjustment type",
+      "countStatus": "Count status",
+      "countedQuantity": "Counted quantity",
+      "barcode": "Barcode"
+    },
+    "lines": {
+      "productLines": "Product lines",
+      "inventoryLines": "Inventory count lines",
+      "inventoryHint": "Enter each product and its actual counted quantity",
+      "countFinished": "Is the count complete?",
+      "addProduct": "Add product",
+      "addLine": "Add line",
+      "noLines": "No lines",
+      "items": "Line items",
+      "addItem": "Add item",
+      "selectProduct": "Select a product",
+      "selectWarehouseFirst": "Select a warehouse first",
+      "selectSourceWarehouseFirst": "Select the source warehouse first",
+      "notPieceTracked": "This product is not marking-tracked",
+      "row": "Line {{number}}",
+      "stock": "Stock",
+      "marking": "Marking",
+      "selectMarking": "Select markings",
+      "pieces": "{{count}} pcs"
+    },
+    "messages": {
+      "created": "Document created",
+      "saved": "Document saved",
+      "fillRequired": "Fill in the required fields",
+      "confirmed": "Document confirmed",
+      "cancelled": "Document cancelled",
+      "countCompleted": "Count completed",
+      "inventoryConfirmed": "Inventory count confirmed",
+      "noData": "No data",
+      "noMarkings": "No marking codes found"
+    },
+    "adjustment": {
+      "title": "Inventory adjustment",
+      "increase": "Increase",
+      "decrease": "Decrease"
+    },
+    "transfer": {
+      "title": "Warehouse transfer",
+      "additional": "Additional"
+    },
+    "count": {
+      "generalInfo": "General information",
+      "corrected": "Corrected",
+      "shortage": "Shortage",
+      "surplus": "Surplus",
+      "cancelled": "Cancelled",
+      "stockMovement": "Stock movement",
+      "finish": "Complete count",
+      "adjustmentsCreated": "Created adjustment documents",
+      "positiveNotCreated": "Positive adjustment not created",
+      "negativeNotCreated": "Negative adjustment not created",
+      "positiveAdjustment": "Positive adjustment",
+      "negativeAdjustment": "Negative adjustment",
+      "confirmTitle": "Confirm inventory count",
+      "confirmQuestion": "Confirm the inventory count? Stock will be adjusted automatically from the differences: shortages create a negative adjustment and surpluses create a positive adjustment.",
+      "cancelTitle": "Cancel inventory count",
+      "cancelQuestion": "Cancel the inventory count?",
+      "deleteTitle": "Delete document",
+      "deleteQuestion": "Delete this document?",
+      "new": "New inventory count",
+      "state": "State",
+      "count": "Count",
+      "completed": "Completed",
+      "inProgress": "In progress",
+      "notCreated": "Not created",
+      "differences": "Differences",
+      "title": "Inventory count",
+      "noDifference": "No difference",
+      "expected": "Expected",
+      "counted": "Counted",
+      "creating": "Creating",
+      "countCompletedLabel": "Count completed",
+      "countInProgressLabel": "Count in progress",
+      "posted": "Posted",
+      "notPosted": "Not posted",
+      "cancelledAt": "Cancelled",
+      "notCancelled": "Not cancelled",
+      "equal": "No difference",
+      "notAvailable": "Not available",
+      "missingProductTableIds": "Missing product table IDs",
+      "postingBatches": "Postings",
+      "saveDraft": "Save draft",
+      "positiveWithId": "Positive: {{id}}",
+      "negativeWithId": "Negative: {{id}}"
+    }
+  },
+  "notifications": {
+    "defaultSender": "System message",
+    "dayAgo": "1 day ago",
+    "defaultMessage": "A new notification is available for you.",
+    "viewAll": "View all"
+  },
+  "excelImport": {
+    "title": "Excel import",
+    "button": "Import from Excel",
+    "dropzone": "Click here or drag and drop a file to upload it",
+    "securityHint": "Upload only .xlsx or .xls files. Do not upload confidential or prohibited data.",
+    "uploadedFile": "Uploaded file",
+    "deleteFile": "Delete file",
+    "selectSheet": "Select a sheet",
+    "selectKey": "Select a key",
+    "newDescription": "New description",
+    "steps": {
+      "selectSheet": "Select sheet",
+      "mapData": "Map data",
+      "assignKey": "Assign key"
+    }
+  },
+  "accountings": {
+    "endpoint": "API endpoint",
+    "fields": {
+      "accountId": "Account ID",
+      "periodId": "Accounting period ID",
+      "dateFrom": "Start date",
+      "dateTo": "End date",
+      "currencyId": "Currency ID",
+      "counterpartyId": "Counterparty ID",
+      "warehouseId": "Warehouse ID",
+      "page": "Page",
+      "pageSize": "Rows per page",
+      "documentType": "Document type",
+      "documentId": "Document ID",
+      "recordId": "Record ID",
+      "tableName": "Table name",
+      "includeZeroBalance": "Include accounts with zero balance"
+    },
+    "placeholders": {
+      "recordId": "For example: 12345",
+      "tableName": "For example: sale_documents"
+    },
+    "actions": {
+      "calculate": "Calculate",
+      "repost": "Repost",
+      "closePeriod": "Close period",
+      "reopenPeriod": "Reopen period"
+    },
+    "validation": {
+      "accountIdRequired": "Enter the account ID",
+      "periodIdRequired": "Enter the accounting period ID"
+    },
+    "result": {
+      "title": "Result",
+      "empty": "No result available",
+      "rawTitle": "Full response",
+      "rawDescription": "Complete data returned by the API."
+    },
+    "ledger": {
+      "title": "General ledger",
+      "resultDescription": "General ledger account movements.",
+      "empty": "No general ledger data found"
+    },
+    "audit": {
+      "title": "Change history",
+      "resultDescription": "Change history by record and table.",
+      "empty": "No change history found"
+    },
+    "repost": {
+      "title": "Repost entries",
+      "resultDescription": "Result of the entry repost request.",
+      "empty": "No repost result available"
+    },
+    "periods": {
+      "title": "Accounting periods",
+      "resultDescription": "Result of closing or reopening an accounting period.",
+      "empty": "No accounting period result available"
+    }
+  },
+  "cash": {
+    "fields": {
+      "date": "Date",
+      "cashBox": "Cash register",
+      "operationType": "Operation type",
+      "cashChartAccount": "Cash ledger account",
+      "offsetAccount": "Offset account",
+      "counterparty": "Counterparty",
+      "paymentType": "Payment type",
+      "currency": "Currency",
+      "amount": "Amount",
+      "exchangeRate": "Exchange rate",
+      "comment": "Comment",
+      "documentNumber": "Document number",
+      "type": "Type",
+      "income": "Receipt",
+      "expense": "Expense",
+      "balance": "Balance",
+      "status": "Status",
+      "currentStatus": "Current status"
+    },
+    "book": {
+      "cashBoxWithId": "Cash register #{{id}}",
+      "openingBalance": "Opening balance",
+      "totalIncome": "Total receipts",
+      "totalExpense": "Total expenses",
+      "closingBalance": "Closing balance"
+    },
+    "operation": {
+      "documentInfo": "Document information"
+    },
+    "validation": {
+      "paymentTypeRequired": "Select a payment type",
+      "cashChartAccountRequired": "Select a cash ledger account",
+      "offsetAccountRequired": "Select an offset account",
+      "operationTypeRequired": "Select an operation type",
+      "amountRequired": "Enter a positive amount",
+      "exchangeRateRequired": "Enter an exchange rate",
+      "dateRequired": "Enter a date"
+    },
+    "messages": {
+      "documentCreated": "Document created",
+      "documentSaved": "Document saved",
+      "documentConfirmed": "Document confirmed",
+      "documentCancelled": "Document cancelled",
+      "fillRequired": "Complete all required fields",
+      "operationConfirmed": "Cash operation confirmed",
+      "operationCancelled": "Cash operation cancelled"
     }
   }
 }

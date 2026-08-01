@@ -6,6 +6,7 @@ import OpeningInventoryActions, {
   type OpeningInventoryActionsProps,
 } from "./OpeningInventoryActions";
 import type { OpeningInventoryMode, OpeningInventoryRow } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 interface OpeningInventoryLinesSectionProps extends OpeningInventoryActionsProps {
   columns: TableColumnType<OpeningInventoryRow>[];
@@ -43,6 +44,7 @@ export default function OpeningInventoryLinesSection({
   totals,
   height,
 }: OpeningInventoryLinesSectionProps) {
+  const { t } = useTranslation();
   const loading = isLoading || isFetching;
   const tableHeight = Math.max(240, height - 320);
 
@@ -76,7 +78,7 @@ export default function OpeningInventoryLinesSection({
           onCommentChange={onCommentChange}
         />
         <div className="sticky bottom-0 z-10 flex justify-center border-t border-border bg-primary-bg/95 py-2 backdrop-blur">
-          <Tooltip title="Qator qo'shish">
+          <Tooltip title={t("openingInventory.actions.addLine")}>
             <Button
               type="primary"
               htmlType="button"

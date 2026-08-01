@@ -8,7 +8,9 @@ import { logout } from "@/store/features/authSlice";
 import { setMode } from "@/store/features/modeSlice";
 import toast from "react-hot-toast";
 import { useEffectiveTheme } from "@/shared/hooks/useEffectiveTheme";
+import { useTranslation } from "react-i18next";
 const ProfileNav: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // const loading = useAppSelector((state) => state.auth.loading);
   const dispatch = useAppDispatch();
@@ -18,7 +20,7 @@ const ProfileNav: React.FC = () => {
   const handleLogout = async () => {
     await navigate("/login", { replace: true });
     dispatch(logout());
-    toast.success("Tizimdan chiqdingiz!");
+    toast.success(t("auth.loggedOut"));
   };
 
   const content = (

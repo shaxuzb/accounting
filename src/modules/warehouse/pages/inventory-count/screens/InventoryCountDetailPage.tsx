@@ -9,6 +9,7 @@ import { useFormik } from "formik";
 import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Col,
@@ -81,14 +82,14 @@ const defaultValues: InventoryCountForm = {
   ],
 };
 
-const getDifferenceStatus = (
+const getDifferenceStatusKey = (
   difference: InventoryCountDifference,
 ): string => {
   const missing = difference.missingQuantity ?? 0;
   const found = difference.foundQuantity ?? 0;
-  if (missing > 0) return "Kam chiqqan";
-  if (found > 0) return "Ortiq chiqqan";
-  return "Farq yo'q";
+  if (missing > 0) return "warehouse.count.shortage";
+  if (found > 0) return "warehouse.count.surplus";
+  return "warehouse.count.noDifference";
 };
 
 const buildJsonTableColumns = (rows: JsonRecord[] = []) =>
@@ -105,6 +106,7 @@ const buildJsonRows = (rows: JsonRecord[] | undefined): (JsonRecord & { key: str
   (rows ?? []).map((row, index) => ({ ...row, key: `${index}` }));
 
 export default function InventoryCountDetailPage() {
+  const { t } = useTranslation();
   const { id = "" } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -212,7 +214,7 @@ export default function InventoryCountDetailPage() {
       try {
         if (isCreate) {
           const created = await createMutation.mutateAsync(toCreatePayload(values));
-          toast.success("Hujjat saqlandi");
+          toast.success(t("warehouse.messages.saved"));
           navigate(`/main/warehouses/inventory-counts/${created.id}`, {
             replace: true,
           });
@@ -220,7 +222,7 @@ export default function InventoryCountDetailPage() {
         }
 
         await updateMutation.mutateAsync(toUpdatePayload(values));
-        toast.success("Hujjat saqlandi");
+        toast.success(t("warehouse.messages.saved"));
       } catch (error) {
         errorHandlers(error);
       }
@@ -248,7 +250,7 @@ export default function InventoryCountDetailPage() {
   const saveDraft = async () => {
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
-      toast.error("Iltimos, majburiy maydonlarni to'ldiring");
+      toast.error(t("warehouse.messages.fillRequired"));
       return false;
     }
     await formik.submitForm();
@@ -263,7 +265,7 @@ export default function InventoryCountDetailPage() {
       await updateMutation.mutateAsync({
         ...toUpdatePayload(formik.values, true),
       });
-      toast.success("Sanoq tugatildi");
+      toast.success(t("warehouse.messages.countCompleted"));
     } catch (error) {
       errorHandlers(error);
     } finally {
@@ -298,49 +300,49 @@ export default function InventoryCountDetailPage() {
   const differenceColumns: TableColumnsType<InventoryCountDifference> = [
     {
       dataIndex: "productName",
-      title: "Mahsulot",
+      title: t("warehouse.fields.productName"),
       render: (_, record) => record.productName ?? record.productId,
     },
     {
       dataIndex: "unitName",
-      title: "Birlik",
+      title: t("purchase.fields.unit"),
       align: "center",
     },
     {
       dataIndex: "expectedQuantity",
-      title: "Kutilgan",
+      title: t("warehouse.count.expected"),
       align: "center",
       render: (value) => numberSpacing(value),
     },
     {
       dataIndex: "countedQuantity",
-      title: "Sanalgan",
+      title: t("warehouse.count.counted"),
       align: "center",
       render: (value) => numberSpacing(value),
     },
     {
       dataIndex: "correctQuantity",
-      title: "To'g'rilangan",
+      title: t("warehouse.count.corrected"),
       align: "center",
       render: (value) => numberSpacing(value),
     },
     {
       dataIndex: "missingQuantity",
-      title: "Kam chiqqan",
+      title: t("warehouse.count.shortage"),
       align: "center",
       render: (value) => numberSpacing(value),
     },
     {
       dataIndex: "foundQuantity",
-      title: "Ortiqchi",
+      title: t("warehouse.count.surplus"),
       align: "center",
       render: (value) => numberSpacing(value),
     },
     {
       dataIndex: "status",
-      title: "Status",
+      title: t("settings.fields.status"),
       align: "center",
-      render: (_, record) => getDifferenceStatus(record),
+      render: (_, record) => t(getDifferenceStatusKey(record)),
     },
   ];
 
@@ -388,9 +390,11 @@ export default function InventoryCountDetailPage() {
       <Card className="p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="text-sm text-muted-foreground">Inventarizatsiya</div>
+            <div className="text-sm text-muted-foreground">
+              {t("warehouse.count.title")}
+            </div>
             <div className="text-lg font-semibold">
-              {record?.docNumber ?? "Yangi hujjat"}
+              {record?.docNumber ?? t("payroll.common.newDocument")}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -404,7 +408,7 @@ export default function InventoryCountDetailPage() {
               icon={<ArrowLeft className="size-4" />}
               onClick={() => navigate("..")}
             >
-              Orqaga
+              {t("common.back")}
             </Button>
           </div>
         </div>
@@ -417,61 +421,81 @@ export default function InventoryCountDetailPage() {
             items={[
               {
                 key: "general",
-                label: "Umumiy ma'lumot",
+                label: t("warehouse.count.generalInfo"),
                 children: (
                   <div className="space-y-3">
                     <div>
-                      <div className="text-sm text-muted-foreground">Hujjat raqami</div>
+                      <div className="text-sm text-muted-foreground">
+                        {t("warehouse.fields.documentNumber")}
+                      </div>
                       <div className="font-medium">
-                        {record?.docNumber ?? "Yaratilmoqda"}
+                        {record?.docNumber ?? t("warehouse.count.creating")}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Hujjat sanasi</div>
+                      <div className="text-sm text-muted-foreground">
+                        {t("warehouse.fields.documentDate")}
+                      </div>
                       <div className="font-medium">
                         {record?.docDate ?? "-"}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Status</div>
+                      <div className="text-sm text-muted-foreground">
+                        {t("settings.fields.status")}
+                      </div>
                       <div className="font-medium">
                         {record?.statusName ?? "-"}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Holat</div>
+                      <div className="text-sm text-muted-foreground">
+                        {t("warehouse.count.state")}
+                      </div>
                       <div className="font-medium">
                         {record?.stateName ?? "-"}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Ombor</div>
+                      <div className="text-sm text-muted-foreground">
+                        {t("menu.warehouse")}
+                      </div>
                       <div className="font-medium">
                         {record?.warehouseName ?? "-"}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Sanoq holati</div>
+                      <div className="text-sm text-muted-foreground">
+                        {t("warehouse.fields.countStatus")}
+                      </div>
                       <div className="font-medium">
-                        {record?.isCountCompleted ? "Sanoq tugallangan" : "Sanoq jarayonida"}
+                        {record?.isCountCompleted
+                          ? t("warehouse.count.countCompletedLabel")
+                          : t("warehouse.count.countInProgressLabel")}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Yaratilgan sana</div>
+                      <div className="text-sm text-muted-foreground">
+                        {t("warehouse.fields.createdDate")}
+                      </div>
                       <div className="font-medium">
                         {record?.createdDate ?? "-"}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Yuborilgan</div>
+                      <div className="text-sm text-muted-foreground">
+                        {t("warehouse.count.posted")}
+                      </div>
                       <div className="font-medium">
-                        {record?.postedAt ?? "Yuborilmagan"}
+                        {record?.postedAt ?? t("warehouse.count.notPosted")}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Bekor qilingan</div>
+                      <div className="text-sm text-muted-foreground">
+                        {t("warehouse.count.cancelledAt")}
+                      </div>
                       <div className="font-medium">
-                        {record?.cancelledAt ?? "Bekor qilinmagan"}
+                        {record?.cancelledAt ?? t("warehouse.count.notCancelled")}
                       </div>
                     </div>
                   </div>
@@ -479,7 +503,7 @@ export default function InventoryCountDetailPage() {
               },
               {
                 key: "products",
-                label: "Mahsulotlar",
+                label: t("products.title"),
                 children: (
                   <>
                     <Form layout="vertical" onFinish={formik.handleSubmit}>
@@ -488,7 +512,7 @@ export default function InventoryCountDetailPage() {
                           <SelectDate
                             formik={formik}
                             fieldName="docDate"
-                            label="Sana"
+                            label="warehouse.fields.documentDate"
                             disabled={!canEdit}
                           />
                         </Col>
@@ -496,7 +520,7 @@ export default function InventoryCountDetailPage() {
                           <SelectCustom
                             formik={formik}
                             fieldName="warehouseId"
-                            label="Ombor"
+                            label="purchase.fields.warehouse"
                             path={selectListEndpoints.warehousesSelectList}
                             disabled={!canEdit}
                           />
@@ -505,7 +529,7 @@ export default function InventoryCountDetailPage() {
                           <InputText
                             formik={formik}
                             fieldName="comment"
-                            label="Izoh"
+                            label={t("openingInventory.fields.comment")}
                             disabled={!canEdit}
                           />
                         </Col>
@@ -527,18 +551,18 @@ export default function InventoryCountDetailPage() {
               },
               {
                 key: "differences",
-                label: "Farqlar",
+                label: t("warehouse.count.differences"),
                 children: (
                   <div className="space-y-3">
                     <div className="flex flex-wrap gap-2">
                       <Tag color="orange">
-                        Kam chiqqan: {differenceSummary.missingCount}
+                        {t("warehouse.count.shortage")}: {differenceSummary.missingCount}
                       </Tag>
                       <Tag color="green">
-                        Ortiq chiqqan: {differenceSummary.extraCount}
+                        {t("warehouse.count.surplus")}: {differenceSummary.extraCount}
                       </Tag>
                       <Tag color="blue">
-                        Farqsiz: {differenceSummary.equalCount}
+                        {t("warehouse.count.equal")}: {differenceSummary.equalCount}
                       </Tag>
                     </div>
                     <Table<InventoryCountDifference>
@@ -555,12 +579,12 @@ export default function InventoryCountDetailPage() {
                           <div className="space-y-3">
                             <div>
                               <div className="font-semibold text-sm">
-                                missingProductTableIds
+                                {t("warehouse.count.missingProductTableIds")}
                               </div>
                               <div>
                                 {row.missingProductTableIds?.length
                                   ? row.missingProductTableIds.join(", ")
-                                  : "Mavjud emas"}
+                                  : t("warehouse.count.notAvailable")}
                               </div>
                             </div>
                             <Table<JsonRecord>
@@ -571,13 +595,13 @@ export default function InventoryCountDetailPage() {
                                 row.foundItems as unknown as JsonRecord[] | undefined,
                               )}
                               columns={[
-                                { dataIndex: "productTableId", title: "ProductTableId" },
-                                { dataIndex: "barcode", title: "Barcode" },
-                                { dataIndex: "serialNumber", title: "Serial" },
-                                { dataIndex: "markingNumber", title: "Marking" },
+                                { dataIndex: "productTableId", title: t("warehouse.fields.productTableId") },
+                                { dataIndex: "barcode", title: t("warehouse.fields.barcode") },
+                                { dataIndex: "serialNumber", title: t("warehouse.fields.serialNumber") },
+                                { dataIndex: "markingNumber", title: t("warehouse.fields.markingNumber") },
                                 {
                                   dataIndex: "costPrice",
-                                  title: "Cost price",
+                                  title: t("warehouse.fields.costPrice"),
                                   render: (value) => numberSpacing(value),
                                 },
                               ]}
@@ -591,7 +615,7 @@ export default function InventoryCountDetailPage() {
               },
               {
                 key: "posting-batches",
-                label: "Provodkalar",
+                label: t("warehouse.count.postingBatches"),
                 children: (
                   <div className="space-y-3">
                     <Table<JsonRecord>
@@ -603,14 +627,14 @@ export default function InventoryCountDetailPage() {
                         postingBatchesQuery.isFetching
                       }
                       pagination={false}
-                      locale={{ emptyText: "Ma'lumot yo'q" }}
+                      locale={{ emptyText: t("warehouse.messages.noData") }}
                     />
                   </div>
                 ),
               },
               {
                 key: "inventory-movements",
-                label: "Qoldiq harakati",
+                label: t("warehouse.count.stockMovement"),
                 children: (
                   <div className="space-y-3">
                     <Table<JsonRecord>
@@ -622,7 +646,7 @@ export default function InventoryCountDetailPage() {
                         inventoryMovementsQuery.isFetching
                       }
                       pagination={false}
-                      locale={{ emptyText: "Ma'lumot yo'q" }}
+                      locale={{ emptyText: t("warehouse.messages.noData") }}
                     />
                   </div>
                 ),
@@ -633,7 +657,7 @@ export default function InventoryCountDetailPage() {
         </Card>
 
         <Card className="space-y-3 p-4">
-          <div className="text-sm font-semibold">Amallar</div>
+          <div className="text-sm font-semibold">{t("common.actions")}</div>
           <Button
             block
             icon={<Save className="size-4" />}
@@ -641,7 +665,7 @@ export default function InventoryCountDetailPage() {
             disabled={!canEdit}
             loading={createMutation.isPending || updateMutation.isPending}
           >
-            {isCreate ? "Qoralama saqlash" : "Saqlash"}
+            {isCreate ? t("warehouse.count.saveDraft") : t("common.save")}
           </Button>
           {!isCreate && (
             <>
@@ -653,7 +677,7 @@ export default function InventoryCountDetailPage() {
                 disabled={!canEdit || formik.values.isCountCompleted}
                 loading={isCompleting || updateMutation.isPending}
               >
-                Sanoqni yakunlash
+                {t("warehouse.count.finish")}
               </Button>
               {canConfirm && (
                 <Button
@@ -663,7 +687,7 @@ export default function InventoryCountDetailPage() {
                   onClick={() => setIsConfirmOpen(true)}
                   loading={confirmMutation.isPending}
                 >
-                  Tasdiqlash
+                  {t("common.confirm")}
                 </Button>
               )}
               {canCancel && (
@@ -674,34 +698,44 @@ export default function InventoryCountDetailPage() {
                   onClick={() => setIsCancelConfirmOpen(true)}
                   loading={cancelMutation.isPending}
                 >
-                  Bekor qilish
+                  {t("common.cancel")}
                 </Button>
               )}
             </>
           )}
           <div className="space-y-1.5 pt-1">
-            <div className="text-sm font-semibold">Yaratilgan tuzatish hujjatlari</div>
+            <div className="text-sm font-semibold">
+              {t("warehouse.count.adjustmentsCreated")}
+            </div>
             <Space direction="vertical" className="w-full">
               {record?.positiveAdjustmentDocId ? (
                 <Link
                   to={`/main/warehouses/inventory-adjustments/${record.positiveAdjustmentDocId}`}
                 >
-                  <Button block>{`Musbat: ${record.positiveAdjustmentDocId}`}</Button>
+                  <Button block>
+                    {t("warehouse.count.positiveWithId", {
+                      id: record.positiveAdjustmentDocId,
+                    })}
+                  </Button>
                 </Link>
               ) : (
                 <Button block disabled>
-                  Musbat: yaratilmagan
+                  {t("warehouse.count.positiveNotCreated")}
                 </Button>
               )}
               {record?.negativeAdjustmentDocId ? (
                 <Link
                   to={`/main/warehouses/inventory-adjustments/${record.negativeAdjustmentDocId}`}
                 >
-                  <Button block>{`Manfiy: ${record.negativeAdjustmentDocId}`}</Button>
+                  <Button block>
+                    {t("warehouse.count.negativeWithId", {
+                      id: record.negativeAdjustmentDocId,
+                    })}
+                  </Button>
                 </Link>
               ) : (
                 <Button block disabled>
-                  Manfiy: yaratilmagan
+                  {t("warehouse.count.negativeNotCreated")}
                 </Button>
               )}
             </Space>
@@ -710,14 +744,14 @@ export default function InventoryCountDetailPage() {
       </div>
 
       <Modal
-        title="Inventarizatsiyani tasdiqlash"
+        title={t("warehouse.count.confirmTitle")}
         open={isConfirmDialogOpen}
         onCancel={closeActionModals}
         confirmLoading={confirmMutation.isPending}
         onOk={async () => {
           try {
             await confirmMutation.mutateAsync();
-            toast.success("Inventarizatsiya tasdiqlandi");
+            toast.success(t("warehouse.messages.inventoryConfirmed"));
             closeActionModals();
           } catch (error) {
             errorHandlers(error);
@@ -725,24 +759,19 @@ export default function InventoryCountDetailPage() {
         }}
       >
         <div className="space-y-2">
-          <p>
-            Inventarizatsiyani tasdiqlaysizmi? Bu amal farqlar asosida qoldiqni
-            avtomatik to'g'rilaydi. Kam chiqqan mahsulotlar uchun negative
-            adjustment, ortiq chiqqan mahsulotlar uchun positive adjustment
-            yaratiladi.
-          </p>
+          <p>{t("warehouse.count.confirmQuestion")}</p>
         </div>
       </Modal>
 
       <Modal
-        title="Inventarizatsiyani bekor qilish"
+        title={t("warehouse.count.cancelTitle")}
         open={isCancelDialogOpen}
         onCancel={closeActionModals}
         confirmLoading={cancelMutation.isPending}
         onOk={async () => {
           try {
             await cancelMutation.mutateAsync();
-            toast.success("Hujjat bekor qilindi");
+            toast.success(t("warehouse.messages.cancelled"));
             closeActionModals();
           } catch (error) {
             errorHandlers(error);
@@ -750,7 +779,7 @@ export default function InventoryCountDetailPage() {
         }}
       >
         <div className="space-y-2">
-          <p>Inventarizatsiyani bekor qilmoqchimisiz?</p>
+          <p>{t("warehouse.count.cancelQuestion")}</p>
         </div>
       </Modal>
     </div>

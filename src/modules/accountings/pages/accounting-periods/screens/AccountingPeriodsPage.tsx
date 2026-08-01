@@ -7,8 +7,10 @@ import {
   useReopenAccountingPeriod,
 } from "../hooks";
 import type { AccountingPeriodActionQuery } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 export default function AccountingPeriodsPage() {
+  const { t } = useTranslation();
   const closeMutation = useCloseAccountingPeriod();
   const reopenMutation = useReopenAccountingPeriod();
   const [lastResult, setLastResult] = useState<unknown>(null);
@@ -27,10 +29,10 @@ export default function AccountingPeriodsPage() {
     <div className="space-y-4">
       <div>
         <Typography.Title level={3} className="mb-1! text-text!">
-          Accounting periods
+          {t("accountings.periods.title")}
         </Typography.Title>
         <p className="text-sm text-secondary-text">
-          Swagger endpoint: <code>/api/accounting-periods/{`{id}`}/close</code> va{" "}
+          {t("accountings.endpoint")}: <code>/api/accounting-periods/{`{id}`}/close</code> {t("common.and")}{" "}
           <code>/api/accounting-periods/{`{id}`}/reopen</code>
         </p>
       </div>
@@ -42,11 +44,11 @@ export default function AccountingPeriodsPage() {
       />
 
       <EndpointResultCard
-        title="Response"
-        description="Period close yoki reopen natijasi."
+        title={t("accountings.result.title")}
+        description={t("accountings.periods.resultDescription")}
         data={closeMutation.data ?? reopenMutation.data ?? lastResult}
         isLoading={closeMutation.isPending || reopenMutation.isPending}
-        emptyText="Accounting period natijasi yo'q"
+        emptyText={t("accountings.periods.empty")}
       />
     </div>
   );

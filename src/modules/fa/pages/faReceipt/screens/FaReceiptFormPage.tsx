@@ -29,7 +29,10 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import InputNumber from "@/components/fields/InputNumber";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import {
+  chartAccountSelectDisplayConfig,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
@@ -54,6 +57,7 @@ const defaultValues: FaReceiptFormValues = {
   warehouseId: null as unknown as number,
   currencyId: null as unknown as number,
   receiptType: "",
+  supplierAccountId: null,
   lines: [
     {
       sourceProductId: null as unknown as number,
@@ -61,6 +65,8 @@ const defaultValues: FaReceiptFormValues = {
       quantity: 1,
       price: 0,
       vatRateId: null as unknown as number,
+      capitalInvestmentAccountId: null,
+      vatAccountId: null,
       assets: [
         {
           inventoryNumber: "",
@@ -76,6 +82,9 @@ const defaultValues: FaReceiptFormValues = {
           plannedUnitsTotal: 0,
           departmentId: null as unknown as number,
           responsibleUserId: null as unknown as number,
+          assetAccountId: null,
+          accumulatedDepreciationAccountId: null,
+          depreciationExpenseAccountId: null,
         },
       ],
     },
@@ -114,6 +123,8 @@ export default function FaReceiptFormPage() {
       warehouseId: record?.warehouseId ?? defaultValues.warehouseId,
       currencyId: record?.currencyId ?? defaultValues.currencyId,
       receiptType: record?.receiptType ?? defaultValues.receiptType,
+      supplierAccountId:
+        record?.supplierAccountId ?? defaultValues.supplierAccountId,
       lines: record?.lines?.length ? record.lines : defaultValues.lines,
     }),
     [record],
@@ -122,7 +133,7 @@ export default function FaReceiptFormPage() {
   const formik = useFormik<FaReceiptFormValues>({
     initialValues,
     enableReinitialize: true,
-    validationSchema: faReceiptSchema,
+    validationSchema: faReceiptSchema(t),
     onSubmit: async (values) => {
       try {
         const payload = {
@@ -131,12 +142,17 @@ export default function FaReceiptFormPage() {
           warehouseId: Number(values.warehouseId),
           currencyId: Number(values.currencyId),
           receiptType: values.receiptType,
+          supplierAccountId: Number(values.supplierAccountId),
           lines: values.lines.map((line) => ({
             ...line,
             sourceProductId: Number(line.sourceProductId),
             quantity: Number(line.quantity),
             price: Number(line.price),
             vatRateId: Number(line.vatRateId),
+            capitalInvestmentAccountId: Number(
+              line.capitalInvestmentAccountId,
+            ),
+            vatAccountId: Number(line.vatAccountId),
             assets: line.assets.map((asset) => ({
               ...asset,
               initialCost: Number(asset.initialCost),
@@ -148,6 +164,13 @@ export default function FaReceiptFormPage() {
               plannedUnitsTotal: Number(asset.plannedUnitsTotal),
               departmentId: Number(asset.departmentId),
               responsibleUserId: Number(asset.responsibleUserId),
+              assetAccountId: Number(asset.assetAccountId),
+              accumulatedDepreciationAccountId: Number(
+                asset.accumulatedDepreciationAccountId,
+              ),
+              depreciationExpenseAccountId: Number(
+                asset.depreciationExpenseAccountId,
+              ),
             })),
           })),
         };
@@ -305,13 +328,24 @@ export default function FaReceiptFormPage() {
                     label="fa.fields.receiptType"
                   />
                 </Col>
+                <Col span={8}>
+                  <SelectCustom
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    displayConfig={chartAccountSelectDisplayConfig}
+                    formik={formik}
+                    fieldName="supplierAccountId"
+                    label="fa.fields.supplierAccount"
+                    search
+                    required
+                  />
+                </Col>
               </Row>
 
               <Divider className="my-4" />
 
               <div className="mb-4 flex justify-between items-center">
                 <Text strong className="text-lg">
-                  Mahsulotlar / Xizmatlar
+                  {t("fa.sections.productsAndServices")}
                 </Text>
                 {isDraft && (
                   <Button
@@ -319,8 +353,7 @@ export default function FaReceiptFormPage() {
                     icon={<Plus className="size-4" />}
                     onClick={handleAddLine}
                   >
-                    Qo'shish
-                  </Button>
+                    {t("common.add")}</Button>
                 )}
               </div>
 
@@ -331,7 +364,7 @@ export default function FaReceiptFormPage() {
                   className="mb-6 bg-gray-50/50 border border-border shadow-sm"
                   title={
                     <div className="flex justify-between items-center mb-1">
-                      <Text strong>Mahsulot #{lineIndex + 1}</Text>
+                      <Text strong>{t("fa.sections.productNumber", { number: lineIndex + 1 })}</Text>
                       {isDraft && formik.values.lines.length > 1 && (
                         <Button
                           danger
@@ -381,14 +414,35 @@ export default function FaReceiptFormPage() {
                         label="fa.fields.vatRateId"
                       />
                     </Col>
+                    <Col span={8}>
+                      <SelectCustom
+                        path={selectListEndpoints.chartAccountsSelectList}
+                        displayConfig={chartAccountSelectDisplayConfig}
+                        formik={formik}
+                        fieldName={`lines[${lineIndex}].capitalInvestmentAccountId`}
+                        label="fa.fields.capitalInvestmentAccount"
+                        search
+                        required
+                      />
+                    </Col>
+                    <Col span={8}>
+                      <SelectCustom
+                        path={selectListEndpoints.chartAccountsSelectList}
+                        displayConfig={chartAccountSelectDisplayConfig}
+                        formik={formik}
+                        fieldName={`lines[${lineIndex}].vatAccountId`}
+                        label="fa.fields.vatAccount"
+                        search
+                        required
+                      />
+                    </Col>
                   </Row>
 
                   <Divider className="my-4 border-dashed" />
 
                   <div className="mb-4 flex justify-between items-center">
                     <Text strong className="text-md text-gray-600">
-                      Asosiy vositalar
-                    </Text>
+                      {t("fa.title")}</Text>
                     {isDraft && (
                       <Button
                         type="dashed"
@@ -396,8 +450,7 @@ export default function FaReceiptFormPage() {
                         icon={<Plus className="size-4" />}
                         onClick={() => handleAddAsset(lineIndex)}
                       >
-                        Qo'shish
-                      </Button>
+                        {t("common.add")}</Button>
                     )}
                   </div>
 
@@ -409,7 +462,7 @@ export default function FaReceiptFormPage() {
                       >
                         <div className="flex justify-between items-center mb-3">
                           <Text type="secondary" className="text-xs">
-                            Vosita #{assetIndex + 1}
+                            {t("fa.sections.assetNumber", { number: assetIndex + 1 })}
                           </Text>
                           {isDraft &&
                             formik.values.lines[lineIndex].assets.length >
@@ -522,6 +575,39 @@ export default function FaReceiptFormPage() {
                               formik={formik}
                               fieldName={`lines[${lineIndex}].assets[${assetIndex}].responsibleUserId`}
                               label="fa.fields.responsibleUserId"
+                            />
+                          </Col>
+                          <Col span={8}>
+                            <SelectCustom
+                              path={selectListEndpoints.chartAccountsSelectList}
+                              displayConfig={chartAccountSelectDisplayConfig}
+                              formik={formik}
+                              fieldName={`lines[${lineIndex}].assets[${assetIndex}].assetAccountId`}
+                              label="fa.fields.assetAccount"
+                              search
+                              required
+                            />
+                          </Col>
+                          <Col span={8}>
+                            <SelectCustom
+                              path={selectListEndpoints.chartAccountsSelectList}
+                              displayConfig={chartAccountSelectDisplayConfig}
+                              formik={formik}
+                              fieldName={`lines[${lineIndex}].assets[${assetIndex}].accumulatedDepreciationAccountId`}
+                              label="fa.fields.accumulatedDepreciationAccount"
+                              search
+                              required
+                            />
+                          </Col>
+                          <Col span={8}>
+                            <SelectCustom
+                              path={selectListEndpoints.chartAccountsSelectList}
+                              displayConfig={chartAccountSelectDisplayConfig}
+                              formik={formik}
+                              fieldName={`lines[${lineIndex}].assets[${assetIndex}].depreciationExpenseAccountId`}
+                              label="fa.fields.depreciationExpenseAccount"
+                              search
+                              required
                             />
                           </Col>
                         </Row>

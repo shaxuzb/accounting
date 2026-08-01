@@ -10,6 +10,7 @@ import { ProductStockSerialModal } from "../components";
 import { useGetDetailSerialWarehouse } from "../hooks/useGetDetailSerialWarehouse";
 import { useGetDetailWarehouse } from "../hooks/useGetDetailWarehouse";
 import type { ProductStock } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 const getProductName = (record?: ProductStock | null) =>
   record?.productName || record?.name || "-";
@@ -20,6 +21,7 @@ const formatMoney = (value: number, currencyCode?: string) => {
 };
 
 export default function ProductDetail() {
+  const { t } = useTranslation();
   // const navigate = useNavigate();
   const { id = "" } = useParams();
   const [searchParams] = useSearchParams();
@@ -76,34 +78,34 @@ export default function ProductDetail() {
     },
     {
       dataIndex: "name",
-      title: "Mahsulot nomi",
+      title: t("warehouse.fields.productName"),
       render: (_, record) => getProductName(record),
     },
     {
       dataIndex: "mxik",
-      title: "Mxik kodi",
+      title: t("warehouse.fields.mxik"),
       align: "center",
     },
     {
       dataIndex: "quantity",
-      title: "Qoldiq",
+      title: t("app.reports.fields.balance"),
       align: "center",
       render: (value: number) => numberSpacing(value, undefined, true),
     },
     {
       dataIndex: "unitName",
-      title: "Birlik",
+      title: t("purchase.fields.unit"),
       render: (value) => value || "-",
     },
     {
       dataIndex: "costPrice",
-      title: "Sotuv narxi",
+      title: t("warehouse.fields.salesPrice"),
       align: "center",
       render: (_, record) => numberSpacing(record.costPrice),
     },
     {
       dataIndex: "totalAmount",
-      title: "Jami sotuv narxi",
+      title: t("warehouse.fields.totalSalesPrice"),
       align: "center",
       render: (value: number, record) =>
         formatMoney(value ?? 0, record.currencyCode),
@@ -132,7 +134,9 @@ export default function ProductDetail() {
             <Table.Summary fixed>
               <Table.Summary.Row>
                 <Table.Summary.Cell index={0} colSpan={6}>
-                  <span className="font-semibold text-text">Jami</span>
+                  <span className="font-semibold text-text">
+                    {t("common.total")}
+                  </span>
                 </Table.Summary.Cell>
                 <Table.Summary.Cell index={6} align="right">
                   <span className="font-semibold text-text">

@@ -47,7 +47,7 @@ export default function CashDocumentFormFields({
         <SelectCustom
           formik={formik}
           fieldName="paymentTypeId"
-          label="To'lov turi"
+          label="cash.fields.paymentType"
           path={selectListEndpoints.paymentTypesSelectList}
           disabled={disabled}
         />
@@ -56,7 +56,7 @@ export default function CashDocumentFormFields({
         <DocumentAccountSelect
           formik={formik}
           fieldName="cashChartAccountId"
-          label="Kassa schyoti"
+          label="cash.fields.cashChartAccount"
           documentTypeId={documentTypeId}
           documentRoleCode={cashDocumentAccountRoleCodes.cashAccount}
           getFirst
@@ -67,7 +67,7 @@ export default function CashDocumentFormFields({
         <DocumentAccountSelect
           formik={formik}
           fieldName="offsetAccountId"
-          label="Qarama-qarshi schyot"
+          label="cash.fields.offsetAccount"
           documentTypeId={documentTypeId}
           documentRoleCode={cashDocumentAccountRoleCodes.offsetAccount}
           getFirst
@@ -120,7 +120,7 @@ export default function CashDocumentFormFields({
         <InputNumberFormat
           formik={formik}
           fieldName="exchangeRate"
-          label="Kurs"
+          label="cash.fields.exchangeRate"
           min={0}
           precision={4}
           disabled={disabled}

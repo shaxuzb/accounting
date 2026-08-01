@@ -9,6 +9,7 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Select } from "antd";
 import type { SelectData } from "@/shared/types";
+import { useTranslation } from "react-i18next";
 
 const fetchOrganizations = async (): Promise<SelectData[]> => {
   const { data } = await $axiosPrivate.get(
@@ -18,6 +19,7 @@ const fetchOrganizations = async (): Promise<SelectData[]> => {
 };
 
 const OrgSwitcher: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const currentOrg = useAppSelector((state) => state.organization);
@@ -66,7 +68,7 @@ const OrgSwitcher: React.FC = () => {
         className="min-w-32! max-w-48! border border-border rounded-lg shadow-sm "
         // className="min-w-32 max-w-48 [&_.ant-select-selector]:!px-0 [&_.ant-select-selection-item]:!text-sm [&_.ant-select-selection-item]:!font-medium [&_.ant-select-selection-item]:!text-text"
         popupMatchSelectWidth={false}
-        placeholder="Tashkilot"
+        placeholder={t("settings.fields.organization")}
         size="medium"
       />
     </div>

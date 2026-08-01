@@ -1,17 +1,18 @@
 import * as yup from "yup";
+import type { TFunction } from "i18next";
 
-export const faMovementSchema = yup.object().shape({
-  docDate: yup.string().required("Sana kiritish majburiy"),
-  toDepartmentId: yup.number().required("Bo'limni tanlash majburiy").nullable(),
-  toResponsibleUserId: yup.number().required("Javobgar shaxsni tanlash majburiy").nullable(),
+export const faMovementSchema = (t: TFunction) => yup.object().shape({
+  docDate: yup.string().required(t("fa.validation.dateRequired")),
+  toDepartmentId: yup.number().required(t("fa.validation.departmentRequired")).nullable(),
+  toResponsibleUserId: yup.number().required(t("fa.validation.responsibleUserRequired")).nullable(),
   note: yup.string(),
   lines: yup
     .array()
     .of(
       yup.object().shape({
-        faAssetId: yup.number().required("Asosiy vositani tanlash majburiy").nullable(),
+        faAssetId: yup.number().required(t("fa.validation.assetRequired")).nullable(),
         note: yup.string(),
       })
     )
-    .min(1, "Kamida bitta asosiy vosita kiritilishi kerak"),
+    .min(1, t("fa.validation.atLeastOneAsset")),
 });

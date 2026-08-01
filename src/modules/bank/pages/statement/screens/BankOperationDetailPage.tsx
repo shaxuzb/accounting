@@ -35,12 +35,13 @@ import {
   useUpdateBankOperation,
 } from "../hooks";
 import { bankPermissions } from "../constants/permissions";
-import { schema } from "../types/schema";
+import { createBankOperationSchema } from "../types/schema";
 import type { BankOperationCreatePayload } from "../types/form";
 import {
   bankDocumentAccountRoleCodes,
   bankDocumentTypeIds,
 } from "../constants/endpoints";
+import { useTranslation } from "react-i18next";
 
 const toPositiveNumber = (value: unknown) => {
   const numberValue = Number(value);
@@ -89,6 +90,7 @@ const defaultValues: BankOperationForm = {
 };
 
 export default function BankOperationDetailPage() {
+  const { t } = useTranslation();
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const detailQuery = useGetDetailBankOperation(id);
@@ -121,7 +123,7 @@ export default function BankOperationDetailPage() {
   const formik = useFormik<BankOperationForm>({
     initialValues,
     enableReinitialize: true,
-    validationSchema: schema,
+    validationSchema: createBankOperationSchema(t),
     onSubmit: async (values) => {
       try {
         const payload: BankOperationCreatePayload = {
@@ -140,7 +142,7 @@ export default function BankOperationDetailPage() {
           comment: values.comment.trim() || null,
         };
         await updateMutation.mutateAsync({ id, payload });
-        toast.success("Hujjat saqlandi");
+        toast.success(t("bank.messages.documentSaved"));
       } catch (error) {
         errorHandlers(error);
       }
@@ -181,7 +183,7 @@ export default function BankOperationDetailPage() {
       <Card className="p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="text-sm text-muted-foreground">Bank operation</div>
+            <div className="text-sm text-muted-foreground">{t("bank.operation.title")}</div>
             <div className="text-lg font-semibold">
               {record.docNumber ?? record.id}
             </div>
@@ -189,7 +191,7 @@ export default function BankOperationDetailPage() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="size-4 text-primary" />
-              <span className="font-semibold">Sana</span>
+              <span className="font-semibold">{t("bank.fields.date")}</span>
             </div>
             <p className="font-semibold text-foreground">
               {customDate(record.docDate)}
@@ -227,7 +229,7 @@ export default function BankOperationDetailPage() {
                   <DocumentAccountSelect
                     formik={formik}
                     fieldName="bankChartAccountId"
-                    label="Bank schyoti"
+                    label="bank.fields.bankChartAccount"
                     documentTypeId={documentTypeId}
                     documentRoleCode={bankDocumentAccountRoleCodes.bankAccount}
                     getFirst
@@ -237,7 +239,7 @@ export default function BankOperationDetailPage() {
                   <DocumentAccountSelect
                     formik={formik}
                     fieldName="offsetAccountId"
-                    label="Qarama-qarshi schyot"
+                    label="bank.fields.offsetAccount"
                     documentTypeId={documentTypeId}
                     documentRoleCode={bankDocumentAccountRoleCodes.offsetAccount}
                     getFirst
@@ -248,7 +250,7 @@ export default function BankOperationDetailPage() {
                   <SelectCustom
                     formik={formik}
                     fieldName="paymentTypeId"
-                    label="To'lov turi"
+                    label="bank.fields.paymentType"
                     path={selectListEndpoints.paymentTypesSelectList}
                   />
                 </Col>
@@ -265,7 +267,7 @@ export default function BankOperationDetailPage() {
                   <SelectCustom
                     formik={formik}
                     fieldName="counterpartyBankAccountId"
-                    label="Counterparty bank hisob raqami"
+                    label="bank.fields.counterpartyBankAccount"
                     path={selectListEndpoints.counterPartyBankAccounts}
                     queryParams={{
                       [filterIds.counterparty]: counterpartyId,
@@ -279,7 +281,7 @@ export default function BankOperationDetailPage() {
                   <InputNumberFormat
                     formik={formik}
                     fieldName="exchangeRate"
-                    label="Kurs"
+                    label="bank.fields.exchangeRate"
                     min={0}
                     precision={6}
                   />
@@ -312,7 +314,7 @@ export default function BankOperationDetailPage() {
                   <SelectCustom
                     formik={formik}
                     fieldName="contractId"
-                    label="Shartnoma"
+                    label="bank.fields.contract"
                     path={selectListEndpoints.contractsSelectList}
                     queryParams={{
                       choosedDate: dayjs(formik.values.docDate).format(
@@ -340,7 +342,7 @@ export default function BankOperationDetailPage() {
         </Card>
 
         <Card className="space-y-3 p-4">
-          <div className="text-sm font-semibold">Amallar</div>
+          <div className="text-sm font-semibold">{t("common.actions")}</div>
           {isDraft && (
             <PermissionCard permission={bankPermissions.update}>
               <Button
@@ -349,7 +351,7 @@ export default function BankOperationDetailPage() {
                 onClick={() => formik.submitForm()}
                 loading={updateMutation.isPending}
               >
-                Saqlash
+                {t("common.save")}
               </Button>
             </PermissionCard>
           )}
@@ -365,14 +367,14 @@ export default function BankOperationDetailPage() {
                 onClick={async () => {
                   try {
                     await confirmMutation.mutateAsync();
-                    toast.success("Hujjat tasdiqlandi");
+                    toast.success(t("bank.messages.documentConfirmed"));
                     navigate(-1);
                   } catch (error) {
                     errorHandlers(error);
                   }
                 }}
               >
-                Tasdiqlash
+                {t("common.confirm")}
               </Button>
             </PermissionCard>
           )}
@@ -388,14 +390,14 @@ export default function BankOperationDetailPage() {
                 onClick={async () => {
                   try {
                     await cancelMutation.mutateAsync();
-                    toast.success("Hujjat bekor qilindi");
+                    toast.success(t("bank.messages.documentCancelled"));
                     navigate(-1);
                   } catch (error) {
                     errorHandlers(error);
                   }
                 }}
               >
-                Bekor qilish
+                {t("common.cancel")}
               </Button>
             </PermissionCard>
           )}
@@ -403,7 +405,7 @@ export default function BankOperationDetailPage() {
             <AntCard size="small">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Landmark className="size-4" />
-                <span>Holati</span>
+                <span>{t("bank.fields.status")}</span>
               </div>
               <div className="mt-2">
                 <ProcessStatusBadge
@@ -415,7 +417,7 @@ export default function BankOperationDetailPage() {
             <AntCard size="small">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Wallet className="size-4" />
-                <span>Joriy summa</span>
+                <span>{t("bank.fields.currentAmount")}</span>
               </div>
               <div className="mt-2 font-semibold">
                 {numberSpacing(record.amount)} {record.currencyName ?? ""}

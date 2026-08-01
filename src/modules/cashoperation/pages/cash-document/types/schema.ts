@@ -1,29 +1,30 @@
 import * as Yup from "yup";
 import { requiredNumber } from "@/modules/settings/shared/validation";
+import type { TFunction } from "i18next";
 
-export const cashDocumentSchema = Yup.object({
+export const cashDocumentSchema = (t: TFunction) => Yup.object({
   cashBoxId: requiredNumber("settings.entities.cashBox"),
-  paymentTypeId: requiredNumber("To'lov turini tanlang").moreThan(
+  paymentTypeId: requiredNumber("cash.fields.paymentType").moreThan(
     0,
-    "To'lov turini tanlang",
+    t("cash.validation.paymentTypeRequired"),
   ),
-  cashChartAccountId: requiredNumber("Kassa schyotini tanlang").moreThan(
+  cashChartAccountId: requiredNumber("cash.fields.cashChartAccount").moreThan(
     0,
-    "Kassa schyotini tanlang",
+    t("cash.validation.cashChartAccountRequired"),
   ),
   offsetAccountId: requiredNumber(
-    "Qarama-qarshi schyotni tanlang",
-  ).moreThan(0, "Qarama-qarshi schyotni tanlang"),
+    "cash.fields.offsetAccount",
+  ).moreThan(0, t("cash.validation.offsetAccountRequired")),
   counterpartyId: requiredNumber("settings.entities.counterparty").moreThan(
     0,
     "settings.entities.counterparty",
   ),
-  docDate: Yup.string().required(),
+  docDate: Yup.string().required(t("cash.validation.dateRequired")),
   currencyId: requiredNumber("settings.fields.currency"),
   amount: Yup.number()
     .nullable()
-    .moreThan(0, "Summani kiriting")
-    .required("Summani kiriting"),
-  exchangeRate: Yup.number().nullable().required("Kursni kiriting"),
+    .moreThan(0, t("cash.validation.amountRequired"))
+    .required(t("cash.validation.amountRequired")),
+  exchangeRate: Yup.number().nullable().required(t("cash.validation.exchangeRateRequired")),
   comment: Yup.string().nullable(),
 });

@@ -67,7 +67,7 @@ export default function SaleListPage() {
     },
     {
       dataIndex: "accountingEntriesReport",
-      title: "Provodka",
+      title: t("common.accountingEntries"),
       align: "center",
       width: 110,
       render: (_, record) => (

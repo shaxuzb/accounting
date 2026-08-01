@@ -1,4 +1,5 @@
 import { Table } from "antd";
+import { useTranslation } from "react-i18next";
 import type { ColumnsType, TableProps } from "antd/es/table";
 import Card from "@/components/ui/card/Card";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
@@ -19,14 +20,14 @@ const humanizeKey = (key: string) =>
     .trim()
     .replace(/^\w/, (char) => char.toUpperCase());
 
-const formatValue = (value: unknown, key = "") => {
+const formatValue = (value: unknown, key = "", yes = "Yes", no = "No") => {
   if (value === null || value === undefined || value === "") return "-";
 
   if (typeof value === "number") {
     return value === 0 ? "0" : numberSpacing(value, " ", true);
   }
 
-  if (typeof value === "boolean") return value ? "Ha" : "Yo'q";
+  if (typeof value === "boolean") return value ? yes : no;
 
   if (Array.isArray(value)) return JSON.stringify(value);
 
@@ -47,13 +48,16 @@ const formatValue = (value: unknown, key = "") => {
 export default function AccountingReportGenericArrayTable({
   data,
   title,
-  emptyText = "Ma'lumot topilmadi",
+  emptyText,
   loading = false,
   onRowClick,
 }: Props) {
+  const { t } = useTranslation();
   const rows = getArrayFromResponse(data);
   const normalizedRows = rows.map((row) =>
-    isObject(row) ? row : { value: formatValue(row) },
+    isObject(row)
+      ? row
+      : { value: formatValue(row, "", t("app.common.yes"), t("app.common.no")) },
   );
   const firstRow = normalizedRows[0] as Record<string, unknown> | undefined;
   const columnKeys = normalizedRows.reduce<string[]>((keys, row) => {
@@ -68,12 +72,14 @@ export default function AccountingReportGenericArrayTable({
     ? columnKeys.map((key) => ({
         title: humanizeKey(key),
         dataIndex: key,
-        render: (value) => formatValue(value, key),
+        render: (value) =>
+          formatValue(value, key, t("app.common.yes"), t("app.common.no")),
       }))
     : [{
-          title: "Value",
+          title: t("app.reports.fields.value"),
           dataIndex: "value",
-          render: (value) => formatValue(value),
+          render: (value) =>
+            formatValue(value, "", t("app.common.yes"), t("app.common.no")),
         }];
 
   const handleRow: TableProps<Record<string, unknown>>["onRow"] = onRowClick
@@ -95,7 +101,7 @@ export default function AccountingReportGenericArrayTable({
         onRow={handleRow}
         rowClassName={onRowClick ? "transition-colors" : ""}
         pagination={false}
-        locale={{ emptyText }}
+        locale={{ emptyText: emptyText ?? t("app.common.noData") }}
         scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
       />
     </Card>

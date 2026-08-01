@@ -106,7 +106,7 @@ export default function MissingBankAccountModal({
       });
 
       if (hasEmpty) {
-        toast.error("Bank ma'lumotlarini to'liq tanlang");
+        toast.error(t("bank.messages.selectCompleteBankInfo"));
         return;
       }
 
@@ -126,7 +126,7 @@ export default function MissingBankAccountModal({
   const columns = useMemo<TableColumnsType<MissingBankInfoRow>>(() => {
     const result: TableColumnsType<MissingBankInfoRow> = [
       {
-        title: "Card",
+        title: t("bank.fields.card"),
         dataIndex: "title",
         width: 220,
       },
@@ -210,7 +210,7 @@ export default function MissingBankAccountModal({
 
   return (
     <Modal
-      title="Topilmagan bank ma'lumotlarini belgilash"
+      title={t("bank.import.assignMissingBankInfo")}
       open={open}
       onCancel={handleClose}
       footer={null}

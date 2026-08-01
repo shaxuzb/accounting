@@ -185,7 +185,9 @@ export const ProfilePopoverContent: React.FC<ProfilePopoverContentProps> = ({
                   <Moon className="size-5" />
                 )
               }
-              label={`${t("profile.theme")} ${isDarkMode ? "Dark" : "Light"}`}
+              label={`${t("profile.theme")} ${t(
+                isDarkMode ? "profile.themeModes.dark" : "profile.themeModes.light",
+              )}`}
               onClick={onThemeClick}
             />
 

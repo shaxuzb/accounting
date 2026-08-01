@@ -3,6 +3,7 @@ import { Form, Spin as AntdSpin } from "antd";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import OpeningInventoryHeader from "../components/OpeningInventoryHeader";
 import OpeningInventoryLinesSection from "../components/OpeningInventoryLinesSection";
@@ -17,7 +18,7 @@ import { useOpeningInventoryOptions } from "../hooks/useOpeningInventoryOptions"
 import { useOpeningInventoryAccountDefaults } from "../hooks/useOpeningInventoryAccountDefaults";
 import { useOpeningInventoryColumns } from "../hooks/useOpeningInventoryColumns";
 import {
-  openingInventorySchema,
+  createOpeningInventorySchema,
   isCompleteOpeningInventoryLineWithAccounts,
 } from "../types/schema";
 import type { OpeningInventoryForm } from "../types/form";
@@ -45,6 +46,7 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { openingInventoryPermissions } from "../constants/permissions";
 
 export default function OpeningInventoryEditorPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isCreate = !id;
@@ -125,32 +127,33 @@ export default function OpeningInventoryEditorPage() {
       );
 
       if (completedRows.length === 0) {
-        toast.error(
-          `Kamida bitta to'ldirilgan ${mode === "services" ? "xizmat" : "tovar"} qatori bo'lishi shart!`,
-        );
+        toast.error(t("openingInventory.messages.atLeastOneCompletedLine", {
+          type:
+            mode === "services"
+              ? t("purchase.fields.service").toLocaleLowerCase()
+              : t("purchase.fields.goods").toLocaleLowerCase(),
+        }));
         return;
       }
 
       if (completedRows.length < values.lines.length) {
-        toast.error(
-          "Iltimos, barcha qatorlardagi hisobvaraqlar va narxlarni to'ldiring!",
-        );
+        toast.error(t("openingInventory.messages.fillAccountsAndPrices"));
         return;
       }
 
       const unmarkedRow = getUnmarkedPieceTrackedRow(completedRows, mode);
       if (unmarkedRow) {
-        toast.error(
-          `"${unmarkedRow.productName || unmarkedRow.product}" mahsuloti markirovkali, lekin markirovka kiritilmagan!`,
-        );
+        toast.error(t("openingInventory.messages.markingRequired", {
+          product: unmarkedRow.productName || unmarkedRow.product,
+        }));
         return;
       }
 
       const duplicateMarking = getDuplicateMarkingNumber(completedRows);
       if (duplicateMarking) {
-        toast.error(
-          `"${duplicateMarking}" markirovka kodi takroriy kiritilgan!`,
-        );
+        toast.error(t("openingInventory.messages.duplicateMarking", {
+          marking: duplicateMarking,
+        }));
         return;
       }
 
@@ -158,23 +161,28 @@ export default function OpeningInventoryEditorPage() {
         if (isCreate) {
           const payload = toCreatePayload(values, completedRows, mode);
           await createMutation.mutateAsync(payload);
-          toast.success("Hujjat muvaffaqiyatli saqlandi");
+          toast.success(t("openingInventory.messages.saved"));
         } else {
           const payload = toUpdatePayload(values, completedRows, mode);
           await updateMutation.mutateAsync({ id: id!, payload });
-          toast.success("Hujjat muvaffaqiyatli yangilandi");
+          toast.success(t("openingInventory.messages.updated"));
         }
         handleBack();
       } catch (error) {
         errorHandlers(error);
       }
     },
-    [isCreate, createMutation, updateMutation, id, handleBack, mode],
+    [isCreate, createMutation, updateMutation, id, handleBack, mode, t],
+  );
+
+  const validationSchema = useMemo(
+    () => createOpeningInventorySchema(t),
+    [t],
   );
 
   const formik = useFormik<OpeningInventoryForm>({
     initialValues,
-    validationSchema: openingInventorySchema,
+    validationSchema,
     enableReinitialize: true,
     onSubmit: persistOpeningInventory,
   });
@@ -273,7 +281,7 @@ export default function OpeningInventoryEditorPage() {
           (row, index) => index !== rowIndex && row.productId === value,
         )
       ) {
-        toast.error("Bir xil productni ikki marta tanlab bo'lmaydi");
+        toast.error(t("openingInventory.messages.duplicateProduct"));
         return;
       }
 
@@ -303,7 +311,7 @@ export default function OpeningInventoryEditorPage() {
         markingNumbers: [],
       });
     },
-    [handleRowValueChange, itemOptions, lines, mode],
+    [handleRowValueChange, itemOptions, lines, mode, t],
   );
 
   const handleCellCommit = useCallback(
@@ -323,7 +331,7 @@ export default function OpeningInventoryEditorPage() {
                 index !== rowIndex && item.productId === matchedProduct.id,
             )
           ) {
-            toast.error("Bir xil productni ikki marta tanlab bo'lmaydi");
+            toast.error(t("openingInventory.messages.duplicateProduct"));
             return;
           }
           const defaultUnitId = matchedProduct.unitId;
@@ -364,7 +372,7 @@ export default function OpeningInventoryEditorPage() {
 
       handleRowValueChange(rowIndex, { [dataIndex]: rawValue });
     },
-    [handleRowValueChange, lines, mode, productByMxik],
+    [handleRowValueChange, lines, mode, productByMxik, t],
   );
 
   const handleCommentChange = useCallback(
@@ -429,7 +437,7 @@ export default function OpeningInventoryEditorPage() {
 
     const currentMarkings = toMarkingNumbers(row);
     if (currentMarkings.includes(value)) {
-      toast.error("Ushbu markirovka allaqachon kiritilgan!");
+      toast.error(t("openingInventory.messages.markingAlreadyAdded"));
       return;
     }
 
@@ -447,7 +455,7 @@ export default function OpeningInventoryEditorPage() {
       ),
     );
     setMarkingInput("");
-  }, [commitLines, markingInput, markingModalIndex, lines]);
+  }, [commitLines, markingInput, markingModalIndex, lines, t]);
 
   const handleRemoveMarking = useCallback(
     (marking: string) => {

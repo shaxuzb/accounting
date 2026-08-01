@@ -64,7 +64,7 @@ export default function ProductListPage() {
     },
      {
       dataIndex: "createdDate",
-      title: t("Sana"),
+      title: t("settings.fields.createdDate"),
       align: "center",
       render: (value) => customDate(value)
     },

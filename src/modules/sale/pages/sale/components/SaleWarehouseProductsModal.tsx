@@ -7,6 +7,7 @@ import { useDebounce } from "@/shared/hooks/useDebounce";
 import { formatDate, numberSpacing } from "@/utils/utils";
 import type { SaleProductPriceLayer, SaleProductStock } from "../types/type";
 import { normalizeProductPriceDetails } from "../utils/salePricingDetails";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   open: boolean;
@@ -63,6 +64,7 @@ export default function SaleWarehouseProductsModal({
   onClose,
   onAdd,
 }: Props) {
+  const { t } = useTranslation();
   const [quantities, setQuantities] = useState<Record<string, number | null>>(
     {},
   );
@@ -83,11 +85,11 @@ export default function SaleWarehouseProductsModal({
     const groups = new Map<string, string>();
     products.forEach((product) => {
       const key = String(product.productGroupId ?? product.productGroupName ?? "");
-      const label = product.productGroupName || "Guruhsiz";
+      const label = product.productGroupName || t("sale.fields.ungrouped");
       if (key) groups.set(key, label);
     });
     return Array.from(groups, ([value, label]) => ({ value, label }));
-  }, [products]);
+  }, [products, t]);
 
   const visibleProducts = useMemo(
     () =>
@@ -203,29 +205,29 @@ export default function SaleWarehouseProductsModal({
   const batchColumns: TableColumnsType<BatchRow> = [
     {
       dataIndex: "batchNumber",
-      title: "Partiya raqami",
+      title: t("sale.fields.batchNumber"),
       render: (value, record) => value || record.batchId || "-",
     },
     {
       dataIndex: "purchaseDate",
-      title: "Kirim sanasi",
+      title: t("sale.fields.receiptDate"),
       render: (value) => formatDate(value) || "-",
     },
     {
       dataIndex: "availableQuantity",
-      title: "Mavjud",
+      title: t("sale.fields.available"),
       align: "center",
       render: (value) => numberSpacing(value, undefined, true),
     },
     {
       dataIndex: "unitPrice",
-      title: "Tannarx",
+      title: t("warehouse.fields.costPrice"),
       align: "center",
       render: (value) => numberSpacing(value, undefined, true),
     },
     {
       dataIndex: "writeOffQuantity",
-      title: "Sotiladigan miqdor",
+      title: t("sale.fields.quantityToSell"),
       width: 170,
       render: (_, record) => {
         const productId = Number(record.rowKey.split(":")[0]);
@@ -239,7 +241,7 @@ export default function SaleWarehouseProductsModal({
             precision={3}
             value={quantities[quantityKey] ?? null}
             disabled={disabled || !record.availableQuantity}
-            placeholder="Miqdor"
+            placeholder={t("openingInventory.fields.quantity")}
             onValueChange={(value) =>
               handleQuantityChange(productId, record, value)
             }
@@ -252,7 +254,7 @@ export default function SaleWarehouseProductsModal({
   const productColumns: TableColumnsType<SaleProductStock> = [
     {
       dataIndex: "productName",
-      title: "Mahsulot",
+      title: t("purchase.fields.product"),
       minWidth: 320,
       render: (_, product) => (
         <div className="min-w-0">
@@ -268,14 +270,14 @@ export default function SaleWarehouseProductsModal({
     },
     {
       dataIndex: "availableQuantity",
-      title: "Qoldiq",
+      title: t("warehouse.lines.stock"),
       align: "center",
       render: (_, product) =>
         numberSpacing(getAvailableQuantity(product), undefined, true),
     },
     {
       dataIndex: "salePrice",
-      title: "Sotuv narxi",
+      title: t("sale.fields.salePrice"),
       width: 170,
       render: (_, product) => {
         const productId = getStockProductId(product);
@@ -297,13 +299,13 @@ export default function SaleWarehouseProductsModal({
     },
     {
       dataIndex: "unitName",
-      title: "Birlik",
+      title: t("purchase.fields.unit"),
       align: "center",
-      render: (value) => value || "Dona",
+      render: (value) => value || t("sale.fields.piece"),
     },
     {
       dataIndex: "selected",
-      title: "Tanlangan",
+      title: t("sale.fields.selected"),
       align: "center",
       render: (_, product) => {
         const selectedLayers = getSelectedLayers(product);
@@ -319,7 +321,7 @@ export default function SaleWarehouseProductsModal({
   return (
     <Modal
       open={open}
-      title="Omborxona"
+      title={t("menu.warehouse")}
       footer={null}
       width={1500}
       destroyOnHidden
@@ -330,7 +332,7 @@ export default function SaleWarehouseProductsModal({
           className="min-w-64 max-w-80"
           value={searchValue}
           onChange={(event) => setSearchValue(event.target.value)}
-          placeholder="Mahsulot qidirish..."
+          placeholder={t("sale.warehouse.searchProduct")}
           prefix={<Search className="size-4 text-secondary-text" />}
           allowClear
         />
@@ -339,14 +341,14 @@ export default function SaleWarehouseProductsModal({
           className="min-w-52"
           value={groupFilter}
           options={groupOptions}
-          placeholder="Barcha guruhlar"
+          placeholder={t("sale.warehouse.allGroups")}
           onChange={setGroupFilter}
         />
         <Checkbox
           checked={onlyAvailable}
           onChange={(event) => setOnlyAvailable(event.target.checked)}
         >
-          Faqat mavjud
+          {t("sale.warehouse.availableOnly")}
         </Checkbox>
       </div>
       <Table<SaleProductStock>
@@ -358,7 +360,12 @@ export default function SaleWarehouseProductsModal({
           defaultPageSize: 50,
           showSizeChanger: true,
           pageSizeOptions: [25, 50, 100],
-          showTotal: (total, range) => `${range[0]}-${range[1]} / ${total} ta`,
+          showTotal: (total, range) =>
+            t("common.resultRange", {
+              from: range[0],
+              to: range[1],
+              total,
+            }),
         }}
         scroll={{ x: "max-content", y: 560 }}
         expandable={{
@@ -376,7 +383,9 @@ export default function SaleWarehouseProductsModal({
 
             return (
               <div className="rounded-lg border border-border bg-primary-bg p-3">
-                <div className="mb-2 font-semibold">Mahsulot partiyalari</div>
+                <div className="mb-2 font-semibold">
+                  {t("sale.warehouse.productBatches")}
+                </div>
                 <Table<BatchRow>
                   size="small"
                   columns={batchColumns}
@@ -389,32 +398,32 @@ export default function SaleWarehouseProductsModal({
             );
           },
         }}
-        locale={{ emptyText: "Omborxonada qoldiq topilmadi" }}
+        locale={{ emptyText: t("sale.messages.warehouseStockEmpty") }}
       />
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
         <div className="flex flex-wrap gap-5 text-sm">
           <span>
-            Tanlangan mahsulot: <b>{selectedSummary.products}</b>
+            {t("sale.warehouse.selectedProduct")}: <b>{selectedSummary.products}</b>
           </span>
           <span>
-            Miqdor: <b>{numberSpacing(selectedSummary.quantity, undefined, true)}</b>
+            {t("openingInventory.fields.quantity")}: <b>{numberSpacing(selectedSummary.quantity, undefined, true)}</b>
           </span>
           <span>
-            Jami tannarx: <b>{numberSpacing(selectedSummary.totalCost, undefined, true)}</b>
+            {t("sale.warehouse.totalCost")}: <b>{numberSpacing(selectedSummary.totalCost, undefined, true)}</b>
           </span>
           <span>
-            Jami sotuv: <b>{numberSpacing(selectedSummary.totalSale, undefined, true)}</b>
+            {t("sale.warehouse.totalSale")}: <b>{numberSpacing(selectedSummary.totalSale, undefined, true)}</b>
           </span>
         </div>
         <div className="flex gap-2">
-          <Button onClick={onClose}>Bekor qilish</Button>
+          <Button onClick={onClose}>{t("common.cancel")}</Button>
           <Button
             type="primary"
             loading={isAdding}
             disabled={disabled || !selectedSummary.quantity}
             onClick={() => void handleAddSelected()}
           >
-            Tanlanganlarni qo‘shish
+            {t("sale.actions.addSelected")}
           </Button>
         </div>
       </div>

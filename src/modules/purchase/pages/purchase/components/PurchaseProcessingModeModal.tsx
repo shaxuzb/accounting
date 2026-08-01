@@ -1,5 +1,6 @@
 import { Button, Modal, Space } from "antd";
 import type { PurchaseProcessingMode } from "../types/form";
+import { useTranslation } from "react-i18next";
 
 interface PurchaseProcessingModeModalProps {
   open: boolean;
@@ -16,10 +17,11 @@ export default function PurchaseProcessingModeModal({
   onClose,
   onSelect,
 }: PurchaseProcessingModeModalProps) {
+  const { t } = useTranslation();
   return (
     <Modal
       open={open}
-      title="Hujjatni saqlash"
+      title={t("purchase.actions.saveDocument")}
       footer={null}
       destroyOnHidden
       closable={!loading}
@@ -28,15 +30,15 @@ export default function PurchaseProcessingModeModal({
       centered
     >
       <p className="mb-4 text-sm text-muted-foreground">
-        Hujjatni qanday holatda saqlamoqchisiz?
+        {t("purchase.messages.chooseSaveMode")}
       </p>
       <Space wrap>
         <Button disabled={loading} onClick={() => onSelect(1)}>
-          Saqlash
+          {t("common.save")}
         </Button>
         {canConfirm && (
           <Button type="primary" loading={loading} onClick={() => onSelect(2)}>
-            Saqlash va tasdiqlash
+            {t("purchase.actions.saveAndConfirm")}
           </Button>
         )}
       </Space>
