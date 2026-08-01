@@ -19,7 +19,10 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, numberSpacing } from "@/utils/utils";
 
 import { faDisposalSchema } from "../types/schema";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import {
+  chartAccountSelectDisplayConfig,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import type { FaDisposalFormValues } from "../types/form";
 import {
   useCancelFaDisposal,
@@ -37,11 +40,18 @@ const defaultValues: FaDisposalFormValues = {
   disposalType: "",
   reason: "",
   stateId: 0,
+  disposalAccountId: null,
+  customerAccountId: null,
+  vatAccountId: null,
+  gainAccountId: null,
+  lossAccountId: null,
   lines: [
     {
       faAssetId: null as unknown as number,
       saleAmount: 0,
       note: "",
+      assetAccountId: null,
+      accumulatedDepreciationAccountId: null,
     },
   ],
 };
@@ -77,6 +87,13 @@ export default function FaDisposalFormPage() {
       disposalType: record?.disposalType ?? "",
       reason: record?.reason ?? "",
       stateId: record?.stateId ?? defaultValues.stateId,
+      disposalAccountId:
+        record?.disposalAccountId ?? defaultValues.disposalAccountId,
+      customerAccountId:
+        record?.customerAccountId ?? defaultValues.customerAccountId,
+      vatAccountId: record?.vatAccountId ?? defaultValues.vatAccountId,
+      gainAccountId: record?.gainAccountId ?? defaultValues.gainAccountId,
+      lossAccountId: record?.lossAccountId ?? defaultValues.lossAccountId,
       lines: record?.lines?.length ? record.lines : defaultValues.lines,
     }),
     [record],
@@ -85,7 +102,7 @@ export default function FaDisposalFormPage() {
   const formik = useFormik<FaDisposalFormValues>({
     initialValues,
     enableReinitialize: true,
-    validationSchema: faDisposalSchema,
+    validationSchema: faDisposalSchema(t),
     onSubmit: async (values) => {
       try {
         const payload = {
@@ -93,10 +110,19 @@ export default function FaDisposalFormPage() {
           disposalType: values.disposalType,
           reason: values.reason,
           stateId: values.stateId,
+          disposalAccountId: Number(values.disposalAccountId),
+          customerAccountId: Number(values.customerAccountId),
+          vatAccountId: Number(values.vatAccountId),
+          gainAccountId: Number(values.gainAccountId),
+          lossAccountId: Number(values.lossAccountId),
           lines: values.lines.map((line) => ({
             ...line,
             faAssetId: Number(line.faAssetId),
             saleAmount: Number(line.saleAmount),
+            assetAccountId: Number(line.assetAccountId),
+            accumulatedDepreciationAccountId: Number(
+              line.accumulatedDepreciationAccountId,
+            ),
           })),
         };
 
@@ -221,13 +247,68 @@ export default function FaDisposalFormPage() {
                     label="fa.fields.reason"
                   />
                 </Col>
+                <Col span={8}>
+                  <SelectCustom
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    displayConfig={chartAccountSelectDisplayConfig}
+                    formik={formik}
+                    fieldName="disposalAccountId"
+                    label="fa.fields.disposalAccount"
+                    search
+                    required
+                  />
+                </Col>
+                <Col span={8}>
+                  <SelectCustom
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    displayConfig={chartAccountSelectDisplayConfig}
+                    formik={formik}
+                    fieldName="customerAccountId"
+                    label="fa.fields.customerAccount"
+                    search
+                    required
+                  />
+                </Col>
+                <Col span={8}>
+                  <SelectCustom
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    displayConfig={chartAccountSelectDisplayConfig}
+                    formik={formik}
+                    fieldName="vatAccountId"
+                    label="fa.fields.vatAccount"
+                    search
+                    required
+                  />
+                </Col>
+                <Col span={8}>
+                  <SelectCustom
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    displayConfig={chartAccountSelectDisplayConfig}
+                    formik={formik}
+                    fieldName="gainAccountId"
+                    label="fa.fields.gainAccount"
+                    search
+                    required
+                  />
+                </Col>
+                <Col span={8}>
+                  <SelectCustom
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    displayConfig={chartAccountSelectDisplayConfig}
+                    formik={formik}
+                    fieldName="lossAccountId"
+                    label="fa.fields.lossAccount"
+                    search
+                    required
+                  />
+                </Col>
               </Row>
 
               <Divider className="my-4" />
               
               <div className="mb-4 flex justify-between items-center">
                 <Text strong className="text-lg">
-                  Yo'q qilish detallari
+                  {t("fa.sections.disposalDetails")}
                 </Text>
                 {isDraft && (
                   <Button
@@ -235,8 +316,7 @@ export default function FaDisposalFormPage() {
                     icon={<Plus className="size-4" />}
                     onClick={handleAddLine}
                   >
-                    Qo'shish
-                  </Button>
+                    {t("common.add")}</Button>
                 )}
               </div>
 
@@ -247,7 +327,7 @@ export default function FaDisposalFormPage() {
                   className="mb-4 bg-gray-50/50 border border-border shadow-sm"
                   title={
                     <div className="flex justify-between items-center mb-1">
-                      <Text strong>Qator #{lineIndex + 1}</Text>
+                      <Text strong>{t("fa.sections.lineNumber", { number: lineIndex + 1 })}</Text>
                       {isDraft && formik.values.lines.length > 1 && (
                         <Button
                           danger
@@ -280,6 +360,28 @@ export default function FaDisposalFormPage() {
                         formik={formik}
                         fieldName={`lines[${lineIndex}].note`}
                         label="fa.fields.note"
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <SelectCustom
+                        path={selectListEndpoints.chartAccountsSelectList}
+                        displayConfig={chartAccountSelectDisplayConfig}
+                        formik={formik}
+                        fieldName={`lines[${lineIndex}].assetAccountId`}
+                        label="fa.fields.assetAccount"
+                        search
+                        required
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <SelectCustom
+                        path={selectListEndpoints.chartAccountsSelectList}
+                        displayConfig={chartAccountSelectDisplayConfig}
+                        formik={formik}
+                        fieldName={`lines[${lineIndex}].accumulatedDepreciationAccountId`}
+                        label="fa.fields.accumulatedDepreciationAccount"
+                        search
+                        required
                       />
                     </Col>
                   </Row>
@@ -359,7 +461,7 @@ export default function FaDisposalFormPage() {
           
           <Card className="p-4 bg-gray-50/50">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground font-medium">Umumiy sotish summasi:</span>
+              <span className="text-muted-foreground font-medium">{t("fa.sections.totalSaleAmount")}:</span>
               <span className="font-bold text-lg">{numberSpacing(totalSaleAmount)}</span>
             </div>
           </Card>

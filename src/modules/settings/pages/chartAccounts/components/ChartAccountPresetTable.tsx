@@ -2,6 +2,7 @@ import { Button, Empty, Table, Tag } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
 import type { Key } from "react";
 import type { ChartAccountPresetAccount } from "../types/preset";
+import { useTranslation } from "react-i18next";
 
 interface ChartAccountPresetTableProps {
   rows: ChartAccountPresetAccount[];
@@ -25,6 +26,7 @@ export default function ChartAccountPresetTable({
   pagination,
   onSelectionChange,
 }: ChartAccountPresetTableProps) {
+  const { t } = useTranslation();
   const rowSelection: PresetRowSelection = {
     selectedRowKeys: selectedIds,
     onChange: (keys: Key[]) => onSelectionChange(keys.map(Number)),
@@ -35,7 +37,7 @@ export default function ChartAccountPresetTable({
 
   const columns: TableColumnsType<ChartAccountPresetAccount> = [
     {
-      title: "№ hisob",
+      title: t("settings.fields.accountNumber"),
       dataIndex: "number",
       width: 130,
       render: (value: string, record) => (
@@ -48,12 +50,12 @@ export default function ChartAccountPresetTable({
       ),
     },
     {
-      title: "Hisob nomi",
+      title: t("settings.fields.name"),
       dataIndex: "name",
       ellipsis: true,
     },
     {
-      title: "Hisob turi",
+      title: t("settings.fields.accountType"),
       dataIndex: "accountTypeName",
       width: 150,
       render: (value: string, record) => (
@@ -63,7 +65,12 @@ export default function ChartAccountPresetTable({
   ];
 
   if (!rows.length) {
-    return <Empty description="Hisoblar topilmadi" className="py-10" />;
+    return (
+      <Empty
+        description={t("settings.chartAccounts.accountsNotFound")}
+        className="py-10"
+      />
+    );
   }
 
   return (
@@ -75,7 +82,12 @@ export default function ChartAccountPresetTable({
       rowSelection={rowSelection}
       pagination={{
         ...pagination,
-        showTotal: (total, range) => `${range[0]}-${range[1]} / ${total} ta`,
+        showTotal: (total, range) =>
+          t("common.resultRange", {
+            from: range[0],
+            to: range[1],
+            total,
+          }),
       }}
       scroll={{ y: 430 }}
       rowClassName={(record) => (record.hasChartAccount ? "opacity-60" : "")}
@@ -92,6 +104,7 @@ export function PresetSelectionActions({
   selectedIds: number[];
   onSelectionChange: (ids: number[]) => void;
 }) {
+  const { t } = useTranslation();
   const availableIds = rows
     .filter((row) => !row.hasChartAccount)
     .map((row) => row.id);
@@ -107,10 +120,10 @@ export function PresetSelectionActions({
   return (
     <div className="flex items-center gap-2">
       <Button size="small" onClick={selectAll}>
-        Joriy sahifani tanlash
+        {t("settings.chartAccounts.selectCurrentPage")}
       </Button>
       <Button size="small" onClick={clearSelection}>
-        Joriy sahifa tanlovini bekor qilish
+        {t("settings.chartAccounts.clearCurrentPage")}
       </Button>
     </div>
   );

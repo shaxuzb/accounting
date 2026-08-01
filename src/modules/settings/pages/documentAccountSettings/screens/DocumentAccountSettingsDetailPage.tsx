@@ -21,6 +21,8 @@ import type {
   DocumentAccountSettingsDetail,
   DocumentAccountChartAccount,
 } from "../types/type";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 type ChartAccountResponse =
   | DocumentAccountChartAccount[]
@@ -46,6 +48,7 @@ const normalizeRoles = (
 const accountTitle = (
   account: DocumentAccountSettingAccount,
   options: DocumentAccountChartAccount[],
+  t: TFunction,
 ) => {
   const option = options.find((item) => item.id === account.chartAccountId);
   if (option) return chartAccountOptionLabel(option);
@@ -53,7 +56,10 @@ const accountTitle = (
   return (
     [account.chartAccountNumber, account.chartAccountName]
       .filter(Boolean)
-      .join(" - ") || `Schyot #${account.chartAccountId}`
+      .join(" - ") ||
+    t("settings.documentAccounts.accountWithId", {
+      id: account.chartAccountId,
+    })
   );
 };
 
@@ -72,6 +78,7 @@ function AccountRoleCard({
   onRemove: (roleId: number, chartAccountId: number) => void;
   onSetDefault: (roleId: number, chartAccountId: number) => void;
 }) {
+  const { t } = useTranslation();
   const [isAdding, setIsAdding] = useState(false);
   const selectedIds = new Set(
     role.accounts.map((account) => account.chartAccountId),
@@ -92,9 +99,9 @@ function AccountRoleCard({
               {role.documentAccountRoleName}
             </h3>
             {role.isRequired ? (
-              <Tag color="blue">Majburiy</Tag>
+              <Tag color="blue">{t("common.required")}</Tag>
             ) : (
-              <Tag>Ixtiyoriy</Tag>
+              <Tag>{t("common.optional")}</Tag>
             )}
           </div>
           {role.documentAccountRoleDescription && (
@@ -108,7 +115,7 @@ function AccountRoleCard({
           icon={<Plus className="size-4" />}
           onClick={() => setIsAdding((value) => !value)}
         >
-          Hisob qo'shish
+          {t("settings.documentAccounts.addAccount")}
         </Button>
       </div>
 
@@ -119,7 +126,7 @@ function AccountRoleCard({
             showSearch
             className="w-full"
             loading={chartAccountsLoading}
-            placeholder="Manualdan hisob tanlang"
+            placeholder={t("settings.documentAccounts.selectFromManual")}
             options={options}
             onChange={(value: number) => {
               onAdd(role.documentAccountTypeRoleId, value);
@@ -141,10 +148,12 @@ function AccountRoleCard({
               </div>
               <div className="min-w-0 flex-1">
                 <div className="font-medium text-gray-900">
-                  {accountTitle(account, chartAccounts)}
+                  {accountTitle(account, chartAccounts, t)}
                 </div>
                 <div className="text-xs text-gray-500">
-                  {account.isDefault ? "Asosiy hisob" : "Qo‘shimcha hisob"}
+                  {account.isDefault
+                    ? t("settings.documentAccounts.defaultAccount")
+                    : t("settings.documentAccounts.additionalAccount")}
                 </div>
               </div>
               <Checkbox
@@ -156,13 +165,13 @@ function AccountRoleCard({
                   )
                 }
               >
-                Asosiy
+                {t("settings.documentAccounts.defaultAccount")}
               </Checkbox>
               <Button
                 type="text"
                 danger
                 icon={<Trash2 className="size-4" />}
-                aria-label="Hisobni o'chirish"
+                aria-label={t("settings.documentAccounts.removeAccount")}
                 onClick={() =>
                   onRemove(
                     role.documentAccountTypeRoleId,
@@ -176,7 +185,7 @@ function AccountRoleCard({
           <div className="px-4 py-7">
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="Hisob biriktirilmagan"
+              description={t("settings.documentAccounts.noAccount")}
             />
           </div>
         )}
@@ -186,6 +195,7 @@ function AccountRoleCard({
 }
 
 export default function DocumentAccountSettingsDetailPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { documentTypeId = "" } = useParams<{ documentTypeId: string }>();
   const { data, isLoading, isFetching } =
@@ -292,7 +302,7 @@ export default function DocumentAccountSettingsDetailPage() {
     try {
       await saveMutation.mutateAsync(payload);
       setDraftRoles(null);
-      toast.success("Hisob sozlamalari saqlandi");
+      toast.success(t("settings.documentAccounts.saved"));
       navigate(-1);
     } catch (error: unknown) {
       errorHandlers(error);
@@ -323,7 +333,13 @@ export default function DocumentAccountSettingsDetailPage() {
           >
             <BookOpen className="size-5" />
           </span>
-          <span>{side === "debit" ? "Debet" : "Kredit"}</span>
+          <span>
+            {t(
+              side === "debit"
+                ? "openingBalance.fields.debit"
+                : "openingBalance.fields.credit",
+            )}
+          </span>
         </div>
       }
       className="h-full! border-gray-200! shadow-sm"
@@ -345,7 +361,7 @@ export default function DocumentAccountSettingsDetailPage() {
         ) : (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description="Rol mavjud emas"
+            description={t("settings.documentAccounts.noRole")}
           />
         )}
       </div>
@@ -361,7 +377,9 @@ export default function DocumentAccountSettingsDetailPage() {
               <BookOpen className="size-5" />
             </div>
             <div className="min-w-0">
-              <div className="text-xs text-gray-500">Hujjat turi</div>
+              <div className="text-xs text-gray-500">
+                {t("settings.documentAccounts.documentType")}
+              </div>
               <div className="truncate font-semibold text-gray-900">
                 {data.documentTypeName}
               </div>
@@ -369,14 +387,18 @@ export default function DocumentAccountSettingsDetailPage() {
           </div>
           <div className="grid grid-cols-1 gap-5 px-5 py-4 sm:grid-cols-[minmax(0,1fr)_minmax(150px,0.42fr)] sm:items-center">
             <div className="min-w-0">
-              <div className="text-xs text-gray-500">Tavsif</div>
+              <div className="text-xs text-gray-500">
+                {t("settings.fields.description")}
+              </div>
               <div className="truncate text-sm font-medium text-gray-900">
                 {data.documentTypeDescription ||
-                  "Hujjat turi uchun hisoblarni biriktirish"}
+                  t("settings.documentAccounts.assignDescription")}
               </div>
             </div>
             <div className="min-w-0">
-              <div className="text-xs text-gray-500">Kod</div>
+              <div className="text-xs text-gray-500">
+                {t("settings.fields.code")}
+              </div>
               <div className="truncate text-sm font-medium text-gray-900">
                 {data.documentTypeCode}
               </div>
@@ -391,7 +413,7 @@ export default function DocumentAccountSettingsDetailPage() {
               loading={saveMutation.isPending || isFetching}
               onClick={() => handleSave()}
             >
-              Saqlash
+              {t("common.save")}
             </Button>
           </div>
         </div>

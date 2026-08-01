@@ -1,6 +1,7 @@
 import type { ClipboardEvent } from "react";
 import { Button, Input, Modal } from "antd";
 import { Plus, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface PurchaseMarkingModalProps {
   open: boolean;
@@ -23,9 +24,10 @@ export default function PurchaseMarkingModal({
   onRemove,
   onClose,
 }: PurchaseMarkingModalProps) {
+  const { t } = useTranslation();
   return (
     <Modal
-      title="Markirovkalarni kiritish"
+      title={t("purchase.actions.enterMarkings")}
       open={open}
       onCancel={onClose}
       footer={null}
@@ -36,13 +38,13 @@ export default function PurchaseMarkingModal({
         <Input
           autoFocus
           value={value}
-          placeholder="Markirovkalarni kiriting yoki Exceldan paste qiling"
+          placeholder={t("purchase.messages.markingInputHint")}
           onChange={(event) => onChange(event.target.value)}
           onPaste={onPaste}
           onPressEnter={onAdd}
         />
         <Button type="primary" icon={<Plus className="size-4" />} onClick={onAdd}>
-          Qo'shish
+          {t("common.add")}
         </Button>
       </div>
       <div className="mt-3 flex max-h-64 flex-col gap-2 overflow-auto rounded border border-border bg-card p-2">
@@ -63,7 +65,7 @@ export default function PurchaseMarkingModal({
           ))
         ) : (
           <div className="py-6 text-center text-sm text-secondary-text">
-            Markirovka kiritilmagan
+            {t("purchase.messages.noMarkings")}
           </div>
         )}
       </div>

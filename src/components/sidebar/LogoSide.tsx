@@ -1,7 +1,9 @@
 import { useAppSelector } from "@/store/hooks";
+import { useTranslation } from "react-i18next";
 /* import logo from "@/assets/images/logo/logo.svg"; */
 
 const LogoSide = () => {
+  const { t } = useTranslation();
   const sidebarInline = useAppSelector((state) => state.sidebar);
 
   return (
@@ -26,7 +28,7 @@ const LogoSide = () => {
               HisobKitob
             </h1>
             <p className="text-blue-600 mt-0.5 text-[10px] font-semibold tracking-wider">
-              Buxgalteriya tizimi
+              {t("auth.systemName")}
             </p>
           </div>
         )}

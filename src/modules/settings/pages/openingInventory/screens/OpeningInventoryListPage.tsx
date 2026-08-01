@@ -45,9 +45,9 @@ export default function OpeningInventoryListPage() {
 
   const handleDelete = (id: number) => {
     modal.confirm({
-      title: "Haqiqatan ham o'chirmoqchimisiz?",
-      okText: "O'chirish",
-      cancelText: "Bekor qilish",
+      title: t("common.deleteConfirm"),
+      okText: t("common.delete"),
+      cancelText: t("common.cancel"),
       okButtonProps: { danger: true },
       onOk: async () => {
         await deleteMutation.mutateAsync(id);
@@ -69,13 +69,13 @@ export default function OpeningInventoryListPage() {
       width: 60,
     },
     {
-      title: "Sana",
+      title: t("purchase.fields.docDate"),
       dataIndex: "docDate",
       key: "docDate",
       render: (date: string) => customDate(date),
     },
     {
-      title: "Yetkazib beruvchi",
+      title: t("products.fields.supplier"),
       dataIndex: "counterpartyName",
       key: "counterpartyName",
       render: (value: string, record) =>
@@ -84,7 +84,7 @@ export default function OpeningInventoryListPage() {
           : value,
     },
     {
-      title: "Turi",
+      title: t("payroll.fields.componentType"),
       key: "openingInventoryMode",
       width: 120,
       render: (_, record) =>
@@ -93,23 +93,23 @@ export default function OpeningInventoryListPage() {
           : "Tovar",
     },
     {
-      title: "Ombor",
+      title: t("menu.warehouse"),
       dataIndex: "warehouseName",
       key: "warehouseName",
     },
     {
-      title: "Summa",
+      title: t("app.fields.amount"),
       dataIndex: "totalAmount",
       key: "totalAmount",
       render: (amount: number) => numberSpacing(amount),
     },
     {
-      title: "Izoh",
+      title: t("settings.fields.comment"),
       dataIndex: "comment",
       key: "comment",
     },
     {
-      title: "Amallar",
+      title: t("common.actions"),
       key: "actions",
       align: "right",
       width: 120,
@@ -149,8 +149,7 @@ export default function OpeningInventoryListPage() {
                 icon={<Plus className="size-4" />}
                 onClick={() => navigate("add")}
               >
-                Yaratish
-              </Button>
+                {t("common.create")}</Button>
             </PermissionCard>
             <Button
               icon={<RefreshCw className="size-4" />}
@@ -166,10 +165,10 @@ export default function OpeningInventoryListPage() {
               showIcon
               type="error"
               className="m-3"
-              message="Boshlang'ich qoldiqlarni yuklashda xatolik yuz berdi"
+              message={t("openingInventory.messages.loadError")}
               action={
                 <Button size="small" onClick={() => refetch()}>
-                  Qayta urinish
+                  {t("openingInventory.actions.retry")}
                 </Button>
               }
             />
@@ -183,7 +182,7 @@ export default function OpeningInventoryListPage() {
               emptyText: (
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="Boshlang'ich qoldiqlar topilmadi"
+                  description={t("openingInventory.messages.empty")}
                 />
               ),
             }}
@@ -194,7 +193,11 @@ export default function OpeningInventoryListPage() {
               showSizeChanger: true,
               pageSizeOptions: [10, 20, 50, 100],
               showTotal: (total, range) =>
-                `${range[0]}-${range[1]} / ${total} ta`,
+                t("common.resultRange", {
+                  from: range[0],
+                  to: range[1],
+                  total,
+                }),
               onChange: handlePaginationChange,
             }}
             scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}

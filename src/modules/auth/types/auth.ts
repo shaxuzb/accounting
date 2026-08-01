@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import type { TFunction } from "i18next";
 
 export interface Auth {
   id: string | number;
@@ -10,8 +11,8 @@ export interface AuthForm {
   name: string;
 }
 
-export const authSchema = Yup.object({
-  userName: Yup.string().required("Userni kiriting"),
-  password: Yup.string().required("Parolni kiriting")
-});
-
+export const createAuthSchema = (t: TFunction) =>
+  Yup.object({
+    userName: Yup.string().required(t("auth.validation.userNameRequired")),
+    password: Yup.string().required(t("auth.validation.passwordRequired")),
+  });

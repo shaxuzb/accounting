@@ -4,8 +4,10 @@ import EndpointResultCard from "@/modules/accountings/components/EndpointResultC
 import { useRepostAccounting } from "../hooks";
 import RepostForm from "../components/RepostForm";
 import type { RepostFilter } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 export default function RepostPage() {
+  const { t } = useTranslation();
   const mutation = useRepostAccounting();
   const [lastResult, setLastResult] = useState<unknown>(null);
 
@@ -18,21 +20,21 @@ export default function RepostPage() {
     <div className="space-y-4">
       <div>
         <Typography.Title level={3} className="!mb-1 !text-text">
-          Repost
+          {t("accountings.repost.title")}
         </Typography.Title>
         <p className="text-sm text-secondary-text">
-          Swagger endpoint: <code>/api/register/repost</code>
+          {t("accountings.endpoint")}: <code>/api/register/repost</code>
         </p>
       </div>
 
       <RepostForm loading={mutation.isPending} onSubmit={handleSubmit} />
 
       <EndpointResultCard
-        title="Response"
-        description="Repost so'rovi natijasi."
+        title={t("accountings.result.title")}
+        description={t("accountings.repost.resultDescription")}
         data={mutation.data ?? lastResult}
         isLoading={mutation.isPending}
-        emptyText="Hozircha repost natijasi yo'q"
+        emptyText={t("accountings.repost.empty")}
       />
     </div>
   );

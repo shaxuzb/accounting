@@ -83,7 +83,7 @@ export default function FaMovementFormPage() {
   const formik = useFormik<FaMovementFormValues>({
     initialValues,
     enableReinitialize: true,
-    validationSchema: faMovementSchema,
+    validationSchema: faMovementSchema(t),
     onSubmit: async (values) => {
       try {
         const payload = {
@@ -232,7 +232,7 @@ export default function FaMovementFormPage() {
               
               <div className="mb-4 flex justify-between items-center">
                 <Text strong className="text-lg">
-                  O'tkazish detallari
+                  {t("fa.sections.movementDetails")}
                 </Text>
                 {isDraft && (
                   <Button
@@ -240,8 +240,7 @@ export default function FaMovementFormPage() {
                     icon={<Plus className="size-4" />}
                     onClick={handleAddLine}
                   >
-                    Qo'shish
-                  </Button>
+                    {t("common.add")}</Button>
                 )}
               </div>
 
@@ -252,7 +251,7 @@ export default function FaMovementFormPage() {
                   className="mb-4 bg-gray-50/50 border border-border shadow-sm"
                   title={
                     <div className="flex justify-between items-center mb-1">
-                      <Text strong>Qator #{lineIndex + 1}</Text>
+                      <Text strong>{t("fa.sections.lineNumber", { number: lineIndex + 1 })}</Text>
                       {isDraft && formik.values.lines.length > 1 && (
                         <Button
                           danger

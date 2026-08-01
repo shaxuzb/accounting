@@ -1,6 +1,7 @@
 import { Button } from "antd";
 import { Boxes, CheckCircle2, Coins, PackageCheck } from "lucide-react";
 import { numberSpacing } from "@/utils/utils";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   positionCount: number;
@@ -19,21 +20,22 @@ export default function SaleDraftSummary({
   loading,
   isEdit = false,
 }: Props) {
+  const { t } = useTranslation();
   const items = [
     {
-      label: "Jami pozitsiya",
+      label: t("sale.fields.totalPositions"),
       value: positionCount,
       icon: PackageCheck,
       className: "bg-blue-50 text-blue-600",
     },
     {
-      label: "Jami miqdor",
+      label: t("sale.fields.totalQuantity"),
       value: totalQuantity,
       icon: Boxes,
       className: "bg-emerald-50 text-emerald-600",
     },
     {
-      label: "Jami summa",
+      label: t("sale.fields.totalAmount"),
       value: numberSpacing(totalAmount),
       icon: Coins,
       className: "bg-violet-50 text-violet-600",
@@ -72,7 +74,7 @@ export default function SaleDraftSummary({
           loading={loading}
           disabled={pendingCount > 0 || (!isEdit && positionCount === 0)}
         >
-         {isEdit ? "Saqlash" : "Yakunlash"}
+         {isEdit ? t("common.save") : t("common.submit")}
         </Button>
       </div>
     </aside>

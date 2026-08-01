@@ -4,8 +4,10 @@ import EndpointResultCard from "@/modules/accountings/components/EndpointResultC
 import { useGetAuditLogs } from "../hooks";
 import AuditLogFilters from "../components/AuditLogFilters";
 import type { AuditLogQuery } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 export default function AuditLogPage() {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<AuditLogQuery | null>(null);
   const query = useGetAuditLogs(filters ?? undefined);
 
@@ -13,10 +15,10 @@ export default function AuditLogPage() {
     <div className="space-y-4">
       <div>
         <Typography.Title level={3} className="!mb-1 !text-text">
-          Audit log
+          {t("accountings.audit.title")}
         </Typography.Title>
         <p className="text-sm text-secondary-text">
-          Swagger endpoint: <code>/api/audit-logs</code>
+          {t("accountings.endpoint")}: <code>/api/audit-logs</code>
         </p>
       </div>
 
@@ -26,11 +28,11 @@ export default function AuditLogPage() {
       />
 
       <EndpointResultCard
-        title="Response"
-        description="RecordId va TableName bo'yicha audit yozuvlari."
+        title={t("accountings.result.title")}
+        description={t("accountings.audit.resultDescription")}
         data={query.data}
         isLoading={query.isLoading || query.isFetching}
-        emptyText="Audit log topilmadi"
+        emptyText={t("accountings.audit.empty")}
       />
     </div>
   );

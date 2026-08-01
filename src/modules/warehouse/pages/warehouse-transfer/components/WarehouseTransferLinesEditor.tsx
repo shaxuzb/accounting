@@ -19,6 +19,7 @@ import type {
   ProductStock,
   ProductStockSerial,
 } from "../../warehouse/types/type";
+import { useTranslation } from "react-i18next";
 import WarehouseTransferMarkingModal from "./WarehouseTransferMarkingModal";
 import {
   createDefaultTransferItem,
@@ -31,12 +32,11 @@ interface Props {
   disabled?: boolean;
 }
 
-const getRowTitle = (index: number) => `Qator ${index + 1}`;
-
 export default function WarehouseTransferLinesEditor({
   formik,
   disabled = false,
 }: Props) {
+  const { t } = useTranslation();
   const sourceWarehouseId = formik.values.sourceWarehouseId;
 
   const stockQuery = useGetWarehouseTransferStocks({
@@ -160,18 +160,22 @@ export default function WarehouseTransferLinesEditor({
   return (
     <Card className="p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <div className="text-sm font-semibold">Mahsulot qatorlari</div>
+        <div className="text-sm font-semibold">
+          {t("warehouse.lines.productLines")}
+        </div>
         <Button
           type="dashed"
           icon={<Plus className="size-4" />}
           onClick={addLine}
           disabled={disabled}
         >
-          Qator qo'shish
+          {t("warehouse.lines.addLine")}
         </Button>
       </div>
 
-      {!formik.values.lines.length && <Empty description="Qatorlar yo'q" />}
+      {!formik.values.lines.length && (
+        <Empty description={t("warehouse.lines.noLines")} />
+      )}
 
       <div className="space-y-4">
         {formik.values.lines.map((line, index) => {
@@ -189,7 +193,7 @@ export default function WarehouseTransferLinesEditor({
             >
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <div className="text-sm font-semibold">
-                  {getRowTitle(index)}
+                  {t("warehouse.lines.row", { number: index + 1 })}
                 </div>
                 <Button
                   type="text"
@@ -204,11 +208,11 @@ export default function WarehouseTransferLinesEditor({
                 <Row gutter={[16, 0]}>
                   <Col span={12}>
                     <div className="mb-1 text-sm text-secondary-text pb-2">
-                      Mahsulot
+                      {t("warehouse.fields.productName")}
                     </div>
                     <Select
                       value={line.productId}
-                      placeholder="Mahsulotni tanlang"
+                      placeholder={t("warehouse.lines.selectProduct")}
                       loading={
                         manualProductsQuery.isLoading ||
                         manualProductsQuery.isFetching
@@ -249,7 +253,7 @@ export default function WarehouseTransferLinesEditor({
                     <InputNumber
                       formik={formik}
                       fieldName={`lines[${index}].quantity`}
-                      label="Miqdor"
+                      label={t("openingInventory.fields.quantity")}
                       disabled={disabled}
                       min={0}
                     />
@@ -258,7 +262,7 @@ export default function WarehouseTransferLinesEditor({
                     <SelectCustom
                       formik={formik}
                       fieldName={`lines[${index}].unitId`}
-                      label="Birlik"
+                      label={t("purchase.fields.unit")}
                       path={selectListEndpoints.unitsSelectList}
                       disabled={disabled}
                       getFieldName={`lines[${index}].unitName`}
@@ -269,7 +273,7 @@ export default function WarehouseTransferLinesEditor({
                     <InputText
                       formik={formik}
                       fieldName={`lines[${index}].comment`}
-                      label="Izoh"
+                      label={t("openingInventory.fields.comment")}
                       disabled={disabled}
                     />
                   </Col>
@@ -277,10 +281,10 @@ export default function WarehouseTransferLinesEditor({
               </Form>
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <Tag color="blue">
-                  Qoldiq: {numberSpacing(totalStock, undefined, true)}
+                  {t("warehouse.lines.stock")}: {numberSpacing(totalStock, undefined, true)}
                 </Tag>
                 <Tag color={selectedMarkings.length ? "green" : "default"}>
-                  Markirovka: {selectedMarkings.length}
+                  {t("warehouse.lines.marking")}: {selectedMarkings.length}
                 </Tag>
                 <Button
                   size="small"
@@ -296,16 +300,16 @@ export default function WarehouseTransferLinesEditor({
                     disabled || !canOpenMarking || serialsQuery.isFetching
                   }
                 >
-                  Markirovka
+                  {t("warehouse.lines.marking")}
                 </Button>
                 {!sourceWarehouseId && (
                   <span className="text-xs text-red-500">
-                    Avval manba omborni tanlang
+                    {t("warehouse.lines.selectSourceWarehouseFirst")}
                   </span>
                 )}
                 {line.productId && !serialItems.length && canOpenMarking && (
                   <span className="text-xs text-secondary-text">
-                    Bu mahsulot markirovkasiz
+                    {t("warehouse.lines.notPieceTracked")}
                   </span>
                 )}
               </div>
@@ -316,7 +320,7 @@ export default function WarehouseTransferLinesEditor({
 
       <WarehouseTransferMarkingModal
         open={activeLineIndex !== null && Boolean(activeLine?.productId)}
-        title={activeLine?.productName || "Markirovka tanlash"}
+        title={activeLine?.productName || t("warehouse.lines.selectMarking")}
         items={serialItems}
         selectedRowKeys={selectedRowKeys}
         loading={serialsQuery.isLoading || serialsQuery.isFetching}

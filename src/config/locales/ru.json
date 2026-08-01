@@ -22,13 +22,29 @@
     "back": "Назад",
     "next": "Далее",
     "refresh": "Обновить",
-    "create": "Создать"
+    "create": "Создать",
+    "confirm": "Подтвердить",
+    "optional": "Необязательно",
+    "requiredFields": "Заполните обязательные поля",
+    "deleteConfirm": "Вы действительно хотите удалить?",
+    "resultRange": "{{from}}–{{to}} / {{total}}",
+    "close": "Закрыть",
+    "required": "Обязательно",
+    "home": "На главную",
+    "reload": "Перезагрузить",
+    "resultCount": "Всего результатов: {{count}}",
+    "accountingEntries": "Проводки",
+    "piece": "шт.",
+    "and": "и"
   },
   "actions": {
     "deleteSuccess": "Элемент {{id}} успешно удалён",
     "deleteConfirmTitle": "Удалить этот элемент?",
     "deleteConfirmContent": "Это действие нельзя отменить!",
-    "confirm": "Подтвердить"
+    "confirm": "Подтвердить",
+    "cancel": "Отменить",
+    "confirmSuccess": "Документ подтверждён",
+    "cancelSuccess": "Документ отменён"
   },
   "processStatuses": {
     "draft": "Черновик",
@@ -39,11 +55,18 @@
   "error": {
     "title": "Произошла ошибка",
     "subtitle": "Не удалось загрузить страницу или обработать запрос.",
-    "reload": "Перезагрузить страницу"
+    "reload": "Перезагрузить страницу",
+    "pageNotFound": "Страница не найдена",
+    "unknown": "Произошла неизвестная ошибка",
+    "noPermission": "У вас нет доступа к этой странице"
   },
   "profile": {
     "defaultUser": "Пользователь",
     "theme": "Тема",
+    "themeModes": {
+      "dark": "тёмная",
+      "light": "светлая"
+    },
     "security": "Безопасность",
     "language": "Язык",
     "wallpaper": "Обои",
@@ -93,7 +116,27 @@
     "login": "Войти",
     "loginSuccess": "Вы успешно вошли!",
     "noPermissions": "Нет разрешений для входа в систему!",
-    "copyright": "© 2026 HisobKitob. Все права защищены."
+    "copyright": "© 2026 HisobKitob. Все права защищены.",
+    "loggedOut": "Вы вышли из системы!",
+    "sessionExpired": "Срок сеанса истёк. Войдите снова.",
+    "validation": {
+      "userNameRequired": "Введите имя пользователя",
+      "passwordRequired": "Введите пароль"
+    },
+    "features": {
+      "convenient": {
+        "title": "Удобно для бухгалтеров",
+        "description": "Экономьте время благодаря удобному интерфейсу и автоматизированным процессам."
+      },
+      "secure": {
+        "title": "Безопасно и надёжно",
+        "description": "Ваши данные защищены современными средствами безопасности."
+      },
+      "allInOne": {
+        "title": "Всё в одной системе",
+        "description": "Управляйте всеми бухгалтерскими процессами на единой платформе."
+      }
+    }
   },
   "validation": {
     "required": "{{field}} обязательно",
@@ -105,7 +148,6 @@
   "fa": {
     "title": "Основные средства",
     "entities": {
-      "integrations": "Интеграции",
       "assets": "Основные средства",
       "receipts": "Приход",
       "movements": "Перемещение",
@@ -119,10 +161,10 @@
       "comment": "Комментарий",
       "inventoryNumber": "Инвентарный номер",
       "name": "Название",
-      "faGroup": "Группа ОФ",
+      "faGroup": "Группа основных средств",
       "okof": "ОКОФ",
       "depreciationMethod": "Метод амортизации",
-      "usefulLifeMonths": "Срок полезного использования (месяцы)",
+      "usefulLifeMonths": "Срок полезного использования (мес.)",
       "initialCost": "Первоначальная стоимость",
       "salvageValue": "Ликвидационная стоимость",
       "commissioningDate": "Дата ввода в эксплуатацию",
@@ -137,9 +179,9 @@
       "quantity": "Количество",
       "price": "Цена",
       "vatRateId": "Ставка НДС",
-      "faGroupId": "Группа ОС",
+      "faGroupId": "Группа основных средств",
       "okofId": "ОКОФ",
-      "depreciationMethodId": "Метод начисления амортизации",
+      "depreciationMethodId": "Метод амортизации",
       "departmentId": "Отдел",
       "responsibleUserId": "Ответственный пользователь",
       "assets": "Активы",
@@ -156,13 +198,89 @@
       "newValue": "Новая стоимость",
       "disposalDate": "Дата выбытия",
       "disposalType": "Тип выбытия",
-      "saleAmount": "Сумма реализации"
+      "saleAmount": "Сумма реализации",
+      "currentStatus": "Текущий статус",
+      "amount": "Сумма",
+      "assetAccount": "Счёт основных средств",
+      "accumulatedDepreciationAccount": "Счёт накопленной амортизации",
+      "depreciationExpenseAccount": "Счёт расходов по амортизации",
+      "supplierAccount": "Счёт поставщика",
+      "capitalInvestmentAccount": "Счёт капитальных вложений",
+      "vatAccount": "Счёт НДС",
+      "revaluationReserveAccount": "Счёт резерва переоценки",
+      "revaluationLossAccount": "Счёт убытка от переоценки",
+      "disposalAccount": "Счёт выбытия",
+      "customerAccount": "Счёт покупателя",
+      "gainAccount": "Счёт прибыли",
+      "lossAccount": "Счёт убытка"
     },
     "form": {
       "create": "Создать документ ОФ",
       "edit": "Редактировать документ ОФ",
       "run": "Запустить амортизацию",
-      "detail": "Документ ОФ"
+      "detail": "Документ ОФ",
+      "revaluationDetails": "Детали переоценки",
+      "assets": "Основные средства",
+      "actions": "Действия"
+    },
+    "validation": {
+      "inventoryNumberRequired": "Введите инвентарный номер",
+      "nameRequired": "Введите наименование",
+      "groupRequired": "Выберите группу основных средств",
+      "okofRequired": "Выберите ОКОФ",
+      "depreciationMethodRequired": "Выберите метод амортизации",
+      "usefulLifeMin": "Срок полезного использования должен быть не менее 1 месяца",
+      "usefulLifeRequired": "Введите срок полезного использования",
+      "initialCostNonNegative": "Первоначальная стоимость не может быть отрицательной",
+      "initialCostRequired": "Введите первоначальную стоимость",
+      "salvageValueNonNegative": "Ликвидационная стоимость не может быть отрицательной",
+      "salvageValueRequired": "Введите ликвидационную стоимость",
+      "commissioningDateRequired": "Введите дату ввода в эксплуатацию",
+      "depreciationStartRequired": "Введите дату начала амортизации",
+      "plannedUnitsNonNegative": "Плановое количество единиц не может быть отрицательным",
+      "plannedUnitsRequired": "Введите плановое количество единиц",
+      "sourceProductRequired": "Выберите исходный товар",
+      "departmentRequired": "Выберите подразделение",
+      "responsibleUserRequired": "Выберите ответственное лицо",
+      "dateRequired": "Введите дату",
+      "disposalTypeRequired": "Выберите тип выбытия",
+      "reasonRequired": "Введите причину",
+      "assetRequired": "Выберите основное средство",
+      "saleAmountRequired": "Введите сумму продажи",
+      "nonNegative": "Значение не может быть отрицательным",
+      "atLeastOneLine": "Добавьте хотя бы одну строку",
+      "atLeastOneAsset": "Добавьте хотя бы одно основное средство",
+      "newValueRequired": "Введите новую стоимость",
+      "quantityMin": "Количество должно быть не менее 1",
+      "quantityRequired": "Введите количество",
+      "priceRequired": "Введите цену",
+      "vatRateRequired": "Выберите ставку НДС",
+      "counterpartyRequired": "Выберите контрагента",
+      "warehouseRequired": "Выберите склад",
+      "currencyRequired": "Выберите валюту",
+      "receiptTypeRequired": "Выберите тип поступления",
+      "documentNumberRequired": "Введите номер документа",
+      "assetAccountRequired": "Выберите счёт основных средств",
+      "accumulatedDepreciationAccountRequired": "Выберите счёт накопленной амортизации",
+      "depreciationExpenseAccountRequired": "Выберите счёт расходов по амортизации",
+      "supplierAccountRequired": "Выберите счёт поставщика",
+      "capitalInvestmentAccountRequired": "Выберите счёт капитальных вложений",
+      "vatAccountRequired": "Выберите счёт НДС",
+      "revaluationReserveAccountRequired": "Выберите счёт резерва переоценки",
+      "revaluationLossAccountRequired": "Выберите счёт убытка от переоценки",
+      "disposalAccountRequired": "Выберите счёт выбытия",
+      "customerAccountRequired": "Выберите счёт покупателя",
+      "gainAccountRequired": "Выберите счёт прибыли",
+      "lossAccountRequired": "Выберите счёт убытка"
+    },
+    "sections": {
+      "disposalDetails": "Детали выбытия",
+      "movementDetails": "Детали перемещения",
+      "lineNumber": "Строка {{number}}",
+      "totalSaleAmount": "Общая сумма продажи",
+      "productsAndServices": "Товары и услуги",
+      "productNumber": "Товар {{number}}",
+      "assetNumber": "Основное средство {{number}}"
     }
   },
   "settings": {
@@ -255,7 +373,8 @@
       "saleConditions": "Условия продаж",
       "documentAccountSettings": "Настройки счетов документов",
       "openingBalance": "Начальный баланс",
-      "openingInventory": "Ввод начальных остатков (ТМЗ)"
+      "openingInventory": "Ввод начальных остатков (ТМЗ)",
+      "integrations": "Интеграции"
     },
     "descriptions": {
       "integrations": "Управление интеграциями dDocs и Asl Belgisi.",
@@ -376,6 +495,27 @@
       "activeDescription": "Отображаются данные активного условия продаж, действующего в текущий момент.",
       "infoTitle": "Информация",
       "infoDescription": "Это условие продаж применяется ко всем операциям продаж в указанный период для текущей организации."
+    },
+    "chartAccounts": {
+      "accountsNotFound": "Счета не найдены",
+      "selectCurrentPage": "Выбрать текущую страницу",
+      "clearCurrentPage": "Снять выбор на текущей странице"
+    },
+    "documentAccounts": {
+      "addAccount": "Добавить счёт",
+      "selectFromManual": "Выберите счёт из справочника",
+      "removeAccount": "Удалить счёт",
+      "noAccount": "Счёт не привязан",
+      "saved": "Настройки счетов сохранены",
+      "noRole": "Роли отсутствуют",
+      "documentType": "Тип документа",
+      "assignDescription": "Привязка счетов к типу документа",
+      "defaultAccount": "Основной счёт",
+      "additionalAccount": "Дополнительный счёт",
+      "accountWithId": "Счёт №{{id}}"
+    },
+    "openingBalance": {
+      "noSubkontoRequired": "Для этого счёта субконто не требуется"
     }
   },
   "openingBalance": {
@@ -442,7 +582,10 @@
       "singleSide": "В строке {{row}} укажите только дебет или кредит",
       "quantityRequired": "Укажите количество в строке {{row}}",
       "currencyRequired": "Укажите валюту, сумму и курс в строке {{row}}",
-      "subkontoRequired": "Выберите субконто {{name}} в строке {{row}}"
+      "subkontoRequired": "Выберите субконто {{name}} в строке {{row}}",
+      "balanceDateRequired": "Введите дату начального баланса",
+      "descriptionMax": "Комментарий не должен превышать 500 символов",
+      "stateRequired": "Выберите состояние"
     }
   },
   "purchase": {
@@ -468,10 +611,57 @@
       "total": "Итоговая сумма",
       "uom": "Единица",
       "debitAccount": "Дебетовый счёт",
-      "vatAccount": "Счёт НДС"
+      "vatAccount": "Счёт НДС",
+      "productName": "Наименование товара",
+      "mxik": "Код ИКПУ",
+      "productType": "Тип товара",
+      "pieceTracked": "Поштучный учёт",
+      "unit": "Единица измерения",
+      "supplierAccount": "Счёт поставщика",
+      "amountWithoutVat": "Сумма без НДС",
+      "vatAmount": "Сумма НДС",
+      "comment": "Комментарий",
+      "vatRateAndAmount": "НДС (ставка и сумма)",
+      "unitPrice": "Цена за единицу",
+      "serviceName": "Наименование услуги",
+      "expenseAccount": "Счёт расходов",
+      "executor": "Исполнитель",
+      "goods": "Товар",
+      "service": "Услуга",
+      "accounts": "Счета"
     },
     "messages": {
-      "imported": "Данные закупки импортированы"
+      "imported": "Данные закупки импортированы",
+      "productNameRequired": "Введите наименование товара",
+      "mxikRequired": "Введите код ИКПУ",
+      "unitRequired": "Выберите единицу измерения",
+      "productTypeRequired": "Выберите тип товара",
+      "atLeastOneProduct": "Добавьте хотя бы один товар",
+      "productsRequired": "Выберите товары",
+      "productCreated": "Товар успешно создан",
+      "productCreateError": "Не удалось создать товар",
+      "productsCreateError": "Не удалось создать товары",
+      "markingInputHint": "Введите коды маркировки или вставьте их из Excel",
+      "noMarkings": "Коды маркировки не введены",
+      "chooseSaveMode": "Как сохранить документ?",
+      "fillRequired": "Заполните обязательные поля",
+      "lineRequired": "Добавьте хотя бы одну строку товара или услуги",
+      "saved": "Документ сохранён",
+      "confirmPermissionDenied": "Недостаточно прав для подтверждения документа",
+      "notPieceTracked": "Этот товар не учитывается поштучно",
+      "duplicateMarkings": "Введённые коды маркировки уже добавлены",
+      "missingMxiksDeleted": "Неизвестные коды ИКПУ удалены",
+      "productListLoadError": "Не удалось загрузить список товаров. Попробуйте ещё раз.",
+      "listLoadError": "Не удалось загрузить документы закупок",
+      "listEmpty": "Документы закупок не найдены",
+      "confirmed": "Документ подтверждён",
+      "cancelled": "Документ отменён",
+      "commentPlaceholder": "Введите комментарий...",
+      "markingCount": "Кодов маркировки: {{count}}",
+      "duplicateMarking": "Код маркировки повторяется: {{marking}}",
+      "markingRequired": "Введите маркировку для «{{product}}»",
+      "ambiguousMxik": "Кодов МХИК, относящихся к нескольким товарам: {{count}}. Выберите товар из списка.",
+      "supplierAccountRequired": "Выберите счёт поставщика"
     },
     "import": {
       "nonSerial": "Без серии",
@@ -485,6 +675,24 @@
       "previewStep": "Просмотр данных",
       "mappingStep": "Сопоставление колонок",
       "selectField": "Выберите поле"
+    },
+    "actions": {
+      "goodsReceipt": "Приход товара",
+      "serviceReceipt": "Приход услуги",
+      "addLine": "Добавить строку",
+      "selectMissingMxik": "Выбрать неизвестные коды ИКПУ",
+      "deleteMissingMxik": "Удалить неизвестные коды ИКПУ",
+      "enterMarkings": "Ввести коды маркировки",
+      "saveDocument": "Сохранить документ",
+      "saveAndConfirm": "Сохранить и подтвердить",
+      "selectAccounts": "Выбрать счета",
+      "deleteLine": "Удалить строку",
+      "retry": "Повторить",
+      "addProduct": "Добавить товар",
+      "addService": "Добавить услугу",
+      "enterMarking": "Ввести маркировку",
+      "viewMarkings": "Просмотреть маркировку",
+      "noMarkingData": "Нет данных маркировки"
     }
   },
   "bank": {
@@ -501,30 +709,76 @@
       "credit": "Кредит",
       "currencyId": "ID валюты",
       "counterpartyId": "ID контрагента",
-      "accountNumber": "Номер счёта"
+      "accountNumber": "Номер счёта",
+      "bankChartAccount": "Банковский счёт учёта",
+      "offsetAccount": "Корреспондирующий счёт",
+      "counterpartyBankAccount": "Банковский счёт контрагента",
+      "exchangeRate": "Курс валюты",
+      "contract": "Договор",
+      "paymentType": "Тип платежа",
+      "card": "Карточка",
+      "accountingEntries": "Проводки",
+      "status": "Статус",
+      "currentAmount": "Текущая сумма"
     },
     "messages": {
       "imported": "Банковская выписка импортирована",
       "saved": "Банковские операции сохранены",
-      "partialSaved": "Сохранено {{saved}} транзакций, пропущено {{skipped}}",
-      "noValidTransactions": "Нет заполненных транзакций для сохранения",
-      "saveNextStep": "Сохранение будет подключено к BankOperation API на следующем шаге",
-      "missingRequired": "В {{count}} транзакциях не хватает обязательных данных",
+      "partialSaved": "Сохранено операций: {{saved}}, пропущено: {{skipped}}",
+      "noValidTransactions": "Нет заполненных операций для сохранения",
+      "saveNextStep": "Сохранение будет подключено к API банковских операций на следующем этапе",
+      "missingRequired": "В {{count}} операциях не хватает обязательных данных",
       "noData": "Импортированных банковских выписок пока нет",
-      "noTransactions": "Транзакции не найдены",
+      "noTransactions": "Операции не найдены",
       "counterpartyMissing": "Контрагент не найден",
-      "bankAccountMissing": "Банковский счёт отсутствует",
-      "bankAccountMissingDescription": "Транзакции этой карточки не будут отправлены, потому что bankAccountId не найден."
+      "bankAccountMissing": "Банковский счёт не найден",
+      "bankAccountMissingDescription": "Операции этой карточки не будут сохранены, потому что банковский счёт не найден.",
+      "bankChartAccountMissing": "Банковский счёт учёта не выбран",
+      "offsetAccountMissing": "Корреспондирующий счёт не выбран",
+      "contractMissing": "Договор не выбран",
+      "counterpartyAccountMissing": "Банковский счёт контрагента не выбран",
+      "selectCompleteBankInfo": "Заполните все банковские данные",
+      "selectAllBankAccounts": "Выберите банковский счёт учёта для всех карточек",
+      "selectAllOffsetAccounts": "Выберите корреспондирующий счёт для всех операций",
+      "selectAllContracts": "Выберите договор для всех операций",
+      "selectAllCounterpartyAccounts": "Выберите банковский счёт контрагента для всех операций",
+      "documentSaved": "Документ сохранён",
+      "documentConfirmed": "Документ подтверждён",
+      "documentCancelled": "Документ отменён"
     },
     "import": {
       "title": "Импорт банковской выписки",
-      "description": "Загрузите Excel файл, и парсер сам извлечёт данные.",
+      "description": "Загрузите файл Excel, и система автоматически извлечёт данные.",
       "uploadText": "Нажмите для загрузки файла или перетащите его сюда",
-      "uploadHint": "Поддерживаются банковские выписки XLS или XLSX.",
-      "statements": "Выписки",
-      "transactions": "Транзакции",
+      "uploadHint": "Поддерживаются банковские выписки в формате XLS или XLSX.",
+      "statements": "Банковские выписки",
+      "transactions": "Операции",
       "status": "Статус",
-      "readyToSave": "Готово к сохранению"
+      "readyToSave": "Готово к сохранению",
+      "assignMissingBankInfo": "Указать недостающие банковские данные",
+      "assignMissingCounterparties": "Указать ненайденных контрагентов",
+      "missingSummary": "Не выбрано: банковских счетов — {{bankAccounts}}, корреспондирующих счетов — {{offsetAccounts}}, договоров — {{contracts}}, счетов контрагентов — {{counterpartyAccounts}}"
+    },
+    "operation": {
+      "title": "Банковская операция",
+      "income": "Поступление",
+      "expense": "Списание"
+    },
+    "placeholders": {
+      "selectAccount": "Выберите счёт",
+      "selectBankChartAccount": "Выберите банковский счёт учёта",
+      "selectContract": "Выберите договор",
+      "selectCounterpartyFirst": "Сначала выберите контрагента",
+      "selectCounterpartyAccount": "Выберите банковский счёт контрагента"
+    },
+    "validation": {
+      "bankAccountRequired": "Выберите банковский счёт",
+      "bankChartAccountRequired": "Выберите банковский счёт учёта",
+      "offsetAccountRequired": "Выберите корреспондирующий счёт",
+      "operationTypeRequired": "Выберите тип операции",
+      "paymentTypeRequired": "Выберите тип платежа",
+      "counterpartyRequired": "Выберите контрагента",
+      "currencyRequired": "Выберите валюту"
     }
   },
   "contract": {
@@ -609,15 +863,130 @@
   "sale": {
     "title": "Продажи",
     "fields": {
+      "product": "Товар",
+      "quantity": "Количество",
       "inventoryAccount": "Счёт товаров",
       "incomeAccount": "Счёт доходов от продаж",
-      "costAccount": "Счёт себестоимости продаж"
+      "costAccount": "Счёт себестоимости продаж",
+      "barcodeScanner": "Сканер штрихкода",
+      "salePrice": "Цена продажи",
+      "vatAmount": "Сумма НДС",
+      "unitPrice": "Цена за единицу",
+      "customerAccount": "Счёт клиента",
+      "vatAccount": "Счёт НДС",
+      "documentDate": "Дата документа",
+      "documentAmount": "Сумма документа",
+      "totalPositions": "Всего позиций",
+      "totalQuantity": "Общее количество",
+      "totalAmount": "Общая сумма",
+      "productTypes": "Виды товаров",
+      "margin": "Маржа, %",
+      "mxik": "Код ИКПУ",
+      "batchNumber": "Номер партии",
+      "receiptDate": "Дата поступления",
+      "saleAmount": "Сумма продажи",
+      "quantityToSell": "Количество к продаже",
+      "amountWithoutVat": "Сумма без НДС",
+      "vatRateAndAmount": "НДС (ставка и сумма)",
+      "comment": "Комментарий",
+      "customer": "Клиент",
+      "piece": "шт.",
+      "status": "Статус",
+      "marked": "Введено",
+      "notMarked": "Не введено",
+      "batch": "Партия",
+      "allVat": "НДС для всех",
+      "marginAmount": "Сумма маржи",
+      "countSuffix": "{{count}} шт.",
+      "available": "Доступно",
+      "batches": "Партии",
+      "selected": "Выбрано",
+      "ungrouped": "Без группы"
     },
     "new": "Новая продажа",
     "edit": "Редактировать продажу",
     "document": "Документ продажи",
     "selection": {
       "selectedProducts": "Выбранные товары (документ)"
+    },
+    "actions": {
+      "scanMarking": "Сканируйте код маркировки",
+      "confirmMarking": "Подтверждение маркировки товара",
+      "selectAccounts": "Выбрать счета",
+      "addGoods": "Добавить товар",
+      "withMarking": "С маркировкой",
+      "addLine": "Добавить строку",
+      "apply": "Применить",
+      "cancelDocument": "Отменить документ",
+      "addSelected": "Добавить выбранные",
+      "formalize": "Оформить"
+    },
+    "messages": {
+      "scanOrEnter": "Сканируйте или введите код и нажмите Enter",
+      "scanOrEnterMarking": "Сканируйте или введите код маркировки",
+      "noProductsToConfirm": "Нет товаров для подтверждения",
+      "salePriceRequired": "Введите цену продажи для всех товаров",
+      "costPriceMissing": "Не найдена себестоимость для всех товаров",
+      "vatRateRequired": "Выберите ставку НДС для всех товаров",
+      "saleDocTableIdMissing": "Не найден ID строки документа продажи",
+      "invalidConfirmLines": "Не удалось сформировать корректные строки для подтверждения",
+      "documentCancelled": "Документ продажи отменён",
+      "cancelDocumentQuestion": "Подтвердить отмену документа продажи?",
+      "productsNotFound": "Товары не найдены",
+      "unitMissing": "У выбранного товара не найдена единица измерения",
+      "notPieceTracked": "Этот товар не учитывается по маркировке",
+      "enterBatchQuantityFirst": "Сначала укажите количество к продаже по партии",
+      "markingPerPieceRequired": "Для каждой единицы необходимо ввести код маркировки",
+      "allMarkingsEntered": "Все коды маркировки для указанного количества введены",
+      "duplicateMarking": "Этот код маркировки уже добавлен",
+      "markingProductNotFound": "Товар с этой маркировкой не найден в доступном списке",
+      "batchQuantityFull": "Количество для этой партии уже заполнено",
+      "allowedMarkingsNotLoaded": "Допустимые коды маркировки ещё не загружены",
+      "markingNotForSale": "Этот код маркировки не относится к данной продаже",
+      "markerDuplicate": "Этот код уже добавлен",
+      "markerNotForDocument": "Этот код не относится к товарам документа",
+      "allowedMarkingsNotChecked": "Допустимые коды маркировки ещё не проверены",
+      "batchesNotConfirmed": "Не все партии подтверждены или отсканированы",
+      "markingNotScanned": "Код маркировки ещё не отсканирован",
+      "warehouseStockEmpty": "На складе нет остатка",
+      "deleteProductQuestion": "Удалить товар?",
+      "addByBarcode": "Добавьте товар по штрихкоду",
+      "checkProductData": "Проверьте данные товара",
+      "markingQuantityRequired": "Для каждого маркируемого товара введите коды по количеству",
+      "saleRuleMissing": "Правило продажи не задано",
+      "dateRequired": "Дата обязательна",
+      "atLeastOneProduct": "Выберите хотя бы один товар",
+      "commentPlaceholder": "Введите комментарий...",
+      "createDocumentFirst": "Сначала создайте документ продажи",
+      "scanBarcodeOrEnter": "Сканируйте штрихкод или введите его вручную",
+      "scanConfirmed": "Подтверждено",
+      "selectCounterparty": "Выберите контрагента",
+      "selectContract": "Выберите договор",
+      "selectWarehouse": "Выберите склад",
+      "selectCurrency": "Выберите валюту",
+      "selectCustomerAccount": "Выберите счёт клиента",
+      "selectVatAccount": "Выберите счёт НДС",
+      "selectProduct": "Выберите товар",
+      "enterQuantity": "Введите количество товара",
+      "selectUnit": "Выберите единицу измерения товара",
+      "selectInventoryAccount": "Выберите счёт товаров",
+      "selectIncomeAccount": "Выберите счёт дохода от продаж",
+      "selectCostAccount": "Выберите счёт себестоимости продаж",
+      "differentBatchCosts": "Для {{product}} при продаже FIFO/LIFO нельзя объединять в одном документе партии с разной себестоимостью: {{costs}}",
+      "productWithId": "Товар №{{id}}",
+      "collapseTable": "Свернуть таблицу",
+      "expandTable": "Развернуть таблицу",
+      "markingsChecking": "Коды маркировки проверяются"
+    },
+    "warehouse": {
+      "goodsToDispatch": "Товары к списанию со склада",
+      "searchProduct": "Поиск товара...",
+      "allGroups": "Все группы",
+      "availableOnly": "Только в наличии",
+      "productBatches": "Партии товаров",
+      "selectedProduct": "Выбранный товар",
+      "totalCost": "Общая себестоимость",
+      "totalSale": "Общая сумма продажи"
     }
   },
   "warehouses": {
@@ -680,6 +1049,54 @@
         "description": "Карточка и движения по одному счету.",
         "table": "Строки карточки счета",
         "empty": "Нет данных карточки счета"
+      },
+      "fields": {
+        "account": "Счёт",
+        "periodId": "ID периода",
+        "dateFrom": "Дата с",
+        "dateTo": "Дата по",
+        "currency": "Валюта",
+        "currencyId": "ID валюты",
+        "documentType": "Тип документа",
+        "page": "Страница",
+        "pageSize": "Строк на странице",
+        "postingDate": "Дата проводки",
+        "journalNumber": "Номер журнала",
+        "documentNumber": "Номер документа",
+        "description": "Описание",
+        "debitAccount": "Счёт дебета",
+        "creditAccount": "Счёт кредита",
+        "amount": "Сумма",
+        "organization": "Организация",
+        "counterparty": "Контрагент",
+        "warehouse": "Склад",
+        "accountCode": "Код счёта",
+        "accountName": "Наименование счёта",
+        "balance": "Сальдо",
+        "counterpartAccount": "Корреспондирующий счёт",
+        "inflow": "Приход",
+        "outflow": "Расход",
+        "net": "Чистое изменение",
+        "value": "Значение"
+      },
+      "summary": {
+        "totalCount": "Всего записей",
+        "totalPages": "Всего страниц",
+        "hasPreviousPage": "Есть предыдущая страница",
+        "hasNextPage": "Есть следующая страница",
+        "totalAssets": "Итого активы",
+        "totalLiabilities": "Итого обязательства",
+        "totalEquity": "Итого капитал",
+        "liabilitiesAndEquity": "Обязательства и капитал",
+        "revenue": "Выручка",
+        "costOfSales": "Себестоимость продаж",
+        "operatingExpense": "Операционные расходы",
+        "netProfit": "Чистая прибыль",
+        "openingCashBalance": "Начальный остаток денежных средств",
+        "closingCashBalance": "Конечный остаток денежных средств"
+      },
+      "actions": {
+        "show": "Показать отчёт"
       }
     },
     "trial": {
@@ -725,7 +1142,11 @@
       "incomeOrder": "Приходный ордер",
       "newExpenseOrder": "Новый расходный ордер",
       "expenseOrder": "Расходный ордер",
-      "accountingEntries": "Отчёт по проводкам"
+      "accountingEntries": "Отчёт по проводкам",
+      "faAssets": "Основные средства",
+      "faReceipts": "Поступление основных средств",
+      "faMovements": "Перемещение основных средств",
+      "faDisposals": "Выбытие основных средств"
     },
     "fields": {
       "organization": "Организация",
@@ -1008,7 +1429,8 @@
       "cashBox": "Касса",
       "sourceChartAccount": "Счёт списания",
       "bankOperation": "Банковская операция",
-      "cashOperation": "Кассовая операция"
+      "cashOperation": "Кассовая операция",
+      "quantity": "Количество"
     },
     "enums": {
       "employmentType": {
@@ -1224,6 +1646,311 @@
       "paymentCreated": "Выплата создана",
       "paymentConfirmed": "Выплата подтверждена",
       "paymentCancelled": "Выплата отменена"
+    },
+    "employments": {
+      "createTitle": "Приём на работу",
+      "editTitle": "Редактирование занятости",
+      "createHint": "Выберите сотрудника, должность и параметры занятости.",
+      "add": "Добавить место работы"
+    }
+  },
+  "openingInventory": {
+    "modes": {
+      "goodsReceipt": "Приход товара",
+      "serviceReceipt": "Приход услуги"
+    },
+    "fields": {
+      "productName": "Наименование товара",
+      "goodsName": "Наименование товара",
+      "serviceName": "Наименование услуги",
+      "unit": "Единица измерения",
+      "quantity": "Количество",
+      "price": "Цена",
+      "amount": "Сумма",
+      "amountWithoutVat": "Сумма без НДС",
+      "vatAmount": "Сумма НДС",
+      "vatRateAndAmount": "НДС (ставка и сумма)",
+      "accounts": "Счета",
+      "debitAccount": "Счёт дебета",
+      "comment": "Комментарий"
+    },
+    "actions": {
+      "addGoods": "Добавить товар",
+      "addService": "Добавить услугу",
+      "addLine": "Добавить строку",
+      "selectAccounts": "Выбрать счета",
+      "applyLine": "Только к этой строке",
+      "applyAll": "Применить ко всем строкам",
+      "enterMarkings": "Ввести коды маркировки",
+      "deleteLine": "Удалить строку",
+      "retry": "Повторить"
+    },
+    "messages": {
+      "atLeastOneCompletedLine": "Добавьте хотя бы одну заполненную строку типа «{{type}}»",
+      "fillAccountsAndPrices": "Заполните счета и цены во всех строках",
+      "saved": "Документ успешно сохранён",
+      "updated": "Документ успешно обновлён",
+      "markingRequired": "Товар «{{product}}» учитывается по маркировке, но код не введён",
+      "duplicateMarking": "Код маркировки «{{marking}}» введён повторно",
+      "duplicateProduct": "Нельзя выбрать один товар дважды",
+      "markingAlreadyAdded": "Этот код маркировки уже добавлен",
+      "markingInputHint": "Введите коды маркировки или вставьте их из Excel",
+      "noMarkings": "Коды маркировки не введены",
+      "markingCount": "Кодов маркировки: {{count}}",
+      "enterMarking": "Введите код маркировки",
+      "notPieceTracked": "Этот товар не учитывается по маркировке",
+      "serviceAccountHint": "Выберите счёт для этой строки услуги",
+      "goodsAccountHint": "Выберите счёт дебета для этой строки товара",
+      "selectDate": "Выберите дату",
+      "selectGoods": "Выберите товар",
+      "selectService": "Выберите услугу",
+      "selectCounterparty": "Выберите контрагента",
+      "selectContract": "Выберите договор",
+      "selectWarehouse": "Выберите склад",
+      "addAtLeastOneProduct": "Добавьте хотя бы один товар",
+      "loadError": "Не удалось загрузить начальные остатки",
+      "empty": "Начальные остатки не найдены",
+      "commentPlaceholder": "Введите комментарий..."
+    }
+  },
+  "warehouse": {
+    "fields": {
+      "documentNumber": "Номер документа",
+      "documentDate": "Дата документа",
+      "createdDate": "Дата создания",
+      "productName": "Наименование товара",
+      "productType": "Тип товара",
+      "mxik": "Код ИКПУ",
+      "salesPrice": "Цена продажи",
+      "totalSalesPrice": "Общая цена продажи",
+      "totalPrice": "Общая стоимость",
+      "productTableId": "ID товарной таблицы",
+      "serialNumber": "Серийный номер",
+      "markingNumber": "Код маркировки",
+      "costPrice": "Себестоимость",
+      "defaultCost": "Себестоимость по умолчанию",
+      "sourceWarehouse": "Склад-отправитель",
+      "destinationWarehouse": "Склад-получатель",
+      "adjustmentType": "Тип корректировки",
+      "countStatus": "Статус пересчёта",
+      "countedQuantity": "Подсчитанное количество",
+      "barcode": "Штрихкод"
+    },
+    "lines": {
+      "productLines": "Строки товаров",
+      "inventoryLines": "Строки инвентаризации",
+      "inventoryHint": "Укажите каждый товар и его фактически подсчитанное количество",
+      "countFinished": "Пересчёт завершён?",
+      "addProduct": "Добавить товар",
+      "addLine": "Добавить строку",
+      "noLines": "Строки отсутствуют",
+      "items": "Элементы строки",
+      "addItem": "Добавить элемент",
+      "selectProduct": "Выберите товар",
+      "selectWarehouseFirst": "Сначала выберите склад",
+      "selectSourceWarehouseFirst": "Сначала выберите склад-отправитель",
+      "notPieceTracked": "Этот товар не учитывается по маркировке",
+      "row": "Строка {{number}}",
+      "stock": "Остаток",
+      "marking": "Маркировка",
+      "selectMarking": "Выбор маркировки",
+      "pieces": "{{count}} шт."
+    },
+    "messages": {
+      "created": "Документ создан",
+      "saved": "Документ сохранён",
+      "fillRequired": "Заполните обязательные поля",
+      "confirmed": "Документ подтверждён",
+      "cancelled": "Документ отменён",
+      "countCompleted": "Пересчёт завершён",
+      "inventoryConfirmed": "Инвентаризация подтверждена",
+      "noData": "Нет данных",
+      "noMarkings": "Коды маркировки не найдены"
+    },
+    "adjustment": {
+      "title": "Корректировка запасов",
+      "increase": "Увеличение",
+      "decrease": "Уменьшение"
+    },
+    "transfer": {
+      "title": "Перемещение между складами",
+      "additional": "Дополнительно"
+    },
+    "count": {
+      "generalInfo": "Общая информация",
+      "corrected": "Скорректировано",
+      "shortage": "Недостача",
+      "surplus": "Излишек",
+      "cancelled": "Отменён",
+      "stockMovement": "Движение запасов",
+      "finish": "Завершить пересчёт",
+      "adjustmentsCreated": "Созданные документы корректировки",
+      "positiveNotCreated": "Положительная корректировка не создана",
+      "negativeNotCreated": "Отрицательная корректировка не создана",
+      "positiveAdjustment": "Положительная корректировка",
+      "negativeAdjustment": "Отрицательная корректировка",
+      "confirmTitle": "Подтверждение инвентаризации",
+      "confirmQuestion": "Подтвердить инвентаризацию? Остатки будут автоматически скорректированы по расхождениям: для недостачи создаётся отрицательная, для излишков — положительная корректировка.",
+      "cancelTitle": "Отмена инвентаризации",
+      "cancelQuestion": "Отменить инвентаризацию?",
+      "deleteTitle": "Удаление документа",
+      "deleteQuestion": "Удалить документ?",
+      "new": "Новая инвентаризация",
+      "state": "Состояние",
+      "count": "Пересчёт",
+      "completed": "Завершён",
+      "inProgress": "В процессе",
+      "notCreated": "Не создано",
+      "differences": "Расхождения",
+      "title": "Инвентаризация",
+      "noDifference": "Без расхождений",
+      "expected": "Ожидалось",
+      "counted": "Подсчитано",
+      "creating": "Создаётся",
+      "countCompletedLabel": "Пересчёт завершён",
+      "countInProgressLabel": "Пересчёт выполняется",
+      "posted": "Проведено",
+      "notPosted": "Не проведено",
+      "cancelledAt": "Отменено",
+      "notCancelled": "Не отменено",
+      "equal": "Без расхождений",
+      "notAvailable": "Нет данных",
+      "missingProductTableIds": "ID недостающих товарных позиций",
+      "postingBatches": "Проводки",
+      "saveDraft": "Сохранить черновик",
+      "positiveWithId": "Положительная: {{id}}",
+      "negativeWithId": "Отрицательная: {{id}}"
+    }
+  },
+  "notifications": {
+    "defaultSender": "Системное сообщение",
+    "dayAgo": "1 день назад",
+    "defaultMessage": "Для вас доступно новое уведомление.",
+    "viewAll": "Посмотреть все"
+  },
+  "excelImport": {
+    "title": "Импорт из Excel",
+    "button": "Импорт из Excel",
+    "dropzone": "Нажмите здесь или перетащите файл для загрузки",
+    "securityHint": "Загружайте только файлы .xlsx или .xls. Не загружайте конфиденциальные или запрещённые данные.",
+    "uploadedFile": "Загруженный файл",
+    "deleteFile": "Удалить файл",
+    "selectSheet": "Выберите лист",
+    "selectKey": "Выберите ключ",
+    "newDescription": "Новое описание",
+    "steps": {
+      "selectSheet": "Выбор листа",
+      "mapData": "Перенос данных",
+      "assignKey": "Назначение ключа"
+    }
+  },
+  "accountings": {
+    "endpoint": "Адрес API",
+    "fields": {
+      "accountId": "ID счёта",
+      "periodId": "ID учётного периода",
+      "dateFrom": "Дата начала",
+      "dateTo": "Дата окончания",
+      "currencyId": "ID валюты",
+      "counterpartyId": "ID контрагента",
+      "warehouseId": "ID склада",
+      "page": "Страница",
+      "pageSize": "Строк на странице",
+      "documentType": "Тип документа",
+      "documentId": "ID документа",
+      "recordId": "ID записи",
+      "tableName": "Имя таблицы",
+      "includeZeroBalance": "Показывать счета с нулевым остатком"
+    },
+    "placeholders": {
+      "recordId": "Например: 12345",
+      "tableName": "Например: sale_documents"
+    },
+    "actions": {
+      "calculate": "Рассчитать",
+      "repost": "Перепровести",
+      "closePeriod": "Закрыть период",
+      "reopenPeriod": "Открыть период снова"
+    },
+    "validation": {
+      "accountIdRequired": "Введите ID счёта",
+      "periodIdRequired": "Введите ID учётного периода"
+    },
+    "result": {
+      "title": "Результат",
+      "empty": "Результат отсутствует",
+      "rawTitle": "Полный ответ",
+      "rawDescription": "Полные данные, возвращённые API."
+    },
+    "ledger": {
+      "title": "Главная книга",
+      "resultDescription": "Движения по счетам главной книги.",
+      "empty": "Данные главной книги не найдены"
+    },
+    "audit": {
+      "title": "История изменений",
+      "resultDescription": "История изменений по записи и таблице.",
+      "empty": "История изменений не найдена"
+    },
+    "repost": {
+      "title": "Перепроведение проводок",
+      "resultDescription": "Результат запроса на перепроведение проводок.",
+      "empty": "Результат перепроведения отсутствует"
+    },
+    "periods": {
+      "title": "Учётные периоды",
+      "resultDescription": "Результат закрытия или повторного открытия периода.",
+      "empty": "Результат по учётному периоду отсутствует"
+    }
+  },
+  "cash": {
+    "fields": {
+      "date": "Дата",
+      "cashBox": "Касса",
+      "operationType": "Тип операции",
+      "cashChartAccount": "Счёт кассы",
+      "offsetAccount": "Корреспондирующий счёт",
+      "counterparty": "Контрагент",
+      "paymentType": "Тип платежа",
+      "currency": "Валюта",
+      "amount": "Сумма",
+      "exchangeRate": "Курс валюты",
+      "comment": "Комментарий",
+      "documentNumber": "Номер документа",
+      "type": "Тип",
+      "income": "Приход",
+      "expense": "Расход",
+      "balance": "Остаток",
+      "status": "Статус",
+      "currentStatus": "Текущий статус"
+    },
+    "book": {
+      "cashBoxWithId": "Касса №{{id}}",
+      "openingBalance": "Начальный остаток",
+      "totalIncome": "Всего приход",
+      "totalExpense": "Всего расход",
+      "closingBalance": "Конечный остаток"
+    },
+    "operation": {
+      "documentInfo": "Данные документа"
+    },
+    "validation": {
+      "paymentTypeRequired": "Выберите тип платежа",
+      "cashChartAccountRequired": "Выберите счёт кассы",
+      "offsetAccountRequired": "Выберите корреспондирующий счёт",
+      "operationTypeRequired": "Выберите тип операции",
+      "amountRequired": "Введите положительную сумму",
+      "exchangeRateRequired": "Введите курс валюты",
+      "dateRequired": "Введите дату"
+    },
+    "messages": {
+      "documentCreated": "Документ создан",
+      "documentSaved": "Документ сохранён",
+      "documentConfirmed": "Документ подтверждён",
+      "documentCancelled": "Документ отменён",
+      "fillRequired": "Заполните обязательные поля",
+      "operationConfirmed": "Кассовая операция подтверждена",
+      "operationCancelled": "Кассовая операция отменена"
     }
   }
 }

@@ -2,6 +2,7 @@ import { Modal, Table, Typography } from "antd";
 import type { TableColumnsType } from "antd";
 import { generateKeyTable } from "@/utils/utils";
 import type { ProductStockSerial } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   open: boolean;
@@ -35,10 +36,11 @@ export default function ProductStockSerialModal({
   loading,
   onClose,
 }: Props) {
+  const { t } = useTranslation();
   const columns: TableColumnsType<ProductStockSerial> = [
     {
       dataIndex: "indexId",
-      title: "T/r",
+      title: t("common.rowNumber"),
       align: "center",
     },
     // {
@@ -49,7 +51,7 @@ export default function ProductStockSerialModal({
     // },
     {
       dataIndex: "markingNumber",
-      title: "Markirovka raqami",
+      title: t("warehouse.fields.markingNumber"),
       render: (value) => <CopyableText value={value} />,
     },
   ];
@@ -70,7 +72,7 @@ export default function ProductStockSerialModal({
         dataSource={generateKeyTable(items, "id")}
         pagination={false}
         scroll={{ x: "max-content", y: 500 }}
-        locale={{ emptyText: "Markirovkalar topilmadi" }}
+        locale={{ emptyText: t("warehouse.messages.noMarkings") }}
       />
     </Modal>
   );

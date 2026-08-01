@@ -4,6 +4,7 @@ import { Check, CheckCheck } from "lucide-react";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import type { OpeningInventoryMode, OpeningInventoryRow } from "../types/type";
 import { openingInventoryDocumentTypeIds } from "../constants/endpoints";
+import { useTranslation } from "react-i18next";
 
 export interface OpeningInventoryLineAccountValues {
   debitAccountId: number | null;
@@ -32,6 +33,7 @@ export default function OpeningInventoryLineAccountsModal({
   onClose,
   onApply,
 }: Props) {
+  const { t } = useTranslation();
   const formik = useFormik<OpeningInventoryLineAccountValues>({
     initialValues: getInitialValues(line),
     enableReinitialize: true,
@@ -49,7 +51,7 @@ export default function OpeningInventoryLineAccountsModal({
 
   return (
     <Modal
-      title="Hisobvaraqlarni tanlash"
+      title={t("openingInventory.actions.selectAccounts")}
       centered
       width={600}
       open={open}
@@ -63,7 +65,7 @@ export default function OpeningInventoryLineAccountsModal({
             icon={<Check className="size-4" />}
             onClick={() => handleApply(false)}
           >
-            Faqat shu qatorga
+            {t("openingInventory.actions.applyLine")}
           </Button>
           <Button
             block
@@ -72,7 +74,7 @@ export default function OpeningInventoryLineAccountsModal({
             icon={<CheckCheck className="size-4" />}
             onClick={() => handleApply(true)}
           >
-            Hammasiga qo'llash
+            {t("openingInventory.actions.applyAll")}
           </Button>
         </Space>
       }
@@ -81,18 +83,20 @@ export default function OpeningInventoryLineAccountsModal({
         <div className="text-sm font-semibold text-text">
           {line?.productName ||
             line?.product ||
-            (mode === "services" ? "Xizmat" : "Mahsulot")}
+            (mode === "services"
+              ? t("purchase.fields.service")
+              : t("purchase.fields.product"))}
         </div>
         <div className="mt-1 text-xs text-secondary-text">
           {mode === "services"
-            ? "Ushbu xizmat qatori uchun hisobvaraqlarni tanlang"
-            : "Ushbu tovar qatori uchun debet hisobvarag'ini tanlang"}
+            ? t("openingInventory.messages.serviceAccountHint")
+            : t("openingInventory.messages.goodsAccountHint")}
         </div>
       </div>
 
       <div className="space-y-1">
         <DocumentAccountSelect
-          label="Debet hisobvarag'i"
+          label={t("openingInventory.fields.debitAccount")}
           fieldName="debitAccountId"
           getFieldName="debitAccountName"
           documentTypeId={openingInventoryDocumentTypeIds[mode]}

@@ -50,8 +50,8 @@ export default function PurchaseImportActions({
           value={purchaseMode}
           onChange={(value) => onPurchaseModeChange(value as PurchaseMode)}
           options={[
-            { label: "Prixod tovar", value: "goods" },
-            { label: "Prixod uslug", value: "services" },
+            { label: t("purchase.actions.goodsReceipt"), value: "goods" },
+            { label: t("purchase.actions.serviceReceipt"), value: "services" },
           ]}
         />
         <ExcelImportFile
@@ -69,13 +69,16 @@ export default function PurchaseImportActions({
           disabled={!formik.values.counterpartyId}
           onClick={onAddManualRow}
         >
-          {purchaseMode === "services" ? "Xizmat qo'shish" : "Tovar qo'shish"}
+          {t(
+            purchaseMode === "services"
+              ? "purchase.actions.addService"
+              : "purchase.actions.addProduct",
+          )}
         </Button>
       </div>
       <div className="flex items-center gap-2">
         <Button htmlType="button" onClick={onBack}>
-          Bekor qilish
-        </Button>
+          {t("common.cancel")}</Button>
         <Button
           type="primary"
           loading={saveLoading ?? formik.isSubmitting}

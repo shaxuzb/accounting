@@ -1,18 +1,20 @@
 import { NavLink } from "react-router";
+import { useTranslation } from "react-i18next";
 
 const tabs = [
-  { to: "../balance-sheet", label: "Balance sheet" },
-  { to: "../income-statement", label: "Income statement" },
-  { to: "../cash-flow", label: "Cash flow" },
+  { to: "../balance-sheet", labelKey: "app.reports.balance.title" },
+  { to: "../income-statement", labelKey: "app.reports.income.title" },
+  { to: "../cash-flow", labelKey: "app.reports.cashFlow.title" },
   {
     to: "../account-turnover",
-    label: "Account turnover",
+    labelKey: "app.reports.turnover.title",
   },
-  { to: "../journal", label: "Journal" },
-  { to: "../account-card", label: "Account card" },
+  { to: "../journal", labelKey: "app.reports.journal.title" },
+  { to: "../account-card", labelKey: "app.reports.card.title" },
 ];
 
 export default function AccountingReportTabs() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-card p-2">
       {tabs.map((tab) => (
@@ -27,7 +29,7 @@ export default function AccountingReportTabs() {
             }`
           }
         >
-          {tab.label}
+          {t(tab.labelKey)}
         </NavLink>
       ))}
     </div>

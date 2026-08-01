@@ -24,6 +24,7 @@ import {
   saleDocumentAccountRoleCodes,
   saleDocumentTypeId,
 } from "../constants/documentAccount";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   formik: FormikProps<SaleDocForm>;
@@ -31,6 +32,7 @@ interface Props {
 }
 
 export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
+  const { t } = useTranslation();
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -56,7 +58,7 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
       <Row gutter={[16, 0]}>
         <Col span={4}>
           <SelectDate
-            label="Sana"
+            label={t("bank.fields.date")}
             fieldName="docDate"
             formik={formik}
             onChange={clearContract}
@@ -66,7 +68,7 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
         <Col span={4}>
           <CounterpartySelect
             kind="client"
-            label="Mijoz"
+            label={t("sale.fields.customer")}
             fieldName="counterpartyId"
             formik={formik}
             onChange={clearContract}
@@ -89,7 +91,7 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
               ),
               [filterIds.counterparty]: formik.values.counterpartyId,
             }}
-            label="Shartnoma"
+            label={t("purchase.fields.contract")}
             fieldName="contractId"
             formik={formik}
             enabled={Boolean(formik.values.counterpartyId)}
@@ -106,7 +108,7 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
         </Col>
         <Col span={4}>
           <SelectCustom
-            label="Ombor"
+            label={t("menu.warehouse")}
             fieldName="warehouseId"
             path={selectListEndpoints.warehousesSelectList}
             formik={formik}
@@ -115,7 +117,7 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
         </Col>
         <Col span={4}>
           <DocumentAccountSelect
-            label="Mijoz schyoti"
+            label={t("sale.fields.customerAccount")}
             fieldName="customerAccountId"
             formik={formik}
             search
@@ -129,7 +131,7 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
         </Col>
         <Col span={4}>
           <DocumentAccountSelect
-            label="QQS schyoti"
+            label={t("sale.fields.vatAccount")}
             fieldName="vatAccountId"
             formik={formik}
             search
@@ -141,7 +143,7 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
         </Col>
         <div className="hidden">
           <SelectCustom
-            label="Valyuta"
+            label={t("app.fields.currency")}
             fieldName="currencyId"
             path={selectListEndpoints.currenciesSelectList}
             formik={formik}
@@ -151,7 +153,7 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
         </div>
         {isEdit && (
           <SelectCustom
-            label="Holat"
+            label={t("settings.fields.status")}
             fieldName="stateId"
             path={selectListEndpoints.statesSelectList}
             formik={formik}

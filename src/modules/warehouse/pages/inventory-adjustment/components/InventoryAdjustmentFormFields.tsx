@@ -6,21 +6,23 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import type { InventoryAdjustmentForm } from "../types/form";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   formik: FormikProps<InventoryAdjustmentForm>;
   disabled?: boolean;
 }
 
-const adjustmentTypeOptions = [
-  { value: "Increase", label: "Ko'paytirish" },
-  { value: "Decrease", label: "Kamaytirish" },
-];
-
 export default function InventoryAdjustmentFormFields({
   formik,
   disabled = false,
 }: Props) {
+  const { t } = useTranslation();
+  const adjustmentTypeOptions = [
+    { value: "Increase", label: t("warehouse.adjustment.increase") },
+    { value: "Decrease", label: t("warehouse.adjustment.decrease") },
+  ];
+
   return (
     <Card className="p-4">
       <div className="grid gap-4 md:grid-cols-2">
@@ -38,7 +40,9 @@ export default function InventoryAdjustmentFormFields({
           disabled={disabled}
         />
         <div>
-          <label className="mb-2 block text-sm font-medium">Tuzatish turi</label>
+          <label className="mb-2 block text-sm font-medium">
+            {t("warehouse.fields.adjustmentType")}
+          </label>
           <Select
             value={formik.values.adjustmentType}
             options={adjustmentTypeOptions}

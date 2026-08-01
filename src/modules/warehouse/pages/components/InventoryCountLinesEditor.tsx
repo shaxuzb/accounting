@@ -18,6 +18,7 @@ import type {
   InventoryCountItemForm,
   InventoryCountLineForm,
 } from "../inventory-count/types/form";
+import { useTranslation } from "react-i18next";
 
 type SelectOption = {
   id: number;
@@ -94,6 +95,7 @@ export default function InventoryCountLinesEditor({
   onCountCompletedChange,
   disabled = false,
 }: InventoryCountLinesEditorProps) {
+  const { t } = useTranslation();
   const productsQuery = useSelectOptions(
     selectListEndpoints.productsSelectList,
     "products",
@@ -200,14 +202,14 @@ export default function InventoryCountLinesEditor({
       render: (_, __, index) => index + 1,
     },
     {
-      title: "Mahsulot",
+      title: t("warehouse.fields.productName"),
       dataIndex: "productId",
       render: (_, line, index) => (
         <Select
           className="w-full"
           showSearch
           allowClear
-          placeholder="Mahsulotni tanlang"
+          placeholder={t("warehouse.lines.selectProduct")}
           value={line.productId ?? undefined}
           loading={productsQuery.isLoading || productsQuery.isFetching}
           disabled={isReadOnly}
@@ -237,7 +239,7 @@ export default function InventoryCountLinesEditor({
       ),
     },
     {
-      title: "Sanoq",
+      title: t("warehouse.fields.countedQuantity"),
       width: 160,
       dataIndex: "countedQuantity",
       align: "center",
@@ -261,7 +263,7 @@ export default function InventoryCountLinesEditor({
       ),
     },
     {
-      title: "Birlik",
+      title: t("purchase.fields.unit"),
       width: 140,
       render: (_, line) => (
         <div className="text-sm text-muted-foreground">
@@ -270,7 +272,7 @@ export default function InventoryCountLinesEditor({
       ),
     },
     {
-      title: "Default cost",
+      title: t("warehouse.fields.defaultCost"),
       width: 160,
       align: "right",
       render: (_, line) => (
@@ -280,12 +282,12 @@ export default function InventoryCountLinesEditor({
       ),
     },
     {
-      title: "Izoh",
+      title: t("openingInventory.fields.comment"),
       dataIndex: "comment",
       render: (value, _, index) => (
         <Input
           value={value}
-          placeholder="Izoh"
+          placeholder={t("openingInventory.fields.comment")}
           disabled={isReadOnly}
           onChange={(event) =>
             updateLine(index, (current) => ({
@@ -297,7 +299,7 @@ export default function InventoryCountLinesEditor({
       ),
     },
     {
-      title: "Amallar",
+      title: t("common.actions"),
       width: 96,
       align: "center",
       render: (_, __, index) => (
@@ -317,10 +319,10 @@ export default function InventoryCountLinesEditor({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="text-sm font-semibold">
-            Inventarizatsiya qatorlari
+            {t("warehouse.lines.inventoryLines")}
           </div>
           <div className="text-xs text-muted-foreground">
-            Har bir mahsulot va uning real sanalgan miqdorini kiriting
+            {t("warehouse.lines.inventoryHint")}
           </div>
         </div>
 
@@ -331,7 +333,9 @@ export default function InventoryCountLinesEditor({
               disabled={disabled || isCountCompleted}
               onChange={onCountCompletedChange}
             />
-            <span className="text-sm">Sanoq yakunlandimi?</span>
+            <span className="text-sm">
+              {t("warehouse.lines.countFinished")}
+            </span>
           </div>
 
           {!isReadOnly && (
@@ -340,14 +344,14 @@ export default function InventoryCountLinesEditor({
               icon={<Plus className="size-4" />}
               onClick={addLine}
             >
-              Mahsulot qo'shish
+              {t("warehouse.lines.addProduct")}
             </Button>
           )}
         </div>
       </div>
 
       {!lines.length ? (
-        <Empty description="Qatorlar mavjud emas" />
+        <Empty description={t("warehouse.lines.noLines")} />
       ) : (
         <Table<InventoryCountLineForm>
           rowKey={(record) => String(lines.indexOf(record))}
@@ -365,7 +369,9 @@ export default function InventoryCountLinesEditor({
               return (
                 <div className="space-y-3 rounded-lg bg-muted/30 p-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="text-sm font-semibold">Qator itemlari</div>
+                    <div className="text-sm font-semibold">
+                      {t("warehouse.lines.items")}
+                    </div>
                     {!isReadOnly && (
                       <Button
                         size="small"
@@ -373,7 +379,7 @@ export default function InventoryCountLinesEditor({
                         icon={<Plus className="size-4" />}
                         onClick={() => addItem(lineIndex)}
                       >
-                        Item qo'shish
+                        {t("warehouse.lines.addItem")}
                       </Button>
                     )}
                   </div>
@@ -393,7 +399,7 @@ export default function InventoryCountLinesEditor({
                         render: (_, __, index) => index + 1,
                       },
                       {
-                        title: "Product table ID",
+                        title: t("warehouse.fields.productTableId"),
                         width: 160,
                         render: (_, item, itemIndex) => (
                           <InputNumber
@@ -414,7 +420,7 @@ export default function InventoryCountLinesEditor({
                         ),
                       },
                       {
-                        title: "Barcode",
+                        title: t("warehouse.fields.barcode"),
                         render: (_, item, itemIndex) => (
                           <Input
                             value={item.barcode}
@@ -429,7 +435,7 @@ export default function InventoryCountLinesEditor({
                         ),
                       },
                       {
-                        title: "Serial number",
+                        title: t("warehouse.fields.serialNumber"),
                         render: (_, item, itemIndex) => (
                           <Input
                             value={item.serialNumber}
@@ -444,7 +450,7 @@ export default function InventoryCountLinesEditor({
                         ),
                       },
                       {
-                        title: "Marking number",
+                        title: t("warehouse.fields.markingNumber"),
                         render: (_, item, itemIndex) => (
                           <Input
                             value={item.markingNumber}
@@ -459,7 +465,7 @@ export default function InventoryCountLinesEditor({
                         ),
                       },
                       {
-                        title: "Cost price",
+                        title: t("warehouse.fields.costPrice"),
                         width: 160,
                         align: "right",
                         render: (_, item, itemIndex) => (
@@ -482,7 +488,7 @@ export default function InventoryCountLinesEditor({
                         ),
                       },
                       {
-                        title: "Amallar",
+                        title: t("common.actions"),
                         width: 80,
                         align: "center",
                         render: (_, __, itemIndex) => (

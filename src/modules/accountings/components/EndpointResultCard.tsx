@@ -1,6 +1,7 @@
 import { Loader2 } from "lucide-react";
 import Card from "@/components/ui/card/Card";
 import StructuredDataView from "@/components/ui/data/StructuredDataView";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   title: string;
@@ -15,8 +16,9 @@ export default function EndpointResultCard({
   description,
   data,
   isLoading = false,
-  emptyText = "Natija yo'q",
+  emptyText,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <Card className="border border-border p-4">
       <div className="mb-4">
@@ -29,10 +31,10 @@ export default function EndpointResultCard({
       {isLoading ? (
         <div className="flex items-center gap-2 text-secondary-text">
           <Loader2 className="size-4 animate-spin" />
-          Yuklanmoqda...
+          {t("common.loading")}...
         </div>
       ) : (
-        <StructuredDataView value={data} empty={emptyText} />
+        <StructuredDataView value={data} empty={emptyText ?? t("accountings.result.empty")} />
       )}
     </Card>
   );

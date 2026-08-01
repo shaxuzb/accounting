@@ -38,7 +38,7 @@ export default function OpeningBalanceAddEditModal({
       stateId: record?.stateId ?? (isEdit ? null : 1),
     },
     enableReinitialize: true,
-    validationSchema: openingBalanceHeaderSchema(isEdit),
+    validationSchema: openingBalanceHeaderSchema(t, isEdit),
     onSubmit: async (values, helpers) => {
       try {
         if (record?.id) {

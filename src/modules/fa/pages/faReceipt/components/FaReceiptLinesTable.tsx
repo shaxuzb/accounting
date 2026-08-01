@@ -5,7 +5,10 @@ import InputNumber from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import {
+  chartAccountSelectDisplayConfig,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import type { FormikProps } from "formik";
 import type { FaReceiptFormValues, FaReceiptLineValues, FaReceiptAssetValues } from "../types/form";
 import { useTranslation } from "react-i18next";
@@ -28,6 +31,8 @@ export default function FaReceiptLinesTable({ formik, isDraft }: FaReceiptLinesT
         quantity: 1,
         price: 0,
         vatRateId: null as unknown as number,
+        capitalInvestmentAccountId: null,
+        vatAccountId: null,
         assets: [
           {
             inventoryNumber: "",
@@ -43,6 +48,9 @@ export default function FaReceiptLinesTable({ formik, isDraft }: FaReceiptLinesT
             plannedUnitsTotal: 0,
             departmentId: null as unknown as number,
             responsibleUserId: null as unknown as number,
+            assetAccountId: null,
+            accumulatedDepreciationAccountId: null,
+            depreciationExpenseAccountId: null,
           },
         ],
       },
@@ -70,6 +78,9 @@ export default function FaReceiptLinesTable({ formik, isDraft }: FaReceiptLinesT
       plannedUnitsTotal: 0,
       departmentId: null as unknown as number,
       responsibleUserId: null as unknown as number,
+      assetAccountId: null,
+      accumulatedDepreciationAccountId: null,
+      depreciationExpenseAccountId: null,
     });
     formik.setFieldValue("lines", currentLines);
   };
@@ -82,7 +93,7 @@ export default function FaReceiptLinesTable({ formik, isDraft }: FaReceiptLinesT
 
   const lineColumns: ColumnsType<FaReceiptLineValues> = [
     {
-      title: "№",
+      title: t("common.rowNumber"),
       width: 50,
       render: (_, __, index) => index + 1,
     },
@@ -141,6 +152,36 @@ export default function FaReceiptLinesTable({ formik, isDraft }: FaReceiptLinesT
           formik={formik}
           fieldName={`lines[${index}].vatRateId`}
           disabled={!isDraft}
+        />
+      ),
+    },
+    {
+      title: t("fa.fields.capitalInvestmentAccount"),
+      width: 220,
+      render: (_, __, index) => (
+        <SelectCustom
+          path={selectListEndpoints.chartAccountsSelectList}
+          displayConfig={chartAccountSelectDisplayConfig}
+          formik={formik}
+          fieldName={`lines[${index}].capitalInvestmentAccountId`}
+          disabled={!isDraft}
+          search
+          required
+        />
+      ),
+    },
+    {
+      title: t("fa.fields.vatAccount"),
+      width: 220,
+      render: (_, __, index) => (
+        <SelectCustom
+          path={selectListEndpoints.chartAccountsSelectList}
+          displayConfig={chartAccountSelectDisplayConfig}
+          formik={formik}
+          fieldName={`lines[${index}].vatAccountId`}
+          disabled={!isDraft}
+          search
+          required
         />
       ),
     },
@@ -300,6 +341,51 @@ export default function FaReceiptLinesTable({ formik, isDraft }: FaReceiptLinesT
             formik={formik}
             fieldName={`lines[${lineIndex}].assets[${index}].responsibleUserId`}
             disabled={!isDraft}
+          />
+        ),
+      },
+      {
+        title: t("fa.fields.assetAccount"),
+        width: 220,
+        render: (_, __, index) => (
+          <SelectCustom
+            path={selectListEndpoints.chartAccountsSelectList}
+            displayConfig={chartAccountSelectDisplayConfig}
+            formik={formik}
+            fieldName={`lines[${lineIndex}].assets[${index}].assetAccountId`}
+            disabled={!isDraft}
+            search
+            required
+          />
+        ),
+      },
+      {
+        title: t("fa.fields.accumulatedDepreciationAccount"),
+        width: 240,
+        render: (_, __, index) => (
+          <SelectCustom
+            path={selectListEndpoints.chartAccountsSelectList}
+            displayConfig={chartAccountSelectDisplayConfig}
+            formik={formik}
+            fieldName={`lines[${lineIndex}].assets[${index}].accumulatedDepreciationAccountId`}
+            disabled={!isDraft}
+            search
+            required
+          />
+        ),
+      },
+      {
+        title: t("fa.fields.depreciationExpenseAccount"),
+        width: 240,
+        render: (_, __, index) => (
+          <SelectCustom
+            path={selectListEndpoints.chartAccountsSelectList}
+            displayConfig={chartAccountSelectDisplayConfig}
+            formik={formik}
+            fieldName={`lines[${lineIndex}].assets[${index}].depreciationExpenseAccountId`}
+            disabled={!isDraft}
+            search
+            required
           />
         ),
       },

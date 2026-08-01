@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ColumnsType } from "antd/es/table";
 import InputNumber from "@/components/fields/InputNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -21,6 +22,7 @@ const initialValues: CashFlowQuery = {
 };
 
 export default function CashFlowPage() {
+  const { t } = useTranslation();
   const [submitted, setSubmitted] = useState<CashFlowQuery | null>(null);
   const query = useGetCashFlow(submitted ?? undefined);
 
@@ -33,19 +35,19 @@ export default function CashFlowPage() {
 
   const columns = useMemo<ColumnsType<CashFlowRow>>(
     () => [
-      { title: "Counterpart account", dataIndex: "counterpartAccountCode", width: 170 },
-      { title: "Account name", dataIndex: "counterpartAccountName" },
-      { title: "Inflow", dataIndex: "inflow", align: "right", width: 140, render: (value) => numberSpacing(value, undefined, true) },
-      { title: "Outflow", dataIndex: "outflow", align: "right", width: 140, render: (value) => numberSpacing(value, undefined, true) },
-      { title: "Net", dataIndex: "net", align: "right", width: 140, render: (value) => <span className="font-semibold">{numberSpacing(value, undefined, true)}</span> },
+      { title: t("app.reports.fields.counterpartAccount"), dataIndex: "counterpartAccountCode", width: 170 },
+      { title: t("app.reports.fields.accountName"), dataIndex: "counterpartAccountName" },
+      { title: t("app.reports.fields.inflow"), dataIndex: "inflow", align: "right", width: 140, render: (value) => numberSpacing(value, undefined, true) },
+      { title: t("app.reports.fields.outflow"), dataIndex: "outflow", align: "right", width: 140, render: (value) => numberSpacing(value, undefined, true) },
+      { title: t("app.reports.fields.net"), dataIndex: "net", align: "right", width: 140, render: (value) => <span className="font-semibold">{numberSpacing(value, undefined, true)}</span> },
     ],
-    [],
+    [t],
   );
 
   return (
     <AccountingReportPageShell
-      title="Cash flow"
-      description="Pul oqimi bo'yicha kirim, chiqim va sof farq."
+      title={t("app.reports.cashFlow.title")}
+      description={t("app.reports.cashFlow.description")}
     >
       <AccountingReportFiltersCard
         formik={formik}
@@ -59,15 +61,15 @@ export default function CashFlowPage() {
           <InputNumber
             formik={formik}
             fieldName="periodId"
-            label="Period ID"
+            label={t("app.reports.fields.periodId")}
             min={1}
           />
-          <SelectDate formik={formik} fieldName="dateFrom" label="Date from" />
-          <SelectDate formik={formik} fieldName="dateTo" label="Date to" />
+          <SelectDate formik={formik} fieldName="dateFrom" label={t("app.reports.fields.dateFrom")} />
+          <SelectDate formik={formik} fieldName="dateTo" label={t("app.reports.fields.dateTo")} />
           <SelectCustom
             formik={formik}
             fieldName="currencyId"
-            label="Currency"
+            label={t("app.reports.fields.currency")}
             path={selectListEndpoints.currenciesSelectList}
             clearable
           />
@@ -79,12 +81,12 @@ export default function CashFlowPage() {
           <AccountingReportSummaryGrid
             items={[
               {
-                label: "Opening cash balance",
+                label: t("app.reports.summary.openingCashBalance"),
                 value: numberSpacing(data.openingCashBalance, undefined, true),
                 tone: "primary",
               },
               {
-                label: "Closing cash balance",
+                label: t("app.reports.summary.closingCashBalance"),
                 value: numberSpacing(data.closingCashBalance, undefined, true),
                 tone: "success",
               },

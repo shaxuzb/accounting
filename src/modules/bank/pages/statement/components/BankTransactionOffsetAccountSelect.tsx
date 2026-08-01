@@ -5,6 +5,7 @@ import {
   chartAccountOptionLabel,
   chartAccountSelectedLabel,
 } from "@/shared/constants/selectLists";
+import { useTranslation } from "react-i18next";
 
 interface BankTransactionOffsetAccountSelectProps {
   options: BankChartAccountOption[];
@@ -19,6 +20,7 @@ export default function BankTransactionOffsetAccountSelect({
   loading,
   onChange,
 }: BankTransactionOffsetAccountSelectProps) {
+  const { t } = useTranslation();
   useEffect(() => {
     if (!value && options.length === 1) {
       onChange(options[0].id);
@@ -29,7 +31,7 @@ export default function BankTransactionOffsetAccountSelect({
     <Select
       showSearch
       value={value || undefined}
-      placeholder="Schyotni tanlang"
+      placeholder={t("bank.placeholders.selectAccount")}
       loading={loading}
       options={options.map((option) => ({
         value: option.id,

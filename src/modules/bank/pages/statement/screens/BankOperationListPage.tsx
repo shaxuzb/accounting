@@ -14,10 +14,25 @@ import { useGetBankOperations } from "../hooks";
 import type { BankOperationData } from "../types/type";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import { useTableScrollRestore } from "@/components/ui/table/actions/useTableScrollRestore";
+
+const BANK_LIST_PATH = "/main/bank";
+
+const BANK_CHILD_PATH_PATTERNS = [
+  /^\/main\/bank\/\d+$/,
+  /^\/main\/bank\/edit\/\d+$/,
+  /^\/main\/bank\/add$/,
+  /^\/main\/bank\/import$/,
+];
 
 export default function BankOperationListPage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const { tableWrapperRef } = useTableScrollRestore({
+    storageKey: "bank-operation-list-scroll-position",
+    listPath: BANK_LIST_PATH,
+    childPathPatterns: BANK_CHILD_PATH_PATTERNS,
+  });
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
@@ -44,7 +59,7 @@ export default function BankOperationListPage() {
     },
     {
       dataIndex: "accountingEntriesReport",
-      title: "Provodka",
+      title: t("bank.fields.accountingEntries"),
       align: "center",
       render: (_, record) => (
         <Link
@@ -165,15 +180,17 @@ export default function BankOperationListPage() {
           />
         </Space>
       </div>
-      <Card className="overflow-hidden border border-border">
-        <Table<BankOperationData>
-          loading={isLoading || isFetching}
-          columns={columns}
-          dataSource={generateKeyTable(data?.items ?? [], "id")}
-          pagination={false}
-          scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
-        />
-      </Card>
+      <div ref={tableWrapperRef}>
+        <Card className="overflow-hidden border border-border">
+          <Table<BankOperationData>
+            loading={isLoading || isFetching}
+            columns={columns}
+            dataSource={generateKeyTable(data?.items ?? [], "id")}
+            pagination={false}
+            scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
+          />
+        </Card>
+      </div>
     </div>
   );
 }

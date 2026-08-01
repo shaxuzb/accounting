@@ -1,6 +1,7 @@
 import { Button, Form, InputNumber, Space } from "antd";
 import Card from "@/components/ui/card/Card";
 import type { AccountingPeriodActionQuery } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   loading?: boolean;
@@ -13,6 +14,7 @@ export default function AccountingPeriodActions({
   onClose,
   onReopen,
 }: Props) {
+  const { t } = useTranslation();
   const [form] = Form.useForm<AccountingPeriodActionQuery>();
 
   return (
@@ -23,9 +25,9 @@ export default function AccountingPeriodActions({
         initialValues={{ periodId: null }}
       >
         <Form.Item
-          label="Period ID"
+          label={t("accountings.fields.periodId")}
           name="periodId"
-          rules={[{ required: true, message: "Period ID kiriting" }]}
+          rules={[{ required: true, message: t("accountings.validation.periodIdRequired") }]}
         >
           <InputNumber className="w-full" min={1} />
         </Form.Item>
@@ -39,7 +41,7 @@ export default function AccountingPeriodActions({
               onClose(values);
             }}
           >
-            Close
+            {t("accountings.actions.closePeriod")}
           </Button>
           <Button
             loading={loading}
@@ -48,7 +50,7 @@ export default function AccountingPeriodActions({
               onReopen(values);
             }}
           >
-            Reopen
+            {t("accountings.actions.reopenPeriod")}
           </Button>
         </Space>
       </Form>

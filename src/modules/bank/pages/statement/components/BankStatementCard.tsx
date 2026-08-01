@@ -149,7 +149,7 @@ function BankStatementCard({
       render: (value) => stringifyValue(value),
     },
     {
-      title: "Hisob raqami",
+      title: t("settings.fields.accountNumber"),
       dataIndex: "counterpartyBankAccountId",
       width: 240,
       render: (_, record, index) => (
@@ -179,7 +179,7 @@ function BankStatementCard({
       },
     },
     {
-      title: "Qarama-qarshi schyot",
+      title: t("bank.fields.offsetAccount"),
       dataIndex: "offsetAccountId",
       width: 220,
       render: (_, record, index) => (
@@ -209,7 +209,7 @@ function BankStatementCard({
     //   ),
     // },
     {
-      title: "Shartnoma",
+      title: t("purchase.fields.contract"),
       dataIndex: "contractId",
       width: 220,
       render: (_, record, index) => (
@@ -301,16 +301,16 @@ function BankStatementCard({
                 <Tag color="red">{t("bank.messages.counterpartyMissing")}</Tag>
               )}
               {!hasBankChartAccount && (
-                <Tag color="red">Bank schyoti belgilanmagan</Tag>
+                <Tag color="red">{t("bank.messages.bankChartAccountMissing")}</Tag>
               )}
               {hasMissingOffsetAccount && (
-                <Tag color="red">Qarama-qarshi schyot belgilanmagan</Tag>
+                <Tag color="red">{t("bank.messages.offsetAccountMissing")}</Tag>
               )}
             {hasMissingContract && (
-              <Tag color="red">Shartnoma belgilanmagan</Tag>
+              <Tag color="red">{t("bank.messages.contractMissing")}</Tag>
             )}
             {hasMissingCounterpartyBankAccount && (
-              <Tag color="red">Hisob raqami belgilanmagan</Tag>
+              <Tag color="red">{t("bank.messages.counterpartyAccountMissing")}</Tag>
             )}
               {item.accountNumber && <Tag>{item.accountNumber}</Tag>}
             </span>
@@ -365,7 +365,7 @@ function BankStatementCard({
           <Select
             className="w-60"
             value={item.bankChartAccountId ?? undefined}
-            placeholder="Bank schyotini tanlang"
+            placeholder={t("bank.placeholders.selectBankChartAccount")}
             loading={chartAccountLoading}
             options={bankAccountOptions.map((option) => ({
               value: option.id,

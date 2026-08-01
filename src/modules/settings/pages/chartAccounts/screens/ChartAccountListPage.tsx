@@ -42,7 +42,7 @@ export default function ChartAccountListPage() {
       dataIndex: "name",
     },
     {
-      title: t("AccountypeName"),
+      title: t("settings.fields.accountType"),
       dataIndex: "accountTypeName",
     },
 
@@ -106,7 +106,7 @@ export default function ChartAccountListPage() {
               icon={<BookPlus className="size-4" />}
               onClick={() => setIsPresetOpen(true)}
             >
-              Hisob qo'shish
+              {t("app.modals.addAccount")}
             </Button>
           </PermissionCard>
           <PermissionCard permission={chartAccountsPermissions.create}>

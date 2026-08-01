@@ -319,7 +319,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         ) : (
           <span>
             {t(label)} {required && <span className="text-red-500">*</span>}{" "}
-            {optional && <span>({t("ixtiyoriy")})</span>}
+            {optional && <span>({t("common.optional")})</span>}
           </span>
         )
       }
@@ -329,7 +329,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
           ? (getIn(formik.errors, fieldName) as React.ReactNode)
           : undefined
       }
-      rules={[{ required: true, message: "Please input your password!" }]}
+      rules={[{ required, message: t("validation.required", { field: t(label) }) }]}
     >
       <Select
         value={currentValue as SelectValue}

@@ -13,6 +13,9 @@ export interface FaAssetForm {
   sourceProductTableId: number | null;
   departmentId: number | null;
   responsibleUserId: number | null;
+  assetAccountId: number | null;
+  accumulatedDepreciationAccountId: number | null;
+  depreciationExpenseAccountId: number | null;
   stateId?: number;
   statusId?: number;
 }

@@ -12,7 +12,10 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import InputNumber from "@/components/fields/InputNumber";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import {
+  chartAccountSelectDisplayConfig,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
@@ -33,11 +36,15 @@ const defaultValues: FaRevaluationFormValues = {
   revaluationDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   reason: "",
   stateId: 0,
+  revaluationReserveAccountId: null,
+  revaluationLossAccountId: null,
   lines: [
     {
       faAssetId: null,
       newValue: 0,
       note: "",
+      assetAccountId: null,
+      accumulatedDepreciationAccountId: null,
     }
   ]
 };
@@ -68,7 +75,7 @@ export default function FaRevaluationFormPage() {
   const formik = useFormik<FaRevaluationFormValues>({
     initialValues: defaultValues,
     enableReinitialize: true,
-    validationSchema: faRevaluationSchema,
+    validationSchema: faRevaluationSchema(t),
     onSubmit: async (values, helpers) => {
       try {
         if (!isCreate && id) {
@@ -97,11 +104,18 @@ export default function FaRevaluationFormPage() {
       revaluationDate: detailQuery.data.revaluationDate ?? defaultValues.revaluationDate,
       reason: detailQuery.data.reason ?? "",
       stateId: detailQuery.data.stateId ?? 0,
+      revaluationReserveAccountId:
+        detailQuery.data.revaluationReserveAccountId ?? null,
+      revaluationLossAccountId:
+        detailQuery.data.revaluationLossAccountId ?? null,
       lines: detailQuery.data.lines?.length
         ? detailQuery.data.lines.map(line => ({
             faAssetId: line.faAssetId,
             newValue: line.newValue ?? 0,
             note: line.note ?? "",
+            assetAccountId: line.assetAccountId ?? null,
+            accumulatedDepreciationAccountId:
+              line.accumulatedDepreciationAccountId ?? null,
           }))
         : defaultValues.lines,
     });
@@ -115,7 +129,13 @@ export default function FaRevaluationFormPage() {
   const handleAddLine = () => {
     const newLines = [
       ...formik.values.lines,
-      { faAssetId: null, newValue: 0, note: "" },
+      {
+        faAssetId: null,
+        newValue: 0,
+        note: "",
+        assetAccountId: null,
+        accumulatedDepreciationAccountId: null,
+      },
     ];
     formik.setFieldValue("lines", newLines);
   };
@@ -178,6 +198,30 @@ export default function FaRevaluationFormPage() {
                           disabled={!isDraft}
                         />
                       </Col>
+                      <Col span={12}>
+                        <SelectCustom
+                          path={selectListEndpoints.chartAccountsSelectList}
+                          displayConfig={chartAccountSelectDisplayConfig}
+                          formik={formik}
+                          fieldName="revaluationReserveAccountId"
+                          label="fa.fields.revaluationReserveAccount"
+                          disabled={!isDraft}
+                          search
+                          required
+                        />
+                      </Col>
+                      <Col span={12}>
+                        <SelectCustom
+                          path={selectListEndpoints.chartAccountsSelectList}
+                          displayConfig={chartAccountSelectDisplayConfig}
+                          formik={formik}
+                          fieldName="revaluationLossAccountId"
+                          label="fa.fields.revaluationLossAccount"
+                          disabled={!isDraft}
+                          search
+                          required
+                        />
+                      </Col>
                     </Row>
                   </Card>
 
@@ -236,6 +280,30 @@ export default function FaRevaluationFormPage() {
                               fieldName={`lines[${lineIndex}].note`}
                               label="fa.fields.note"
                               disabled={!isDraft}
+                            />
+                          </Col>
+                          <Col span={12}>
+                            <SelectCustom
+                              path={selectListEndpoints.chartAccountsSelectList}
+                              displayConfig={chartAccountSelectDisplayConfig}
+                              formik={formik}
+                              fieldName={`lines[${lineIndex}].assetAccountId`}
+                              label="fa.fields.assetAccount"
+                              disabled={!isDraft}
+                              search
+                              required
+                            />
+                          </Col>
+                          <Col span={12}>
+                            <SelectCustom
+                              path={selectListEndpoints.chartAccountsSelectList}
+                              displayConfig={chartAccountSelectDisplayConfig}
+                              formik={formik}
+                              fieldName={`lines[${lineIndex}].accumulatedDepreciationAccountId`}
+                              label="fa.fields.accumulatedDepreciationAccount"
+                              disabled={!isDraft}
+                              search
+                              required
                             />
                           </Col>
                         </Row>

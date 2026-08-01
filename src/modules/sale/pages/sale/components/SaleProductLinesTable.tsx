@@ -5,6 +5,7 @@ import LineClampCell from "@/components/widget/text/LineClampCell";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import type { SalePricingLine } from "../types/type";
 import { getVatAmount } from "../utils/pricing";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   lines: SalePricingLine[];
@@ -21,6 +22,7 @@ export default function SaleProductLinesTable({
   onMarginChange,
   onSalePriceChange,
 }: Props) {
+  const { t } = useTranslation();
   const columns: ColumnsType<SalePricingLine> = [
     { title: "ID", dataIndex: "id" },
     // {
@@ -37,7 +39,7 @@ export default function SaleProductLinesTable({
     // },
     {
       dataIndex: "markingNumber",
-      title: "Markirovka",
+      title: t("app.fields.marking"),
       width: 280,
       render: (value) => {
         return (
@@ -49,13 +51,13 @@ export default function SaleProductLinesTable({
     },
     {
       dataIndex: "costPrice",
-      title: "Tannarx",
+      title: t("warehouse.fields.costPrice"),
       render: (value: number) =>
         `${numberSpacing(value, undefined, true)} ${currencyCode}`,
     },
     {
       dataIndex: "marginPercent",
-      title: "Marja, %",
+      title: t("sale.fields.margin"),
       width: 120,
       render: (value, line) => (
         <InputNumberFormat
@@ -72,7 +74,7 @@ export default function SaleProductLinesTable({
     },
     {
       dataIndex: "amount",
-      title: "Sotuv narxi",
+      title: t("sale.fields.salePrice"),
       width: 120,
       render: (value, line) => (
         <InputNumberFormat
@@ -88,18 +90,19 @@ export default function SaleProductLinesTable({
     },
     {
       dataIndex: "quantity",
-      title: "Miqdor",
+      title: t("openingInventory.fields.quantity"),
       align: "center",
-      render: (value: number, line) => `${value} ${line.unitName || "dona"}`,
+      render: (value: number, line) =>
+        `${value} ${line.unitName || t("sale.fields.piece")}`,
     },
     {
       dataIndex: "vatRateName",
-      title: "QQS",
+      title: t("settings.fields.vatRate"),
       render: (value) => vatRateName || value || "-",
     },
     {
       dataIndex: "vatAmount",
-      title: "QQS summasi",
+      title: t("sale.fields.vatAmount"),
       align: "center",
       render: (_, line) =>
         numberSpacing(
@@ -114,7 +117,7 @@ export default function SaleProductLinesTable({
     },
     {
       dataIndex: "totalAmount",
-      title: "Jami",
+      title: t("common.total"),
       align: "center",
       render: (_, line) => (
         <span className="font-semibold">

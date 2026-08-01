@@ -4,7 +4,7 @@ import { Button, Checkbox, Form } from "antd";
 import { useFormik } from "formik";
 /* import logo from "@/assets/images/logo/logo.svg"; */
 import loginP from "@/assets/loginP.png";
-import { authSchema } from "../../types/auth";
+import { createAuthSchema } from "../../types/auth";
 import { authService, type LoginPayload } from "@/services/authService";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { login } from "@/store/features/authSlice";
@@ -22,7 +22,7 @@ function Login() {
 
   const formik = useFormik<LoginPayload>({
     initialValues: { userName: "", password: "" },
-    validationSchema: authSchema,
+    validationSchema: createAuthSchema(t),
     onSubmit: async (values) => {
       // dispatch(setIsLoading(true));
       try {
@@ -178,11 +178,10 @@ function Login() {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-800 text-[13px] mb-1">
-                    Buxgalterlar uchun qulay
+                    {t("auth.features.convenient.title")}
                   </h4>
                   <p className="text-[11px] text-gray-600 leading-relaxed">
-                    Intuitiv interfeys va avtomatlashtirilgan jarayonlar bilan
-                    vaqtni tejang.
+                    {t("auth.features.convenient.description")}
                   </p>
                 </div>
               </div>
@@ -206,11 +205,10 @@ function Login() {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-800 text-[13px] mb-1">
-                    Xavfsiz va ishonchli
+                    {t("auth.features.secure.title")}
                   </h4>
                   <p className="text-[11px] text-gray-600 leading-relaxed">
-                    Ma'lumotlaringiz yuqori darajadagi xavfsizlik bilan
-                    himoyalangan.
+                    {t("auth.features.secure.description")}
                   </p>
                 </div>
               </div>
@@ -234,11 +232,10 @@ function Login() {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-800 text-[13px] mb-1">
-                    Barchasi bitta tizimda
+                    {t("auth.features.allInOne.title")}
                   </h4>
                   <p className="text-[11px] text-gray-600 leading-relaxed">
-                    Barcha buxgalteriya jarayonlarini yagona platformada
-                    boshqaring.
+                    {t("auth.features.allInOne.description")}
                   </p>
                 </div>
               </div>

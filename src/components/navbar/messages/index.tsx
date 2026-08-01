@@ -1,8 +1,10 @@
 import { Badge, Button, Popover } from "antd";
 import { Bell, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const Messages = () => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -28,13 +30,13 @@ const Messages = () => {
                     <div className="w-8 h-8 bg-secondary rounded-full shrink-0"></div>
                     <div className="flex flex-col">
                       <h1 className="text-text text-sm font-semibold">
-                        John Smith
+                        {t("notifications.defaultSender")}
                       </h1>
-                      <span className="text-xs text-primary-text">1d ago</span>
+                      <span className="text-xs text-primary-text">
+                        {t("notifications.dayAgo")}
+                      </span>
                       <p className="text-text line-clamp-2 text-xs">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Earum sed doloremque voluptatum exercitationem nobis nam
-                        tempora deleniti magni maiores iusto?
+                        {t("notifications.defaultMessage")}
                       </p>
                     </div>
                   </div>
@@ -42,7 +44,7 @@ const Messages = () => {
                 <div className="p-2">
                   <div className="bg-secondary hover:bg-surface-hover flex cursor-pointer items-center justify-center rounded-lg py-2 transition-colors">
                     <span className="text-text flex items-center text-sm">
-                      Hammasini ko'rish <ChevronRight className="size-4" />
+                      {t("notifications.viewAll")} <ChevronRight className="size-4" />
                     </span>
                   </div>
                 </div>

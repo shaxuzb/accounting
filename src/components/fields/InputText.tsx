@@ -31,7 +31,6 @@ const InputText = <T extends object>({
         fieldTouched && fieldError ? "error" : ""
       }
       help={fieldTouched && fieldError ? String(fieldError) : undefined}
-      rules={[{ required: true, message: "Please input your password!" }]}
     >
       <Input
         value={fieldValue ?? ""}

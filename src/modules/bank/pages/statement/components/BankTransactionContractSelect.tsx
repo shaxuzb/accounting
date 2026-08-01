@@ -58,7 +58,9 @@ export default function BankTransactionContractSelect({
       selectedLabel={contractOptionLabel}
       marginBottom="mb-0"
       placeholder={
-        counterpartyId ? "Shartnomani tanlang" : "Avval kontragentni tanlang"
+        counterpartyId
+          ? "bank.placeholders.selectContract"
+          : "bank.placeholders.selectCounterpartyFirst"
       }
       addOption={{
         bool: true,

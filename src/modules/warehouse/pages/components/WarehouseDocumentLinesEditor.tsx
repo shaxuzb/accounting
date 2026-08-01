@@ -3,6 +3,7 @@ import { Button, Card as AntCard, Empty, Input, InputNumber, Select } from "antd
 import { Plus, Trash2 } from "lucide-react";
 import { $axiosPrivate } from "@/services/AxiosService";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
+import { useTranslation } from "react-i18next";
 
 type SelectOption = {
   id: number;
@@ -55,6 +56,7 @@ export default function WarehouseDocumentLinesEditor({
   lines,
   onChange,
 }: Props) {
+  const { t } = useTranslation();
   const productsQuery = useSelectOptions(
     selectListEndpoints.productsSelectList,
     "products",
@@ -118,24 +120,26 @@ export default function WarehouseDocumentLinesEditor({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="text-sm font-semibold">Mahsulot qatorlari</div>
+        <div className="text-sm font-semibold">
+          {t("warehouse.lines.productLines")}
+        </div>
         <Button
           type="dashed"
           icon={<Plus className="size-4" />}
           onClick={addLine}
           disabled={disabled}
         >
-          Qator qo'shish
+          {t("warehouse.lines.addLine")}
         </Button>
       </div>
 
-      {!lines.length && <Empty description="Qatorlar yo'q" />}
+      {!lines.length && <Empty description={t("warehouse.lines.noLines")} />}
 
       {lines.map((line, lineIndex) => (
         <AntCard
           key={`line-${lineIndex}`}
           size="small"
-          title={`Qator ${lineIndex + 1}`}
+          title={t("warehouse.lines.row", { number: lineIndex + 1 })}
           extra={
             <Button
               type="text"
@@ -149,7 +153,7 @@ export default function WarehouseDocumentLinesEditor({
           <div className="grid gap-3 md:grid-cols-2">
             <Select
               value={line.productId}
-              placeholder="Mahsulot"
+              placeholder={t("warehouse.fields.productName")}
               options={(productsQuery.data ?? []).map((item) => ({
                 value: item.id,
                 label: item.name ?? item.id,
@@ -160,7 +164,7 @@ export default function WarehouseDocumentLinesEditor({
             />
             <Select
               value={line.unitId}
-              placeholder="Birlik"
+              placeholder={t("purchase.fields.unit")}
               options={(unitsQuery.data ?? []).map((item) => ({
                 value: item.id,
                 label: item.name ?? item.id,
@@ -172,7 +176,7 @@ export default function WarehouseDocumentLinesEditor({
             <InputNumber
               className="w-full"
               min={0}
-              placeholder="Miqdor"
+              placeholder={t("openingInventory.fields.quantity")}
               value={line.quantity ?? undefined}
               disabled={disabled}
               onChange={(value) =>
@@ -180,7 +184,7 @@ export default function WarehouseDocumentLinesEditor({
               }
             />
             <Input
-              placeholder="Izoh"
+              placeholder={t("openingInventory.fields.comment")}
               value={line.comment}
               disabled={disabled}
               onChange={(event) => setLine(lineIndex, { comment: event.target.value })}
@@ -190,7 +194,7 @@ export default function WarehouseDocumentLinesEditor({
           <div className="mt-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="text-xs font-semibold text-muted-foreground">
-                Itemlar
+                {t("warehouse.lines.items")}
               </div>
               <Button
                 type="dashed"
@@ -199,7 +203,7 @@ export default function WarehouseDocumentLinesEditor({
                 onClick={() => addItem(lineIndex)}
                 disabled={disabled}
               >
-                Item qo'shish
+                {t("warehouse.lines.addItem")}
               </Button>
             </div>
             {line.items.map((item, itemIndex) => (
@@ -210,7 +214,7 @@ export default function WarehouseDocumentLinesEditor({
                 <InputNumber
                   className="w-full"
                   min={0}
-                  placeholder="Product table ID"
+                  placeholder={t("warehouse.fields.productTableId")}
                   value={item.productTableId ?? undefined}
                   disabled={disabled}
                   onChange={(value) =>
@@ -222,7 +226,7 @@ export default function WarehouseDocumentLinesEditor({
                 <InputNumber
                   className="w-full"
                   min={0}
-                  placeholder="Cost price"
+                  placeholder={t("warehouse.fields.costPrice")}
                   value={item.costPrice ?? undefined}
                   disabled={disabled}
                   onChange={(value) =>

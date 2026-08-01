@@ -9,6 +9,7 @@ import { numberSpacing } from "@/utils/utils";
 import type { SaleProductGroupForm } from "../types/form";
 import type { SaleProductGroupData } from "../types/type";
 import SaleProductLinesTable from "./SaleProductLinesTable";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   group: SaleProductGroupData;
@@ -35,6 +36,7 @@ function SaleProductGroup({
   onLineMarginChange,
   onLineSalePriceChange,
 }: Props) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(true);
   const lineKeys = useMemo(
     () => group.lines.map((line) => line.rowKey),
@@ -100,7 +102,13 @@ function SaleProductGroup({
     <section className="overflow-hidden rounded-lg border border-border bg-primary-bg">
       <div className="flex flex-col gap-3 border-b border-border px-3 py-3 2xl:flex-row 2xl:items-center">
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          <Tooltip title={expanded ? "Jadvalni yopish" : "Jadvalni ochish"}>
+          <Tooltip
+            title={
+              expanded
+                ? t("sale.messages.collapseTable")
+                : t("sale.messages.expandTable")
+            }
+          >
             <Button
               type="text"
               shape="circle"
@@ -125,17 +133,17 @@ function SaleProductGroup({
             <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-secondary-text">
               {/* <span>Product ID: {group.productId || "-"}</span> */}
               {productMxik && <span>MXIK: {productMxik}</span>}
-              <span>Itemlar: {group.lines.length}</span>
-              <span>Markirovka: {group.markingCount || 0}</span>
+              <span>{t("warehouse.lines.items")}: {group.lines.length}</span>
+              <span>{t("app.fields.marking")}: {group.markingCount || 0}</span>
               <span>
-                Umumiy summa:{" "}
+                {t("sale.fields.totalAmount")}:{" "}
                 {numberSpacing(groupTotalAmount, undefined, true)}{" "}
                 {currencyCode}
               </span>
             </div>
           </div>
           <span className="ml-auto whitespace-nowrap rounded bg-primary/10 px-2 py-1 text-xs font-semibold text-primary xl:ml-2">
-            {group.totalQuantity} ta
+            {t("sale.fields.countSuffix", { count: group.totalQuantity })}
           </span>
          
         </div>
@@ -146,7 +154,7 @@ function SaleProductGroup({
         >
           <div className="min-w-0 [&_.ant-form-item]:mb-0! [&_.ant-form-item-label]:pb-1! [&_.ant-select-selector]:h-9.5!">
             <SelectCustom
-              label="Barchasi uchun QQS"
+              label={t("sale.fields.allVat")}
               fieldName="vatRateId"
               getFieldName="vatRateName"
               path={selectListEndpoints.vatRatesSelectList}
@@ -160,9 +168,9 @@ function SaleProductGroup({
               block
               value={formik.values.priceMode}
               options={[
-                { label: "Marja %", value: "marginPercent" },
-                { label: "Marja", value: "marginAmount" },
-                { label: "Sotuv narxi", value: "salePrice" },
+                { label: t("sale.fields.margin"), value: "marginPercent" },
+                { label: t("sale.fields.marginAmount"), value: "marginAmount" },
+                { label: t("sale.fields.salePrice"), value: "salePrice" },
               ]}
               onChange={(value) => {
                 formik.setFieldValue("priceMode", value);
@@ -176,10 +184,10 @@ function SaleProductGroup({
             <InputNumberFormat
               label={
                 formik.values.priceMode === "marginPercent"
-                  ? "Marja, %"
+                  ? t("sale.fields.margin")
                   : formik.values.priceMode === "marginAmount"
-                    ? "Marja summa"
-                    : "Sotuv narxi"
+                    ? t("sale.fields.marginAmount")
+                    : t("sale.fields.salePrice")
               }
               fieldName={
                 formik.values.priceMode === "marginPercent"
@@ -231,7 +239,7 @@ function SaleProductGroup({
             }
             onClick={() => formik.handleSubmit()}
           >
-            Qo'llash
+            {t("sale.actions.apply")}
           </Button>
         </Form>
       </div>

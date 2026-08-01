@@ -63,7 +63,7 @@ export default function CashOperationAddEditPage({
   const formik = useFormik<CashOperationForm>({
     initialValues,
     enableReinitialize: true,
-    validationSchema: cashOperationSchema(),
+    validationSchema: cashOperationSchema(t),
     onSubmit: async (values, helpers) => {
       try {
         if (id) {

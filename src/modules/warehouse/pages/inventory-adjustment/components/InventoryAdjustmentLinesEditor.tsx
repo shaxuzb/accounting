@@ -12,6 +12,7 @@ import type { ProductStock, ProductStockSerial } from "../../warehouse/types/typ
 import { useGetInventoryAdjustmentStocks } from "../hooks/useGetInventoryAdjustmentStocks";
 import { useGetInventoryAdjustmentSerials } from "../hooks/useGetInventoryAdjustmentSerials";
 import type { InventoryAdjustmentForm, InventoryAdjustmentLineForm } from "../types/form";
+import { useTranslation } from "react-i18next";
 import InventoryAdjustmentMarkingModal from "./InventoryAdjustmentMarkingModal";
 import {
   createDefaultAdjustmentItem,
@@ -24,12 +25,11 @@ interface Props {
   disabled?: boolean;
 }
 
-const getRowTitle = (index: number) => `Qator ${index + 1}`;
-
 export default function InventoryAdjustmentLinesEditor({
   formik,
   disabled = false,
 }: Props) {
+  const { t } = useTranslation();
   const warehouseId = formik.values.warehouseId;
   const stockQuery = useGetInventoryAdjustmentStocks({
     warehouseId,
@@ -114,18 +114,22 @@ export default function InventoryAdjustmentLinesEditor({
   return (
     <Card className="p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <div className="text-sm font-semibold">Mahsulot qatorlari</div>
+        <div className="text-sm font-semibold">
+          {t("warehouse.lines.productLines")}
+        </div>
         <Button
           type="dashed"
           icon={<Plus className="size-4" />}
           onClick={addLine}
           disabled={disabled}
         >
-          Qator qo'shish
+          {t("warehouse.lines.addLine")}
         </Button>
       </div>
 
-      {!formik.values.lines.length && <Empty description="Qatorlar yo'q" />}
+      {!formik.values.lines.length && (
+        <Empty description={t("warehouse.lines.noLines")} />
+      )}
 
       <div className="space-y-4">
         {formik.values.lines.map((line, index) => {
@@ -140,7 +144,9 @@ export default function InventoryAdjustmentLinesEditor({
               className="rounded-xl border border-border p-4"
             >
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <div className="text-sm font-semibold">{getRowTitle(index)}</div>
+                <div className="text-sm font-semibold">
+                  {t("warehouse.lines.row", { number: index + 1 })}
+                </div>
                 <Button
                   type="text"
                   danger
@@ -152,16 +158,18 @@ export default function InventoryAdjustmentLinesEditor({
 
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <div className="xl:col-span-2">
-                  <div className="mb-1 text-sm text-secondary-text">Mahsulot</div>
+                  <div className="mb-1 text-sm text-secondary-text">
+                    {t("warehouse.fields.productName")}
+                  </div>
                   <Select
                     value={line.productId}
-                    placeholder="Mahsulotni tanlang"
+                    placeholder={t("warehouse.lines.selectProduct")}
                     loading={stockQuery.isLoading || stockQuery.isFetching}
                     disabled={disabled || !warehouseId}
                     showSearch
                     options={(stockQuery.data?.items ?? []).map((item) => ({
                       value: item.productId,
-                      label: `${item.productName ?? item.name ?? item.productId} - ${numberSpacing(item.quantity, undefined, true)} dona`,
+                      label: `${item.productName ?? item.name ?? item.productId} - ${t("warehouse.lines.pieces", { count: numberSpacing(item.quantity, undefined, true) })}`,
                     }))}
                     onChange={(value) => {
                       const selected = stockMap.get(Number(value));
@@ -183,7 +191,7 @@ export default function InventoryAdjustmentLinesEditor({
                 <SelectCustom
                   formik={formik}
                   fieldName={`lines[${index}].unitId`}
-                  label="Birlik"
+                  label={t("purchase.fields.unit")}
                   path={selectListEndpoints.unitsSelectList}
                   disabled={disabled}
                   getFieldName={`lines[${index}].unitName`}
@@ -192,7 +200,7 @@ export default function InventoryAdjustmentLinesEditor({
                 <InputNumber
                   formik={formik}
                   fieldName={`lines[${index}].quantity`}
-                  label="Miqdor"
+                  label={t("openingInventory.fields.quantity")}
                   disabled={disabled}
                   min={0}
                 />
@@ -201,7 +209,7 @@ export default function InventoryAdjustmentLinesEditor({
                   <InputText
                     formik={formik}
                     fieldName={`lines[${index}].comment`}
-                    label="Izoh"
+                    label={t("openingInventory.fields.comment")}
                     disabled={disabled}
                   />
                 </div>
@@ -209,10 +217,10 @@ export default function InventoryAdjustmentLinesEditor({
 
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <Tag color="blue">
-                  Qoldiq: {numberSpacing(totalStock, undefined, true)}
+                  {t("warehouse.lines.stock")}: {numberSpacing(totalStock, undefined, true)}
                 </Tag>
                 <Tag color={selectedMarkings.length ? "green" : "default"}>
-                  Markirovka: {selectedMarkings.length}
+                  {t("warehouse.lines.marking")}: {selectedMarkings.length}
                 </Tag>
                 <Button
                   size="small"
@@ -226,16 +234,16 @@ export default function InventoryAdjustmentLinesEditor({
                   }}
                   disabled={disabled || !canOpenMarking || serialsQuery.isFetching}
                 >
-                  Markirovka
+                  {t("warehouse.lines.marking")}
                 </Button>
                 {!warehouseId && (
                   <span className="text-xs text-red-500">
-                    Avval omborni tanlang
+                    {t("warehouse.lines.selectWarehouseFirst")}
                   </span>
                 )}
                 {line.productId && !serialItems.length && canOpenMarking && (
                   <span className="text-xs text-secondary-text">
-                    Bu mahsulot markirovkasiz
+                    {t("warehouse.lines.notPieceTracked")}
                   </span>
                 )}
               </div>
@@ -246,7 +254,7 @@ export default function InventoryAdjustmentLinesEditor({
 
       <InventoryAdjustmentMarkingModal
         open={activeLineIndex !== null && Boolean(activeLine?.productId)}
-        title={activeLine?.productName || "Markirovka tanlash"}
+        title={activeLine?.productName || t("warehouse.lines.selectMarking")}
         items={serialItems}
         selectedRowKeys={selectedRowKeys}
         loading={serialsQuery.isLoading || serialsQuery.isFetching}

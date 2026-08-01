@@ -39,6 +39,7 @@ import SaleLineAccountsDrawer, {
   type SaleLineAccountValues,
 } from "./SaleLineAccountsModal";
 import SaleMarkingModal from "./SaleMarkingModal";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   warehouseId?: number | null;
@@ -242,6 +243,7 @@ export default function SaleProductSelection({
   submitting = false,
   disabled = false,
 }: Props) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [warehouseOpen, setWarehouseOpen] = useState(false);
   const [accountLine, setAccountLine] = useState<SaleSelectedProduct | null>(
@@ -437,7 +439,7 @@ export default function SaleProductSelection({
         costingMethodId: saleCondition.costingMethodId,
         productName: detail.productName || getProductName(product),
         layers: allocatedLayers,
-      });
+      }, t);
       if (layerCostValidationError) {
         toast.error(layerCostValidationError);
         return;
@@ -455,7 +457,7 @@ export default function SaleProductSelection({
       });
       const unitId = detail.unitId || product.unitId || 0;
       if (!unitId) {
-        toast.error("Tanlangan mahsulotda birlik topilmadi");
+        toast.error(t("sale.messages.unitMissing"));
         return;
       }
       const selectedSalePrice =
@@ -603,7 +605,7 @@ export default function SaleProductSelection({
         costingMethodId: saleCondition.costingMethodId,
         productName: line.productName,
         layers: nextLayers,
-      });
+      }, t);
       if (layerCostValidationError) {
         toast.error(layerCostValidationError);
         return line;
@@ -688,12 +690,12 @@ export default function SaleProductSelection({
 
   const openMarkingModal = (line: SaleSelectedProduct) => {
     if (!getLineIsPieceTracked(line)) {
-      toast.error("Bu mahsulot markirovkasiz");
+      toast.error(t("sale.messages.notPieceTracked"));
       return;
     }
 
     if (!(line.layers ?? []).some((layer) => layer.batchId && layer.writeOffQuantity > 0)) {
-      toast.error("Avval partiya bo'yicha sotiladigan miqdorni kiriting");
+      toast.error(t("sale.messages.enterBatchQuantityFirst"));
       return;
     }
 
@@ -711,7 +713,7 @@ export default function SaleProductSelection({
       (activeMarkingLine.markings?.length ?? 0) !==
       Math.round(activeMarkingLine.quantity)
     ) {
-      toast.error("Har bir dona uchun markirovka kiritilishi kerak");
+      toast.error(t("sale.messages.markingPerPieceRequired"));
       return;
     }
 
@@ -722,7 +724,7 @@ export default function SaleProductSelection({
     if (!activeMarkingLine) return;
 
     if (isAvailableMarkingsFetching) {
-      toast("Markirovkalar tekshirilmoqda");
+      toast(t("sale.messages.markingsChecking"));
       return;
     }
 
@@ -749,7 +751,7 @@ export default function SaleProductSelection({
     });
 
     if (!remainingByBatch.size) {
-      toast.error("Avval partiya bo'yicha sotiladigan miqdorni kiriting");
+      toast.error(t("sale.messages.enterBatchQuantityFirst"));
       return;
     }
 
@@ -764,7 +766,7 @@ export default function SaleProductSelection({
     let hasNewMarkings = false;
     for (const markingNumber of values) {
       if (nextMarkings.length >= Math.round(activeMarkingLine.quantity)) {
-        toast.error("Miqdor bo'yicha barcha markirovka kiritilgan");
+        toast.error(t("sale.messages.allMarkingsEntered"));
         break;
       }
 
@@ -779,7 +781,7 @@ export default function SaleProductSelection({
           ),
         )
       ) {
-        toast.error("Bu markirovka avval qo'shilgan");
+        toast.error(t("sale.messages.duplicateMarking"));
         continue;
       }
 
@@ -793,13 +795,13 @@ export default function SaleProductSelection({
       );
 
       if (!availableBatch || !availableTable) {
-        toast.error("Markirovka mavjud mahsulotlar ro'yxatida topilmadi");
+        toast.error(t("sale.messages.markingProductNotFound"));
         continue;
       }
 
       const remainingQuantity = remainingByBatch.get(availableBatch.batchId) ?? 0;
       if (remainingQuantity <= 0) {
-        toast.error("Bu partiya uchun kiritilgan miqdor to'ldi");
+        toast.error(t("sale.messages.batchQuantityFull"));
         continue;
       }
 
@@ -826,19 +828,19 @@ export default function SaleProductSelection({
   const columns: TableColumnsType<SaleSelectedProduct> = [
     {
       dataIndex: "indexId",
-      title: "T/r",
+      title: t("common.rowNumber"),
       align: "center",
       className: "whitespace-nowrap",
     },
     {
       dataIndex: "productName",
-      title: "Mahsulot",
+      title: t("sale.fields.product"),
       width: 450,
       render: (_, record) => (
         <Select
           showSearch
           className="w-full"
-          placeholder="Mahsulot"
+          placeholder={t("purchase.fields.product")}
           value={record.productId || undefined}
           loading={
             isProductStocksLoading ||
@@ -862,14 +864,14 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "mxik",
-      title: "MXIK kod",
+      title: t("sale.fields.mxik"),
       render: (value) => value || "-",
     },
     ...(markingMode
       ? [
           {
             dataIndex: "markings",
-            title: "Markirovka",
+            title: t("app.fields.marking"),
             align: "center" as const,
             render: (_: unknown, record: SaleSelectedProduct) => {
               if (isNewRow(record.rowKey)) return "-";
@@ -878,7 +880,7 @@ export default function SaleProductSelection({
               const markingCount = record.markings?.length ?? 0;
               const isPieceTracked = getLineIsPieceTracked(record);
               if (isPieceTracked && markingCount === quantity) {
-                return <Tag color="success">Urilgan</Tag>;
+                return <Tag color="success">{t("sale.fields.marked")}</Tag>;
               }
 
               return isPieceTracked ? (
@@ -891,7 +893,7 @@ export default function SaleProductSelection({
                   {markingCount}/{quantity}
                 </Button>
               ) : (
-                <Tag>Markirovkasiz</Tag>
+                <Tag>{t("sale.messages.notPieceTracked")}</Tag>
               );
             },
           },
@@ -899,18 +901,18 @@ export default function SaleProductSelection({
       : []),
     {
       dataIndex: "unitName",
-      title: "Birlik",
-      render: (value) => value || "Dona",
+      title: t("purchase.fields.unit"),
+      render: (value) => value || t("sale.fields.piece"),
     },
     {
       dataIndex: "availableQuantity",
-      title: "Qoldiq",
+      title: t("warehouse.lines.stock"),
       align: "center",
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "quantity",
-      title: "Miqdor",
+      title: t("openingInventory.fields.quantity"),
       width: 100,
       render: (value, record) =>
         isNewRow(record.rowKey) ? (
@@ -946,13 +948,13 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "costPrice",
-      title: "Tannarx",
+      title: t("warehouse.fields.costPrice"),
       align: "center",
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "unitPrice",
-      title: "Sotuv narxi",
+      title: t("sale.fields.salePrice"),
       width: 120,
       render: (value, record) => (
         <InputNumberFormat
@@ -983,13 +985,13 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "amount",
-      title: "Summa",
+      title: t("openingInventory.fields.amount"),
       align: "center",
       render: (_, record) => numberSpacing(getLineAmount(record)),
     },
     {
       dataIndex: "vatRateId",
-      title: "QQS (foiz va summa)",
+      title: t("sale.fields.vatRateAndAmount"),
       render: (_, record) => (
         <div className="flex items-center">
           <Select
@@ -1021,14 +1023,14 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "total",
-      title: "Jami",
+      title: t("common.total"),
       align: "center",
       render: (_, record) =>
         numberSpacing(getLineTotal(record, vatRateOptions)),
     },
     {
       dataIndex: "accounts",
-      title: "Hisobvaraqlar",
+      title: t("openingInventory.fields.accounts"),
       render: (_, record) => (
         <div className="flex min-w-30 items-center">
           <span
@@ -1042,7 +1044,7 @@ export default function SaleProductSelection({
             size="small"
             icon={<Pencil className="size-4" />}
             disabled={isNewRow(record.rowKey) || disabled}
-            title="Hisobvaraqlarni tanlash"
+            title={t("sale.actions.selectAccounts")}
             onClick={() => setAccountLine(record)}
           />
         </div>
@@ -1075,23 +1077,23 @@ export default function SaleProductSelection({
   ): TableColumnsType<SaleProductPriceLayer> => [
     {
       dataIndex: "batchNumber",
-      title: "Partiya raqami",
+      title: t("sale.fields.batchNumber"),
       render: (value, record) => value || record.batchId || "-",
     },
     {
       dataIndex: "purchaseDate",
-      title: "Kirim sanasi",
+      title: t("sale.fields.receiptDate"),
       render: (value) => customDate(value),
     },
     {
       dataIndex: "availableQuantity",
-      title: "Mavjud",
+      title: t("sale.fields.available"),
       align: "center",
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "writeOffQuantity",
-      title: "Sotiladigan",
+      title: t("sale.fields.quantityToSell"),
       align: "center",
       width: 50,
       render: (_, record) => (
@@ -1115,19 +1117,19 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "unitPrice",
-      title: "Tannarx",
+      title: t("warehouse.fields.costPrice"),
       align: "center",
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "salePrice",
-      title: "Sotuv narxi",
+      title: t("sale.fields.salePrice"),
       align: "center",
       render: () => numberSpacing(Number(line.unitPrice ?? 0)),
     },
     {
       dataIndex: "saleAmount",
-      title: "Sotuv summasi",
+      title: t("sale.fields.saleAmount"),
       align: "center",
       render: (_, record) =>
         numberSpacing(
@@ -1136,7 +1138,7 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "vatAmount",
-      title: "QQS",
+      title: t("settings.fields.vatRate"),
       align: "center",
       render: (_, record) =>
         numberSpacing(
@@ -1151,7 +1153,7 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "totalAmount",
-      title: "Jami",
+      title: t("common.total"),
       align: "center",
       render: (_, record) =>
         numberSpacing(
@@ -1191,26 +1193,28 @@ export default function SaleProductSelection({
     <Card className="overflow-hidden border border-border">
       <div className="flex w-full flex-nowrap items-center justify-between gap-3 overflow-x-auto border-b border-border p-3">
         <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
-          <Button type="primary">Tovarlar</Button>
+          <Button type="primary">{t("purchase.fields.goods")}</Button>
           <Button
             className="w-32"
             disabled={disabled || !warehouseId}
             onClick={() => setWarehouseOpen(true)}
           >
-            Omborxona
+            {t("menu.warehouse")}
           </Button>
           <Button
             className="w-32"
             icon={<Plus className="size-4" />}
             onClick={handleAddEmptyRow}
           >
-            Tovar qo'shish
+            {t("sale.actions.addGoods")}
           </Button>
           {/* <Button>Qo'shimcha</Button> */}
         </div>
         {onMarkingModeChange && (
           <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
-            <span className="text-sm font-medium">Markirovka bilan</span>
+            <span className="text-sm font-medium">
+              {t("sale.actions.withMarking")}
+            </span>
             <Switch
               checked={markingMode}
               disabled={disabled}
@@ -1233,7 +1237,7 @@ export default function SaleProductSelection({
             icon={<X className="size-4" />}
             onClick={onCancel}
           >
-            Bekor qilish
+            {t("common.cancel")}
           </Button>
           <Button
             className="w-42"
@@ -1243,7 +1247,7 @@ export default function SaleProductSelection({
             icon={<Save className="size-4" />}
             loading={submitting}
           >
-            Rasmiylashtirish
+            {t("sale.actions.formalize")}
           </Button>
         </div>
       </div>
@@ -1256,7 +1260,9 @@ export default function SaleProductSelection({
           expandedRowRender: (record) =>
             record.priceLayers?.length ? (
               <div className="px-5 py-3">
-                <div className="mb-2 font-semibold">Partiyalar</div>
+                <div className="mb-2 font-semibold">
+                  {t("sale.fields.batches")}
+                </div>
                 <Table<SaleProductPriceLayer>
                   size="small"
                   columns={getLayerColumns(record)}
@@ -1273,36 +1279,44 @@ export default function SaleProductSelection({
       <div className="border-t border-border p-4">
         <div className="mb-4">
           <div>
-            <div className="mb-1 text-sm text-muted-second">Kommentariya</div>
+            <div className="mb-1 text-sm text-muted-second">
+              {t("sale.fields.comment")}
+            </div>
             <Input.TextArea
               value={comment}
-              placeholder="Kommentariya kiriting"
+              placeholder={t("sale.messages.commentPlaceholder")}
               onChange={(event) => onCommentChange(event.target.value)}
             />
           </div>
         </div>
         <div className="grid overflow-hidden rounded-lg border border-border bg-primary-bg sm:grid-cols-3">
           <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
-            <div className="text-xs text-secondary-text">Summa (QQSsiz)</div>
+            <div className="text-xs text-secondary-text">
+              {t("sale.fields.amountWithoutVat")}
+            </div>
             <div className="mt-1 text-base font-semibold">
               {numberSpacing(totals.amount, undefined, true)}
             </div>
           </div>
           <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
-            <div className="text-xs text-secondary-text">Summa QQS</div>
+            <div className="text-xs text-secondary-text">
+              {t("sale.fields.vatAmount")}
+            </div>
             <div className="mt-1 text-base font-semibold">
               {numberSpacing(totals.vatAmount, undefined, true)}
             </div>
           </div>
           <div className="bg-primary/5 px-4 py-3 text-center">
-            <div className="text-xs text-secondary-text">Jami</div>
+            <div className="text-xs text-secondary-text">
+              {t("common.total")}
+            </div>
             <div className="mt-1 text-base font-bold text-primary">
               {numberSpacing(totals.totalAmount, undefined, true)}
             </div>
           </div>
         </div>
         <div className="sticky bottom-0 z-10 flex justify-center border-t border-border bg-primary-bg/95 py-2 backdrop-blur">
-          <Tooltip title="Qator qo'shish">
+          <Tooltip title={t("sale.actions.addLine")}>
             <Button
               type="primary"
               shape="circle"

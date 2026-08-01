@@ -31,6 +31,7 @@ import {
   toSaleCreatePayload,
 } from "../utils/saleCreatePayload";
 import { getSaleCostingValidationError } from "../utils/saleCostingValidation";
+import { useTranslation } from "react-i18next";
 
 const toPositiveNumber = (value: unknown) => {
   const parsed = Number(value);
@@ -51,6 +52,7 @@ const defaultValues: SaleDocForm = {
 };
 
 export default function SaleAddEditPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id = "" } = useParams();
   const isEdit = Boolean(id);
@@ -150,17 +152,17 @@ export default function SaleAddEditPage() {
         }
       : initialDraft?.form ?? defaultValues,
     enableReinitialize: true,
-    validationSchema: saleDocSchema(isEdit),
+    validationSchema: saleDocSchema(t, isEdit),
     onSubmit: async (values) => {
       try {
-        await saleDocLinesSchema(isEdit).validate(products, {
+        await saleDocLinesSchema(t, isEdit).validate(products, {
           abortEarly: false,
         });
       } catch (error) {
         if (error instanceof ValidationError) {
-          toast.error(error.errors[0] || "Mahsulot ma'lumotlarini tekshiring");
+          toast.error(error.errors[0] || t("sale.messages.checkProductData"));
         } else {
-          toast.error("Mahsulot ma'lumotlarini tekshiring");
+          toast.error(t("sale.messages.checkProductData"));
         }
         return;
       }
@@ -168,7 +170,7 @@ export default function SaleAddEditPage() {
       const costingValidationError = getSaleCostingValidationError({
         costingMethodId: activeSaleCondition.costingMethodId,
         products,
-      });
+      }, t);
       if (costingValidationError) {
         toast.error(costingValidationError);
         return;
@@ -181,7 +183,7 @@ export default function SaleAddEditPage() {
         processingMode === 2 &&
         !hasRequiredSaleMarkings(validProducts)
       ) {
-        toast.error("Har bir markirovkali tovar uchun miqdoricha markirovka kiriting");
+        toast.error(t("sale.messages.markingQuantityRequired"));
         return;
       }
 
@@ -304,7 +306,7 @@ export default function SaleAddEditPage() {
   useEffect(() => {
     if (isEdit || isSaleConditionLoading) return;
     if (isSaleConditionError || (isSaleConditionSuccess && !saleCondition)) {
-      toast.error("Sotuv qoidasi kiritilmagan");
+      toast.error(t("sale.messages.saleRuleMissing"));
       navigate(-1);
     }
   }, [
@@ -314,6 +316,7 @@ export default function SaleAddEditPage() {
     isSaleConditionSuccess,
     navigate,
     saleCondition,
+    t,
   ]);
 
   if (isEdit && isDocumentLoading) {

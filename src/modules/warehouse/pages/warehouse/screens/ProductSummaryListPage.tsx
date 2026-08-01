@@ -17,6 +17,7 @@ import { useAppSelector } from "@/store/hooks";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import { useGetListWarehouse } from "../hooks/useGetListWarehouse";
 import type { ProductStockGroup } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 const fetchWarehouses = async (): Promise<SelectData[]> => {
   const { data } = await $axiosPrivate.get<SelectData[]>(
@@ -26,6 +27,7 @@ const fetchWarehouses = async (): Promise<SelectData[]> => {
 };
 
 export default function ProductSummaryListPage() {
+  const { t } = useTranslation();
   const lang = useAppSelector((state) => state.lang.lang);
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: warehouses = [], isLoading: isWarehousesLoading } = useQuery({
@@ -57,13 +59,13 @@ export default function ProductSummaryListPage() {
   const columns: TableColumnsType<ProductStockGroup> = [
     {
       dataIndex: "indexId",
-      title: "T/r",
+      title: t("common.rowNumber"),
       align: "center",
       width: 70,
     },
     {
       dataIndex: "name",
-      title: "Mahsulot turi",
+      title: t("warehouse.fields.productType"),
       render: (_, record) => (
         <Link
           to={`${record.id}${detailQuery}`}
@@ -75,19 +77,19 @@ export default function ProductSummaryListPage() {
     },
     {
       dataIndex: "quantity",
-      title: "Miqdori",
+      title: t("purchase.fields.quantity"),
       align: "center",
       render: (value: number) => numberSpacing(value, undefined, true),
     },
     {
       dataIndex: "costPrice",
-      title: "Sotuv narxi",
+      title: t("warehouse.fields.salesPrice"),
       align: "center",
       render: (value: number) => numberSpacing(value),
     },
     {
       dataIndex: "totalAmount",
-      title: "Umumiy narx",
+      title: t("warehouse.fields.totalPrice"),
       align: "center",
       render: (value: number) => numberSpacing(value),
     },
@@ -109,7 +111,7 @@ export default function ProductSummaryListPage() {
               value: warehouse.id,
               label: getLocalizedLabel(warehouse, lang),
             }))}
-            placeholder="Ombor"
+            placeholder={t("menu.warehouse")}
             className="min-w-48"
             popupMatchSelectWidth={false}
           />

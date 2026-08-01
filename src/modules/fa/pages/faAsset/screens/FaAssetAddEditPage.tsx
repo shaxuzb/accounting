@@ -13,7 +13,10 @@ import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import {
+  chartAccountSelectDisplayConfig,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import { useAppSelector } from "@/store/hooks";
 import { customDate, numberSpacing } from "@/utils/utils";
 import type { FaAssetForm } from "../types/form";
@@ -42,6 +45,9 @@ const defaultValues: FaAssetForm = {
   sourceProductTableId: null,
   departmentId: null,
   responsibleUserId: null,
+  assetAccountId: null,
+  accumulatedDepreciationAccountId: null,
+  depreciationExpenseAccountId: null,
 };
 
 export default function FaAssetFormPage() {
@@ -70,7 +76,7 @@ export default function FaAssetFormPage() {
   const formik = useFormik<FaAssetForm>({
     initialValues: defaultValues,
     enableReinitialize: true,
-    validationSchema: faAssetSchema,
+    validationSchema: faAssetSchema(t),
     onSubmit: async (values) => {
       try {
         const payload = {
@@ -111,6 +117,11 @@ export default function FaAssetFormPage() {
         sourceProductTableId: record.sourceProductTableId ?? null,
         departmentId: record.departmentId ?? null,
         responsibleUserId: record.responsibleUserId ?? null,
+        assetAccountId: record.assetAccountId ?? null,
+        accumulatedDepreciationAccountId:
+          record.accumulatedDepreciationAccountId ?? null,
+        depreciationExpenseAccountId:
+          record.depreciationExpenseAccountId ?? null,
       });
     }
   }, [record, isCreate, formik]);
@@ -286,6 +297,39 @@ export default function FaAssetFormPage() {
                     path={selectListEndpoints.usersSelectList}
                   />
                 </Col>
+                <Col span={8}>
+                  <SelectCustom
+                    formik={formik}
+                    fieldName="assetAccountId"
+                    label="fa.fields.assetAccount"
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    displayConfig={chartAccountSelectDisplayConfig}
+                    search
+                    required
+                  />
+                </Col>
+                <Col span={8}>
+                  <SelectCustom
+                    formik={formik}
+                    fieldName="accumulatedDepreciationAccountId"
+                    label="fa.fields.accumulatedDepreciationAccount"
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    displayConfig={chartAccountSelectDisplayConfig}
+                    search
+                    required
+                  />
+                </Col>
+                <Col span={8}>
+                  <SelectCustom
+                    formik={formik}
+                    fieldName="depreciationExpenseAccountId"
+                    label="fa.fields.depreciationExpenseAccount"
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    displayConfig={chartAccountSelectDisplayConfig}
+                    search
+                    required
+                  />
+                </Col>
               </Row>
             </fieldset>
           </Form>
@@ -376,13 +420,13 @@ export default function FaAssetFormPage() {
 
           {record?.statusName && (
             <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
-              Joriy holat:{" "}
+              {t("fa.fields.currentStatus")}: {" "}
               <span className="font-semibold">{record.statusName}</span>
             </div>
           )}
           {record?.initialCost != null && (
             <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
-              Summa:{" "}
+              {t("fa.fields.amount")}: {" "}
               <span className="font-semibold">
                 {numberSpacing(record.initialCost)}
               </span>

@@ -46,8 +46,8 @@ export default function BankTransactionCounterpartyAccountSelect({
       marginBottom="mb-0"
       placeholder={
         counterpartyId
-          ? "Hisob raqamini tanlang"
-          : "Avval kontragentni tanlang"
+          ? "bank.placeholders.selectCounterpartyAccount"
+          : "bank.placeholders.selectCounterpartyFirst"
       }
       optionLabel={accountOptionLabel}
       selectedLabel={accountOptionLabel}

@@ -8,6 +8,7 @@ import {
 } from "@/shared/constants/selectLists";
 import { customDate, numberSpacing } from "@/utils/utils";
 import type { CashOperation } from "../pages/cashoperation/types/type";
+import { useTranslation } from "react-i18next";
 
 interface ChartAccountOption {
   id: number;
@@ -23,6 +24,7 @@ interface CashReadonlyDetailsCardProps {
 export default function CashReadonlyDetailsCard({
   record,
 }: CashReadonlyDetailsCardProps) {
+  const { t } = useTranslation();
   const { data: chartAccounts = [] } = useQuery<ChartAccountOption[]>({
     queryKey: ["selectlist", selectListEndpoints.chartAccountsSelectList, undefined, {}],
     queryFn: async () => {
@@ -50,39 +52,39 @@ export default function CashReadonlyDetailsCard({
   return (
     <ReadonlyDetailsCard
       items={[
-        { label: "Sana", value: customDate(record.docDate) },
-        { label: "Kassa", value: record.cashBoxName ?? record.cashBoxId },
+        { label: t("cash.fields.date"), value: customDate(record.docDate) },
+        { label: t("cash.fields.cashBox"), value: record.cashBoxName ?? record.cashBoxId },
         {
-          label: "Operatsiya turi",
+          label: t("cash.fields.operationType"),
           value: record.operationTypeName ?? record.operationTypeId,
         },
         {
-          label: "Kassa schyoti",
+          label: t("cash.fields.cashChartAccount"),
           value: getChartAccountLabel(record.cashChartAccountId),
         },
         {
-          label: "Qarama-qarshi schyot",
+          label: t("cash.fields.offsetAccount"),
           value: getChartAccountLabel(record.offsetAccountId),
         },
         {
-          label: "Kontragent",
+          label: t("cash.fields.counterparty"),
           value: record.counterpartyName ?? record.counterpartyId,
         },
         {
-          label: "To'lov turi",
+          label: t("cash.fields.paymentType"),
           value: record.paymentTypeName ?? record.paymentTypeId,
         },
 
         {
-          label: "Valyuta",
+          label: t("cash.fields.currency"),
           value: record.currencyName ?? record.currencyId,
         },
         {
-          label: "Summa",
+          label: t("cash.fields.amount"),
           value: `${numberSpacing(record.amount)} ${record.currencyName ?? ""}`,
         },
-        { label: "Kurs", value: record.exchangeRate },
-        { label: "Izoh", value: record.comment || "-", className: "md:col-span-2" },
+        { label: t("cash.fields.exchangeRate"), value: record.exchangeRate },
+        { label: t("cash.fields.comment"), value: record.comment || "-", className: "md:col-span-2" },
       ]}
     />
   );

@@ -9,10 +9,16 @@ const transformPayload = (payload: FaRevaluationFormValues): FaRevaluationPayloa
   revaluationDate: payload.revaluationDate,
   reason: payload.reason || "",
   stateId: payload.stateId ?? 0,
+  revaluationReserveAccountId: Number(payload.revaluationReserveAccountId),
+  revaluationLossAccountId: Number(payload.revaluationLossAccountId),
   lines: payload.lines.map(line => ({
     faAssetId: Number(line.faAssetId),
     newValue: Number(line.newValue),
     note: line.note || "",
+    assetAccountId: Number(line.assetAccountId),
+    accumulatedDepreciationAccountId: Number(
+      line.accumulatedDepreciationAccountId,
+    ),
   }))
 });
 

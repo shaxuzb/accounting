@@ -3,6 +3,7 @@ import type { InputRef } from "antd";
 import { ScanBarcode } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useBarcodeScanner } from "../hooks";
+import { useTranslation } from "react-i18next";
 
 interface BarcodeScannerInputProps {
   disabled?: boolean;
@@ -15,6 +16,7 @@ export default function BarcodeScannerInput({
   loading = false,
   onScan,
 }: BarcodeScannerInputProps) {
+  const { t } = useTranslation();
   const [value, setValue] = useState("");
   const inputRef = useRef<InputRef>(null);
 
@@ -44,13 +46,13 @@ export default function BarcodeScannerInput({
       onPressEnter={() => void submit()}
       placeholder={
         disabled
-          ? "Avval savdo hujjatini yarating"
-          : "Barcode skanerlang yoki qo'lda kiriting"
+          ? t("sale.messages.createDocumentFirst")
+          : t("sale.messages.scanBarcodeOrEnter")
       }
       size="large"
       autoComplete="off"
       suffix={
-        <Tooltip title="Barcode skaneri">
+        <Tooltip title={t("sale.fields.barcodeScanner")}>
           <ScanBarcode className="size-5 text-slate-500" />
         </Tooltip>
       }

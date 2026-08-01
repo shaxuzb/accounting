@@ -2,6 +2,7 @@ import { Button, Select, Tooltip, type TableColumnType } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { Pencil, QrCode, Trash2 } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { $axiosPrivate } from "@/services/AxiosService";
 import {
   chartAccountSelectedLabel,
@@ -75,6 +76,7 @@ export const usePurchaseImportColumns = ({
   unitOptions,
   vatRateOptions,
 }: UsePurchaseImportColumnsParams): TableColumnType<PurchaseImportRow>[] => {
+  const { t } = useTranslation();
   const documentTypeId = purchaseDocumentTypeIds[purchaseMode];
   const chartAccountsPath =
     purchaseDocumentAccountChartAccountsPath(purchaseMode);
@@ -168,8 +170,8 @@ export const usePurchaseImportColumns = ({
         title:
           col.code === "product"
             ? purchaseMode === "services"
-              ? "Xizmat"
-              : "Tovar"
+              ? t("purchase.fields.service")
+              : t("purchase.fields.goods")
             : col.code === "mxik"
               ? "MXIK"
               : col.title,
@@ -198,8 +200,8 @@ export const usePurchaseImportColumns = ({
                 record.product
                   ? String(record.product)
                   : purchaseMode === "services"
-                    ? "Xizmat"
-                    : "Tovar"
+                    ? t("purchase.fields.service")
+                    : t("purchase.fields.goods")
               }
               value={record.productId ?? undefined}
               loading={isLoading}
@@ -242,7 +244,7 @@ export const usePurchaseImportColumns = ({
 
     const markingColumn: TableColumnType<PurchaseImportRow> = {
       dataIndex: "markingNumber",
-      title: "Markirovka",
+      title: t("app.fields.marking"),
       width: 130,
       align: "center",
       render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => {
@@ -253,9 +255,9 @@ export const usePurchaseImportColumns = ({
             title={
               isTracked
                 ? markingCount
-                  ? `${markingCount} ta markirovka`
-                  : "Markirovka kiritish"
-                : "Bu mahsulot markirovkasiz"
+                  ? t("purchase.messages.markingCount", { count: markingCount })
+                  : t("purchase.actions.enterMarking")
+                : t("purchase.messages.notPieceTracked")
             }
           >
             <Button
@@ -282,7 +284,7 @@ export const usePurchaseImportColumns = ({
       ...orderedEditableColumns,
       {
         dataIndex: "unitId",
-        title: "Birlik",
+        title: t("purchase.fields.uom"),
         width: 120,
         align: "center",
         render: (_: unknown, record: PurchaseImportRow, rowIndex: number) =>
@@ -293,7 +295,7 @@ export const usePurchaseImportColumns = ({
               showSearch
               optionFilterProp="label"
               className="w-full"
-              placeholder="Birlik"
+              placeholder={t("purchase.fields.uom")}
               value={(record.unitId as number | null) ?? undefined}
               options={unitOptions.map((item) => ({
                 value: item.id,
@@ -307,7 +309,7 @@ export const usePurchaseImportColumns = ({
       },
       {
         dataIndex: "qty",
-        title: "Miqdor",
+        title: t("purchase.fields.quantity"),
         width: 100,
         align: "center",
         render: (value: unknown, record: PurchaseImportRow, rowIndex: number) => (
@@ -322,7 +324,7 @@ export const usePurchaseImportColumns = ({
       } satisfies TableColumnType<PurchaseImportRow>,
       {
         dataIndex: "price",
-        title: "Narx",
+        title: t("purchase.fields.price"),
         width: 140,
         align: "center",
         render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => (
@@ -336,7 +338,7 @@ export const usePurchaseImportColumns = ({
       } satisfies TableColumnType<PurchaseImportRow>,
       {
         dataIndex: "amount",
-        title: "Summa",
+        title: t("purchase.fields.amount"),
         width: 140,
         align: "center",
         render: (_: unknown, record: PurchaseImportRow) => {
@@ -347,7 +349,7 @@ export const usePurchaseImportColumns = ({
       },
       {
         dataIndex: "vatRateId",
-        title: "QQS (foiz va summa)",
+        title: t("purchase.fields.vatRateAndAmount"),
         align: "center",
         render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => {
           const vatAmount = getRowVatAmount(record, vatRateOptions);
@@ -379,7 +381,7 @@ export const usePurchaseImportColumns = ({
       },
       {
         dataIndex: "totalAmount",
-        title: "Jami",
+        title: t("common.total"),
         width: 140,
         align: "center",
         render: (_: unknown, record: PurchaseImportRow) => {
@@ -390,7 +392,7 @@ export const usePurchaseImportColumns = ({
       },
       {
         dataIndex: "accounts",
-        title: "Hisobvaraqlar",
+        title: t("purchase.fields.accounts"),
         align: "center",
         render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => (
           <div className="flex min-w-30 items-center">
@@ -404,7 +406,7 @@ export const usePurchaseImportColumns = ({
               type="text"
               size="small"
               icon={<Pencil className="size-4" />}
-              title="Hisobvaraqlarni tanlash"
+              title={t("purchase.actions.selectAccounts")}
               onClick={() => openAccountModal(rowIndex)}
             />
           </div>
@@ -414,7 +416,7 @@ export const usePurchaseImportColumns = ({
         dataIndex: "actions",
         // title: "Amallar",
         render: (_: unknown, __: PurchaseImportRow, rowIndex: number) => (
-          <Tooltip title="Qatorni o'chirish">
+          <Tooltip title={t("purchase.actions.deleteLine")}>
             <Button
               danger
               type="text"
@@ -440,5 +442,6 @@ export const usePurchaseImportColumns = ({
     unitOptions,
     vatRateOptions,
     chartAccountById,
+    t,
   ]);
 };

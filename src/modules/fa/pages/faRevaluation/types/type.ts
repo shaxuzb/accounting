@@ -2,12 +2,16 @@ export interface FaRevaluationLine {
   faAssetId: number | null;
   newValue: number | string;
   note: string;
+  assetAccountId: number;
+  accumulatedDepreciationAccountId: number;
 }
 
 export interface FaRevaluationPayload {
   revaluationDate: string;
   reason: string;
   stateId: number;
+  revaluationReserveAccountId: number;
+  revaluationLossAccountId: number;
   lines: FaRevaluationLine[];
 }
 

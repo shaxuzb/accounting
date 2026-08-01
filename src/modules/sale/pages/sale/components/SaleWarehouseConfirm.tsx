@@ -19,6 +19,7 @@ import type {
   SaleDocTable,
 } from "../types/type";
 import SaleBarcodeScanner from "./SaleBarcodeScanner";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   document: SaleDoc;
@@ -317,6 +318,7 @@ const toAssemblyPayload = (rows: WarehouseConfirmRow[]) => {
 };
 
 export default function SaleWarehouseConfirm({ document }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const confirmSale = useWarehouseConfirmSale(document.id);
   const availableProductsQuery = useGetAvailableSaleProducts(document.id);
@@ -387,7 +389,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
   const handleScan = useCallback(async (markingNumber: string) => {
     try {
       if (!availableProductsQuery.isSuccess) {
-        toast.error("Ruxsat etilgan markirovkalar hali yuklanmagan");
+        toast.error(t("sale.messages.allowedMarkingsNotLoaded"));
         return;
       }
 
@@ -397,7 +399,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
       );
 
       if (!matchedProduct) {
-        toast.error("Bu markirovka ushbu sotuvga tegishli emas");
+        toast.error(t("sale.messages.markingNotForSale"));
         return;
       }
 
@@ -407,7 +409,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
         const current = mergeDraftRows(baseRows, currentDraft);
 
         if (current.some((item) => item.productTableId === productTableId)) {
-          toast.error("Bu marker avval qo'shilgan");
+          toast.error(t("sale.messages.markerDuplicate"));
           return currentDraft;
         }
 
@@ -428,7 +430,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
           batchRowIndex !== -1 ? batchRowIndex : expectedRowIndex;
 
         if (rowIndex === -1) {
-          toast.error("Bu marker hujjatdagi mahsulotlarga tegishli emas");
+          toast.error(t("sale.messages.markerNotForDocument"));
           return currentDraft;
         }
 
@@ -447,16 +449,16 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     } catch (error) {
       errorHandlers(error);
     }
-  }, [availableMarkingByNumber, availableProductsQuery.isSuccess, baseRows, setDraftRows]);
+  }, [availableMarkingByNumber, availableProductsQuery.isSuccess, baseRows, setDraftRows, t]);
 
   const handleConfirm = useCallback(async () => {
     if (hasPieceTrackedRows && !availableProductsQuery.isSuccess) {
-      toast.error("Ruxsat etilgan markirovkalar hali tekshirilmagan");
+      toast.error(t("sale.messages.allowedMarkingsNotChecked"));
       return;
     }
 
     if (rows.some((row) => !isRowConfirmed(row))) {
-      toast.error("Barcha partiyalar tasdiqlanmagan yoki skaner qilinmagan");
+      toast.error(t("sale.messages.batchesNotConfirmed"));
       return;
     }
 
@@ -467,7 +469,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     } catch (error) {
       errorHandlers(error);
     }
-  }, [availableProductsQuery.isSuccess, confirmSale, hasPieceTrackedRows, navigate, rows, setDraftRows]);
+  }, [availableProductsQuery.isSuccess, confirmSale, hasPieceTrackedRows, navigate, rows, setDraftRows, t]);
 
   const confirmedQuantity = getConfirmedQuantity(rows);
   const totalQuantity = getTotalQuantity(rows);
@@ -476,49 +478,49 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     () => [
     {
       dataIndex: "indexId",
-      title: "T/r",
+      title: t("common.rowNumber"),
       width: 56,
       align: "center",
       render: (_, __, index) => index + 1,
     },
     {
       dataIndex: "quantity",
-      title: "Miqdor",
+      title: t("openingInventory.fields.quantity"),
       width: 120,
       align: "center",
       render: (_, row) =>
-        `${numberSpacing(row.quantity, undefined, true)} ${row.unitName || "dona"}`,
+        `${numberSpacing(row.quantity, undefined, true)} ${row.unitName || t("sale.fields.piece")}`,
     },
     {
       dataIndex: "batchNumber",
-      title: "Partiya",
+      title: t("sale.fields.batch"),
       width: 130,
       render: (value, row) => value || row.batchId || "—",
     },
     {
       dataIndex: "batchDate",
-      title: "Kirim sanasi",
+      title: t("sale.fields.receiptDate"),
       width: 120,
       render: (value) => (value ? customDate(value) : "—"),
     },
     {
       dataIndex: "markingNumber",
-      title: "Markirovka",
+      title: t("app.fields.marking"),
       minWidth: 240,
       render: (value, row) =>
         row.isPieceTracked ? <LineClampCell text={value || null} /> : "—",
     },
     {
       dataIndex: "status",
-      title: "Holati",
+      title: t("sale.fields.status"),
       width: 180,
       align: "center",
       render: (_, row) =>
         row.isPieceTracked ? (
           row.productTableId ? (
-            <Tag color="success">Urildi</Tag>
+            <Tag color="success">{t("sale.fields.marked")}</Tag>
           ) : (
-            <Tag>Urilmagan</Tag>
+            <Tag>{t("sale.fields.notMarked")}</Tag>
           )
         ) : (
           <Checkbox
@@ -527,12 +529,12 @@ export default function SaleWarehouseConfirm({ document }: Props) {
               handleBatchConfirm(row.rowId, event.target.checked)
             }
           >
-            Tasdiqlash
+            {t("common.confirm")}
           </Checkbox>
         ),
     },
     ],
-    [handleBatchConfirm],
+    [handleBatchConfirm, t],
   );
 
   const batchColumns = useMemo(
@@ -555,7 +557,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
       )}
       <div className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2">
         <span className="font-semibold text-text">
-          Ombordan chiqariladigan tovarlar
+          {t("sale.warehouse.goodsToDispatch")}
         </span>
         <span className="text-sm text-secondary-text">
           {numberSpacing(confirmedQuantity, undefined, true)} /{" "}
@@ -609,18 +611,18 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                   )}
                 </span>
                 <div>
-                  <div className="text-xs text-secondary-text">Mahsulot</div>
+                  <div className="text-xs text-secondary-text">{t("sale.fields.product")}</div>
                   <div className="font-semibold text-text">{group.productName}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs text-secondary-text">Miqdor</div>
+                  <div className="text-xs text-secondary-text">{t("sale.fields.quantity")}</div>
                   <div>
                     {numberSpacing(groupTotalQuantity, undefined, true)}{" "}
-                    {group.unitName || "dona"}
+                    {group.unitName || t("common.piece")}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs text-secondary-text">Holati</div>
+                  <div className="text-xs text-secondary-text">{t("sale.fields.status")}</div>
                   <div className={isGroupComplete ? "font-semibold text-success" : undefined}>
                     {numberSpacing(groupConfirmedQuantity, undefined, true)} /{" "}
                     {numberSpacing(groupTotalQuantity, undefined, true)}
@@ -649,29 +651,29 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-muted px-3 py-2">
                         <div>
                           <div className="text-sm font-semibold text-text">
-                            Partiya {batch.batchNumber || batch.batchId || "—"}
+                            {t("sale.fields.batch")} {batch.batchNumber || batch.batchId || "—"}
                           </div>
                           <div className="text-xs text-secondary-text">
-                            Hujjat raqami: {batch.batchNumber || batch.batchId || "—"}
+                            {t("warehouse.fields.documentNumber")}: {batch.batchNumber || batch.batchId || "—"}
                             {batch.batchDate
-                              ? ` · Kirim sanasi: ${customDate(batch.batchDate)}`
+                              ? ` · ${t("sale.fields.receiptDate")}: ${customDate(batch.batchDate)}`
                               : ""}
                           </div>
                         </div>
                         <div className="text-right text-sm text-secondary-text">
                           <div>
-                            Miqdor: {numberSpacing(batchTotalQuantity, undefined, true)}{" "}
-                            {group.unitName || "dona"}
+                            {t("openingInventory.fields.quantity")}: {numberSpacing(batchTotalQuantity, undefined, true)}{" "}
+                            {group.unitName || t("sale.fields.piece")}
                           </div>
                           <div className="font-medium text-text">
-                            Tasdiqlangan: {numberSpacing(batchConfirmedQuantity, undefined, true)} /{" "}
+                            {t("sale.messages.scanConfirmed")}: {numberSpacing(batchConfirmedQuantity, undefined, true)} /{" "}
                             {numberSpacing(batchTotalQuantity, undefined, true)}
                           </div>
                         </div>
                       </div>
                       {isPieceTracked && !visibleRows.length ? (
                         <div className="px-3 py-3 text-sm text-secondary-text">
-                          Markirovka hali skaner qilinmagan
+                          {t("sale.messages.markingNotScanned")}
                         </div>
                       ) : (
                         <Table<WarehouseConfirmRow>
@@ -707,7 +709,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
           disabled={!rows.length}
           onClick={handleConfirm}
         >
-          Tasdiqlash
+          {t("common.confirm")}
         </Button>
       </div>
     </div>

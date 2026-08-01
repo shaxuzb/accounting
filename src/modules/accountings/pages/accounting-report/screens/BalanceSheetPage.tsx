@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ColumnsType } from "antd/es/table";
 import Card from "@/components/ui/card/Card";
 import InputNumber from "@/components/fields/InputNumber";
@@ -25,6 +26,7 @@ const initialValues: BalanceSheetQuery = {
 };
 
 export default function BalanceSheetPage() {
+  const { t } = useTranslation();
   const [submitted, setSubmitted] = useState<BalanceSheetQuery | null>(null);
   const query = useGetBalanceSheet(submitted ?? undefined);
 
@@ -38,10 +40,10 @@ export default function BalanceSheetPage() {
 
   const columns = useMemo<ColumnsType<BalanceSheetRow>>(
     () => [
-      { title: "Account code", dataIndex: "accountCode", width: 140 },
-      { title: "Account name", dataIndex: "accountName" },
+      { title: t("app.reports.fields.accountCode"), dataIndex: "accountCode", width: 140 },
+      { title: t("app.reports.fields.accountName"), dataIndex: "accountName" },
       {
-        title: "Balance",
+        title: t("app.reports.fields.balance"),
         dataIndex: "balance",
         align: "right",
         width: 160,
@@ -52,13 +54,13 @@ export default function BalanceSheetPage() {
         ),
       },
     ],
-    [],
+    [t],
   );
 
   return (
     <AccountingReportPageShell
-      title="Balance sheet"
-      description="Aktivlar, majburiyatlar va kapital bo'yicha to'liq hisobot."
+      title={t("app.reports.balance.title")}
+      description={t("app.reports.balance.description")}
     >
       <AccountingReportFiltersCard
         formik={formik}
@@ -72,15 +74,15 @@ export default function BalanceSheetPage() {
           <InputNumber
             formik={formik}
             fieldName="periodId"
-            label="Period ID"
+            label={t("app.reports.fields.periodId")}
             min={1}
           />
-          <SelectDate formik={formik} fieldName="dateFrom" label="Date from" />
-          <SelectDate formik={formik} fieldName="dateTo" label="Date to" />
+          <SelectDate formik={formik} fieldName="dateFrom" label={t("app.reports.fields.dateFrom")} />
+          <SelectDate formik={formik} fieldName="dateTo" label={t("app.reports.fields.dateTo")} />
           <SelectCustom
             formik={formik}
             fieldName="currencyId"
-            label="Currency"
+            label={t("app.reports.fields.currency")}
             path={selectListEndpoints.currenciesSelectList}
             clearable
           />
@@ -92,22 +94,22 @@ export default function BalanceSheetPage() {
           <AccountingReportSummaryGrid
             items={[
               {
-                label: "Total assets",
+                label: t("app.reports.summary.totalAssets"),
                 value: numberSpacing(data.totalAssets, undefined, true),
                 tone: "primary",
               },
               {
-                label: "Total liabilities",
+                label: t("app.reports.summary.totalLiabilities"),
                 value: numberSpacing(data.totalLiabilities, undefined, true),
                 tone: "danger",
               },
               {
-                label: "Total equity",
+                label: t("app.reports.summary.totalEquity"),
                 value: numberSpacing(data.totalEquity, undefined, true),
                 tone: "success",
               },
               {
-                label: "Liabilities + equity",
+                label: t("app.reports.summary.liabilitiesAndEquity"),
                 value: numberSpacing(data.totalLiabilitiesAndEquity, undefined, true),
                 tone: "default",
               },
@@ -129,23 +131,23 @@ export default function BalanceSheetPage() {
           <Card className="border border-border p-4">
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <div>
-                <div className="text-xs text-secondary-text">Period ID</div>
+                <div className="text-xs text-secondary-text">{t("app.reports.fields.periodId")}</div>
                 <div className="font-semibold">{data.periodId ?? "-"}</div>
               </div>
               <div>
-                <div className="text-xs text-secondary-text">Date from</div>
+                <div className="text-xs text-secondary-text">{t("app.reports.fields.dateFrom")}</div>
                 <div className="font-semibold">
                   {data.dateFrom ? customDate(data.dateFrom) : "-"}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-secondary-text">Date to</div>
+                <div className="text-xs text-secondary-text">{t("app.reports.fields.dateTo")}</div>
                 <div className="font-semibold">
                   {data.dateTo ? customDate(data.dateTo) : "-"}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-secondary-text">Currency ID</div>
+                <div className="text-xs text-secondary-text">{t("app.reports.fields.currencyId")}</div>
                 <div className="font-semibold">{data.currencyId ?? "-"}</div>
               </div>
             </div>

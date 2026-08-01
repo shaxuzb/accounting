@@ -1,6 +1,7 @@
 import { Button } from "antd";
 import { CheckCircle2, CircleX, Save } from "lucide-react";
 import Card from "@/components/ui/card/Card";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   isDraft: boolean;
@@ -21,9 +22,11 @@ export default function InventoryAdjustmentActions({
   onConfirm,
   onCancel,
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <Card className="space-y-3 p-4">
-      <div className="text-sm font-semibold">Amallar</div>
+      <div className="text-sm font-semibold">{t("common.actions")}</div>
       <Button
         block
         icon={<Save className="size-4" />}
@@ -31,7 +34,7 @@ export default function InventoryAdjustmentActions({
         disabled={!isDraft}
         loading={saving}
       >
-        Saqlash
+        {t("common.save")}
       </Button>
       <Button
         type="primary"
@@ -41,7 +44,7 @@ export default function InventoryAdjustmentActions({
         disabled={!isDraft}
         loading={confirming}
       >
-        Tasdiqlash
+        {t("common.confirm")}
       </Button>
       <Button
         danger
@@ -51,7 +54,7 @@ export default function InventoryAdjustmentActions({
         disabled={!isDraft}
         loading={cancelling}
       >
-        Bekor qilish
+        {t("common.cancel")}
       </Button>
     </Card>
   );

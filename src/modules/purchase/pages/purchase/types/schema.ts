@@ -1,6 +1,7 @@
 import * as Yup from "yup";
 import type { PurchaseImportForm } from "./form";
 import type { PurchaseImportRow } from "./type";
+import type { TFunction } from "i18next";
 
 export const isCompletePurchaseLine = (line: PurchaseImportRow) => {
   const price = Number(line.price ?? line.pricePerUom ?? 0);
@@ -15,16 +16,16 @@ export const isCompletePurchaseLineWithAccounts = (
   isCompletePurchaseLine(line) &&
   Boolean(line.debitAccountId && line.vatAccountId);
 
-export const purchaseValidationSchema = Yup.object<PurchaseImportForm>({
-  docDate: Yup.string().trim().required("validation.required"),
-  counterpartyId: Yup.number().required("validation.required"),
-  contractId: Yup.number().required("validation.required"),
-  warehouseId: Yup.number().required("validation.required"),
-  currencyId: Yup.number().required("validation.required"),
+export const createPurchaseValidationSchema = (t: TFunction) => Yup.object<PurchaseImportForm>({
+  docDate: Yup.string().trim().required(t("common.requiredFields")),
+  counterpartyId: Yup.number().required(t("common.requiredFields")),
+  contractId: Yup.number().required(t("common.requiredFields")),
+  warehouseId: Yup.number().required(t("common.requiredFields")),
+  currencyId: Yup.number().required(t("common.requiredFields")),
   supplierAccountId: Yup.number()
     .nullable()
-    .required("Yetkazib beruvchi schyotini tanlang")
-    .moreThan(0, "Yetkazib beruvchi schyotini tanlang"),
+    .required(t("purchase.messages.supplierAccountRequired"))
+    .moreThan(0, t("purchase.messages.supplierAccountRequired")),
   comment: Yup.string().trim().notRequired(),
   lines: Yup.array()
     .of(
@@ -37,10 +38,10 @@ export const purchaseValidationSchema = Yup.object<PurchaseImportForm>({
         vatAccountId: Yup.number().nullable(),
       }),
     )
-    .required("validation.required"),
+    .required(t("common.requiredFields")),
 }).test(
   "has-lines",
-  "Kamida bitta mahsulot yoki xizmat kiriting",
+  t("purchase.messages.lineRequired"),
   (value: unknown) => {
     const form = value as PurchaseImportForm | undefined;
     return Boolean(form?.lines?.some(isCompletePurchaseLineWithAccounts));

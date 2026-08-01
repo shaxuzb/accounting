@@ -72,12 +72,12 @@ export default function CashDocumentDetailPage() {
   const formik = useFormik<CashDocumentForm>({
     initialValues,
     enableReinitialize: true,
-    validationSchema: cashDocumentSchema,
+    validationSchema: cashDocumentSchema(t),
     onSubmit: async (values) => {
       try {
         if (isCreate) {
           await createMutation.mutateAsync(values);
-          toast.success("Hujjat yaratildi");
+          toast.success(t("cash.messages.documentCreated"));
           navigate(`/main/cash-operationses/cash-documents/${kind}`, {
             replace: true,
           });
@@ -85,7 +85,7 @@ export default function CashDocumentDetailPage() {
         }
 
         await updateMutation.mutateAsync(values);
-        toast.success("Hujjat saqlandi");
+        toast.success(t("cash.messages.documentSaved"));
         navigate(`/main/cash-operationses/cash-documents/${kind}/${id}`, {
           replace: true,
         });
@@ -110,7 +110,7 @@ export default function CashDocumentDetailPage() {
         cashChartAccountId:true,
         offsetAccountId: true,
       });
-      toast.error("Iltimos, majburiy maydonlarni to'ldiring");
+      toast.error(t("cash.messages.fillRequired"));
       return false;
     }
 
@@ -140,13 +140,13 @@ export default function CashDocumentDetailPage() {
               {t(labels.detailTitle)}
             </div>
             <div className="text-lg font-semibold">
-              {record?.docNumber ?? (isCreate ? t(labels.addTitle) : "Hujjat")}
+              {record?.docNumber ?? (isCreate ? t(labels.addTitle) : t("app.routes.cashDocument"))}
             </div>
           </div>
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="size-4 text-primary" />
-              <span className="font-semibold">Sana</span>
+              <span className="font-semibold">{t("purchase.fields.docDate")}</span>
             </div>
             <p className="font-semibold text-foreground">
               {customDate(record?.docDate)}
@@ -188,7 +188,7 @@ export default function CashDocumentDetailPage() {
         </Card>
 
         <Card className="space-y-3 p-4">
-          <div className="text-sm font-semibold">Amallar</div>
+          <div className="text-sm font-semibold">{t("common.actions")}</div>
           {isDraft && (
             <>
               <Button
@@ -197,8 +197,7 @@ export default function CashDocumentDetailPage() {
                 onClick={() => void saveDraft()}
                 loading={createMutation.isPending || updateMutation.isPending}
               >
-                Saqlash
-              </Button>
+                {t("common.save")}</Button>
               {!isCreate && (
                 <>
                   <Button
@@ -211,7 +210,7 @@ export default function CashDocumentDetailPage() {
 
                       try {
                         await confirmMutation.mutateAsync();
-                        toast.success("Hujjat tasdiqlandi");
+                        toast.success(t("cash.messages.documentConfirmed"));
                         navigate(`/main/cash-operationses/cash-documents/${kind}`, {
                           replace: true,
                         });
@@ -221,8 +220,7 @@ export default function CashDocumentDetailPage() {
                     }}
                     loading={confirmMutation.isPending}
                   >
-                    Tasdiqlash
-                  </Button>
+                    {t("common.confirm")}</Button>
                   <Button
                     danger
                     block
@@ -233,7 +231,7 @@ export default function CashDocumentDetailPage() {
 
                       try {
                         await cancelMutation.mutateAsync();
-                        toast.success("Hujjat bekor qilindi");
+                        toast.success(t("cash.messages.documentCancelled"));
                         navigate(`/main/cash-operationses/cash-documents/${kind}`, {
                           replace: true,
                         });
@@ -243,21 +241,20 @@ export default function CashDocumentDetailPage() {
                     }}
                     loading={cancelMutation.isPending}
                   >
-                    Bekor qilish
-                  </Button>
+                    {t("common.cancel")}</Button>
                 </>
               )}
             </>
           )}
           {record?.statusName && (
             <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
-              Joriy holat:{" "}
+              {t("cash.fields.currentStatus")}: {" "}
               <span className="font-semibold">{record.statusName}</span>
             </div>
           )}
           {record?.amount != null && (
             <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
-              Summa:{" "}
+              {t("cash.fields.amount")}: {" "}
               <span className="font-semibold">
                 {numberSpacing(record.amount)} {record.currencyName ?? ""}
               </span>

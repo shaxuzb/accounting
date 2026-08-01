@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import type { WarehouseTransferDocument } from "../types/type";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   record?: WarehouseTransferDocument | null;
@@ -15,13 +16,17 @@ export default function WarehouseTransferHeader({
   isCreate,
   onBack,
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <Card className="p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="text-sm text-muted-foreground">Warehouse transfer</div>
+          <div className="text-sm text-muted-foreground">
+            {t("warehouse.transfer.title")}
+          </div>
           <div className="text-lg font-semibold">
-            {record?.docNumber ?? "Yangi hujjat"}
+            {record?.docNumber ?? t("payroll.common.newDocument")}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -32,7 +37,7 @@ export default function WarehouseTransferHeader({
             />
           )}
           <Button icon={<ArrowLeft className="size-4" />} onClick={onBack}>
-            Orqaga
+            {t("common.back")}
           </Button>
         </div>
       </div>

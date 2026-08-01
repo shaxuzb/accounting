@@ -1,6 +1,7 @@
 import { Col, Row } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { FormikProps } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
 import SelectDate from "@/components/fields/SelectDate";
@@ -29,6 +30,7 @@ export default function PurchaseImportHeader({
   formik,
   purchaseMode,
 }: PurchaseImportHeaderProps) {
+  const { t } = useTranslation();
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -66,7 +68,7 @@ export default function PurchaseImportHeader({
         <Row gutter={24}>
           <Col span={24} sm={12} lg={8} xl={4}>
             <SelectDate
-              label="Sana"
+              label="purchase.fields.docDate"
               formik={formik}
               fieldName="docDate"
               onChange={clearContract}
@@ -77,7 +79,9 @@ export default function PurchaseImportHeader({
               kind="supplier"
               fieldName="counterpartyId"
               label={
-                purchaseMode === "services" ? "Ijrochi" : "Yetkazib beruvchi"
+                purchaseMode === "services"
+                  ? t("purchase.fields.executor")
+                  : t("purchase.fields.supplier")
               }
               formik={formik}
               onChange={clearContract}
@@ -102,7 +106,7 @@ export default function PurchaseImportHeader({
               }}
               enabled={hasCounterparty}
               disabled={!hasCounterparty}
-              label="Shartnoma"
+              label="purchase.fields.contract"
               fieldName="contractId"
               formik={formik}
               getFirst
@@ -120,7 +124,7 @@ export default function PurchaseImportHeader({
           <Col span={24} sm={12} lg={8} xl={4}>
             <SelectCustom
               path={selectListEndpoints.warehousesSelectList}
-              label="Ombor"
+              label="purchase.fields.warehouse"
               fieldName="warehouseId"
               formik={formik}
               required
@@ -139,7 +143,7 @@ export default function PurchaseImportHeader({
           <Col span={24} sm={12} lg={8} xl={4}>
             <DocumentAccountSelect
               fieldName="supplierAccountId"
-              label="Yetkazib beruvchi schyoti"
+              label="purchase.fields.supplierAccount"
               documentTypeId={purchaseDocumentTypeIds[purchaseMode]}
               documentRoleCode="supplier_settlement"
               formik={formik}

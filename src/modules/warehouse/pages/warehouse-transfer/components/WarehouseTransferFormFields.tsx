@@ -6,6 +6,7 @@ import SelectDate from "@/components/fields/SelectDate";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import type { WarehouseTransferForm } from "../types/form";
 import { Col, Form, Row } from "antd";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   formik: FormikProps<WarehouseTransferForm>;
@@ -16,6 +17,8 @@ export default function WarehouseTransferFormFields({
   formik,
   disabled = false,
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <Card className="p-4">
       <Form layout="vertical">
@@ -32,7 +35,7 @@ export default function WarehouseTransferFormFields({
             <SelectCustom
               formik={formik}
               fieldName="sourceWarehouseId"
-              label="Manba ombor"
+              label={t("warehouse.fields.sourceWarehouse")}
               path={selectListEndpoints.warehousesSelectList}
               disabled={disabled}
             />
@@ -41,7 +44,7 @@ export default function WarehouseTransferFormFields({
             <SelectCustom
               formik={formik}
               fieldName="destinationWarehouseId"
-              label="Qabul ombor"
+              label={t("warehouse.fields.destinationWarehouse")}
               path={selectListEndpoints.warehousesSelectList}
               disabled={disabled}
             />

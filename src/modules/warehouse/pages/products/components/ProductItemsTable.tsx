@@ -55,33 +55,37 @@ export default function ProductItemsTable({
     },
     {
       dataIndex: "mxik",
-      title: t("mxik"),
+      title: t("products.fields.mxik"),
       align: "center",
     },
 
     {
       dataIndex: "isSold",
-      title: "Sotiladi",
+      title: t("products.fields.sold"),
       align: "center",
       render: (value) => (
-        <Tag color={value ? "green" : "default"}>{value ? "Ha" : "Yo'q"}</Tag>
+        <Tag color={value ? "green" : "default"}>
+          {value ? t("app.common.yes") : t("app.common.no")}
+        </Tag>
       ),
     },
     {
       dataIndex: "isPurchased",
-      title: "Xarid qilinadi",
+      title: t("products.fields.purchased"),
       align: "center",
       render: (value) => (
-        <Tag color={value ? "blue" : "default"}>{value ? "Ha" : "Yo'q"}</Tag>
+        <Tag color={value ? "blue" : "default"}>
+          {value ? t("app.common.yes") : t("app.common.no")}
+        </Tag>
       ),
     },
     {
       dataIndex: "isPieceTracked",
-      title: "Markirovkali",
+      title: t("products.fields.pieceTracked"),
       align: "center",
       render: (value) => (
         <Tag color={value ? "purple" : "default"}>
-          {value ? t("Ha") : t("Yo'q")}
+          {value ? t("app.common.yes") : t("app.common.no")}
         </Tag>
       ),
     },

@@ -110,7 +110,6 @@ const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
       label={label === "" ? false : t(label)}
       validateStatus={hasError ? "error" : ""}
       help={hasError ? String(getIn(formik?.errors, fieldName)) : undefined}
-      rules={[{ required: true, message: "Please input your password!" }]}
     >
       {input}
     </Form.Item>

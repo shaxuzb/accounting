@@ -116,7 +116,7 @@ export default function OrganizationAddEditPage({
                 fieldName="regionId"
                 label="settings.fields.region"
                 path={selectListEndpoints.regionsSelectList}
-                placeholder="region"
+                placeholder="settings.fields.region"
               />
             </Col>
             <Col span={12}>
@@ -134,7 +134,7 @@ export default function OrganizationAddEditPage({
                 fieldName="defaultLanguageId"
                 label="settings.fields.language"
                 path={selectListEndpoints.languagesSelectList}
-                placeholder="language"
+                placeholder="settings.fields.language"
               />
             </Col>
 

@@ -53,7 +53,7 @@ export default function OpeningInventoryHeader({
         <Row gutter={[24, 16]}>
           <Col span={24} sm={12} lg={8} xl={4}>
             <SelectDate
-              label="Sana"
+              label="purchase.fields.docDate"
               formik={formik}
               fieldName="docDate"
               onChange={clearContract}
@@ -63,7 +63,11 @@ export default function OpeningInventoryHeader({
             <CounterpartySelect
               kind="supplier"
               fieldName="counterpartyId"
-              label={mode === "services" ? "Ijrochi" : "Yetkazib beruvchi"}
+              label={
+                mode === "services"
+                  ? "purchase.fields.executor"
+                  : "purchase.fields.supplier"
+              }
               formik={formik}
               onChange={clearContract}
               addOption={{
@@ -87,7 +91,7 @@ export default function OpeningInventoryHeader({
               }}
               enabled={hasCounterparty}
               disabled={!hasCounterparty}
-              label="Shartnoma"
+              label="purchase.fields.contract"
               fieldName="contractId"
               formik={formik}
               getFirst
@@ -104,7 +108,7 @@ export default function OpeningInventoryHeader({
           <Col span={24} sm={12} lg={8} xl={4}>
             <SelectCustom
               path={selectListEndpoints.warehousesSelectList}
-              label="Ombor"
+              label="purchase.fields.warehouse"
               fieldName="warehouseId"
               formik={formik}
               required

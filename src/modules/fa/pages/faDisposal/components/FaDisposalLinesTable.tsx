@@ -4,10 +4,17 @@ import { Delete, Plus } from "lucide-react";
 import InputNumber from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectStatic from "@/components/fields/SelectStatic";
+import SelectCustom from "@/components/fields/SelectCustom";
 import type { FormikProps } from "formik";
-import type { FaDisposalFormValues } from "../types/form";
-import type { FaDisposalLineItem } from "../types/type";
+import type {
+  FaDisposalFormValues,
+  FaDisposalLineValues,
+} from "../types/form";
 import { useTranslation } from "react-i18next";
+import {
+  chartAccountSelectDisplayConfig,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 
 interface FaDisposalLinesTableProps {
   formik: FormikProps<FaDisposalFormValues>;
@@ -29,6 +36,8 @@ export default function FaDisposalLinesTable({
         faAssetId: null as unknown as number,
         saleAmount: 0,
         note: "",
+        assetAccountId: null,
+        accumulatedDepreciationAccountId: null,
       },
     ]);
   };
@@ -38,9 +47,9 @@ export default function FaDisposalLinesTable({
     formik.setFieldValue("lines", newLines);
   };
 
-  const lineColumns: ColumnsType<FaDisposalLineItem> = [
+  const lineColumns: ColumnsType<FaDisposalLineValues> = [
     {
-      title: "№",
+      title: t("common.rowNumber"),
       width: 50,
       render: (_, __, index) => index + 1,
     },
@@ -74,6 +83,36 @@ export default function FaDisposalLinesTable({
           formik={formik}
           fieldName={`lines[${index}].note`}
           disabled={!isDraft}
+        />
+      ),
+    },
+    {
+      title: t("fa.fields.assetAccount"),
+      width: 220,
+      render: (_, __, index) => (
+        <SelectCustom
+          path={selectListEndpoints.chartAccountsSelectList}
+          displayConfig={chartAccountSelectDisplayConfig}
+          formik={formik}
+          fieldName={`lines[${index}].assetAccountId`}
+          disabled={!isDraft}
+          search
+          required
+        />
+      ),
+    },
+    {
+      title: t("fa.fields.accumulatedDepreciationAccount"),
+      width: 240,
+      render: (_, __, index) => (
+        <SelectCustom
+          path={selectListEndpoints.chartAccountsSelectList}
+          displayConfig={chartAccountSelectDisplayConfig}
+          formik={formik}
+          fieldName={`lines[${index}].accumulatedDepreciationAccountId`}
+          disabled={!isDraft}
+          search
+          required
         />
       ),
     },

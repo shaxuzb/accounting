@@ -4,6 +4,7 @@ import type {
 } from "../types/type";
 import { roundMoney } from "./pricing";
 import { COSTING_METHOD } from "./salePricingDetails";
+import type { TFunction } from "i18next";
 
 const getLayerCostPrice = (layer: SaleProductPriceLayer) =>
   roundMoney(Number(layer.costPrice || layer.unitPrice || 0));
@@ -29,13 +30,16 @@ export const getLayerCostValidationError = ({
   costingMethodId: number;
   productName: string;
   layers: SaleProductPriceLayer[];
-}) => {
+}, t: TFunction) => {
   if (costingMethodId === COSTING_METHOD.AVERAGE) return null;
 
   const costs = getLayerCosts(layers);
   if (costs.length <= 1) return null;
 
-  return `${productName || "Mahsulot"} uchun FIFO/LIFO sotuvda turli tannarxli partiyalarni bitta documentda sotib bo'lmaydi: ${formatCosts(costs)}`;
+  return t("sale.messages.differentBatchCosts", {
+    product: productName || t("purchase.fields.product"),
+    costs: formatCosts(costs),
+  });
 };
 
 export const getSaleCostingValidationError = ({
@@ -44,7 +48,7 @@ export const getSaleCostingValidationError = ({
 }: {
   costingMethodId: number;
   products: SaleSelectedProduct[];
-}) => {
+}, t: TFunction) => {
   if (costingMethodId === COSTING_METHOD.AVERAGE) return null;
 
   const costsByProduct = new Map<
@@ -80,7 +84,11 @@ export const getSaleCostingValidationError = ({
 
   for (const [productId, { productName, costs }] of costsByProduct) {
     if (costs.length > 1) {
-      return `${productName || `Mahsulot #${productId}`} uchun FIFO/LIFO sotuvda turli tannarxli partiyalarni bitta documentda sotib bo'lmaydi: ${formatCosts(costs)}`;
+      return t("sale.messages.differentBatchCosts", {
+        product:
+          productName || t("sale.messages.productWithId", { id: productId }),
+        costs: formatCosts(costs),
+      });
     }
   }
 
