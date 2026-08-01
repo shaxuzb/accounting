@@ -4,8 +4,9 @@ import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeS
 import { usePayrollEmployeeLookup } from "@/modules/payroll/hooks";
 import { payrollTimesheetService } from "@/modules/payroll/pages/timesheets/services/payrollTimesheetService";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { Button, Empty, Input, Table, Tooltip } from "antd";
+import { Button, Empty, Input, Table, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
+import dayjs from "dayjs";
 import type { FormikProps } from "formik";
 import { Trash2, UserPlus, Users } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -15,6 +16,11 @@ import type {
   PayrollTimesheetForm,
   PayrollTimesheetLineForm,
 } from "../types/form";
+import type {
+  PayrollTimesheetAttendanceStatus,
+  PayrollTimesheetCalendar,
+  PayrollTimesheetCalendarDay,
+} from "../types/type";
 import {
   createTimesheetLine,
   mapCalendarToTimesheetLine,
@@ -32,6 +38,46 @@ interface Props {
 
 type LineRow = PayrollTimesheetLineForm & { key: number; rowIndex: number };
 
+const STATUS_ORDER: PayrollTimesheetAttendanceStatus[] = [
+  "WORKED",
+  "PLANNED_WORK",
+  "DAY_OFF",
+  "NOT_EMPLOYED",
+  "ANNUAL_LEAVE",
+  "SICK_LEAVE",
+  "UNPAID_LEAVE",
+  "UNEXCUSED_ABSENCE",
+  "MATERNITY_LEAVE",
+  "STUDY_LEAVE",
+  "OTHER_ABSENCE",
+];
+
+const STATUS_STYLES: Record<PayrollTimesheetAttendanceStatus, { dot: string }> =
+  {
+    WORKED: { dot: "bg-emerald-500" },
+    PLANNED_WORK: { dot: "bg-blue-500" },
+    DAY_OFF: { dot: "bg-slate-400" },
+    NOT_EMPLOYED: { dot: "bg-slate-300" },
+    ANNUAL_LEAVE: { dot: "bg-amber-500" },
+    SICK_LEAVE: { dot: "bg-rose-500" },
+    UNPAID_LEAVE: { dot: "bg-orange-500" },
+    UNEXCUSED_ABSENCE: { dot: "bg-red-500" },
+    MATERNITY_LEAVE: { dot: "bg-violet-500" },
+    STUDY_LEAVE: { dot: "bg-indigo-500" },
+    OTHER_ABSENCE: { dot: "bg-gray-500" },
+  };
+
+const getStatusColorClass = (statusCode: PayrollTimesheetAttendanceStatus) =>
+  statusCode === "WORKED"
+    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+    : statusCode.includes("LEAVE")
+      ? "border-amber-200 bg-amber-50 text-amber-700"
+      : statusCode === "SICK_LEAVE"
+        ? "border-rose-200 bg-rose-50 text-rose-700"
+        : statusCode === "UNEXCUSED_ABSENCE"
+          ? "border-red-200 bg-red-50 text-red-700"
+          : "border-slate-200 bg-slate-50 text-slate-600";
+
 export default function TimesheetLinesEditor({
   formik,
   disabled = false,
@@ -42,6 +88,9 @@ export default function TimesheetLinesEditor({
   const { t } = useTranslation();
   const { data: employees } = usePayrollEmployeeLookup();
   const [syncingEmployeeIds, setSyncingEmployeeIds] = useState<number[]>([]);
+  const [employeeCalendars, setEmployeeCalendars] = useState<
+    Record<number, PayrollTimesheetCalendar>
+  >({});
 
   const lines = formik.values.lines;
   const totals = useMemo(() => summarizeTimesheet(lines), [lines]);
@@ -55,14 +104,39 @@ export default function TimesheetLinesEditor({
       !employees.some((employee) => !selectedIds.includes(employee.id)),
     [employees, selectedIds],
   );
+  const calendarDays = useMemo(() => {
+    const daysByDate = new Map<string, PayrollTimesheetCalendarDay>();
+    Object.values(employeeCalendars).forEach((calendar) =>
+      (calendar.days ?? []).forEach((day) => daysByDate.set(day.date, day)),
+    );
+    return Array.from(daysByDate.values()).sort((a, b) =>
+      a.date.localeCompare(b.date),
+    );
+  }, [employeeCalendars]);
+  const dailyByEmployee = useMemo(() => {
+    const result = new Map<number, Map<string, PayrollTimesheetCalendarDay>>();
+    Object.entries(employeeCalendars).forEach(([employeeId, calendar]) => {
+      result.set(
+        Number(employeeId),
+        new Map((calendar.days ?? []).map((day) => [day.date, day])),
+      );
+    });
+    return result;
+  }, [employeeCalendars]);
+  const statusCodes = useMemo(() => {
+    const available = new Set<PayrollTimesheetAttendanceStatus>();
+    Object.values(employeeCalendars).forEach((calendar) =>
+      (calendar.days ?? []).forEach((day) => available.add(day.statusCode)),
+    );
+    return STATUS_ORDER.filter((statusCode) => available.has(statusCode));
+  }, [employeeCalendars]);
+  const getStatusLabel = (code: PayrollTimesheetAttendanceStatus) =>
+    t(`hr.calendar.status.${code}`, { defaultValue: code });
 
   const setLines = (next: PayrollTimesheetLineForm[]) =>
     formik.setFieldValue("lines", next, true);
 
-  const patchLine = (
-    index: number,
-    patch: Partial<PayrollTimesheetLineForm>,
-  ) =>
+  const patchLine = (index: number, patch: Partial<PayrollTimesheetLineForm>) =>
     setLines(
       lines.map((line, current) =>
         current === index ? { ...line, ...patch } : line,
@@ -78,8 +152,17 @@ export default function TimesheetLinesEditor({
       }),
     ]);
 
-  const removeLine = (index: number) =>
+  const removeLine = (index: number) => {
+    const employeeId = lines[index]?.employeeId;
+    if (employeeId != null) {
+      setEmployeeCalendars((current) => {
+        const next = { ...current };
+        delete next[employeeId];
+        return next;
+      });
+    }
     setLines(lines.filter((_, current) => current !== index));
+  };
 
   const syncLineCalendar = async (
     index: number,
@@ -99,6 +182,10 @@ export default function TimesheetLinesEditor({
       );
       const calendarPatch = mapCalendarToTimesheetLine(calendar);
       patchLine(index, { ...employeePatch, ...calendarPatch });
+      setEmployeeCalendars((current) => ({
+        ...current,
+        [employeeId]: calendar,
+      }));
     } catch (error) {
       patchLine(index, employeePatch);
       errorHandlers(error);
@@ -109,19 +196,55 @@ export default function TimesheetLinesEditor({
     }
   };
 
+  const renderCalendarDay = (day?: PayrollTimesheetCalendarDay) => {
+    if (!day) return <span className="text-secondary-text">-</span>;
+
+    const statusLabel = t(`hr.calendar.status.${day.statusCode}`, {
+      defaultValue: day.statusName ?? day.statusCode,
+    });
+    const shortLabel = t(`hr.calendar.statusShort.${day.statusCode}`, {
+      defaultValue: statusLabel,
+    });
+    const hours =
+      day.statusCode === "WORKED"
+        ? (day.workedHours ?? day.workHours)
+        : day.plannedHours;
+    const colorClass = getStatusColorClass(day.statusCode);
+
+    return (
+      <div
+        aria-label={statusLabel}
+        className={`mx-auto flex min-h-7 w-12 flex-col items-center justify-center rounded-md border px-0.5 py-0.5 text-[10px] leading-tight ${colorClass}`}
+        title={statusLabel}
+      >
+        {day.statusCode !== "WORKED" && (
+          <span className="font-medium">
+            {shortLabel.slice(0, 1).toUpperCase()}
+          </span>
+        )}
+        {day.statusCode === "WORKED" && hours != null && (
+          <span className="mt-0.5 font-semibold">
+            {Number.isInteger(hours) ? hours : hours.toFixed(1)} s
+          </span>
+        )}
+      </div>
+    );
+  };
+
   const numberColumn = (
     key: keyof PayrollTimesheetLineForm,
     title: string,
     max?: number,
   ) => ({
     dataIndex: key as string,
-    title: t(title),
+    title: <span className="text-[11px]! leading-tight">{t(title)}</span>,
     align: "center" as const,
-    width: 110,
+    width: 88,
+    className: "text-xs!",
     render: (_: unknown, record: LineRow) => (
       <InputNumber
         standalone
-        height={32}
+        height={28}
         min={0}
         max={max}
         precision={1}
@@ -130,8 +253,7 @@ export default function TimesheetLinesEditor({
         disabled={
           disabled ||
           Boolean(
-            record.employeeId &&
-              syncingEmployeeIds.includes(record.employeeId),
+            record.employeeId && syncingEmployeeIds.includes(record.employeeId),
           )
         }
         value={record[key] as number | null}
@@ -145,25 +267,34 @@ export default function TimesheetLinesEditor({
   const columns: TableColumnsType<LineRow> = [
     {
       dataIndex: "rowIndex",
-      title: t("common.rowNumber"),
+      title: <span className="text-[11px]!">{t("common.rowNumber")}</span>,
       align: "center",
-      width: 60,
+      width: 48,
       fixed: "left",
+      className: "text-xs!",
       render: (_, record) => record.rowIndex + 1,
     },
     {
       dataIndex: "employeeId",
-      title: t("payroll.fields.employee"),
-      width: 280,
+      title: <span className="text-[11px]!">{t("payroll.fields.employee")}</span>,
+      width: 220,
       fixed: "left",
+      className: "text-xs!",
       render: (_, record) => (
-        <div className="py-1">
+        <div className="py-0.5">
           <PayrollEmployeeSelect
             standalone
             value={record.employeeId}
             excludeIds={selectedIds.filter((id) => id !== record.employeeId)}
             disabled={disabled || !periodId}
             onChange={(value) => {
+              if (record.employeeId != null && record.employeeId !== value) {
+                setEmployeeCalendars((current) => {
+                  const next = { ...current };
+                  delete next[record.employeeId!];
+                  return next;
+                });
+              }
               const employee = (employees ?? []).find(
                 (item) => item.id === value,
               );
@@ -180,14 +311,35 @@ export default function TimesheetLinesEditor({
               }
             }}
           />
-          {record.departmentName && (
+          {/* {record.departmentName && (
             <div className="mt-1 text-xs text-secondary-text">
               {record.departmentName}
             </div>
-          )}
+          )} */}
         </div>
       ),
     },
+    ...calendarDays.map((day) => ({
+      key: `calendar-${day.date}`,
+      dataIndex: `calendar-${day.date}`,
+      title: (
+        <div className="text-center leading-tight">
+          <div className="text-[11px]!">{dayjs(day.date).format("DD")}</div>
+          <div className="text-[9px] font-normal text-secondary-text">
+            {(day.dayName ?? dayjs(day.date).format("ddd")).slice(0, 3)}
+          </div>
+        </div>
+      ),
+      align: "center" as const,
+      width: 54,
+      className: "text-xs!",
+      render: (_: unknown, record: LineRow) =>
+        renderCalendarDay(
+          record.employeeId == null
+            ? undefined
+            : dailyByEmployee.get(record.employeeId)?.get(day.date),
+        ),
+    })),
     numberColumn("normWorkDays", "payroll.fields.normWorkDays", 31),
     numberColumn("normWorkHours", "payroll.fields.normWorkHours"),
     numberColumn("workedDays", "payroll.fields.workedDays", 31),
@@ -198,8 +350,9 @@ export default function TimesheetLinesEditor({
     numberColumn("overtimeHours", "payroll.fields.overtimeHours"),
     {
       dataIndex: "note",
-      title: t("payroll.fields.note"),
-      width: 190,
+      title: <span className="text-[11px]!">{t("payroll.fields.note")}</span>,
+      width: 150,
+      className: "text-xs!",
       render: (_, record) => (
         <Input
           value={record.note ?? ""}
@@ -208,7 +361,7 @@ export default function TimesheetLinesEditor({
           onChange={(event) =>
             patchLine(record.rowIndex, { note: event.target.value })
           }
-          style={{ height: 32, backgroundColor: "transparent" }}
+          style={{ height: 28, backgroundColor: "transparent" }}
         />
       ),
     },
@@ -219,14 +372,14 @@ export default function TimesheetLinesEditor({
       dataIndex: "actions",
       title: "",
       align: "center",
-      width: 56,
+      width: 48,
       fixed: "right",
       render: (_, record) => (
         <Tooltip title={t("common.delete")}>
           <Button
             type="text"
             danger
-            icon={<Trash2 className="size-4" />}
+            icon={<Trash2 className="size-3.5" />}
             onClick={() => removeLine(record.rowIndex)}
           />
         </Tooltip>
@@ -251,7 +404,8 @@ export default function TimesheetLinesEditor({
         !disabled && (
           <Button
             type="dashed"
-            icon={<UserPlus className="size-4" />}
+            size="small"
+            icon={<UserPlus className="size-3.5" />}
             disabled={!periodId || noAvailableEmployees}
             onClick={addLine}
           >
@@ -260,56 +414,110 @@ export default function TimesheetLinesEditor({
         )
       }
     >
+      {statusCodes.length > 0 && (
+        <div className="border-b border-border px-3 py-1.5">
+          <div className="flex flex-wrap gap-1">
+            {STATUS_ORDER.filter((code) => statusCodes.includes(code)).map(
+              (code) => (
+                <Tag
+                  key={code}
+                  className="m-0! px-1.5! py-0! text-[10px]! leading-5!"
+                >
+                  <span
+                    className={`mr-1 inline-block size-1.5 rounded-full ${STATUS_STYLES[code].dot}`}
+                  />
+                  {getStatusLabel(code)}
+                </Tag>
+              ),
+            )}
+          </div>
+        </div>
+      )}
       <Table<LineRow>
         columns={columns}
         dataSource={dataSource}
         pagination={false}
         size="small"
-        scroll={{ x: 1480, y: 460 }}
+        className="text-xs!"
+        scroll={{ x: "max-content", y: 460 }}
         locale={{
-          emptyText: (
-            <Empty description={t("payroll.timesheets.noLines")} />
-          ),
+          emptyText: <Empty description={t("payroll.timesheets.noLines")} />,
         }}
         summary={() =>
           lines.length ? (
             <Table.Summary fixed>
-              <Table.Summary.Row className="bg-primary-bg font-semibold">
+              <Table.Summary.Row className="bg-primary-bg font-semibold text-xs!">
                 <Table.Summary.Cell index={0} colSpan={2}>
                   {t("common.total")}: {totals.employees}
                 </Table.Summary.Cell>
-                <Table.Summary.Cell index={2} align="center">
+                {calendarDays.map((day, dayIndex) => (
+                  <Table.Summary.Cell
+                    key={day.date}
+                    index={dayIndex + 2}
+                    align="center"
+                  >
+                    -
+                  </Table.Summary.Cell>
+                ))}
+                <Table.Summary.Cell
+                  index={calendarDays.length + 2}
+                  align="center"
+                >
                   {totals.normWorkDays}
                 </Table.Summary.Cell>
-                <Table.Summary.Cell index={3} align="center">
+                <Table.Summary.Cell
+                  index={calendarDays.length + 3}
+                  align="center"
+                >
                   {totals.normWorkHours}
                 </Table.Summary.Cell>
-                <Table.Summary.Cell index={4} align="center">
+                <Table.Summary.Cell
+                  index={calendarDays.length + 4}
+                  align="center"
+                >
                   {totals.workedDays}
                 </Table.Summary.Cell>
-                <Table.Summary.Cell index={5} align="center">
+                <Table.Summary.Cell
+                  index={calendarDays.length + 5}
+                  align="center"
+                >
                   {totals.workedHours}
                 </Table.Summary.Cell>
-                <Table.Summary.Cell index={6} align="center">
+                <Table.Summary.Cell
+                  index={calendarDays.length + 6}
+                  align="center"
+                >
                   {totals.leaveDays}
                 </Table.Summary.Cell>
-                <Table.Summary.Cell index={7} align="center">
+                <Table.Summary.Cell
+                  index={calendarDays.length + 7}
+                  align="center"
+                >
                   {totals.sickDays}
                 </Table.Summary.Cell>
-                <Table.Summary.Cell index={8} align="center">
+                <Table.Summary.Cell
+                  index={calendarDays.length + 8}
+                  align="center"
+                >
                   {totals.absentDays}
                 </Table.Summary.Cell>
-                <Table.Summary.Cell index={9} align="center">
+                <Table.Summary.Cell
+                  index={calendarDays.length + 9}
+                  align="center"
+                >
                   {totals.overtimeHours}
                 </Table.Summary.Cell>
-                <Table.Summary.Cell index={10} colSpan={disabled ? 1 : 2} />
+                <Table.Summary.Cell
+                  index={calendarDays.length + 10}
+                  colSpan={disabled ? 1 : 2}
+                />
               </Table.Summary.Row>
             </Table.Summary>
           ) : null
         }
       />
       {typeof formik.errors.lines === "string" && (
-        <div className="px-4 py-2 text-sm text-red-500">
+        <div className="px-3 py-1.5 text-xs text-red-500">
           {formik.errors.lines}
         </div>
       )}

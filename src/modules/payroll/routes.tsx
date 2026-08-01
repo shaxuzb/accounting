@@ -16,6 +16,7 @@ import PayrollPayslipReportPage from "./pages/reports/screens/PayrollPayslipRepo
 import PayrollRegisterReportPage from "./pages/reports/screens/PayrollRegisterReportPage";
 import PayrollTimesheetDetailPage from "./pages/timesheets/screens/PayrollTimesheetDetailPage";
 import PayrollTimesheetListPage from "./pages/timesheets/screens/PayrollTimesheetListPage";
+import "./styles.css";
 
 const withPermission = (
   element: React.ReactElement,
@@ -28,7 +29,11 @@ const withPermission = (
 
 export const payrollRoutes: RouteObject = {
   path: "payroll",
-  element: <Outlet />,
+  element: (
+    <div className="payroll-module">
+      <Outlet />
+    </div>
+  ),
   children: [
     {
       path: "periods",

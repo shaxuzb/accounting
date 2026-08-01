@@ -12,7 +12,7 @@ import { isDraftStatus } from "@/modules/payroll/constants/options";
 import { payrollTimesheetPermissions } from "@/modules/payroll/constants/permissions";
 import { usePayrollPeriodLookup } from "@/modules/payroll/pages/periods/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { Alert, Col, Form, Row, Spin } from "antd";
+import { Col, Form, Row, Spin } from "antd";
 import { useFormik } from "formik";
 import {
   CalendarClock,
@@ -163,15 +163,7 @@ export default function PayrollTimesheetDetailPage() {
         isCreate={isCreate}
         onBack={() => navigate(LIST_PATH)}
       />
-
-      {isPeriodClosed && (
-        <Alert
-          type="warning"
-          showIcon
-          message={t("payroll.messages.periodClosedWarning")}
-        />
-      )}
-
+     
       <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-4">
           <SectionCard

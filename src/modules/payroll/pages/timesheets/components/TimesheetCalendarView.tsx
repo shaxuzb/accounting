@@ -40,19 +40,19 @@ interface CalendarRow {
   attendance: Map<string, PayrollTimesheetDailyEmployee>;
 }
 
-// const STATUS_ORDER: PayrollTimesheetAttendanceStatus[] = [
-//   "WORKED",
-//   "PLANNED_WORK",
-//   "DAY_OFF",
-//   "NOT_EMPLOYED",
-//   "ANNUAL_LEAVE",
-//   "SICK_LEAVE",
-//   "UNPAID_LEAVE",
-//   "UNEXCUSED_ABSENCE",
-//   "MATERNITY_LEAVE",
-//   "STUDY_LEAVE",
-//   "OTHER_ABSENCE",
-// ];
+const STATUS_ORDER: PayrollTimesheetAttendanceStatus[] = [
+  "WORKED",
+  "PLANNED_WORK",
+  "DAY_OFF",
+  "NOT_EMPLOYED",
+  "ANNUAL_LEAVE",
+  "SICK_LEAVE",
+  "UNPAID_LEAVE",
+  "UNEXCUSED_ABSENCE",
+  "MATERNITY_LEAVE",
+  "STUDY_LEAVE",
+  "OTHER_ABSENCE",
+];
 
 const STATUS_STYLES: Record<
   PayrollTimesheetAttendanceStatus,
@@ -109,24 +109,24 @@ const SUMMARY_COLUMNS: Array<{
   title: string;
   width: number;
 }> = [
-  { key: "normWorkDays", title: "payroll.fields.normWorkDays", width: 108 },
-  { key: "normWorkHours", title: "payroll.fields.normWorkHours", width: 112 },
+  { key: "normWorkDays", title: "payroll.fields.normWorkDays", width: 84 },
+  { key: "normWorkHours", title: "payroll.fields.normWorkHours", width: 88 },
   {
     key: "plannedWorkDays",
     title: "payroll.fields.plannedWorkDays",
-    width: 112,
+    width: 90,
   },
   {
     key: "plannedWorkHours",
     title: "payroll.fields.plannedWorkHours",
-    width: 116,
+    width: 94,
   },
-  { key: "workedDays", title: "payroll.fields.workedDays", width: 100 },
-  { key: "workedHours", title: "payroll.fields.workedHours", width: 108 },
-  { key: "leaveDays", title: "payroll.fields.leaveDays", width: 96 },
-  { key: "sickDays", title: "payroll.fields.sickDays", width: 106 },
-  { key: "absentDays", title: "payroll.fields.absentDays", width: 112 },
-  { key: "overtimeHours", title: "payroll.fields.overtimeHours", width: 112 },
+  { key: "workedDays", title: "payroll.fields.workedDays", width: 78 },
+  { key: "workedHours", title: "payroll.fields.workedHours", width: 84 },
+  { key: "leaveDays", title: "payroll.fields.leaveDays", width: 74 },
+  { key: "sickDays", title: "payroll.fields.sickDays", width: 78 },
+  { key: "absentDays", title: "payroll.fields.absentDays", width: 84 },
+  { key: "overtimeHours", title: "payroll.fields.overtimeHours", width: 86 },
 ];
 
 const EMPTY_ATTENDANCE: PayrollTimesheetDailyAttendance[] = [];
@@ -193,13 +193,15 @@ const AttendanceCell = ({
     //   </Tooltip>
     <div
       aria-label={statusLabel}
-      className={`mx-auto flex min-h-10 w-17 flex-col items-center justify-center rounded-md border px-1 py-1 text-[11px] leading-tight ${style.cell}`}
+      className={`mx-auto flex min-h-7 w-12 flex-col items-center justify-center rounded-md border px-0.5 py-0.5 text-[10px] leading-tight ${style.cell}`}
     >
-      <span className="font-medium">
-        {getStatusShortLabel(attendance.statusCode)}
-      </span>
+      {attendance.statusCode !== "WORKED" && (
+        <span className="font-medium">
+          {getStatusShortLabel(attendance.statusCode).slice(0, 1).toUpperCase()}
+        </span>
+      )}
       {hours != null && attendance.statusCode === "WORKED" && (
-        <span className="mt-0.5 font-semibold">{formatHours(hours)} soat</span>
+        <span className="mt-0.5 font-semibold">{formatHours(hours)} s</span>
       )}
     </div>
   );
@@ -226,7 +228,7 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
     [getStatusLabel, t],
   );
 
-  const { rows, dates } = useMemo(() => {
+  const { rows, dates, statusCodes } = useMemo(() => {
     const summaryByEmployee = new Map(
       summaries.map((summary) => [summary.employeeId, summary]),
     );
@@ -311,17 +313,18 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
         dataIndex: "employeeName",
         title: t("payroll.fields.employee"),
         fixed: "left",
-        width: 230,
+        width: 200,
+        className: "text-xs!",
         render: (_, row) => (
-          <div className="min-w-0 py-1">
-            <div className="truncate font-medium text-text">
+          <div className="min-w-0 py-0.5">
+            <div className="truncate font-medium text-text text-xs!">
               {row.employeeName ?? "-"}
             </div>
-            {row.employeeNumber && (
+            {/* {row.employeeNumber && (
               <div className="text-xs text-secondary-text">
                 {row.employeeNumber}
               </div>
-            )}
+            )} */}
           </div>
         ),
       },
@@ -332,14 +335,15 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
           // <Tooltip title={`${displayDate(day.date)} - ${day.dayName ?? ""}`}>
           // </Tooltip>
           <div className="text-center leading-tight">
-            <div>{dayjs(day.date).format("DD")}</div>
-            <div className="text-[10px] font-normal text-secondary-text">
+            <div className="text-[11px]!">{dayjs(day.date).format("DD")}</div>
+            <div className="text-[9px] font-normal text-secondary-text">
               {(day.dayName ?? "").slice(0, 3)}
             </div>
           </div>
         ),
         align: "center" as const,
-        width: 82,
+        width: 54,
+        className: "text-xs!",
         render: (_: unknown, row: CalendarRow) => (
           <AttendanceCell
             attendance={row.attendance.get(day.date)}
@@ -350,9 +354,10 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
       })),
       ...SUMMARY_COLUMNS.map(({ key, title, width }) => ({
         dataIndex: ["summary", key],
-        title: t(title),
+        title: <div className="text-[11px]! leading-tight">{t(title)}</div>,
         align: "center" as const,
         width,
+        className: "text-xs!",
         render: (_: unknown, row: CalendarRow) =>
           formatMetric(row.summary?.[key]),
       })),
@@ -387,24 +392,18 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
       }
       bodyClassName="min-w-0 overflow-hidden p-0!"
     >
-      {/* <div className="border-b border-border px-4 py-3">
-        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-secondary-text">
-          <span>
-            {displayDate(calendar.dateFrom)} - {displayDate(calendar.dateTo)}
-          </span>
-          <span>{t("payroll.timesheets.calendarLegend")}</span>
-        </div>
-        <div className="flex flex-wrap gap-2">
+      <div className="border-b border-border px-4 py-2">
+        <div className="flex flex-wrap gap-1">
           {STATUS_ORDER.filter((code) => statusCodes.includes(code)).map((code) => (
-            <Tag key={code} className="m-0!">
+            <Tag key={code} className="m-0! px-1.5! py-0! text-[10px]! leading-5!">
               <span
-                className={`mr-1.5 inline-block size-2 rounded-full ${STATUS_STYLES[code].dot}`}
+                className={`mr-1 inline-block size-1.5 rounded-full ${STATUS_STYLES[code].dot}`}
               />
               {getStatusLabel(code)}
             </Tag>
           ))}
         </div>
-      </div> */}
+      </div>
 
       <Table<CalendarRow>
         rowKey="key"
@@ -412,10 +411,11 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
         dataSource={rows}
         pagination={false}
         size="small"
+        className="text-xs!"
         scroll={{ x: "max-content", y: 520 }}
         summary={() => (
           <Table.Summary fixed>
-            <Table.Summary.Row className="bg-primary-bg font-semibold">
+            <Table.Summary.Row className="bg-primary-bg font-semibold text-xs!">
               <Table.Summary.Cell index={0}>
                 {t("common.total")}: {rows.length}
               </Table.Summary.Cell>
