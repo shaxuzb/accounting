@@ -4,10 +4,10 @@ import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeS
 import { usePayrollEmployeeLookup } from "@/modules/payroll/hooks";
 import { payrollTimesheetService } from "@/modules/payroll/pages/timesheets/services/payrollTimesheetService";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { App, Button, Empty, Input, Table, Tooltip } from "antd";
+import { Button, Empty, Input, Table, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import type { FormikProps } from "formik";
-import { CalendarSync, Trash2, UserPlus, Users } from "lucide-react";
+import { Trash2, UserPlus, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -40,16 +40,20 @@ export default function TimesheetLinesEditor({
   periodId,
 }: Props) {
   const { t } = useTranslation();
-  const { modal } = App.useApp();
-  const { data: employees, isFetching } = usePayrollEmployeeLookup();
+  const { data: employees } = usePayrollEmployeeLookup();
   const [syncingEmployeeIds, setSyncingEmployeeIds] = useState<number[]>([]);
-  const [isSyncingAll, setIsSyncingAll] = useState(false);
 
   const lines = formik.values.lines;
   const totals = useMemo(() => summarizeTimesheet(lines), [lines]);
   const selectedIds = useMemo(
     () => lines.map((line) => line.employeeId),
     [lines],
+  );
+  const noAvailableEmployees = useMemo(
+    () =>
+      employees != null &&
+      !employees.some((employee) => !selectedIds.includes(employee.id)),
+    [employees, selectedIds],
   );
 
   const setLines = (next: PayrollTimesheetLineForm[]) =>
@@ -77,15 +81,6 @@ export default function TimesheetLinesEditor({
   const removeLine = (index: number) =>
     setLines(lines.filter((_, current) => current !== index));
 
-  const fetchCalendarPatch = async (employeeId: number) => {
-    if (!periodId) return null;
-    const calendar = await payrollTimesheetService.calendar(
-      periodId,
-      employeeId,
-    );
-    return mapCalendarToTimesheetLine(calendar);
-  };
-
   const syncLineCalendar = async (
     index: number,
     employeeId: number,
@@ -98,7 +93,11 @@ export default function TimesheetLinesEditor({
     }
     setSyncingEmployeeIds((current) => [...current, employeeId]);
     try {
-      const calendarPatch = await fetchCalendarPatch(employeeId);
+      const calendar = await payrollTimesheetService.calendar(
+        periodId,
+        employeeId,
+      );
+      const calendarPatch = mapCalendarToTimesheetLine(calendar);
       patchLine(index, { ...employeePatch, ...calendarPatch });
     } catch (error) {
       patchLine(index, employeePatch);
@@ -107,91 +106,6 @@ export default function TimesheetLinesEditor({
       setSyncingEmployeeIds((current) =>
         current.filter((id) => id !== employeeId),
       );
-    }
-  };
-
-  /** Barcha faol xodimlarni shaxsiy HR kalendari bo'yicha to'ldiradi. */
-  const fillAllEmployees = () => {
-    const existing = new Set(
-      lines
-        .map((line) => line.employeeId)
-        .filter((id): id is number => Boolean(id)),
-    );
-    const newLines = (employees ?? [])
-      .filter((employee) => !existing.has(employee.id))
-      .map((employee) => ({
-        employee,
-        line: createTimesheetLine({
-          employeeId: employee.id,
-          employeeName: employee.label,
-          employeeNumber: employee.employeeNumber,
-          departmentName: employee.departmentName,
-          workedDays: normWorkDays ?? 0,
-          workedHours: normWorkHours ?? 0,
-        }),
-      }));
-
-    if (!newLines.length) return;
-    modal.confirm({
-      title: t("payroll.timesheets.fillAllTitle"),
-      content: t("payroll.timesheets.fillAllText", { count: newLines.length }),
-      okText: t("common.submit"),
-      cancelText: t("common.cancel"),
-      onOk: async () => {
-        setIsSyncingAll(true);
-        try {
-          const calendarPatches = periodId
-            ? await Promise.all(
-                newLines.map(({ employee }) =>
-                  fetchCalendarPatch(employee.id).catch(() => null),
-                ),
-              )
-            : newLines.map(() => null);
-          const hydrated = newLines.map(({ line }, index) => ({
-            ...line,
-            ...calendarPatches[index],
-          }));
-          await setLines([...lines, ...hydrated]);
-        } finally {
-          setIsSyncingAll(false);
-        }
-      },
-    });
-  };
-
-  const syncAllCalendars = async () => {
-    if (!periodId) {
-      toast.error(t("hr.messages.selectPeriodFirst"));
-      return;
-    }
-    const employeeLines = lines.filter(
-      (line): line is PayrollTimesheetLineForm & { employeeId: number } =>
-        Boolean(line.employeeId),
-    );
-    if (!employeeLines.length) return;
-
-    setIsSyncingAll(true);
-    try {
-      const patches = await Promise.all(
-        employeeLines.map(async (line) => ({
-          employeeId: line.employeeId,
-          patch: await fetchCalendarPatch(line.employeeId).catch(() => null),
-        })),
-      );
-      const patchMap = new Map(
-        patches.map((item) => [item.employeeId, item.patch]),
-      );
-      await setLines(
-        lines.map((line) => ({
-          ...line,
-          ...(line.employeeId ? patchMap.get(line.employeeId) ?? {} : {}),
-        })),
-      );
-      toast.success(t("hr.messages.calendarLoaded"));
-    } catch (error) {
-      errorHandlers(error);
-    } finally {
-      setIsSyncingAll(false);
     }
   };
 
@@ -247,8 +161,8 @@ export default function TimesheetLinesEditor({
           <PayrollEmployeeSelect
             standalone
             value={record.employeeId}
-            excludeIds={selectedIds}
-            disabled={disabled}
+            excludeIds={selectedIds.filter((id) => id !== record.employeeId)}
+            disabled={disabled || !periodId}
             onChange={(value) => {
               const employee = (employees ?? []).find(
                 (item) => item.id === value,
@@ -335,30 +249,14 @@ export default function TimesheetLinesEditor({
       bodyClassName="min-w-0 overflow-hidden p-0!"
       extra={
         !disabled && (
-          <>
-            <Button
-              icon={<CalendarSync className="size-4" />}
-              loading={isSyncingAll}
-              disabled={!lines.some((line) => line.employeeId)}
-              onClick={() => void syncAllCalendars()}
-            >
-              {t("payroll.timesheets.syncCalendar")}
-            </Button>
-            <Button
-              icon={<Users className="size-4" />}
-              loading={isFetching || isSyncingAll}
-              onClick={fillAllEmployees}
-            >
-              {t("payroll.timesheets.fillAll")}
-            </Button>
-            <Button
-              type="dashed"
-              icon={<UserPlus className="size-4" />}
-              onClick={addLine}
-            >
-              {t("payroll.timesheets.addLine")}
-            </Button>
-          </>
+          <Button
+            type="dashed"
+            icon={<UserPlus className="size-4" />}
+            disabled={!periodId || noAvailableEmployees}
+            onClick={addLine}
+          >
+            {t("payroll.timesheets.addLine")}
+          </Button>
         )
       }
     >

@@ -823,10 +823,27 @@
         "WORKED": "Ishlangan",
         "PLANNED_WORK": "Rejadagi ish",
         "DAY_OFF": "Dam olish",
+        "NOT_EMPLOYED": "Xodim emas",
         "ANNUAL_LEAVE": "Mehnat ta'tili",
         "SICK_LEAVE": "Kasallik",
         "UNPAID_LEAVE": "Ish haqi saqlanmagan",
-        "UNEXCUSED_ABSENCE": "Sababsiz yo'qlik"
+        "UNEXCUSED_ABSENCE": "Sababsiz yo'qlik",
+        "MATERNITY_LEAVE": "Dekret ta'tili",
+        "STUDY_LEAVE": "O'quv ta'tili",
+        "OTHER_ABSENCE": "Boshqa yo'qlik"
+      },
+      "statusShort": {
+        "WORKED": "Ish",
+        "PLANNED_WORK": "Reja",
+        "DAY_OFF": "Dam",
+        "NOT_EMPLOYED": "Xodim emas",
+        "ANNUAL_LEAVE": "Ta'til",
+        "SICK_LEAVE": "Kasallik",
+        "UNPAID_LEAVE": "Haqsiz",
+        "UNEXCUSED_ABSENCE": "Sababsiz",
+        "MATERNITY_LEAVE": "Dekret",
+        "STUDY_LEAVE": "O'quv",
+        "OTHER_ABSENCE": "Boshqa"
       }
     },
     "fields": {
@@ -973,6 +990,8 @@
       "periodRange": "Davr oralig'i",
       "normWorkDays": "Me'yoriy ish kunlari",
       "normWorkHours": "Me'yoriy ish soatlari",
+      "plannedWorkDays": "Rejadagi ish kunlari",
+      "plannedWorkHours": "Rejadagi ish soatlari",
       "closedDate": "Yopilgan sana",
       "docNumber": "Hujjat raqami",
       "docDate": "Hujjat sanasi",
@@ -1111,6 +1130,10 @@
       "headerHint": "Davr va hujjat sanasini tanlang",
       "linesTitle": "Xodimlar bo'yicha vaqt hisobi",
       "linesHint": "Ishlangan kun va soatni kiriting",
+      "calendarTitle": "Kunlik tabel kalendari",
+      "calendarHint": "Har bir xodimning kunlik holati va oy yakunini bir jadvalda ko'ring",
+      "calendarEmpty": "Bu tabel uchun kunlik kalendar ma'lumoti mavjud emas",
+      "calendarLegend": "Katakdagi soat ishlangan vaqtni bildiradi",
       "addLine": "Xodim qo'shish",
       "syncCalendar": "HR kalendaridan to'ldirish",
       "fillAll": "Barcha xodimlar",

@@ -5,5 +5,6 @@ export const payrollTimesheetEndpoints = {
   update: (id: string | number) => `payroll/timesheets/${id}`,
   confirm: (id: string | number) => `payroll/timesheets/${id}/confirm`,
   cancel: (id: string | number) => `payroll/timesheets/${id}/cancel`,
-  calendar: "payroll/timesheets/calendar",
+  detailCalendar: (id: string | number) => `payroll/timesheets/${id}/calendar`,
+  employeeCalendar: "payroll/timesheets/calendar",
 } as const;

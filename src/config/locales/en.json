@@ -823,10 +823,27 @@
         "WORKED": "Worked",
         "PLANNED_WORK": "Planned work",
         "DAY_OFF": "Day off",
+        "NOT_EMPLOYED": "Not employed",
         "ANNUAL_LEAVE": "Annual leave",
         "SICK_LEAVE": "Sick leave",
         "UNPAID_LEAVE": "Unpaid leave",
-        "UNEXCUSED_ABSENCE": "Unexcused absence"
+        "UNEXCUSED_ABSENCE": "Unexcused absence",
+        "MATERNITY_LEAVE": "Maternity leave",
+        "STUDY_LEAVE": "Study leave",
+        "OTHER_ABSENCE": "Other absence"
+      },
+      "statusShort": {
+        "WORKED": "Worked",
+        "PLANNED_WORK": "Plan",
+        "DAY_OFF": "Day off",
+        "NOT_EMPLOYED": "Not employed",
+        "ANNUAL_LEAVE": "Leave",
+        "SICK_LEAVE": "Sick",
+        "UNPAID_LEAVE": "Unpaid",
+        "UNEXCUSED_ABSENCE": "Absent",
+        "MATERNITY_LEAVE": "Maternity",
+        "STUDY_LEAVE": "Study",
+        "OTHER_ABSENCE": "Other"
       }
     },
     "fields": {
@@ -973,6 +990,8 @@
       "periodRange": "Period range",
       "normWorkDays": "Norm work days",
       "normWorkHours": "Norm work hours",
+      "plannedWorkDays": "Planned work days",
+      "plannedWorkHours": "Planned work hours",
       "closedDate": "Closed date",
       "docNumber": "Document number",
       "docDate": "Document date",
@@ -1111,6 +1130,10 @@
       "headerHint": "Choose the period and document date",
       "linesTitle": "Time tracking by employee",
       "linesHint": "Enter worked days and hours",
+      "calendarTitle": "Daily timesheet calendar",
+      "calendarHint": "Review each employee's daily status and monthly totals in one table",
+      "calendarEmpty": "No daily calendar data is available for this timesheet",
+      "calendarLegend": "The hours in a cell show the actual worked time",
       "addLine": "Add employee",
       "syncCalendar": "Fill from HR calendar",
       "fillAll": "All employees",
