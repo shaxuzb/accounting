@@ -1,5 +1,5 @@
 import { Button, Col, Form, Row, Spin, Typography, Space } from "antd";
-import { useEffect } from "react";
+import { useMemo } from "react";
 import { useFormik } from "formik";
 import { useNavigate, useParams, Link } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -29,13 +29,14 @@ import {
   useUpdateFaRevaluation,
 } from "../hooks";
 import { faRevaluationPermissions } from "../constants/permissions";
+import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 
 const { Text } = Typography;
 
 const defaultValues: FaRevaluationFormValues = {
   revaluationDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   reason: "",
-  stateId: 0,
+  stateId: faDocumentStatusIds.draft,
   revaluationReserveAccountId: null,
   revaluationLossAccountId: null,
   lines: [
@@ -59,8 +60,8 @@ export default function FaRevaluationFormPage() {
   const permissions = user?.user.permissions ?? [];
   const canCreate = permissions.includes(faRevaluationPermissions.create);
   const canUpdate = permissions.includes(faRevaluationPermissions.update);
-  const canView = permissions.includes(faRevaluationPermissions.view);
-  const canSubmit = isCreate ? canCreate : canUpdate;
+  const canConfirm = permissions.includes(faRevaluationPermissions.confirm);
+  const canCancel = permissions.includes(faRevaluationPermissions.cancel);
 
   const detailQuery = useGetDetailFaRevaluation(id);
   const createMutation = useCreateFaRevaluation();
@@ -69,17 +70,43 @@ export default function FaRevaluationFormPage() {
   const cancelMutation = useCancelFaRevaluation(id);
 
   const record = detailQuery.data;
-  const stateId = record?.stateId ?? 1;
-  const isDraft = isCreate || stateId === 1;
+  const statusId =
+    record?.statusId ?? record?.stateId ?? faDocumentStatusIds.draft;
+  const isDraft = isCreate || statusId === faDocumentStatusIds.draft;
+  const canSubmit = isCreate ? canCreate : isDraft && canUpdate;
+
+  const initialValues = useMemo<FaRevaluationFormValues>(
+    () => ({
+      revaluationDate:
+        record?.revaluationDate ?? defaultValues.revaluationDate,
+      reason: record?.reason ?? "",
+      stateId: record?.stateId ?? defaultValues.stateId,
+      revaluationReserveAccountId:
+        record?.revaluationReserveAccountId ?? null,
+      revaluationLossAccountId: record?.revaluationLossAccountId ?? null,
+      lines: record?.lines?.length
+        ? record.lines.map((line) => ({
+            faAssetId: line.faAssetId,
+            newValue: line.newValue ?? 0,
+            note: line.note ?? "",
+            assetAccountId: line.assetAccountId ?? null,
+            accumulatedDepreciationAccountId:
+              line.accumulatedDepreciationAccountId ?? null,
+          }))
+        : defaultValues.lines,
+    }),
+    [record],
+  );
 
   const formik = useFormik<FaRevaluationFormValues>({
-    initialValues: defaultValues,
+    initialValues,
     enableReinitialize: true,
     validationSchema: faRevaluationSchema(t),
     onSubmit: async (values, helpers) => {
       try {
         if (!isCreate && id) {
           await updateMutation.mutateAsync({ id, payload: values });
+          helpers.resetForm({ values });
           toast.success(t("settings.messages.updated"));
         } else {
           const created = await createMutation.mutateAsync(values);
@@ -90,40 +117,39 @@ export default function FaRevaluationFormPage() {
           return;
         }
 
-        helpers.resetForm();
-        navigate("/main/fa/revaluations");
       } catch (err: unknown) {
         errorHandlers(err);
+        throw err;
       }
     },
   });
 
-  useEffect(() => {
-    if (!detailQuery.data || isCreate) return;
-    formik.setValues({
-      revaluationDate: detailQuery.data.revaluationDate ?? defaultValues.revaluationDate,
-      reason: detailQuery.data.reason ?? "",
-      stateId: detailQuery.data.stateId ?? 0,
-      revaluationReserveAccountId:
-        detailQuery.data.revaluationReserveAccountId ?? null,
-      revaluationLossAccountId:
-        detailQuery.data.revaluationLossAccountId ?? null,
-      lines: detailQuery.data.lines?.length
-        ? detailQuery.data.lines.map(line => ({
-            faAssetId: line.faAssetId,
-            newValue: line.newValue ?? 0,
-            note: line.note ?? "",
-            assetAccountId: line.assetAccountId ?? null,
-            accumulatedDepreciationAccountId:
-              line.accumulatedDepreciationAccountId ?? null,
-          }))
-        : defaultValues.lines,
-    });
-  }, [detailQuery.data, isCreate, formik]);
+  const saveDraft = async () => {
+    const errors = await formik.validateForm();
+    if (Object.keys(errors).length) {
+      formik.setTouched(
+        Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
+      );
+      toast.error(t("common.requiredFields"));
+      return false;
+    }
+
+    try {
+      await formik.submitForm();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const ensureSavedBeforeAction = () =>
+    formik.dirty ? saveDraft() : Promise.resolve(true);
 
   const isSubmitting =
     createMutation.isPending ||
     updateMutation.isPending ||
+    confirmMutation.isPending ||
+    cancelMutation.isPending ||
     detailQuery.isLoading;
 
   const handleAddLine = () => {
@@ -145,10 +171,6 @@ export default function FaRevaluationFormPage() {
     formik.setFieldValue("lines", newLines);
   };
 
-  if (!canView) {
-    return null;
-  }
-
   return (
     <div className="w-full">
       <Form layout="vertical" onFinish={formik.handleSubmit}>
@@ -166,8 +188,8 @@ export default function FaRevaluationFormPage() {
             <div className="flex items-center gap-2">
               {!isCreate && (
                 <ProcessStatusBadge
-                  statusId={record?.stateId}
-                  statusName={record?.stateName}
+                  statusId={record?.statusId ?? record?.stateId}
+                  statusName={record?.statusName ?? record?.stateName}
                 />
               )}
             </div>
@@ -340,7 +362,7 @@ export default function FaRevaluationFormPage() {
                       </PermissionCard>
                     )}
 
-                    {!isCreate && isDraft && permissions.includes(faRevaluationPermissions.confirm) && (
+                    {!isCreate && isDraft && canConfirm && (
                       <PermissionCard permission={faRevaluationPermissions.confirm}>
                         <Button
                           type="default"
@@ -348,6 +370,9 @@ export default function FaRevaluationFormPage() {
                           size="large"
                           loading={confirmMutation.isPending}
                           onClick={async () => {
+                            const ready = await ensureSavedBeforeAction();
+                            if (!ready) return;
+
                             try {
                               await confirmMutation.mutateAsync();
                               toast.success(t("common.submit"));
@@ -362,7 +387,7 @@ export default function FaRevaluationFormPage() {
                       </PermissionCard>
                     )}
 
-                    {!isCreate && isDraft && permissions.includes(faRevaluationPermissions.cancel) && (
+                    {!isCreate && isDraft && canCancel && (
                       <PermissionCard permission={faRevaluationPermissions.cancel}>
                         <Button
                           danger
@@ -370,6 +395,9 @@ export default function FaRevaluationFormPage() {
                           size="large"
                           loading={cancelMutation.isPending}
                           onClick={async () => {
+                            const ready = await ensureSavedBeforeAction();
+                            if (!ready) return;
+
                             try {
                               await cancelMutation.mutateAsync();
                               toast.success(t("common.cancel"));
@@ -393,4 +421,3 @@ export default function FaRevaluationFormPage() {
     </div>
   );
 }
-

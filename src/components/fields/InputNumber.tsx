@@ -29,6 +29,7 @@ interface InputNumberFormaterProps {
   standalone?: boolean;
   height?: number;
   emptyZero?: boolean;
+  required?: boolean;
 }
 
 const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
@@ -49,6 +50,7 @@ const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
     standalone = false,
     height = 38,
     emptyZero = false,
+    required = false,
   } = props;
   const rawInputValue = onValueChange ? value : getIn(formik?.values, fieldName);
   const inputValue =
@@ -107,7 +109,15 @@ const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
   return (
     <Form.Item<FormProps>
       className="flex! flex-col!"
-      label={label === "" ? false : t(label)}
+      label={
+        label === "" ? (
+          false
+        ) : (
+          <span>
+            {t(label)} {required && <span className="text-red-500">*</span>}
+          </span>
+        )
+      }
       validateStatus={hasError ? "error" : ""}
       help={hasError ? String(getIn(formik?.errors, fieldName)) : undefined}
     >

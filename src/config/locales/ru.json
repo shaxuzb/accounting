@@ -43,6 +43,10 @@
     "deleteConfirmContent": "Это действие нельзя отменить!",
     "confirm": "Подтвердить",
     "cancel": "Отменить",
+    "confirmConfirmTitle": "Подтвердить документ?",
+    "confirmConfirmContent": "После подтверждения документ нельзя будет изменить.",
+    "cancelConfirmTitle": "Отменить документ?",
+    "cancelConfirmContent": "Документ будет переведён в отменённое состояние.",
     "confirmSuccess": "Документ подтверждён",
     "cancelSuccess": "Документ отменён"
   },
@@ -219,6 +223,9 @@
       "edit": "Редактировать документ ОФ",
       "run": "Запустить амортизацию",
       "detail": "Документ ОФ",
+      "receiptCreate": "Поступление основных средств (новое)",
+      "receiptEdit": "Поступление основных средств №{{number}}",
+      "receiptSubtitle": "Документ поступления основных средств",
       "revaluationDetails": "Детали переоценки",
       "assets": "Основные средства",
       "actions": "Действия"
@@ -234,9 +241,11 @@
       "initialCostNonNegative": "Первоначальная стоимость не может быть отрицательной",
       "initialCostRequired": "Введите первоначальную стоимость",
       "salvageValueNonNegative": "Ликвидационная стоимость не может быть отрицательной",
+      "salvageValueExceedsInitialCost": "Ликвидационная стоимость не может превышать первоначальную стоимость",
       "salvageValueRequired": "Введите ликвидационную стоимость",
       "commissioningDateRequired": "Введите дату ввода в эксплуатацию",
       "depreciationStartRequired": "Введите дату начала амортизации",
+      "depreciationStartBeforeCommissioning": "Дата начала амортизации не может быть раньше даты ввода в эксплуатацию",
       "plannedUnitsNonNegative": "Плановое количество единиц не может быть отрицательным",
       "plannedUnitsRequired": "Введите плановое количество единиц",
       "sourceProductRequired": "Выберите исходный товар",
@@ -246,6 +255,7 @@
       "disposalTypeRequired": "Выберите тип выбытия",
       "reasonRequired": "Введите причину",
       "assetRequired": "Выберите основное средство",
+      "duplicateAsset": "Нельзя добавить одно основное средство дважды",
       "saleAmountRequired": "Введите сумму продажи",
       "nonNegative": "Значение не может быть отрицательным",
       "atLeastOneLine": "Добавьте хотя бы одну строку",
@@ -280,7 +290,25 @@
       "totalSaleAmount": "Общая сумма продажи",
       "productsAndServices": "Товары и услуги",
       "productNumber": "Товар {{number}}",
-      "assetNumber": "Основное средство {{number}}"
+      "assetNumber": "Основное средство {{number}}",
+      "documentHeader": "Заголовок документа",
+      "documentLines": "Строки документа",
+      "documentLinesDescription": "Под каждой строкой заполняются карточки основных средств.",
+      "assetInformation": "Основные данные",
+      "accounts": "Счета",
+      "lineTotal": "Итого по строке",
+      "documentTotal": "Итого по документу"
+    },
+    "actions": {
+      "saveDocument": "Сохранить документ",
+      "saveAndConfirm": "Сохранить и подтвердить",
+      "addLine": "Добавить строку",
+      "addAsset": "Добавить средство",
+      "applyCommonData": "Применить общие данные",
+      "saveDraft": "Сохранить черновик"
+    },
+    "messages": {
+      "chooseSaveMode": "Как сохранить документ?"
     }
   },
   "settings": {

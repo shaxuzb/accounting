@@ -8,13 +8,14 @@ import SearchFilter from "@/components/ui/filters/SearchFilter";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
-import { stateStatus } from "@/utils/helpers/statusHelper";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { customDate, generateKeyTable } from "@/utils/utils";
 import { endpoints } from "../constants/endpoints";
 import { faMovementPermissions } from "../constants/permissions";
 import { useGetListFaMovements } from "../hooks";
 
 import type { FaMovement } from "../types/type";
+import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 
 export default function FaMovementListPage() {
   const { t } = useTranslation();
@@ -24,39 +25,47 @@ export default function FaMovementListPage() {
   const [searchParams] = useSearchParams();
   const { data, isLoading, isFetching, refetch } =
     useGetListFaMovements(searchParams);
-  
+  const canOpenDetail = permissions.includes(faMovementPermissions.detail);
+
   const tableColumns: TableColumnsType<FaMovement> = [
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
       align: "center",
-      width: 80,
     },
     {
       title: t("fa.fields.documentNumber"),
       dataIndex: "documentNumber",
-      render: (_, record) => (
-        <Link to={`${record.id}`}>{record.documentNumber ?? record.id}</Link>
-      ),
-      minWidth: 180,
+      render: (_, record) =>
+        canOpenDetail ? (
+          <Link to={`${record.id}`}>
+            {record.documentNumber ?? record.docNumber ?? record.id}
+          </Link>
+        ) : (
+          <span>{record.documentNumber ?? record.docNumber ?? record.id}</span>
+        ),
     },
     {
       title: t("fa.fields.documentDate"),
       dataIndex: "documentDate",
-      render: (value) => customDate(value),
-      width: 180,
+      render: (_, record) =>
+        customDate(record.documentDate ?? record.docDate),
     },
     {
       title: t("fa.fields.comment"),
       dataIndex: "comment",
-      minWidth: 240,
+      render: (_, record) => record.comment ?? record.note ?? "-",
     },
     {
-      dataIndex: "stateName",
-      title: t("fa.fields.state"),
+      dataIndex: "statusName",
+      title: t("settings.fields.status"),
       align: "center",
-      width: 130,
-      render: (_, record) => stateStatus(record.stateId, record.stateName),
+      render: (_, record) => (
+        <ProcessStatusBadge
+          statusId={record.statusId ?? record.stateId}
+          statusName={record.statusName ?? record.stateName}
+        />
+      ),
     },
   ];
 
@@ -64,32 +73,36 @@ export default function FaMovementListPage() {
     permissions.includes(faMovementPermissions.update) ||
     permissions.includes(faMovementPermissions.delete);
 
-  const columns: TableColumnType<FaMovement>[] =
-    hasActions
-      ? [
+  const columns: TableColumnType<FaMovement>[] = hasActions
+    ? [
           ...tableColumns,
           {
             dataIndex: "actions",
             title: t("common.actions"),
             align: "center",
-            width: 100,
             fixed: "right",
-            render: (_, record) => (
-              <ActionColumn
-                deletePath={endpoints.list}
-                customPath={`/main/fa/movements/edit/${record.id}`}
-                record={record}
-                permissions={permissions}
-                permissionsCode={{
-                  deleteCode: faMovementPermissions.delete,
-                  editCode: faMovementPermissions.update,
-                }}
-                refetch={refetch}
-              />
-            ),
+            render: (_, record) => {
+              const isDraft =
+                (record.statusId ?? record.stateId) ===
+                faDocumentStatusIds.draft;
+
+              return (
+                <ActionColumn
+                  deletePath={endpoints.list}
+                  customPath={`/main/fa/movements/edit/${record.id}`}
+                  record={record}
+                  permissions={permissions}
+                  permissionsCode={{
+                    deleteCode: isDraft ? faMovementPermissions.delete : "",
+                    editCode: isDraft ? faMovementPermissions.update : "",
+                  }}
+                  refetch={refetch}
+                />
+              );
+            },
           },
-        ]
-      : tableColumns;
+      ]
+    : tableColumns;
 
   return (
     <div className="w-full">

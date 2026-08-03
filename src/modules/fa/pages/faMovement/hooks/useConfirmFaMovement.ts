@@ -7,9 +7,9 @@ export const useConfirmFaMovement = (id: string | number) => {
 
   return useMutation({
     mutationFn: () => faMovementService.confirm(id),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.all });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.detail(id) });
+    onSuccess: (data) => {
+      queryClient.setQueryData(queryKeys.detail(id), data);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
     },
   });
 };

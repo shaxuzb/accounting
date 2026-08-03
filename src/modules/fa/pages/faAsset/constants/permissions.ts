@@ -4,5 +4,6 @@ export const faAssetPermissions = {
   create: "FA_ASSET_CREATE",
   update: "FA_ASSET_UPDATE",
   delete: "FA_ASSET_DELETE",
+  confirm: "FA_ASSET_CREATE",
+  cancel: "FA_ASSET_CREATE",
 } as const;
-

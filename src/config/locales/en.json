@@ -43,6 +43,10 @@
     "deleteConfirmContent": "This action cannot be undone!",
     "confirm": "Confirm",
     "cancel": "Cancel",
+    "confirmConfirmTitle": "Confirm this document?",
+    "confirmConfirmContent": "The document cannot be edited after confirmation.",
+    "cancelConfirmTitle": "Cancel this document?",
+    "cancelConfirmContent": "The document will be moved to the cancelled state.",
     "confirmSuccess": "Document confirmed",
     "cancelSuccess": "Document cancelled"
   },
@@ -219,6 +223,9 @@
       "edit": "Edit fixed asset document",
       "run": "Run depreciation",
       "detail": "Fixed asset document",
+      "receiptCreate": "Fixed asset receipt (new)",
+      "receiptEdit": "Fixed asset receipt №{{number}}",
+      "receiptSubtitle": "Fixed asset receipt document",
       "revaluationDetails": "Revaluation details",
       "assets": "Fixed assets",
       "actions": "Actions"
@@ -234,9 +241,11 @@
       "initialCostNonNegative": "Initial cost cannot be negative",
       "initialCostRequired": "Enter the initial cost",
       "salvageValueNonNegative": "Salvage value cannot be negative",
+      "salvageValueExceedsInitialCost": "Salvage value cannot exceed initial cost",
       "salvageValueRequired": "Enter the salvage value",
       "commissioningDateRequired": "Enter the commissioning date",
       "depreciationStartRequired": "Enter the depreciation start date",
+      "depreciationStartBeforeCommissioning": "Depreciation start date cannot be before the commissioning date",
       "plannedUnitsNonNegative": "Planned units cannot be negative",
       "plannedUnitsRequired": "Enter the planned units",
       "sourceProductRequired": "Select a source product",
@@ -246,6 +255,7 @@
       "disposalTypeRequired": "Select a disposal type",
       "reasonRequired": "Enter a reason",
       "assetRequired": "Select a fixed asset",
+      "duplicateAsset": "The same fixed asset cannot be added twice",
       "saleAmountRequired": "Enter the sale amount",
       "nonNegative": "The value cannot be negative",
       "atLeastOneLine": "Add at least one line",
@@ -280,7 +290,25 @@
       "totalSaleAmount": "Total sale amount",
       "productsAndServices": "Products and services",
       "productNumber": "Product {{number}}",
-      "assetNumber": "Fixed asset {{number}}"
+      "assetNumber": "Fixed asset {{number}}",
+      "documentHeader": "Document header",
+      "documentLines": "Document lines",
+      "documentLinesDescription": "Fixed asset cards are entered under each line.",
+      "assetInformation": "Asset information",
+      "accounts": "Accounts",
+      "lineTotal": "Line total",
+      "documentTotal": "Document total"
+    },
+    "actions": {
+      "saveDocument": "Save document",
+      "saveAndConfirm": "Save and confirm",
+      "addLine": "Add line",
+      "addAsset": "Add asset",
+      "applyCommonData": "Apply common data",
+      "saveDraft": "Save draft"
+    },
+    "messages": {
+      "chooseSaveMode": "How would you like to save the document?"
     }
   },
   "settings": {

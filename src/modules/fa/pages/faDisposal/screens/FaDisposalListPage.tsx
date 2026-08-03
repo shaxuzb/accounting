@@ -14,6 +14,7 @@ import { faDisposalPermissions } from "../constants/permissions";
 import { useGetListFaDisposals } from "../hooks";
 import type { FaDisposalResponse } from "../types/type";
 import { ProcessStatusBadge } from "@/components/ui/status";
+import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 
 export default function FaDisposalListPage() {
   const { t } = useTranslation();
@@ -47,7 +48,9 @@ export default function FaDisposalListPage() {
     },
     {
       title: t("fa.fields.disposalType"),
-      dataIndex: "disposalType",
+      dataIndex: "disposalTypeName",
+      render: (_, record) =>
+        record.disposalTypeName ?? record.disposalTypeId ?? "—",
       minWidth: 200,
     },
     {
@@ -81,19 +84,21 @@ export default function FaDisposalListPage() {
           align: "center",
           width: 100,
           fixed: "right",
-          render: (_, record) => (
-            <ActionColumn
+          render: (_, record) => {
+            const isDraft = record.statusId === faDocumentStatusIds.draft;
+
+            return <ActionColumn
               deletePath={endpoints.list}
               customPath={`/main/fa/disposals/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: faDisposalPermissions.delete,
-                editCode: faDisposalPermissions.update,
+                deleteCode: isDraft ? faDisposalPermissions.delete : "",
+                editCode: isDraft ? faDisposalPermissions.update : "",
               }}
               refetch={refetch}
-            />
-          ),
+            />;
+          },
         },
       ]
     : tableColumns;

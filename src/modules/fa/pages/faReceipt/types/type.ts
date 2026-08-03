@@ -33,13 +33,16 @@ export interface FaReceiptPayload {
   counterpartyId: number;
   warehouseId: number;
   currencyId: number;
-  receiptType: string;
+  receiptTypeId: number;
   supplierAccountId: number;
   lines: FaReceiptLineItem[];
 }
 
 export interface FaReceiptResponse extends FaReceiptPayload {
   id: number;
+  documentNumber?: string;
+  documentDate?: string;
+  comment?: string;
   statusId?: number;
   statusName?: string;
   stateId?: number;

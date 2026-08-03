@@ -14,11 +14,9 @@ export const useUpdateFaReceipt = () => {
   return useMutation({
     mutationFn: ({ id, payload }: UpdateArgs) =>
       faReceiptService.update(id, payload),
-    onSuccess: (_data, variables) => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.all });
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.detail(variables.id),
-      });
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(queryKeys.detail(variables.id), data);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
     },
   });
 };

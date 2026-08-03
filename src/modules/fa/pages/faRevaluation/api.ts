@@ -4,11 +4,12 @@ import type { QueryParams } from "@/shared/types/api";
 import { endpoints } from "./constants/endpoints";
 import type { FaRevaluationFormValues } from "./types/form";
 import type { FaRevaluation, FaRevaluationPayload } from "./types/type";
+import { faDocumentStatusIds } from "../../shared/constants/statuses";
 
 const transformPayload = (payload: FaRevaluationFormValues): FaRevaluationPayload => ({
   revaluationDate: payload.revaluationDate,
   reason: payload.reason || "",
-  stateId: payload.stateId ?? 0,
+  stateId: payload.stateId ?? faDocumentStatusIds.draft,
   revaluationReserveAccountId: Number(payload.revaluationReserveAccountId),
   revaluationLossAccountId: Number(payload.revaluationLossAccountId),
   lines: payload.lines.map(line => ({
@@ -45,12 +46,12 @@ export const faRevaluationService = {
 
   confirm: (id: string | number) =>
     $axiosPrivate
-      .put<FaRevaluation>(`${endpoints.detail(id)}/confirm`)
+      .put<FaRevaluation>(endpoints.confirm(id))
       .then((res) => res.data),
 
   cancel: (id: string | number) =>
     $axiosPrivate
-      .put<FaRevaluation>(`${endpoints.detail(id)}/cancel`)
+      .put<FaRevaluation>(endpoints.cancel(id))
       .then((res) => res.data),
 };
 

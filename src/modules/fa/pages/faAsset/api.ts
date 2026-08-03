@@ -2,7 +2,10 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { endpoints } from "./constants/endpoints";
-import type { FaAssetForm } from "./types/form";
+import type {
+  FaAssetCreatePayload,
+  FaAssetUpdatePayload,
+} from "./types/form";
 import type { FaAsset } from "./types/type";
 
 export const faAssetService = {
@@ -16,26 +19,23 @@ export const faAssetService = {
       .get<FaAsset>(endpoints.detail(id))
       .then((res) => res.data),
 
-  create: (payload: FaAssetForm) =>
+  create: (payload: FaAssetCreatePayload) =>
     $axiosPrivate
-      .post<FaAsset>(endpoints.create, payload)
+      .post<FaAsset>(endpoints.list, payload)
       .then((res) => res.data),
 
-  update: (id: string | number, payload: Partial<FaAssetForm>) =>
+  update: (id: string | number, payload: FaAssetUpdatePayload) =>
     $axiosPrivate
-      .put<FaAsset>(endpoints.update(id), payload)
+      .put<FaAsset>(endpoints.detail(id), payload)
       .then((res) => res.data),
 
   confirm: (id: string | number) =>
     $axiosPrivate
-      .put<FaAsset>(`${endpoints.detail(id)}/confirm`)
+      .put<FaAsset>(endpoints.confirm(id))
       .then((res) => res.data),
 
   cancel: (id: string | number) =>
     $axiosPrivate
-      .put<FaAsset>(`${endpoints.detail(id)}/cancel`)
+      .put<FaAsset>(endpoints.cancel(id))
       .then((res) => res.data),
-
-  remove: (id: string | number) =>
-    $axiosPrivate.delete<FaAsset>(endpoints.detail(id)).then((res) => res.data),
 };

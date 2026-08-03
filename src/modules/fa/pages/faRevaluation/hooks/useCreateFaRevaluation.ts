@@ -10,7 +10,7 @@ export const useCreateFaRevaluation = () => {
     mutationFn: (payload: FaRevaluationFormValues) =>
       faRevaluationService.create(payload),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
     },
   });
 };

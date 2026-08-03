@@ -8,7 +8,7 @@ import { faMovementPermissions } from "./pages/faMovement/constants/permissions"
 import { faReceiptPermissions } from "./pages/faReceipt/constants/permissions";
 import { faRevaluationPermissions } from "./pages/faRevaluation/constants/permissions";
 import FaAssetListPage from "./pages/faAsset/screens/FaAssetListPage";
-import FaAssetFormPage from "./pages/faAsset/screens/FaAssetAddEditPage";
+import FaAssetFormPage from "./pages/faAsset/screens/FaAssetFormPage";
 import FaReceiptListPage from "./pages/faReceipt/screens/FaReceiptListPage";
 import FaReceiptFormPage from "./pages/faReceipt/screens/FaReceiptFormPage";
 import FaMovementListPage from "./pages/faMovement/screens/FaMovementListPage";

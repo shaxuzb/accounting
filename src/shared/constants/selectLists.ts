@@ -41,6 +41,8 @@ export const selectListEndpoints = {
   faGroupsSelectList: "manuals/fa-groups",
   okofsSelectList: "manuals/fa-okofs",
   depreciationMethodsSelectList: "manuals/fa-depreciation-methods",
+  faReceiptTypesSelectList: "manuals/fa-receipt-types",
+  faDisposalTypesSelectList: "manuals/fa-disposal-types",
   sourceProductTablesSelectList: "manuals/source-product-tables",
   counterPartyBankAccounts: "manuals/counterparty-bank-accounts",
   paymentPurposes: "manuals/payment-purposes",
@@ -53,7 +55,7 @@ export const selectListEndpoints = {
   inventoryAdjustmentTypes: "manuals/inventory-adjustment-types",
   moduleSubGroups: "manuals/module-sub-groups",
   accountingPolicies: "manuals/accounting-policies",
-  faAssetsSelectList: "fa-assets",
+  faAssetsSelectList: "manuals/fa-assets",
 };
 
 export const chartAccountOptionLabel = (item: {

@@ -10,7 +10,7 @@ export const useCreateFaReceipt = () => {
     mutationFn: (payload: FaReceiptPayload) =>
       faReceiptService.create(payload),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
     },
   });
 };

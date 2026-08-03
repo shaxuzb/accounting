@@ -9,10 +9,11 @@ import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { useAppSelector } from "@/store/hooks";
-import { generateKeyTable} from "@/utils/utils";
+import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { endpoints } from "../constants/endpoints";
 import { faAssetPermissions } from "../constants/permissions";
+import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import { useGetListFaAssets } from "../hooks";
 import type { FaAsset } from "../types/type";
 
@@ -21,51 +22,52 @@ export default function FaAssetListPage() {
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
 
-  const { data, isLoading, isFetching, refetch } = useGetListFaAssets(searchParams);
+  const { data, isLoading, isFetching, refetch } =
+    useGetListFaAssets(searchParams);
   const permissions = user?.user.permissions ?? [];
+  const canOpenDetail = permissions.includes(faAssetPermissions.detail);
 
   const tableColumns: TableColumnsType<FaAsset> = [
     {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
       align: "center",
-      width: 70,
     },
     {
       title: t("fa.fields.inventoryNumber"),
       dataIndex: "inventoryNumber",
-      minWidth: 150,
-      render: (_, record) => (
-        <Link to={`${record.id}`}>{record.inventoryNumber ?? record.id}</Link>
-      ),
+      render: (_, record) =>
+        canOpenDetail ? (
+          <Link to={`${record.id}`}>{record.inventoryNumber ?? record.id}</Link>
+        ) : (
+          <span>{record.inventoryNumber ?? record.id}</span>
+        ),
     },
     {
       title: t("fa.fields.name"),
       dataIndex: "name",
-      minWidth: 220,
     },
     {
       title: t("fa.fields.faGroup"),
       dataIndex: "faGroupName",
-      minWidth: 180,
+      align: "center",
     },
     {
-      title: t("fa.fields.okof"),
-      dataIndex: "okofName",
-      minWidth: 180,
+      title: t("fa.fields.commissioningDate"),
+      dataIndex: "commissioningDate",
+      align: "center",
+      render: (value) => (value ? customDate(value) : "-"),
     },
     {
       title: t("fa.fields.initialCost"),
       dataIndex: "initialCost",
-      align: "right",
-      minWidth: 140,
-      render: (value) => value ?? "-",
+      align: "center",
+      render: (value) => (value == null ? "-" : numberSpacing(value)),
     },
     {
       title: t("fa.fields.state"),
       dataIndex: "stateName",
       align: "center",
-      width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
     {
@@ -79,13 +81,6 @@ export default function FaAssetListPage() {
         />
       ),
     },
-    // {
-    //   title: t("settings.fields.createdDate"),
-    //   dataIndex: "createdDate",
-    //   align: "center",
-    //   width: 170,
-    //   render: (_, record) => <span>{customDate(record.createdDate)}</span>,
-    // },
   ];
 
   const columns: TableColumnType<FaAsset>[] =
@@ -99,19 +94,23 @@ export default function FaAssetListPage() {
             align: "center",
             width: 100,
             fixed: "right",
-            render: (_, record) => (
-              <ActionColumn
-                deletePath={endpoints.list}
-                customPath={`/main/fa/assets/edit/${record.id}`}
-                record={record}
-                permissions={permissions}
-                permissionsCode={{
-                  deleteCode: faAssetPermissions.delete,
-                  editCode: faAssetPermissions.update,
-                }}
-                refetch={refetch}
-              />
-            ),
+            render: (_, record) => {
+              const isDraft = record.statusId === faDocumentStatusIds.draft;
+
+              return (
+                <ActionColumn
+                  deletePath={endpoints.list}
+                  customPath={`/main/fa/assets/edit/${record.id}`}
+                  record={record}
+                  permissions={permissions}
+                  permissionsCode={{
+                    deleteCode: isDraft ? faAssetPermissions.delete : "",
+                    editCode: isDraft ? faAssetPermissions.update : "",
+                  }}
+                  refetch={refetch}
+                />
+              );
+            },
           },
         ]
       : tableColumns;
@@ -147,4 +146,3 @@ export default function FaAssetListPage() {
     </div>
   );
 }
-

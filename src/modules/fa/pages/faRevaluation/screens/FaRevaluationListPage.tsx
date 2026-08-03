@@ -14,6 +14,7 @@ import { endpoints } from "../constants/endpoints";
 import { faRevaluationPermissions } from "../constants/permissions";
 import { useGetListFaRevaluations } from "../hooks";
 import type { FaRevaluation } from "../types/type";
+import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 
 export default function FaRevaluationListPage() {
   const { t } = useTranslation();
@@ -73,19 +74,23 @@ export default function FaRevaluationListPage() {
           align: "center",
           width: 100,
           fixed: "right",
-          render: (_, record) => (
-            <ActionColumn
+          render: (_, record) => {
+            const isDraft =
+              (record.statusId ?? record.stateId) ===
+              faDocumentStatusIds.draft;
+
+            return <ActionColumn
               deletePath={endpoints.list}
               customPath={`/main/fa/revaluations/edit/${record.id}`}
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: faRevaluationPermissions.delete,
-                editCode: faRevaluationPermissions.update,
+                deleteCode: isDraft ? faRevaluationPermissions.delete : "",
+                editCode: isDraft ? faRevaluationPermissions.update : "",
               }}
               refetch={refetch}
-            />
-          ),
+            />;
+          },
         },
       ]
     : tableColumns;
@@ -121,4 +126,3 @@ export default function FaRevaluationListPage() {
     </div>
   );
 }
-

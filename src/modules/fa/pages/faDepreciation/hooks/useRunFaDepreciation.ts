@@ -10,7 +10,7 @@ export const useRunFaDepreciation = () => {
     mutationFn: () =>
       faDepreciationService.run({} as Record<string, unknown>),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
     },
   });
 };

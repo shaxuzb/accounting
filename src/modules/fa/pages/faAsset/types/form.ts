@@ -1,4 +1,4 @@
-export interface FaAssetForm {
+export interface FaAssetEditableFields {
   inventoryNumber: string;
   name: string;
   faGroupId: number | null;
@@ -16,6 +16,20 @@ export interface FaAssetForm {
   assetAccountId: number | null;
   accumulatedDepreciationAccountId: number | null;
   depreciationExpenseAccountId: number | null;
-  stateId?: number;
-  statusId?: number;
+}
+
+export interface FaAssetFormValues extends FaAssetEditableFields {
+  stateId: number | null;
+  statusId: number;
+}
+
+export type FaAssetProcessingMode = 1 | 2;
+
+export interface FaAssetCreatePayload extends FaAssetEditableFields {
+  processingMode: FaAssetProcessingMode;
+}
+
+export interface FaAssetUpdatePayload extends FaAssetEditableFields {
+  stateId: number | null;
+  statusId: number;
 }

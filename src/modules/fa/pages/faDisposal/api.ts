@@ -27,11 +27,11 @@ export const faDisposalService = {
 
   confirm: (id: string | number) =>
     $axiosPrivate
-      .put<FaDisposalResponse>(`${endpoints.detail(id)}/confirm`)
+      .put<FaDisposalResponse>(endpoints.confirm(id))
       .then((res) => res.data),
 
   cancel: (id: string | number) =>
     $axiosPrivate
-      .put<FaDisposalResponse>(`${endpoints.detail(id)}/cancel`)
+      .put<FaDisposalResponse>(endpoints.cancel(id))
       .then((res) => res.data),
 };

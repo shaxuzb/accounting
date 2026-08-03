@@ -3,6 +3,13 @@ export interface FaMovementAssetLine {
   note: string;
 }
 
+export interface FaMovementAssetLineResponse extends FaMovementAssetLine {
+  faAssetName?: string;
+  faAssetInventoryNumber?: string;
+  assetName?: string;
+  inventoryNumber?: string;
+}
+
 export interface FaMovementPayload {
   docDate: string;
   toDepartmentId: number;
@@ -12,9 +19,11 @@ export interface FaMovementPayload {
   lines: FaMovementAssetLine[];
 }
 
-export interface FaMovement extends FaMovementPayload {
+export interface FaMovement extends Omit<FaMovementPayload, "lines"> {
   id: number;
   docNumber?: string;
+  toDepartmentName?: string;
+  toResponsibleUserName?: string;
   statusId?: number;
   statusName?: string;
   // For List Page compatibility
@@ -23,4 +32,5 @@ export interface FaMovement extends FaMovementPayload {
   comment?: string;
   stateId?: number;
   stateName?: string;
+  lines: FaMovementAssetLineResponse[];
 }

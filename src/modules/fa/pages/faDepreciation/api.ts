@@ -22,7 +22,6 @@ export const faDepreciationService = {
 
   cancel: (id: string | number) =>
     $axiosPrivate
-      .put<FaDepreciationRun>(`${endpoints.detail(id)}/cancel`)
+      .put<FaDepreciationRun>(endpoints.cancel(id))
       .then((res) => res.data),
 };
-

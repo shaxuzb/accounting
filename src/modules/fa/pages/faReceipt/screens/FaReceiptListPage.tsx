@@ -14,6 +14,7 @@ import { faReceiptPermissions } from "../constants/permissions";
 import { useGetListFaReceipts } from "../hooks";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import type { FaReceiptResponse } from "../types/type";
+import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 
 export default function FaReceiptListPage() {
   const { t } = useTranslation();
@@ -68,19 +69,23 @@ export default function FaReceiptListPage() {
             align: "center",
             width: 100,
             fixed: "right",
-            render: (_, record) => (
-              <ActionColumn
+            render: (_, record) => {
+              const isDraft =
+                (record.statusId ?? record.stateId) ===
+                faDocumentStatusIds.draft;
+
+              return <ActionColumn
                 deletePath={endpoints.list}
                 customPath={`/main/fa/receipts/edit/${record.id}`}
                 record={record}
                 permissions={permissions}
                 permissionsCode={{
-                  deleteCode: faReceiptPermissions.delete,
-                  editCode: faReceiptPermissions.update,
+                  deleteCode: isDraft ? faReceiptPermissions.delete : "",
+                  editCode: isDraft ? faReceiptPermissions.update : "",
                 }}
                 refetch={refetch}
-              />
-            ),
+              />;
+            },
           },
         ]
       : tableColumns;

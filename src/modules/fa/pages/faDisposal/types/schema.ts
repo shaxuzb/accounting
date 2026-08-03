@@ -3,7 +3,9 @@ import type { TFunction } from "i18next";
 
 export const faDisposalSchema = (t: TFunction) => Yup.object().shape({
   disposalDate: Yup.string().required(t("fa.validation.dateRequired")),
-  disposalType: Yup.string().required(t("fa.validation.disposalTypeRequired")),
+  disposalTypeId: Yup.number()
+    .nullable()
+    .required(t("fa.validation.disposalTypeIdRequired")),
   reason: Yup.string().required(t("fa.validation.reasonRequired")),
   disposalAccountId: Yup.number().nullable().required(t("fa.validation.disposalAccountRequired")),
   customerAccountId: Yup.number().nullable().required(t("fa.validation.customerAccountRequired")),

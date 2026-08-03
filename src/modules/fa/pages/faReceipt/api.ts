@@ -27,16 +27,11 @@ export const faReceiptService = {
 
   confirm: (id: string | number) =>
     $axiosPrivate
-      .put<FaReceiptResponse>(`${endpoints.detail(id)}/confirm`)
+      .put<FaReceiptResponse>(endpoints.confirm(id))
       .then((res) => res.data),
 
   cancel: (id: string | number) =>
     $axiosPrivate
-      .put<FaReceiptResponse>(`${endpoints.detail(id)}/cancel`)
-      .then((res) => res.data),
-
-  remove: (id: string | number) =>
-    $axiosPrivate
-      .delete<FaReceiptResponse>(endpoints.detail(id))
+      .put<FaReceiptResponse>(endpoints.cancel(id))
       .then((res) => res.data),
 };

@@ -25,12 +25,11 @@ export const faMovementService = {
 
   confirm: (id: string | number) =>
     $axiosPrivate
-      .put<FaMovement>(`${endpoints.detail(id)}/confirm`)
+      .put<FaMovement>(endpoints.confirm(id))
       .then((res) => res.data),
 
   cancel: (id: string | number) =>
     $axiosPrivate
-      .put<FaMovement>(`${endpoints.detail(id)}/cancel`)
+      .put<FaMovement>(endpoints.cancel(id))
       .then((res) => res.data),
 };
-

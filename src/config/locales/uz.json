@@ -43,6 +43,10 @@
     "deleteConfirmContent": "Bu amalni qaytarib bo'lmaydi!",
     "confirm": "Tasdiqlash",
     "cancel": "Bekor qilish",
+    "confirmConfirmTitle": "Hujjatni tasdiqlaysizmi?",
+    "confirmConfirmContent": "Tasdiqlangandan keyin hujjatni tahrirlab bo'lmaydi.",
+    "cancelConfirmTitle": "Hujjatni bekor qilasizmi?",
+    "cancelConfirmContent": "Hujjat bekor qilingan holatga o'tkaziladi.",
     "confirmSuccess": "Hujjat tasdiqlandi",
     "cancelSuccess": "Hujjat bekor qilindi"
   },
@@ -219,6 +223,9 @@
       "edit": "Asosiy vosita o'zgartirish",
       "run": "Eskirishni hisoblash",
       "detail": "Asosiy vosita hujjati",
+      "receiptCreate": "Asosiy vositalar kirimi (yangi)",
+      "receiptEdit": "Asosiy vositalar kirimi №{{number}}",
+      "receiptSubtitle": "Asosiy vositalar kirim hujjati",
       "revaluationDetails": "Qayta baholash tafsilotlari",
       "assets": "Asosiy vositalar",
       "actions": "Amallar"
@@ -234,9 +241,11 @@
       "initialCostNonNegative": "Boshlang'ich qiymat manfiy bo'lmasligi kerak",
       "initialCostRequired": "Boshlang'ich qiymatni kiriting",
       "salvageValueNonNegative": "Qoldiq qiymat manfiy bo'lmasligi kerak",
+      "salvageValueExceedsInitialCost": "Qoldiq qiymat boshlang'ich qiymatdan katta bo'lmasligi kerak",
       "salvageValueRequired": "Qoldiq qiymatni kiriting",
       "commissioningDateRequired": "Ishga tushirish sanasini kiriting",
       "depreciationStartRequired": "Amortizatsiya boshlanish sanasini kiriting",
+      "depreciationStartBeforeCommissioning": "Amortizatsiya boshlanish sanasi ishga tushirish sanasidan oldin bo'lmasligi kerak",
       "plannedUnitsNonNegative": "Rejadagi birliklar soni manfiy bo'lmasligi kerak",
       "plannedUnitsRequired": "Rejadagi birliklar sonini kiriting",
       "sourceProductRequired": "Manba mahsulotni tanlang",
@@ -246,6 +255,7 @@
       "disposalTypeRequired": "Hisobdan chiqarish turini tanlang",
       "reasonRequired": "Sababni kiriting",
       "assetRequired": "Asosiy vositani tanlang",
+      "duplicateAsset": "Bitta asosiy vositani ikki marta qo‘shib bo‘lmaydi",
       "saleAmountRequired": "Sotish summasini kiriting",
       "nonNegative": "Qiymat manfiy bo'lmasligi kerak",
       "atLeastOneLine": "Kamida bitta qator qo'shing",
@@ -280,7 +290,25 @@
       "totalSaleAmount": "Jami sotish summasi",
       "productsAndServices": "Mahsulotlar va xizmatlar",
       "productNumber": "{{number}}-mahsulot",
-      "assetNumber": "{{number}}-asosiy vosita"
+      "assetNumber": "{{number}}-asosiy vosita",
+      "documentHeader": "Hujjat sarlavhasi",
+      "documentLines": "Hujjat satrlari",
+      "documentLinesDescription": "Har bir satr ostida asosiy vositalar kartochkalari kiritiladi.",
+      "assetInformation": "Asosiy ma'lumotlar",
+      "accounts": "Hisobvaraqlar",
+      "lineTotal": "Satr jami",
+      "documentTotal": "Hujjat jami"
+    },
+    "actions": {
+      "saveDocument": "Hujjatni saqlash",
+      "saveAndConfirm": "Saqlash va tasdiqlash",
+      "addLine": "Satr qo'shish",
+      "addAsset": "Vosita qo'shish",
+      "applyCommonData": "Umumiy ma'lumotlarni qo'llash",
+      "saveDraft": "Qoralama saqlash"
+    },
+    "messages": {
+      "chooseSaveMode": "Hujjatni qanday saqlamoqchisiz?"
     }
   },
   "settings": {

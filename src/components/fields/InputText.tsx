@@ -7,6 +7,7 @@ interface InputProps<T extends object> {
   formik: FormikProps<T>;
   fieldName: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
 const InputText = <T extends object>({
@@ -14,6 +15,7 @@ const InputText = <T extends object>({
   formik,
   fieldName = "",
   disabled = false,
+  required = false,
 }: InputProps<T>) => {
   const { t } = useTranslation();
   const fieldValue = getIn(formik.values, fieldName) as
@@ -26,7 +28,15 @@ const InputText = <T extends object>({
   return (
     <Form.Item<FormProps>
       className="flex flex-col"
-      label={label === "" ? false : t(label)}
+      label={
+        label === "" ? (
+          false
+        ) : (
+          <span>
+            {t(label)} {required && <span className="text-red-500">*</span>}
+          </span>
+        )
+      }
       validateStatus={
         fieldTouched && fieldError ? "error" : ""
       }

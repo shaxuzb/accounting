@@ -13,6 +13,7 @@ import {
   useGetDetailFaDepreciation,
   useRunFaDepreciation,
 } from "../hooks";
+import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 
 export default function FaDepreciationFormPage() {
   const { t } = useTranslation();
@@ -25,8 +26,8 @@ export default function FaDepreciationFormPage() {
   const runMutation = useRunFaDepreciation();
   const cancelMutation = useCancelFaDepreciation(id);
   const detail = detailQuery.data;
-  const stateId = detail?.stateId ?? 1;
-  const isDraft = !isEdit || stateId === 1;
+  const stateId = detail?.stateId ?? faDocumentStatusIds.draft;
+  const isDraft = !isEdit || stateId === faDocumentStatusIds.draft;
 
   const isSubmitting = runMutation.isPending || cancelMutation.isPending;
 

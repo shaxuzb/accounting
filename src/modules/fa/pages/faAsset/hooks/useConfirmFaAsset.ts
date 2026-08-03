@@ -2,15 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { faAssetService } from "../api";
 import { queryKeys } from "../constants/queryKeys";
 
-export function useConfirmFaAsset() {
+export function useConfirmFaAsset(id: string | number) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string | number) => faAssetService.confirm(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.all,
-      });
+    mutationFn: () => faAssetService.confirm(id),
+    onSuccess: (data) => {
+      queryClient.setQueryData(queryKeys.detail(id), data);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
     },
   });
 }

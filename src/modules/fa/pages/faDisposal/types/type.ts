@@ -9,7 +9,8 @@ export interface FaDisposalLineItem {
 export interface FaDisposalResponse {
   id: number;
   disposalDate: string;
-  disposalType: string;
+  disposalTypeId: number;
+  disposalTypeName?: string;
   reason: string;
   stateId: number;
   stateName?: string;
@@ -27,7 +28,7 @@ export interface FaDisposalResponse {
 
 export interface FaDisposalPayload {
   disposalDate: string;
-  disposalType: string;
+  disposalTypeId: number;
   reason: string;
   stateId: number;
   disposalAccountId: number;

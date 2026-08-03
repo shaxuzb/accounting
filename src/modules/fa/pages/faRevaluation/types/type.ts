@@ -1,5 +1,5 @@
 export interface FaRevaluationLine {
-  faAssetId: number | null;
+  faAssetId: number;
   newValue: number | string;
   note: string;
   assetAccountId: number;
@@ -17,6 +17,8 @@ export interface FaRevaluationPayload {
 
 export interface FaRevaluation extends Omit<FaRevaluationPayload, "stateId"> {
   id: number;
+  statusId?: number;
+  statusName?: string;
   stateId?: number;
   stateName?: string;
   documentNumber?: string;

@@ -1,5 +1,4 @@
 export * from "./useCreateFaAsset";
-export * from "./useDeleteFaAsset";
 export * from "./useGetDetailFaAsset";
 export * from "./useGetListFaAssets";
 export * from "./useUpdateFaAsset";

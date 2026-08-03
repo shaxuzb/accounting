@@ -1,16 +1,11 @@
-import { Button, Form, Spin, Divider, Row, Col, Typography, Card as AntdCard } from "antd";
+import { Button, Form, Spin } from "antd";
 import { useMemo } from "react";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
-import { Calendar, CheckCircle2, CircleX, Delete, Plus, Save } from "lucide-react";
-
-import InputText from "@/components/fields/InputText";
-import SelectDate from "@/components/fields/SelectDate";
-import SelectCustom from "@/components/fields/SelectCustom";
-import InputNumber from "@/components/fields/InputNumber";
+import { Calendar, CheckCircle2, CircleX, Save } from "lucide-react";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 
@@ -19,10 +14,6 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, numberSpacing } from "@/utils/utils";
 
 import { faDisposalSchema } from "../types/schema";
-import {
-  chartAccountSelectDisplayConfig,
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
 import type { FaDisposalFormValues } from "../types/form";
 import {
   useCancelFaDisposal,
@@ -32,14 +23,14 @@ import {
   useUpdateFaDisposal,
 } from "../hooks";
 import { faDisposalPermissions } from "../constants/permissions";
-
-const { Text } = Typography;
+import { faDocumentStatusIds } from "../../../shared/constants/statuses";
+import FaDisposalFormFields from "../components/FaDisposalFormFields";
 
 const defaultValues: FaDisposalFormValues = {
   disposalDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
-  disposalType: "",
+  disposalTypeId: null,
   reason: "",
-  stateId: 0,
+  stateId: faDocumentStatusIds.draft,
   disposalAccountId: null,
   customerAccountId: null,
   vatAccountId: null,
@@ -47,7 +38,7 @@ const defaultValues: FaDisposalFormValues = {
   lossAccountId: null,
   lines: [
     {
-      faAssetId: null as unknown as number,
+      faAssetId: null,
       saleAmount: 0,
       note: "",
       assetAccountId: null,
@@ -64,12 +55,10 @@ export default function FaDisposalFormPage() {
   
   const { user } = useAppSelector((state) => state.auth);
   const permissions = user?.user.permissions ?? [];
-  const canView =
-    permissions.includes(faDisposalPermissions.view) ||
-    permissions.includes(faDisposalPermissions.detail);
   const canCreate = permissions.includes(faDisposalPermissions.create);
   const canUpdate = permissions.includes(faDisposalPermissions.update);
-  const canSubmit = isCreate ? canCreate : canUpdate;
+  const canConfirm = permissions.includes(faDisposalPermissions.confirm);
+  const canCancel = permissions.includes(faDisposalPermissions.cancel);
 
   const detailQuery = useGetDetailFaDisposal(id);
   const createMutation = useCreateFaDisposal();
@@ -78,13 +67,15 @@ export default function FaDisposalFormPage() {
   const cancelMutation = useCancelFaDisposal(id);
 
   const record = detailQuery.data;
-  const statusId = record?.statusId ?? 1;
-  const isDraft = isCreate || statusId === 1;
+  const statusId =
+    record?.statusId ?? record?.stateId ?? faDocumentStatusIds.draft;
+  const isDraft = isCreate || statusId === faDocumentStatusIds.draft;
+  const canSubmit = isCreate ? canCreate : isDraft && canUpdate;
 
   const initialValues = useMemo<FaDisposalFormValues>(
     () => ({
       disposalDate: record?.disposalDate ?? defaultValues.disposalDate,
-      disposalType: record?.disposalType ?? "",
+      disposalTypeId: record?.disposalTypeId ?? defaultValues.disposalTypeId,
       reason: record?.reason ?? "",
       stateId: record?.stateId ?? defaultValues.stateId,
       disposalAccountId:
@@ -103,11 +94,11 @@ export default function FaDisposalFormPage() {
     initialValues,
     enableReinitialize: true,
     validationSchema: faDisposalSchema(t),
-    onSubmit: async (values) => {
+    onSubmit: async (values, helpers) => {
       try {
         const payload = {
           disposalDate: values.disposalDate,
-          disposalType: values.disposalType,
+          disposalTypeId: Number(values.disposalTypeId),
           reason: values.reason,
           stateId: values.stateId,
           disposalAccountId: Number(values.disposalAccountId),
@@ -128,8 +119,8 @@ export default function FaDisposalFormPage() {
 
         if (!isCreate && id) {
           await updateMutation.mutateAsync({ id, payload });
+          helpers.resetForm({ values });
           toast.success(t("settings.messages.updated"));
-          navigate(`/main/fa/disposals/edit/${id}`, { replace: true });
         } else {
           const created = await createMutation.mutateAsync(payload);
           toast.success(t("settings.messages.created"));
@@ -137,6 +128,7 @@ export default function FaDisposalFormPage() {
         }
       } catch (err: unknown) {
         errorHandlers(err);
+        throw err;
       }
     },
   });
@@ -150,8 +142,12 @@ export default function FaDisposalFormPage() {
       toast.error(t("common.requiredFields"));
       return false;
     }
-    await formik.submitForm();
-    return true;
+    try {
+      await formik.submitForm();
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const ensureSavedBeforeAction = async () => {
@@ -165,21 +161,7 @@ export default function FaDisposalFormPage() {
     confirmMutation.isPending ||
     cancelMutation.isPending;
 
-  const handleAddLine = () => {
-    const newLines = [...formik.values.lines, { ...defaultValues.lines[0] }];
-    formik.setFieldValue("lines", newLines);
-  };
-
-  const handleRemoveLine = (index: number) => {
-    const newLines = formik.values.lines.filter((_, i) => i !== index);
-    formik.setFieldValue("lines", newLines);
-  };
-
   const totalSaleAmount = formik.values.lines.reduce((sum, line) => sum + Number(line.saleAmount || 0), 0);
-
-  if (!canView) {
-    return null;
-  }
 
   if (detailQuery.isLoading && !isCreate) {
     return (
@@ -213,8 +195,8 @@ export default function FaDisposalFormPage() {
           <div className="flex items-center gap-2">
             {!isCreate && (
               <ProcessStatusBadge
-                statusId={record?.statusId}
-                statusName={record?.statusName}
+                statusId={record?.statusId ?? record?.stateId}
+                statusName={record?.statusName ?? record?.stateName}
               />
             )}
           </div>
@@ -225,174 +207,7 @@ export default function FaDisposalFormPage() {
         <Card className="p-4">
           <Form layout="vertical" onFinish={formik.handleSubmit}>
             <fieldset disabled={!isDraft} className="group">
-              <Row gutter={[20, 8]}>
-                <Col span={8}>
-                  <SelectDate
-                    formik={formik}
-                    fieldName="disposalDate"
-                    label="fa.fields.disposalDate"
-                  />
-                </Col>
-                <Col span={8}>
-                  <InputText
-                    formik={formik}
-                    fieldName="disposalType"
-                    label="fa.fields.disposalType"
-                  />
-                </Col>
-                <Col span={8}>
-                  <InputText
-                    formik={formik}
-                    fieldName="reason"
-                    label="fa.fields.reason"
-                  />
-                </Col>
-                <Col span={8}>
-                  <SelectCustom
-                    path={selectListEndpoints.chartAccountsSelectList}
-                    displayConfig={chartAccountSelectDisplayConfig}
-                    formik={formik}
-                    fieldName="disposalAccountId"
-                    label="fa.fields.disposalAccount"
-                    search
-                    required
-                  />
-                </Col>
-                <Col span={8}>
-                  <SelectCustom
-                    path={selectListEndpoints.chartAccountsSelectList}
-                    displayConfig={chartAccountSelectDisplayConfig}
-                    formik={formik}
-                    fieldName="customerAccountId"
-                    label="fa.fields.customerAccount"
-                    search
-                    required
-                  />
-                </Col>
-                <Col span={8}>
-                  <SelectCustom
-                    path={selectListEndpoints.chartAccountsSelectList}
-                    displayConfig={chartAccountSelectDisplayConfig}
-                    formik={formik}
-                    fieldName="vatAccountId"
-                    label="fa.fields.vatAccount"
-                    search
-                    required
-                  />
-                </Col>
-                <Col span={8}>
-                  <SelectCustom
-                    path={selectListEndpoints.chartAccountsSelectList}
-                    displayConfig={chartAccountSelectDisplayConfig}
-                    formik={formik}
-                    fieldName="gainAccountId"
-                    label="fa.fields.gainAccount"
-                    search
-                    required
-                  />
-                </Col>
-                <Col span={8}>
-                  <SelectCustom
-                    path={selectListEndpoints.chartAccountsSelectList}
-                    displayConfig={chartAccountSelectDisplayConfig}
-                    formik={formik}
-                    fieldName="lossAccountId"
-                    label="fa.fields.lossAccount"
-                    search
-                    required
-                  />
-                </Col>
-              </Row>
-
-              <Divider className="my-4" />
-              
-              <div className="mb-4 flex justify-between items-center">
-                <Text strong className="text-lg">
-                  {t("fa.sections.disposalDetails")}
-                </Text>
-                {isDraft && (
-                  <Button
-                    type="dashed"
-                    icon={<Plus className="size-4" />}
-                    onClick={handleAddLine}
-                  >
-                    {t("common.add")}</Button>
-                )}
-              </div>
-
-              {formik.values.lines.map((_, lineIndex) => (
-                <AntdCard
-                  key={`line-${lineIndex}`}
-                  size="small"
-                  className="mb-4 bg-gray-50/50 border border-border shadow-sm"
-                  title={
-                    <div className="flex justify-between items-center mb-1">
-                      <Text strong>{t("fa.sections.lineNumber", { number: lineIndex + 1 })}</Text>
-                      {isDraft && formik.values.lines.length > 1 && (
-                        <Button
-                          danger
-                          size="small"
-                          icon={<Delete className="size-4" />}
-                          onClick={() => handleRemoveLine(lineIndex)}
-                        />
-                      )}
-                    </div>
-                  }
-                >
-                  <Row gutter={[16, 16]}>
-                    <Col span={8}>
-                      <SelectCustom
-                        path={selectListEndpoints.faAssetsSelectList}
-                        formik={formik}
-                        fieldName={`lines[${lineIndex}].faAssetId`}
-                        label="fa.fields.faAssetId"
-                      />
-                    </Col>
-                    <Col span={8}>
-                      <InputNumber
-                        formik={formik}
-                        fieldName={`lines[${lineIndex}].saleAmount`}
-                        label="fa.fields.saleAmount"
-                      />
-                    </Col>
-                    <Col span={8}>
-                      <InputText
-                        formik={formik}
-                        fieldName={`lines[${lineIndex}].note`}
-                        label="fa.fields.note"
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <SelectCustom
-                        path={selectListEndpoints.chartAccountsSelectList}
-                        displayConfig={chartAccountSelectDisplayConfig}
-                        formik={formik}
-                        fieldName={`lines[${lineIndex}].assetAccountId`}
-                        label="fa.fields.assetAccount"
-                        search
-                        required
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <SelectCustom
-                        path={selectListEndpoints.chartAccountsSelectList}
-                        displayConfig={chartAccountSelectDisplayConfig}
-                        formik={formik}
-                        fieldName={`lines[${lineIndex}].accumulatedDepreciationAccountId`}
-                        label="fa.fields.accumulatedDepreciationAccount"
-                        search
-                        required
-                      />
-                    </Col>
-                  </Row>
-                </AntdCard>
-              ))}
-              
-              {typeof formik.errors.lines === "string" && (
-                <div className="text-red-500 text-sm mt-2">
-                  {formik.errors.lines}
-                </div>
-              )}
+              <FaDisposalFormFields formik={formik} isDraft={isDraft} />
             </fieldset>
           </Form>
         </Card>
@@ -401,18 +216,19 @@ export default function FaDisposalFormPage() {
         <div className="flex flex-col gap-4">
           <Card className="space-y-3 p-4">
             <div className="text-sm font-semibold">{t("common.actions")}</div>
-            {isDraft && canSubmit && (
+            {isDraft && (
               <>
-                <Button
-                  block
-                  icon={<Save className="size-4" />}
-                  onClick={() => void saveDraft()}
-                  loading={isSubmitting}
-                >
-                  {t("common.save")}
-                </Button>
-                {!isCreate && (
-                  <>
+                {canSubmit && (
+                  <Button
+                    block
+                    icon={<Save className="size-4" />}
+                    onClick={() => void saveDraft()}
+                    loading={isSubmitting}
+                  >
+                    {t("common.save")}
+                  </Button>
+                )}
+                {!isCreate && canConfirm && (
                     <Button
                       type="primary"
                       block
@@ -433,6 +249,8 @@ export default function FaDisposalFormPage() {
                     >
                       {t("common.confirm")}
                     </Button>
+                )}
+                {!isCreate && canCancel && (
                     <Button
                       danger
                       block
@@ -453,7 +271,6 @@ export default function FaDisposalFormPage() {
                     >
                       {t("common.cancel")}
                     </Button>
-                  </>
                 )}
               </>
             )}
