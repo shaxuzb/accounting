@@ -1,0 +1,91 @@
+.payroll-module {
+  --payroll-font-size: 12px;
+  --payroll-control-height: 34px;
+}
+
+.payroll-module .text-sm {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.payroll-module .text-base {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.payroll-module .text-lg {
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.payroll-module .ant-table {
+  font-size: var(--payroll-font-size);
+  line-height: 1.35;
+}
+
+.payroll-module .ant-table-thead > tr > th,
+.payroll-module .ant-table-tbody > tr > td,
+.payroll-module .ant-table-summary > tr > td {
+  font-size: var(--payroll-font-size);
+  line-height: 1.35;
+}
+
+.payroll-module .ant-table-middle .ant-table-thead > tr > th,
+.payroll-module .ant-table-middle .ant-table-tbody > tr > td {
+  padding: 8px 10px;
+}
+
+.payroll-module .ant-table-small .ant-table-thead > tr > th,
+.payroll-module .ant-table-small .ant-table-tbody > tr > td {
+  padding: 6px 8px;
+}
+
+.payroll-module .ant-form-item-label > label,
+.payroll-module .ant-input,
+.payroll-module .ant-input-number-input,
+.payroll-module .ant-picker-input > input,
+.payroll-module .ant-select,
+.payroll-module .ant-select-selection-item,
+.payroll-module .ant-select-selection-placeholder {
+  font-size: var(--payroll-font-size);
+}
+
+.payroll-module .ant-select-single .ant-select-selector,
+.payroll-module .ant-picker,
+.payroll-module input.ant-input,
+.payroll-module .ant-input-number,
+.payroll-module .ant-input-number-affix-wrapper {
+  min-height: var(--payroll-control-height);
+  height: var(--payroll-control-height);
+}
+
+.payroll-module .ant-select-single .ant-select-selector {
+  height: var(--payroll-control-height) !important;
+  padding: 0 10px;
+}
+
+.payroll-module .ant-select-single .ant-select-selection-item,
+.payroll-module .ant-select-single .ant-select-selection-placeholder {
+  line-height: 32px;
+}
+
+.payroll-module .ant-btn {
+  font-size: var(--payroll-font-size);
+}
+
+.payroll-module .ant-tag {
+  font-size: 11px;
+}
+
+.payroll-module .ant-select-dropdown,
+.payroll-module .ant-dropdown-menu,
+.payroll-module .ant-picker-dropdown {
+  font-size: var(--payroll-font-size);
+}
+
+.payroll-module .ant-select-item,
+.payroll-module .ant-dropdown-menu-item {
+  min-height: 30px;
+  padding: 6px 10px;
+  font-size: var(--payroll-font-size);
+}

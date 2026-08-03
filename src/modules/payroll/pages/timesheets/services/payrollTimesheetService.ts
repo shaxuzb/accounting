@@ -17,6 +17,10 @@ export const payrollTimesheetService = {
     $axiosPrivate
       .get<PayrollTimesheet>(endpoints.detail(id))
       .then((res) => res.data),
+  detailCalendar: (id: string | number) =>
+    $axiosPrivate
+      .get<PayrollTimesheetCalendar>(endpoints.detailCalendar(id))
+      .then((res) => res.data),
   create: (payload: PayrollTimesheetForm) =>
     $axiosPrivate
       .post<PayrollTimesheet>(endpoints.create, payload)
@@ -31,7 +35,7 @@ export const payrollTimesheetService = {
     $axiosPrivate.put(endpoints.cancel(id)).then((res) => res.data),
   calendar: (periodId: number, employeeId: number) =>
     $axiosPrivate
-      .get<PayrollTimesheetCalendar>(endpoints.calendar, {
+      .get<PayrollTimesheetCalendar>(endpoints.employeeCalendar, {
         params: { periodId, employeeId },
       })
       .then((res) => res.data),

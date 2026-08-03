@@ -12,7 +12,7 @@ import { isDraftStatus } from "@/modules/payroll/constants/options";
 import { payrollTimesheetPermissions } from "@/modules/payroll/constants/permissions";
 import { usePayrollPeriodLookup } from "@/modules/payroll/pages/periods/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { Alert, Col, Form, Row, Spin } from "antd";
+import { Col, Form, Row, Spin } from "antd";
 import { useFormik } from "formik";
 import {
   CalendarClock,
@@ -27,6 +27,7 @@ import { useMemo } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
+import TimesheetCalendarView from "../components/TimesheetCalendarView";
 import TimesheetLinesEditor from "../components/TimesheetLinesEditor";
 import {
   useCancelPayrollTimesheet,
@@ -88,13 +89,14 @@ export default function PayrollTimesheetDetailPage() {
       };
       try {
         if (isCreate) {
-          const created = await createMutation.mutateAsync(payload);
+          await createMutation.mutateAsync(payload);
           toast.success(t("payroll.messages.timesheetCreated"));
-          navigate(`${LIST_PATH}/${created.id}`, { replace: true });
+          navigate(LIST_PATH, { replace: true });
           return;
         }
         await updateMutation.mutateAsync(payload);
         toast.success(t("payroll.messages.timesheetSaved"));
+        navigate(LIST_PATH, { replace: true });
       } catch (error) {
         errorHandlers(error);
       }
@@ -107,6 +109,7 @@ export default function PayrollTimesheetDetailPage() {
     [periods, formik.values.periodId],
   );
   const isPeriodClosed = selectedPeriod?.status === "CLOSED";
+  const visibleCalendar = record?.calendar ?? null;
   const totals = useMemo(
     () => summarizeTimesheet(formik.values.lines),
     [formik.values.lines],
@@ -160,15 +163,7 @@ export default function PayrollTimesheetDetailPage() {
         isCreate={isCreate}
         onBack={() => navigate(LIST_PATH)}
       />
-
-      {isPeriodClosed && (
-        <Alert
-          type="warning"
-          showIcon
-          message={t("payroll.messages.periodClosedWarning")}
-        />
-      )}
-
+     
       <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-4">
           <SectionCard
@@ -238,13 +233,17 @@ export default function PayrollTimesheetDetailPage() {
             />
           </DocumentSummary>
 
-          <TimesheetLinesEditor
-            formik={formik}
-            disabled={!isDraft}
-            normWorkDays={selectedPeriod?.normWorkDays}
-            normWorkHours={selectedPeriod?.normWorkHours}
-            periodId={formik.values.periodId}
-          />
+          {visibleCalendar ? (
+            <TimesheetCalendarView calendar={visibleCalendar} />
+          ) : (
+            <TimesheetLinesEditor
+              formik={formik}
+              disabled={!isDraft}
+              normWorkDays={selectedPeriod?.normWorkDays}
+              normWorkHours={selectedPeriod?.normWorkHours}
+              periodId={formik.values.periodId}
+            />
+          )}
         </div>
 
         <DocumentActionsCard
@@ -304,6 +303,7 @@ export default function PayrollTimesheetDetailPage() {
           ]}
         />
       </div>
+
     </div>
   );
 }

@@ -1272,10 +1272,27 @@
         "WORKED": "Отработано",
         "PLANNED_WORK": "Рабочий день",
         "DAY_OFF": "Выходной",
+        "NOT_EMPLOYED": "Не сотрудник",
         "ANNUAL_LEAVE": "Ежегодный отпуск",
         "SICK_LEAVE": "Больничный",
         "UNPAID_LEAVE": "Без содержания",
-        "UNEXCUSED_ABSENCE": "Прогул"
+        "UNEXCUSED_ABSENCE": "Прогул",
+        "MATERNITY_LEAVE": "Декретный отпуск",
+        "STUDY_LEAVE": "Учебный отпуск",
+        "OTHER_ABSENCE": "Другое отсутствие"
+      },
+      "statusShort": {
+        "WORKED": "Работа",
+        "PLANNED_WORK": "План",
+        "DAY_OFF": "Выходной",
+        "NOT_EMPLOYED": "Не сотрудник",
+        "ANNUAL_LEAVE": "Отпуск",
+        "SICK_LEAVE": "Больничный",
+        "UNPAID_LEAVE": "Без оплаты",
+        "UNEXCUSED_ABSENCE": "Прогул",
+        "MATERNITY_LEAVE": "Декрет",
+        "STUDY_LEAVE": "Учёба",
+        "OTHER_ABSENCE": "Другое"
       }
     },
     "fields": {
@@ -1422,6 +1439,8 @@
       "periodRange": "Границы периода",
       "normWorkDays": "Норма дней",
       "normWorkHours": "Норма часов",
+      "plannedWorkDays": "Плановые рабочие дни",
+      "plannedWorkHours": "Плановые рабочие часы",
       "closedDate": "Дата закрытия",
       "docNumber": "Номер документа",
       "docDate": "Дата документа",
@@ -1561,6 +1580,10 @@
       "headerHint": "Выберите период и дату документа",
       "linesTitle": "Учёт времени по сотрудникам",
       "linesHint": "Введите отработанные дни и часы",
+      "calendarTitle": "Дневной календарь табеля",
+      "calendarHint": "Дневной статус и месячный итог по каждому сотруднику в одной таблице",
+      "calendarEmpty": "Для этого табеля нет данных календаря",
+      "calendarLegend": "Часы в ячейке показывают фактически отработанное время",
       "addLine": "Добавить сотрудника",
       "syncCalendar": "Заполнить по HR-календарю",
       "fillAll": "Все сотрудники",
