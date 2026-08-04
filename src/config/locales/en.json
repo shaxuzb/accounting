@@ -226,6 +226,15 @@
       "receiptCreate": "Fixed asset receipt (new)",
       "receiptEdit": "Fixed asset receipt №{{number}}",
       "receiptSubtitle": "Fixed asset receipt document",
+      "movementCreate": "Fixed asset movement (new)",
+      "movementEdit": "Fixed asset movement",
+      "movementDetail": "Fixed asset movement",
+      "revaluationCreate": "Fixed asset revaluation (new)",
+      "revaluationEdit": "Fixed asset revaluation",
+      "revaluationDetail": "Fixed asset revaluation",
+      "disposalCreate": "Fixed asset disposal (new)",
+      "disposalEdit": "Fixed asset disposal",
+      "disposalDetail": "Fixed asset disposal",
       "revaluationDetails": "Revaluation details",
       "assets": "Fixed assets",
       "actions": "Actions"
@@ -304,11 +313,61 @@
       "saveAndConfirm": "Save and confirm",
       "addLine": "Add line",
       "addAsset": "Add asset",
+      "cancelDocument": "Cancel document",
       "applyCommonData": "Apply common data",
       "saveDraft": "Save draft"
     },
     "messages": {
       "chooseSaveMode": "How would you like to save the document?"
+    },
+    "movement": {
+      "newLocation": "New location",
+      "previousLocation": "Previous location",
+      "currentLocations": "Current locations",
+      "generalNote": "General note",
+      "assetsToMove": "Assets to move",
+      "assetsToMoveDescription": "Add fixed assets to the movement document.",
+      "currentDepartment": "Current department",
+      "currentResponsible": "Current responsible person",
+      "selectedAssets": "Selected assets: {{count}}",
+      "movementContents": "Movement contents",
+      "assetCount": "Asset count",
+      "countValue": "{{count}}",
+      "previousDepartment": "Previous department",
+      "previousResponsible": "Previous responsible person",
+      "destinationDepartment": "New department",
+      "destinationResponsible": "New responsible person"
+    },
+    "revaluation": {
+      "detailsDescription": "Enter the document date and reason for revaluation.",
+      "increase": "When value increases",
+      "decrease": "When value decreases",
+      "assetsToRevalue": "Assets to revalue",
+      "assetsDescription": "Set the new value and accounts for each asset.",
+      "selectedAssets": "Selected assets: {{count}}",
+      "assetCount": "Asset count",
+      "countValue": "{{count}}",
+      "newValuesTotal": "Total new values",
+      "contents": "Revaluation contents"
+    },
+    "disposal": {
+      "assetsToDispose": "Assets to dispose",
+      "assetsDescription": "Add fixed assets to the disposal document and set their sale amounts.",
+      "selectedAssets": "Selected assets: {{count}}",
+      "assetCount": "Asset count",
+      "countValue": "{{count}}",
+      "contents": "Disposal contents"
+    },
+    "asset": {
+      "identity": "Basic information",
+      "identityDescription": "Enter the asset inventory number, name, and source product.",
+      "classification": "Classification and depreciation",
+      "classificationDescription": "Set the group, OKOF, and depreciation parameters.",
+      "valuation": "Value and dates",
+      "valuationDescription": "Enter the initial and salvage values and commissioning dates.",
+      "placement": "Location and responsible person",
+      "placementDescription": "Select the department and responsible user assigned to the asset.",
+      "accountsDescription": "Set the fixed asset and depreciation accounts."
     }
   },
   "settings": {
@@ -514,6 +573,10 @@
           "name": "dDocs",
           "description": "Electronic document signing and exchange service."
         },
+        "edo": {
+          "name": "Electronic document exchange",
+          "description": "Send and receive electronic documents through Didox, Edocs, and other providers."
+        },
         "aslBelgi": {
           "name": "Asl Belgisi",
           "description": "Product marking and tracking service."
@@ -522,6 +585,24 @@
       "messages": {
         "connected": "Integration connected successfully",
         "disconnected": "Integration disconnected"
+      },
+      "edo": {
+        "title": "Electronic document exchange",
+        "description": "Select a provider, authenticate with E-IMZO, and manage electronic invoices.",
+        "capabilityUnavailable": "This action is unavailable for the selected provider",
+        "provider": { "title": "EDO provider", "description": "Select the electronic document operator for this organization.", "notConfigured": "Provider credentials are not configured" },
+        "auth": { "title": "E-IMZO authentication", "description": "Open an organization session for the selected provider.", "selectProvider": "Select an active provider first", "unavailable": "Authentication capability is unavailable", "authenticated": "Authenticated with {{provider}}", "expiresAt": "Session expires: {{date}}", "authenticate": "Authenticate" },
+        "inbox": { "title": "Incoming EDO documents", "description": "Review incoming provider documents, check status, and perform available actions.", "unavailable": "Inbox capability is unavailable", "filtersUnavailable": "Provider-side search, status, and date filters are not confirmed for Edocs and are currently disabled.", "rejectTitle": "Reject incoming document" },
+        "outbox": { "create": "Create invoice", "createDescription": "Prepare internal document data as a common EDO invoice.", "unavailable": "Invoice creation capability is unavailable", "document": "Outgoing EDO document #{{id}}", "detailDescription": "Check provider status and sign the document with E-IMZO.", "sign": "Sign document", "signUnavailable": "The document cannot be signed in its current state" },
+        "sections": { "document": "Document information", "empowerment": "Empowerment", "lines": "Invoice lines" },
+        "actions": { "createFactura": "Create invoice", "sign": "Sign", "reject": "Reject", "download": "Download" },
+        "fields": {
+          "internalDocumentId": "Internal document ID", "internalDocumentType": "Internal document type", "documentNumber": "Document number", "documentDate": "Document date", "documentType": "Document type", "providerDocumentId": "Provider document ID", "contractNumber": "Contract number", "contractDate": "Contract date", "seller": "Seller", "buyer": "Buyer", "name": "Name", "taxIdentifier": "Tax identifier", "bankCode": "Bank code", "accountNumber": "Account number", "address": "Address", "branchCode": "Branch code", "branchName": "Branch name", "directorName": "Director", "accountantName": "Accountant", "vatRegistrationStatus": "VAT registration status", "districtId": "District ID", "empowermentNumber": "Empowerment number", "dateOfIssue": "Date of issue", "agentName": "Agent name", "agentPinfl": "Agent PINFL", "catalogCode": "Catalog code", "catalogName": "Catalog name", "unitCode": "Unit code", "unitName": "Unit name", "quantity": "Quantity", "amount": "Amount", "taxRate": "Tax rate", "taxAmount": "Tax amount", "isTaxFree": "Tax free", "markingCodes": "Marking codes", "companyInn": "Company TIN", "fromDate": "From date", "toDate": "To date", "status": "Status", "localStatus": "Local status", "providerStatus": "Provider status", "checkedAt": "Checked at", "reason": "Reason", "preparedPkcs7": "Prepared PKCS#7"
+        },
+        "status": { "reconciliation": "Provider and local state require manual reconciliation" },
+        "statuses": { "UNKNOWN": "Unknown", "DRAFT": "Draft", "PENDING": "Pending", "SIGNED": "Signed", "SENT": "Sent", "RECEIVED": "Received", "REJECTED": "Rejected", "COMPLETED": "Completed", "CANCELLED": "Cancelled", "FAILED": "Failed", "RECONCILIATION_REQUIRED": "Reconciliation required" },
+        "messages": { "providerChanged": "Active provider changed", "authenticated": "EDO authentication completed", "created": "Invoice created", "replay": "Existing successful result returned", "signed": "Document signed", "rejected": "Document rejected", "downloaded": "File downloaded" },
+        "errors": { "providers": "Could not load providers", "status": "Could not load document status", "challengeExpired": "The signing session expired. Try again.", "authRejected": "The provider did not confirm authentication" }
       }
     },
     "chartAccounts": {

@@ -14,7 +14,7 @@ import { endpoints } from "../constants/endpoints";
 import { faRevaluationPermissions } from "../constants/permissions";
 import { useGetListFaRevaluations } from "../hooks";
 import type { FaRevaluation } from "../types/type";
-import { faDocumentStatusIds } from "../../../shared/constants/statuses";
+import { isFaDraftStatus } from "../../../shared/constants/statuses";
 
 export default function FaRevaluationListPage() {
   const { t } = useTranslation();
@@ -75,9 +75,7 @@ export default function FaRevaluationListPage() {
           width: 100,
           fixed: "right",
           render: (_, record) => {
-            const isDraft =
-              (record.statusId ?? record.stateId) ===
-              faDocumentStatusIds.draft;
+            const isDraft = isFaDraftStatus(record);
 
             return <ActionColumn
               deletePath={endpoints.list}

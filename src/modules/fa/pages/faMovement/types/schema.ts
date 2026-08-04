@@ -20,6 +20,14 @@ export const faMovementSchema = (t: TFunction) => yup.object().shape({
           .number()
           .nullable()
           .required(t("fa.validation.assetRequired")),
+        fromDepartmentId: yup
+          .number()
+          .nullable()
+          .required(t("fa.validation.departmentRequired")),
+        fromResponsibleUserId: yup
+          .number()
+          .nullable()
+          .required(t("fa.validation.responsibleUserRequired")),
         note: yup.string(),
       }),
     )

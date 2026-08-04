@@ -15,7 +15,7 @@ import { faMovementPermissions } from "../constants/permissions";
 import { useGetListFaMovements } from "../hooks";
 
 import type { FaMovement } from "../types/type";
-import { faDocumentStatusIds } from "../../../shared/constants/statuses";
+import { isFaDraftStatus } from "../../../shared/constants/statuses";
 
 export default function FaMovementListPage() {
   const { t } = useTranslation();
@@ -82,9 +82,7 @@ export default function FaMovementListPage() {
             align: "center",
             fixed: "right",
             render: (_, record) => {
-              const isDraft =
-                (record.statusId ?? record.stateId) ===
-                faDocumentStatusIds.draft;
+              const isDraft = isFaDraftStatus(record);
 
               return (
                 <ActionColumn

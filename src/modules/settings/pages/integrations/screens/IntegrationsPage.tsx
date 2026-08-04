@@ -1,6 +1,7 @@
 import { Alert, Button, Empty, Segmented, Skeleton } from "antd";
 import { CheckCircle2, CircleOff, RefreshCw } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import {
@@ -11,19 +12,29 @@ import IntegrationCard from "../components/IntegrationCard";
 import IntegrationConnectionModal from "../components/IntegrationConnectionModal";
 import { useIntegrations } from "../hooks/useIntegrations";
 import type { IntegrationCategory, IntegrationCode } from "../types/type";
+import { useEdoActiveProvider } from "../edo/hooks";
+import { readEdoAuthSession } from "../edo/utils/authSession";
 
 export default function IntegrationsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { items, isLoading, error, refresh } = useIntegrations();
+  const activeProviderQuery = useEdoActiveProvider();
   const [selectedCode, setSelectedCode] = useState<IntegrationCode | null>(
     null,
   );
   const [activeCategory, setActiveCategory] =
     useState<IntegrationCategory>("ALL");
-  const recordsByCode = useMemo(
-    () => new Map(items.map((item) => [item.code, item])),
-    [items],
-  );
+  const recordsByCode = useMemo(() => {
+    const records = new Map(items.map((item) => [item.code, item]));
+    const provider = activeProviderQuery.data;
+    const session = readEdoAuthSession(provider?.code);
+    records.set("EDO", {
+      code: "EDO",
+      status: session?.isAuthenticated ? "CONNECTED" : "DISCONNECTED",
+    });
+    return records;
+  }, [activeProviderQuery.data, items]);
   const selectedDefinition = integrationDefinitions.find(
     (item) => item.code === selectedCode,
   );
@@ -49,7 +60,15 @@ export default function IntegrationsPage() {
       //   t(definition.nameKey).toLowerCase().includes(normalizedSearch);
       return matchesCategory;
     });
-  }, [activeCategory, t]);
+  }, [activeCategory]);
+
+  const openIntegration = (code: IntegrationCode) => {
+    if (code === "EDO") {
+      navigate("edo");
+      return;
+    }
+    setSelectedCode(code);
+  };
 
   return (
     <Card className="p-3">
@@ -126,7 +145,7 @@ export default function IntegrationsPage() {
                 definition={definition}
                 record={recordsByCode.get(definition.code)}
                 isBusy={selectedCode === definition.code}
-                onOpen={() => setSelectedCode(definition.code)}
+                onOpen={() => openIntegration(definition.code)}
               />
             ))}
             {visibleDefinitions.length === 0 && (

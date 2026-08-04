@@ -6,9 +6,10 @@ export const useConfirmFaMovement = (id: string | number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => faMovementService.confirm(id),
-    onSuccess: (data) => {
-      queryClient.setQueryData(queryKeys.detail(id), data);
+    mutationFn: (targetId?: string | number) =>
+      faMovementService.confirm(targetId ?? id),
+    onSuccess: (data, targetId) => {
+      queryClient.setQueryData(queryKeys.detail(targetId ?? id), data);
       void queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
     },
   });

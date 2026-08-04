@@ -6,14 +6,14 @@ import type {
 
 export const integrationDefinitions: IntegrationDefinition[] = [
   {
-    code: "DDOCS",
+    code: "EDO",
     category: "DOCUMENTS",
-    nameKey: "settings.integrations.items.ddocs.name",
-    descriptionKey: "settings.integrations.items.ddocs.description",
-    domain: "ddocs",
+    nameKey: "settings.integrations.items.edo.name",
+    descriptionKey: "settings.integrations.items.edo.description",
+    domain: "DIDOX / EDOCS / FAKTURA",
     accentClassName: "bg-blue-50 text-blue-600",
     logoClassName: "bg-blue-600 text-white",
-    logo: "dD",
+    logo: "EDO",
     isAvailable: true,
   },
   {
@@ -73,7 +73,7 @@ export const integrationCategories: {
 ];
 
 export const integrationNames: Record<IntegrationCode, string> = {
-  DDOCS: "dDocs",
+  EDO: "EDO",
   ASL_BELGISI: "Asl Belgisi",
   TELEGRAM: "Telegram",
   INSTAGRAM: "Instagram",

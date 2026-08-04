@@ -13,7 +13,7 @@ import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { endpoints } from "../constants/endpoints";
 import { faAssetPermissions } from "../constants/permissions";
-import { faDocumentStatusIds } from "../../../shared/constants/statuses";
+import { isFaDraftStatus } from "../../../shared/constants/statuses";
 import { useGetListFaAssets } from "../hooks";
 import type { FaAsset } from "../types/type";
 
@@ -95,7 +95,7 @@ export default function FaAssetListPage() {
             width: 100,
             fixed: "right",
             render: (_, record) => {
-              const isDraft = record.statusId === faDocumentStatusIds.draft;
+              const isDraft = isFaDraftStatus(record);
 
               return (
                 <ActionColumn

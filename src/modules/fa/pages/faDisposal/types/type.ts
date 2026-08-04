@@ -4,6 +4,14 @@ export interface FaDisposalLineItem {
   note: string;
   assetAccountId: number;
   accumulatedDepreciationAccountId: number;
+  faAssetInventoryNumber?: string;
+  inventoryNumber?: string;
+  faAssetName?: string;
+  assetName?: string;
+  assetAccountNumber?: string;
+  assetAccountName?: string;
+  accumulatedDepreciationAccountNumber?: string;
+  accumulatedDepreciationAccountName?: string;
 }
 
 export interface FaDisposalResponse {
@@ -24,6 +32,19 @@ export interface FaDisposalResponse {
   lines: FaDisposalLineItem[];
   organizationId?: number;
   organizationName?: string;
+  documentNumber?: string;
+  documentDate?: string;
+  comment?: string;
+  disposalAccountNumber?: string;
+  disposalAccountName?: string;
+  customerAccountNumber?: string;
+  customerAccountName?: string;
+  vatAccountNumber?: string;
+  vatAccountName?: string;
+  gainAccountNumber?: string;
+  gainAccountName?: string;
+  lossAccountNumber?: string;
+  lossAccountName?: string;
 }
 
 export interface FaDisposalPayload {

@@ -14,13 +14,15 @@ import { faDisposalPermissions } from "../constants/permissions";
 import { useGetListFaDisposals } from "../hooks";
 import type { FaDisposalResponse } from "../types/type";
 import { ProcessStatusBadge } from "@/components/ui/status";
-import { faDocumentStatusIds } from "../../../shared/constants/statuses";
+import { isFaDraftStatus } from "../../../shared/constants/statuses";
 
 export default function FaDisposalListPage() {
   const { t } = useTranslation();
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
+  const canOpenDetail = permissions.includes(faDisposalPermissions.detail);
+  const canUpdate = permissions.includes(faDisposalPermissions.update);
   const [searchParams] = useSearchParams();
   const { data, isLoading, isFetching, refetch } =
     useGetListFaDisposals(searchParams);
@@ -35,9 +37,19 @@ export default function FaDisposalListPage() {
     {
       title: "ID",
       dataIndex: "id",
-      render: (_, record) => (
-        <Link to={`/main/fa/disposals/edit/${record.id}`}>{record.id}</Link>
-      ),
+      render: (_, record) => {
+        const isDraft = isFaDraftStatus(record);
+        const path =
+          isDraft && canUpdate
+            ? `/main/fa/disposals/edit/${record.id}`
+            : `/main/fa/disposals/${record.id}`;
+
+        return canOpenDetail || (isDraft && canUpdate) ? (
+          <Link to={path}>{record.id}</Link>
+        ) : (
+          <span>{record.id}</span>
+        );
+      },
       minWidth: 100,
     },
     {
@@ -64,8 +76,8 @@ export default function FaDisposalListPage() {
       align: "center",
       render: (_, record) => (
         <ProcessStatusBadge
-          statusId={record.statusId}
-          statusName={record.statusName}
+          statusId={record.statusId ?? record.stateId}
+          statusName={record.statusName ?? record.stateName}
         />
       ),
     },
@@ -85,7 +97,7 @@ export default function FaDisposalListPage() {
           width: 100,
           fixed: "right",
           render: (_, record) => {
-            const isDraft = record.statusId === faDocumentStatusIds.draft;
+            const isDraft = isFaDraftStatus(record);
 
             return <ActionColumn
               deletePath={endpoints.list}

@@ -147,7 +147,7 @@ export const faRoutes: RouteObject = {
             faMovementPermissions.create,
           ),
           handle: {
-            title: "fa.form.create",
+            title: "fa.form.movementCreate",
             showBack: true,
             backTo: "..",
           },
@@ -159,7 +159,7 @@ export const faRoutes: RouteObject = {
             faMovementPermissions.detail,
           ),
           handle: {
-            title: "fa.form.detail",
+            title: "fa.form.movementDetail",
             showBack: true,
             backTo: "..",
           },
@@ -171,7 +171,7 @@ export const faRoutes: RouteObject = {
             faMovementPermissions.update,
           ),
           handle: {
-            title: "fa.form.edit",
+            title: "fa.form.movementEdit",
             showBack: true,
             backTo: "..",
           },
@@ -196,7 +196,7 @@ export const faRoutes: RouteObject = {
             faRevaluationPermissions.create,
           ),
           handle: {
-            title: "fa.form.create",
+            title: "fa.form.revaluationCreate",
             showBack: true,
             backTo: "..",
           },
@@ -208,7 +208,7 @@ export const faRoutes: RouteObject = {
             faRevaluationPermissions.detail,
           ),
           handle: {
-            title: "fa.form.detail",
+            title: "fa.form.revaluationDetail",
             showBack: true,
             backTo: "..",
           },
@@ -220,7 +220,7 @@ export const faRoutes: RouteObject = {
             faRevaluationPermissions.update,
           ),
           handle: {
-            title: "fa.form.edit",
+            title: "fa.form.revaluationEdit",
             showBack: true,
             backTo: "..",
           },
@@ -245,7 +245,7 @@ export const faRoutes: RouteObject = {
             faDisposalPermissions.create,
           ),
           handle: {
-            title: "fa.form.create",
+            title: "fa.form.disposalCreate",
             showBack: true,
             backTo: "..",
           },
@@ -257,7 +257,7 @@ export const faRoutes: RouteObject = {
             faDisposalPermissions.detail,
           ),
           handle: {
-            title: "fa.form.detail",
+            title: "fa.form.disposalDetail",
             showBack: true,
             backTo: "..",
           },
@@ -269,7 +269,7 @@ export const faRoutes: RouteObject = {
             faDisposalPermissions.update,
           ),
           handle: {
-            title: "fa.form.edit",
+            title: "fa.form.disposalEdit",
             showBack: true,
             backTo: "..",
           },

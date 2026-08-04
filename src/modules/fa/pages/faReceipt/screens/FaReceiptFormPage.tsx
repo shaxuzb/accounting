@@ -5,16 +5,13 @@ import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
-import { FileCheck2, Save, X } from "lucide-react";
-import Card from "@/components/ui/card/Card";
+import { Trash2 } from "lucide-react";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import FaDraftActionsBar from "../../../shared/components/FaDraftActionsBar";
 import { faReceiptSchema } from "../types/schema";
 import type { FaReceiptFormValues } from "../types/form";
-import type {
-  FaReceiptPayload,
-  FaReceiptResponse,
-} from "../types/type";
+import type { FaReceiptPayload, FaReceiptResponse } from "../types/type";
 import {
   useCancelFaReceipt,
   useConfirmFaReceipt,
@@ -25,6 +22,7 @@ import {
 import { faReceiptPermissions } from "../constants/permissions";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import FaReceiptFormFields from "../components/FaReceiptFormFields";
+import FaReceiptReadonlyView from "../components/readonly/FaReceiptReadonlyView";
 
 const defaultValues: FaReceiptFormValues = {
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
@@ -116,9 +114,7 @@ const toPayload = (values: FaReceiptFormValues): FaReceiptPayload => ({
       accumulatedDepreciationAccountId: Number(
         asset.accumulatedDepreciationAccountId,
       ),
-      depreciationExpenseAccountId: Number(
-        asset.depreciationExpenseAccountId,
-      ),
+      depreciationExpenseAccountId: Number(asset.depreciationExpenseAccountId),
     })),
   })),
 });
@@ -179,15 +175,13 @@ export default function FaReceiptFormPage() {
     validationSchema: faReceiptSchema(t),
     onSubmit: async (values) => {
       try {
-        const saved = await persistReceipt(values);
+        await persistReceipt(values);
         toast.success(
           isCreate
             ? t("settings.messages.created")
             : t("settings.messages.updated"),
         );
-        if (isCreate) {
-          navigate(`/main/fa/receipts/edit/${saved.id}`, { replace: true });
-        }
+        navigate(-1);
       } catch (error: unknown) {
         errorHandlers(error);
         throw error;
@@ -203,7 +197,6 @@ export default function FaReceiptFormPage() {
       !isCreate && id
         ? await updateMutation.mutateAsync({ id, payload })
         : await createMutation.mutateAsync(payload);
-    formik.resetForm({ values });
     return saved;
   }
 
@@ -216,24 +209,14 @@ export default function FaReceiptFormPage() {
     return false;
   };
 
-  const saveDraft = async () => {
-    if (!(await validateReceipt())) return false;
-    try {
-      await formik.submitForm();
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  const handleSaveAndConfirm = async () => {
+  const handleConfirm = async () => {
     if (!(await validateReceipt())) return;
 
     try {
-      const saved = await persistReceipt(formik.values);
-      await confirmMutation.mutateAsync(saved.id);
-      toast.success(t("actions.confirmSuccess", { id: saved.id }));
-      navigate(listPath, { replace: true });
+      await persistReceipt(formik.values);
+      await confirmMutation.mutateAsync(id);
+      toast.success(t("actions.confirmSuccess", { id }));
+      navigate(-1);
     } catch (error: unknown) {
       errorHandlers(error);
     }
@@ -243,17 +226,11 @@ export default function FaReceiptFormPage() {
     try {
       await cancelMutation.mutateAsync();
       toast.success(t("actions.cancelSuccess", { id: record?.id ?? id }));
-      navigate(listPath, { replace: true });
+      navigate(-1);
     } catch (error: unknown) {
       errorHandlers(error);
     }
   };
-
-  const isSubmitting =
-    createMutation.isPending ||
-    updateMutation.isPending ||
-    confirmMutation.isPending ||
-    cancelMutation.isPending;
 
   if (detailQuery.isLoading && !isCreate) {
     return (
@@ -271,7 +248,7 @@ export default function FaReceiptFormPage() {
         message={t("error.title")}
         description={t("error.subtitle")}
         action={
-          <Button size="small" onClick={() => void detailQuery.refetch()}>
+          <Button size="small" onClick={() => detailQuery.refetch()}>
             {t("common.reload")}
           </Button>
         }
@@ -279,25 +256,38 @@ export default function FaReceiptFormPage() {
     );
   }
 
-  const showFooter = isCreate || isDraft || (isPosted && canCancel);
+  if (!isDraft && record) {
+    return (
+      <div className="w-full pb-2">
+        <FaReceiptReadonlyView
+          record={record}
+          action={
+            isPosted && canCancel ? (
+              <Popconfirm
+                title={t("actions.cancelConfirmTitle")}
+                description={t("actions.cancelConfirmContent")}
+                okText={t("actions.cancel")}
+                cancelText={t("common.cancel")}
+                okButtonProps={{ danger: true }}
+                onConfirm={() => handleCancelDocument()}
+              >
+                <Button
+                  danger
+                  icon={<Trash2 className="size-4" />}
+                  loading={cancelMutation.isPending}
+                >
+                  {t("fa.actions.cancelDocument")}
+                </Button>
+              </Popconfirm>
+            ) : undefined
+          }
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-4 pb-2">
-      <div className="flex flex-wrap items-start justify-between gap-3 px-1">
-        <div>
-          <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
-            {isCreate
-              ? t("fa.form.receiptCreate")
-              : t("fa.form.receiptEdit", {
-                  number: record?.documentNumber ?? record?.id ?? id,
-                })}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("fa.form.receiptSubtitle")}
-          </p>
-        </div>
-      </div>
-
       <Form layout="vertical" onFinish={formik.handleSubmit}>
         <fieldset disabled={!isDraft || !canSubmit} className="group">
           <FaReceiptFormFields
@@ -307,58 +297,19 @@ export default function FaReceiptFormPage() {
           />
         </fieldset>
 
-        {showFooter && (
-          <Card className="sticky bottom-0 z-20 mt-4 flex flex-wrap items-center justify-between gap-3 border border-border bg-primary-bg/95 p-4 shadow-[0_-8px_24px_rgba(15,23,42,0.06)] backdrop-blur-xl">
-            {isPosted && canCancel ? (
-              <Popconfirm
-                title={t("actions.cancelConfirmTitle")}
-                description={t("actions.cancelConfirmContent")}
-                okText={t("actions.cancel")}
-                cancelText={t("common.cancel")}
-                okButtonProps={{ danger: true }}
-                onConfirm={() => void handleCancelDocument()}
-              >
-                <Button
-                  danger
-                  icon={<X className="size-4" />}
-                  loading={cancelMutation.isPending}
-                >
-                  {t("actions.cancel")}
-                </Button>
-              </Popconfirm>
-            ) : (
-              <Button
-                icon={<X className="size-4" />}
-                disabled={isSubmitting}
-                onClick={() => navigate(listPath)}
-              >
-                {t("common.cancel")}
-              </Button>
-            )}
-
-            {isDraft && canSubmit && (
-              <div className="ml-auto flex flex-wrap gap-3">
-                <Button
-                  icon={<Save className="size-4" />}
-                  loading={createMutation.isPending || updateMutation.isPending}
-                  disabled={confirmMutation.isPending}
-                  onClick={() => void saveDraft()}
-                >
-                  {t("fa.actions.saveDraft")}
-                </Button>
-                {canConfirm && (
-                  <Button
-                    type="primary"
-                    icon={<FileCheck2 className="size-4" />}
-                    loading={isSubmitting}
-                    onClick={() => void handleSaveAndConfirm()}
-                  >
-                    {t("common.save")}
-                  </Button>
-                )}
-              </div>
-            )}
-          </Card>
+        {isDraft && (
+          <FaDraftActionsBar
+            isCreate={isCreate}
+            canSave={canSubmit}
+            canConfirm={canConfirm}
+            canCancel={canCancel}
+            saving={createMutation.isPending || updateMutation.isPending}
+            confirming={confirmMutation.isPending}
+            cancelling={cancelMutation.isPending}
+            onExit={() => navigate(listPath)}
+            onConfirm={handleConfirm}
+            onCancelDocument={handleCancelDocument}
+          />
         )}
       </Form>
     </div>

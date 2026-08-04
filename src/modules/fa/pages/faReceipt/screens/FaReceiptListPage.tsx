@@ -14,7 +14,7 @@ import { faReceiptPermissions } from "../constants/permissions";
 import { useGetListFaReceipts } from "../hooks";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import type { FaReceiptResponse } from "../types/type";
-import { faDocumentStatusIds } from "../../../shared/constants/statuses";
+import { isFaDraftStatus } from "../../../shared/constants/statuses";
 
 export default function FaReceiptListPage() {
   const { t } = useTranslation();
@@ -70,9 +70,7 @@ export default function FaReceiptListPage() {
             width: 100,
             fixed: "right",
             render: (_, record) => {
-              const isDraft =
-                (record.statusId ?? record.stateId) ===
-                faDocumentStatusIds.draft;
+              const isDraft = isFaDraftStatus(record);
 
               return <ActionColumn
                 deletePath={endpoints.list}

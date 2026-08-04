@@ -42,7 +42,13 @@ const addToken = (config: InternalAxiosRequestConfig) => {
 };
 
 const handleResponseError = (error: AxiosError) => {
-  if (error.response?.status === 401) {
+  const responseData = error.response?.data as
+    | { title?: string }
+    | undefined;
+  const isProviderAuthenticationError =
+    responseData?.title === "IntegrationUnauthorized";
+
+  if (error.response?.status === 401 && !isProviderAuthenticationError) {
     store.dispatch(logout());
     window.location.href = "/login";
   }

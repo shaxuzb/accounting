@@ -38,9 +38,9 @@ export default function FaDepreciationFormPage() {
 
   const handleRun = async () => {
     try {
-      const created = await runMutation.mutateAsync();
+      await runMutation.mutateAsync();
       toast.success(t("settings.messages.created"));
-      navigate(`/main/fa/depreciation/${created.id}`, { replace: true });
+      navigate(-1);
     } catch (error) {
       errorHandlers(error);
     }
@@ -50,7 +50,7 @@ export default function FaDepreciationFormPage() {
     try {
       await cancelMutation.mutateAsync();
       toast.success(t("common.cancel"));
-      navigate("/main/fa/depreciation");
+      navigate(-1);
     } catch (error) {
       errorHandlers(error);
     }

@@ -1,20 +1,26 @@
-import { Alert, Button, Form, Spin } from "antd";
+import { Alert, Button, Form, Popconfirm, Spin } from "antd";
 import { useMemo, useState } from "react";
-import { useFormik } from "formik";
-import { useMatch, useNavigate, useParams } from "react-router";
+import { setNestedObjectValues, useFormik } from "formik";
+import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
-import { Calendar, CheckCircle2, CircleX, Save } from "lucide-react";
+import { Trash2 } from "lucide-react";
+import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import Card from "@/components/ui/card/Card";
-import DocumentActionsCard from "@/components/ui/card/DocumentActionsCard";
-import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import FaDraftActionsBar from "../../../shared/components/FaDraftActionsBar";
+import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import FaAssetFormFields from "../components/FaAssetFormFields";
 import FaAssetProcessingModeModal from "../components/FaAssetProcessingModeModal";
-import FaAssetReadonlyDetailsCard from "../components/FaAssetReadonlyDetailsCard";
-import { useAppSelector } from "@/store/hooks";
-import { customDate, numberSpacing } from "@/utils/utils";
+import FaAssetReadonlyView from "../components/FaAssetReadonlyView";
+import { faAssetPermissions } from "../constants/permissions";
+import {
+  useCancelFaAsset,
+  useConfirmFaAsset,
+  useCreateFaAsset,
+  useGetDetailFaAsset,
+  useUpdateFaAsset,
+} from "../hooks";
 import type {
   FaAssetCreatePayload,
   FaAssetEditableFields,
@@ -23,15 +29,7 @@ import type {
   FaAssetUpdatePayload,
 } from "../types/form";
 import { faAssetSchema } from "../types/schema";
-import { faAssetPermissions } from "../constants/permissions";
-import { faDocumentStatusIds } from "../../../shared/constants/statuses";
-import {
-  useGetDetailFaAsset,
-  useCreateFaAsset,
-  useUpdateFaAsset,
-  useConfirmFaAsset,
-  useCancelFaAsset,
-} from "../hooks";
+import type { FaAsset } from "../types/type";
 
 const defaultValues: FaAssetFormValues = {
   inventoryNumber: "",
@@ -72,12 +70,11 @@ export default function FaAssetFormPage() {
   const navigate = useNavigate();
   const { id = "" } = useParams();
   const isCreate = !id;
-  const isEdit = Boolean(useMatch("/main/fa/assets/edit/:id"));
+
   const user = useAppSelector((state) => state.auth.user);
   const currentUserId = user?.user.id ?? null;
   const permissions = user?.user.permissions ?? [];
   const canViewList = permissions.includes(faAssetPermissions.view);
-  const canViewDetail = permissions.includes(faAssetPermissions.detail);
   const canCreate = permissions.includes(faAssetPermissions.create);
   const canUpdate = permissions.includes(faAssetPermissions.update);
   const canConfirm = permissions.includes(faAssetPermissions.confirm);
@@ -90,11 +87,13 @@ export default function FaAssetFormPage() {
   const updateMutation = useUpdateFaAsset();
   const confirmMutation = useConfirmFaAsset(id);
   const cancelMutation = useCancelFaAsset(id);
+
   const record = detailQuery.data;
   const statusId = record?.statusId ?? faDocumentStatusIds.draft;
   const isDraft = isCreate || statusId === faDocumentStatusIds.draft;
   const canSubmit = isCreate ? canCreate : isDraft && canUpdate;
-  const exitPath = canViewList ? "/main/fa/assets" : "/main";
+  const showEditor = isCreate || (isDraft && canSubmit);
+  const listPath = canViewList ? "/main/fa/assets" : "/main";
 
   const initialValues = useMemo<FaAssetFormValues>(
     () => ({
@@ -132,28 +131,31 @@ export default function FaAssetFormPage() {
     [currentUserId, isCreate, record],
   );
 
+  const updateAsset = async (values: FaAssetFormValues): Promise<FaAsset> => {
+    const payload: FaAssetUpdatePayload = {
+      ...toEditableFields(values),
+      stateId: values.stateId,
+      statusId: values.statusId,
+    };
+    return updateMutation.mutateAsync({ id, payload });
+  };
+
   const formik = useFormik<FaAssetFormValues>({
     initialValues,
     enableReinitialize: true,
     validationSchema: faAssetSchema(t),
     onSubmit: async (values, helpers) => {
+      if (isCreate) {
+        setProcessingModeModalOpen(true);
+        return;
+      }
+
       try {
-        if (!isCreate && id) {
-          const editableFields = toEditableFields(values);
-          const payload: FaAssetUpdatePayload = {
-            ...editableFields,
-            stateId: values.stateId,
-            statusId: values.statusId,
-          };
-          await updateMutation.mutateAsync({ id, payload });
-          helpers.resetForm({ values: payload });
-          toast.success(t("settings.messages.updated"));
-        } else {
-          setProcessingModeModalOpen(true);
-        }
-      } catch (err: unknown) {
-        errorHandlers(err);
-        throw err;
+        await updateAsset(values);
+        helpers.resetForm({ values });
+        toast.success(t("settings.messages.updated"));
+      } catch (error: unknown) {
+        errorHandlers(error);
       }
     },
   });
@@ -169,16 +171,9 @@ export default function FaAssetFormPage() {
         ...toEditableFields(formik.values),
         processingMode,
       };
-      const created = await createMutation.mutateAsync(payload);
+      await createMutation.mutateAsync(payload);
       toast.success(t("settings.messages.created"));
-
-      const path =
-        processingMode === 1 && canUpdate
-          ? `/main/fa/assets/edit/${created.id}`
-          : canViewDetail
-            ? `/main/fa/assets/${created.id}`
-            : exitPath;
-      navigate(path, { replace: true });
+      navigate(-1);
     } catch (error: unknown) {
       errorHandlers(error);
     } finally {
@@ -186,64 +181,37 @@ export default function FaAssetFormPage() {
     }
   };
 
-  const saveDraft = async () => {
+  const validateAsset = async () => {
     const errors = await formik.validateForm();
-    if (Object.keys(errors).length > 0) {
-      formik.setTouched(
-        Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
-      );
-      toast.error(t("common.requiredFields"));
-      return false;
-    }
-    try {
-      await formik.submitForm();
-      return true;
-    } catch {
-      return false;
-    }
-  };
+    if (!Object.keys(errors).length) return true;
 
-  const ensureSavedBeforeAction = async () => {
-    if (!formik.dirty) return true;
-    return saveDraft();
+    formik.setTouched(setNestedObjectValues(errors, true));
+    toast.error(t("common.requiredFields"));
+    return false;
   };
 
   const handleConfirm = async () => {
-    const ready = await ensureSavedBeforeAction();
-    if (!ready) return;
+    if (!(await validateAsset())) return;
 
     try {
+      await updateAsset(formik.values);
       await confirmMutation.mutateAsync();
-      toast.success(t("actions.confirmSuccess"));
-      navigate(exitPath, { replace: true });
+      toast.success(t("actions.confirmSuccess", { id }));
+      navigate(-1);
     } catch (error: unknown) {
       errorHandlers(error);
-      throw error;
     }
   };
 
-  const handleCancel = async () => {
-    if (isDraft) {
-      const ready = await ensureSavedBeforeAction();
-      if (!ready) return;
-    }
-
+  const handleCancelDocument = async () => {
     try {
       await cancelMutation.mutateAsync();
-      toast.success(t("actions.cancelSuccess"));
-      navigate(exitPath, { replace: true });
+      toast.success(t("actions.cancelSuccess", { id: record?.id ?? id }));
+      navigate(-1);
     } catch (error: unknown) {
       errorHandlers(error);
-      throw error;
     }
   };
-
-  const isSubmitting =
-    createMutation.isPending ||
-    updateMutation.isPending ||
-    confirmMutation.isPending ||
-    cancelMutation.isPending ||
-    isCreateProcessing;
 
   if (detailQuery.isLoading && !isCreate) {
     return (
@@ -269,129 +237,52 @@ export default function FaAssetFormPage() {
     );
   }
 
+  if (!showEditor && record) {
+    const cancelAction =
+      statusId === faDocumentStatusIds.posted && canCancel ? (
+        <Popconfirm
+          title={t("actions.cancelConfirmTitle")}
+          description={t("actions.cancelConfirmContent")}
+          okText={t("actions.cancel")}
+          cancelText={t("common.cancel")}
+          okButtonProps={{ danger: true }}
+          onConfirm={handleCancelDocument}
+        >
+          <Button
+            danger
+            icon={<Trash2 className="size-4" />}
+            loading={cancelMutation.isPending}
+          >
+            {t("fa.actions.cancelDocument")}
+          </Button>
+        </Popconfirm>
+      ) : undefined;
+
+    return <FaAssetReadonlyView record={record} action={cancelAction} />;
+  }
+
   return (
-    <div className="space-y-4">
-      <Card className="p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="text-sm text-muted-foreground">
-              {t("app.routes.faAssets")}
-            </div>
-            <div className="text-lg font-semibold">
-              {record?.inventoryNumber ??
-                (isCreate
-                  ? t("fa.form.create")
-                  : isEdit
-                    ? t("fa.form.edit")
-                    : t("fa.form.detail"))}
-            </div>
-          </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="size-4 text-primary" />
-              <span className="font-semibold">
-                {t("fa.fields.commissioningDate")}
-              </span>
-            </div>
-            <p className="font-semibold text-foreground">
-              {customDate(
-                record?.commissioningDate ?? defaultValues.commissioningDate,
-              )}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {!isCreate && (
-              <ProcessStatusBadge
-                statusId={record?.statusId}
-                statusCode={record?.statusCode}
-                statusName={record?.statusName}
-              />
-            )}
-          </div>
-        </div>
-      </Card>
+    <Form layout="vertical" onFinish={formik.handleSubmit}>
+      <fieldset disabled={!canSubmit} className="min-w-0">
+        <FaAssetFormFields formik={formik} isCreate={isCreate} />
+      </fieldset>
 
-      <div className="grid gap-4 lg:grid-cols-[1.7fr_0.9fr]">
-        <Card className="p-4">
-          {isDraft ? (
-            <Form layout="vertical" onFinish={formik.handleSubmit}>
-              <fieldset disabled={!canSubmit}>
-                <FaAssetFormFields formik={formik} isCreate={isCreate} />
-              </fieldset>
-            </Form>
-          ) : (
-            record && <FaAssetReadonlyDetailsCard record={record} />
-          )}
-        </Card>
-
-        <div className="space-y-4">
-          <DocumentActionsCard
-            actions={[
-              {
-                key: "save",
-                label: "common.save",
-                icon: <Save className="size-4" />,
-                onClick: saveDraft,
-                loading: isSubmitting,
-                hidden: !isDraft || !canSubmit,
-              },
-              {
-                key: "confirm",
-                label: "common.confirm",
-                icon: <CheckCircle2 className="size-4" />,
-                type: "primary",
-                onClick: handleConfirm,
-                loading: confirmMutation.isPending,
-                disabled: isSubmitting,
-                hidden: isCreate || !isDraft || !canConfirm,
-                confirm: {
-                  title: "actions.confirmConfirmTitle",
-                  content: "actions.confirmConfirmContent",
-                  okText: "common.confirm",
-                },
-              },
-              {
-                key: "cancel",
-                label: "actions.cancel",
-                icon: <CircleX className="size-4" />,
-                danger: true,
-                onClick: handleCancel,
-                loading: cancelMutation.isPending,
-                disabled: isSubmitting,
-                hidden:
-                  isCreate ||
-                  (!isDraft && statusId !== faDocumentStatusIds.posted) ||
-                  !canCancel,
-                confirm: {
-                  title: "actions.cancelConfirmTitle",
-                  content: "actions.cancelConfirmContent",
-                  okText: "actions.cancel",
-                  danger: true,
-                },
-              },
-            ]}
-          />
-
-          {(record?.statusName || record?.initialCost != null) && (
-            <Card className="space-y-3 p-4">
-              {record?.statusName && (
-                <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
-                  {t("fa.fields.currentStatus")}:{" "}
-                  <span className="font-semibold">{record.statusName}</span>
-                </div>
-              )}
-              {record?.initialCost != null && (
-                <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">
-                  {t("fa.fields.amount")}:{" "}
-                  <span className="font-semibold">
-                    {numberSpacing(record.initialCost)}
-                  </span>
-                </div>
-              )}
-            </Card>
-          )}
-        </div>
-      </div>
+      <FaDraftActionsBar
+        isCreate={isCreate}
+        canSave={canSubmit}
+        canConfirm={canConfirm}
+        canCancel={canCancel}
+        saving={
+          createMutation.isPending ||
+          updateMutation.isPending ||
+          isCreateProcessing
+        }
+        confirming={confirmMutation.isPending}
+        cancelling={cancelMutation.isPending}
+        onExit={() => navigate(listPath)}
+        onConfirm={handleConfirm}
+        onCancelDocument={handleCancelDocument}
+      />
 
       <FaAssetProcessingModeModal
         open={processingModeModalOpen}
@@ -400,6 +291,6 @@ export default function FaAssetFormPage() {
         onClose={() => setProcessingModeModalOpen(false)}
         onSelect={(mode) => void handleCreateSave(mode)}
       />
-    </div>
+    </Form>
   );
 }

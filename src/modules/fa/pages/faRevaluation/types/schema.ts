@@ -26,6 +26,13 @@ export const faRevaluationSchema = (t: TFunction) => Yup.object().shape({
           .required(t("fa.validation.accumulatedDepreciationAccountRequired")),
       })
     )
-    .min(1, t("fa.validation.atLeastOneLine")),
+    .min(1, t("fa.validation.atLeastOneLine"))
+    .test("unique-assets", t("fa.validation.duplicateAsset"), (lines) => {
+      if (!lines) return true;
+      const assetIds = lines
+        .map((line) => line.faAssetId)
+        .filter((assetId): assetId is number => assetId != null);
+      return new Set(assetIds).size === assetIds.length;
+    }),
 });
 

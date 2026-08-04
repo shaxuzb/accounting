@@ -226,6 +226,15 @@
       "receiptCreate": "Поступление основных средств (новое)",
       "receiptEdit": "Поступление основных средств №{{number}}",
       "receiptSubtitle": "Документ поступления основных средств",
+      "movementCreate": "Перемещение основных средств (новое)",
+      "movementEdit": "Перемещение основных средств",
+      "movementDetail": "Перемещение основных средств",
+      "revaluationCreate": "Переоценка основных средств (новая)",
+      "revaluationEdit": "Переоценка основных средств",
+      "revaluationDetail": "Переоценка основных средств",
+      "disposalCreate": "Списание основных средств (новое)",
+      "disposalEdit": "Списание основных средств",
+      "disposalDetail": "Списание основных средств",
       "revaluationDetails": "Детали переоценки",
       "assets": "Основные средства",
       "actions": "Действия"
@@ -304,11 +313,61 @@
       "saveAndConfirm": "Сохранить и подтвердить",
       "addLine": "Добавить строку",
       "addAsset": "Добавить средство",
+      "cancelDocument": "Отменить документ",
       "applyCommonData": "Применить общие данные",
       "saveDraft": "Сохранить черновик"
     },
     "messages": {
       "chooseSaveMode": "Как сохранить документ?"
+    },
+    "movement": {
+      "newLocation": "Новое местоположение",
+      "previousLocation": "Прежнее местоположение",
+      "currentLocations": "Текущие местоположения",
+      "generalNote": "Общее примечание",
+      "assetsToMove": "Перемещаемые средства",
+      "assetsToMoveDescription": "Добавьте основные средства в документ перемещения.",
+      "currentDepartment": "Текущий отдел",
+      "currentResponsible": "Текущий ответственный",
+      "selectedAssets": "Выбрано средств: {{count}}",
+      "movementContents": "Состав перемещения",
+      "assetCount": "Количество средств",
+      "countValue": "{{count}}",
+      "previousDepartment": "Прежний отдел",
+      "previousResponsible": "Прежний ответственный",
+      "destinationDepartment": "Новый отдел",
+      "destinationResponsible": "Новое ответственное лицо"
+    },
+    "revaluation": {
+      "detailsDescription": "Укажите дату документа и причину переоценки.",
+      "increase": "При увеличении стоимости",
+      "decrease": "При уменьшении стоимости",
+      "assetsToRevalue": "Переоцениваемые средства",
+      "assetsDescription": "Укажите новую стоимость и счета для каждого средства.",
+      "selectedAssets": "Выбрано средств: {{count}}",
+      "assetCount": "Количество средств",
+      "countValue": "{{count}}",
+      "newValuesTotal": "Сумма новых стоимостей",
+      "contents": "Состав переоценки"
+    },
+    "disposal": {
+      "assetsToDispose": "Основные средства к списанию",
+      "assetsDescription": "Добавьте основные средства в документ списания и укажите суммы продажи.",
+      "selectedAssets": "Выбрано основных средств: {{count}}",
+      "assetCount": "Количество основных средств",
+      "countValue": "{{count}}",
+      "contents": "Состав списания"
+    },
+    "asset": {
+      "identity": "Основная информация",
+      "identityDescription": "Укажите инвентарный номер, наименование и исходный товар.",
+      "classification": "Классификация и амортизация",
+      "classificationDescription": "Укажите группу, ОКОФ и параметры амортизации.",
+      "valuation": "Стоимость и даты",
+      "valuationDescription": "Укажите первоначальную и ликвидационную стоимость и даты ввода.",
+      "placement": "Расположение и ответственное лицо",
+      "placementDescription": "Выберите подразделение и ответственного пользователя.",
+      "accountsDescription": "Укажите счета основного средства и амортизации."
     }
   },
   "settings": {
@@ -366,6 +425,10 @@
           "name": "dDocs",
           "description": "Сервис подписания и обмена электронными документами."
         },
+        "edo": {
+          "name": "Электронный документооборот",
+          "description": "Отправка и получение электронных документов через Didox, Edocs и других провайдеров."
+        },
         "aslBelgi": {
           "name": "Asl Belgisi",
           "description": "Сервис маркировки и отслеживания товаров."
@@ -374,6 +437,24 @@
       "messages": {
         "connected": "Интеграция успешно подключена",
         "disconnected": "Интеграция отключена"
+      },
+      "edo": {
+        "title": "Электронный документооборот",
+        "description": "Выбор провайдера, авторизация через E-IMZO и управление электронными счетами-фактурами.",
+        "capabilityUnavailable": "Действие недоступно у выбранного провайдера",
+        "provider": { "title": "Провайдер ЭДО", "description": "Выберите оператора электронного документооборота для организации.", "notConfigured": "Реквизиты провайдера не настроены" },
+        "auth": { "title": "Авторизация E-IMZO", "description": "Откройте сессию организации у выбранного провайдера.", "selectProvider": "Сначала выберите активного провайдера", "unavailable": "Авторизация недоступна", "authenticated": "Авторизация в {{provider}} выполнена", "expiresAt": "Сессия истекает: {{date}}", "authenticate": "Авторизоваться" },
+        "inbox": { "title": "Входящие документы ЭДО", "description": "Просмотр входящих документов, проверка статуса и доступные действия.", "unavailable": "Получение входящих документов недоступно", "filtersUnavailable": "Поиск, статус и фильтры дат на стороне Edocs не подтверждены и временно отключены.", "rejectTitle": "Отклонить входящий документ" },
+        "outbox": { "create": "Создать счёт-фактуру", "createDescription": "Подготовка данных внутреннего документа для отправки в ЭДО.", "unavailable": "Создание счёта-фактуры недоступно", "document": "Исходящий документ ЭДО №{{id}}", "detailDescription": "Проверка статуса и подписание документа через E-IMZO.", "sign": "Подписание документа", "signUnavailable": "Документ нельзя подписать в текущем состоянии" },
+        "sections": { "document": "Данные документа", "empowerment": "Доверенность", "lines": "Строки счёта-фактуры" },
+        "actions": { "createFactura": "Создать счёт-фактуру", "sign": "Подписать", "reject": "Отклонить", "download": "Скачать" },
+        "fields": {
+          "internalDocumentId": "ID внутреннего документа", "internalDocumentType": "Тип внутреннего документа", "documentNumber": "Номер документа", "documentDate": "Дата документа", "documentType": "Тип документа", "providerDocumentId": "ID документа провайдера", "contractNumber": "Номер договора", "contractDate": "Дата договора", "seller": "Продавец", "buyer": "Покупатель", "name": "Наименование", "taxIdentifier": "ИНН/ПИНФЛ", "bankCode": "МФО", "accountNumber": "Расчётный счёт", "address": "Адрес", "branchCode": "Код филиала", "branchName": "Название филиала", "directorName": "Директор", "accountantName": "Бухгалтер", "vatRegistrationStatus": "Статус регистрации НДС", "districtId": "ID района", "empowermentNumber": "Номер доверенности", "dateOfIssue": "Дата выдачи", "agentName": "Ф.И.О. представителя", "agentPinfl": "ПИНФЛ представителя", "catalogCode": "Код каталога", "catalogName": "Наименование каталога", "unitCode": "Код единицы", "unitName": "Единица измерения", "quantity": "Количество", "amount": "Сумма", "taxRate": "Ставка налога", "taxAmount": "Сумма налога", "isTaxFree": "Без налога", "markingCodes": "Коды маркировки", "companyInn": "ИНН организации", "fromDate": "Дата с", "toDate": "Дата по", "status": "Статус", "localStatus": "Локальный статус", "providerStatus": "Статус провайдера", "checkedAt": "Время проверки", "reason": "Причина", "preparedPkcs7": "Подготовленный PKCS#7"
+        },
+        "status": { "reconciliation": "Требуется ручная сверка состояния провайдера и системы" },
+        "statuses": { "UNKNOWN": "Неизвестно", "DRAFT": "Черновик", "PENDING": "Ожидает", "SIGNED": "Подписан", "SENT": "Отправлен", "RECEIVED": "Получен", "REJECTED": "Отклонён", "COMPLETED": "Завершён", "CANCELLED": "Отменён", "FAILED": "Ошибка", "RECONCILIATION_REQUIRED": "Требуется сверка" },
+        "messages": { "providerChanged": "Активный провайдер изменён", "authenticated": "Авторизация ЭДО выполнена", "created": "Счёт-фактура создан", "replay": "Возвращён существующий успешный результат", "signed": "Документ подписан", "rejected": "Документ отклонён", "downloaded": "Файл загружен" },
+        "errors": { "providers": "Не удалось загрузить провайдеров", "status": "Не удалось получить статус документа", "challengeExpired": "Сессия подписания истекла. Повторите попытку.", "authRejected": "Провайдер не подтвердил авторизацию" }
       }
     },
     "title": "Настройки",

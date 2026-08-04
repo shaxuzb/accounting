@@ -94,7 +94,7 @@ export default function IntegrationConnectionModal({
     if (!open || !isSelectingCertificate || phase !== "checking") return;
     if (!isInstalled || hasEimzoInstallError) return;
 
-    void reloadKeys({ force: true })
+    reloadKeys({ force: true })
       .then(() => setPhase("ready"))
       .catch((cause) => {
         setErrorMessage(cause instanceof Error ? cause.message : String(cause));

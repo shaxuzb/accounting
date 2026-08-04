@@ -1,8 +1,13 @@
 import type { FaMovementAssetLine, FaMovementPayload } from "./type";
 
 export interface FaMovementLineValues
-  extends Omit<FaMovementAssetLine, "faAssetId"> {
+  extends Omit<
+    FaMovementAssetLine,
+    "faAssetId" | "fromDepartmentId" | "fromResponsibleUserId"
+  > {
   faAssetId: number | null;
+  fromDepartmentId: number | null;
+  fromResponsibleUserId: number | null;
 }
 
 export interface FaMovementFormValues

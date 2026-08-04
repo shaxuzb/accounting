@@ -1,5 +1,5 @@
 export type IntegrationCode =
-  | "DDOCS"
+  | "EDO"
   | "ASL_BELGISI"
   | "TELEGRAM"
   | "INSTAGRAM"

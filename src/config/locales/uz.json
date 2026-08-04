@@ -226,6 +226,15 @@
       "receiptCreate": "Asosiy vositalar kirimi (yangi)",
       "receiptEdit": "Asosiy vositalar kirimi №{{number}}",
       "receiptSubtitle": "Asosiy vositalar kirim hujjati",
+      "movementCreate": "Asosiy vositalarni ko'chirish (yangi)",
+      "movementEdit": "Asosiy vositalarni ko'chirish",
+      "movementDetail": "Asosiy vositalarni ko'chirish",
+      "revaluationCreate": "Asosiy vositalarni qayta baholash (yangi)",
+      "revaluationEdit": "Asosiy vositalarni qayta baholash",
+      "revaluationDetail": "Asosiy vositalarni qayta baholash",
+      "disposalCreate": "Asosiy vositalarni hisobdan chiqarish (yangi)",
+      "disposalEdit": "Asosiy vositalarni hisobdan chiqarish",
+      "disposalDetail": "Asosiy vositalarni hisobdan chiqarish",
       "revaluationDetails": "Qayta baholash tafsilotlari",
       "assets": "Asosiy vositalar",
       "actions": "Amallar"
@@ -304,11 +313,61 @@
       "saveAndConfirm": "Saqlash va tasdiqlash",
       "addLine": "Satr qo'shish",
       "addAsset": "Vosita qo'shish",
+      "cancelDocument": "Hujjatni bekor qilish",
       "applyCommonData": "Umumiy ma'lumotlarni qo'llash",
       "saveDraft": "Qoralama saqlash"
     },
     "messages": {
       "chooseSaveMode": "Hujjatni qanday saqlamoqchisiz?"
+    },
+    "movement": {
+      "newLocation": "Yangi joylashuv",
+      "previousLocation": "Oldingi joylashuv",
+      "currentLocations": "Joriy joylashuvlar",
+      "generalNote": "Umumiy izoh",
+      "assetsToMove": "Ko'chiriladigan vositalar",
+      "assetsToMoveDescription": "Ko'chirish hujjatiga asosiy vositalarni qo'shing.",
+      "currentDepartment": "Joriy bo'lim",
+      "currentResponsible": "Joriy mas'ul",
+      "selectedAssets": "Tanlangan vositalar: {{count}} ta",
+      "movementContents": "Ko'chirish tarkibi",
+      "assetCount": "Vositalar soni",
+      "countValue": "{{count}} ta",
+      "previousDepartment": "Oldingi bo'lim",
+      "previousResponsible": "Oldingi mas'ul",
+      "destinationDepartment": "Yangi bo'lim",
+      "destinationResponsible": "Yangi mas'ul shaxs"
+    },
+    "revaluation": {
+      "detailsDescription": "Hujjat sanasi va qayta baholash sababini kiriting.",
+      "increase": "Qiymat oshganda",
+      "decrease": "Qiymat kamayganda",
+      "assetsToRevalue": "Qayta baholanadigan vositalar",
+      "assetsDescription": "Har bir vosita uchun yangi qiymat va hisobvaraqlarni belgilang.",
+      "selectedAssets": "Tanlangan vositalar: {{count}} ta",
+      "assetCount": "Vositalar soni",
+      "countValue": "{{count}} ta",
+      "newValuesTotal": "Yangi qiymatlar jami",
+      "contents": "Qayta baholash tarkibi"
+    },
+    "disposal": {
+      "assetsToDispose": "Hisobdan chiqariladigan vositalar",
+      "assetsDescription": "Hisobdan chiqarish hujjatiga asosiy vositalarni qo'shing va sotish summasini belgilang.",
+      "selectedAssets": "Tanlangan vositalar: {{count}} ta",
+      "assetCount": "Vositalar soni",
+      "countValue": "{{count}} ta",
+      "contents": "Hisobdan chiqarish tarkibi"
+    },
+    "asset": {
+      "identity": "Asosiy ma'lumotlar",
+      "identityDescription": "Vositaning inventar raqami, nomi va manba mahsulotini kiriting.",
+      "classification": "Tasniflash va amortizatsiya",
+      "classificationDescription": "Guruh, O'KOF va amortizatsiya parametrlarini belgilang.",
+      "valuation": "Qiymat va sanalar",
+      "valuationDescription": "Boshlang'ich va qoldiq qiymat hamda ishga tushirish sanalarini kiriting.",
+      "placement": "Joylashuv va mas'ul shaxs",
+      "placementDescription": "Vosita biriktiriladigan bo'lim va mas'ul foydalanuvchini tanlang.",
+      "accountsDescription": "Asosiy vosita va amortizatsiya uchun hisobvaraqlarni belgilang."
     }
   },
   "settings": {
@@ -514,6 +573,10 @@
           "name": "Didox va Edocs",
           "description": "Elektron hujjatlarni imzolash va almashish xizmati."
         },
+        "edo": {
+          "name": "Elektron hujjat almashinuvi",
+          "description": "Didox, Edocs va boshqa providerlar orqali elektron hujjatlarni yuborish va qabul qilish."
+        },
         "aslBelgi": {
           "name": "Asl Belgi",
           "description": "Markirovka va tovarlarni kuzatish xizmati."
@@ -522,6 +585,129 @@
       "messages": {
         "connected": "Integratsiya muvaffaqiyatli ulandi",
         "disconnected": "Integratsiya uzildi"
+      },
+      "edo": {
+        "title": "Elektron hujjat almashinuvi",
+        "description": "Provider tanlash, E-IMZO autentifikatsiyasi va elektron hisob-fakturalarni boshqarish.",
+        "capabilityUnavailable": "Bu amal tanlangan providerda mavjud emas",
+        "provider": {
+          "title": "EDO provider",
+          "description": "Tashkilot uchun ishlatiladigan elektron hujjat operatorini tanlang.",
+          "notConfigured": "Provider rekvizitlari sozlanmagan"
+        },
+        "auth": {
+          "title": "E-IMZO autentifikatsiyasi",
+          "description": "Tanlangan provider uchun tashkilot sessiyasini sertifikat bilan oching.",
+          "selectProvider": "Avval faol providerni tanlang",
+          "unavailable": "Autentifikatsiya capability’si mavjud emas",
+          "authenticated": "{{provider}} bilan autentifikatsiya bajarilgan",
+          "expiresAt": "Sessiya muddati: {{date}}",
+          "authenticate": "Autentifikatsiya"
+        },
+        "inbox": {
+          "title": "Kiruvchi EDO hujjatlar",
+          "description": "Providerdan kirgan hujjatlarni ko‘rish, holatini tekshirish va mavjud amallarni bajarish.",
+          "unavailable": "Kiruvchi hujjatlar capability’si mavjud emas",
+          "filtersUnavailable": "Edocs’da search, status va sana filterlarining provider semanticsi tasdiqlanmagan; hozircha ular o‘chirilgan.",
+          "rejectTitle": "Kiruvchi hujjatni rad etish"
+        },
+        "outbox": {
+          "create": "Hisob-faktura yaratish",
+          "createDescription": "Ichki hujjat ma’lumotlarini umumiy EDO hisob-fakturasiga tayyorlash.",
+          "unavailable": "Hisob-faktura yaratish capability’si mavjud emas",
+          "document": "Chiquvchi EDO hujjat #{{id}}",
+          "detailDescription": "Provider holatini tekshirish va hujjatni E-IMZO bilan imzolash.",
+          "sign": "Hujjatni imzolash",
+          "signUnavailable": "Joriy holatda hujjatni imzolash mumkin emas"
+        },
+        "sections": {
+          "document": "Hujjat ma’lumotlari",
+          "empowerment": "Ishonchnoma",
+          "lines": "Hisob-faktura satrlari"
+        },
+        "actions": {
+          "createFactura": "Hisob-faktura yaratish",
+          "sign": "Imzolash",
+          "reject": "Rad etish",
+          "download": "Yuklab olish"
+        },
+        "fields": {
+          "internalDocumentId": "Ichki hujjat ID",
+          "internalDocumentType": "Ichki hujjat turi",
+          "documentNumber": "Hujjat raqami",
+          "documentDate": "Hujjat sanasi",
+          "documentType": "Hujjat turi",
+          "providerDocumentId": "Provider hujjat ID",
+          "contractNumber": "Shartnoma raqami",
+          "contractDate": "Shartnoma sanasi",
+          "seller": "Sotuvchi",
+          "buyer": "Xaridor",
+          "name": "Nomi",
+          "taxIdentifier": "STIR/JShShIR",
+          "bankCode": "MFO",
+          "accountNumber": "Hisob raqami",
+          "address": "Manzil",
+          "branchCode": "Filial kodi",
+          "branchName": "Filial nomi",
+          "directorName": "Direktor",
+          "accountantName": "Buxgalter",
+          "vatRegistrationStatus": "QQS ro‘yxat holati",
+          "districtId": "Tuman ID",
+          "empowermentNumber": "Ishonchnoma raqami",
+          "dateOfIssue": "Berilgan sana",
+          "agentName": "Vakil F.I.Sh.",
+          "agentPinfl": "Vakil JShShIR",
+          "catalogCode": "Katalog kodi",
+          "catalogName": "Katalog nomi",
+          "unitCode": "O‘lchov kodi",
+          "unitName": "O‘lchov nomi",
+          "quantity": "Miqdor",
+          "amount": "Summa",
+          "taxRate": "Soliq stavkasi",
+          "taxAmount": "Soliq summasi",
+          "isTaxFree": "Soliqdan ozod",
+          "markingCodes": "Markirovka kodlari",
+          "companyInn": "Tashkilot STIR",
+          "fromDate": "Boshlanish sanasi",
+          "toDate": "Tugash sanasi",
+          "status": "Holat",
+          "localStatus": "Ichki holat",
+          "providerStatus": "Provider holati",
+          "checkedAt": "Tekshirilgan vaqt",
+          "reason": "Sabab",
+          "preparedPkcs7": "Tayyor PKCS#7"
+        },
+        "status": {
+          "reconciliation": "Provider va ichki holatni qo‘lda muvofiqlashtirish talab qilinadi"
+        },
+        "statuses": {
+          "UNKNOWN": "Noma’lum",
+          "DRAFT": "Qoralama",
+          "PENDING": "Kutilmoqda",
+          "SIGNED": "Imzolangan",
+          "SENT": "Yuborilgan",
+          "RECEIVED": "Qabul qilingan",
+          "REJECTED": "Rad etilgan",
+          "COMPLETED": "Yakunlangan",
+          "CANCELLED": "Bekor qilingan",
+          "FAILED": "Xatolik",
+          "RECONCILIATION_REQUIRED": "Muvofiqlashtirish kerak"
+        },
+        "messages": {
+          "providerChanged": "Faol provider o‘zgartirildi",
+          "authenticated": "EDO autentifikatsiyasi muvaffaqiyatli",
+          "created": "Hisob-faktura yaratildi",
+          "replay": "Oldingi muvaffaqiyatli natija qaytarildi",
+          "signed": "Hujjat imzolandi",
+          "rejected": "Hujjat rad etildi",
+          "downloaded": "Fayl yuklab olindi"
+        },
+        "errors": {
+          "providers": "Providerlarni yuklab bo‘lmadi",
+          "status": "Hujjat holatini olib bo‘lmadi",
+          "challengeExpired": "Imzolash sessiyasi muddati tugadi. Qayta urinib ko‘ring.",
+          "authRejected": "Provider autentifikatsiyani tasdiqlamadi"
+        }
       }
     },
     "chartAccounts": {

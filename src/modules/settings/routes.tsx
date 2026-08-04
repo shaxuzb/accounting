@@ -53,6 +53,10 @@ import IntegrationsPage from "./pages/integrations/screens/IntegrationsPage";
 import { integrationPermissions } from "./pages/integrations/constants/permissions";
 import PayrollComponentListPage from "./pages/payrollComponents/screens/PayrollComponentListPage";
 import { payrollComponentPermissions } from "./pages/payrollComponents/constants/permissions";
+import EdoWorkspacePage from "./pages/integrations/edo/screens/EdoWorkspacePage";
+import EdoInboxPage from "./pages/integrations/edo/screens/EdoInboxPage";
+import EdoOutboxCreatePage from "./pages/integrations/edo/screens/EdoOutboxCreatePage";
+import EdoOutboxDetailPage from "./pages/integrations/edo/screens/EdoOutboxDetailPage";
 
 const settingsPermissions = [
   rolePermissions.view,
@@ -90,6 +94,18 @@ const withPermission = (
   </PermissionCard>
 );
 
+const withEimzo = (element: React.ReactElement) => (
+  <EimzoProvider
+    apiKeys={
+      import.meta.env.VITE_EIMZO_DOMAIN && import.meta.env.VITE_EIMZO_API_KEY
+        ? [import.meta.env.VITE_EIMZO_DOMAIN, import.meta.env.VITE_EIMZO_API_KEY]
+        : undefined
+    }
+  >
+    {element}
+  </EimzoProvider>
+);
+
 export const settingsRoutes: RouteObject = {
   path: "settings",
   handle: { title: "settings.title" },
@@ -106,19 +122,55 @@ export const settingsRoutes: RouteObject = {
         backTo: "..",
       },
       element: withPermission(
-        <EimzoProvider
-          apiKeys={
-            import.meta.env.VITE_EIMZO_DOMAIN &&
-            import.meta.env.VITE_EIMZO_API_KEY
-              ? [
-                  import.meta.env.VITE_EIMZO_DOMAIN,
-                  import.meta.env.VITE_EIMZO_API_KEY,
-                ]
-              : undefined
-          }
-        >
-          <IntegrationsPage />
-        </EimzoProvider>,
+        withEimzo(<IntegrationsPage />),
+        integrationPermissions.view,
+      ),
+    },
+    {
+      path: "integrations/edo",
+      handle: {
+        title: "settings.integrations.edo.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        withEimzo(<EdoWorkspacePage />),
+        integrationPermissions.view,
+      ),
+    },
+    {
+      path: "integrations/edo/inbox",
+      handle: {
+        title: "settings.integrations.edo.inbox.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        withEimzo(<EdoInboxPage />),
+        integrationPermissions.view,
+      ),
+    },
+    {
+      path: "integrations/edo/outbox/create",
+      handle: {
+        title: "settings.integrations.edo.outbox.create",
+        showBack: true,
+        backTo: "../..",
+      },
+      element: withPermission(
+        withEimzo(<EdoOutboxCreatePage />),
+        integrationPermissions.view,
+      ),
+    },
+    {
+      path: "integrations/edo/outbox/:id",
+      handle: {
+        title: "settings.integrations.edo.outbox.sign",
+        showBack: true,
+        backTo: "../..",
+      },
+      element: withPermission(
+        withEimzo(<EdoOutboxDetailPage />),
         integrationPermissions.view,
       ),
     },

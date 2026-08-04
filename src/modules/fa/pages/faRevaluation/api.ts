@@ -2,26 +2,7 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { endpoints } from "./constants/endpoints";
-import type { FaRevaluationFormValues } from "./types/form";
 import type { FaRevaluation, FaRevaluationPayload } from "./types/type";
-import { faDocumentStatusIds } from "../../shared/constants/statuses";
-
-const transformPayload = (payload: FaRevaluationFormValues): FaRevaluationPayload => ({
-  revaluationDate: payload.revaluationDate,
-  reason: payload.reason || "",
-  stateId: payload.stateId ?? faDocumentStatusIds.draft,
-  revaluationReserveAccountId: Number(payload.revaluationReserveAccountId),
-  revaluationLossAccountId: Number(payload.revaluationLossAccountId),
-  lines: payload.lines.map(line => ({
-    faAssetId: Number(line.faAssetId),
-    newValue: Number(line.newValue),
-    note: line.note || "",
-    assetAccountId: Number(line.assetAccountId),
-    accumulatedDepreciationAccountId: Number(
-      line.accumulatedDepreciationAccountId,
-    ),
-  }))
-});
 
 export const faRevaluationService = {
   list: (searchParams?: QueryParams) =>
@@ -34,14 +15,14 @@ export const faRevaluationService = {
       .get<FaRevaluation>(endpoints.detail(id))
       .then((res) => res.data),
 
-  create: (payload: FaRevaluationFormValues) =>
+  create: (payload: FaRevaluationPayload) =>
     $axiosPrivate
-      .post<FaRevaluation>(endpoints.list, transformPayload(payload))
+      .post<FaRevaluation>(endpoints.list, payload)
       .then((res) => res.data),
 
-  update: (id: string | number, payload: FaRevaluationFormValues) =>
+  update: (id: string | number, payload: FaRevaluationPayload) =>
     $axiosPrivate
-      .put<FaRevaluation>(endpoints.detail(id), transformPayload(payload))
+      .put<FaRevaluation>(endpoints.detail(id), payload)
       .then((res) => res.data),
 
   confirm: (id: string | number) =>

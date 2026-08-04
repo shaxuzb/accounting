@@ -1,11 +1,5 @@
-import { useMemo, useState } from "react";
-import {
-  Button,
-  Col,
-  Collapse,
-  Divider,
-  Row,
-} from "antd";
+import { useState } from "react";
+import { Button, Col, Collapse, Row } from "antd";
 import type { CollapseProps } from "antd";
 import type { FormikProps } from "formik";
 import { useTranslation } from "react-i18next";
@@ -20,11 +14,7 @@ import {
   chartAccountSelectDisplayConfig,
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
-import { numberSpacing } from "@/utils/utils";
-import type {
-  FaReceiptAssetValues,
-  FaReceiptFormValues,
-} from "../types/form";
+import type { FaReceiptAssetValues, FaReceiptFormValues } from "../types/form";
 
 const createEmptyAsset = (
   responsibleUserId: number | null,
@@ -75,15 +65,15 @@ export default function FaReceiptFormFields({
     Record<number, string[]>
   >({ 0: ["asset-0"] });
 
-  const documentTotal = useMemo(
-    () =>
-      formik.values.lines.reduce(
-        (total, line) =>
-          total + Number(line.quantity || 0) * Number(line.price || 0),
-        0,
-      ),
-    [formik.values.lines],
-  );
+  // const documentTotal = useMemo(
+  //   () =>
+  //     formik.values.lines.reduce(
+  //       (total, line) =>
+  //         total + Number(line.quantity || 0) * Number(line.price || 0),
+  //       0,
+  //     ),
+  //   [formik.values.lines],
+  // );
 
   const handleAddLine = () => {
     const lineIndex = formik.values.lines.length;
@@ -115,10 +105,7 @@ export default function FaReceiptFormFields({
     ]);
     setActiveAssetKeys((keys) => ({
       ...keys,
-      [lineIndex]: [
-        ...(keys[lineIndex] ?? ["asset-0"]),
-        `asset-${assetIndex}`,
-      ],
+      [lineIndex]: [...(keys[lineIndex] ?? ["asset-0"]), `asset-${assetIndex}`],
     }));
   };
 
@@ -136,8 +123,7 @@ export default function FaReceiptFormFields({
   };
 
   const handleApplyCommonAssetData = (lineIndex: number) => {
-    const [sourceAsset, ...otherAssets] =
-      formik.values.lines[lineIndex].assets;
+    const [sourceAsset, ...otherAssets] = formik.values.lines[lineIndex].assets;
     if (!sourceAsset || !otherAssets.length) return;
 
     const commonValues = {
@@ -153,8 +139,7 @@ export default function FaReceiptFormFields({
       assetAccountId: sourceAsset.assetAccountId,
       accumulatedDepreciationAccountId:
         sourceAsset.accumulatedDepreciationAccountId,
-      depreciationExpenseAccountId:
-        sourceAsset.depreciationExpenseAccountId,
+      depreciationExpenseAccountId: sourceAsset.depreciationExpenseAccountId,
     };
 
     formik.setFieldValue(`lines[${lineIndex}].assets`, [
@@ -169,8 +154,8 @@ export default function FaReceiptFormFields({
         <div className="mb-4 text-sm font-semibold text-foreground">
           {t("fa.sections.assetInformation")}
         </div>
-        <Row gutter={[16, 4]}>
-          <Col xs={24} md={12} xl={6}>
+        <Row gutter={[12, 0]}>
+          <Col span={6}>
             <InputText
               formik={formik}
               fieldName={`lines[${lineIndex}].assets[${assetIndex}].inventoryNumber`}
@@ -178,7 +163,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <InputText
               formik={formik}
               fieldName={`lines[${lineIndex}].assets[${assetIndex}].name`}
@@ -186,7 +171,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <InputNumber
               formik={formik}
               fieldName={`lines[${lineIndex}].assets[${assetIndex}].initialCost`}
@@ -195,7 +180,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <InputNumber
               formik={formik}
               fieldName={`lines[${lineIndex}].assets[${assetIndex}].salvageValue`}
@@ -203,7 +188,7 @@ export default function FaReceiptFormFields({
               min={0}
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <InputNumber
               formik={formik}
               fieldName={`lines[${lineIndex}].assets[${assetIndex}].usefulLifeMonths`}
@@ -212,7 +197,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <SelectCustom
               path={selectListEndpoints.depreciationMethodsSelectList}
               formik={formik}
@@ -221,7 +206,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <SelectCustom
               path={selectListEndpoints.faGroupsSelectList}
               formik={formik}
@@ -230,7 +215,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <SelectCustom
               path={selectListEndpoints.okofsSelectList}
               formik={formik}
@@ -240,7 +225,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <SelectDate
               formik={formik}
               fieldName={`lines[${lineIndex}].assets[${assetIndex}].commissioningDate`}
@@ -248,7 +233,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <SelectDate
               formik={formik}
               fieldName={`lines[${lineIndex}].assets[${assetIndex}].deprStartDate`}
@@ -256,7 +241,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <InputNumber
               formik={formik}
               fieldName={`lines[${lineIndex}].assets[${assetIndex}].plannedUnitsTotal`}
@@ -264,7 +249,7 @@ export default function FaReceiptFormFields({
               min={0}
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <SelectCustom
               path={selectListEndpoints.departmentsSelectList}
               formik={formik}
@@ -274,7 +259,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={6}>
+          <Col span={6}>
             <SelectCustom
               path={selectListEndpoints.usersSelectList}
               formik={formik}
@@ -284,15 +269,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-        </Row>
-      </div>
-
-      <div className="border-t border-border pt-5">
-        <div className="mb-4 text-sm font-semibold text-foreground">
-          {t("fa.sections.accounts")}
-        </div>
-        <Row gutter={[16, 4]}>
-          <Col xs={24} md={12} xl={8}>
+          <Col span={6}>
             <SelectCustom
               path={selectListEndpoints.chartAccountsSelectList}
               displayConfig={chartAccountSelectDisplayConfig}
@@ -303,7 +280,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={8}>
+          <Col span={6}>
             <SelectCustom
               path={selectListEndpoints.chartAccountsSelectList}
               displayConfig={chartAccountSelectDisplayConfig}
@@ -314,7 +291,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={8}>
+          <Col span={6}>
             <SelectCustom
               path={selectListEndpoints.chartAccountsSelectList}
               displayConfig={chartAccountSelectDisplayConfig}
@@ -327,12 +304,21 @@ export default function FaReceiptFormFields({
           </Col>
         </Row>
       </div>
+
+      {/* <div className="border-t border-border pt-5">
+        <div className="mb-4 text-sm font-semibold text-foreground">
+          {t("fa.sections.accounts")}
+        </div>
+        <Row gutter={[16, 0]}>
+        
+        </Row>
+      </div> */}
     </div>
   );
 
   const lineItems: CollapseProps["items"] = formik.values.lines.map(
     (line, lineIndex) => {
-      const lineTotal = Number(line.quantity || 0) * Number(line.price || 0);
+      // const lineTotal = Number(line.quantity || 0) * Number(line.price || 0);
       const assetItems: CollapseProps["items"] = line.assets.map(
         (asset, assetIndex) => ({
           key: `asset-${assetIndex}`,
@@ -342,7 +328,7 @@ export default function FaReceiptFormFields({
                 {t("fa.sections.assetNumber", { number: assetIndex + 1 })}
               </span>
               <span className="truncate text-xs text-muted-foreground">
-                {asset.inventoryNumber || asset.name || "—"}
+                {asset.name}
               </span>
             </div>
           ),
@@ -371,13 +357,7 @@ export default function FaReceiptFormFields({
               {t("fa.sections.lineNumber", { number: lineIndex + 1 })}
             </span>
             <div className="hidden min-w-0 flex-1 grid-cols-5 gap-5 text-xs text-muted-foreground lg:grid">
-              <span className="truncate">{line.name || "—"}</span>
-              <span>{numberSpacing(Number(line.quantity || 0))}</span>
-              <span>{numberSpacing(Number(line.price || 0))}</span>
-              <span>{line.vatRateId ?? "—"}</span>
-              <span className="text-right font-semibold text-foreground">
-                {numberSpacing(lineTotal)}
-              </span>
+              <span className="truncate">{line.name}</span>
             </div>
           </div>
         ),
@@ -395,9 +375,9 @@ export default function FaReceiptFormFields({
             />
           ) : null,
         children: (
-          <div className="space-y-5">
-            <Row gutter={[16, 4]}>
-              <Col xs={24} md={12} xl={8}>
+          <div className="space-y-2">
+            <Row gutter={[16, 0]}>
+              <Col span={6}>
                 <InputText
                   formik={formik}
                   fieldName={`lines[${lineIndex}].name`}
@@ -405,7 +385,7 @@ export default function FaReceiptFormFields({
                   required
                 />
               </Col>
-              <Col xs={24} md={12} xl={8}>
+              <Col span={6}>
                 <SelectCustom
                   path={selectListEndpoints.productsSelectList}
                   formik={formik}
@@ -415,7 +395,7 @@ export default function FaReceiptFormFields({
                   required
                 />
               </Col>
-              <Col xs={12} md={8} xl={4}>
+              <Col span={6}>
                 <InputNumber
                   formik={formik}
                   fieldName={`lines[${lineIndex}].quantity`}
@@ -424,7 +404,7 @@ export default function FaReceiptFormFields({
                   required
                 />
               </Col>
-              <Col xs={12} md={8} xl={4}>
+              <Col span={6}>
                 <InputNumber
                   formik={formik}
                   fieldName={`lines[${lineIndex}].price`}
@@ -433,7 +413,7 @@ export default function FaReceiptFormFields({
                   required
                 />
               </Col>
-              <Col xs={24} md={8} xl={8}>
+              <Col span={6}>
                 <SelectCustom
                   path={selectListEndpoints.vatRatesSelectList}
                   formik={formik}
@@ -442,7 +422,7 @@ export default function FaReceiptFormFields({
                   required
                 />
               </Col>
-              <Col xs={24} md={12} xl={8}>
+              <Col span={6}>
                 <SelectCustom
                   path={selectListEndpoints.chartAccountsSelectList}
                   displayConfig={chartAccountSelectDisplayConfig}
@@ -453,7 +433,7 @@ export default function FaReceiptFormFields({
                   required
                 />
               </Col>
-              <Col xs={24} md={12} xl={8}>
+              <Col span={6}>
                 <SelectCustom
                   path={selectListEndpoints.chartAccountsSelectList}
                   displayConfig={chartAccountSelectDisplayConfig}
@@ -466,14 +446,14 @@ export default function FaReceiptFormFields({
               </Col>
             </Row>
 
-            <div className="flex justify-end border-t border-dashed border-border pt-3 text-sm">
+            {/* <div className="flex justify-end border-t border-dashed border-border pt-2 text-sm">
               <span className="text-muted-foreground">
                 {t("fa.sections.lineTotal")}:{" "}
                 <strong className="text-foreground">
                   {numberSpacing(lineTotal)}
                 </strong>
               </span>
-            </div>
+            </div> */}
 
             <div className="rounded-lg border border-border bg-background/40">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
@@ -517,13 +497,11 @@ export default function FaReceiptFormFields({
   );
 
   return (
-    <div className="space-y-4">
-      <Card className="border border-border p-5">
-        <div className="mb-5 text-base font-semibold">
-          {t("fa.sections.documentHeader")}
-        </div>
-        <Row gutter={[20, 4]}>
-          <Col xs={24} md={12} xl={8}>
+    <div className="space-y-2">
+      <Card className=" p-3">
+      
+        <Row gutter={[16, 0]}>
+          <Col span={4}>
             <SelectDate
               formik={formik}
               fieldName="docDate"
@@ -531,7 +509,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={8}>
+          <Col span={4}>
             <SelectCustom
               path={selectListEndpoints.counterpartiesSelectList}
               formik={formik}
@@ -541,7 +519,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={8}>
+          <Col span={4}>
             <SelectCustom
               path={selectListEndpoints.faReceiptTypesSelectList}
               formik={formik}
@@ -550,7 +528,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={8}>
+          <Col span={4}>
             <SelectCustom
               path={selectListEndpoints.warehousesSelectList}
               formik={formik}
@@ -560,7 +538,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={8}>
+          <Col span={4}>
             <SelectCustom
               path={selectListEndpoints.currenciesSelectList}
               formik={formik}
@@ -569,7 +547,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col xs={24} md={12} xl={8}>
+          <Col span={4}>
             <SelectCustom
               path={selectListEndpoints.chartAccountsSelectList}
               displayConfig={chartAccountSelectDisplayConfig}
@@ -615,20 +593,16 @@ export default function FaReceiptFormFields({
         />
 
         {typeof formik.errors.lines === "string" && (
-          <div className="mt-3 text-sm text-red-500">
-            {formik.errors.lines}
-          </div>
+          <div className="mt-3 text-sm text-red-500">{formik.errors.lines}</div>
         )}
-
-        <Divider className="my-4" />
-        <div className="flex justify-end text-sm">
+        {/* <div className="flex justify-end text-sm">
           <span className="text-muted-foreground">
             {t("fa.sections.documentTotal")}:{" "}
             <strong className="text-lg text-foreground">
               {numberSpacing(documentTotal)}
             </strong>
           </span>
-        </div>
+        </div> */}
       </Card>
     </div>
   );
