@@ -72,15 +72,13 @@ export default function EdoAuthenticationPanel({
       const keyId = await prepareKey(selectedCertificate);
       const { preparedPkcs7, signatureHex } = await createEimzoSignature(
         keyId,
-        getEimzoSigningDataBase64(
-          challenge.payload,
-          challenge.payloadFormat,
-        ),
+        getEimzoSigningDataBase64(challenge.payload, challenge.payloadFormat),
       );
 
       if (new Date(challenge.expiresAt).getTime() <= Date.now()) {
         throw new Error(t("settings.integrations.edo.errors.challengeExpired"));
       }
+      console.log(challenge);
 
       const response = await completeMutation.mutateAsync({
         challengeId: challenge.challengeId,
@@ -198,12 +196,11 @@ export default function EdoAuthenticationPanel({
               }))}
               placeholder={t("settings.integrations.eimzo.selectCertificate")}
               showSearch
-              optionFilterProp="label"
             />
           </div>
           <Button
             icon={<RefreshCw className="size-4" />}
-            onClick={() => void reloadKeys({ force: true })}
+            onClick={() => reloadKeys({ force: true })}
           >
             {t("common.refresh")}
           </Button>
@@ -212,7 +209,7 @@ export default function EdoAuthenticationPanel({
             icon={<KeyRound className="size-4" />}
             disabled={!selectedCertificate || !authAvailable || !isInstalled}
             loading={challengeMutation.isPending || completeMutation.isPending}
-            onClick={() => void authenticate()}
+            onClick={() => authenticate()}
           >
             {t("settings.integrations.edo.auth.authenticate")}
           </Button>

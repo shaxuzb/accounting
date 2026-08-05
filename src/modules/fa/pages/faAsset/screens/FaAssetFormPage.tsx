@@ -55,6 +55,7 @@ const defaultValues: FaAssetFormValues = {
 
 const toEditableFields = (
   values: FaAssetFormValues,
+  responsibleUserId: number | null,
 ): FaAssetEditableFields => {
   const { stateId: _stateId, statusId: _statusId, ...editableFields } = values;
 
@@ -62,6 +63,7 @@ const toEditableFields = (
     ...editableFields,
     inventoryNumber: values.inventoryNumber.trim(),
     name: values.name.trim(),
+    responsibleUserId,
   };
 };
 
@@ -115,9 +117,7 @@ export default function FaAssetFormPage() {
       sourceProductTableId:
         record?.sourceProductTableId ?? defaultValues.sourceProductTableId,
       departmentId: record?.departmentId ?? defaultValues.departmentId,
-      responsibleUserId:
-        record?.responsibleUserId ??
-        (isCreate ? currentUserId : defaultValues.responsibleUserId),
+      responsibleUserId: currentUserId,
       assetAccountId: record?.assetAccountId ?? defaultValues.assetAccountId,
       accumulatedDepreciationAccountId:
         record?.accumulatedDepreciationAccountId ??
@@ -128,12 +128,12 @@ export default function FaAssetFormPage() {
       stateId: record?.stateId ?? defaultValues.stateId,
       statusId: record?.statusId ?? defaultValues.statusId,
     }),
-    [currentUserId, isCreate, record],
+    [currentUserId, record],
   );
 
   const updateAsset = async (values: FaAssetFormValues): Promise<FaAsset> => {
     const payload: FaAssetUpdatePayload = {
-      ...toEditableFields(values),
+      ...toEditableFields(values, currentUserId),
       stateId: values.stateId,
       statusId: values.statusId,
     };
@@ -168,7 +168,7 @@ export default function FaAssetFormPage() {
 
     try {
       const payload: FaAssetCreatePayload = {
-        ...toEditableFields(formik.values),
+        ...toEditableFields(formik.values, currentUserId),
         processingMode,
       };
       await createMutation.mutateAsync(payload);

@@ -56,9 +56,7 @@ export default function FaReceiptAssetsTable({
         dataIndex: "inventoryNumber",
         align: "center",
         render: (value: string) => (
-          <span className="font-mono text-xs font-semibold text-primary">
-            {value || "-"}
-          </span>
+          <span className="font-mono font-semibold ">{value || "-"}</span>
         ),
       },
       {

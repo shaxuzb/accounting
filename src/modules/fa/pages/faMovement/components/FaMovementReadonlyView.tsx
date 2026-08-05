@@ -12,10 +12,7 @@ import {
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { useAppSelector } from "@/store/hooks";
 import { customDate } from "@/utils/utils";
-import type {
-  FaMovement,
-  FaMovementAssetLineResponse,
-} from "../types/type";
+import type { FaMovement, FaMovementAssetLineResponse } from "../types/type";
 import FaMovementRouteCard from "./FaMovementRouteCard";
 import useFaMovementLookups from "./useFaMovementLookups";
 
@@ -60,13 +57,10 @@ export default function FaMovementReadonlyView({
   action,
 }: FaMovementReadonlyViewProps) {
   const { t } = useTranslation();
-  const organizationName = useAppSelector(
-    (state) => state.organization.name,
-  );
+  const organizationName = useAppSelector((state) => state.organization.name);
   const lookups = useFaMovementLookups();
   const destinationDepartment =
-    record.toDepartmentName ||
-    lookups.departmentLabel(record.toDepartmentId);
+    record.toDepartmentName || lookups.departmentLabel(record.toDepartmentId);
   const destinationResponsible =
     record.toResponsibleUserName ||
     lookups.userLabel(record.toResponsibleUserId);
@@ -91,7 +85,9 @@ export default function FaMovementReadonlyView({
 
     const asset = lookups.getAsset(line.faAssetId);
     if (asset?.departmentId === record.toDepartmentId) return "-";
-    return asset?.departmentName || lookups.departmentLabel(asset?.departmentId);
+    return (
+      asset?.departmentName || lookups.departmentLabel(asset?.departmentId)
+    );
   };
 
   const getPreviousResponsible = (line: FaMovementAssetLineResponse) => {
@@ -143,7 +139,11 @@ export default function FaMovementReadonlyView({
   );
 
   const previousLocations = Array.from(
-    new Set(rows.map((row) => row.previousDepartment).filter((value) => value !== "-")),
+    new Set(
+      rows
+        .map((row) => row.previousDepartment)
+        .filter((value) => value !== "-"),
+    ),
   ).join(" / ");
 
   const columns = useMemo<TableColumnsType<MovementReadonlyRow>>(
@@ -152,22 +152,17 @@ export default function FaMovementReadonlyView({
         title: t("common.rowNumber"),
         dataIndex: "index",
         align: "center",
-        width: 62,
       },
       {
         title: t("fa.fields.inventoryNumber"),
         dataIndex: "inventoryNumber",
-        width: 150,
         render: (value: string) => (
-          <span className="font-mono text-xs font-semibold text-primary">
-            {value}
-          </span>
+          <span className="font-mono  font-semibold">{value}</span>
         ),
       },
       {
         title: t("fa.fields.faAssetId"),
         dataIndex: "assetName",
-        minWidth: 230,
         render: (value: string) => (
           <span className="font-medium text-text">{value}</span>
         ),
@@ -175,27 +170,22 @@ export default function FaMovementReadonlyView({
       {
         title: t("fa.movement.previousDepartment"),
         dataIndex: "previousDepartment",
-        minWidth: 160,
       },
       {
         title: t("fa.movement.previousResponsible"),
         dataIndex: "previousResponsible",
-        minWidth: 180,
       },
       {
         title: t("fa.movement.destinationDepartment"),
         dataIndex: "destinationDepartment",
-        minWidth: 150,
       },
       {
         title: t("fa.movement.destinationResponsible"),
         dataIndex: "destinationResponsible",
-        minWidth: 180,
       },
       {
         title: t("fa.fields.note"),
         dataIndex: "note",
-        minWidth: 220,
       },
     ],
     [t],

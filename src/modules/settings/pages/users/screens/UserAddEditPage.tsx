@@ -1,17 +1,23 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { Button, Checkbox, Col, Form, Modal, Radio, Row } from "antd";
+import { Plus, Trash2 } from "lucide-react";
+import { useFormik } from "formik";
+
 import InputPasword from "@/components/fields/InputPassword";
 import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import InputText from "@/components/fields/InputText";
-import { Modal, Form, Button, Row, Col } from "antd";
-import { useFormik } from "formik";
-import { useCreateUsers } from "../hooks";
-import { useUpdateUsers } from "../hooks";
-import type { UsersForm } from "../types/form";
-import { userSchema } from "../types/schema";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
-import { useGetDetailUsers } from "../hooks";
-import { useEffect } from "react";
+
+import { useCreateUsers, useGetDetailUsers, useUpdateUsers } from "../hooks";
+import type {
+  CreateUserPayload,
+  UpdateUserPayload,
+  UserOrganizationForm,
+  UsersForm,
+} from "../types/form";
+import { createUserSchema } from "../types/schema";
 
 interface UserAddEditPageProps {
   open: boolean;
@@ -19,60 +25,143 @@ interface UserAddEditPageProps {
   editId: number | null;
 }
 
+const createEmptyOrganization = (isDefault = false): UserOrganizationForm => ({
+  organizationId: null,
+  roleId: null,
+  isDefault,
+  isOwner: false,
+});
+
+const initialValues: UsersForm = {
+  userName: "",
+  phoneNumber: "",
+  email: "",
+  firstName: "",
+  lastName: "",
+  password: "",
+  stateId: null,
+  organizations: [createEmptyOrganization(true)],
+};
+
 function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
-  if (!open) return null;
   const { t } = useTranslation();
   const isEdit = Boolean(editId);
   const createUser = useCreateUsers();
   const updateUser = useUpdateUsers();
   const { data, isSuccess } = useGetDetailUsers(editId ?? "");
+
   const formik = useFormik<UsersForm>({
-    initialValues: {
-      id: null,
-      userName: "",
-      phoneNumber: "",
-      email: "",
-      firstName: "",
-      lastName: "",
-      roleId: null,
-      password: "",
-      stateId: null,
-      organizations: null,
-    },
-    enableReinitialize: true,
+    initialValues,
     validateOnChange: false,
     validateOnBlur: true,
-    validationSchema: userSchema,
+    validationSchema: createUserSchema(isEdit),
     onSubmit: async (values) => {
+      const organizations = values.organizations.map((organization) => ({
+        organizationId: organization.organizationId as number,
+        roleId: organization.roleId as number,
+        isDefault: organization.isDefault,
+        isOwner: organization.isOwner,
+      }));
+
+      const basePayload = {
+        userName: values.userName,
+        phoneNumber: values.phoneNumber,
+        email: values.email,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        emailVerified: false as const,
+        timezone: null,
+        organizations,
+      };
+
       if (editId) {
-        await updateUser.mutateAsync({
-          id: editId,
-          payload: values,
-        });
+        const payload: UpdateUserPayload = {
+          ...basePayload,
+          stateId: values.stateId,
+          ...(values.password ? { password: values.password } : {}),
+        };
+
+        await updateUser.mutateAsync({ id: editId, payload });
       } else {
-        await createUser.mutateAsync(values);
+        const payload: CreateUserPayload = {
+          ...basePayload,
+          password: values.password,
+        };
+
+        await createUser.mutateAsync(payload);
       }
+
       formik.resetForm();
       onClose();
     },
   });
+  const { setValues } = formik;
+
   useEffect(() => {
-    if (isSuccess) {
-      formik.setValues({
-        id: data?.id ?? null,
-        userName: data?.userName ?? "",
-        phoneNumber: data?.phoneNumber ?? "",
-        email: data?.email ?? "",
-        firstName: data?.firstName ?? "",
-        lastName: data?.lastName ?? "",
-        roleId: data?.roleId ?? null,
-        password: "xxxxxxxxxxx",
-        stateId: data?.stateId ?? null,
-        organizations:
-          data.organizations.map((item) => item.organizationId) ?? null,
-      });
+    if (!open || !isSuccess || !data) return;
+
+    const defaultOrganizationIndex = data.organizations.findIndex(
+      (organization) => organization.isDefault,
+    );
+    const selectedDefaultIndex =
+      defaultOrganizationIndex >= 0 ? defaultOrganizationIndex : 0;
+    const organizations = data.organizations.map((organization, index) => ({
+      organizationId: organization.organizationId,
+      roleId: organization.roleId,
+      isDefault: index === selectedDefaultIndex,
+      isOwner: organization.isOwner ?? false,
+    }));
+
+    void setValues({
+      userName: data.userName ?? "",
+      phoneNumber: data.phoneNumber ?? "",
+      email: data.email ?? "",
+      firstName: data.firstName ?? "",
+      lastName: data.lastName ?? "",
+      password: "",
+      stateId: data.stateId ?? null,
+      organizations:
+        organizations.length > 0
+          ? organizations
+          : [createEmptyOrganization(true)],
+    });
+  }, [data, isSuccess, open, setValues]);
+
+  const setOrganizations = (organizations: UserOrganizationForm[]) =>
+    formik.setFieldValue("organizations", organizations, true);
+
+  const handleAddOrganization = () => {
+    void setOrganizations([
+      ...formik.values.organizations,
+      createEmptyOrganization(formik.values.organizations.length === 0),
+    ]);
+  };
+
+  const handleRemoveOrganization = (index: number) => {
+    const organizations = formik.values.organizations.filter(
+      (_, organizationIndex) => organizationIndex !== index,
+    );
+
+    if (organizations.length > 0 && !organizations.some((item) => item.isDefault)) {
+      organizations[0] = { ...organizations[0], isDefault: true };
     }
-  }, [isSuccess, data]);
+
+    void setOrganizations(organizations);
+  };
+
+  const handleSetDefaultOrganization = (index: number) => {
+    void setOrganizations(
+      formik.values.organizations.map((organization, organizationIndex) => ({
+        ...organization,
+        isDefault: organizationIndex === index,
+      })),
+    );
+  };
+
+  const handleClose = () => {
+    formik.resetForm();
+    onClose();
+  };
 
   return (
     <Modal
@@ -81,13 +170,10 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
       }
       centered
       open={open}
-      onCancel={() => {
-        onClose();
-        formik.resetForm();
-      }}
+      onCancel={handleClose}
       footer={false}
       destroyOnHidden
-      width={650}
+      width={900}
     >
       <div className="py-4">
         <Form layout="vertical" onFinish={formik.handleSubmit}>
@@ -107,6 +193,7 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
               />
             </Col>
           </Row>
+
           <Row gutter={[16, 0]}>
             <Col span={12}>
               <InputText
@@ -123,13 +210,13 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
               />
             </Col>
           </Row>
+
           <Row gutter={[16, 0]}>
             <Col span={12}>
-              <SelectCustom
-                fieldName="roleId"
+              <InputText
+                fieldName="email"
                 formik={formik}
-                label="settings.fields.role"
-                path={selectListEndpoints.rolesSelectList}
+                label="settings.fields.email"
               />
             </Col>
             <Col span={12}>
@@ -141,63 +228,99 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
             </Col>
           </Row>
 
-          {isEdit ? (
-            <>
-              <Row gutter={[16, 0]}>
-                <Col span={24}>
-                  <SelectCustom
-                    fieldName="organizations"
-                    formik={formik}
-                    label="settings.fields.organization"
-                    path={selectListEndpoints.organizationsSelectList}
-                    mode="multiple"
-                  />
-                </Col>
-
-                <Col span={12}>
-                  <InputText
-                    fieldName="email"
-                    formik={formik}
-                    label="settings.fields.email"
-                  />
-                </Col>
-                <Col span={12}>
-                  <SelectCustom
-                    fieldName="stateId"
-                    formik={formik}
-                    label="settings.fields.status"
-                    path={selectListEndpoints.statesSelectList}
-                  />
-                </Col>
-              </Row>
-            </>
-          ) : (
-            <>
-              <Col span={24}>
+          {isEdit && (
+            <Row gutter={[16, 0]}>
+              <Col span={12}>
                 <SelectCustom
-                  fieldName="organizations"
+                  fieldName="stateId"
                   formik={formik}
-                  label="settings.fields.organization"
-                  path={selectListEndpoints.organizationsSelectList}
-                  mode="multiple"
+                  label="settings.fields.status"
+                  path={selectListEndpoints.statesSelectList}
                 />
               </Col>
-              <Col span={24}>
-                <InputText
-                  fieldName="email"
-                  formik={formik}
-                  label="settings.fields.email"
-                />
-              </Col>
-            </>
+            </Row>
           )}
+
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h3 className="m-0 text-base font-semibold text-text">
+              {t("settings.entities.organizations")}
+            </h3>
+            <Button icon={<Plus className="size-4" />} onClick={handleAddOrganization}>
+              {t("common.add")}
+            </Button>
+          </div>
+
+          <div className="mb-6 space-y-3">
+            {formik.values.organizations.map((organization, index) => (
+              <div
+                key={index}
+                className="rounded-xl border border-border bg-background-secondary p-3"
+              >
+                <Row gutter={[12, 12]} align="middle">
+                  <Col xs={24} md={9}>
+                    <SelectCustom
+                      fieldName={`organizations[${index}].organizationId`}
+                      formik={formik}
+                      label="settings.fields.organization"
+                      path={selectListEndpoints.organizationsSelectList}
+                      marginBottom="mb-0"
+                      search
+                    />
+                  </Col>
+                  <Col xs={24} md={7}>
+                    <SelectCustom
+                      fieldName={`organizations[${index}].roleId`}
+                      formik={formik}
+                      label="settings.fields.role"
+                      path={selectListEndpoints.rolesSelectList}
+                      marginBottom="mb-0"
+                      search
+                    />
+                  </Col>
+                  <Col xs={12} md={3}>
+                    <Radio
+                      checked={organization.isDefault}
+                      onChange={() => handleSetDefaultOrganization(index)}
+                    >
+                      {t("settings.fields.defaultOrganization")}
+                    </Radio>
+                  </Col>
+                  <Col xs={12} md={3}>
+                    <Checkbox
+                      checked={organization.isOwner}
+                      onChange={(event) =>
+                        formik.setFieldValue(
+                          `organizations[${index}].isOwner`,
+                          event.target.checked,
+                          true,
+                        )
+                      }
+                    >
+                      {t("settings.fields.owner")}
+                    </Checkbox>
+                  </Col>
+                  <Col xs={24} md={2} className="flex justify-end">
+                    <Button
+                      danger
+                      type="text"
+                      aria-label={t("common.delete")}
+                      icon={<Trash2 className="size-4" />}
+                      disabled={formik.values.organizations.length === 1}
+                      onClick={() => handleRemoveOrganization(index)}
+                    />
+                  </Col>
+                </Row>
+              </div>
+            ))}
+          </div>
 
           <Button
             type="primary"
             htmlType="submit"
             block
             size="large"
-            className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
+            loading={createUser.isPending || updateUser.isPending}
+            className="h-12 rounded-xl bg-blue-600! text-base font-semibold hover:bg-blue-700!"
           >
             {t("common.submit")}
           </Button>
@@ -206,4 +329,5 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
     </Modal>
   );
 }
+
 export default UserAddEditPage;

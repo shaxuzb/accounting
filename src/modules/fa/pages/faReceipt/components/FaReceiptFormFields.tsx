@@ -135,7 +135,7 @@ export default function FaReceiptFormFields({
       deprStartDate: sourceAsset.deprStartDate,
       plannedUnitsTotal: sourceAsset.plannedUnitsTotal,
       departmentId: sourceAsset.departmentId,
-      responsibleUserId: sourceAsset.responsibleUserId,
+      responsibleUserId: currentUserId,
       assetAccountId: sourceAsset.assetAccountId,
       accumulatedDepreciationAccountId:
         sourceAsset.accumulatedDepreciationAccountId,
@@ -267,6 +267,7 @@ export default function FaReceiptFormFields({
               label="fa.fields.responsibleUserId"
               search
               required
+              disabled
             />
           </Col>
           <Col span={6}>

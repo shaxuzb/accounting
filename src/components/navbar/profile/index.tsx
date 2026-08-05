@@ -18,8 +18,9 @@ const ProfileNav: React.FC = () => {
   const effectiveTheme = useEffectiveTheme();
   const [mainPopover, setMainPopover] = useState(false);
   const handleLogout = async () => {
-    await navigate("/login", { replace: true });
     dispatch(logout());
+    await navigate("/login", { replace: true });
+
     toast.success(t("auth.loggedOut"));
   };
 

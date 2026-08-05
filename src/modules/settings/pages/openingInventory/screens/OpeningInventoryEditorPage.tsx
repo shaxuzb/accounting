@@ -22,10 +22,7 @@ import {
   isCompleteOpeningInventoryLineWithAccounts,
 } from "../types/schema";
 import type { OpeningInventoryForm } from "../types/form";
-import type {
-  OpeningInventoryMode,
-  OpeningInventoryRow,
-} from "../types/type";
+import type { OpeningInventoryMode, OpeningInventoryRow } from "../types/type";
 import {
   createEmptyRow,
   ensureStableRowKeys,
@@ -127,12 +124,14 @@ export default function OpeningInventoryEditorPage() {
       );
 
       if (completedRows.length === 0) {
-        toast.error(t("openingInventory.messages.atLeastOneCompletedLine", {
-          type:
-            mode === "services"
-              ? t("purchase.fields.service").toLocaleLowerCase()
-              : t("purchase.fields.goods").toLocaleLowerCase(),
-        }));
+        toast.error(
+          t("openingInventory.messages.atLeastOneCompletedLine", {
+            type:
+              mode === "services"
+                ? t("purchase.fields.service").toLocaleLowerCase()
+                : t("purchase.fields.goods").toLocaleLowerCase(),
+          }),
+        );
         return;
       }
 
@@ -143,17 +142,21 @@ export default function OpeningInventoryEditorPage() {
 
       const unmarkedRow = getUnmarkedPieceTrackedRow(completedRows, mode);
       if (unmarkedRow) {
-        toast.error(t("openingInventory.messages.markingRequired", {
-          product: unmarkedRow.productName || unmarkedRow.product,
-        }));
+        toast.error(
+          t("openingInventory.messages.markingRequired", {
+            product: unmarkedRow.productName || unmarkedRow.product,
+          }),
+        );
         return;
       }
 
       const duplicateMarking = getDuplicateMarkingNumber(completedRows);
       if (duplicateMarking) {
-        toast.error(t("openingInventory.messages.duplicateMarking", {
-          marking: duplicateMarking,
-        }));
+        toast.error(
+          t("openingInventory.messages.duplicateMarking", {
+            marking: duplicateMarking,
+          }),
+        );
         return;
       }
 
@@ -175,10 +178,7 @@ export default function OpeningInventoryEditorPage() {
     [isCreate, createMutation, updateMutation, id, handleBack, mode, t],
   );
 
-  const validationSchema = useMemo(
-    () => createOpeningInventorySchema(t),
-    [t],
-  );
+  const validationSchema = useMemo(() => createOpeningInventorySchema(t), [t]);
 
   const formik = useFormik<OpeningInventoryForm>({
     initialValues,
@@ -243,22 +243,25 @@ export default function OpeningInventoryEditorPage() {
     });
   }, [commitLines, defaultAccounts, formik.values.counterpartyId, mode]);
 
-  const deleteRow = useCallback((rowIndex: number) => {
-    commitLines((prev) => {
-      const next = prev.filter((_, idx) => idx !== rowIndex);
-      return ensureStableRowKeys(
-        next.length
-          ? next
-          : [
-              createEmptyRow({
-                indexId: 1,
-                counterpartyId: formik.values.counterpartyId,
-                mode,
-              }),
-            ],
-      );
-    });
-  }, [commitLines, formik.values.counterpartyId, mode]);
+  const deleteRow = useCallback(
+    (rowIndex: number) => {
+      commitLines((prev) => {
+        const next = prev.filter((_, idx) => idx !== rowIndex);
+        return ensureStableRowKeys(
+          next.length
+            ? next
+            : [
+                createEmptyRow({
+                  indexId: 1,
+                  counterpartyId: formik.values.counterpartyId,
+                  mode,
+                }),
+              ],
+        );
+      });
+    },
+    [commitLines, formik.values.counterpartyId, mode],
+  );
 
   const handleRowValueChange = useCallback(
     (rowIndex: number, patch: Partial<OpeningInventoryRow>) => {
@@ -383,11 +386,14 @@ export default function OpeningInventoryEditorPage() {
   );
 
   // Marking modal handlers
-  const openMarkingModal = useCallback((rowIndex: number) => {
-    if (mode !== "goods") return;
-    setMarkingModalIndex(rowIndex);
-    setMarkingInput("");
-  }, [mode]);
+  const openMarkingModal = useCallback(
+    (rowIndex: number) => {
+      if (mode !== "goods") return;
+      setMarkingModalIndex(rowIndex);
+      setMarkingInput("");
+    },
+    [mode],
+  );
 
   const handleMarkingInputChange = useCallback((value: string) => {
     setMarkingInput(value);
@@ -537,10 +543,7 @@ export default function OpeningInventoryEditorPage() {
       <Form onFinish={formik.handleSubmit} layout="vertical">
         <AntdSpin spinning={pageLoading}>
           <div className="flex flex-col gap-3">
-            <OpeningInventoryHeader
-              formik={formik}
-              mode={mode}
-            />
+            <OpeningInventoryHeader formik={formik} mode={mode} />
 
             <OpeningInventoryLinesSection
               columns={columns}

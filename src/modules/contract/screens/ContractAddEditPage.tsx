@@ -109,9 +109,7 @@ export default function ContractAddEditPage({
 
   return (
     <Modal
-      title={
-        isEdit ? t("contract.editTitle") : t("contract.createTitle")
-      }
+      title={isEdit ? t("contract.editTitle") : t("contract.createTitle")}
       open={open}
       onCancel={() => {
         formik.resetForm();
@@ -129,7 +127,7 @@ export default function ContractAddEditPage({
                 formik={formik}
                 fieldName="organizationId"
                 label="settings.fields.organization"
-                path={selectListEndpoints.operationTypesSelectList}
+                path={selectListEndpoints.organizationsSelectList}
               />
             </Col>
             <Col span={12}>

@@ -117,14 +117,7 @@ export default function FaAssetReadonlyView({
               {record.name || "-"}
             </div>
           </div>
-          <div className="min-w-40">
-            <div className="text-xs text-secondary-text">
-              {t("fa.fields.state")}
-            </div>
-            <div className="mt-0.5 text-sm font-semibold text-text">
-              {record.stateName || record.stateId || "-"}
-            </div>
-          </div>
+          <div className="min-w-40"></div>
           <ProcessStatusBadge
             statusId={record.statusId}
             statusCode={record.statusCode}

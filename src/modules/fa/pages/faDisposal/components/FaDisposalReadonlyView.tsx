@@ -132,21 +132,20 @@ export default function FaDisposalReadonlyView({
         title: t("common.rowNumber"),
         dataIndex: "index",
         align: "center",
-        width: 62,
       },
       {
         title: t("fa.fields.inventoryNumber"),
         dataIndex: "inventoryNumber",
+        align: "center",
         width: 150,
         render: (value: string) => (
-          <span className="font-mono text-xs font-semibold text-primary">
-            {value}
-          </span>
+          <span className="font-mono font-semibold">{value}</span>
         ),
       },
       {
         title: t("fa.fields.faAssetId"),
         dataIndex: "assetName",
+        align: "center",
         minWidth: 230,
         render: (value: string) => (
           <span className="font-medium text-text">{value}</span>
@@ -155,7 +154,7 @@ export default function FaDisposalReadonlyView({
       {
         title: t("fa.fields.saleAmount"),
         dataIndex: "saleAmount",
-        align: "right",
+        align: "center",
         minWidth: 170,
         render: (value: number) => (
           <span className="font-semibold tabular-nums text-primary">
@@ -166,16 +165,19 @@ export default function FaDisposalReadonlyView({
       {
         title: t("fa.fields.assetAccount"),
         dataIndex: "assetAccount",
+        align: "center",
         minWidth: 240,
       },
       {
         title: t("fa.fields.accumulatedDepreciationAccount"),
         dataIndex: "accumulatedDepreciationAccount",
+        align: "center",
         minWidth: 280,
       },
       {
         title: t("fa.fields.note"),
         dataIndex: "note",
+        align: "center",
         minWidth: 220,
       },
     ],
@@ -250,7 +252,7 @@ export default function FaDisposalReadonlyView({
               className="rounded-lg border border-border bg-surface-muted px-3 py-2.5"
             >
               <div className="text-xs text-secondary-text">{item.label}</div>
-              <div className="mt-1 break-words font-mono text-sm font-semibold text-text">
+              <div className="mt-1  font-mono text-sm font-semibold text-text">
                 {item.value}
               </div>
             </div>

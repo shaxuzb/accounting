@@ -57,9 +57,7 @@ export const createEimzoSignature = (
 
         if (!response.pkcs7_64 || !response.signature_hex) {
           reject(
-            new Error(
-              "E-IMZO javobida PKCS7 yoki signatureHex mavjud emas",
-            ),
+            new Error("E-IMZO javobida PKCS7 yoki signatureHex mavjud emas"),
           );
           return;
         }

@@ -227,6 +227,7 @@ export default function FaAssetFormFields({
               path={selectListEndpoints.usersSelectList}
               search
               required
+              disabled
             />
           </Col>
           {!isCreate && (

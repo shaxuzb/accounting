@@ -144,7 +144,7 @@ export default function EdoInboxPage() {
   );
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-2">
       <div className="px-1">
         <h1 className="text-2xl font-semibold text-heading">
           {t("settings.integrations.edo.inbox.title")}

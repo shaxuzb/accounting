@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usersService } from "../api";
 import { queryKeys } from "../constants/queryKeys";
-import type { UsersForm } from "../types/form";
+import type { UpdateUserPayload } from "../types/form";
 
 interface UpdateArgs {
   id: string | number;
-  payload: Partial<UsersForm>;
+  payload: UpdateUserPayload;
 }
 
 export const useUpdateUsers = () => {

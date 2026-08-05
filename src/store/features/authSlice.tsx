@@ -5,6 +5,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 export interface AuthState {
   user: AuthToken | null;
   loading: boolean;
+  sessionChecked: boolean;
 }
 
 const getInitialState = (): AuthState => {
@@ -14,6 +15,7 @@ const getInitialState = (): AuthState => {
     return {
       user: storedUser ? (JSON.parse(storedUser) as AuthToken) : null,
       loading: false,
+      sessionChecked: !storedUser,
     };
   } catch (error) {
     console.error("Invalid login JSON:", error);
@@ -23,6 +25,7 @@ const getInitialState = (): AuthState => {
     return {
       user: null,
       loading: false,
+      sessionChecked: true,
     };
   }
 };
@@ -33,11 +36,16 @@ const authSlice = createSlice({
   reducers: {
     login: (state, action: PayloadAction<AuthToken>) => {
       state.user = action.payload;
+      state.sessionChecked = true;
       localStorage.setItem("login", JSON.stringify(action.payload));
     },
 
     isLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
+    },
+
+    setSessionChecked: (state, action: PayloadAction<boolean>) => {
+      state.sessionChecked = action.payload;
     },
 
     logout: () => {
@@ -47,5 +55,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout, isLoading } = authSlice.actions;
+export const { login, logout, isLoading, setSessionChecked } =
+  authSlice.actions;
 export default authSlice.reducer;

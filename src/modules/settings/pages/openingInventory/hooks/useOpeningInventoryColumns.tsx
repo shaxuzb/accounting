@@ -136,7 +136,6 @@ export const useOpeningInventoryColumns = ({
         render: (_: unknown, record: OpeningInventoryRow, rowIndex: number) => (
           <Select
             showSearch
-            optionFilterProp="label"
             className="w-full"
             placeholder={
               record.product ||
@@ -219,7 +218,6 @@ export const useOpeningInventoryColumns = ({
           ) : (
             <Select
               showSearch
-              optionFilterProp="label"
               className="w-full"
               placeholder={t("openingInventory.fields.unit")}
               value={(record.unitId as number | null) ?? undefined}

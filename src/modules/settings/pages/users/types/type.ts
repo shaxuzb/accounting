@@ -1,6 +1,4 @@
-// import type { organizations } from "./form";
-
-import type { organizations } from "./form";
+import type { UserOrganizationPayload } from "./form";
 
 export interface Users {
   id: number;
@@ -9,11 +7,13 @@ export interface Users {
   email: string;
   firstName: string;
   lastName: string;
+  emailVerified?: boolean;
+  timezone?: string | null;
   roleId: number;
   lastAccessTime: string;
   stateId: number;
   createdDate: string;
   roleName: string;
   stateName: string;
-  organizations: organizations[];
+  organizations: UserOrganizationPayload[];
 }

@@ -58,11 +58,11 @@ const PermissionCard = ({
   const shouldRedirect = mode === "redirect" || redirectOnDenied;
 
   useEffect(() => {
-    if (!hasAccess && shouldRedirect) {
-      navigate(-1);
-      toast.error(t("error.noPermission"));
+    if (user && !hasAccess && shouldRedirect) {
+      navigate("/main", { replace: true });
+      toast.error(t("error.noPermission"), { id: "permission-denied" });
     }
-  }, [hasAccess, navigate, shouldRedirect, t]);
+  }, [hasAccess, navigate, shouldRedirect, t, user]);
 
   return hasAccess ? <>{children}</> : null;
 };

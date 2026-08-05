@@ -1,53 +1,40 @@
-import { useEffect, useCallback, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
-import toast from "react-hot-toast";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import Error from "@/components/Error";
 import LoadingScreen from "@/components/LoadingScreen";
-
-import type { AuthToken } from "@/shared/types";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { isLoading, logout } from "@/store/features/authSlice";
+import {
+  isLoading,
+  logout,
+  setSessionChecked,
+} from "@/store/features/authSlice";
 import { authService } from "@/services/authService";
 import {
   menuPermissions,
   settingsViewPermissions,
 } from "../config/menuPermissions";
-import { useTranslation } from "react-i18next";
 
 const ProtectAuthLayout = () => {
-  const { t } = useTranslation();
-  const [error, setError] = useState(false);
-  const [load, setLoad] = useState(true);
-
-  const user = useAppSelector((state) => state.auth.user) as AuthToken | null;
+  const user = useAppSelector((state) => state.auth.user);
+  const sessionChecked = useAppSelector((state) => state.auth.sessionChecked);
 
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
 
   const pathname = location.pathname;
-
   const isLoginPage = pathname === "/login";
   const isRootPage = pathname === "/";
   const isMainPage = pathname === "/main" || pathname.startsWith("/main/");
+  const token = user?.token;
+  const isCheckingSession = Boolean(token && !sessionChecked);
 
-  const redirectToLogin = useCallback(
-    (showMessage = false) => {
-      dispatch(logout());
-
-      if (pathname !== "/login") {
-        navigate("/login", { replace: true });
-      }
-
-      if (showMessage) {
-        toast.error(t("auth.sessionExpired"));
-      }
-    },
-    [dispatch, navigate, pathname, t],
-  );
+  const redirectToLogin = useCallback(() => {
+    dispatch(logout());
+    navigate("/login", { replace: true });
+  }, [dispatch, navigate]);
 
   const getFirstAllowedPath = useCallback(() => {
     if (!user?.user?.permissions?.length) return null;
@@ -86,104 +73,83 @@ const ProtectAuthLayout = () => {
     return `/main/${allowedMenu.linkData.path}`;
   }, [user]);
 
-  const checkState = useCallback(async () => {
-    try {
-      await authService.authCheck();
-      return true;
-    } catch (err: unknown) {
-      errorHandlers(err);
-      return false;
-    }
-  }, []);
-
-  const initAuth = useCallback(async () => {
-    // 1. Agar user yo'q bo'lsa — faqat login
-    if (!user) {
-      if (!isLoginPage) {
-        navigate("/login", { replace: true });
-      }
-
-      return;
-    }
-
-    // 2. User bor bo'lsa, token/session backenddan tekshiriladi
-    const isValidSession = await checkState();
-
-    if (!isValidSession) {
-      redirectToLogin(true);
-      return;
-    }
-
-    // 3. User login yoki root page'da turgan bo'lsa — birinchi ruxsat berilgan page'ga yuboramiz
-    if (isLoginPage || isRootPage || pathname === "/main") {
-      const firstAllowedPath = getFirstAllowedPath();
-
-      if (firstAllowedPath) {
-        navigate(firstAllowedPath, { replace: true });
-        return;
-      }
-
-      // Permission umuman yo'q bo'lsa
-      redirectToLogin(false);
-      // toast.error("Sizda tizimga kirish uchun ruxsat yo'q!");
-      return;
-    }
-
-    // 4. Agar user allaqachon /main/... ichida bo'lsa — joyida qoladi
-    if (isMainPage) {
-      return;
-    }
-
-    // 5. Boshqa noma'lum protected route bo'lsa — main ichidagi birinchi page'ga yuboramiz
-    const firstAllowedPath = getFirstAllowedPath();
-
-    if (firstAllowedPath) {
-      navigate(firstAllowedPath, { replace: true });
-      return;
-    }
-
-    redirectToLogin(false);
-  }, [
-    user,
-    pathname,
-    isLoginPage,
-    isRootPage,
-    isMainPage,
-    checkState,
-    redirectToLogin,
-    getFirstAllowedPath,
-    navigate,
-  ]);
-
   useEffect(() => {
-    let mounted = true;
+    if (!token || sessionChecked) return;
 
-    const loadData = async () => {
+    let active = true;
+
+    const validateSession = async () => {
       try {
         dispatch(isLoading(true));
-        setError(false);
+        await authService.authCheck();
 
-        await initAuth();
-      } catch {
-        setError(true);
+        if (active) {
+          dispatch(setSessionChecked(true));
+        }
+      } catch (err: unknown) {
+        if (active) {
+          errorHandlers(err);
+          redirectToLogin();
+        }
       } finally {
-        if (mounted) {
-          setLoad(false);
+        if (active) {
           dispatch(isLoading(false));
         }
       }
     };
 
-    loadData();
+    validateSession();
 
     return () => {
-      mounted = false;
+      active = false;
     };
-  }, [initAuth, dispatch]);
+  }, [dispatch, redirectToLogin, sessionChecked, token]);
+
+  useEffect(() => {
+    if (isCheckingSession) return;
+
+    if (!user) {
+      if (!isLoginPage) {
+        navigate("/login", { replace: true });
+      }
+      return;
+    }
+
+    if (isLoginPage || isRootPage || pathname === "/main") {
+      const firstAllowedPath = getFirstAllowedPath();
+
+      if (firstAllowedPath) {
+        navigate(firstAllowedPath, { replace: true });
+      } else {
+        redirectToLogin();
+      }
+      return;
+    }
+
+    if (isMainPage) return;
+
+    const firstAllowedPath = getFirstAllowedPath();
+
+    if (firstAllowedPath) {
+      navigate(firstAllowedPath, { replace: true });
+    } else {
+      redirectToLogin();
+    }
+  }, [
+    getFirstAllowedPath,
+    isCheckingSession,
+    isLoginPage,
+    isMainPage,
+    isRootPage,
+    navigate,
+    pathname,
+    redirectToLogin,
+    user,
+  ]);
 
   return (
     <AnimatePresence mode="wait">
-      {load ? (
+      {isCheckingSession ? (
         <motion.div
           key="loading"
           initial={{ opacity: 1 }}
@@ -192,8 +158,6 @@ const ProtectAuthLayout = () => {
         >
           <LoadingScreen />
         </motion.div>
-      ) : error ? (
-        <Error />
       ) : (
         <motion.div
           key="content"

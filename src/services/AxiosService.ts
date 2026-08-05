@@ -3,6 +3,10 @@ import { store } from "@/store/store";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import type { AuthToken } from "@/shared/types";
 import { logout } from "@/store/features/authSlice";
+import toast from "react-hot-toast";
+import i18n from "@/config/i18n";
+
+let isHandlingUnauthorized = false;
 
 const addToken = (config: InternalAxiosRequestConfig) => {
   try {
@@ -19,8 +23,18 @@ const addToken = (config: InternalAxiosRequestConfig) => {
   try {
     const lang = localStorage.getItem("lang");
     const orgData = localStorage.getItem("org");
+    const edoOrganizationIdOverride = Number(
+      import.meta.env.VITE_EDO_ORGANIZATION_ID_OVERRIDE,
+    );
+    const shouldOverrideEdoOrganization =
+      config.url?.startsWith("/edo/") &&
+      Number.isSafeInteger(edoOrganizationIdOverride) &&
+      edoOrganizationIdOverride > 0;
+
     config.headers["X-Language"] = lang ?? "uz";
-    if (orgData) {
+    if (shouldOverrideEdoOrganization) {
+      config.headers["X-OrganizationId"] = edoOrganizationIdOverride;
+    } else if (orgData) {
       const { id } = JSON.parse(orgData) as { id: number };
       if (id) {
         config.headers["X-OrganizationId"] = id;
@@ -42,15 +56,24 @@ const addToken = (config: InternalAxiosRequestConfig) => {
 };
 
 const handleResponseError = (error: AxiosError) => {
-  const responseData = error.response?.data as
-    | { title?: string }
-    | undefined;
+  const responseData = error.response?.data as { title?: string } | undefined;
   const isProviderAuthenticationError =
     responseData?.title === "IntegrationUnauthorized";
 
   if (error.response?.status === 401 && !isProviderAuthenticationError) {
-    store.dispatch(logout());
-    window.location.href = "/login";
+    if (!isHandlingUnauthorized) {
+      isHandlingUnauthorized = true;
+
+      toast.error(i18n.t("auth.sessionExpired"), {
+        id: "session-expired",
+      });
+
+      store.dispatch(logout());
+
+      window.setTimeout(() => {
+        isHandlingUnauthorized = false;
+      }, 1000);
+    }
   }
   return Promise.reject(error);
 };

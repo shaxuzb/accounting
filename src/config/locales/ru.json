@@ -223,16 +223,16 @@
       "edit": "Редактировать документ ОФ",
       "run": "Запустить амортизацию",
       "detail": "Документ ОФ",
-      "receiptCreate": "Поступление основных средств (новое)",
+      "receiptCreate": "Поступление основных средств ",
       "receiptEdit": "Поступление основных средств №{{number}}",
       "receiptSubtitle": "Документ поступления основных средств",
-      "movementCreate": "Перемещение основных средств (новое)",
+      "movementCreate": "Перемещение основных средств",
       "movementEdit": "Перемещение основных средств",
       "movementDetail": "Перемещение основных средств",
-      "revaluationCreate": "Переоценка основных средств (новая)",
+      "revaluationCreate": "Переоценка основных средств ",
       "revaluationEdit": "Переоценка основных средств",
       "revaluationDetail": "Переоценка основных средств",
-      "disposalCreate": "Списание основных средств (новое)",
+      "disposalCreate": "Списание основных средств",
       "disposalEdit": "Списание основных средств",
       "disposalDetail": "Списание основных средств",
       "revaluationDetails": "Детали переоценки",
@@ -442,19 +442,124 @@
         "title": "Электронный документооборот",
         "description": "Выбор провайдера, авторизация через E-IMZO и управление электронными счетами-фактурами.",
         "capabilityUnavailable": "Действие недоступно у выбранного провайдера",
-        "provider": { "title": "Провайдер ЭДО", "description": "Выберите оператора электронного документооборота для организации.", "notConfigured": "Реквизиты провайдера не настроены" },
-        "auth": { "title": "Авторизация E-IMZO", "description": "Откройте сессию организации у выбранного провайдера.", "selectProvider": "Сначала выберите активного провайдера", "unavailable": "Авторизация недоступна", "authenticated": "Авторизация в {{provider}} выполнена", "expiresAt": "Сессия истекает: {{date}}", "authenticate": "Авторизоваться" },
-        "inbox": { "title": "Входящие документы ЭДО", "description": "Просмотр входящих документов, проверка статуса и доступные действия.", "unavailable": "Получение входящих документов недоступно", "filtersUnavailable": "Поиск, статус и фильтры дат на стороне Edocs не подтверждены и временно отключены.", "rejectTitle": "Отклонить входящий документ" },
-        "outbox": { "create": "Создать счёт-фактуру", "createDescription": "Подготовка данных внутреннего документа для отправки в ЭДО.", "unavailable": "Создание счёта-фактуры недоступно", "document": "Исходящий документ ЭДО №{{id}}", "detailDescription": "Проверка статуса и подписание документа через E-IMZO.", "sign": "Подписание документа", "signUnavailable": "Документ нельзя подписать в текущем состоянии" },
-        "sections": { "document": "Данные документа", "empowerment": "Доверенность", "lines": "Строки счёта-фактуры" },
-        "actions": { "createFactura": "Создать счёт-фактуру", "sign": "Подписать", "reject": "Отклонить", "download": "Скачать" },
-        "fields": {
-          "internalDocumentId": "ID внутреннего документа", "internalDocumentType": "Тип внутреннего документа", "documentNumber": "Номер документа", "documentDate": "Дата документа", "documentType": "Тип документа", "providerDocumentId": "ID документа провайдера", "contractNumber": "Номер договора", "contractDate": "Дата договора", "seller": "Продавец", "buyer": "Покупатель", "name": "Наименование", "taxIdentifier": "ИНН/ПИНФЛ", "bankCode": "МФО", "accountNumber": "Расчётный счёт", "address": "Адрес", "branchCode": "Код филиала", "branchName": "Название филиала", "directorName": "Директор", "accountantName": "Бухгалтер", "vatRegistrationStatus": "Статус регистрации НДС", "districtId": "ID района", "empowermentNumber": "Номер доверенности", "dateOfIssue": "Дата выдачи", "agentName": "Ф.И.О. представителя", "agentPinfl": "ПИНФЛ представителя", "catalogCode": "Код каталога", "catalogName": "Наименование каталога", "unitCode": "Код единицы", "unitName": "Единица измерения", "quantity": "Количество", "amount": "Сумма", "taxRate": "Ставка налога", "taxAmount": "Сумма налога", "isTaxFree": "Без налога", "markingCodes": "Коды маркировки", "companyInn": "ИНН организации", "fromDate": "Дата с", "toDate": "Дата по", "status": "Статус", "localStatus": "Локальный статус", "providerStatus": "Статус провайдера", "checkedAt": "Время проверки", "reason": "Причина", "preparedPkcs7": "Подготовленный PKCS#7"
+        "provider": {
+          "title": "Провайдер ЭДО",
+          "description": "Выберите оператора электронного документооборота для организации.",
+          "notConfigured": "Реквизиты провайдера не настроены"
         },
-        "status": { "reconciliation": "Требуется ручная сверка состояния провайдера и системы" },
-        "statuses": { "UNKNOWN": "Неизвестно", "DRAFT": "Черновик", "PENDING": "Ожидает", "SIGNED": "Подписан", "SENT": "Отправлен", "RECEIVED": "Получен", "REJECTED": "Отклонён", "COMPLETED": "Завершён", "CANCELLED": "Отменён", "FAILED": "Ошибка", "RECONCILIATION_REQUIRED": "Требуется сверка" },
-        "messages": { "providerChanged": "Активный провайдер изменён", "authenticated": "Авторизация ЭДО выполнена", "created": "Счёт-фактура создан", "replay": "Возвращён существующий успешный результат", "signed": "Документ подписан", "rejected": "Документ отклонён", "downloaded": "Файл загружен" },
-        "errors": { "providers": "Не удалось загрузить провайдеров", "status": "Не удалось получить статус документа", "challengeExpired": "Сессия подписания истекла. Повторите попытку.", "authRejected": "Провайдер не подтвердил авторизацию" }
+        "auth": {
+          "title": "Авторизация E-IMZO",
+          "description": "Откройте сессию организации у выбранного провайдера.",
+          "selectProvider": "Сначала выберите активного провайдера",
+          "unavailable": "Авторизация недоступна",
+          "authenticated": "Авторизация в {{provider}} выполнена",
+          "expiresAt": "Сессия истекает: {{date}}",
+          "authenticate": "Авторизоваться"
+        },
+        "inbox": {
+          "title": "Входящие документы ЭДО",
+          "description": "Просмотр входящих документов, проверка статуса и доступные действия.",
+          "unavailable": "Получение входящих документов недоступно",
+          "filtersUnavailable": "Поиск, статус и фильтры дат на стороне Edocs не подтверждены и временно отключены.",
+          "rejectTitle": "Отклонить входящий документ"
+        },
+        "outbox": {
+          "create": "Создать счёт-фактуру",
+          "createDescription": "Подготовка данных внутреннего документа для отправки в ЭДО.",
+          "unavailable": "Создание счёта-фактуры недоступно",
+          "document": "Исходящий документ ЭДО №{{id}}",
+          "detailDescription": "Проверка статуса и подписание документа через E-IMZO.",
+          "sign": "Подписание документа",
+          "signUnavailable": "Документ нельзя подписать в текущем состоянии"
+        },
+        "sections": {
+          "document": "Данные документа",
+          "empowerment": "Доверенность",
+          "lines": "Строки счёта-фактуры"
+        },
+        "actions": {
+          "createFactura": "Создать счёт-фактуру",
+          "sign": "Подписать",
+          "reject": "Отклонить",
+          "download": "Скачать"
+        },
+        "fields": {
+          "internalDocumentId": "ID внутреннего документа",
+          "internalDocumentType": "Тип внутреннего документа",
+          "documentNumber": "Номер документа",
+          "documentDate": "Дата документа",
+          "documentType": "Тип документа",
+          "providerDocumentId": "ID документа провайдера",
+          "contractNumber": "Номер договора",
+          "contractDate": "Дата договора",
+          "seller": "Продавец",
+          "buyer": "Покупатель",
+          "name": "Наименование",
+          "taxIdentifier": "ИНН/ПИНФЛ",
+          "bankCode": "МФО",
+          "accountNumber": "Расчётный счёт",
+          "address": "Адрес",
+          "branchCode": "Код филиала",
+          "branchName": "Название филиала",
+          "directorName": "Директор",
+          "accountantName": "Бухгалтер",
+          "vatRegistrationStatus": "Статус регистрации НДС",
+          "districtId": "ID района",
+          "empowermentNumber": "Номер доверенности",
+          "dateOfIssue": "Дата выдачи",
+          "agentName": "Ф.И.О. представителя",
+          "agentPinfl": "ПИНФЛ представителя",
+          "catalogCode": "Код каталога",
+          "catalogName": "Наименование каталога",
+          "unitCode": "Код единицы",
+          "unitName": "Единица измерения",
+          "quantity": "Количество",
+          "amount": "Сумма",
+          "taxRate": "Ставка налога",
+          "taxAmount": "Сумма налога",
+          "isTaxFree": "Без налога",
+          "markingCodes": "Коды маркировки",
+          "companyInn": "ИНН организации",
+          "fromDate": "Дата с",
+          "toDate": "Дата по",
+          "status": "Статус",
+          "localStatus": "Локальный статус",
+          "providerStatus": "Статус провайдера",
+          "checkedAt": "Время проверки",
+          "reason": "Причина",
+          "preparedPkcs7": "Подготовленный PKCS#7"
+        },
+        "status": {
+          "reconciliation": "Требуется ручная сверка состояния провайдера и системы"
+        },
+        "statuses": {
+          "UNKNOWN": "Неизвестно",
+          "DRAFT": "Черновик",
+          "PENDING": "Ожидает",
+          "SIGNED": "Подписан",
+          "SENT": "Отправлен",
+          "RECEIVED": "Получен",
+          "REJECTED": "Отклонён",
+          "COMPLETED": "Завершён",
+          "CANCELLED": "Отменён",
+          "FAILED": "Ошибка",
+          "RECONCILIATION_REQUIRED": "Требуется сверка"
+        },
+        "messages": {
+          "providerChanged": "Активный провайдер изменён",
+          "authenticated": "Авторизация ЭДО выполнена",
+          "created": "Счёт-фактура создан",
+          "replay": "Возвращён существующий успешный результат",
+          "signed": "Документ подписан",
+          "rejected": "Документ отклонён",
+          "downloaded": "Файл загружен"
+        },
+        "errors": {
+          "providers": "Не удалось загрузить провайдеров",
+          "status": "Не удалось получить статус документа",
+          "challengeExpired": "Сессия подписания истекла. Повторите попытку.",
+          "authRejected": "Провайдер не подтвердил авторизацию"
+        }
       }
     },
     "title": "Настройки",
@@ -482,7 +587,7 @@
       "saleConditions": "Условия продаж",
       "documentAccountSettings": "Настройки счетов документов",
       "openingBalance": "Начальный баланс",
-      "openingInventory": "Ввод начальных остатков (ТМЗ)",
+      "openingInventory": "Ввод начальных остатков",
       "integrations": "Интеграции"
     },
     "descriptions": {
@@ -569,7 +674,9 @@
       "vatRate": "Ставка НДС",
       "period": "Период действия",
       "conditionId": "ID условия",
-      "organizationId": "ID организации"
+      "organizationId": "ID организации",
+      "defaultOrganization": "Основная",
+      "owner": "Владелец"
     },
     "form": {
       "createTitle": "Добавить новую запись",
@@ -1795,7 +1902,7 @@
       "productName": "Наименование товара",
       "goodsName": "Наименование товара",
       "serviceName": "Наименование услуги",
-      "unit": "Единица измерения",
+      "unit": "Единица",
       "quantity": "Количество",
       "price": "Цена",
       "amount": "Сумма",

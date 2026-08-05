@@ -4,10 +4,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import Card from "@/components/ui/card/Card";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import {
-  useEdoActiveProvider,
-  useSetEdoActiveProvider,
-} from "../hooks";
+import { useEdoActiveProvider, useSetEdoActiveProvider } from "../hooks";
 import { edoProviderOptions } from "../constants/providers";
 import type { EdoProviderCode, EdoProviderDto } from "../types/type";
 
@@ -73,7 +70,7 @@ export default function EdoProviderPanel({
           </label>
           <Select<EdoProviderCode>
             className="w-full"
-            size="large"
+            size="medium"
             value={activeCode}
             options={edoProviderOptions.map((provider) => ({
               value: provider.providerCode,
@@ -89,19 +86,15 @@ export default function EdoProviderPanel({
         </div>
 
         {activeProviderQuery.data && (
-          <div className="rounded-lg border border-border bg-surface-muted px-4 py-3">
+          <div className="rounded-lg border border-border bg-surface-muted px-4 py-1">
             <div className="flex flex-wrap items-center gap-2">
               <CheckCircle2 className="size-4 text-success" />
-              <span className="text-sm font-semibold text-heading">
+              <span className="text-sm font-semibold">
                 {activeProviderQuery.data.name || activeCode}
               </span>
-              <span className="text-xs text-secondary-text">
-                {activeCode}
-              </span>
-              <span className="text-xs text-secondary-text">
-                ID: {activeProviderQuery.data.id}
-              </span>
-              <Tag color="success" className="m-0! ml-auto!">
+              <span className="text-xs text-secondary-text">{activeCode}</span>
+
+              <Tag color="green" className="m-0! ml-auto!">
                 {t("settings.saleCondition.active")}
               </Tag>
             </div>

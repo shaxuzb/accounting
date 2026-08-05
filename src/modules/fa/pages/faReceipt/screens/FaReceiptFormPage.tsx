@@ -81,7 +81,10 @@ const getFirstValidationError = (value: unknown): string | undefined => {
   return undefined;
 };
 
-const toPayload = (values: FaReceiptFormValues): FaReceiptPayload => ({
+const toPayload = (
+  values: FaReceiptFormValues,
+  responsibleUserId: number | null,
+): FaReceiptPayload => ({
   docDate: values.docDate,
   counterpartyId: Number(values.counterpartyId),
   warehouseId: Number(values.warehouseId),
@@ -109,7 +112,7 @@ const toPayload = (values: FaReceiptFormValues): FaReceiptPayload => ({
       deprStartDate: asset.deprStartDate,
       plannedUnitsTotal: Number(asset.plannedUnitsTotal),
       departmentId: Number(asset.departmentId),
-      responsibleUserId: Number(asset.responsibleUserId),
+      responsibleUserId: Number(responsibleUserId),
       assetAccountId: Number(asset.assetAccountId),
       accumulatedDepreciationAccountId: Number(
         asset.accumulatedDepreciationAccountId,
@@ -156,15 +159,15 @@ export default function FaReceiptFormPage() {
       receiptTypeId: record?.receiptTypeId ?? defaultValues.receiptTypeId,
       supplierAccountId:
         record?.supplierAccountId ?? defaultValues.supplierAccountId,
-      lines: record?.lines?.length
-        ? record.lines
-        : defaultValues.lines.map((line) => ({
-            ...line,
-            assets: line.assets.map((asset) => ({
-              ...asset,
-              responsibleUserId: currentUserId,
-            })),
+      lines: (record?.lines?.length ? record.lines : defaultValues.lines).map(
+        (line) => ({
+          ...line,
+          assets: line.assets.map((asset) => ({
+            ...asset,
+            responsibleUserId: currentUserId,
           })),
+        }),
+      ),
     }),
     [currentUserId, record],
   );
@@ -192,7 +195,7 @@ export default function FaReceiptFormPage() {
   async function persistReceipt(
     values: FaReceiptFormValues,
   ): Promise<FaReceiptResponse> {
-    const payload = toPayload(values);
+    const payload = toPayload(values, currentUserId);
     const saved =
       !isCreate && id
         ? await updateMutation.mutateAsync({ id, payload })

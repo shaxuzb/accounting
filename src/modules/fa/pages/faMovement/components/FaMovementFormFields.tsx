@@ -18,12 +18,14 @@ import useFaMovementLookups, {
   faMovementAssetDisplayConfig,
 } from "./useFaMovementLookups";
 
-const emptyLine: FaMovementLineValues = {
+const createEmptyLine = (
+  currentUserId: number | null,
+): FaMovementLineValues => ({
   faAssetId: null,
   fromDepartmentId: null,
-  fromResponsibleUserId: null,
+  fromResponsibleUserId: currentUserId,
   note: "",
-};
+});
 
 interface MovementLineRow extends FaMovementLineValues {
   key: number;
@@ -33,9 +35,11 @@ interface MovementLineRow extends FaMovementLineValues {
 export default function FaMovementFormFields({
   formik,
   isDraft,
+  currentUserId,
 }: {
   formik: FormikProps<FaMovementFormValues>;
   isDraft: boolean;
+  currentUserId: number | null;
 }) {
   const { t } = useTranslation();
   const lookups = useFaMovementLookups();
@@ -53,8 +57,7 @@ export default function FaMovementFormFields({
 
       const fromDepartmentId =
         line.fromDepartmentId ?? asset.departmentId ?? null;
-      const fromResponsibleUserId =
-        line.fromResponsibleUserId ?? asset.responsibleUserId ?? null;
+      const fromResponsibleUserId = currentUserId;
 
       if (
         fromDepartmentId === line.fromDepartmentId &&
@@ -74,12 +77,12 @@ export default function FaMovementFormFields({
     if (hasChanges) {
       void formik.setFieldValue("lines", nextLines, false);
     }
-  }, [assets.length, formik, getAsset, isDraft]);
+  }, [assets.length, currentUserId, formik, getAsset, isDraft]);
 
   const handleAddLine = () => {
     formik.setFieldValue("lines", [
       ...formik.values.lines,
-      { ...emptyLine },
+      createEmptyLine(currentUserId),
     ]);
   };
 
@@ -107,7 +110,7 @@ export default function FaMovementFormFields({
                   ...line,
                   faAssetId,
                   fromDepartmentId: asset?.departmentId ?? null,
-                  fromResponsibleUserId: asset?.responsibleUserId ?? null,
+                  fromResponsibleUserId: currentUserId,
                 }
               : line,
           ),
@@ -115,7 +118,7 @@ export default function FaMovementFormFields({
         false,
       );
     },
-    [formik, getAsset],
+    [currentUserId, formik, getAsset],
   );
 
   const rows = useMemo<MovementLineRow[]>(
@@ -182,6 +185,7 @@ export default function FaMovementFormFields({
               search
               required
               marginBottom="mb-0"
+              disabled
             />
           </div>
         ),

@@ -44,6 +44,7 @@ const defaultValues: FaMovementFormValues = {
 const toPayload = (
   values: FaMovementFormValues,
   stateId: number,
+  currentUserId: number | null,
 ): FaMovementPayload => ({
   docDate: values.docDate,
   toDepartmentId: Number(values.toDepartmentId),
@@ -55,9 +56,7 @@ const toPayload = (
     ...(line.fromDepartmentId != null && {
       fromDepartmentId: Number(line.fromDepartmentId),
     }),
-    ...(line.fromResponsibleUserId != null && {
-      fromResponsibleUserId: Number(line.fromResponsibleUserId),
-    }),
+    fromResponsibleUserId: Number(currentUserId),
     note: line.note,
   })),
 });
@@ -69,6 +68,7 @@ export default function FaMovementFormPage() {
   const isCreate = !id;
 
   const { user } = useAppSelector((state) => state.auth);
+  const currentUserId = user?.user.id ?? null;
   const permissions = user?.user.permissions ?? [];
   const canViewList = permissions.includes(faMovementPermissions.view);
   const canCreate = permissions.includes(faMovementPermissions.create);
@@ -106,17 +106,15 @@ export default function FaMovementFormPage() {
               line.oldDepartmentId ??
               line.departmentId ??
               null,
-            fromResponsibleUserId:
-              line.fromResponsibleUserId ??
-              line.previousResponsibleUserId ??
-              line.oldResponsibleUserId ??
-              line.responsibleUserId ??
-              null,
+            fromResponsibleUserId: currentUserId,
             note: line.note ?? "",
           }))
-        : defaultValues.lines,
+        : defaultValues.lines.map((line) => ({
+            ...line,
+            fromResponsibleUserId: currentUserId,
+          })),
     }),
-    [record],
+    [currentUserId, record],
   );
 
   const persistMovement = async (
@@ -125,6 +123,7 @@ export default function FaMovementFormPage() {
     const payload = toPayload(
       values,
       record?.stateId ?? faDocumentStatusIds.draft,
+      currentUserId,
     );
 
     if (!isCreate && id) {
@@ -235,7 +234,11 @@ export default function FaMovementFormPage() {
   return (
     <Form layout="vertical" onFinish={formik.handleSubmit}>
       <fieldset disabled={!canSubmit} className="min-w-0">
-        <FaMovementFormFields formik={formik} isDraft={isDraft} />
+        <FaMovementFormFields
+          formik={formik}
+          isDraft={isDraft}
+          currentUserId={currentUserId}
+        />
       </fieldset>
 
       <FaDraftActionsBar

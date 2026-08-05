@@ -1,5 +1,5 @@
 import { Button } from "antd";
-import { Inbox, Settings2 } from "lucide-react";
+import { Inbox } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import EdoProviderPanel from "../components/EdoProviderPanel";
@@ -10,9 +10,9 @@ export default function EdoWorkspacePage() {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-4 px-1">
-        <div>
+    <div className="w-full space-y-2">
+      <div className="flex flex-wrap items-start justify-end gap-4 px-1">
+        {/* <div>
           <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand">
             <Settings2 className="size-4" /> EDO
           </div>
@@ -22,7 +22,7 @@ export default function EdoWorkspacePage() {
           <p className="mt-1 text-sm text-secondary-text">
             {t("settings.integrations.edo.description")}
           </p>
-        </div>
+        </div> */}
         <Button
           type="primary"
           icon={<Inbox className="size-4" />}
