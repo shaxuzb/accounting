@@ -2,6 +2,7 @@ export const edoEndpoints = {
   activeProvider: "/edo/active-provider",
   authChallenge: "/edo/auth/challenge",
   authComplete: "/edo/auth/complete",
+  fakturaAuthComplete: "/edo/auth/faktura/complete",
   outboxFacturas: "/edo/outbox/facturas",
   outboxSign: (id: string | number) => `/edo/outbox/${id}/sign`,
   inbox: "/edo/inbox",

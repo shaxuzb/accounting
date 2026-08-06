@@ -5,6 +5,7 @@ import type { AuthToken } from "@/shared/types";
 import { logout } from "@/store/features/authSlice";
 import toast from "react-hot-toast";
 import i18n from "@/config/i18n";
+import { appEvents } from "@/shared/constants/appEvents";
 
 let isHandlingUnauthorized = false;
 
@@ -23,18 +24,9 @@ const addToken = (config: InternalAxiosRequestConfig) => {
   try {
     const lang = localStorage.getItem("lang");
     const orgData = localStorage.getItem("org");
-    const edoOrganizationIdOverride = Number(
-      import.meta.env.VITE_EDO_ORGANIZATION_ID_OVERRIDE,
-    );
-    const shouldOverrideEdoOrganization =
-      config.url?.startsWith("/edo/") &&
-      Number.isSafeInteger(edoOrganizationIdOverride) &&
-      edoOrganizationIdOverride > 0;
 
     config.headers["X-Language"] = lang ?? "uz";
-    if (shouldOverrideEdoOrganization) {
-      config.headers["X-OrganizationId"] = edoOrganizationIdOverride;
-    } else if (orgData) {
+    if (orgData) {
       const { id } = JSON.parse(orgData) as { id: number };
       if (id) {
         config.headers["X-OrganizationId"] = id;
@@ -59,6 +51,10 @@ const handleResponseError = (error: AxiosError) => {
   const responseData = error.response?.data as { title?: string } | undefined;
   const isProviderAuthenticationError =
     responseData?.title === "IntegrationUnauthorized";
+
+  if (isProviderAuthenticationError) {
+    window.dispatchEvent(new Event(appEvents.edoUnauthorized));
+  }
 
   if (error.response?.status === 401 && !isProviderAuthenticationError) {
     if (!isHandlingUnauthorized) {

@@ -4,6 +4,7 @@ import i18n from "@/config/i18n";
 
 export const errorHandlers = (err: unknown): void => {
   if (err instanceof AxiosError) {
+    if (err.response?.data?.title === "IntegrationUnauthorized") return;
     toast.error(
       err.response?.data?.detail || err.response?.data?.message || err.message
     );

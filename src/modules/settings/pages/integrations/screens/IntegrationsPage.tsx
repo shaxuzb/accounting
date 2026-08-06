@@ -12,14 +12,15 @@ import IntegrationCard from "../components/IntegrationCard";
 import IntegrationConnectionModal from "../components/IntegrationConnectionModal";
 import { useIntegrations } from "../hooks/useIntegrations";
 import type { IntegrationCategory, IntegrationCode } from "../types/type";
-import { useEdoActiveProvider } from "../edo/hooks";
-import { readEdoAuthSession } from "../edo/utils/authSession";
+import { useEdoActiveProvider, useEdoAuthSession } from "../edo/hooks";
+import { isEdoAuthSessionActive } from "../edo/utils/authSession";
 
 export default function IntegrationsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { items, isLoading, error, refresh } = useIntegrations();
   const activeProviderQuery = useEdoActiveProvider();
+  const edoSession = useEdoAuthSession(activeProviderQuery.data?.code);
   const [selectedCode, setSelectedCode] = useState<IntegrationCode | null>(
     null,
   );
@@ -27,14 +28,14 @@ export default function IntegrationsPage() {
     useState<IntegrationCategory>("ALL");
   const recordsByCode = useMemo(() => {
     const records = new Map(items.map((item) => [item.code, item]));
-    const provider = activeProviderQuery.data;
-    const session = readEdoAuthSession(provider?.code);
     records.set("EDO", {
       code: "EDO",
-      status: session?.isAuthenticated ? "CONNECTED" : "DISCONNECTED",
+      status: isEdoAuthSessionActive(edoSession)
+        ? "CONNECTED"
+        : "DISCONNECTED",
     });
     return records;
-  }, [activeProviderQuery.data, items]);
+  }, [edoSession, items]);
   const selectedDefinition = integrationDefinitions.find(
     (item) => item.code === selectedCode,
   );

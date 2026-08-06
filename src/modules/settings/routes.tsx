@@ -57,6 +57,7 @@ import EdoWorkspacePage from "./pages/integrations/edo/screens/EdoWorkspacePage"
 import EdoInboxPage from "./pages/integrations/edo/screens/EdoInboxPage";
 import EdoOutboxCreatePage from "./pages/integrations/edo/screens/EdoOutboxCreatePage";
 import EdoOutboxDetailPage from "./pages/integrations/edo/screens/EdoOutboxDetailPage";
+import EdoSessionGuard from "./pages/integrations/edo/components/EdoSessionGuard";
 
 const settingsPermissions = [
   rolePermissions.view,
@@ -106,6 +107,13 @@ const withEimzo = (element: React.ReactElement) => (
   </EimzoProvider>
 );
 
+const withEdoSession = (
+  element: React.ReactElement,
+  requireSession = false,
+) => (
+  <EdoSessionGuard requireSession={requireSession}>{element}</EdoSessionGuard>
+);
+
 export const settingsRoutes: RouteObject = {
   path: "settings",
   handle: { title: "settings.title" },
@@ -122,7 +130,7 @@ export const settingsRoutes: RouteObject = {
         backTo: "..",
       },
       element: withPermission(
-        withEimzo(<IntegrationsPage />),
+        withEimzo(withEdoSession(<IntegrationsPage />)),
         integrationPermissions.view,
       ),
     },
@@ -134,7 +142,7 @@ export const settingsRoutes: RouteObject = {
         backTo: "..",
       },
       element: withPermission(
-        withEimzo(<EdoWorkspacePage />),
+        withEimzo(withEdoSession(<EdoWorkspacePage />)),
         integrationPermissions.view,
       ),
     },
@@ -146,7 +154,7 @@ export const settingsRoutes: RouteObject = {
         backTo: "..",
       },
       element: withPermission(
-        withEimzo(<EdoInboxPage />),
+        withEimzo(withEdoSession(<EdoInboxPage />, true)),
         integrationPermissions.view,
       ),
     },
@@ -158,7 +166,7 @@ export const settingsRoutes: RouteObject = {
         backTo: "../..",
       },
       element: withPermission(
-        withEimzo(<EdoOutboxCreatePage />),
+        withEimzo(withEdoSession(<EdoOutboxCreatePage />, true)),
         integrationPermissions.view,
       ),
     },
@@ -170,7 +178,7 @@ export const settingsRoutes: RouteObject = {
         backTo: "../..",
       },
       element: withPermission(
-        withEimzo(<EdoOutboxDetailPage />),
+        withEimzo(withEdoSession(<EdoOutboxDetailPage />, true)),
         integrationPermissions.view,
       ),
     },

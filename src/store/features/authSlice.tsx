@@ -50,6 +50,16 @@ const authSlice = createSlice({
 
     logout: () => {
       clearLocalStorageExcept(["mode", "lang", "theme"]);
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("accounting:edo:auth:")) {
+          localStorage.removeItem(key);
+        }
+      });
+      Object.keys(sessionStorage).forEach((key) => {
+        if (key.startsWith("accounting:edo:auth:")) {
+          sessionStorage.removeItem(key);
+        }
+      });
       return getInitialState();
     },
   },

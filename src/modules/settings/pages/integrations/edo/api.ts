@@ -16,6 +16,7 @@ import type {
   EdoOutboxFacturaCreateRequestDto,
   EdoOutboxSignDto,
   EdoOutboxSignRequestDto,
+  EdoProviderCode,
   EdoProviderDto,
 } from "./types/type";
 
@@ -43,9 +44,17 @@ export const edoService = {
       .get<EdoAuthChallengeDto>(edoEndpoints.authChallenge, { params })
       .then((response) => response.data),
 
-  authComplete: (payload: EdoAuthCompleteRequestDto) =>
+  authComplete: (
+    providerCode: EdoProviderCode,
+    payload: EdoAuthCompleteRequestDto,
+  ) =>
     $axiosPrivate
-      .post<EdoAuthCompleteDto>(edoEndpoints.authComplete, payload)
+      .post<EdoAuthCompleteDto>(
+        providerCode === "FAKTURA"
+          ? edoEndpoints.fakturaAuthComplete
+          : edoEndpoints.authComplete,
+        payload,
+      )
       .then((response) => response.data),
 
   createOutboxFactura: (payload: EdoOutboxFacturaCreateRequestDto) =>

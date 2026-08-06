@@ -4,15 +4,20 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useEimzo, type ICertificate } from "@islom929/react-eimzo";
 import toast from "react-hot-toast";
+import { isAxiosError } from "axios";
 import Card from "@/components/ui/card/Card";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   useEdoActiveProvider,
+  useEdoAuthSession,
   useEdoAuthChallenge,
   useEdoAuthComplete,
 } from "../hooks";
 import { hasSupportedCapability } from "../utils/capabilities";
-import { readEdoAuthSession, saveEdoAuthSession } from "../utils/authSession";
+import {
+  isEdoAuthSessionActive,
+  saveEdoAuthSession,
+} from "../utils/authSession";
 import { createEimzoSignature } from "../utils/eimzoSignature";
 import { getEimzoSigningDataBase64 } from "../utils/signingPayload";
 
@@ -33,7 +38,7 @@ export default function EdoAuthenticationPanel({
   const [selectedSerial, setSelectedSerial] = useState<string>();
   const [localError, setLocalError] = useState<string>();
   const provider = activeProviderQuery.data;
-  const session = readEdoAuthSession(provider?.code);
+  const session = useEdoAuthSession(provider?.code);
   const certificates = useMemo(
     () => keyList.filter((certificate) => !certificate.expired),
     [keyList],
@@ -78,15 +83,16 @@ export default function EdoAuthenticationPanel({
       if (new Date(challenge.expiresAt).getTime() <= Date.now()) {
         throw new Error(t("settings.integrations.edo.errors.challengeExpired"));
       }
-      console.log(challenge);
-
       const response = await completeMutation.mutateAsync({
-        challengeId: challenge.challengeId,
-        signingSessionId: challenge.signingSessionId,
-        certificateSerialNumber,
-        signedPayload: preparedPkcs7,
-        preparedPkcs7,
-        signatureHex,
+        providerCode: provider.code,
+        payload: {
+          challengeId: challenge.challengeId,
+          signingSessionId: challenge.signingSessionId,
+          certificateSerialNumber,
+          signedPayload: preparedPkcs7,
+          preparedPkcs7,
+          signatureHex,
+        },
       });
 
       if (!response.isAuthenticated) {
@@ -96,8 +102,16 @@ export default function EdoAuthenticationPanel({
       toast.success(t("settings.integrations.edo.messages.authenticated"));
       onAuthenticated?.();
     } catch (cause) {
-      setLocalError(cause instanceof Error ? cause.message : String(cause));
-      errorHandlers(cause);
+      if (isAxiosError(cause) && cause.response?.status === 404) {
+        const message = t(
+          "settings.integrations.edo.errors.providerUserNotFound",
+        );
+        setLocalError(message);
+        toast.error(message, { id: "edo-provider-user-not-found" });
+      } else {
+        setLocalError(cause instanceof Error ? cause.message : String(cause));
+        errorHandlers(cause);
+      }
     }
   };
 
@@ -131,7 +145,7 @@ export default function EdoAuthenticationPanel({
           message={t("settings.integrations.edo.auth.unavailable")}
         />
       )}
-      {session?.isAuthenticated && (
+      {isEdoAuthSessionActive(session) && (
         <Alert
           type="success"
           showIcon
@@ -146,7 +160,7 @@ export default function EdoAuthenticationPanel({
                 })
               : undefined
           }
-          className="mb-4"
+          className="mb-4! border-emerald-200! bg-emerald-50! text-emerald-700! dark:border-emerald-800! dark:bg-emerald-950/60! dark:text-emerald-300!"
         />
       )}
       {(!isInstalled || error) && (

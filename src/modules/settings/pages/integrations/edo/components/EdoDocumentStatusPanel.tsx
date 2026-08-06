@@ -74,7 +74,7 @@ export default function EdoDocumentStatusPanel({
           size="small"
           icon={<RefreshCw className="size-3.5" />}
           loading={statusQuery.isFetching}
-          onClick={() => void statusQuery.refetch()}
+          onClick={() => statusQuery.refetch()}
         >
           {t("common.refresh")}
         </Button>

@@ -8,4 +8,5 @@ export const edoQueryKeys = {
     [...edoQueryKeys.inboxes(), params] as const,
   status: (direction: "INBOX" | "OUTBOX", id: string | number) =>
     [...edoQueryKeys.all, "status", direction, id] as const,
+  file: (id: string | number) => [...edoQueryKeys.all, "file", id] as const,
 };

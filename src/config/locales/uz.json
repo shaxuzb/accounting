@@ -591,6 +591,22 @@
       "edo": {
         "title": "Elektron hujjat almashinuvi",
         "description": "Provider tanlash, E-IMZO autentifikatsiyasi va elektron hisob-fakturalarni boshqarish.",
+        "navigation": {
+          "inbox": "Kiruvchi",
+          "outbox": "Chiquvchi",
+          "drafts": "Qoralamalar",
+          "templates": "Shablonlar",
+          "excelImport": "Excel yuklash",
+          "received": "Qabul qilingan",
+          "pendingSignature": "Imzolash kutilmoqda",
+          "pendingPartnerSignature": "Hamkor imzosi kutilmoqda",
+          "signed": "Imzolangan",
+          "rejected": "Rad etilgan",
+          "deleted": "O‘chirilgan",
+          "powerOfAttorney": "Ishonchli vakil hujjatlari",
+          "notAvailable": "Hozircha mavjud emas",
+          "sectionUnavailable": "Bu bo‘lim uchun API tayyor emas. Backend endpoint chiqqach ulanadi."
+        },
         "capabilityUnavailable": "Bu amal tanlangan providerda mavjud emas",
         "provider": {
           "title": "EDO provider",
@@ -631,7 +647,9 @@
           "createFactura": "Hisob-faktura yaratish",
           "sign": "Imzolash",
           "reject": "Rad etish",
-          "download": "Yuklab olish"
+           "download": "Yuklab olish",
+           "print": "Chop etish",
+           "basedOn": "Asosida yaratish"
         },
         "fields": {
           "internalDocumentId": "Ichki hujjat ID",
@@ -708,7 +726,11 @@
           "providers": "Providerlarni yuklab bo‘lmadi",
           "status": "Hujjat holatini olib bo‘lmadi",
           "challengeExpired": "Imzolash sessiyasi muddati tugadi. Qayta urinib ko‘ring.",
-          "authRejected": "Provider autentifikatsiyani tasdiqlamadi"
+          "authRejected": "Provider autentifikatsiyani tasdiqlamadi",
+          "providerUserNotFound": "Tanlangan E-IMZO egasi ushbu providerda ro‘yxatdan o‘tmagan. Sertifikat va providerni tekshirib, qayta urinib ko‘ring.",
+          "sessionExpired": "EDO sessiyasi muddati tugadi. Qayta autentifikatsiya qiling.",
+          "notConnected": "EDO integratsiyasi ulanmagan. Avval E-IMZO orqali autentifikatsiya qiling.",
+          "inboxLoad": "Kiruvchi EDO hujjatlarini yuklab bo‘lmadi"
         }
       }
     },
