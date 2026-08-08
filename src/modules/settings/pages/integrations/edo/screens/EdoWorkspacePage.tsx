@@ -1,10 +1,14 @@
-import { Button, Tooltip } from "antd";
+import { Button, Card as AntCard, Statistic, Tooltip } from "antd";
 import { Inbox } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import EdoProviderPanel from "../components/EdoProviderPanel";
 import EdoAuthenticationPanel from "../components/EdoAuthenticationPanel";
-import { useEdoActiveProvider, useEdoAuthSession } from "../hooks";
+import {
+  useEdoActiveProvider,
+  useEdoAuthSession,
+  useEdoInboxSummary,
+} from "../hooks";
 import { isEdoAuthSessionActive } from "../utils/authSession";
 
 export default function EdoWorkspacePage() {
@@ -13,6 +17,8 @@ export default function EdoWorkspacePage() {
   const providerQuery = useEdoActiveProvider();
   const session = useEdoAuthSession(providerQuery.data?.code);
   const canOpenInbox = isEdoAuthSessionActive(session);
+  const canLoadSummary = providerQuery.data?.code === "EDOCS" && canOpenInbox;
+  const summaryQuery = useEdoInboxSummary(canLoadSummary);
 
   return (
     <div className="w-full space-y-2">
@@ -47,6 +53,23 @@ export default function EdoWorkspacePage() {
           </span>
         </Tooltip>
       </div>
+
+      {canLoadSummary && summaryQuery.data && (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <AntCard size="small" title={t("settings.integrations.edo.navigation.inbox")}>
+            <div className="grid grid-cols-2 gap-3">
+              <Statistic title={t("settings.integrations.edo.statuses.RECEIVED")} value={summaryQuery.data.inbox.received ?? "—"} />
+              <Statistic title={t("settings.integrations.edo.statuses.SIGNED")} value={summaryQuery.data.inbox.signed ?? "—"} />
+            </div>
+          </AntCard>
+          <AntCard size="small" title={t("settings.integrations.edo.navigation.outbox")}>
+            <div className="grid grid-cols-2 gap-3">
+              <Statistic title={t("settings.integrations.edo.statuses.SENT")} value={summaryQuery.data.outbox.sent ?? "—"} />
+              <Statistic title={t("settings.integrations.edo.statuses.DRAFT")} value={summaryQuery.data.outbox.draft ?? "—"} />
+            </div>
+          </AntCard>
+        </div>
+      )}
 
       <EdoProviderPanel />
       <EdoAuthenticationPanel onAuthenticated={() => navigate("inbox")} />

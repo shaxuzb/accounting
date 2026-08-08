@@ -1,6 +1,7 @@
 import { Tooltip } from "antd";
 import {
   BookOpen,
+  Files,
   FileSpreadsheet,
   FileText,
   Inbox,
@@ -27,6 +28,7 @@ const sectionIcons: Record<
   INBOX: Inbox,
   OUTBOX: Send,
   DRAFTS: FileText,
+  ALL: Files,
   TEMPLATES: BookOpen,
   EXCEL: FileSpreadsheet,
 };
@@ -80,4 +82,3 @@ function EdoSectionNavigation({
 }
 
 export default memo(EdoSectionNavigation);
-

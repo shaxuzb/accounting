@@ -1,18 +1,21 @@
 import { Alert, Button, Descriptions, Skeleton } from "antd";
 import { RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useEdoDocumentStatus } from "../hooks";
+import { useEdoDocumentStatus, useEdoRemoteOutboxStatus } from "../hooks";
 import EdoStatusBadge from "./EdoStatusBadge";
 
 export default function EdoDocumentStatusPanel({
   id,
   direction,
+  providerDocumentId,
 }: {
   id: string | number;
   direction: "INBOX" | "OUTBOX";
+  providerDocumentId?: string | null;
 }) {
   const { t } = useTranslation();
   const statusQuery = useEdoDocumentStatus(direction, id);
+  const remoteStatusQuery = useEdoRemoteOutboxStatus(providerDocumentId, false);
 
   if (statusQuery.isLoading) return <Skeleton active paragraph={{ rows: 2 }} />;
   if (statusQuery.isError || !statusQuery.data) {
@@ -30,7 +33,8 @@ export default function EdoDocumentStatusPanel({
     );
   }
 
-  const status = statusQuery.data;
+  const status = remoteStatusQuery.data?.status ?? statusQuery.data;
+  if (!status) return null;
   return (
     <div className="space-y-3">
       {status.isReconciliationRequired && (
@@ -74,7 +78,10 @@ export default function EdoDocumentStatusPanel({
           size="small"
           icon={<RefreshCw className="size-3.5" />}
           loading={statusQuery.isFetching}
-          onClick={() => statusQuery.refetch()}
+          onClick={() => {
+            void statusQuery.refetch();
+            if (providerDocumentId) void remoteStatusQuery.refetch();
+          }}
         >
           {t("common.refresh")}
         </Button>

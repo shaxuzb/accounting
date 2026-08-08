@@ -12,6 +12,11 @@ export type EdoCapabilityKind =
   | "CreateFactura"
   | "SignOutbox"
   | "ListInbox"
+  | "ListOutbox"
+  | "ListDrafts"
+  | "ListAll"
+  | "AggregateAll"
+  | "GetDetail"
   | "RejectInbox"
   | "GetFile"
   | "GetOutboxStatus"
@@ -27,6 +32,44 @@ export interface EdoProviderDto {
   id: number;
   name: string;
   code: EdoProviderCode;
+}
+
+export interface EdoFrontendCapabilitiesDto {
+  canListInbox: EdoCapabilityStatus;
+  canListOutbox: EdoCapabilityStatus;
+  canListDrafts: EdoCapabilityStatus;
+  canListAll: EdoCapabilityStatus;
+  canAggregateAll: EdoCapabilityStatus;
+  canGetDetail: EdoCapabilityStatus;
+  canGetFile: EdoCapabilityStatus;
+  canGetStatus: EdoCapabilityStatus;
+  canCreate: EdoCapabilityStatus;
+  canSign: EdoCapabilityStatus;
+  canReject: EdoCapabilityStatus;
+  canDelete: EdoCapabilityStatus;
+  canRestore: EdoCapabilityStatus;
+  canExport: EdoCapabilityStatus;
+  canMarking: EdoCapabilityStatus;
+}
+
+export interface EdoCategoryCapabilityDto {
+  category: EdoDocumentCategory;
+  capability: EdoCapabilityStatus;
+}
+
+export interface EdoStatusCapabilityDto {
+  status: EdoDocumentStatusCode;
+  capability: EdoCapabilityStatus;
+}
+
+export interface EdoCapabilitiesResponseDto {
+  provider: EdoProviderCode;
+  displayName: string;
+  authModes: string[];
+  signingModes: string[];
+  capabilities: EdoFrontendCapabilitiesDto;
+  categoryCapabilities: EdoCategoryCapabilityDto[];
+  statusCapabilities: EdoStatusCapabilityDto[];
 }
 
 export interface EdoActiveProviderRequestDto {
@@ -50,10 +93,15 @@ export interface EdoAuthChallengeDto {
 export interface EdoAuthCompleteRequestDto {
   challengeId: string;
   signingSessionId?: string | null;
-  certificateSerialNumber: string;
+  certificateSerialNumber?: string | null;
   signedPayload?: string | null;
-  preparedPkcs7: string;
-  signatureHex: string;
+  preparedPkcs7?: string | null;
+  signatureHex?: string | null;
+}
+
+export interface EdoFakturaAuthCompleteRequestDto {
+  preparedPkcs7?: string | null;
+  rememberMe: boolean;
 }
 
 export interface EdoAuthCompleteDto {
@@ -73,7 +121,7 @@ export interface EdoPartyDto {
   directorName?: string | null;
   accountantName?: string | null;
   vatRegistrationStatus?: string | null;
-  districtId?: number | null;
+  districtId?: number | string | null;
 }
 
 export interface EdoEmpowermentDto {
@@ -114,6 +162,9 @@ export interface EdoOutboxFacturaCreateRequestDto {
 
 export type EdoDocumentStatusCode =
   | "UNKNOWN"
+  | "PENDING_SIGNATURE"
+  | "PARTNER_SIGNATURE_PENDING"
+  | "AGENT_SIGNATURE_PENDING"
   | "DRAFT"
   | "PENDING"
   | "SIGNED"
@@ -125,10 +176,19 @@ export type EdoDocumentStatusCode =
   | "FAILED"
   | "RECONCILIATION_REQUIRED";
 
+export type EdoDocumentCategory =
+  | "INBOX"
+  | "OUTBOX"
+  | "DRAFTS"
+  | "REJECTED"
+  | "DELETED_ARCHIVED"
+  | "ALL";
+
 export interface EdoDocumentStatusDto {
   code: EdoDocumentStatusCode;
   localCode?: string | null;
   providerStatusCode?: string | null;
+  providerRawStatus?: string | null;
   description?: string | null;
   isTerminal: boolean;
   isSuccessful: boolean;
@@ -138,8 +198,12 @@ export interface EdoDocumentStatusDto {
 
 export interface EdoDocumentDto {
   id: number;
+  statusCheckable: boolean;
+  providerCode: EdoProviderCode;
+  documentIdentity?: string | null;
   providerDocumentId?: string | null;
   direction: "INBOX" | "OUTBOX";
+  category: EdoDocumentCategory;
   documentType: string;
   documentNumber: string;
   documentDate: string;
@@ -150,6 +214,7 @@ export interface EdoDocumentDto {
   currencyCode?: string | null;
   createdAt?: string | null;
   updatedAt?: string | null;
+  markingCodes: string[];
 }
 
 export interface EdoSigningSessionDto {
@@ -183,20 +248,66 @@ export interface EdoOutboxSignDto {
 }
 
 export interface EdoInboxQueryDto {
-  companyInn?: string;
   page: number;
   pageSize: number;
   search?: string;
+  hasMarks?: boolean;
+  category?: EdoDocumentCategory;
   status?: EdoDocumentStatusCode;
   fromDate?: string;
   toDate?: string;
 }
 
-export interface EdoInboxListDto {
+export interface EdoOutboxQueryDto {
+  page: number;
+  pageSize: number;
+  search?: string;
+  hasMarks?: boolean;
+  category?: EdoDocumentCategory;
+  status?: EdoDocumentStatusCode;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export type EdoAllDocumentsQueryDto = EdoOutboxQueryDto;
+
+export interface EdoPagedDocumentResponse {
   items: EdoDocumentDto[];
   page: number;
   pageSize: number;
   totalCount?: number | null;
+  totalPages?: number | null;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+}
+
+export type EdoInboxListDto = EdoPagedDocumentResponse;
+
+export interface EdoProviderDocumentStatusResponseDto {
+  documentIdentity: string;
+  providerDocumentId: string;
+  providerCode: EdoProviderCode;
+  direction: "INBOX" | "OUTBOX";
+  status: EdoDocumentStatusDto;
+}
+
+export interface EdoPublicStatusCountsDto {
+  received?: number | null;
+  signed?: number | null;
+  rejected?: number | null;
+  draft?: number | null;
+  sent?: number | null;
+  deleted?: number | null;
+  archived?: number | null;
+  pendingSignature?: number | null;
+  partnerSignaturePending?: number | null;
+  agentSignaturePending?: number | null;
+}
+
+export interface EdoPublicInboxSummaryDto {
+  provider: EdoProviderCode;
+  inbox: EdoPublicStatusCountsDto;
+  outbox: EdoPublicStatusCountsDto;
 }
 
 export interface EdoInboxRejectRequestDto {

@@ -4,6 +4,7 @@ export type EdoWorkspaceSection =
   | "INBOX"
   | "OUTBOX"
   | "DRAFTS"
+  | "ALL"
   | "TEMPLATES"
   | "EXCEL";
 
@@ -88,13 +89,19 @@ const navigationByProvider: Record<EdoProviderCode, EdoNavigationItem[]> = {
       id: "OUTBOX",
       labelKey: "settings.integrations.edo.navigation.outbox",
       direction: "OUTBOX",
-      available: false,
+      available: true,
       statusOptions: didoxOutboxStatuses,
     },
     {
       id: "DRAFTS",
       labelKey: "settings.integrations.edo.navigation.drafts",
-      available: false,
+      available: true,
+      statusOptions: [],
+    },
+    {
+      id: "ALL",
+      labelKey: "settings.integrations.edo.navigation.all",
+      available: true,
       statusOptions: [],
     },
     {
@@ -122,8 +129,20 @@ const navigationByProvider: Record<EdoProviderCode, EdoNavigationItem[]> = {
       id: "OUTBOX",
       labelKey: "settings.integrations.edo.navigation.outbox",
       direction: "OUTBOX",
-      available: false,
+      available: true,
       statusOptions: edocsOutboxStatuses,
+    },
+    {
+      id: "DRAFTS",
+      labelKey: "settings.integrations.edo.navigation.drafts",
+      available: true,
+      statusOptions: [],
+    },
+    {
+      id: "ALL",
+      labelKey: "settings.integrations.edo.navigation.all",
+      available: false,
+      statusOptions: [],
     },
   ],
   FAKTURA: [
@@ -138,8 +157,14 @@ const navigationByProvider: Record<EdoProviderCode, EdoNavigationItem[]> = {
       id: "OUTBOX",
       labelKey: "settings.integrations.edo.navigation.outbox",
       direction: "OUTBOX",
-      available: false,
+      available: true,
       statusOptions: edocsOutboxStatuses,
+    },
+    {
+      id: "ALL",
+      labelKey: "settings.integrations.edo.navigation.all",
+      available: false,
+      statusOptions: [],
     },
   ],
 };

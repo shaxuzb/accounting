@@ -12,6 +12,7 @@ import {
   useEdoAuthSession,
   useEdoAuthChallenge,
   useEdoAuthComplete,
+  useEdoCapabilities,
 } from "../hooks";
 import { hasSupportedCapability } from "../utils/capabilities";
 import {
@@ -33,11 +34,19 @@ export default function EdoAuthenticationPanel({
   const activeProviderQuery = useEdoActiveProvider();
   const challengeMutation = useEdoAuthChallenge();
   const completeMutation = useEdoAuthComplete();
-  const { isInstalled, isLoading, error, keyList, reloadKeys, prepareKey } =
-    useEimzo();
+  const {
+    isInstalled,
+    isLoading,
+    error,
+    keyList,
+    reloadKeys,
+    prepareKey,
+    signAsync,
+  } = useEimzo();
   const [selectedSerial, setSelectedSerial] = useState<string>();
   const [localError, setLocalError] = useState<string>();
   const provider = activeProviderQuery.data;
+  const capabilitiesQuery = useEdoCapabilities(provider?.code);
   const session = useEdoAuthSession(provider?.code);
   const certificates = useMemo(
     () => keyList.filter((certificate) => !certificate.expired),
@@ -46,10 +55,20 @@ export default function EdoAuthenticationPanel({
   const selectedCertificate = certificates.find(
     (certificate) => certificate.serialNumber === selectedSerial,
   );
+  const isFaktura = provider?.code === "FAKTURA";
   const authAvailable =
     Boolean(provider) &&
-    hasSupportedCapability(provider, "AuthChallenge") &&
-    hasSupportedCapability(provider, "AuthComplete");
+    (isFaktura ||
+      (hasSupportedCapability(
+        provider,
+        "AuthChallenge",
+        capabilitiesQuery.data,
+      ) &&
+        hasSupportedCapability(
+          provider,
+          "AuthComplete",
+          capabilitiesQuery.data,
+        )));
 
   useEffect(() => {
     if (!isInstalled) return;
@@ -62,6 +81,29 @@ export default function EdoAuthenticationPanel({
     if (!provider || !selectedCertificate || !authAvailable) return;
     setLocalError(undefined);
     try {
+      if (isFaktura) {
+        const preparedPkcs7 = await signAsync({
+          keyId: selectedCertificate,
+          data: selectedCertificate.serialNumber,
+          verifyPassword: true,
+        });
+        const response = await completeMutation.mutateAsync({
+          providerCode: provider.code,
+          payload: {
+            preparedPkcs7,
+            rememberMe: false,
+          },
+        });
+
+        if (!response.isAuthenticated) {
+          throw new Error(t("settings.integrations.edo.errors.authRejected"));
+        }
+        saveEdoAuthSession(provider.code, response);
+        toast.success(t("settings.integrations.edo.messages.authenticated"));
+        onAuthenticated?.();
+        return;
+      }
+
       const certificateSerialNumber =
         provider.code === "EDOCS"
           ? selectedCertificate.serialNumber.toLowerCase()
@@ -138,7 +180,7 @@ export default function EdoAuthenticationPanel({
           message={t("settings.integrations.edo.auth.selectProvider")}
         />
       )}
-      {provider && !authAvailable && (
+      {provider && !capabilitiesQuery.isLoading && !authAvailable && (
         <Alert
           type="warning"
           showIcon

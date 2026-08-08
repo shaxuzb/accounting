@@ -10,13 +10,15 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { EdoDocumentDto } from "../types/type";
-import { useEdoFilePreview } from "../hooks";
+import { useEdoDocumentDetail, useEdoFilePreview } from "../hooks";
 // import EdoDocumentStatusPanel from "./EdoDocumentStatusPanel";
 
 interface EdoInboxDocumentPreviewProps {
   document: EdoDocumentDto;
   canDownload: boolean;
   canReject: boolean;
+  canGetDetail?: boolean;
+  direction?: "INBOX" | "OUTBOX";
   onDownload: (document: EdoDocumentDto) => void;
   onReject: () => void;
 }
@@ -25,11 +27,15 @@ export default function EdoInboxDocumentPreview({
   document,
   canDownload,
   canReject,
+  canGetDetail = false,
+  direction = "INBOX",
   onDownload,
   onReject,
 }: EdoInboxDocumentPreviewProps) {
   const { t } = useTranslation();
   const fileQuery = useEdoFilePreview(document.id);
+  const detailQuery = useEdoDocumentDetail(document.id, canGetDetail);
+  const resolvedDocument = detailQuery.data ?? document;
 
   const printPreview = () => {
     if (!fileQuery.previewUrl) return;
@@ -48,7 +54,10 @@ export default function EdoInboxDocumentPreview({
   );
 
   return (
-    <div className="space-y-3 rounded-xl border border-border bg-surface-muted/35 p-3 sm:p-4">
+    <div
+      data-direction={direction}
+      className="space-y-3 rounded-xl border border-border bg-surface-muted/35 p-3 sm:p-4"
+    >
       <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-surface px-2.5 py-2 shadow-sm">
         <Tooltip title={unavailableTitle}>
           <span>
@@ -151,7 +160,7 @@ export default function EdoInboxDocumentPreview({
             />
           ) : fileQuery.previewUrl ? (
             <iframe
-              title={document.documentNumber || `EDO document ${document.id}`}
+              title={resolvedDocument.documentNumber || `EDO document ${resolvedDocument.id}`}
               src={fileQuery.previewUrl}
               className="h-[min(78vh,900px)] w-full border-0 bg-white"
             />

@@ -10,6 +10,8 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   useDownloadEdoFile,
   useEdoActiveProvider,
+  useEdoCapabilities,
+  useEdoDocumentDetail,
   useEdoDocumentStatus,
   useSignEdoOutbox,
 } from "../hooks";
@@ -29,6 +31,9 @@ export default function EdoOutboxDetailPage() {
   const { id = "" } = useParams();
   const activeProviderQuery = useEdoActiveProvider();
   const provider = activeProviderQuery.data;
+  const capabilitiesQuery = useEdoCapabilities(provider?.code);
+  const canGetDetail = hasSupportedCapability(provider, "GetDetail", capabilitiesQuery.data);
+  const detailQuery = useEdoDocumentDetail(id, canGetDetail && Boolean(id));
   const statusQuery = useEdoDocumentStatus("OUTBOX", id, Boolean(id));
   const signMutation = useSignEdoOutbox();
   const downloadMutation = useDownloadEdoFile();
@@ -39,8 +44,9 @@ export default function EdoOutboxDetailPage() {
   const certificates = useMemo(() => keyList.filter((item) => !item.expired), [keyList]);
   const certificate = certificates.find((item) => item.serialNumber === selectedSerial);
   const status = statusQuery.data ?? document?.status;
-  const canSign = hasSupportedCapability(provider, "SignOutbox") && !status?.isTerminal && status?.code !== "FAILED" && status?.code !== "RECONCILIATION_REQUIRED";
-  const canDownload = hasSupportedCapability(provider, "GetFile");
+  const canSign = hasSupportedCapability(provider, "SignOutbox", capabilitiesQuery.data) && !status?.isTerminal && status?.code !== "FAILED" && status?.code !== "RECONCILIATION_REQUIRED";
+  const canDownload = hasSupportedCapability(provider, "GetFile", capabilitiesQuery.data);
+  const resolvedDocument = detailQuery.data ?? document;
 
   const finishSign = (response: Awaited<ReturnType<typeof signMutation.mutateAsync>>) => {
     saveEdoOutboxDocument(response.document);
@@ -103,13 +109,13 @@ export default function EdoOutboxDetailPage() {
       <Card className="border border-border p-5">
         <Descriptions bordered size="small" column={{ xs: 1, md: 2, xl: 4 }} items={[
           { key: "id", label: "ID", children: id },
-          { key: "number", label: t("settings.integrations.edo.fields.documentNumber"), children: document?.documentNumber ?? "—" },
-          { key: "providerId", label: t("settings.integrations.edo.fields.providerDocumentId"), children: document?.providerDocumentId ?? "—" },
-          { key: "type", label: t("settings.integrations.edo.fields.documentType"), children: document?.documentType ?? "—" },
+          { key: "number", label: t("settings.integrations.edo.fields.documentNumber"), children: resolvedDocument?.documentNumber ?? "—" },
+          { key: "providerId", label: t("settings.integrations.edo.fields.providerDocumentId"), children: resolvedDocument?.providerDocumentId ?? "—" },
+          { key: "type", label: t("settings.integrations.edo.fields.documentType"), children: resolvedDocument?.documentType ?? "—" },
         ]} />
       </Card>
 
-      <Card className="border border-border p-5"><EdoDocumentStatusPanel id={id} direction="OUTBOX" /></Card>
+      <Card className="border border-border p-5"><EdoDocumentStatusPanel id={id} direction="OUTBOX" providerDocumentId={resolvedDocument?.providerDocumentId} /></Card>
 
       <Card className="border border-border p-5">
         <h2 className="mb-4 font-semibold">{t("settings.integrations.edo.outbox.sign")}</h2>

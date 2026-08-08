@@ -13,6 +13,7 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   useCreateEdoOutboxFactura,
   useEdoActiveProvider,
+  useEdoCapabilities,
 } from "../hooks";
 import type {
   EdoFacturaLineDto,
@@ -146,7 +147,12 @@ export default function EdoOutboxCreatePage() {
   const activeProviderQuery = useEdoActiveProvider();
   const createMutation = useCreateEdoOutboxFactura();
   const provider = activeProviderQuery.data;
-  const canCreate = hasSupportedCapability(provider, "CreateFactura");
+  const capabilitiesQuery = useEdoCapabilities(provider?.code);
+  const canCreate = hasSupportedCapability(
+    provider,
+    "CreateFactura",
+    capabilitiesQuery.data,
+  );
   const formik = useFormik<EdoOutboxFacturaCreateRequestDto>({
     initialValues,
     onSubmit: async (values) => {

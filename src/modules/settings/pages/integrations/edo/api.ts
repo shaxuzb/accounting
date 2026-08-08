@@ -6,16 +6,23 @@ import type {
   EdoAuthChallengeQuery,
   EdoAuthCompleteDto,
   EdoAuthCompleteRequestDto,
+  EdoFakturaAuthCompleteRequestDto,
+  EdoAllDocumentsQueryDto,
+  EdoCapabilitiesResponseDto,
   EdoDocumentStatusDto,
+  EdoDocumentDto,
   EdoDownloadedFile,
   EdoInboxListDto,
   EdoInboxQueryDto,
   EdoInboxRejectDto,
   EdoInboxRejectRequestDto,
+  EdoOutboxQueryDto,
   EdoOutboxCreateDto,
   EdoOutboxFacturaCreateRequestDto,
   EdoOutboxSignDto,
   EdoOutboxSignRequestDto,
+  EdoProviderDocumentStatusResponseDto,
+  EdoPublicInboxSummaryDto,
   EdoProviderCode,
   EdoProviderDto,
 } from "./types/type";
@@ -34,6 +41,11 @@ export const edoService = {
       .get<EdoProviderDto>(edoEndpoints.activeProvider)
       .then((response) => response.data),
 
+  capabilities: () =>
+    $axiosPrivate
+      .get<EdoCapabilitiesResponseDto>(edoEndpoints.capabilities)
+      .then((response) => response.data),
+
   setActiveProvider: (payload: EdoActiveProviderRequestDto) =>
     $axiosPrivate
       .put<EdoProviderDto>(edoEndpoints.activeProvider, payload)
@@ -46,7 +58,7 @@ export const edoService = {
 
   authComplete: (
     providerCode: EdoProviderCode,
-    payload: EdoAuthCompleteRequestDto,
+    payload: EdoAuthCompleteRequestDto | EdoFakturaAuthCompleteRequestDto,
   ) =>
     $axiosPrivate
       .post<EdoAuthCompleteDto>(
@@ -73,6 +85,26 @@ export const edoService = {
   inbox: (params: EdoInboxQueryDto) =>
     $axiosPrivate
       .get<EdoInboxListDto>(edoEndpoints.inbox, { params })
+      .then((response) => response.data),
+
+  outbox: (params: EdoOutboxQueryDto) =>
+    $axiosPrivate
+      .get<EdoInboxListDto>(edoEndpoints.outbox, { params })
+      .then((response) => response.data),
+
+  allDocuments: (params: EdoAllDocumentsQueryDto) =>
+    $axiosPrivate
+      .get<EdoInboxListDto>(edoEndpoints.allDocuments, { params })
+      .then((response) => response.data),
+
+  document: (id: string | number) =>
+    $axiosPrivate
+      .get<EdoDocumentDto>(edoEndpoints.document(id))
+      .then((response) => response.data),
+
+  inboxSummary: () =>
+    $axiosPrivate
+      .get<EdoPublicInboxSummaryDto>(edoEndpoints.inboxSummary)
       .then((response) => response.data),
 
   rejectInbox: (
@@ -118,6 +150,14 @@ export const edoService = {
   outboxStatus: (id: string | number) =>
     $axiosPrivate
       .get<EdoDocumentStatusDto>(edoEndpoints.outboxStatus(id))
+      .then((response) => response.data),
+
+  remoteOutboxStatus: (providerDocumentId?: string) =>
+    $axiosPrivate
+      .get<EdoProviderDocumentStatusResponseDto>(
+        edoEndpoints.remoteOutboxStatus,
+        { params: providerDocumentId ? { providerDocumentId } : undefined },
+      )
       .then((response) => response.data),
 
   inboxStatus: (id: string | number) =>
