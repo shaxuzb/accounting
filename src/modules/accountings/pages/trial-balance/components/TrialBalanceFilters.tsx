@@ -1,55 +1,44 @@
-import { Button, Checkbox, Form, Input, InputNumber, Space } from "antd";
-import Card from "@/components/ui/card/Card";
-import type { TrialBalanceQuery } from "../types/type";
+import { Switch } from "antd";
+import type { FormikProps } from "formik";
 import { useTranslation } from "react-i18next";
+import AccountingReportFilterBar from "@/modules/accountings/pages/accounting-report/components/AccountingReportFilterBar";
+import type { TrialBalanceQuery } from "../types/type";
 
 interface Props {
-  loading?: boolean;
-  onSubmit: (values: TrialBalanceQuery) => void;
+  formik: FormikProps<TrialBalanceQuery>;
+  loading: boolean;
+  onDateChange: (dateFrom: string, dateTo: string) => void;
+  onIncludeZeroBalanceChange: (checked: boolean) => void;
+  onRefresh: () => void;
 }
 
 export default function TrialBalanceFilters({
-  loading = false,
-  onSubmit,
+  formik,
+  loading,
+  onDateChange,
+  onIncludeZeroBalanceChange,
+  onRefresh,
 }: Props) {
   const { t } = useTranslation();
-  return (
-    <Card className="border border-border p-4">
-      <Form<TrialBalanceQuery>
-        layout="vertical"
-        initialValues={{
-          periodId: null,
-          dateFrom: "",
-          dateTo: "",
-          currencyId: null,
-          includeZeroBalance: false,
-        }}
-        onFinish={onSubmit}
-      >
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <Form.Item label={t("accountings.fields.periodId")} name="periodId">
-            <InputNumber className="w-full" min={1} />
-          </Form.Item>
-          <Form.Item label={t("accountings.fields.dateFrom")} name="dateFrom">
-            <Input placeholder="2026-07-01T00:00:00" />
-          </Form.Item>
-          <Form.Item label={t("accountings.fields.dateTo")} name="dateTo">
-            <Input placeholder="2026-07-31T23:59:59" />
-          </Form.Item>
-          <Form.Item label={t("accountings.fields.currencyId")} name="currencyId">
-            <InputNumber className="w-full" min={1} />
-          </Form.Item>
-          <Form.Item name="includeZeroBalance" valuePropName="checked">
-            <Checkbox>{t("accountings.fields.includeZeroBalance")}</Checkbox>
-          </Form.Item>
-        </div>
 
-        <Space className="mt-2">
-          <Button type="primary" htmlType="submit" loading={loading}>
-            {t("accountings.actions.calculate")}
-          </Button>
-        </Space>
-      </Form>
-    </Card>
+  return (
+    <AccountingReportFilterBar
+      formik={formik}
+      loading={loading}
+      onDateChange={onDateChange}
+      onRefresh={onRefresh}
+      afterDate={
+        <label className="flex cursor-pointer items-center gap-2 whitespace-nowrap text-sm text-text">
+          <Switch
+            checked={Boolean(formik.values.includeZeroBalance)}
+            onChange={(checked) => {
+              void formik.setFieldValue("includeZeroBalance", checked, false);
+              onIncludeZeroBalanceChange(checked);
+            }}
+          />
+          <span>{t("accountings.fields.includeZeroBalance")}</span>
+        </label>
+      }
+    />
   );
 }

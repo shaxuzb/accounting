@@ -1,5 +1,7 @@
 export type EdoProviderCode = "DIDOX" | "FAKTURA" | "EDOCS";
 
+export type EdoDocumentDirection = "INBOX" | "OUTBOX";
+
 export type EdoCapabilityStatus =
   | "SUPPORTED"
   | "PARTIAL"
@@ -62,6 +64,32 @@ export interface EdoStatusCapabilityDto {
   capability: EdoCapabilityStatus;
 }
 
+export type EdoFilterCode =
+  | "Page"
+  | "PageSize"
+  | "Status"
+  | "Search"
+  | "HasMarks"
+  | "DateFrom"
+  | "DateTo"
+  | "Category"
+  | (string & {});
+
+export interface EdoFilterCapabilityDto {
+  direction?: EdoDocumentDirection | null;
+  category: EdoDocumentCategory;
+  filter: EdoFilterCode;
+  capability: EdoCapabilityStatus;
+}
+
+export interface EdoStatusOptionDto {
+  direction?: EdoDocumentDirection | null;
+  category: EdoDocumentCategory;
+  code: EdoDocumentStatusCode;
+  sendsProviderStatus: boolean;
+  capability: EdoCapabilityStatus;
+}
+
 export interface EdoCapabilitiesResponseDto {
   provider: EdoProviderCode;
   displayName: string;
@@ -70,6 +98,8 @@ export interface EdoCapabilitiesResponseDto {
   capabilities: EdoFrontendCapabilitiesDto;
   categoryCapabilities: EdoCategoryCapabilityDto[];
   statusCapabilities: EdoStatusCapabilityDto[];
+  filterCapabilities: EdoFilterCapabilityDto[];
+  statusOptions: EdoStatusOptionDto[];
 }
 
 export interface EdoActiveProviderRequestDto {
@@ -161,6 +191,7 @@ export interface EdoOutboxFacturaCreateRequestDto {
 }
 
 export type EdoDocumentStatusCode =
+  | "ALL"
   | "UNKNOWN"
   | "PENDING_SIGNATURE"
   | "PARTNER_SIGNATURE_PENDING"
@@ -171,6 +202,8 @@ export type EdoDocumentStatusCode =
   | "SENT"
   | "RECEIVED"
   | "REJECTED"
+  | "DELETED"
+  | "ARCHIVED"
   | "COMPLETED"
   | "CANCELLED"
   | "FAILED"
@@ -202,7 +235,7 @@ export interface EdoDocumentDto {
   providerCode: EdoProviderCode;
   documentIdentity?: string | null;
   providerDocumentId?: string | null;
-  direction: "INBOX" | "OUTBOX";
+  direction: EdoDocumentDirection;
   category: EdoDocumentCategory;
   documentType: string;
   documentNumber: string;
@@ -247,29 +280,22 @@ export interface EdoOutboxSignDto {
   signingSession?: EdoSigningSessionDto | null;
 }
 
-export interface EdoInboxQueryDto {
+export interface EdoDocumentListQueryDto {
   page: number;
   pageSize: number;
   search?: string;
   hasMarks?: boolean;
-  category?: EdoDocumentCategory;
-  status?: EdoDocumentStatusCode;
-  fromDate?: string;
-  toDate?: string;
-}
-
-export interface EdoOutboxQueryDto {
-  page: number;
-  pageSize: number;
-  search?: string;
-  hasMarks?: boolean;
-  category?: EdoDocumentCategory;
   status?: EdoDocumentStatusCode;
   dateFrom?: string;
   dateTo?: string;
 }
 
-export type EdoAllDocumentsQueryDto = EdoOutboxQueryDto;
+export type EdoInboxQueryDto = EdoDocumentListQueryDto;
+export type EdoOutboxQueryDto = EdoDocumentListQueryDto;
+
+export interface EdoAllDocumentsQueryDto extends EdoDocumentListQueryDto {
+  category?: EdoDocumentCategory;
+}
 
 export interface EdoPagedDocumentResponse {
   items: EdoDocumentDto[];
@@ -287,7 +313,7 @@ export interface EdoProviderDocumentStatusResponseDto {
   documentIdentity: string;
   providerDocumentId: string;
   providerCode: EdoProviderCode;
-  direction: "INBOX" | "OUTBOX";
+  direction: EdoDocumentDirection;
   status: EdoDocumentStatusDto;
 }
 
@@ -327,6 +353,7 @@ export interface EdoDownloadedFile {
   blob: Blob;
   fileName: string;
   contentType: string;
+  isPdf: boolean;
 }
 
 export interface EdoProblemDetails {

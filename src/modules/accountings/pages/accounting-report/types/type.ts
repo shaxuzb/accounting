@@ -10,7 +10,8 @@ export interface ReportSection<T> {
 
 export interface BalanceSheetRow {
   accountId: number | null;
-  accountCode: string;
+  accountCode: string | null;
+  accountNumber: string;
   accountName: string;
   balance: number;
 }
@@ -29,7 +30,8 @@ export interface BalanceSheetResponse {
 
 export interface IncomeStatementRow {
   accountId: number | null;
-  accountCode: string;
+  accountCode: string | null;
+  accountNumber?: string;
   accountName: string;
   amount: number;
 }
@@ -51,7 +53,7 @@ export interface IncomeStatementResponse {
 }
 
 export interface CashFlowRow {
-  counterpartAccountCode: string;
+  counterpartAccountCode: string | null;
   counterpartAccountName: string;
   inflow: number;
   outflow: number;
@@ -68,28 +70,74 @@ export interface CashFlowResponse {
   sections: ReportSection<CashFlowRow>[];
 }
 
-export interface AccountTurnoverEntry {
-  id: number;
-  postingDate: string;
-  journalNumber: string;
-  documentNumber: string;
-  documentTypeId: number | null;
-  documentType: string;
-  description: string;
-  debitAccountCode: string;
-  debitAccountName: string;
-  creditAccountCode: string;
-  creditAccountName: string;
-  amount: number;
-  currencyId: number | null;
-  currency: string;
-  organizationId: number | null;
-  organization: string;
-  counterparty: string;
-  warehouse: string;
+export interface AccountTurnoverItem {
+  accountId: number;
+  accountCode: string | null;
+  accountName: string;
+  accountNumber: string;
+  openingDebit: number;
+  openingCredit: number;
+  periodDebit: number;
+  periodCredit: number;
+  closingDebit: number;
+  closingCredit: number;
 }
 
 export interface AccountTurnoverResponse {
+  periodId: number | null;
+  dateFrom: string | null;
+  dateTo: string | null;
+  currencyId: number | null;
+  includeZeroBalance: boolean;
+  openingDebitTotal: number;
+  openingCreditTotal: number;
+  periodDebitTotal: number;
+  periodCreditTotal: number;
+  closingDebitTotal: number;
+  closingCreditTotal: number;
+  items: AccountTurnoverItem[];
+}
+
+export interface AccountingReportQueryBase {
+  periodId?: number | null;
+  dateFrom?: string | null;
+  dateTo?: string | null;
+  currencyId?: number | null;
+}
+
+export interface AccountTurnoverQuery {
+  dateFrom?: string | null;
+  dateTo?: string | null;
+}
+
+export interface JournalQuery extends AccountingReportQueryBase {
+  documentTypeId?: number | null;
+  page?: number | null;
+  pageSize?: number | null;
+}
+
+export interface JournalEntry {
+  id: number;
+  postingDate: string;
+  journalNumber: string | null;
+  documentNumber: string | null;
+  documentTypeId: number | null;
+  documentType: string | null;
+  description: string | null;
+  debitAccountCode: string | null;
+  debitAccountName: string | null;
+  creditAccountCode: string | null;
+  creditAccountName: string | null;
+  amount: number;
+  currencyId: number | null;
+  currency: string | null;
+  organizationId: number | null;
+  organization: string | null;
+  counterparty: string | null;
+  warehouse: string | null;
+}
+
+export interface JournalResponse {
   periodId: number | null;
   dateFrom: string | null;
   dateTo: string | null;
@@ -101,28 +149,59 @@ export interface AccountTurnoverResponse {
   totalPages: number;
   hasPreviousPage: boolean;
   hasNextPage: boolean;
-  entries: AccountTurnoverEntry[];
-}
-
-export interface AccountingReportQueryBase {
-  periodId?: number | null;
-  dateFrom?: string | null;
-  dateTo?: string | null;
-  currencyId?: number | null;
-}
-
-export interface AccountTurnoverQuery extends AccountingReportQueryBase {
-  documentTypeId?: number | null;
-  page?: number | null;
-  pageSize?: number | null;
+  entries: JournalEntry[];
 }
 
 export type BalanceSheetQuery = AccountingReportQueryBase;
 export type IncomeStatementQuery = AccountingReportQueryBase;
 export type CashFlowQuery = AccountingReportQueryBase;
-export type JournalQuery = AccountTurnoverQuery;
 export interface AccountCardQuery extends AccountingReportQueryBase {
   accountId?: number | null;
+  page?: number | null;
+  pageSize?: number | null;
+}
+
+export interface AccountCardTransaction {
+  id: number;
+  postingDate: string;
+  journalNumber: string | null;
+  documentNumber: string | null;
+  documentTypeId: number | null;
+  documentType: string | null;
+  reference: string | null;
+  description: string | null;
+  debit: number;
+  credit: number;
+  runningBalance: number;
+  currencyId: number | null;
+  currency: string | null;
+  organizationId: number | null;
+  organization: string | null;
+  counterpartyId: number | null;
+  counterparty: string | null;
+  warehouseId: number | null;
+  warehouse: string | null;
+}
+
+export interface AccountCardResponse {
+  accountId: number;
+  accountCode: string | null;
+  accountName: string;
+  periodId: number | null;
+  dateFrom: string | null;
+  dateTo: string | null;
+  currencyId: number | null;
+  openingBalance: number;
+  closingBalance: number;
+  totalDebit: number;
+  totalCredit: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  transactions: AccountCardTransaction[];
 }
 
 export interface RawAccountingReportResponse {

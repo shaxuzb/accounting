@@ -1,72 +1,53 @@
-import { Button, Form, Input, InputNumber, Space } from "antd";
-import Card from "@/components/ui/card/Card";
+import type { FormikProps } from "formik";
+import SelectCustom from "@/components/fields/SelectCustom";
+import AccountingReportFilterBar from "@/modules/accountings/pages/accounting-report/components/AccountingReportFilterBar";
+import {
+  chartAccountOptionLabel,
+  chartAccountSelectedLabel,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import type { LedgerQuery } from "../types/type";
-import { useTranslation } from "react-i18next";
 
 interface Props {
-  loading?: boolean;
-  onSubmit: (values: LedgerQuery) => void;
+  formik: FormikProps<LedgerQuery>;
+  loading: boolean;
+  onAccountChange: (accountId: number | null) => void;
+  onDateChange: (dateFrom: string, dateTo: string) => void;
+  onRefresh: () => void;
 }
 
-export default function LedgerFilters({ loading = false, onSubmit }: Props) {
-  const { t } = useTranslation();
-  return (
-    <Card className="border border-border p-4">
-      <Form<LedgerQuery>
-        layout="vertical"
-        initialValues={{
-          accountId: null,
-          periodId: null,
-          dateFrom: "",
-          dateTo: "",
-          currencyId: null,
-          counterpartyId: null,
-          warehouseId: null,
-          page: 1,
-          pageSize: 50,
-        }}
-        onFinish={onSubmit}
-      >
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <Form.Item
-            label={t("accountings.fields.accountId")}
-            name="accountId"
-            rules={[{ required: true, message: t("accountings.validation.accountIdRequired") }]}
-          >
-            <InputNumber className="w-full" min={1} />
-          </Form.Item>
-          <Form.Item label={t("accountings.fields.periodId")} name="periodId">
-            <InputNumber className="w-full" min={1} />
-          </Form.Item>
-          <Form.Item label={t("accountings.fields.dateFrom")} name="dateFrom">
-            <Input placeholder="2026-07-01T00:00:00" />
-          </Form.Item>
-          <Form.Item label={t("accountings.fields.dateTo")} name="dateTo">
-            <Input placeholder="2026-07-31T23:59:59" />
-          </Form.Item>
-          <Form.Item label={t("accountings.fields.currencyId")} name="currencyId">
-            <InputNumber className="w-full" min={1} />
-          </Form.Item>
-          <Form.Item label={t("accountings.fields.counterpartyId")} name="counterpartyId">
-            <InputNumber className="w-full" min={1} />
-          </Form.Item>
-          <Form.Item label={t("accountings.fields.warehouseId")} name="warehouseId">
-            <InputNumber className="w-full" min={1} />
-          </Form.Item>
-          <Form.Item label={t("accountings.fields.page")} name="page">
-            <InputNumber className="w-full" min={1} />
-          </Form.Item>
-          <Form.Item label={t("accountings.fields.pageSize")} name="pageSize">
-            <InputNumber className="w-full" min={1} />
-          </Form.Item>
-        </div>
+export default function LedgerFilters({
+  formik,
+  loading,
+  onAccountChange,
+  onDateChange,
+  onRefresh,
+}: Props) {
 
-        <Space className="mt-2">
-          <Button type="primary" htmlType="submit" loading={loading}>
-            {t("accountings.actions.calculate")}
-          </Button>
-        </Space>
-      </Form>
-    </Card>
+  return (
+    <AccountingReportFilterBar
+      formik={formik}
+      loading={loading}
+      refreshDisabled={!formik.values.accountId}
+      onDateChange={onDateChange}
+      onRefresh={onRefresh}
+    >
+      <div>
+        <SelectCustom
+          formik={formik}
+          fieldName="accountId"
+          placeholder="app.reports.fields.account"
+          path={selectListEndpoints.chartAccountsSelectList}
+          clearable
+          search
+          marginBottom="0"
+          optionLabel={chartAccountOptionLabel}
+          selectedLabel={chartAccountSelectedLabel}
+          onChange={(value) =>
+            onAccountChange(typeof value === "number" ? value : null)
+          }
+        />
+      </div>
+    </AccountingReportFilterBar>
   );
 }

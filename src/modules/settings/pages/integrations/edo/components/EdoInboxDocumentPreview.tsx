@@ -33,7 +33,7 @@ export default function EdoInboxDocumentPreview({
   onReject,
 }: EdoInboxDocumentPreviewProps) {
   const { t } = useTranslation();
-  const fileQuery = useEdoFilePreview(document.id);
+  const fileQuery = useEdoFilePreview(document.id, canDownload);
   const detailQuery = useEdoDocumentDetail(document.id, canGetDetail);
   const resolvedDocument = detailQuery.data ?? document;
 
@@ -92,7 +92,7 @@ export default function EdoInboxDocumentPreview({
               disabled={!canDownload}
               onClick={() => onDownload(document)}
             >
-              PDF
+              {t("settings.integrations.edo.actions.download")}
             </Button>
           </span>
         </Tooltip>
@@ -142,7 +142,14 @@ export default function EdoInboxDocumentPreview({
        */}
 
       <div className="min-h-80 overflow-hidden rounded-xl border border-border bg-white shadow-sm dark:bg-slate-950">
-          {fileQuery.isLoading ? (
+          {!canDownload ? (
+            <Alert
+              className="m-4"
+              type="info"
+              showIcon
+              message={t("settings.integrations.edo.capabilityUnavailable")}
+            />
+          ) : fileQuery.isLoading ? (
             <div className="bg-surface p-5">
               <Skeleton active paragraph={{ rows: 8 }} />
             </div>
@@ -151,10 +158,28 @@ export default function EdoInboxDocumentPreview({
               className="m-4"
               type="error"
               showIcon
-              message={t("settings.integrations.edo.errors.inboxLoad")}
+              message={t("settings.integrations.edo.errors.fileLoad")}
+              description={
+                fileQuery.error instanceof Error
+                  ? fileQuery.error.message
+                  : undefined
+              }
               action={
                 <Button size="small" onClick={() => void fileQuery.refetch()}>
                   {t("common.reload")}
+                </Button>
+              }
+            />
+          ) : fileQuery.data && !fileQuery.data.isPdf ? (
+            <Alert
+              className="m-4"
+              type="info"
+              showIcon
+              message={t("settings.integrations.edo.previewUnavailable")}
+              description={`${fileQuery.data.fileName} — ${fileQuery.data.contentType}`}
+              action={
+                <Button size="small" onClick={() => onDownload(document)}>
+                  {t("settings.integrations.edo.actions.download")}
                 </Button>
               }
             />
@@ -166,7 +191,7 @@ export default function EdoInboxDocumentPreview({
             />
           ) : (
             <div className="flex min-h-80 items-center justify-center bg-surface p-6 text-sm text-secondary-text">
-              {t("settings.integrations.edo.errors.inboxLoad")}
+              {t("settings.integrations.edo.previewUnavailable")}
             </div>
           )}
       </div>

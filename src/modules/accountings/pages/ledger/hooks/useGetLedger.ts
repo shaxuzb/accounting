@@ -7,5 +7,5 @@ export const useGetLedger = (params?: LedgerQuery) =>
   useQuery({
     queryKey: ledgerKeys.list(params),
     queryFn: () => ledgerService.list(params!),
-    enabled: Boolean(params),
+    enabled: Boolean(params?.accountId),
   });

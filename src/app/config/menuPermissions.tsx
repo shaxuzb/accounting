@@ -33,6 +33,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { salePermissions } from "@/modules/sale";
+import { retailSalePermissions } from "@/modules/sale/pages/retail-sale/constants/permissions";
 import { productPermissions } from "@/modules/warehouse/pages/products/constants/permissions";
 import {
   inventoryAdjustmentPermissions,
@@ -59,6 +60,8 @@ import {
   hrEmployeePermissions,
 } from "@/modules/hr/constants/permissions";
 import { payrollComponentPermissions } from "@/modules/settings/pages/payrollComponents/constants/permissions";
+import { fiscalCashRegisterPermissions } from "@/modules/settings/pages/fiscalCashRegister/constants/permissions";
+import { bankTerminalPermissions } from "@/modules/settings/pages/bankTerminal/constants/permissions";
 import {
   cashBookPermissions,
   cashDocumentPermissions,
@@ -72,12 +75,9 @@ import {
   faReceiptPermissions,
   faRevaluationPermissions,
 } from "@/modules/fa";
-// import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
-// import { accountingPeriodsPermissions } from "@/modules/accountings/pages/accounting-periods/constants/permissions";
-// import { ledgerPermissions } from "@/modules/accountings/pages/ledger/constants/permissions";
-// import { trialBalancePermissions } from "@/modules/accountings/pages/trial-balance/constants/permissions";
-// import { auditLogPermissions } from "@/modules/accountings/pages/audit-log/constants/permissions";
-// import { repostPermissions } from "@/modules/accountings/pages/repost/constants/permissions";
+import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
+import { ledgerPermissions } from "@/modules/accountings/pages/ledger/constants/permissions";
+import { trialBalancePermissions } from "@/modules/accountings/pages/trial-balance/constants/permissions";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -100,6 +100,8 @@ export const settingsViewPermissions = [
   "POSITION_VIEW",
   "PRODUCT_GROUP_VIEW",
   "CASH_BOX_VIEW",
+  fiscalCashRegisterPermissions.view,
+  bankTerminalPermissions.view,
   "COUNTERPARTY_CONTACT_VIEW",
   "WAREHOUSE_VIEW",
   purchasePermissions.view,
@@ -246,68 +248,53 @@ export const menuPermissions: MainMenu = {
       ],
     },
 
-    // {
-    //   code: "DROPDOWN",
-    //   dropdown: true,
-    //   dropdownName: "Accounting",
-    //   iconName: <ReceiptText className="size-5" />,
-    //   linkData: {
-    //     path: "accountings",
-    //     title: "Accounting",
-    //   },
-    //   items: [
-    //     {
-    //       code: accountingReportPermissions.balanceSheet,
-    //       linkData: {
-    //         path: "reports/balance-sheet",
-    //         title: "Accounting reports",
-    //       },
-    //     },
-    //     {
-    //       code: accountingPeriodsPermissions.close,
-    //       linkData: {
-    //         path: "register-entries",
-    //         title: "Accounting period",
-    //       },
-    //     },
-
-    //     {
-    //       code: ledgerPermissions.view,
-    //       linkData: {
-    //         path: "ledger",
-    //         title: "Ledger",
-    //       },
-    //     },
-    //     {
-    //       code: trialBalancePermissions.view,
-    //       linkData: {
-    //         path: "trial-balance",
-    //         title: "Trial balance",
-    //       },
-    //     },
-    //     {
-    //       code: auditLogPermissions.view,
-    //       linkData: {
-    //         path: "audit-log",
-    //         title: "Audit log",
-    //       },
-    //     },
-    //     {
-    //       code: repostPermissions.update,
-    //       linkData: {
-    //         path: "repost",
-    //         title: "Repost",
-    //       },
-    //     },
-    //     {
-    //       code: accountingPeriodsPermissions.reopen,
-    //       linkData: {
-    //         path: "accounting-periods",
-    //         title: "Accounting periods",
-    //       },
-    //     },
-    //   ],
-    // },
+    {
+      code: "DROPDOWN",
+      dropdown: true,
+      dropdownName: "app.accounting.title",
+      iconName: <ReceiptText className="size-5" />,
+      linkData: {
+        path: "accountings",
+        title: "app.accounting.title",
+      },
+      items: [
+        {
+          code: accountingReportPermissions.balanceSheet,
+          linkData: {
+            path: "reports/balance-sheet",
+            title: "app.accounting.reports",
+          },
+        },
+        {
+          code: ledgerPermissions.view,
+          linkData: {
+            path: "ledger",
+            title: "app.accounting.ledger",
+          },
+        },
+        {
+          code: trialBalancePermissions.view,
+          linkData: {
+            path: "trial-balance",
+            title: "app.accounting.trialBalance",
+          },
+        },
+        // {
+        //   code: auditLogPermissions.view,
+        //   linkData: {
+        //     path: "audit-log",
+        //     title: "Audit log",
+        //   },
+        // },
+        // {
+        //   code: repostPermissions.update,
+        //   linkData: {
+        //     path: "repost",
+        //     title: "Repost",
+        //   },
+        // },
+      ],
+    },
     {
       code: "DROPDOWN",
       dropdown: true,
@@ -364,7 +351,7 @@ export const menuPermissions: MainMenu = {
     },
 
     {
-      code: salePermissions.view,
+      code: "DROPDOWN",
       dropdown: true,
       dropdownName: "app.menu.sales",
       iconName: <ShoppingBag className="size-5" />,
@@ -378,6 +365,13 @@ export const menuPermissions: MainMenu = {
           linkData: {
             path: "sale",
             title: "app.menu.salesList",
+          },
+        },
+        {
+          code: retailSalePermissions.view,
+          linkData: {
+            path: "retail-sale",
+            title: "app.menu.retailSales",
           },
         },
 
@@ -646,6 +640,24 @@ export const menuPermissions: MainMenu = {
         title: "settings.entities.cashBox",
         // img: role,
         description: "settings.descriptions.cashBox",
+      },
+    },
+    {
+      code: fiscalCashRegisterPermissions.view,
+      iconName: <ReceiptText className="size-5" />,
+      linkData: {
+        path: "fiscal-cash-registers",
+        title: "settings.entities.fiscalCashRegisters",
+        description: "settings.descriptions.fiscalCashRegisters",
+      },
+    },
+    {
+      code: bankTerminalPermissions.view,
+      iconName: <CreditCard className="size-5" />,
+      linkData: {
+        path: "bank-terminals",
+        title: "settings.entities.bankTerminals",
+        description: "settings.descriptions.bankTerminals",
       },
     },
     {

@@ -58,6 +58,10 @@ import EdoInboxPage from "./pages/integrations/edo/screens/EdoInboxPage";
 import EdoOutboxCreatePage from "./pages/integrations/edo/screens/EdoOutboxCreatePage";
 import EdoOutboxDetailPage from "./pages/integrations/edo/screens/EdoOutboxDetailPage";
 import EdoSessionGuard from "./pages/integrations/edo/components/EdoSessionGuard";
+import FiscalCashRegisterListPage from "./pages/fiscalCashRegister/screens/FiscalCashRegisterListPage";
+import { fiscalCashRegisterPermissions } from "./pages/fiscalCashRegister/constants/permissions";
+import BankTerminalListPage from "./pages/bankTerminal/screens/BankTerminalListPage";
+import { bankTerminalPermissions } from "./pages/bankTerminal/constants/permissions";
 
 const settingsPermissions = [
   rolePermissions.view,
@@ -74,6 +78,8 @@ const settingsPermissions = [
   positionsPermissions.view,
   productGroupsPermissions.view,
   cashBoxPermissions.view,
+  fiscalCashRegisterPermissions.view,
+  bankTerminalPermissions.view,
   counterpartyContactPermissions.view,
   warehousePermissions.view,
   purchaseServicePermissions.view,
@@ -399,6 +405,30 @@ export const settingsRoutes: RouteObject = {
         backTo: "..",
       },
       element: withPermission(<CashBoxListPage />, cashBoxPermissions.view),
+    },
+    {
+      path: "fiscal-cash-registers",
+      handle: {
+        title: "settings.entities.fiscalCashRegisters",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <FiscalCashRegisterListPage />,
+        fiscalCashRegisterPermissions.view,
+      ),
+    },
+    {
+      path: "bank-terminals",
+      handle: {
+        title: "settings.entities.bankTerminals",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <BankTerminalListPage />,
+        bankTerminalPermissions.view,
+      ),
     },
     {
       path: "counterparty-contacts",

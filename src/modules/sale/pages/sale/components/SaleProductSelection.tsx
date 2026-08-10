@@ -2,7 +2,6 @@ import { Button, Input, Select, Switch, Table, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import { Pencil, Plus, QrCode, Save, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { Dispatch, SetStateAction } from "react";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import InputNumberFormat from "@/components/fields/InputNumber";
@@ -14,6 +13,7 @@ import {
 import { $axiosPrivate } from "@/services/AxiosService";
 import type { SaleCondition } from "@/modules/settings/pages/saleCondition/types/type";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
+import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   useGetAvailableSaleProductMarkings,
   useGetProductPriceDetails,
@@ -47,7 +47,7 @@ interface Props {
   products: SaleSelectedProduct[];
   saleCondition: SaleCondition;
   onCommentChange: (value: string) => void;
-  onChange: Dispatch<SetStateAction<SaleSelectedProduct[]>>;
+  onChange: (products: SaleSelectedProduct[]) => void;
   onCancel: () => void;
   markingMode?: boolean;
   onMarkingModeChange?: (enabled: boolean) => void;
@@ -524,19 +524,18 @@ export default function SaleProductSelection({
         layers: allocatedLayers,
       };
 
-      onChange((currentProducts) => {
-        const currentExistingLine = currentProducts.find((item) =>
-          existingLine
-            ? item.rowKey === existingLine.rowKey
-            : !rowKey && item.productId === productId,
-        );
-
-        return currentExistingLine
-          ? currentProducts.map((item) =>
+      const currentExistingLine = products.find((item) =>
+        existingLine
+          ? item.rowKey === existingLine.rowKey
+          : !rowKey && item.productId === productId,
+      );
+      onChange(
+        currentExistingLine
+          ? products.map((item) =>
               item.rowKey === currentExistingLine.rowKey ? nextLine : item,
             )
-          : [...currentProducts, nextLine];
-      });
+          : [...products, nextLine],
+      );
 
       if (!existingLine) {
         if (isNewRow(rowKey)) {
@@ -546,6 +545,8 @@ export default function SaleProductSelection({
           });
         }
       }
+    } catch (error) {
+      errorHandlers(error);
     } finally {
       setLoadingProductId(null);
     }

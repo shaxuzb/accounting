@@ -1,4 +1,4 @@
-import { Button, Modal, Space } from "antd";
+import DocumentProcessingModeModal from "@/components/ui/DocumentProcessingModeModal";
 import type { PurchaseProcessingMode } from "../types/form";
 import { useTranslation } from "react-i18next";
 
@@ -19,29 +19,16 @@ export default function PurchaseProcessingModeModal({
 }: PurchaseProcessingModeModalProps) {
   const { t } = useTranslation();
   return (
-    <Modal
+    <DocumentProcessingModeModal
       open={open}
       title={t("purchase.actions.saveDocument")}
-      footer={null}
-      destroyOnHidden
-      closable={!loading}
-      onCancel={onClose}
-      width={500}
-      centered
-    >
-      <p className="mb-4 text-sm text-muted-foreground">
-        {t("purchase.messages.chooseSaveMode")}
-      </p>
-      <Space wrap>
-        <Button disabled={loading} onClick={() => onSelect(1)}>
-          {t("common.save")}
-        </Button>
-        {canConfirm && (
-          <Button type="primary" loading={loading} onClick={() => onSelect(2)}>
-            {t("purchase.actions.saveAndConfirm")}
-          </Button>
-        )}
-      </Space>
-    </Modal>
+      description={t("purchase.messages.chooseSaveMode")}
+      saveLabel={t("common.save")}
+      saveAndConfirmLabel={t("purchase.actions.saveAndConfirm")}
+      loading={loading}
+      canConfirm={canConfirm}
+      onClose={onClose}
+      onSelect={onSelect}
+    />
   );
 }

@@ -4,11 +4,14 @@ import Card from "@/components/ui/card/Card";
 interface SummaryItem {
   label: string;
   value: ReactNode;
-  tone?: "default" | "primary" | "success" | "danger";
+  icon?: ReactNode;
+  helper?: ReactNode;
+  tone?: "default" | "primary" | "success" | "danger" | "warning" | "violet";
 }
 
 interface Props {
   items: SummaryItem[];
+  columns?: 2 | 3 | 4;
 }
 
 const toneClass: Record<NonNullable<SummaryItem["tone"]>, string> = {
@@ -16,19 +19,62 @@ const toneClass: Record<NonNullable<SummaryItem["tone"]>, string> = {
   primary: "text-brand-text",
   success: "text-success",
   danger: "text-danger",
+  warning: "text-warning",
+  violet: "text-violet-600",
 };
 
-export default function AccountingReportSummaryGrid({ items }: Props) {
+const iconToneClass: Record<NonNullable<SummaryItem["tone"]>, string> = {
+  default: "bg-surface-muted text-secondary-text",
+  primary: "bg-brand-soft text-brand-text",
+  success: "bg-success-soft text-success",
+  danger: "bg-danger-soft text-danger",
+  warning: "bg-warning-soft text-warning",
+  violet: "bg-violet-50 text-violet-600",
+};
+
+const gridClass = {
+  2: "xl:grid-cols-2",
+  3: "xl:grid-cols-3",
+  4: "xl:grid-cols-4",
+};
+
+export default function AccountingReportSummaryGrid({
+  items,
+  columns = 4,
+}: Props) {
   return (
-    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-      {items.map((item) => (
-        <Card key={item.label} className="border border-border p-4">
-          <div className="text-xs text-secondary-text">{item.label}</div>
-          <div className={`mt-1 text-lg font-semibold ${toneClass[item.tone ?? "default"]}`}>
-            {item.value}
-          </div>
-        </Card>
-      ))}
+    <div className={`grid gap-3 md:grid-cols-2 ${gridClass[columns]}`}>
+      {items.map((item) => {
+        const tone = item.tone ?? "default";
+
+        return (
+          <Card key={item.label} className="border border-border p-4 shadow-sm">
+            <div className="flex items-start gap-3">
+              {item.icon && (
+                <span
+                  className={`flex size-9 shrink-0 items-center justify-center rounded-full ${iconToneClass[tone]}`}
+                >
+                  {item.icon}
+                </span>
+              )}
+              <div className="min-w-0">
+                <div className="text-xs text-secondary-text">{item.label}</div>
+                <div
+                  className={`mt-1 truncate text-lg font-semibold tabular-nums ${toneClass[tone]}`}
+                  title={typeof item.value === "string" ? item.value : undefined}
+                >
+                  {item.value}
+                </div>
+                {item.helper && (
+                  <div className="mt-1 text-xs text-secondary-text">
+                    {item.helper}
+                  </div>
+                )}
+              </div>
+            </div>
+          </Card>
+        );
+      })}
     </div>
   );
 }

@@ -389,6 +389,8 @@
       "positions": "Positions",
       "productGroups": "Product groups",
       "cashBox": "Cash desk",
+      "fiscalCashRegisters": "Fiscal cash registers",
+      "bankTerminals": "Bank terminals",
       "counterpartyContacts": "Counterparty contacts",
       "warehouse": "Warehouse",
       "purchaseServices": "Purchase services",
@@ -413,6 +415,8 @@
       "positions": "Manage positions.",
       "productGroups": "Manage product groups.",
       "cashBox": "Manage cash desks.",
+      "fiscalCashRegisters": "Manage fiscal cash registers.",
+      "bankTerminals": "Manage bank payment terminals.",
       "counterpartyContacts": "Manage counterparty contacts.",
       "warehouse": "Manage warehouses.",
       "purchaseServices": "Manage services used in purchases.",
@@ -439,6 +443,7 @@
       "address": "Address",
       "bank": "Bank",
       "bankName": "Bank name",
+      "bankAccount": "Bank account",
       "branch": "Branch",
       "branchName": "Branch name",
       "code": "Code",
@@ -457,6 +462,13 @@
       "modules": "Modules",
       "mfo": "MFO",
       "name": "Name",
+      "registerType": "Register type",
+      "externalRegisterId": "External register ID",
+      "merchantId": "Merchant ID",
+      "externalTerminalId": "External terminal ID",
+      "model": "Model",
+      "serialNumber": "Serial number",
+      "fiscalModuleNumber": "Fiscal module number",
       "organization": "Organization",
       "organizationName": "Organization name",
       "partyType": "Counterparty type",
@@ -490,6 +502,10 @@
     "form": {
       "createTitle": "Add new record",
       "editTitle": "Edit record",
+      "createFiscalCashRegister": "Add fiscal cash register",
+      "editFiscalCashRegister": "Edit fiscal cash register",
+      "createBankTerminal": "Add bank terminal",
+      "editBankTerminal": "Edit bank terminal",
       "createUser": "Add user",
       "editUser": "Edit user",
       "createRole": "Add role",
@@ -593,6 +609,7 @@
         "description": "Select a provider, authenticate with E-IMZO, and manage electronic invoices.",
         "navigation": { "inbox": "Incoming", "outbox": "Outgoing", "drafts": "Drafts", "all": "All documents", "templates": "Templates", "excelImport": "Excel upload", "received": "Received", "pendingSignature": "Signature pending", "pendingPartnerSignature": "Partner signature pending", "signed": "Signed", "rejected": "Rejected", "deleted": "Deleted", "powerOfAttorney": "Power of attorney", "notAvailable": "Not available yet", "sectionUnavailable": "This section is waiting for its backend endpoint." },
         "capabilityUnavailable": "This action is unavailable for the selected provider",
+        "previewUnavailable": "This file cannot be previewed in the browser. Download it to open it.",
         "provider": { "title": "EDO provider", "description": "Select the electronic document operator for this organization.", "notConfigured": "Provider credentials are not configured" },
         "auth": { "title": "E-IMZO authentication", "description": "Open an organization session for the selected provider.", "selectProvider": "Select an active provider first", "unavailable": "Authentication capability is unavailable", "authenticated": "Authenticated with {{provider}}", "expiresAt": "Session expires: {{date}}", "authenticate": "Authenticate" },
         "inbox": { "title": "Incoming EDO documents", "description": "Review incoming provider documents, check status, and perform available actions.", "unavailable": "Inbox capability is unavailable", "filtersUnavailable": "Provider-side search, status, and date filters are not confirmed for Edocs and are currently disabled.", "rejectTitle": "Reject incoming document" },
@@ -603,9 +620,9 @@
           "internalDocumentId": "Internal document ID", "internalDocumentType": "Internal document type", "documentNumber": "Document number", "documentDate": "Document date", "documentType": "Document type", "providerDocumentId": "Provider document ID", "contractNumber": "Contract number", "contractDate": "Contract date", "seller": "Seller", "buyer": "Buyer", "name": "Name", "taxIdentifier": "Tax identifier", "bankCode": "Bank code", "accountNumber": "Account number", "address": "Address", "branchCode": "Branch code", "branchName": "Branch name", "directorName": "Director", "accountantName": "Accountant", "vatRegistrationStatus": "VAT registration status", "districtId": "District ID", "empowermentNumber": "Empowerment number", "dateOfIssue": "Date of issue", "agentName": "Agent name", "agentPinfl": "Agent PINFL", "catalogCode": "Catalog code", "catalogName": "Catalog name", "unitCode": "Unit code", "unitName": "Unit name", "quantity": "Quantity", "amount": "Amount", "taxRate": "Tax rate", "taxAmount": "Tax amount", "isTaxFree": "Tax free", "markingCodes": "Marking codes", "companyInn": "Company TIN", "category": "Category", "hasMarks": "Has marks", "yes": "Yes", "no": "No", "fromDate": "From date", "toDate": "To date", "status": "Status", "localStatus": "Local status", "providerStatus": "Provider status", "checkedAt": "Checked at", "reason": "Reason", "preparedPkcs7": "Prepared PKCS#7"
         },
         "status": { "reconciliation": "Provider and local state require manual reconciliation" },
-        "statuses": { "UNKNOWN": "Unknown", "PENDING_SIGNATURE": "Signature pending", "PARTNER_SIGNATURE_PENDING": "Partner signature pending", "AGENT_SIGNATURE_PENDING": "Agent signature pending", "DRAFT": "Draft", "PENDING": "Pending", "SIGNED": "Signed", "SENT": "Sent", "RECEIVED": "Received", "REJECTED": "Rejected", "DELETED": "Deleted", "ARCHIVED": "Archived", "COMPLETED": "Completed", "CANCELLED": "Cancelled", "FAILED": "Failed", "RECONCILIATION_REQUIRED": "Reconciliation required" },
+        "statuses": { "ALL": "All", "UNKNOWN": "Unknown", "PENDING_SIGNATURE": "Signature pending", "PARTNER_SIGNATURE_PENDING": "Partner signature pending", "AGENT_SIGNATURE_PENDING": "Agent signature pending", "DRAFT": "Draft", "PENDING": "Pending", "SIGNED": "Signed", "SENT": "Sent", "RECEIVED": "Received", "REJECTED": "Rejected", "DELETED": "Deleted", "ARCHIVED": "Archived", "COMPLETED": "Completed", "CANCELLED": "Cancelled", "FAILED": "Failed", "RECONCILIATION_REQUIRED": "Reconciliation required" },
         "messages": { "providerChanged": "Active provider changed", "authenticated": "EDO authentication completed", "created": "Invoice created", "replay": "Existing successful result returned", "signed": "Document signed", "rejected": "Document rejected", "downloaded": "File downloaded" },
-        "errors": { "providers": "Could not load providers", "status": "Could not load document status", "challengeExpired": "The signing session expired. Try again.", "authRejected": "The provider did not confirm authentication", "providerUserNotFound": "The selected E-IMZO owner is not registered with this provider. Check the certificate and provider and try again.", "sessionExpired": "The EDO session has expired. Authenticate again.", "notConnected": "The EDO integration is not connected. Authenticate with E-IMZO first.", "inboxLoad": "Could not load incoming EDO documents" }
+        "errors": { "providers": "Could not load providers", "capabilitiesLoad": "Could not load provider capabilities", "fileLoad": "Could not load the document file", "status": "Could not load document status", "challengeExpired": "The signing session expired. Try again.", "authRejected": "The provider did not confirm authentication", "providerUserNotFound": "The selected E-IMZO owner is not registered with this provider. Check the certificate and provider and try again.", "sessionExpired": "The EDO session has expired. Authenticate again.", "notConnected": "The EDO integration is not connected. Authenticate with E-IMZO first.", "inboxLoad": "Could not load incoming EDO documents" }
       }
     },
     "chartAccounts": {
@@ -1101,6 +1118,53 @@
       "totalSale": "Total sale"
     }
   },
+  "retailSale": {
+    "title": "Retail sales",
+    "new": "New retail sale",
+    "edit": "Edit retail sale",
+    "document": "Retail sale document",
+    "fields": {
+      "docNumber": "Document number",
+      "docDate": "Document date",
+      "customer": "Customer",
+      "retailCustomer": "Retail customer",
+      "warehouse": "Warehouse",
+      "cashRegister": "Fiscal cash register",
+      "currency": "Currency",
+      "receivableAccount": "Receivable account",
+      "vatAccount": "VAT account",
+      "state": "State",
+      "status": "Status",
+      "totalAmount": "Total amount",
+      "paymentMethod": "Payment method",
+      "bankTerminal": "Bank terminal",
+      "debitAccount": "Debit account",
+      "amount": "Amount",
+      "transactionNumber": "Transaction number"
+    },
+    "payments": {
+      "title": "Payments",
+      "add": "Add payment",
+      "total": "Total payment",
+      "empty": "No payments entered"
+    },
+    "messages": {
+      "dateRequired": "Enter the document date",
+      "warehouseRequired": "Select a warehouse",
+      "cashRegisterRequired": "Select a fiscal cash register",
+      "currencyRequired": "Select a currency",
+      "paymentMethodRequired": "Select a payment method",
+      "debitAccountRequired": "Select a debit account",
+      "paymentAmountRequired": "Enter a payment amount",
+      "checkProductData": "Check the product data",
+      "listLoadError": "Could not load retail sale documents",
+      "listEmpty": "No retail sale documents found",
+      "created": "Retail sale document created",
+      "updated": "Retail sale document updated",
+      "confirmed": "Retail sale document confirmed",
+      "cancelled": "Retail sale document cancelled"
+    }
+  },
   "warehouses": {
     "title": "Warehouse"
   },
@@ -1130,37 +1194,60 @@
         "title": "Balance sheet",
         "description": "A complete report on assets, liabilities, and equity.",
         "table": "Balance sheet balances",
-        "empty": "No balance sheet results"
+        "empty": "No balance sheet results",
+        "assets": "Assets",
+        "liabilities": "Liabilities",
+        "equity": "Equity",
+        "balanced": "Balance is equal",
+        "notBalanced": "Balance is not equal"
       },
       "income": {
         "title": "Income statement",
         "description": "Analysis of income, cost, and profit / loss.",
         "table": "Income statement rows",
-        "empty": "No income statement results"
+        "empty": "No income statement results",
+        "revenue": "Revenue",
+        "costOfSales": "Cost of sales",
+        "operatingExpenses": "Operating expenses",
+        "otherIncome": "Other income",
+        "otherExpenses": "Other expenses"
       },
       "cashFlow": {
         "title": "Cash flow",
         "description": "Cash inflows, outflows, and net change.",
         "table": "Cash flow rows",
-        "empty": "No cash flow results"
+        "empty": "No cash flow results",
+        "operating": "Operating activities",
+        "investing": "Investing activities",
+        "financing": "Financing activities",
+        "transfers": "Cash transfers"
       },
       "turnover": {
         "title": "Account turnover",
-        "description": "Postings with journal numbers, documents, and quantities.",
+        "description": "Opening balances, period turnover, and closing balances by account.",
         "table": "Account turnover rows",
-        "empty": "No account turnover results"
+        "empty": "No account turnover results",
+        "period": "Reporting period",
+        "openingBalance": "Opening balance",
+        "periodTurnover": "Period turnover",
+        "closingBalance": "Closing balance",
+        "accountsCount": "{{count}} accounts",
+        "columns": "Columns",
+        "exportExcel": "Excel"
       },
       "journal": {
         "title": "Journal",
         "description": "A general journal for all records and postings.",
         "table": "Journal rows",
-        "empty": "No journal results"
+        "empty": "No journal results",
+        "entriesCount": "{{count}} operations"
       },
       "card": {
         "title": "Account card",
         "description": "Account card and movements for a single account.",
         "table": "Account card rows",
-        "empty": "No account card results"
+        "empty": "No account card results",
+        "transactionsCount": "{{count}} transactions"
       },
       "fields": {
         "account": "Account",
@@ -1189,6 +1276,7 @@
         "inflow": "Inflow",
         "outflow": "Outflow",
         "net": "Net change",
+        "runningBalance": "Running balance",
         "value": "Value"
       },
       "summary": {
@@ -1200,10 +1288,19 @@
         "totalLiabilities": "Total liabilities",
         "totalEquity": "Total equity",
         "liabilitiesAndEquity": "Liabilities and equity",
+        "balanceDifference": "Balance difference",
         "revenue": "Revenue",
         "costOfSales": "Cost of sales",
         "operatingExpense": "Operating expense",
+        "grossProfit": "Gross profit",
+        "operatingProfit": "Operating profit",
         "netProfit": "Net profit",
+        "openingBalance": "Opening balance",
+        "totalDebit": "Total debit",
+        "totalCredit": "Total credit",
+        "closingBalance": "Closing balance",
+        "totalInflow": "Total inflow",
+        "totalOutflow": "Total outflow",
         "openingCashBalance": "Opening cash balance",
         "closingCashBalance": "Closing cash balance"
       },
@@ -1237,6 +1334,7 @@
       "cashBook": "Cash book",
       "sales": "Sales",
       "salesList": "Sales documents",
+      "retailSales": "Retail sales",
       "company": "HisobKitob LLC"
     },
     "routes": {
@@ -2020,7 +2118,12 @@
     "ledger": {
       "title": "General ledger",
       "resultDescription": "General ledger account movements.",
-      "empty": "No general ledger data found"
+      "empty": "No general ledger data found",
+      "selectAccount": "Select an account to view its movements",
+      "movements": "Account movements",
+      "transactionsCount": "{{count}} transactions",
+      "columns": "Columns",
+      "exportExcel": "Excel"
     },
     "audit": {
       "title": "Change history",

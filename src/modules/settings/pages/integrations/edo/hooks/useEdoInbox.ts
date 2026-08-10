@@ -51,7 +51,10 @@ export const useEdoFilePreview = (
     gcTime: 60_000,
   });
   const previewUrl = useMemo(
-    () => (query.data ? URL.createObjectURL(query.data.blob) : undefined),
+    () =>
+      query.data?.isPdf
+        ? URL.createObjectURL(query.data.blob)
+        : undefined,
     [query.data],
   );
 

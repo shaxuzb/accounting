@@ -7,17 +7,32 @@ import EdoAuthenticationPanel from "../components/EdoAuthenticationPanel";
 import {
   useEdoActiveProvider,
   useEdoAuthSession,
+  useEdoCapabilities,
   useEdoInboxSummary,
 } from "../hooks";
 import { isEdoAuthSessionActive } from "../utils/authSession";
+import { hasSupportedCapability } from "../utils/capabilities";
 
 export default function EdoWorkspacePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const providerQuery = useEdoActiveProvider();
+  const capabilitiesQuery = useEdoCapabilities(providerQuery.data?.code);
   const session = useEdoAuthSession(providerQuery.data?.code);
-  const canOpenInbox = isEdoAuthSessionActive(session);
-  const canLoadSummary = providerQuery.data?.code === "EDOCS" && canOpenInbox;
+  const canOpenInbox =
+    isEdoAuthSessionActive(session) &&
+    hasSupportedCapability(
+      providerQuery.data,
+      "ListInbox",
+      capabilitiesQuery.data,
+    );
+  const canLoadSummary =
+    canOpenInbox &&
+    hasSupportedCapability(
+      providerQuery.data,
+      "AggregateAll",
+      capabilitiesQuery.data,
+    );
   const summaryQuery = useEdoInboxSummary(canLoadSummary);
 
   return (

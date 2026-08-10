@@ -2,6 +2,7 @@ import { getJson } from "../../services/request";
 import { accountingReportEndpoints } from "./constants/endpoints";
 import type {
   AccountCardQuery,
+  AccountCardResponse,
   AccountTurnoverQuery,
   BalanceSheetQuery,
   BalanceSheetResponse,
@@ -10,7 +11,7 @@ import type {
   IncomeStatementQuery,
   IncomeStatementResponse,
   JournalQuery,
-  RawAccountingReportResponse,
+  JournalResponse,
   AccountTurnoverResponse,
 } from "./types/type";
 
@@ -27,10 +28,13 @@ export const accountingReportService = {
   accountTurnover: (params?: AccountTurnoverQuery) =>
     getJson<AccountTurnoverResponse>(
       accountingReportEndpoints.accountTurnover,
-      params,
+      {
+        dateFrom: params?.dateFrom,
+        dateTo: params?.dateTo,
+      },
     ),
   journal: (params?: JournalQuery) =>
-    getJson<RawAccountingReportResponse>(accountingReportEndpoints.journal, params),
+    getJson<JournalResponse>(accountingReportEndpoints.journal, params),
   accountCard: (params?: AccountCardQuery) =>
-    getJson<RawAccountingReportResponse>(accountingReportEndpoints.accountCard, params),
+    getJson<AccountCardResponse>(accountingReportEndpoints.accountCard, params),
 };

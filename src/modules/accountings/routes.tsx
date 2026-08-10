@@ -6,13 +6,11 @@ import { ledgerPermissions } from "./pages/ledger/constants/permissions";
 import { trialBalancePermissions } from "./pages/trial-balance/constants/permissions";
 import { auditLogPermissions } from "./pages/audit-log/constants/permissions";
 import { repostPermissions } from "./pages/repost/constants/permissions";
-import { accountingPeriodsPermissions } from "./pages/accounting-periods/constants/permissions";
 import { accountingReportPermissions } from "./pages/accounting-report/constants/permissions";
 import {
   AccountCardPage,
   AccountTurnoverPage,
   BalanceSheetPage,
-  AccountingPeriodsPage,
   AuditLogPage,
   CashFlowPage,
   IncomeStatementPage,
@@ -111,14 +109,6 @@ export const accountingsRoutes: RouteObject = {
       path: "repost",
       handle: { title: "app.accounting.repost" },
       element: withAccess(<RepostPage />, repostPermissions.update),
-    },
-    {
-      path: "accounting-periods",
-      handle: { title: "app.accounting.periods" },
-      element: withAccess(
-        <AccountingPeriodsPage />,
-        accountingPeriodsPermissions.close,
-      ),
     },
     {
       path: "*",

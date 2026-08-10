@@ -1,97 +1,171 @@
+import type { ColumnsType } from "antd/es/table";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { Files, LibraryBig } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-// import InputNumber from "@/components/fields/InputNumber";
-// import SelectCustom from "@/components/fields/SelectCustom";
-// import SelectDate from "@/components/fields/SelectDate";
-// import { selectListEndpoints } from "@/shared/constants/selectLists";
-import AccountingReportFiltersCard from "../components/AccountingReportFiltersCard";
-import AccountingReportGenericArrayTable from "../components/AccountingReportGenericArrayTable";
+import { customDate, numberSpacing } from "@/utils/utils";
+import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
+import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
+import AccountingReportSummaryGrid from "../components/AccountingReportSummaryGrid";
 import { useGetJournal } from "../hooks";
-import type { JournalQuery } from "../types/type";
+import type { JournalEntry, JournalQuery } from "../types/type";
 
 const initialValues: JournalQuery = {
-  periodId: null,
   dateFrom: "",
   dateTo: "",
-  currencyId: null,
-  documentTypeId: null,
   page: 1,
   pageSize: 50,
 };
+const money = (value: number) => numberSpacing(value, undefined, true);
+const accountLabel = (code: string | null, name: string | null) =>
+  [code, name].filter(Boolean).join(" — ") || "-";
 
 export default function JournalPage() {
   const { t } = useTranslation();
-  const [submitted, setSubmitted] = useState<JournalQuery | null>(null);
-  const query = useGetJournal(submitted ?? undefined);
-
+  const [filters, setFilters] = useState<JournalQuery>({ page: 1, pageSize: 50 });
+  const query = useGetJournal(filters);
   const formik = useFormik<JournalQuery>({
     initialValues,
-    onSubmit: (values) => setSubmitted(values),
+    onSubmit: (values) => setFilters(values),
   });
 
+  const columns = useMemo<ColumnsType<JournalEntry>>(
+    () => [
+      {
+        title: t("app.reports.fields.postingDate"),
+        dataIndex: "postingDate",
+        width: 150,
+        fixed: "left",
+        render: (value) => customDate(value),
+      },
+      {
+        title: t("app.reports.fields.journalNumber"),
+        dataIndex: "journalNumber",
+        width: 150,
+        render: (value) => value || "-",
+      },
+      {
+        title: t("app.reports.fields.documentNumber"),
+        dataIndex: "documentNumber",
+        width: 150,
+        render: (value) => value || "-",
+      },
+      {
+        title: t("app.reports.fields.documentType"),
+        dataIndex: "documentType",
+        width: 180,
+        render: (value) => value || "-",
+      },
+      {
+        title: t("app.reports.fields.description"),
+        dataIndex: "description",
+        width: 220,
+        render: (value) => value || "-",
+      },
+      {
+        title: t("app.reports.fields.debitAccount"),
+        width: 260,
+        render: (_value, row) =>
+          accountLabel(row.debitAccountCode, row.debitAccountName),
+      },
+      {
+        title: t("app.reports.fields.creditAccount"),
+        width: 260,
+        render: (_value, row) =>
+          accountLabel(row.creditAccountCode, row.creditAccountName),
+      },
+      {
+        title: t("app.reports.fields.amount"),
+        dataIndex: "amount",
+        align: "right",
+        width: 160,
+        render: (value) => (
+          <span className="font-semibold tabular-nums">{money(value)}</span>
+        ),
+      },
+      {
+        title: t("app.reports.fields.currency"),
+        dataIndex: "currency",
+        width: 90,
+        render: (value) => value || "-",
+      },
+      {
+        title: t("app.reports.fields.organization"),
+        dataIndex: "organization",
+        width: 170,
+        render: (value) => value || "-",
+      },
+      {
+        title: t("app.reports.fields.counterparty"),
+        dataIndex: "counterparty",
+        width: 240,
+        render: (value) => value || "-",
+      },
+    ],
+    [t],
+  );
+
+  const data = query.data;
+
   return (
-    <AccountingReportPageShell
-      title={t("app.reports.journal.title")}
-      description={t("app.reports.journal.description")}
-    >
-      <AccountingReportFiltersCard
+    <AccountingReportPageShell>
+      <AccountingReportFilterBar
         formik={formik}
         loading={query.isFetching}
-        onReset={() => {
-          formik.resetForm();
-          setSubmitted(null);
-        }}
-        children={
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {/* <InputNumber formik={formik} fieldName="periodId" label="Period ID" min={1} />
-            <SelectDate formik={formik} fieldName="dateFrom" label="Date from" />
-            <SelectDate formik={formik} fieldName="dateTo" label="Date to" />
-            <SelectCustom
-              formik={formik}
-              fieldName="currencyId"
-              label="Currency"
-              path={selectListEndpoints.currenciesSelectList}
-              clearable
-            />
-            <SelectCustom
-              formik={formik}
-              fieldName="documentTypeId"
-              label="Document type"
-              path={selectListEndpoints.documentTypesSelectList}
-              clearable
-            /> */}
-          </div>
+        onDateChange={(dateFrom, dateTo) =>
+          setFilters((current) => ({
+            ...current,
+            dateFrom,
+            dateTo,
+            page: 1,
+          }))
         }
-
+        onRefresh={() => void query.refetch()}
       />
-      {/* <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <InputNumber formik={formik} fieldName="periodId" label="Period ID" min={1} />
-          <SelectDate formik={formik} fieldName="dateFrom" label="Date from" />
-          <SelectDate formik={formik} fieldName="dateTo" label="Date to" />
-          <SelectCustom
-            formik={formik}
-            fieldName="currencyId"
-            label="Currency"
-            path={selectListEndpoints.currenciesSelectList}
-            clearable
+
+      {data && (
+        <>
+          <AccountingReportSummaryGrid
+            columns={2}
+            items={[
+              {
+                label: t("app.reports.summary.totalCount"),
+                value: data.totalCount,
+                icon: <Files className="size-4" />,
+                tone: "primary",
+              },
+              {
+                label: t("app.reports.summary.totalPages"),
+                value: data.totalPages,
+                icon: <LibraryBig className="size-4" />,
+                tone: "default",
+              },
+            ]}
           />
-          <SelectCustom
-            formik={formik}
-            fieldName="documentTypeId"
-            label="Document type"
-            path={selectListEndpoints.documentTypesSelectList}
-            clearable
-          /> 
-         
-         </div> */}
 
-      <AccountingReportGenericArrayTable
-        data={query.data}
-        title={t("app.reports.journal.table")}
-        emptyText={t("app.reports.journal.empty")}
-      />
+          <AccountingReportSectionCard
+            title={t("app.reports.journal.table")}
+            total={t("app.reports.journal.entriesCount", {
+              count: data.totalCount,
+            })}
+            columns={columns}
+            dataSource={data.entries}
+            loading={query.isFetching}
+            emptyText={t("app.reports.journal.empty")}
+            tone="primary"
+            rowKey="id"
+            pagination={{
+              current: data.page,
+              pageSize: data.pageSize,
+              total: data.totalCount,
+              showSizeChanger: true,
+              onChange: (page, pageSize) =>
+                setFilters((current) => ({ ...current, page, pageSize })),
+            }}
+          />
+        </>
+      )}
     </AccountingReportPageShell>
   );
 }

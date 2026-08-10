@@ -1,80 +1,101 @@
+import type { ColumnsType } from "antd/es/table";
 import { useFormik } from "formik";
+import {
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  CircleDollarSign,
+  Wallet,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { ColumnsType } from "antd/es/table";
-import InputNumber from "@/components/fields/InputNumber";
-import SelectCustom from "@/components/fields/SelectCustom";
-import SelectDate from "@/components/fields/SelectDate";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { numberSpacing } from "@/utils/utils";
-import AccountingReportFiltersCard from "../components/AccountingReportFiltersCard";
+import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
 import AccountingReportSummaryGrid from "../components/AccountingReportSummaryGrid";
 import { useGetCashFlow } from "../hooks";
 import type { CashFlowQuery, CashFlowRow } from "../types/type";
 
-const initialValues: CashFlowQuery = {
-  periodId: null,
-  dateFrom: "",
-  dateTo: "",
-  currencyId: null,
-};
+const initialValues: CashFlowQuery = { dateFrom: "", dateTo: "" };
+const money = (value: number) => numberSpacing(value, undefined, true);
 
 export default function CashFlowPage() {
   const { t } = useTranslation();
-  const [submitted, setSubmitted] = useState<CashFlowQuery | null>(null);
-  const query = useGetCashFlow(submitted ?? undefined);
-
+  const [filters, setFilters] = useState<CashFlowQuery>({});
+  const query = useGetCashFlow(filters);
   const formik = useFormik<CashFlowQuery>({
     initialValues,
-    onSubmit: (values) => setSubmitted(values),
+    onSubmit: (values) => setFilters(values),
   });
-
-  const data = query.data;
 
   const columns = useMemo<ColumnsType<CashFlowRow>>(
     () => [
-      { title: t("app.reports.fields.counterpartAccount"), dataIndex: "counterpartAccountCode", width: 170 },
-      { title: t("app.reports.fields.accountName"), dataIndex: "counterpartAccountName" },
-      { title: t("app.reports.fields.inflow"), dataIndex: "inflow", align: "right", width: 140, render: (value) => numberSpacing(value, undefined, true) },
-      { title: t("app.reports.fields.outflow"), dataIndex: "outflow", align: "right", width: 140, render: (value) => numberSpacing(value, undefined, true) },
-      { title: t("app.reports.fields.net"), dataIndex: "net", align: "right", width: 140, render: (value) => <span className="font-semibold">{numberSpacing(value, undefined, true)}</span> },
+      {
+        title: t("app.reports.fields.counterpartAccount"),
+        dataIndex: "counterpartAccountCode",
+        width: 150,
+        render: (value) => (
+          <span className="inline-flex rounded-md bg-surface-muted px-2 py-1 font-medium text-text">
+            {value || "-"}
+          </span>
+        ),
+      },
+      {
+        title: t("app.reports.fields.accountName"),
+        dataIndex: "counterpartAccountName",
+        width: 280,
+      },
+      {
+        title: t("app.reports.fields.inflow"),
+        dataIndex: "inflow",
+        align: "right",
+        width: 150,
+        render: (value) => (
+          <span className="text-success tabular-nums">{money(value)}</span>
+        ),
+      },
+      {
+        title: t("app.reports.fields.outflow"),
+        dataIndex: "outflow",
+        align: "right",
+        width: 150,
+        render: (value) => (
+          <span className="text-danger tabular-nums">{money(value)}</span>
+        ),
+      },
+      {
+        title: t("app.reports.fields.net"),
+        dataIndex: "net",
+        align: "right",
+        width: 150,
+        render: (value) => (
+          <span className="font-semibold tabular-nums">{money(value)}</span>
+        ),
+      },
     ],
     [t],
   );
 
+  const data = query.data;
+  const totalInflow =
+    data?.sections.reduce((sum, section) => sum + (section.inflow ?? 0), 0) ?? 0;
+  const totalOutflow =
+    data?.sections.reduce((sum, section) => sum + (section.outflow ?? 0), 0) ?? 0;
+  const sectionTitles: Record<string, string> = {
+    OPERATING: t("app.reports.cashFlow.operating"),
+    INVESTING: t("app.reports.cashFlow.investing"),
+    FINANCING: t("app.reports.cashFlow.financing"),
+    TRANSFERS: t("app.reports.cashFlow.transfers"),
+  };
+
   return (
-    <AccountingReportPageShell
-      title={t("app.reports.cashFlow.title")}
-      description={t("app.reports.cashFlow.description")}
-    >
-      <AccountingReportFiltersCard
+    <AccountingReportPageShell>
+      <AccountingReportFilterBar
         formik={formik}
         loading={query.isFetching}
-        onReset={() => {
-          formik.resetForm();
-          setSubmitted(null);
-        }}
-      >
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <InputNumber
-            formik={formik}
-            fieldName="periodId"
-            label={t("app.reports.fields.periodId")}
-            min={1}
-          />
-          <SelectDate formik={formik} fieldName="dateFrom" label={t("app.reports.fields.dateFrom")} />
-          <SelectDate formik={formik} fieldName="dateTo" label={t("app.reports.fields.dateTo")} />
-          <SelectCustom
-            formik={formik}
-            fieldName="currencyId"
-            label={t("app.reports.fields.currency")}
-            path={selectListEndpoints.currenciesSelectList}
-            clearable
-          />
-        </div>
-      </AccountingReportFiltersCard>
+        onDateChange={(dateFrom, dateTo) => setFilters({ dateFrom, dateTo })}
+        onRefresh={() => void query.refetch()}
+      />
 
       {data && (
         <>
@@ -82,31 +103,62 @@ export default function CashFlowPage() {
             items={[
               {
                 label: t("app.reports.summary.openingCashBalance"),
-                value: numberSpacing(data.openingCashBalance, undefined, true),
+                value: money(data.openingCashBalance),
+                icon: <Wallet className="size-4" />,
                 tone: "primary",
               },
               {
+                label: t("app.reports.summary.totalInflow"),
+                value: money(totalInflow),
+                icon: <ArrowDownToLine className="size-4" />,
+                tone: "success",
+              },
+              {
+                label: t("app.reports.summary.totalOutflow"),
+                value: money(totalOutflow),
+                icon: <ArrowUpFromLine className="size-4" />,
+                tone: "danger",
+              },
+              {
                 label: t("app.reports.summary.closingCashBalance"),
-                value: numberSpacing(data.closingCashBalance, undefined, true),
+                value: money(data.closingCashBalance),
+                icon: <CircleDollarSign className="size-4" />,
                 tone: "success",
               },
             ]}
           />
 
-          <div className="grid gap-4">
+          <div className="grid items-start gap-4 xl:grid-cols-2">
             {data.sections.map((section) => (
               <AccountingReportSectionCard
                 key={section.code}
-                title={section.name}
-                total={section.net}
+                title={sectionTitles[section.code] ?? section.name}
                 columns={columns}
                 dataSource={section.rows}
+                emptyText={t("app.reports.cashFlow.empty")}
+                tone={(section.net ?? 0) < 0 ? "danger" : "primary"}
+                metrics={[
+                  {
+                    label: t("app.reports.fields.inflow"),
+                    value: money(section.inflow ?? 0),
+                    tone: "success",
+                  },
+                  {
+                    label: t("app.reports.fields.outflow"),
+                    value: money(section.outflow ?? 0),
+                    tone: "danger",
+                  },
+                  {
+                    label: t("app.reports.fields.net"),
+                    value: money(section.net ?? 0),
+                    tone: (section.net ?? 0) < 0 ? "danger" : "default",
+                  },
+                ]}
               />
             ))}
           </div>
         </>
       )}
-
     </AccountingReportPageShell>
   );
 }

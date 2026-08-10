@@ -320,7 +320,7 @@ export default function AccountingReportsPage({ reportType }: Props) {
   ]);
 
   return (
-    <AccountingReportPageShell title={t(config.title)} description={t(config.description)}>
+    <AccountingReportPageShell>
       <div className="flex items-center justify-end">
         <Button
           icon={<RefreshCw className="size-4" />}

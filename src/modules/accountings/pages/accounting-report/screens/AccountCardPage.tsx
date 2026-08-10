@@ -1,87 +1,220 @@
+import type { ColumnsType } from "antd/es/table";
 import { useFormik } from "formik";
-import { useState } from "react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  BookOpenText,
+  Scale,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import InputNumber from "@/components/fields/InputNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
-import SelectDate from "@/components/fields/SelectDate";
 import {
   chartAccountOptionLabel,
   chartAccountSelectedLabel,
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
-import AccountingReportFiltersCard from "../components/AccountingReportFiltersCard";
-import AccountingReportGenericArrayTable from "../components/AccountingReportGenericArrayTable";
+import { customDate, numberSpacing } from "@/utils/utils";
+import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
+import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
+import AccountingReportSummaryGrid from "../components/AccountingReportSummaryGrid";
 import { useGetAccountCard } from "../hooks";
-import type { AccountCardQuery } from "../types/type";
+import type { AccountCardQuery, AccountCardTransaction } from "../types/type";
 
 const initialValues: AccountCardQuery = {
   accountId: null,
-  periodId: null,
   dateFrom: "",
   dateTo: "",
-  currencyId: null,
+  page: 1,
+  pageSize: 50,
 };
+const money = (value: number) => numberSpacing(value, undefined, true);
 
 export default function AccountCardPage() {
   const { t } = useTranslation();
-  const [submitted, setSubmitted] = useState<AccountCardQuery | null>(null);
-  const query = useGetAccountCard(submitted?.accountId ? submitted : undefined);
-
+  const [filters, setFilters] = useState<AccountCardQuery>();
+  const query = useGetAccountCard(filters);
   const formik = useFormik<AccountCardQuery>({
     initialValues,
-    validate: (values) => {
-      const errors: Partial<Record<keyof AccountCardQuery, string>> = {};
-      if (!values.accountId) {
-        errors.accountId = t("openingBalance.validation.accountRequired");
-      }
-      return errors;
-    },
-    onSubmit: (values) => setSubmitted(values),
+    onSubmit: (values) => setFilters(values.accountId ? values : undefined),
   });
 
+  const columns = useMemo<ColumnsType<AccountCardTransaction>>(
+    () => [
+      {
+        title: t("app.reports.fields.postingDate"),
+        dataIndex: "postingDate",
+        width: 150,
+        render: (value) => customDate(value),
+      },
+      {
+        title: t("app.reports.fields.journalNumber"),
+        dataIndex: "journalNumber",
+        width: 150,
+        render: (value) => value || "-",
+      },
+      {
+        title: t("app.reports.fields.documentType"),
+        dataIndex: "documentType",
+        width: 190,
+        render: (value) => value || "-",
+      },
+      {
+        title: t("app.reports.fields.description"),
+        dataIndex: "description",
+        width: 240,
+        render: (value) => value || "-",
+      },
+      {
+        title: t("openingBalance.fields.debit"),
+        dataIndex: "debit",
+        align: "right",
+        width: 150,
+        render: (value) => (
+          <span className="font-medium text-brand-text tabular-nums">
+            {money(value)}
+          </span>
+        ),
+      },
+      {
+        title: t("openingBalance.fields.credit"),
+        dataIndex: "credit",
+        align: "right",
+        width: 150,
+        render: (value) => (
+          <span className="font-medium text-warning tabular-nums">
+            {money(value)}
+          </span>
+        ),
+      },
+      {
+        title: t("app.reports.fields.runningBalance"),
+        dataIndex: "runningBalance",
+        align: "right",
+        width: 170,
+        render: (value) => (
+          <span className="font-semibold tabular-nums">{money(value)}</span>
+        ),
+      },
+      {
+        title: t("app.reports.fields.currency"),
+        dataIndex: "currency",
+        width: 90,
+        render: (value) => value || "-",
+      },
+      {
+        title: t("app.reports.fields.counterparty"),
+        dataIndex: "counterparty",
+        width: 230,
+        render: (value) => value || "-",
+      },
+    ],
+    [t],
+  );
+
+  const data = query.data;
+
   return (
-    <AccountingReportPageShell
-      title={t("app.reports.card.title")}
-      description={t("app.reports.card.description")}
-    >
-      <AccountingReportFiltersCard
+    <AccountingReportPageShell>
+      <AccountingReportFilterBar 
         formik={formik}
         loading={query.isFetching}
-        onReset={() => {
-          formik.resetForm();
-          setSubmitted(null);
+        refreshDisabled={!filters?.accountId}
+        onDateChange={(dateFrom, dateTo) => {
+          const accountId = formik.values.accountId;
+          if (accountId) {
+            setFilters({ accountId, dateFrom, dateTo, page: 1, pageSize: 50 });
+          }
         }}
+        onRefresh={() => void query.refetch()}
       >
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div>
           <SelectCustom
             formik={formik}
+            placeholder="app.reports.fields.account"
             fieldName="accountId"
-            label={t("app.reports.fields.account")}
             path={selectListEndpoints.chartAccountsSelectList}
             clearable
+            search
+            marginBottom="0"
             optionLabel={chartAccountOptionLabel}
             selectedLabel={chartAccountSelectedLabel}
-          />
-          <InputNumber formik={formik} fieldName="periodId" label={t("app.reports.fields.periodId")} min={1} />
-          <SelectDate formik={formik} fieldName="dateFrom" label={t("app.reports.fields.dateFrom")} />
-          <SelectDate formik={formik} fieldName="dateTo" label={t("app.reports.fields.dateTo")} />
-          <SelectCustom
-            formik={formik}
-            fieldName="currencyId"
-            label={t("app.reports.fields.currency")}
-            path={selectListEndpoints.currenciesSelectList}
-            clearable
+            onChange={(value) => {
+              const accountId = typeof value === "number" ? value : null;
+              setFilters(
+                accountId
+                  ? {
+                      accountId,
+                      dateFrom: formik.values.dateFrom,
+                      dateTo: formik.values.dateTo,
+                      page: 1,
+                      pageSize: 50,
+                    }
+                  : undefined,
+              );
+            }}
           />
         </div>
-      </AccountingReportFiltersCard>
+      </AccountingReportFilterBar>
 
-      <AccountingReportGenericArrayTable
-        data={query.data}
-        title={t("app.reports.card.table")}
-        emptyText={t("app.reports.card.empty")}
-      />
+      {data && (
+        <>
+          <AccountingReportSummaryGrid
+            items={[
+              {
+                label: t("app.reports.summary.openingBalance"),
+                value: money(data.openingBalance),
+                icon: <BookOpenText className="size-4" />,
+                tone: "primary",
+              },
+              {
+                label: t("app.reports.summary.totalDebit"),
+                value: money(data.totalDebit),
+                icon: <ArrowDownRight className="size-4" />,
+                tone: "primary",
+              },
+              {
+                label: t("app.reports.summary.totalCredit"),
+                value: money(data.totalCredit),
+                icon: <ArrowUpRight className="size-4" />,
+                tone: "warning",
+              },
+              {
+                label: t("app.reports.summary.closingBalance"),
+                value: money(data.closingBalance),
+                icon: <Scale className="size-4" />,
+                tone: "success",
+              },
+            ]}
+          />
 
+          <AccountingReportSectionCard
+            title={[data.accountCode, data.accountName]
+              .filter(Boolean)
+              .join(" — ")}
+            total={t("app.reports.card.transactionsCount", {
+              count: data.totalCount,
+            })}
+            columns={columns}
+            dataSource={data.transactions}
+            loading={query.isFetching}
+            emptyText={t("app.reports.card.empty")}
+            tone="primary"
+            rowKey="id"
+            pagination={{
+              current: data.page,
+              pageSize: data.pageSize,
+              total: data.totalCount,
+              showSizeChanger: true,
+              onChange: (page, pageSize) =>
+                setFilters((current) =>
+                  current ? { ...current, page, pageSize } : current,
+                ),
+            }}
+          />
+        </>
+      )}
     </AccountingReportPageShell>
   );
 }

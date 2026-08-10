@@ -35,6 +35,14 @@ const getFileName = (disposition?: string) => {
   return plainMatch?.[1] ?? "edo-document";
 };
 
+const hasPdfSignature = async (blob: Blob) => {
+  if (blob.size < 5) return false;
+  const signature = new TextDecoder().decode(
+    await blob.slice(0, 5).arrayBuffer(),
+  );
+  return signature === "%PDF-";
+};
+
 export const edoService = {
   activeProvider: () =>
     $axiosPrivate
@@ -119,14 +127,29 @@ export const edoService = {
     try {
       const response = await $axiosPrivate.get<Blob>(edoEndpoints.file(id), {
         responseType: "blob",
-        headers: { Accept: "application/octet-stream" },
+        headers: { Accept: "application/pdf, application/octet-stream" },
       });
+      const fileName = getFileName(response.headers["content-disposition"]);
+      const contentType = String(
+        response.headers["content-type"] || response.data.type || "application/octet-stream",
+      );
+      const isPdf =
+        contentType.toLocaleLowerCase().includes("application/pdf") ||
+        fileName.toLocaleLowerCase().endsWith(".pdf") ||
+        (await hasPdfSignature(response.data));
+      const resolvedFileName =
+        isPdf && !fileName.toLocaleLowerCase().endsWith(".pdf")
+          ? `${fileName}.pdf`
+          : fileName;
+      const blob = isPdf && response.data.type !== "application/pdf"
+        ? new Blob([response.data], { type: "application/pdf" })
+        : response.data;
+
       return {
-        blob: response.data,
-        fileName: getFileName(response.headers["content-disposition"]),
-        contentType: String(
-          response.headers["content-type"] || "application/octet-stream",
-        ),
+        blob,
+        fileName: resolvedFileName,
+        contentType,
+        isPdf,
       };
     } catch (error) {
       if (

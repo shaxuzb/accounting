@@ -392,6 +392,8 @@
       "positions": "Lavozimlar",
       "productGroups": "Mahsulot guruhlari",
       "cashBox": "Kassa",
+      "fiscalCashRegisters": "Fiskal kassalar",
+      "bankTerminals": "Bank terminallari",
       "counterpartyContacts": "Kontragent kontaktlari",
       "warehouse": "Ombor",
       "purchaseServices": "Xarid xizmatlari",
@@ -416,6 +418,8 @@
       "positions": "Lavozimlar ro'yxatini boshqarish.",
       "productGroups": "Mahsulot guruhlarini boshqarish.",
       "cashBox": "Kassalar ro'yxatini boshqarish.",
+      "fiscalCashRegisters": "Fiskal kassa apparatlarini boshqarish.",
+      "bankTerminals": "Bank to'lov terminallarini boshqarish.",
       "counterpartyContacts": "Kontragent kontaktlarini boshqarish.",
       "warehouse": "Omborlar ro'yxatini boshqarish.",
       "purchaseServices": "Xaridda ishlatiladigan xizmatlar ro'yxatini boshqarish.",
@@ -439,6 +443,7 @@
       "address": "Manzil",
       "bank": "Bank",
       "bankName": "Bank nomi",
+      "bankAccount": "Bank hisobi",
       "branch": "Filial",
       "branchName": "Filial nomi",
       "code": "Kod",
@@ -457,6 +462,13 @@
       "modules": "Modullar",
       "mfo": "MFO",
       "name": "Nomi",
+      "registerType": "Kassa turi",
+      "externalRegisterId": "Tashqi kassa ID",
+      "merchantId": "Merchant ID",
+      "externalTerminalId": "Tashqi terminal ID",
+      "model": "Model",
+      "serialNumber": "Seriya raqami",
+      "fiscalModuleNumber": "Fiskal modul raqami",
       "organization": "Tashkilot",
       "organizationName": "Tashkilot nomi",
       "partyType": "Kontragent turi",
@@ -490,6 +502,10 @@
     "form": {
       "createTitle": "Yangi ma'lumot qo'shish",
       "editTitle": "Ma'lumotni tahrirlash",
+      "createFiscalCashRegister": "Fiskal kassa qo'shish",
+      "editFiscalCashRegister": "Fiskal kassani tahrirlash",
+      "createBankTerminal": "Bank terminali qo'shish",
+      "editBankTerminal": "Bank terminalini tahrirlash",
       "createUser": "Foydalanuvchi qo'shish",
       "editUser": "Foydalanuvchini o'zgartirish",
       "createRole": "Rol qo'shish",
@@ -609,6 +625,7 @@
           "sectionUnavailable": "Bu bo‘lim uchun API tayyor emas. Backend endpoint chiqqach ulanadi."
         },
         "capabilityUnavailable": "Bu amal tanlangan providerda mavjud emas",
+        "previewUnavailable": "Bu faylni brauzerda ko‘rib bo‘lmaydi. Uni yuklab olib oching.",
         "provider": {
           "title": "EDO provider",
           "description": "Tashkilot uchun ishlatiladigan elektron hujjat operatorini tanlang.",
@@ -706,6 +723,7 @@
           "reconciliation": "Provider va ichki holatni qo‘lda muvofiqlashtirish talab qilinadi"
         },
         "statuses": {
+          "ALL": "Barchasi",
           "UNKNOWN": "Noma’lum",
           "PENDING_SIGNATURE": "Imzolash kutilmoqda",
           "PARTNER_SIGNATURE_PENDING": "Hamkor imzosi kutilmoqda",
@@ -734,6 +752,8 @@
         },
         "errors": {
           "providers": "Providerlarni yuklab bo‘lmadi",
+          "capabilitiesLoad": "Provider imkoniyatlarini yuklab bo‘lmadi",
+          "fileLoad": "Hujjat faylini yuklab bo‘lmadi",
           "status": "Hujjat holatini olib bo‘lmadi",
           "challengeExpired": "Imzolash sessiyasi muddati tugadi. Qayta urinib ko‘ring.",
           "authRejected": "Provider autentifikatsiyani tasdiqlamadi",
@@ -1237,6 +1257,53 @@
       "totalSale": "Jami sotuv"
     }
   },
+  "retailSale": {
+    "title": "Chakana savdo",
+    "new": "Yangi chakana savdo",
+    "edit": "Chakana savdoni tahrirlash",
+    "document": "Chakana savdo hujjati",
+    "fields": {
+      "docNumber": "Hujjat raqami",
+      "docDate": "Hujjat sanasi",
+      "customer": "Mijoz",
+      "retailCustomer": "Chakana xaridor",
+      "warehouse": "Ombor",
+      "cashRegister": "Fiskal kassa",
+      "currency": "Valyuta",
+      "receivableAccount": "Debitorlik hisobvarag'i",
+      "vatAccount": "QQS hisobvarag'i",
+      "state": "Holat",
+      "status": "Status",
+      "totalAmount": "Jami summa",
+      "paymentMethod": "To'lov usuli",
+      "bankTerminal": "Bank terminali",
+      "debitAccount": "Debet hisobvarag'i",
+      "amount": "Summa",
+      "transactionNumber": "Tranzaksiya raqami"
+    },
+    "payments": {
+      "title": "To'lovlar",
+      "add": "To'lov qo'shish",
+      "total": "Jami to'lov",
+      "empty": "To'lovlar kiritilmagan"
+    },
+    "messages": {
+      "dateRequired": "Hujjat sanasini kiriting",
+      "warehouseRequired": "Omborni tanlang",
+      "cashRegisterRequired": "Fiskal kassani tanlang",
+      "currencyRequired": "Valyutani tanlang",
+      "paymentMethodRequired": "To'lov usulini tanlang",
+      "debitAccountRequired": "Debet hisobvarag'ini tanlang",
+      "paymentAmountRequired": "To'lov summasini kiriting",
+      "checkProductData": "Mahsulot ma'lumotlarini tekshiring",
+      "listLoadError": "Chakana savdo hujjatlarini yuklab bo'lmadi",
+      "listEmpty": "Chakana savdo hujjatlari topilmadi",
+      "created": "Chakana savdo hujjati yaratildi",
+      "updated": "Chakana savdo hujjati yangilandi",
+      "confirmed": "Chakana savdo hujjati tasdiqlandi",
+      "cancelled": "Chakana savdo hujjati bekor qilindi"
+    }
+  },
   "warehouses": {
     "title": "Ombor"
   },
@@ -1256,7 +1323,7 @@
       "journal": "Operatsiyalar jurnali",
       "accountCard": "Hisob kartochkasi",
       "ledger": "Bosh kitob",
-      "trialBalance": "Sinov balansi",
+      "trialBalance": "Aylanma-saldo vedomosti",
       "auditLog": "Audit jurnali",
       "repost": "Qayta o'tkazish",
       "periods": "Hisob davrlari"
@@ -1266,37 +1333,60 @@
         "title": "Balans hisoboti",
         "description": "Aktivlar, majburiyatlar va kapital bo'yicha to'liq hisobot.",
         "table": "Balans qoldiqlari",
-        "empty": "Balans hisoboti natijasi yo'q"
+        "empty": "Balans hisoboti natijasi yo'q",
+        "assets": "Aktivlar",
+        "liabilities": "Majburiyatlar",
+        "equity": "Kapital",
+        "balanced": "Balans teng",
+        "notBalanced": "Balans teng emas"
       },
       "income": {
         "title": "Daromadlar hisoboti",
         "description": "Daromad, tannarx va foyda / zarar bo'yicha tahlil.",
         "table": "Daromadlar hisoboti qatorlari",
-        "empty": "Daromadlar hisoboti natijasi yo'q"
+        "empty": "Daromadlar hisoboti natijasi yo'q",
+        "revenue": "Daromad",
+        "costOfSales": "Sotuv tannarxi",
+        "operatingExpenses": "Operatsion xarajatlar",
+        "otherIncome": "Boshqa daromadlar",
+        "otherExpenses": "Boshqa xarajatlar"
       },
       "cashFlow": {
         "title": "Pul oqimi",
         "description": "Pul oqimi bo'yicha kirim, chiqim va sof farq.",
         "table": "Pul oqimi qatorlari",
-        "empty": "Pul oqimi natijasi yo'q"
+        "empty": "Pul oqimi natijasi yo'q",
+        "operating": "Operatsion faoliyat",
+        "investing": "Investitsion faoliyat",
+        "financing": "Moliyalashtirish faoliyati",
+        "transfers": "Pul o'tkazmalari"
       },
       "turnover": {
         "title": "Hisob aylanmasi",
-        "description": "Provodkalar, jurnal raqami, hujjat va miqdorlar ro'yxati.",
+        "description": "Hisobvaraqlar bo'yicha davr boshidagi qoldiq, davr aylanmasi va yakuniy qoldiq.",
         "table": "Hisob aylanmasi qatorlari",
-        "empty": "Hisob aylanmasi natijasi yo'q"
+        "empty": "Hisob aylanmasi natijasi yo'q",
+        "period": "Hisobot davri",
+        "openingBalance": "Boshlang'ich qoldiq",
+        "periodTurnover": "Davr aylanmasi",
+        "closingBalance": "Yakuniy qoldiq",
+        "accountsCount": "{{count}} ta hisob",
+        "columns": "Ustunlar",
+        "exportExcel": "Excel"
       },
       "journal": {
         "title": "Operatsiyalar jurnali",
         "description": "Barcha qaydlar va o'tkazmalar uchun umumiy jurnal.",
         "table": "Jurnal qatorlari",
-        "empty": "Jurnal natijasi yo'q"
+        "empty": "Jurnal natijasi yo'q",
+        "entriesCount": "{{count}} ta operatsiya"
       },
       "card": {
         "title": "Hisob kartochkasi",
         "description": "Bitta hisobvaraq bo'yicha karta va harakatlar.",
         "table": "Hisob kartochkasi qatorlari",
-        "empty": "Hisob kartochkasi natijasi yo'q"
+        "empty": "Hisob kartochkasi natijasi yo'q",
+        "transactionsCount": "{{count}} ta harakat"
       },
       "fields": {
         "account": "Hisobvaraq",
@@ -1325,6 +1415,7 @@
         "inflow": "Kirim",
         "outflow": "Chiqim",
         "net": "Sof o'zgarish",
+        "runningBalance": "Joriy qoldiq",
         "value": "Qiymat"
       },
       "summary": {
@@ -1336,10 +1427,19 @@
         "totalLiabilities": "Jami majburiyatlar",
         "totalEquity": "Jami kapital",
         "liabilitiesAndEquity": "Majburiyatlar va kapital",
+        "balanceDifference": "Balans farqi",
         "revenue": "Daromad",
         "costOfSales": "Sotuv tannarxi",
         "operatingExpense": "Operatsion xarajatlar",
+        "grossProfit": "Yalpi foyda",
+        "operatingProfit": "Operatsion foyda",
         "netProfit": "Sof foyda",
+        "openingBalance": "Boshlang'ich qoldiq",
+        "totalDebit": "Jami debet",
+        "totalCredit": "Jami kredit",
+        "closingBalance": "Yakuniy qoldiq",
+        "totalInflow": "Jami kirim",
+        "totalOutflow": "Jami chiqim",
         "openingCashBalance": "Boshlang'ich pul qoldig'i",
         "closingCashBalance": "Yakuniy pul qoldig'i"
       },
@@ -1373,6 +1473,7 @@
       "cashBook": "Kassa hisobi",
       "sales": "Sotuv",
       "salesList": "Sotuvlar",
+      "retailSales": "Chakana savdo",
       "company": "HisobKitob MCHJ"
     },
     "routes": {
@@ -2156,7 +2257,12 @@
     "ledger": {
       "title": "Bosh kitob",
       "resultDescription": "Bosh kitob bo'yicha hisob harakatlari.",
-      "empty": "Bosh kitob ma'lumotlari topilmadi"
+      "empty": "Bosh kitob ma'lumotlari topilmadi",
+      "selectAccount": "Harakatlarni ko'rish uchun hisobvaraqni tanlang",
+      "movements": "Hisobvaraq harakatlari",
+      "transactionsCount": "{{count}} ta operatsiya",
+      "columns": "Ustunlar",
+      "exportExcel": "Excel"
     },
     "audit": {
       "title": "O'zgarishlar tarixi",

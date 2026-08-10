@@ -2,7 +2,11 @@ import type {
   EdoCapabilitiesResponseDto,
   EdoCapabilityKind,
   EdoCapabilityStatus,
+  EdoDocumentCategory,
+  EdoDocumentDirection,
+  EdoFilterCode,
   EdoProviderDto,
+  EdoStatusOptionDto,
 } from "../types/type";
 
 const capabilityFieldByKind: Partial<
@@ -66,4 +70,77 @@ export const getStatusCapabilityStatus = (
     ?.capability ?? "UNKNOWN";
 
 export const isCapabilityAvailable = (status: EdoCapabilityStatus) =>
-  status === "SUPPORTED" || status === "PARTIAL";
+  status === "SUPPORTED";
+
+const normalizeCapabilityKey = (value: string) =>
+  value.replaceAll("_", "").toLocaleLowerCase();
+
+const getScopeScore = (
+  item: { direction?: EdoDocumentDirection | null; category: EdoDocumentCategory },
+  direction: EdoDocumentDirection | undefined,
+  category: EdoDocumentCategory,
+) => {
+  const categoryMatches = item.category === category;
+  const categoryFallback = item.category === "ALL";
+  const directionMatches = item.direction === direction;
+  const directionFallback = item.direction == null;
+
+  if (categoryMatches && directionMatches) return 4;
+  if (categoryMatches && directionFallback) return 3;
+  if (categoryFallback && directionMatches) return 2;
+  if (categoryFallback && directionFallback) return 1;
+  return -1;
+};
+
+export const getFilterCapabilityStatus = (
+  capabilities: EdoCapabilitiesResponseDto | null | undefined,
+  filter: EdoFilterCode,
+  direction: EdoDocumentDirection | undefined,
+  category: EdoDocumentCategory,
+): EdoCapabilityStatus => {
+  const filterKey = normalizeCapabilityKey(filter);
+  const matches = (capabilities?.filterCapabilities ?? [])
+    .filter(
+      (item) => normalizeCapabilityKey(item.filter) === filterKey,
+    )
+    .map((item) => ({
+      item,
+      score: getScopeScore(item, direction, category),
+    }))
+    .filter(({ score }) => score >= 0)
+    .sort((left, right) => right.score - left.score);
+
+  return matches[0]?.item.capability ?? "UNKNOWN";
+};
+
+export const hasSupportedFilter = (
+  capabilities: EdoCapabilitiesResponseDto | null | undefined,
+  filter: EdoFilterCode,
+  direction: EdoDocumentDirection | undefined,
+  category: EdoDocumentCategory,
+) =>
+  getFilterCapabilityStatus(capabilities, filter, direction, category) ===
+  "SUPPORTED";
+
+export const getSupportedStatusOptions = (
+  capabilities: EdoCapabilitiesResponseDto | null | undefined,
+  direction: EdoDocumentDirection | undefined,
+  category: EdoDocumentCategory,
+) => {
+  const bestByCode = new Map<
+    EdoStatusOptionDto["code"],
+    { item: EdoStatusOptionDto; score: number }
+  >();
+
+  for (const item of capabilities?.statusOptions ?? []) {
+    if (item.capability !== "SUPPORTED") continue;
+    const score = getScopeScore(item, direction, category);
+    if (score < 0) continue;
+    const current = bestByCode.get(item.code);
+    if (!current || score > current.score) {
+      bestByCode.set(item.code, { item, score });
+    }
+  }
+
+  return [...bestByCode.values()].map(({ item }) => item);
+};
