@@ -4,6 +4,13 @@ import { useSearchParams } from "react-router";
 
 const DEFAULT_PAGE_SIZE = 20;
 
+const getPositiveInteger = (value: string | null, fallback: number) => {
+  const parsedValue = Number(value);
+  return Number.isInteger(parsedValue) && parsedValue > 0
+    ? parsedValue
+    : fallback;
+};
+
 /**
  * Ro'yxat sahifalari uchun URL asosidagi pagination.
  * Antd Table pagination propsini tayyor holda qaytaradi.
@@ -12,9 +19,18 @@ export const usePaginationParams = (defaultPageSize = DEFAULT_PAGE_SIZE) => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const page = Number(searchParams.get("page") ?? 1) || 1;
-  const pageSize = Number(searchParams.get("pageSize") ?? defaultPageSize) ||
-    defaultPageSize;
+  const page = getPositiveInteger(searchParams.get("page"), 1);
+  const pageSize = getPositiveInteger(
+    searchParams.get("pageSize"),
+    defaultPageSize,
+  );
+
+  const queryParams = useMemo(() => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", String(page));
+    params.set("pageSize", String(pageSize));
+    return params;
+  }, [page, pageSize, searchParams]);
 
   const handleChange = useCallback(
     (nextPage: number, nextPageSize: number) => {
@@ -45,14 +61,18 @@ export const usePaginationParams = (defaultPageSize = DEFAULT_PAGE_SIZE) => {
       showSizeChanger: true,
       pageSizeOptions: [10, 20, 50, 100],
       showTotal: (totalCount: number, range: [number, number]) =>
-        `${range[0]}-${range[1]} / ${totalCount} ${t("common.total").toLowerCase()}`,
+        t("common.resultRange", {
+          from: range[0],
+          to: range[1],
+          total: totalCount,
+        }),
       onChange: handleChange,
     }),
     [handleChange, page, pageSize, t],
   );
 
   return useMemo(
-    () => ({ page, pageSize, withRowNumbers, paginationProps }),
-    [page, pageSize, withRowNumbers, paginationProps],
+    () => ({ page, pageSize, queryParams, withRowNumbers, paginationProps }),
+    [page, pageSize, paginationProps, queryParams, withRowNumbers],
   );
 };

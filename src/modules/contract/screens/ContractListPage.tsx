@@ -16,6 +16,7 @@ import { useGetListContract } from "../hooks/useGetListContract";
 import type { Contract } from "../types/type";
 import { contractPermissions } from "../constants/permissions";
 import ContractDetailModal from "./ContractDetailModal";
+import LineClampCell from "@/components/widget/text/LineClampCell";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const numberValue = Number(value);
@@ -72,11 +73,11 @@ export default function ContractListPage() {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
       align: "center",
-      width: 70,
     },
     {
       title: t("contract.fields.contractNumber"),
       dataIndex: "contractNumber",
+      width: 160,
       render: (value, record) =>
         canViewDetail ? (
           <Button
@@ -107,11 +108,17 @@ export default function ContractListPage() {
         return formatDate(value);
       },
     },
+    // {
+    //   title: t("contract.fields.contractType"),
+    //   dataIndex: "contractTypeName",
+    //   render: (_, record) =>
+    //     record.contractTypeName || record.contractType || "-",
+    // },
     {
-      title: t("contract.fields.contractType"),
-      dataIndex: "contractTypeName",
-      render: (_, record) =>
-        record.contractTypeName || record.contractType || "-",
+      title: t("contract.fields.comment"),
+      dataIndex: "comment",
+      minWidth: 220,
+      render: (value: string | null) => <LineClampCell text={value} />,
     },
     {
       title: t("contract.fields.stateName"),

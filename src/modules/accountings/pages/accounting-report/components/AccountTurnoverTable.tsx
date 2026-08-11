@@ -28,6 +28,8 @@ type FinancialColumnKey =
   | "closingDebit"
   | "closingCredit";
 
+type VisibleColumnKey = FinancialColumnKey | "accountName";
+
 const financialColumnKeys: FinancialColumnKey[] = [
   "openingDebit",
   "openingCredit",
@@ -43,9 +45,13 @@ export default function AccountTurnoverTable({
   filters,
 }: Props) {
   const { t } = useTranslation();
-  const [visibleFinancialColumns, setVisibleFinancialColumns] = useState<
-    FinancialColumnKey[]
-  >(financialColumnKeys);
+  const [visibleColumns, setVisibleColumns] = useState<VisibleColumnKey[]>([
+    "accountName",
+    ...financialColumnKeys,
+  ]);
+  const visibleFinancialColumns = financialColumnKeys.filter((key) =>
+    visibleColumns.includes(key),
+  );
 
   const baseColumns = useMemo<ColumnsType<AccountTurnoverItem>>(
     () => [
@@ -67,14 +73,18 @@ export default function AccountTurnoverTable({
           </span>
         ),
       },
-      {
-        title: t("app.trial.accountName"),
-        dataIndex: "accountName",
-        width: 260,
-        fixed: "left",
-      },
+      ...(visibleColumns.includes("accountName")
+        ? [
+            {
+              title: t("app.trial.accountName"),
+              dataIndex: "accountName",
+              width: 260,
+              fixed: "left" as const,
+            },
+          ]
+        : []),
     ],
-    [t],
+    [t, visibleColumns],
   );
 
   const financialColumns = useMemo<
@@ -236,6 +246,7 @@ export default function AccountTurnoverTable({
   };
 
   const summaryValues = visibleFinancialColumns.map((key) => totals[key]);
+  const baseColumnCount = visibleColumns.includes("accountName") ? 3 : 2;
 
   return (
     <Card className="overflow-hidden border border-border shadow-sm">
@@ -250,13 +261,16 @@ export default function AccountTurnoverTable({
             placement="bottomRight"
             content={
               <Checkbox.Group
-                value={visibleFinancialColumns}
+                value={visibleColumns}
                 onChange={(values) => {
-                  const nextValues = values as FinancialColumnKey[];
-                  if (nextValues.length) setVisibleFinancialColumns(nextValues);
+                  const nextValues = values as VisibleColumnKey[];
+                  if (nextValues.length) setVisibleColumns(nextValues);
                 }}
               >
                 <div className="grid gap-2">
+                  <Checkbox value="accountName">
+                    {t("app.trial.accountName")}
+                  </Checkbox>
                   {financialColumns.map(({ key, label }) => (
                     <Checkbox key={key} value={key}>
                       {label}
@@ -295,13 +309,13 @@ export default function AccountTurnoverTable({
           items.length ? (
             <Table.Summary fixed>
               <Table.Summary.Row className="bg-surface-muted font-semibold">
-                <Table.Summary.Cell index={0} colSpan={3}>
+                <Table.Summary.Cell index={0} colSpan={baseColumnCount}>
                   {t("common.total")} ({items.length})
                 </Table.Summary.Cell>
                 {summaryValues.map((value, index) => (
                   <Table.Summary.Cell
                     key={index}
-                    index={index + 3}
+                    index={index + baseColumnCount}
                     align="right"
                   >
                     <span className="tabular-nums">

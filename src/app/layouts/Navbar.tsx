@@ -60,7 +60,7 @@ const Navbar = () => {
   }, [currentRouteHandle, navigate]);
 
   return (
- <div className="bg-primary-bg top-0 sticky z-10 border-b border-b-border border-[#e5e7eb] h-16 flex items-center">
+ <div className="flex h-16 shrink-0 items-center border-b border-border bg-primary-bg">
       <div className={`flex justify-between py-1.5 items-center w-full px-4`}>
         <div className="flex gap-3 items-center">
           <Button onClick={handleClickMenu} className="p-0!" type="link">

@@ -16,6 +16,7 @@ import { useGetCashOperations } from "../hooks";
 import type { CashOperation } from "../types/type";
 import CashOperationAddEditPage from "./CashOperationAddEditPage";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 
 export default function CashOperationListPage() {
   const { t } = useTranslation();
@@ -46,11 +47,12 @@ export default function CashOperationListPage() {
       title: t("app.routes.accountingEntries"),
       align: "center",
       render: (_, record) => (
-        <Link
-          to={`/main/accountingentriesreport?documentTypeId=4&documentId=${record.id}`}
-        >
-          <Button icon={<ReceiptText className="size-4" />} />
-        </Link>
+        <AccountingEntriesButton
+          documentTypeId={4}
+          documentId={record.id}
+          statusId={record.statusId}
+          icon={<ReceiptText className="size-4" />}
+        />
       ),
     },
     {

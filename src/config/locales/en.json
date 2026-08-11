@@ -34,6 +34,7 @@
     "reload": "Reload",
     "resultCount": "Total results: {{count}}",
     "accountingEntries": "Accounting entries",
+    "accountingEntriesPostedOnly": "Accounting entries are available only for posted documents",
     "piece": "pcs",
     "and": "and"
   },
@@ -1146,6 +1147,11 @@
       "title": "Payments",
       "add": "Add payment",
       "total": "Total payment",
+      "saleTotal": "Total sale",
+      "paid": "Paid",
+      "remaining": "Remaining",
+      "fullyPaid": "Fully paid",
+      "partiallyPaid": "Partially paid",
       "empty": "No payments entered"
     },
     "messages": {
@@ -1176,6 +1182,7 @@
   "app": {
     "accounting": {
       "title": "Accounting",
+      "sidebarTitle": "Reports",
       "reports": "Accounting reports",
       "balanceSheet": "Balance sheet",
       "incomeStatement": "Income statement",

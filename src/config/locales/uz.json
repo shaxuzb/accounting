@@ -34,6 +34,7 @@
     "reload": "Qayta yuklash",
     "resultCount": "Jami {{count}} ta natija",
     "accountingEntries": "Provodkalar",
+    "accountingEntriesPostedOnly": "Provodkalar faqat o'tkazilgan hujjatda mavjud",
     "piece": "dona",
     "and": "va"
   },
@@ -1285,6 +1286,11 @@
       "title": "To'lovlar",
       "add": "To'lov qo'shish",
       "total": "Jami to'lov",
+      "saleTotal": "Jami sotuv",
+      "paid": "To'langan",
+      "remaining": "Qoldiq",
+      "fullyPaid": "To'liq to'langan",
+      "partiallyPaid": "Qisman to'langan",
       "empty": "To'lovlar kiritilmagan"
     },
     "messages": {
@@ -1315,6 +1321,7 @@
   "app": {
     "accounting": {
       "title": "Buxgalteriya",
+      "sidebarTitle": "Hisobotlar",
       "reports": "Buxgalteriya hisobotlari",
       "balanceSheet": "Balans hisoboti",
       "incomeStatement": "Daromadlar hisoboti",

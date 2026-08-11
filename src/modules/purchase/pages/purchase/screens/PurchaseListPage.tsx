@@ -17,6 +17,7 @@ import {
   purchaseEndpoints,
 } from "../constants/endpoints";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const numberValue = Number(value);
@@ -71,11 +72,12 @@ export default function PurchaseListPage() {
       title: t("common.accountingEntries"),
       align: "center",
       render: (_, record) => (
-        <Link
-          to={`/main/accountingentriesreport?documentTypeId=${purchaseAccountingEntriesReportDocumentTypeId}&documentId=${record.id}`}
-        >
-          <Button icon={<ReceiptText className="size-4" />} />
-        </Link>
+        <AccountingEntriesButton
+          documentTypeId={purchaseAccountingEntriesReportDocumentTypeId}
+          documentId={record.id}
+          statusId={record.statusId}
+          icon={<ReceiptText className="size-4" />}
+        />
       ),
     },
     {
@@ -204,7 +206,7 @@ export default function PurchaseListPage() {
               `${range[0]}-${range[1]} / ${total} ta`,
             onChange: handlePaginationChange,
           }}
-          scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
+          scroll={{ x: "max-content", y: "calc(100vh - 280px)" }}
         />
       </Card>
     </div>

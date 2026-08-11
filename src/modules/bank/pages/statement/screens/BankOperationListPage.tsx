@@ -1,43 +1,32 @@
-import { Link, useSearchParams } from "react-router";
-import { Button, Space, Table, Tooltip } from "antd";
+import { Link } from "react-router";
+import { Button, Space, Tooltip } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
 import { FileUp, Plus, ReceiptText, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
+import RestorableTable from "@/components/ui/table/RestorableTable";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { useAppSelector } from "@/store/hooks";
-import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
+import { customDate, numberSpacing } from "@/utils/utils";
 import { bankStatementEndpoints } from "../constants/endpoints";
 import { bankPermissions } from "../constants/permissions";
 import { useGetBankOperations } from "../hooks";
 import type { BankOperationData } from "../types/type";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
-import { useTableScrollRestore } from "@/components/ui/table/actions/useTableScrollRestore";
-
-const BANK_LIST_PATH = "/main/bank";
-
-const BANK_CHILD_PATH_PATTERNS = [
-  /^\/main\/bank\/\d+$/,
-  /^\/main\/bank\/edit\/\d+$/,
-  /^\/main\/bank\/add$/,
-  /^\/main\/bank\/import$/,
-];
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
+import { usePaginationParams } from "@/shared/hooks/usePaginationParams";
 
 export default function BankOperationListPage() {
   const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
-  const { tableWrapperRef } = useTableScrollRestore({
-    storageKey: "bank-operation-list-scroll-position",
-    listPath: BANK_LIST_PATH,
-    childPathPatterns: BANK_CHILD_PATH_PATTERNS,
-  });
+  const { queryParams, withRowNumbers, paginationProps } =
+    usePaginationParams();
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
   const { data, isLoading, isFetching, refetch } =
-    useGetBankOperations(searchParams);
+    useGetBankOperations(queryParams);
 
   const tableColumns: TableColumnsType<BankOperationData> = [
     {
@@ -62,11 +51,12 @@ export default function BankOperationListPage() {
       title: t("bank.fields.accountingEntries"),
       align: "center",
       render: (_, record) => (
-        <Link
-          to={`/main/accountingentriesreport?documentTypeId=3&documentId=${record.id}`}
-        >
-          <Button icon={<ReceiptText className="size-4" />} />
-        </Link>
+        <AccountingEntriesButton
+          documentTypeId={3}
+          documentId={record.id}
+          statusId={record.statusId}
+          icon={<ReceiptText className="size-4" />}
+        />
       ),
     },
     // {
@@ -104,11 +94,11 @@ export default function BankOperationListPage() {
     {
       dataIndex: "comment",
       title: t("bank.fields.comment"),
-      width: 400,
+      width: 200,
       render: (value) => {
         return (
           <Tooltip title={value}>
-            <span className="line-clamp-2">{value}</span>
+            <span className="line-clamp-1">{value}</span>
           </Tooltip>
         );
       },
@@ -180,17 +170,20 @@ export default function BankOperationListPage() {
           />
         </Space>
       </div>
-      <div ref={tableWrapperRef}>
-        <Card className="overflow-hidden border border-border">
-          <Table<BankOperationData>
-            loading={isLoading || isFetching}
-            columns={columns}
-            dataSource={generateKeyTable(data?.items ?? [], "id")}
-            pagination={false}
-            scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
-          />
-        </Card>
-      </div>
+      <Card className="overflow-hidden border border-border">
+        <RestorableTable<BankOperationData>
+          scrollStorageKey="bank-operation-list-scroll"
+          restoreEnabled={false}
+          restoreReady={!isLoading && Boolean(data)}
+          loading={isLoading || isFetching}
+          columns={columns}
+          dataSource={withRowNumbers(data?.items)}
+          rowKey="id"
+          pagination={paginationProps(data?.total)}
+          scroll={{ x: "max-content", y: "calc(100vh - 230px)" }}
+          size="small"
+        />
+      </Card>
     </div>
   );
 }

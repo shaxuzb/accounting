@@ -26,6 +26,8 @@ type FinancialColumnKey =
   | "closingDebit"
   | "closingCredit";
 
+type VisibleColumnKey = FinancialColumnKey | "accountName";
+
 const financialColumnKeys: FinancialColumnKey[] = [
   "openingDebit",
   "openingCredit",
@@ -41,8 +43,13 @@ const exportDate = (value?: string | null) => value?.split("T")[0] ?? "all";
 export default function TrialBalanceTable({ result, filters, loading }: Props) {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
-  const [visibleFinancialColumns, setVisibleFinancialColumns] =
-    useState<FinancialColumnKey[]>(financialColumnKeys);
+  const [visibleColumns, setVisibleColumns] = useState<VisibleColumnKey[]>([
+    "accountName",
+    ...financialColumnKeys,
+  ]);
+  const visibleFinancialColumns = financialColumnKeys.filter((key) =>
+    visibleColumns.includes(key),
+  );
 
   const financialColumns = useMemo<
     Record<FinancialColumnKey, ColumnsType<TrialBalanceItem>[number]>
@@ -136,24 +143,28 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
         dataIndex: "accountCode",
         fixed: "left",
         width: 145,
-        render: (value,record) => (
+        render: (value, record) => (
           <span className="font-medium text-text">
-            {record.accountCode || "-" || value}
+            {record.accountCode || value || "-"}
           </span>
         ),
       },
-      {
-        title: t("app.trial.accountName"),
-        dataIndex: "accountName",
-        fixed: "left",
-        width: 260,
-        render: (value) => value || "-",
-      },
+      ...(visibleColumns.includes("accountName")
+        ? [
+            {
+              title: t("app.trial.accountName"),
+              dataIndex: "accountName",
+              fixed: "left" as const,
+              width: 260,
+              render: (value: string) => value || "-",
+            },
+          ]
+        : []),
       ...financialColumnKeys
         .filter((key) => visibleFinancialColumns.includes(key))
         .map((key) => financialColumns[key]),
     ],
-    [financialColumns, t, visibleFinancialColumns],
+    [financialColumns, t, visibleColumns, visibleFinancialColumns],
   );
 
   const rows = useMemo(() => {
@@ -181,6 +192,7 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
   const visibleTotalKeys = financialColumnKeys.filter((key) =>
     visibleFinancialColumns.includes(key),
   );
+  const baseColumnCount = visibleColumns.includes("accountName") ? 3 : 2;
 
   const exportToExcel = () => {
     if (!rows.length) return;
@@ -231,14 +243,17 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
               placement="bottomRight"
               content={
                 <Checkbox.Group
-                  value={visibleFinancialColumns}
+                  value={visibleColumns}
                   onChange={(values) => {
-                    const nextValues = values as FinancialColumnKey[];
+                    const nextValues = values as VisibleColumnKey[];
                     if (nextValues.length)
-                      setVisibleFinancialColumns(nextValues);
+                      setVisibleColumns(nextValues);
                   }}
                 >
                   <div className="grid gap-2">
+                    <Checkbox value="accountName">
+                      {t("app.trial.accountName")}
+                    </Checkbox>
                     {financialColumnKeys.map((key) => (
                       <Checkbox key={key} value={key}>
                         {t(`app.trial.${key}`)}
@@ -286,11 +301,15 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
         summary={() =>
           result && rows.length ? (
             <Table.Summary.Row className="bg-surface-muted font-semibold">
-              <Table.Summary.Cell index={0} colSpan={3}>
+              <Table.Summary.Cell index={0} colSpan={baseColumnCount}>
                 {t("common.total")}
               </Table.Summary.Cell>
               {visibleTotalKeys.map((key, index) => (
-                <Table.Summary.Cell key={key} index={index + 3} align="right">
+                <Table.Summary.Cell
+                  key={key}
+                  index={index + baseColumnCount}
+                  align="right"
+                >
                   <span
                     className={`tabular-nums ${key.endsWith("Debit") ? "text-success" : "text-warning"}`}
                   >

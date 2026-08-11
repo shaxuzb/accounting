@@ -2,7 +2,7 @@
 import InputText from "@/components/fields/InputText";
 import { Button, Checkbox, Form } from "antd";
 import { useFormik } from "formik";
-/* import logo from "@/assets/images/logo/logo.svg"; */
+import logo from "@/assets/images/logo/logo.svg";
 import loginP from "@/assets/loginP.png";
 import { createAuthSchema } from "../../types/auth";
 import { authService, type LoginPayload } from "@/services/authService";
@@ -48,10 +48,14 @@ function Login() {
         <div className="w-full lg:w-[38%] min-width:30rem flex flex-col px-6 py-6 sm:px-10 sm:py-8">
           <div className="flex flex-col flex-1 justify-center max-w-90 mx-auto w-full">
             <div className="flex items-center gap-3 mb-10">
-              {/* <img src={logo} alt="logo" className="h-11 w-11 object-contain" /> */}
-              <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-200">
+              <img
+                src={logo}
+                alt="HisobKitob"
+                className="h-11 w-11 object-contain"
+              />
+              {/* <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-200">
                 HK
-              </div>
+              </div> */}
               <div>
                 <h1 className="text-xl font-bold text-gray-900 leading-none">
                   HisobKitob

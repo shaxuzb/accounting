@@ -14,6 +14,7 @@ import { saleEndpoints } from "../constants/endpoints";
 import { salePermissions } from "../constants/permissions";
 import { useGetListSale } from "../hooks";
 import type { SaleDoc } from "../types/type";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const numberValue = Number(value);
@@ -71,11 +72,12 @@ export default function SaleListPage() {
       align: "center",
       width: 110,
       render: (_, record) => (
-        <Link
-          to={`/main/accountingentriesreport?documentTypeId=2&documentId=${record.id}`}
-        >
-          <Button icon={<ReceiptText className="size-4" />} />
-        </Link>
+        <AccountingEntriesButton
+          documentTypeId={2}
+          documentId={record.id}
+          statusId={record.statusId}
+          icon={<ReceiptText className="size-4" />}
+        />
       ),
     },
     {

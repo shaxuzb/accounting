@@ -56,7 +56,12 @@ const authSlice = createSlice({
         }
       });
       Object.keys(sessionStorage).forEach((key) => {
-        if (key.startsWith("accounting:edo:auth:")) {
+        if (
+          key.startsWith("accounting:edo:auth:") ||
+          key.startsWith("accounting:workspace-tabs:") ||
+          key.startsWith("accounting:pinned-pages:") ||
+          key.startsWith("main-layout-scroll-position:")
+        ) {
           sessionStorage.removeItem(key);
         }
       });

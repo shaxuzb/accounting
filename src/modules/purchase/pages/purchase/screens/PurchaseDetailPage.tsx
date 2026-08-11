@@ -38,6 +38,11 @@ import {
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
 
+const toFiniteNumber = (value: unknown) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : 0;
+};
+
 const getMarkedLineItems = (
   line?: PurchaseDetailLine | null,
 ): PurchaseDetailLineItem[] =>
@@ -62,6 +67,40 @@ const PurchaseDetailPage = () => {
   const isDraft = data?.statusId === 1;
   const currency = data?.currencyName || "UZS";
   const documentAmount = data?.finalAmount || data?.totalAmount || 0;
+  const productTotals = useMemo(() => {
+    const totals = (data?.lines ?? []).reduce(
+      (accumulator, line) => {
+        const quantity = toFiniteNumber(line.quantity);
+        const unitPrice = toFiniteNumber(line.unitPrice);
+        const amount = toFiniteNumber(line.amount) || quantity * unitPrice;
+        const vatAmount = toFiniteNumber(line.vatAmount);
+        const totalAmount =
+          toFiniteNumber(line.totalAmount) || amount + vatAmount;
+
+        accumulator.quantity += quantity;
+        accumulator.amount += amount;
+        accumulator.vatAmount += vatAmount;
+        accumulator.totalAmount += totalAmount;
+        return accumulator;
+      },
+      { quantity: 0, amount: 0, vatAmount: 0, totalAmount: 0 },
+    );
+
+    return {
+      ...totals,
+      averageUnitPrice:
+        totals.quantity > 0 ? totals.amount / totals.quantity : 0,
+    };
+  }, [data?.lines]);
+  const hasProductLines = Boolean(data?.lines?.length);
+  const serviceTotal = useMemo(
+    () =>
+      (data?.serviceLines ?? []).reduce(
+        (sum, line) => sum + toFiniteNumber(line.price),
+        0,
+      ),
+    [data?.serviceLines],
+  );
 
   const selectedLineItems = useMemo<ProductStockSerial[]>(() => {
     if (!selectedLine) return [];
@@ -290,6 +329,68 @@ const PurchaseDetailPage = () => {
             loading={isLoading || isFetching}
             columns={tableColumnLabels}
             size="large"
+            summary={
+              hasProductLines
+                ? () => (
+                    <Table.Summary fixed>
+                      <Table.Summary.Row className="bg-primary-bg [&>td]:font-semibold">
+                        <Table.Summary.Cell index={0} align="center">
+                          {t("common.total")}
+                        </Table.Summary.Cell>
+                        <Table.Summary.Cell index={1} />
+                        <Table.Summary.Cell index={2} align="center">
+                          <span className="tabular-nums">
+                            {numberSpacing(
+                              productTotals.quantity,
+                              undefined,
+                              true,
+                            )}
+                          </span>
+                        </Table.Summary.Cell>
+                        <Table.Summary.Cell index={3} align="center">
+                          <span className="tabular-nums">
+                            {numberSpacing(
+                              productTotals.averageUnitPrice,
+                              undefined,
+                              true,
+                            )}
+                          </span>
+                        </Table.Summary.Cell>
+                        <Table.Summary.Cell index={4} align="center">
+                          <span className="tabular-nums">
+                            {numberSpacing(productTotals.amount, undefined, true)}
+                          </span>
+                        </Table.Summary.Cell>
+                        <Table.Summary.Cell index={5} align="center">
+                          —
+                        </Table.Summary.Cell>
+                        <Table.Summary.Cell index={6} align="center">
+                          <span className="tabular-nums">
+                            {numberSpacing(
+                              productTotals.vatAmount,
+                              undefined,
+                              true,
+                            )}
+                          </span>
+                        </Table.Summary.Cell>
+                        <Table.Summary.Cell
+                          index={7}
+                          align="center"
+                          className="bg-primary/5! text-primary!"
+                        >
+                          <span className="tabular-nums">
+                            {numberSpacing(
+                              productTotals.totalAmount,
+                              undefined,
+                              true,
+                            )}
+                          </span>
+                        </Table.Summary.Cell>
+                      </Table.Summary.Row>
+                    </Table.Summary>
+                  )
+                : undefined
+            }
             // summary={(pageData) => {
             //   const totals = pageData.reduce(
             //     (acc, { pricePerUom, qty, currencyId, discountPercent }) => {
@@ -404,6 +505,24 @@ const PurchaseDetailPage = () => {
               loading={isLoading || isFetching}
               columns={serviceLineColumns}
               size="large"
+              summary={() => (
+                <Table.Summary>
+                  <Table.Summary.Row className="bg-primary-bg [&>td]:font-semibold">
+                    <Table.Summary.Cell index={0} colSpan={3} align="right">
+                      {t("common.total")}
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell
+                      index={3}
+                      align="right"
+                      className="bg-primary/5! text-primary!"
+                    >
+                      <span className="tabular-nums">
+                        {numberSpacing(serviceTotal, undefined, true)}
+                      </span>
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row>
+                </Table.Summary>
+              )}
             />
           </Card>
         )}

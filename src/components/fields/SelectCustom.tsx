@@ -70,6 +70,7 @@ interface SelectCustomProps {
   isPossibleBorrow?: boolean;
   allowedIds?: (number | string)[];
   onChange?: (value: unknown) => void;
+  height?: string;
 }
 
 const normalizeText = (text: unknown): string =>
@@ -101,6 +102,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
   const lang = useAppSelector((state) => state.lang.lang);
   const user = useAppSelector((state) => state.auth?.user);
   const {
+    height = "38px",
     label = "",
     formik,
     fieldName = "",
@@ -433,7 +435,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         disabled={disabled}
         style={{
           backgroundColor: "transparent",
-          height: mode === "multiple" ? "" : "38px",
+          height: mode === "multiple" ? "" : height,
           marginBottom: "0px",
         }}
         labelRender={(option) => {

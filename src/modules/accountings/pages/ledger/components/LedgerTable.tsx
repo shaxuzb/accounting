@@ -20,6 +20,7 @@ interface Props {
 }
 
 type DetailColumnKey =
+  | "accountName"
   | "journalNumber"
   | "documentType"
   | "description"
@@ -28,9 +29,23 @@ type DetailColumnKey =
   | "counterparty";
 
 const detailColumnKeys: DetailColumnKey[] = [
+  "accountName",
   "journalNumber",
   "documentType",
   "description",
+  "currency",
+  "organization",
+  "counterparty",
+];
+
+const leadingDetailKeys: DetailColumnKey[] = [
+  "accountName",
+  "journalNumber",
+  "documentType",
+  "description",
+];
+
+const trailingDetailKeys: DetailColumnKey[] = [
   "currency",
   "organization",
   "counterparty",
@@ -49,6 +64,7 @@ export default function LedgerTable({
   const [search, setSearch] = useState("");
   const [visibleDetails, setVisibleDetails] =
     useState<DetailColumnKey[]>(detailColumnKeys);
+  const accountName = result?.accountName ?? "";
 
   const detailColumns = useMemo<
     Array<{
@@ -58,6 +74,16 @@ export default function LedgerTable({
     }>
   >(
     () => [
+      {
+        key: "accountName",
+        label: t("app.reports.fields.accountName"),
+        column: {
+          title: t("app.reports.fields.accountName"),
+          dataIndex: "accountName",
+          width: 240,
+          render: () => accountName || "-",
+        },
+      },
       {
         key: "journalNumber",
         label: t("app.reports.fields.journalNumber"),
@@ -119,7 +145,7 @@ export default function LedgerTable({
         },
       },
     ],
-    [t],
+    [accountName, t],
   );
 
   const columns = useMemo<ColumnsType<LedgerTransaction>>(
@@ -139,7 +165,7 @@ export default function LedgerTable({
           width: 155,
           render: (value) => customDate(value),
         },
-        ...visibleColumn(["journalNumber", "documentType", "description"]),
+        ...visibleColumn(leadingDetailKeys),
         {
           title: t("openingBalance.fields.debit"),
           dataIndex: "debit",
@@ -173,7 +199,7 @@ export default function LedgerTable({
             </span>
           ),
         },
-        ...visibleColumn(["currency", "organization", "counterparty"]),
+        ...visibleColumn(trailingDetailKeys),
       ];
     },
     [detailColumns, t, visibleDetails],
@@ -201,7 +227,7 @@ export default function LedgerTable({
     );
   }, [result?.transactions, search]);
 
-  const accountName = result
+  const accountLabel = result
     ? [result.accountCode, result.accountName].filter(Boolean).join(" — ")
     : "";
 
@@ -211,6 +237,7 @@ export default function LedgerTable({
     const exportRows = rows.map((item, index) => ({
       [t("common.rowNumber")]: index + 1,
       [t("app.reports.fields.postingDate")]: customDate(item.postingDate),
+      [t("app.reports.fields.accountName")]: accountName || "-",
       [t("app.reports.fields.journalNumber")]: item.journalNumber,
       [t("app.reports.fields.documentNumber")]: item.documentNumber,
       [t("app.reports.fields.documentType")]: item.documentType,
@@ -231,13 +258,22 @@ export default function LedgerTable({
     );
   };
 
+  const visibleLeadingCount = leadingDetailKeys.filter((key) =>
+    visibleDetails.includes(key),
+  ).length;
+  const visibleTrailingCount = trailingDetailKeys.filter((key) =>
+    visibleDetails.includes(key),
+  ).length;
+  const debitColumnIndex = 1 + visibleLeadingCount;
+  const runningBalanceColumnIndex = debitColumnIndex + 2;
+
   return (
     <Card className="overflow-hidden border border-border shadow-sm">
       <div className="flex flex-col gap-3 border-b border-border px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <div className="text-base font-semibold text-text">
             {result
-              ? `${accountName} — ${t("accountings.ledger.movements")}`
+              ? `${accountLabel} — ${t("accountings.ledger.movements")}`
               : t("accountings.ledger.movements")}
           </div>
           {result && (
@@ -327,6 +363,44 @@ export default function LedgerTable({
                 onChange: onPageChange,
               }
             : false
+        }
+        summary={() =>
+          result && rows.length ? (
+            <Table.Summary fixed>
+              <Table.Summary.Row className="bg-surface-muted font-semibold">
+                <Table.Summary.Cell index={0} colSpan={debitColumnIndex}>
+                  {t("common.total")} ({result.totalCount})
+                </Table.Summary.Cell>
+                <Table.Summary.Cell index={debitColumnIndex} align="right">
+                  <span className="font-medium text-brand-text tabular-nums">
+                    {money(result.totalDebit)}
+                  </span>
+                </Table.Summary.Cell>
+                <Table.Summary.Cell
+                  index={debitColumnIndex + 1}
+                  align="right"
+                >
+                  <span className="font-medium text-warning tabular-nums">
+                    {money(result.totalCredit)}
+                  </span>
+                </Table.Summary.Cell>
+                <Table.Summary.Cell
+                  index={runningBalanceColumnIndex}
+                  align="right"
+                >
+                  <span className="font-semibold text-success tabular-nums">
+                    {money(result.closingBalance)}
+                  </span>
+                </Table.Summary.Cell>
+                {visibleTrailingCount > 0 && (
+                  <Table.Summary.Cell
+                    index={runningBalanceColumnIndex + 1}
+                    colSpan={visibleTrailingCount}
+                  />
+                )}
+              </Table.Summary.Row>
+            </Table.Summary>
+          ) : null
         }
       />
     </Card>

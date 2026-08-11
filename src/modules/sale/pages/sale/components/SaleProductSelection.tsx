@@ -48,6 +48,8 @@ interface Props {
   saleCondition: SaleCondition;
   onCommentChange: (value: string) => void;
   onChange: (products: SaleSelectedProduct[]) => void;
+  onTotalsChange?: (totalAmount: number) => void;
+  documentTypeId?: number;
   onCancel: () => void;
   markingMode?: boolean;
   onMarkingModeChange?: (enabled: boolean) => void;
@@ -61,6 +63,7 @@ interface VatRateOption {
 }
 
 const newRowKey = "__new__";
+const tableControlHeight = 32;
 const EMPTY_STOCK_PRODUCTS: SaleProductStock[] = [];
 const EMPTY_VAT_RATE_OPTIONS: VatRateOption[] = [];
 const EMPTY_MARKING_PRODUCTS: SaleAvailableProduct[] = [];
@@ -237,6 +240,8 @@ export default function SaleProductSelection({
   saleCondition,
   onCommentChange,
   onChange,
+  onTotalsChange,
+  documentTypeId,
   onCancel,
   markingMode = false,
   onMarkingModeChange,
@@ -320,7 +325,8 @@ export default function SaleProductSelection({
     },
   });
   const vatRateOptions = vatRateData ?? EMPTY_VAT_RATE_OPTIONS;
-  const { chartAccounts, defaultAccounts } = useGetSaleDocumentAccountOptions();
+  const { chartAccounts, defaultAccounts } =
+    useGetSaleDocumentAccountOptions(documentTypeId ?? 0);
   const chartAccountById = useMemo(
     () =>
       new Map(
@@ -840,6 +846,7 @@ export default function SaleProductSelection({
       render: (_, record) => (
         <Select
           showSearch
+          size="middle"
           className="w-full"
           placeholder={t("purchase.fields.product")}
           value={record.productId || undefined}
@@ -866,6 +873,7 @@ export default function SaleProductSelection({
     {
       dataIndex: "mxik",
       title: t("sale.fields.mxik"),
+      width: 140,
       render: (value) => value || "-",
     },
     ...(markingMode
@@ -873,6 +881,7 @@ export default function SaleProductSelection({
           {
             dataIndex: "markings",
             title: t("app.fields.marking"),
+            width: 170,
             align: "center" as const,
             render: (_: unknown, record: SaleSelectedProduct) => {
               if (isNewRow(record.rowKey)) return "-";
@@ -903,18 +912,20 @@ export default function SaleProductSelection({
     {
       dataIndex: "unitName",
       title: t("purchase.fields.unit"),
+      width: 100,
       render: (value) => value || t("sale.fields.piece"),
     },
     {
       dataIndex: "availableQuantity",
       title: t("warehouse.lines.stock"),
+      width: 110,
       align: "center",
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "quantity",
       title: t("openingInventory.fields.quantity"),
-      width: 100,
+      width: 110,
       render: (value, record) =>
         isNewRow(record.rowKey) ? (
           <InputNumberFormat
@@ -922,12 +933,12 @@ export default function SaleProductSelection({
             value={0}
             emptyZero
             disabled
-            height={30}
+            height={tableControlHeight}
           />
         ) : (
           <InputNumberFormat
             standalone
-            height={30}
+            height={tableControlHeight}
             emptyZero
             min={0}
             max={record.availableQuantity}
@@ -951,16 +962,17 @@ export default function SaleProductSelection({
       dataIndex: "costPrice",
       title: t("warehouse.fields.costPrice"),
       align: "center",
+      width: 130,
       render: (value) => numberSpacing(Number(value ?? 0)),
     },
     {
       dataIndex: "unitPrice",
       title: t("sale.fields.salePrice"),
-      width: 120,
+      width: 130,
       render: (value, record) => (
         <InputNumberFormat
           standalone
-          height={30}
+          height={tableControlHeight}
           emptyZero
           value={Number(value ?? 0)}
           disabled={isNewRow(record.rowKey) || disabled}
@@ -988,15 +1000,18 @@ export default function SaleProductSelection({
       dataIndex: "amount",
       title: t("openingInventory.fields.amount"),
       align: "center",
+      width: 150,
       render: (_, record) => numberSpacing(getLineAmount(record)),
     },
     {
       dataIndex: "vatRateId",
       title: t("sale.fields.vatRateAndAmount"),
+      width: 230,
       render: (_, record) => (
-        <div className="flex items-center">
+        <div className="flex h-8 items-center gap-2">
           <Select
             showSearch
+            size="middle"
             className="min-w-28"
             value={record.vatRateId ?? undefined}
             disabled={isNewRow(record.rowKey) || disabled}
@@ -1026,12 +1041,14 @@ export default function SaleProductSelection({
       dataIndex: "total",
       title: t("common.total"),
       align: "center",
+      width: 150,
       render: (_, record) =>
         numberSpacing(getLineTotal(record, vatRateOptions)),
     },
     {
       dataIndex: "accounts",
       title: t("openingInventory.fields.accounts"),
+      width: 220,
       render: (_, record) => (
         <div className="flex min-w-30 items-center">
           <span
@@ -1053,6 +1070,7 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "actions",
+      width: 70,
       // title: "Amallar",
       align: "center",
       render: (_, record) => (
@@ -1100,6 +1118,7 @@ export default function SaleProductSelection({
       render: (_, record) => (
         <InputNumberFormat
           standalone
+          height={tableControlHeight}
           emptyZero
           min={0}
           max={record.availableQuantity}
@@ -1190,6 +1209,11 @@ export default function SaleProductSelection({
       ),
     [products, vatRateOptions],
   );
+
+  useEffect(() => {
+    onTotalsChange?.(totals.totalAmount);
+  }, [onTotalsChange, totals.totalAmount]);
+
   return (
     <Card className="overflow-hidden border border-border">
       <div className="flex w-full flex-nowrap items-center justify-between gap-3 overflow-x-auto border-b border-border p-3">
@@ -1256,7 +1280,8 @@ export default function SaleProductSelection({
         columns={columns}
         dataSource={tableData}
         pagination={false}
-        scroll={{ x: "max-content" }}
+        tableLayout="auto"
+        scroll={{ x: 2050 }}
         expandable={{
           expandedRowRender: (record) =>
             record.priceLayers?.length ? (
@@ -1269,7 +1294,8 @@ export default function SaleProductSelection({
                   columns={getLayerColumns(record)}
                   dataSource={generateKeyTable(record.priceLayers, "batchId")}
                   pagination={false}
-                  scroll={{ x: "max-content" }}
+                  tableLayout="auto"
+                  scroll={{ x: 900 }}
                 />
               </div>
             ) : null,
@@ -1350,6 +1376,7 @@ export default function SaleProductSelection({
       <SaleLineAccountsDrawer
         open={Boolean(accountLine)}
         line={accountLine}
+        documentTypeId={documentTypeId}
         onClose={() => setAccountLine(null)}
         onApply={applyLineAccounts}
       />

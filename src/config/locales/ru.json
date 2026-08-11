@@ -34,6 +34,7 @@
     "reload": "Перезагрузить",
     "resultCount": "Всего результатов: {{count}}",
     "accountingEntries": "Проводки",
+    "accountingEntriesPostedOnly": "Проводки доступны только для проведённых документов",
     "piece": "шт.",
     "and": "и"
   },
@@ -1291,6 +1292,7 @@
   "app": {
     "accounting": {
       "title": "Бухгалтерия",
+      "sidebarTitle": "Отчёты",
       "reports": "Бухгалтерские отчёты",
       "balanceSheet": "Бухгалтерский баланс",
       "incomeStatement": "Отчёт о прибылях и убытках",

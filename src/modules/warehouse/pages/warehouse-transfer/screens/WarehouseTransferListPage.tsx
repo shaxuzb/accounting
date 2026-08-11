@@ -15,6 +15,7 @@ import { warehouseTransferPermissions } from "../constants/permissions";
 import { useGetWarehouseTransfers } from "../hooks";
 import type { WarehouseTransferDocument } from "../types/type";
 import { stateStatus } from "@/utils/helpers/statusHelper";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 
 export default function WarehouseTransferListPage() {
   const { t } = useTranslation();
@@ -39,9 +40,11 @@ export default function WarehouseTransferListPage() {
       title: t("app.routes.accountingEntries"),
       align: "center",
       render: (_, record) => (
-        <Link to={`/main/accountingentriesreport?documentId=${record.id}`}>
-          <Button icon={<ReceiptText className="size-4" />} />
-        </Link>
+        <AccountingEntriesButton
+          documentId={record.id}
+          statusId={record.statusId}
+          icon={<ReceiptText className="size-4" />}
+        />
       ),
     },
     {

@@ -1,4 +1,4 @@
-import { Button, Spin } from "antd";
+import { Spin } from "antd";
 import { useFormik } from "formik";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
@@ -22,6 +22,7 @@ import {
 } from "../utils/inventoryAdjustment";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { useTranslation } from "react-i18next";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 
 export default function InventoryAdjustmentDetailPage() {
   const { t } = useTranslation();
@@ -132,12 +133,13 @@ export default function InventoryAdjustmentDetailPage() {
           />
 
           {!isCreate && (
-            <Button
+            <AccountingEntriesButton
               block
-              onClick={() => navigate(`/main/accountingentriesreport?documentId=${id}`)}
+              documentId={id}
+              statusId={record?.statusId}
             >
               {t("app.routes.accountingEntries")}
-            </Button>
+            </AccountingEntriesButton>
           )}
         </div>
       </div>

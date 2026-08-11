@@ -1,176 +1,215 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useLocation } from "react-router";
 
 type ScrollPosition = {
   top: number;
   left: number;
-  listPath: string;
+  updatedAt: number;
 };
 
 type Props = {
   storageKey: string;
-  listPath: string;
-  childPathPatterns: RegExp[];
   enabled?: boolean;
-  restoreDelay?: number;
+  ready?: boolean;
+  saveDelay?: number;
+  restoreTtl?: number;
 };
 
+const SCROLL_ELEMENT_SELECTORS = [
+  ".ant-table-tbody-virtual-holder",
+  ".rc-virtual-list-holder",
+  ".ant-table-body",
+];
+
+const DEFAULT_RESTORE_TTL = 30 * 60 * 1000;
+const MAX_RESTORE_FRAMES = 30;
+
+/**
+ * Browser historydagi har bir list holati uchun jadval scrollini saqlaydi.
+ * React state ishlatilmagani uchun scroll paytida qayta render bo'lmaydi.
+ */
 export const useTableScrollRestore = ({
   storageKey,
-  listPath,
-  childPathPatterns,
   enabled = true,
-  restoreDelay = 100,
+  ready = true,
+  saveDelay = 120,
+  restoreTtl = DEFAULT_RESTORE_TTL,
 }: Props) => {
   const tableWrapperRef = useRef<HTMLDivElement | null>(null);
+  const scrollElementRef = useRef<HTMLElement | null>(null);
+  const latestPositionRef = useRef<ScrollPosition | null>(null);
+  const saveTimerRef = useRef<number | null>(null);
   const location = useLocation();
+
+  const scopedStorageKey = useMemo(
+    () => `${storageKey}:${location.key}`,
+    [location.key, storageKey],
+  );
 
   const getScrollElement = useCallback(() => {
     const wrapper = tableWrapperRef.current;
+    const cachedElement = scrollElementRef.current;
+
+    if (wrapper && cachedElement && wrapper.contains(cachedElement)) {
+      return cachedElement;
+    }
     if (!wrapper) return null;
 
-    const selectors = [
-      ".ant-table-tbody-virtual-holder",
-      ".rc-virtual-list-holder",
-      ".ant-table-body",
-    ];
-    const candidates = selectors.flatMap((selector) =>
+    const candidates = SCROLL_ELEMENT_SELECTORS.flatMap((selector) =>
       Array.from(wrapper.querySelectorAll<HTMLElement>(selector)),
     );
-
-    return (
+    const element =
       candidates.find(
-        (element) =>
-          element.scrollHeight > element.clientHeight + 1 ||
-          element.scrollWidth > element.clientWidth + 1,
-      ) ?? candidates[0] ?? null
-    );
+        (candidate) =>
+          candidate.scrollHeight > candidate.clientHeight + 1 ||
+          candidate.scrollWidth > candidate.clientWidth + 1,
+      ) ?? candidates[0] ?? null;
+
+    scrollElementRef.current = element;
+    return element;
   }, []);
 
-  const isChildPath = useCallback(
-    (pathname: string) => {
-      return childPathPatterns.some((pattern) => pattern.test(pathname));
-    },
-    [childPathPatterns],
-  );
+  const persistPosition = useCallback(() => {
+    if (saveTimerRef.current !== null) {
+      window.clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
 
-  const saveCurrentScroll = useCallback(() => {
-    const scrollElement = getScrollElement();
-    if (!scrollElement) return;
+    const element = getScrollElement();
+    const position = element
+      ? {
+          top: element.scrollTop,
+          left: element.scrollLeft,
+          updatedAt: Date.now(),
+        }
+      : latestPositionRef.current;
 
-    const position: ScrollPosition = {
-      top: scrollElement.scrollTop,
-      left: scrollElement.scrollLeft,
-      listPath,
+    if (!position) return;
+    latestPositionRef.current = position;
+    sessionStorage.setItem(scopedStorageKey, JSON.stringify(position));
+  }, [getScrollElement, scopedStorageKey]);
+
+  const schedulePositionSave = useCallback(() => {
+    const element = getScrollElement();
+    if (!element) return;
+
+    latestPositionRef.current = {
+      top: element.scrollTop,
+      left: element.scrollLeft,
+      updatedAt: Date.now(),
     };
 
-    sessionStorage.setItem(storageKey, JSON.stringify(position));
-  }, [getScrollElement, listPath, storageKey]);
+    if (saveTimerRef.current !== null) {
+      window.clearTimeout(saveTimerRef.current);
+    }
+    saveTimerRef.current = window.setTimeout(persistPosition, saveDelay);
+  }, [getScrollElement, persistPosition, saveDelay]);
 
   useEffect(() => {
-    if (!enabled) return;
-    if (location.pathname !== listPath) return;
+    if (!enabled || !ready) return;
 
-    const scrollElement = getScrollElement();
-    if (!scrollElement) return;
+    let cancelled = false;
+    let frameId = 0;
+    let attachedElement: HTMLElement | null = null;
+    let listenerAttached = false;
 
-    let animationFrame = 0;
-    const handleScroll = () => {
-      if (animationFrame) return;
-      animationFrame = window.requestAnimationFrame(() => {
-        animationFrame = 0;
-        saveCurrentScroll();
-      });
-    };
+    const readPosition = () => {
+      const savedValue = sessionStorage.getItem(scopedStorageKey);
+      if (!savedValue) return null;
 
-    scrollElement.addEventListener("scroll", handleScroll, { passive: true });
+      try {
+        const position = JSON.parse(savedValue) as ScrollPosition;
+        const isValid =
+          Number.isFinite(position.top) &&
+          Number.isFinite(position.left) &&
+          Number.isFinite(position.updatedAt);
 
-    return () => {
-      scrollElement.removeEventListener("scroll", handleScroll);
-      if (animationFrame) {
-        window.cancelAnimationFrame(animationFrame);
+        if (!isValid || Date.now() - position.updatedAt > restoreTtl) {
+          sessionStorage.removeItem(scopedStorageKey);
+          return null;
+        }
+        return position;
+      } catch {
+        sessionStorage.removeItem(scopedStorageKey);
+        return null;
       }
     };
-  }, [
-    enabled,
-    location.pathname,
-    listPath,
-    getScrollElement,
-    saveCurrentScroll,
-  ]);
 
-  useEffect(() => {
-    return () => {
-      if (!enabled) return;
+    const savedPosition = readPosition();
 
-      /**
-       * Component unmount bo‘layotganda browser URL allaqachon
-       * yangi route tomonga o‘tgan bo‘ladi.
-       */
-      const nextPath = window.location.pathname;
+    const attachListener = (element: HTMLElement) => {
+      if (listenerAttached) return;
+      attachedElement = element;
+      element.addEventListener("scroll", schedulePositionSave, {
+        passive: true,
+      });
+      listenerAttached = true;
+    };
 
-      /**
-       * Faqat list page'dan child page'ga ketganda saqlaydi:
-       * /sale -> /sale/2
-       */
-      if (location.pathname === listPath && isChildPath(nextPath)) {
-        saveCurrentScroll();
+    const restore = (frame = 0) => {
+      if (cancelled) return;
+
+      const element = getScrollElement();
+      if (!element) {
+        if (frame < MAX_RESTORE_FRAMES) {
+          frameId = window.requestAnimationFrame(() => restore(frame + 1));
+        }
         return;
       }
 
-      /**
-       * Boshqa page'ga ketsa eski scroll kerak emas:
-       * /sale -> /finance
-       * /sale -> /report
-       */
-      sessionStorage.removeItem(storageKey);
+      if (!savedPosition) {
+        attachListener(element);
+        return;
+      }
+
+      const maxTop = Math.max(0, element.scrollHeight - element.clientHeight);
+      const maxLeft = Math.max(0, element.scrollWidth - element.clientWidth);
+      const tableIsReady =
+        maxTop >= savedPosition.top && maxLeft >= savedPosition.left;
+
+      if (!tableIsReady && frame < MAX_RESTORE_FRAMES) {
+        frameId = window.requestAnimationFrame(() => restore(frame + 1));
+        return;
+      }
+
+      element.scrollTop = Math.min(savedPosition.top, maxTop);
+      element.scrollLeft = Math.min(savedPosition.left, maxLeft);
+      latestPositionRef.current = {
+        top: element.scrollTop,
+        left: element.scrollLeft,
+        updatedAt: Date.now(),
+      };
+      attachListener(element);
+    };
+
+    frameId = window.requestAnimationFrame(() => restore());
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frameId);
+
+      if (attachedElement && listenerAttached) {
+        attachedElement.removeEventListener("scroll", schedulePositionSave);
+        persistPosition();
+      }
+      scrollElementRef.current = null;
     };
   }, [
     enabled,
-    location.pathname,
-    listPath,
-    isChildPath,
-    saveCurrentScroll,
-    storageKey,
+    getScrollElement,
+    persistPosition,
+    ready,
+    restoreTtl,
+    schedulePositionSave,
+    scopedStorageKey,
   ]);
 
   useEffect(() => {
     if (!enabled) return;
-    if (location.pathname !== listPath) return;
 
-    const saved = sessionStorage.getItem(storageKey);
-    if (!saved) return;
+    window.addEventListener("pagehide", persistPosition);
+    return () => window.removeEventListener("pagehide", persistPosition);
+  }, [enabled, persistPosition]);
 
-    const timer = setTimeout(() => {
-      const scrollElement = getScrollElement();
-      if (!scrollElement) return;
-
-      try {
-        const position = JSON.parse(saved) as ScrollPosition;
-
-        if (position.listPath !== listPath) {
-          sessionStorage.removeItem(storageKey);
-          return;
-        }
-
-        scrollElement.scrollTop = position.top;
-        scrollElement.scrollLeft = position.left;
-      } catch {
-        sessionStorage.removeItem(storageKey);
-      }
-    }, restoreDelay);
-
-    return () => clearTimeout(timer);
-  }, [
-    enabled,
-    location.pathname,
-    listPath,
-    storageKey,
-    getScrollElement,
-    restoreDelay,
-  ]);
-
-  return {
-    tableWrapperRef,
-  };
+  return { tableWrapperRef };
 };

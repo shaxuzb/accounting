@@ -1,20 +1,41 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import WorkspaceTabs from "./WorkspaceTabs";
 // import SettingSystem from "@/components/navbar/settings";
 import { useRef } from "react";
 import { motion } from "motion/react";
-const MainLayout = () => {
-  const containerRef = useRef(null);
-  return (
-    <motion.div ref={containerRef} className="relative">
-      <div className="flex relative box-border! z-10!">
-        <Sidebar />
-        <div className="w-full relative overflow-auto h-screen">
-          <Navbar />
+import { usePageScrollRestore } from "@/components/ui/scroll/usePageScrollRestore";
+import { useAppSelector } from "@/store/hooks";
 
-          <div className="py-2 px-4 w-full relative">
-            <div className="">
+const MainLayout = () => {
+  const location = useLocation();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const userId = useAppSelector((state) => state.auth.user?.user?.id ?? 0);
+  const organizationId = useAppSelector((state) => state.organization.id);
+  usePageScrollRestore({
+    containerRef: scrollContainerRef,
+    storageKey: "main-layout-scroll-position",
+    scopeKey: `${userId}:${organizationId}:${location.pathname}`,
+  });
+
+  return (
+    <motion.div
+      ref={containerRef}
+      className="relative h-screen overflow-hidden"
+    >
+      <div className="relative z-10! flex h-full box-border!">
+        <Sidebar />
+        <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
+          <Navbar />
+          <WorkspaceTabs key={`${userId}:${organizationId}`} />
+
+          <div
+            ref={scrollContainerRef}
+            className="relative min-h-0 flex-1 overflow-auto"
+          >
+            <div className="relative w-full px-4 py-2">
               <Outlet />
             </div>
           </div>

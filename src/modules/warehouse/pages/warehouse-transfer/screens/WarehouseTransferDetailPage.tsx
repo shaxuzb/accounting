@@ -1,8 +1,8 @@
-import { Button, Spin } from "antd";
+import { Spin } from "antd";
 import { useFormik } from "formik";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
-import { Link, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import Card from "@/components/ui/card/Card";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import WarehouseTransferActions from "../components/WarehouseTransferActions";
@@ -23,6 +23,7 @@ import {
   mapTransferDetailToForm,
 } from "../utils/transfer";
 import { useTranslation } from "react-i18next";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 
 export default function WarehouseTransferDetailPage() {
   const { t } = useTranslation();
@@ -128,9 +129,13 @@ export default function WarehouseTransferDetailPage() {
                 {t("warehouse.transfer.additional")}
               </div>
               <div className="mt-3 space-y-2">
-                <Link to={`/main/accountingentriesreport?documentId=${id}`}>
-                  <Button block>{t("app.routes.accountingEntries")}</Button>
-                </Link>
+                <AccountingEntriesButton
+                  block
+                  documentId={id}
+                  statusId={record?.statusId}
+                >
+                  {t("app.routes.accountingEntries")}
+                </AccountingEntriesButton>
               </div>
             </Card>
           )}

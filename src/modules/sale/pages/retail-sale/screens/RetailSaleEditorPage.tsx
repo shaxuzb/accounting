@@ -1,7 +1,7 @@
 import { Form, Spin } from "antd";
 import dayjs from "dayjs";
 import { useFormik } from "formik";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
@@ -22,6 +22,7 @@ import {
   RetailSaleFormFields,
   RetailSalePayments,
 } from "../components";
+import { retailSaleDocumentTypeIds } from "../constants/endpoints";
 import {
   useCreateRetailSale,
   useGetRetailSale,
@@ -65,6 +66,7 @@ export default function RetailSaleEditorPage() {
   const [selectedProducts, setSelectedProducts] = useState<
     SaleSelectedProduct[] | null
   >(null);
+  const [saleTotalAmount, setSaleTotalAmount] = useState(0);
   const [markingModeOverride, setMarkingModeOverride] =
     useState<boolean | null>(null);
   const [processingModeModalOpen, setProcessingModeModalOpen] =
@@ -125,6 +127,10 @@ export default function RetailSaleEditorPage() {
   }, [document]);
 
   const products = selectedProducts ?? savedProducts;
+  const handleSaleTotalChange = useCallback(
+    (totalAmount: number) => setSaleTotalAmount(totalAmount),
+    [],
+  );
   const markingMode =
     markingModeOverride ??
     savedProducts.some(
@@ -297,8 +303,16 @@ export default function RetailSaleEditorPage() {
           onClose={() => setProcessingModeModalOpen(false)}
           onSelect={(mode) => void handleCreate(mode)}
         />
-        <RetailSaleFormFields formik={formik} isEdit={isEdit} />
-        <RetailSalePayments formik={formik} disabled={isSubmitting} />
+        <RetailSaleFormFields
+          formik={formik}
+          isEdit={isEdit}
+          documentTypeId={retailSaleDocumentTypeIds.goods}
+        />
+        <RetailSalePayments
+          formik={formik}
+          totalAmount={saleTotalAmount}
+          disabled={isSubmitting}
+        />
         <SaleProductSelection
           warehouseId={formik.values.warehouseId}
           comment={formik.values.comment}
@@ -308,6 +322,8 @@ export default function RetailSaleEditorPage() {
             void formik.setFieldValue("comment", comment, false)
           }
           onChange={setSelectedProducts}
+          onTotalsChange={handleSaleTotalChange}
+          documentTypeId={retailSaleDocumentTypeIds.goods}
           markingMode={markingMode}
           onMarkingModeChange={setMarkingModeOverride}
           onCancel={() => navigate(-1)}

@@ -10,16 +10,21 @@ import type { FormikProps } from "formik";
 import { useTranslation } from "react-i18next";
 import {
   saleDocumentAccountRoleCodes,
-  saleDocumentTypeId,
 } from "../../sale/constants/documentAccount";
+import { retailSaleDocumentTypeIds } from "../constants/endpoints";
 import type { RetailSaleFormValues } from "../types/form";
 
 interface Props {
   formik: FormikProps<RetailSaleFormValues>;
   isEdit: boolean;
+  documentTypeId?: number;
 }
 
-export default function RetailSaleFormFields({ formik, isEdit }: Props) {
+export default function RetailSaleFormFields({
+  formik,
+  isEdit,
+  documentTypeId,
+}: Props) {
   const { t } = useTranslation();
 
   return (
@@ -52,7 +57,6 @@ export default function RetailSaleFormFields({ formik, isEdit }: Props) {
           path={selectListEndpoints.fiscalCashRegistersSelectList}
           queryParams={{ warehouseId: formik.values.warehouseId }}
           enabled={Boolean(formik.values.warehouseId)}
-          disabled={!formik.values.warehouseId}
           formik={formik}
           search
           required
@@ -64,8 +68,10 @@ export default function RetailSaleFormFields({ formik, isEdit }: Props) {
           search
           clearable
           optional
-          documentTypeId={saleDocumentTypeId}
+          documentTypeId={documentTypeId ?? retailSaleDocumentTypeIds.goods}
           documentRoleCode={saleDocumentAccountRoleCodes.customerSettlement}
+          enabled={Boolean(documentTypeId)}
+          disabled={!documentTypeId}
           getFirst
         />
         <DocumentAccountSelect
@@ -75,8 +81,10 @@ export default function RetailSaleFormFields({ formik, isEdit }: Props) {
           search
           clearable
           optional
-          documentTypeId={saleDocumentTypeId}
+          documentTypeId={documentTypeId ?? retailSaleDocumentTypeIds.goods}
           documentRoleCode={saleDocumentAccountRoleCodes.vat}
+          enabled={Boolean(documentTypeId)}
+          disabled={!documentTypeId}
           getFirst
         />
         <div className="hidden">

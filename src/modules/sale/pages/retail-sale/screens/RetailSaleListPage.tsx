@@ -3,14 +3,18 @@ import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import { useAppSelector } from "@/store/hooks";
 import { customDate, numberSpacing } from "@/utils/utils";
 import { Alert, Button, Empty, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { Plus, RefreshCw } from "lucide-react";
+import { Plus, ReceiptText, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
-import { retailSaleEndpoints } from "../constants/endpoints";
+import {
+  retailSaleAccountingEntriesReportDocumentTypeId,
+  retailSaleEndpoints,
+} from "../constants/endpoints";
 import { retailSalePermissions } from "../constants/permissions";
 import { useGetRetailSales } from "../hooks";
 import type { RetailSaleDoc } from "../types/type";
@@ -61,6 +65,20 @@ export default function RetailSaleListPage() {
       minWidth: 140,
       render: (value, record) => (
         <Link to={`${record.id}`}>{value || record.id}</Link>
+      ),
+    },
+    {
+      dataIndex: "accountingEntriesReport",
+      title: t("common.accountingEntries"),
+      align: "center",
+      width: 110,
+      render: (_, record) => (
+        <AccountingEntriesButton
+          documentTypeId={retailSaleAccountingEntriesReportDocumentTypeId}
+          documentId={record.id}
+          statusId={record.statusId}
+          icon={<ReceiptText className="size-4" />}
+        />
       ),
     },
     {

@@ -1,11 +1,16 @@
 // import LineClampAnimation from "@/components/widget/text/LineClampAnimation";
 import type { AuthToken, MenuRole } from "@/shared/types";
-import { useAppSelector } from "@/store/hooks";
+import {
+  addTab,
+  removeTab,
+  type TabItem,
+} from "@/store/features/tabListSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { cn } from "@/utils/utils";
 import { Badge, Menu } from "antd";
 import type { MenuProps } from "antd/lib/menu";
 import dayjs from "dayjs";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Pin } from "lucide-react";
 import { useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
@@ -52,7 +57,9 @@ const subItemClassName = cn(
 );
 
 const MenuCustom: FC<LinkProps> = ({ route }) => {
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth?.user) as AuthToken | null;
+  const pinnedTabs = useAppSelector((state) => state.tabList.tabs);
   const params = new URLSearchParams();
   params.set("statusId", "1");
   params.set("startDate", "1999-1-1");
@@ -92,17 +99,48 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
   const [stateOpenKeys, setStateOpenKeys] = useState<string[]>(() =>
     selectedParentKey ? [`main/${selectedParentKey}`] : [],
   );
-  // const handleAddTabItem = (path: string, item: SideBarItems) => {
-  //   dispatch(
-  //     setAddTab({
-  //       path: "main/" + path,
-  //       code: item.code ?? "",
-  //       title: item.linkData?.title ?? "",
-  //     }),
-  //   );
-  // };
+  const renderPinButton = (tab: TabItem) => {
+    const isPinned = pinnedTabs.some((pinnedTab) => pinnedTab.key === tab.key);
+    const accessibleLabel = isPinned
+      ? t("app.tabs.unpin", { defaultValue: "Tabdan olib tashlash" })
+      : t("app.tabs.pin", { defaultValue: "Tabga biriktirish" });
+
+    return (
+      <button
+        type="button"
+        aria-label={accessibleLabel}
+        title={accessibleLabel}
+        onMouseDown={(event) => event.stopPropagation()}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          if (isPinned) {
+            dispatch(removeTab(tab.key));
+            return;
+          }
+
+          dispatch(addTab(tab));
+          navigate(tab.path);
+        }}
+        className={cn(
+          "inline-flex size-6 shrink-0 items-center justify-center rounded-md opacity-0 outline-none transition-all duration-150 group-hover/sidebar-item:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-brand",
+          isPinned
+            ? "bg-brand-soft text-brand"
+            : "text-muted hover:bg-brand-soft hover:text-brand",
+        )}
+      >
+        <Pin
+          className="size-3.5"
+          fill={isPinned ? "currentColor" : "none"}
+        />
+      </button>
+    );
+  };
+
   const items: MenuItem[] = route.map((itemParent) => {
     const isDropdown = itemParent.dropdown && itemParent.items?.length;
+    const parentPath = `/main/${itemParent.linkData.path}`;
     return {
       key: "main/" + itemParent.linkData?.path,
       className: isDropdown ? dropdownClassName : menuItemClassName,
@@ -111,7 +149,17 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
           {t(String(itemParent.dropdownName ?? ""))}
         </div>
       ) : (
-        t(String(itemParent.linkData.title ?? ""))
+        <div className="group/sidebar-item flex w-full min-w-0 items-center justify-between gap-2">
+          <span className="truncate">
+            {t(String(itemParent.linkData.title ?? ""))}
+          </span>
+          {!sidebarInline.sidebar &&
+            renderPinButton({
+              key: parentPath,
+              path: parentPath,
+              title: String(itemParent.linkData.title ?? ""),
+            })}
+        </div>
       ),
       onClick: () => {
         if (!isDropdown) {
@@ -147,21 +195,31 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
               )
               ?.map((item) => {
                 const childKey = `main/${itemParent.linkData.path}/${item.linkData?.path}`;
+                const childPath = `/${childKey}`;
                 const isSelected = selectedKey === childKey;
 
                 return {
                   key: childKey,
                   className: subItemClassName,
                   label: (
-                    <span
-                      className={
-                        isSelected
-                          ? "font-semibold text-[#1554d1]"
-                          : "text-inherit"
-                      }
-                    >
-                      {t(item.linkData?.title || "")}
-                    </span>
+                    <div className="group/sidebar-item flex w-full min-w-0 items-center justify-between gap-2">
+                      <span
+                        className={cn(
+                          "truncate",
+                          isSelected
+                            ? "font-semibold text-[#1554d1]"
+                            : "text-inherit",
+                        )}
+                      >
+                        {t(item.linkData?.title || "")}
+                      </span>
+                      {!sidebarInline.sidebar &&
+                        renderPinButton({
+                          key: childPath,
+                          path: childPath,
+                          title: item.linkData?.title || "",
+                        })}
+                    </div>
                   ),
                   onClick: () => {
                     if (currentPath !== childKey) {

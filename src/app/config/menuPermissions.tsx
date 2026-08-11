@@ -251,11 +251,11 @@ export const menuPermissions: MainMenu = {
     {
       code: "DROPDOWN",
       dropdown: true,
-      dropdownName: "app.accounting.title",
+      dropdownName: "app.accounting.sidebarTitle",
       iconName: <ReceiptText className="size-5" />,
       linkData: {
         path: "accountings",
-        title: "app.accounting.title",
+        title: "app.accounting.sidebarTitle",
       },
       items: [
         {

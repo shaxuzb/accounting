@@ -22,6 +22,7 @@ export interface SaleLineAccountValues {
 interface Props {
   open: boolean;
   line: SaleSelectedProduct | null;
+  documentTypeId?: number;
   onClose: () => void;
   onApply: (values: SaleLineAccountValues, applyToAll: boolean) => void;
 }
@@ -40,6 +41,7 @@ const getInitialValues = (
 export default function SaleLineAccountsModal({
   open,
   line,
+  documentTypeId,
   onClose,
   onApply,
 }: Props) {
@@ -115,7 +117,7 @@ export default function SaleLineAccountsModal({
           search
           required
           clearable
-          documentTypeId={saleDocumentTypeId}
+          documentTypeId={documentTypeId ?? saleDocumentTypeId}
           documentRoleCode={saleDocumentAccountRoleCodes.inventory}
           getFirst
         />
@@ -127,7 +129,7 @@ export default function SaleLineAccountsModal({
           search
           required
           clearable
-          documentTypeId={saleDocumentTypeId}
+          documentTypeId={documentTypeId ?? saleDocumentTypeId}
           documentRoleCode={saleDocumentAccountRoleCodes.income}
           getFirst
         />
@@ -139,7 +141,7 @@ export default function SaleLineAccountsModal({
           search
           required
           clearable
-          documentTypeId={saleDocumentTypeId}
+          documentTypeId={documentTypeId ?? saleDocumentTypeId}
           documentRoleCode={saleDocumentAccountRoleCodes.cost}
           getFirst
         />

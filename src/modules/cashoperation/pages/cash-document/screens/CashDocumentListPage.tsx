@@ -14,6 +14,7 @@ import { cashDocumentPermissions } from "../constants/permissions";
 import { useGetCashDocuments } from "../hooks";
 import type { CashDocument } from "../types/type";
 import { getCashDocumentLabels, resolveCashDocumentKind } from "../utils/kind";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 
 export default function CashDocumentListPage() {
   const { t } = useTranslation();
@@ -51,11 +52,12 @@ export default function CashDocumentListPage() {
       title: t("app.routes.accountingEntries"),
       align: "center",
       render: (_, record) => (
-        <Link
-          to={`/main/accountingentriesreport?documentTypeId=4&documentId=${record.id}`}
-        >
-          <Button icon={<ReceiptText className="size-4" />} />
-        </Link>
+        <AccountingEntriesButton
+          documentTypeId={4}
+          documentId={record.id}
+          statusId={record.statusId}
+          icon={<ReceiptText className="size-4" />}
+        />
       ),
     },
     {

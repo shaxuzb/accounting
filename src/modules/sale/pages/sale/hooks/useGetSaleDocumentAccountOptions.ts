@@ -4,39 +4,58 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import { useGetDetailDocumentAccountSettings } from "@/modules/settings/pages/documentAccountSettings/hooks";
 import type { SaleDocumentAccountOption } from "../types/type";
 import {
-  saleDocumentAccountChartAccountsPath,
   saleDocumentAccountRoleCodes,
   saleDocumentTypeId,
 } from "../constants/documentAccount";
 
-const useGetRoleOptions = (documentRoleCode: string) =>
+const useGetRoleOptions = (
+  documentTypeId: number,
+  documentRoleCode: string,
+) =>
   useQuery<SaleDocumentAccountOption[]>({
     queryKey: [
       "document-account-settings",
       "chart-accounts",
-      saleDocumentTypeId,
+      documentTypeId,
       documentRoleCode,
     ],
     queryFn: async () => {
       const { data } = await $axiosPrivate.get<SaleDocumentAccountOption[]>(
-        saleDocumentAccountChartAccountsPath(),
+        `document-account-settings/${documentTypeId}/chart-accounts`,
         { params: { documentRoleCode } },
       );
       return data ?? [];
     },
+    enabled: Boolean(documentTypeId),
   });
 
-export const useGetSaleDocumentAccountOptions = () => {
+export const useGetSaleDocumentAccountOptions = (
+  documentTypeId = saleDocumentTypeId,
+) => {
   const customerQuery = useGetRoleOptions(
+    documentTypeId,
     saleDocumentAccountRoleCodes.customerSettlement,
   );
-  const incomeQuery = useGetRoleOptions(saleDocumentAccountRoleCodes.income);
-  const vatQuery = useGetRoleOptions(saleDocumentAccountRoleCodes.vat);
-  const costQuery = useGetRoleOptions(saleDocumentAccountRoleCodes.cost);
+  const incomeQuery = useGetRoleOptions(
+    documentTypeId,
+    saleDocumentAccountRoleCodes.income,
+  );
+  const vatQuery = useGetRoleOptions(
+    documentTypeId,
+    saleDocumentAccountRoleCodes.vat,
+  );
+  const costQuery = useGetRoleOptions(
+    documentTypeId,
+    saleDocumentAccountRoleCodes.cost,
+  );
   const inventoryQuery = useGetRoleOptions(
+    documentTypeId,
     saleDocumentAccountRoleCodes.inventory,
   );
-  const settingsQuery = useGetDetailDocumentAccountSettings(saleDocumentTypeId);
+  const settingsQuery = useGetDetailDocumentAccountSettings(
+    documentTypeId,
+    Boolean(documentTypeId),
+  );
 
   return useMemo(() => {
     const chartAccounts = [
