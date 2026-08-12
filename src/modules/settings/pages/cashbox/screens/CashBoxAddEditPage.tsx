@@ -76,7 +76,7 @@ export default function CashBoxAddEditPage({
         stateId: CashBox.stateId ?? null,
       });
     }
-  }, [CashBox, isEdit]);
+  }, [CashBox, formik, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -142,7 +142,6 @@ export default function CashBoxAddEditPage({
             block
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-            onClick={() => console.log(formik)}
             loading={isSubmitting}
           >{t("common.submit")}</Button>
         </Form>

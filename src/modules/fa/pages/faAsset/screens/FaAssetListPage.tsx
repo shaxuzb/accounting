@@ -1,10 +1,7 @@
-import { Button, Space, Table } from "antd";
+import { Table } from "antd";
 import type { TableColumnsType, TableColumnType } from "antd";
 import { Link, useSearchParams } from "react-router";
-import { Plus, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import SearchFilter from "@/components/ui/filters/SearchFilter";
-import PermissionCard from "@/components/ui/card/PermissionCard";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
@@ -13,7 +10,9 @@ import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { endpoints } from "../constants/endpoints";
 import { faAssetPermissions } from "../constants/permissions";
-import { isFaDraftStatus } from "../../../shared/constants/statuses";
+import FaListFilters, { FaGroupFilter } from "../../../shared/components/FaListFilters";
+import FaListPagination from "../../../shared/components/FaListPagination";
+import ListToolbar from "@/components/ui/filters/ListToolbar";
 import { useGetListFaAssets } from "../hooks";
 import type { FaAsset } from "../types/type";
 
@@ -94,45 +93,30 @@ export default function FaAssetListPage() {
             align: "center",
             width: 100,
             fixed: "right",
-            render: (_, record) => {
-              const isDraft = isFaDraftStatus(record);
-
-              return (
+            render: (_, record) => (
                 <ActionColumn
                   deletePath={endpoints.list}
                   customPath={`/main/fa/assets/edit/${record.id}`}
                   record={record}
                   permissions={permissions}
                   permissionsCode={{
-                    deleteCode: isDraft ? faAssetPermissions.delete : "",
-                    editCode: isDraft ? faAssetPermissions.update : "",
+                    deleteCode: faAssetPermissions.delete,
+                    editCode: faAssetPermissions.update,
                   }}
                   refetch={refetch}
                 />
-              );
-            },
+              ),
           },
         ]
       : tableColumns;
 
   return (
     <div className="w-full">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <SearchFilter />
-        <Space>
-          <PermissionCard permission={faAssetPermissions.create}>
-            <Link to="add">
-              <Button type="primary" icon={<Plus className="size-4" />}>
-                {t("common.add")}
-              </Button>
-            </Link>
-          </PermissionCard>
-          <Button
-            icon={<RefreshCw className="size-4" />}
-            onClick={() => void refetch()}
-          />
-        </Space>
-      </div>
+      <ListToolbar
+        filters={<FaListFilters statusKind="asset" dateParamKeys={null}><FaGroupFilter /></FaListFilters>}
+        onRefresh={() => void refetch()}
+        refreshing={isFetching}
+      />
 
       <Card className="overflow-hidden border border-border">
         <Table<FaAsset>
@@ -141,6 +125,11 @@ export default function FaAssetListPage() {
           dataSource={generateKeyTable(data?.items ?? [], "id")}
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
+        />
+        <FaListPagination
+          total={data?.totalCount ?? data?.total}
+          page={data?.page}
+          pageSize={data?.pageSize}
         />
       </Card>
     </div>

@@ -1,11 +1,15 @@
 import { Button, Checkbox, Empty, Popover, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { FileSpreadsheet, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 import Card from "@/components/ui/card/Card";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
+import {
+  usePersistedState,
+  useScopedStorageKey,
+} from "@/shared/persistence/usePersistedState";
 import { numberSpacing } from "@/utils/utils";
 import type {
   AccountTurnoverItem,
@@ -45,10 +49,15 @@ export default function AccountTurnoverTable({
   filters,
 }: Props) {
   const { t } = useTranslation();
-  const [visibleColumns, setVisibleColumns] = useState<VisibleColumnKey[]>([
-    "accountName",
-    ...financialColumnKeys,
-  ]);
+  const columnsKey = useScopedStorageKey(
+    "report-table",
+    "account-turnover:columns",
+  );
+  const [visibleColumns, setVisibleColumns] = usePersistedState<VisibleColumnKey[]>(
+    columnsKey,
+    ["accountName", ...financialColumnKeys],
+    { storage: "session", debounceMs: 0 },
+  );
   const visibleFinancialColumns = financialColumnKeys.filter((key) =>
     visibleColumns.includes(key),
   );

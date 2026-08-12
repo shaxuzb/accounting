@@ -6,9 +6,10 @@ import {
   ReceiptText,
   WalletCards,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { numberSpacing } from "@/utils/utils";
+import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
@@ -28,10 +29,16 @@ const sectionTone = (code: string) => {
 
 export default function IncomeStatementPage() {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState<IncomeStatementQuery>({});
+  const filtersKey = useScopedStorageKey("report-state", "income-statement");
+  const [filters, setFilters] = usePersistedState<IncomeStatementQuery>(
+    filtersKey,
+    {},
+    { debounceMs: 0 },
+  );
   const query = useGetIncomeStatement(filters);
   const formik = useFormik<IncomeStatementQuery>({
-    initialValues,
+    initialValues: { ...initialValues, ...filters },
+    enableReinitialize: true,
     onSubmit: (values) => setFilters(values),
   });
 

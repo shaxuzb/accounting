@@ -4,7 +4,8 @@ import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Plus, RefreshCw } from "lucide-react";
 import { useAppSelector } from "@/store/hooks";
-import SearchFilter from "@/components/ui/filters/SearchFilter";
+import SelectFilter from "@/components/ui/filters/SelectFilter";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
@@ -12,9 +13,11 @@ import { generateKeyTable, customDate } from "@/utils/utils";
 import { endpoints } from "../constants/endpoints";
 import { faReceiptPermissions } from "../constants/permissions";
 import { useGetListFaReceipts } from "../hooks";
-import { stateStatus } from "@/utils/helpers/statusHelper";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import type { FaReceiptResponse } from "../types/type";
 import { isFaDraftStatus } from "../../../shared/constants/statuses";
+import FaListFilters from "../../../shared/components/FaListFilters";
+import FaListPagination from "../../../shared/components/FaListPagination";
 
 export default function FaReceiptListPage() {
   const { t } = useTranslation();
@@ -50,11 +53,11 @@ export default function FaReceiptListPage() {
       title: t("fa.fields.comment"),
     },
     {
-      dataIndex: "stateName",
-      title: t("fa.fields.state"),
+      dataIndex: "statusName",
+      title: t("settings.fields.status"),
       align: "center",
       width: 130,
-      render: (_, record) => stateStatus(record.stateId, record.stateName),
+      render: (_, record) => <ProcessStatusBadge statusId={record.statusId} statusName={record.statusName} />,
     },
   ];
 
@@ -91,7 +94,12 @@ export default function FaReceiptListPage() {
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <SearchFilter />
+        <div className="flex flex-wrap items-center gap-2">
+          <FaListFilters>
+            <SelectFilter paramKey="counterpartyId" placeholder="fa.fields.counterpartyId" path={selectListEndpoints.counterpartiesSelectList} width={190} search />
+            <SelectFilter paramKey="receiptTypeId" placeholder="fa.fields.receiptType" path={selectListEndpoints.faReceiptTypesSelectList} width={170} />
+          </FaListFilters>
+        </div>
         <Space>
           <PermissionCard permission={faReceiptPermissions.create}>
             <Link to="add">
@@ -115,6 +123,7 @@ export default function FaReceiptListPage() {
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
         />
+        <FaListPagination total={data?.totalCount ?? data?.total} page={data?.page} pageSize={data?.pageSize} />
       </Card>
     </div>
   );

@@ -7,8 +7,8 @@ export const useConfirmFaDisposal = (id: string | number) => {
 
   return useMutation({
     mutationFn: () => faDisposalService.confirm(id),
-    onSuccess: (data) => {
-      queryClient.setQueryData(queryKeys.detail(id), data);
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.detail(id) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
     },
   });

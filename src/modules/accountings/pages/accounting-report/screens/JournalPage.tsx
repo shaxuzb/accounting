@@ -1,8 +1,9 @@
 import type { ColumnsType } from "antd/es/table";
 import { useFormik } from "formik";
 import { Files, LibraryBig } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import { customDate, numberSpacing } from "@/utils/utils";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
@@ -23,10 +24,16 @@ const accountLabel = (code: string | null, name: string | null) =>
 
 export default function JournalPage() {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState<JournalQuery>({ page: 1, pageSize: 50 });
+  const filtersKey = useScopedStorageKey("report-state", "journal");
+  const [filters, setFilters] = usePersistedState<JournalQuery>(
+    filtersKey,
+    { page: 1, pageSize: 50 },
+    { debounceMs: 0 },
+  );
   const query = useGetJournal(filters);
   const formik = useFormik<JournalQuery>({
-    initialValues,
+    initialValues: { ...initialValues, ...filters },
+    enableReinitialize: true,
     onSubmit: (values) => setFilters(values),
   });
 

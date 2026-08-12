@@ -2,15 +2,25 @@ export const faDocumentStatusIds = {
   draft: 1,
   posted: 2,
   cancelled: 3,
+  pending: 4,
+} as const;
+
+export const faAssetStatusIds = {
+  notCommissioned: 1,
+  active: 2,
+  conservation: 3,
+  disposed: 4,
+} as const;
+
+export const faRecordStateIds = {
+  active: 1,
+  passive: 2,
 } as const;
 
 interface FaStatusCarrier {
   statusId?: number | string | null;
   statusCode?: string | null;
   statusName?: string | null;
-  stateId?: number | string | null;
-  stateCode?: string | null;
-  stateName?: string | null;
 }
 
 const draftStatusNames = new Set([
@@ -31,14 +41,5 @@ export const isFaDraftStatus = (record: FaStatusCarrier) => {
   }
 
   const statusName = normalizeStatusText(record.statusName);
-  if (statusName) return draftStatusNames.has(statusName);
-
-  const stateCode = normalizeStatusText(record.stateCode);
-  if (stateCode) return stateCode === "draft";
-
-  if (record.stateId != null) {
-    return Number(record.stateId) === faDocumentStatusIds.draft;
-  }
-
-  return draftStatusNames.has(normalizeStatusText(record.stateName));
+  return draftStatusNames.has(statusName);
 };

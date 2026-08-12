@@ -92,7 +92,7 @@ export default function CounterpartyBankAccountAddEditPage({
         stateId: counterpartybankaccount.stateId ?? null,
       });
     }
-  }, [counterpartybankaccount, isEdit]);
+  }, [counterpartybankaccount, formik, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -171,7 +171,6 @@ export default function CounterpartyBankAccountAddEditPage({
             block
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-            onClick={() => console.log(formik)}
             loading={isSubmitting}
           >
             {t("common.submit")}

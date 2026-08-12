@@ -13,7 +13,7 @@ import FaDraftActionsBar from "../../../shared/components/FaDraftActionsBar";
 
 import { faMovementSchema } from "../types/schema";
 import type { FaMovementFormValues } from "../types/form";
-import type { FaMovement, FaMovementPayload } from "../types/type";
+import type { FaMovementPayload } from "../types/type";
 import {
   useCancelFaMovement,
   useConfirmFaMovement,
@@ -34,8 +34,6 @@ const defaultValues: FaMovementFormValues = {
   lines: [
     {
       faAssetId: null,
-      fromDepartmentId: null,
-      fromResponsibleUserId: null,
       note: "",
     },
   ],
@@ -43,21 +41,14 @@ const defaultValues: FaMovementFormValues = {
 
 const toPayload = (
   values: FaMovementFormValues,
-  stateId: number,
-  currentUserId: number | null,
 ): FaMovementPayload => ({
   docDate: values.docDate,
-  toDepartmentId: Number(values.toDepartmentId),
-  toResponsibleUserId: Number(values.toResponsibleUserId),
+  toDepartmentId: values.toDepartmentId == null ? null : Number(values.toDepartmentId),
+  toResponsibleUserId: values.toResponsibleUserId == null ? null : Number(values.toResponsibleUserId),
   note: values.note,
-  stateId,
   lines: values.lines.map((line) => ({
     faAssetId: Number(line.faAssetId),
-    ...(line.fromDepartmentId != null && {
-      fromDepartmentId: Number(line.fromDepartmentId),
-    }),
-    fromResponsibleUserId: Number(currentUserId),
-    note: line.note,
+    note: line.note || null,
   })),
 });
 
@@ -68,7 +59,6 @@ export default function FaMovementFormPage() {
   const isCreate = !id;
 
   const { user } = useAppSelector((state) => state.auth);
-  const currentUserId = user?.user.id ?? null;
   const permissions = user?.user.permissions ?? [];
   const canViewList = permissions.includes(faMovementPermissions.view);
   const canCreate = permissions.includes(faMovementPermissions.create);
@@ -83,8 +73,7 @@ export default function FaMovementFormPage() {
   const cancelMutation = useCancelFaMovement(id);
 
   const record = detailQuery.data;
-  const statusId =
-    record?.statusId ?? record?.stateId ?? faDocumentStatusIds.draft;
+  const statusId = record?.statusId ?? faDocumentStatusIds.draft;
   const isDraft = isCreate || statusId === faDocumentStatusIds.draft;
   const canSubmit = isCreate ? canCreate : isDraft && canUpdate;
   const showEditor = isCreate || (isDraft && canSubmit);
@@ -100,34 +89,21 @@ export default function FaMovementFormPage() {
       lines: record?.lines?.length
         ? record.lines.map((line) => ({
             faAssetId: line.faAssetId,
-            fromDepartmentId:
-              line.fromDepartmentId ??
-              line.previousDepartmentId ??
-              line.oldDepartmentId ??
-              line.departmentId ??
-              null,
-            fromResponsibleUserId: currentUserId,
             note: line.note ?? "",
           }))
-        : defaultValues.lines.map((line) => ({
-            ...line,
-            fromResponsibleUserId: currentUserId,
-          })),
+        : defaultValues.lines,
     }),
-    [currentUserId, record],
+    [record],
   );
 
   const persistMovement = async (
     values: FaMovementFormValues,
-  ): Promise<FaMovement> => {
-    const payload = toPayload(
-      values,
-      record?.stateId ?? faDocumentStatusIds.draft,
-      currentUserId,
-    );
+  ): Promise<number> => {
+    const payload = toPayload(values);
 
     if (!isCreate && id) {
-      return updateMutation.mutateAsync({ id, payload });
+      await updateMutation.mutateAsync({ id, payload });
+      return Number(id);
     }
     return createMutation.mutateAsync(payload);
   };
@@ -237,7 +213,6 @@ export default function FaMovementFormPage() {
         <FaMovementFormFields
           formik={formik}
           isDraft={isDraft}
-          currentUserId={currentUserId}
         />
       </fieldset>
 

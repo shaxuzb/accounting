@@ -5,6 +5,8 @@ import { BookOpen, Plus, Save, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import { $axiosPrivate } from "@/services/AxiosService";
+import { useAppSelector } from "@/store/hooks";
+import { normalizeDocumentAccountOptions } from "@/shared/documentAccounts";
 import {
   chartAccountOptionLabel,
   selectListEndpoints,
@@ -32,15 +34,16 @@ const normalizeRoles = (
   detail?: DocumentAccountSettingsDetail,
 ): DocumentAccountSettingRole[] =>
   (detail?.accountSettings ?? []).map((role) => {
-    const accounts = (role.accounts ?? []).map((account, index) => ({
+    const sourceAccounts = (role.accounts ?? []).map((account, index) => ({
       ...account,
-      canChange: true,
       sortOrder: account.sortOrder || index + 1,
     }));
-
-    if (accounts.length && !accounts.some((account) => account.isDefault)) {
-      accounts[0] = { ...accounts[0], isDefault: true };
-    }
+    const defaultIndex = sourceAccounts.findIndex((account) => account.isDefault);
+    const accounts = sourceAccounts.map((account, index) => ({
+      ...account,
+      isDefault:
+        defaultIndex >= 0 ? index === defaultIndex : index === 0,
+    }));
 
     return { ...role, accounts };
   });
@@ -158,6 +161,7 @@ function AccountRoleCard({
               </div>
               <Checkbox
                 checked={account.isDefault}
+                disabled={account.canChange === false}
                 onChange={() =>
                   onSetDefault(
                     role.documentAccountTypeRoleId,
@@ -170,6 +174,7 @@ function AccountRoleCard({
               <Button
                 type="text"
                 danger
+                disabled={account.canChange === false}
                 icon={<Trash2 className="size-4" />}
                 aria-label={t("settings.documentAccounts.removeAccount")}
                 onClick={() =>
@@ -201,21 +206,28 @@ export default function DocumentAccountSettingsDetailPage() {
   const { data, isLoading, isFetching } =
     useGetDetailDocumentAccountSettings(documentTypeId);
   const saveMutation = useSaveDocumentAccountSettings();
+  const organizationId = useAppSelector(
+    (state) => state.organization.id || null,
+  );
   const [draftRoles, setDraftRoles] = useState<
     DocumentAccountSettingRole[] | null
   >(null);
   const { data: chartAccounts = [], isLoading: chartAccountsLoading } =
     useQuery({
-      queryKey: ["selectlist", selectListEndpoints.chartAccountsSelectList],
+      queryKey: [
+        "selectlist",
+        organizationId,
+        selectListEndpoints.chartAccountsSelectList,
+      ],
       queryFn: async () => {
         const response = await $axiosPrivate.get<ChartAccountResponse>(
           selectListEndpoints.chartAccountsSelectList,
         );
-        const payload = response.data;
-        return Array.isArray(payload)
-          ? payload
-          : (payload.items ?? payload.data ?? []);
+        return normalizeDocumentAccountOptions<DocumentAccountChartAccount>(
+          response.data,
+        );
       },
+      enabled: Boolean(organizationId),
     });
 
   const roles = draftRoles ?? normalizeRoles(data);
@@ -266,6 +278,11 @@ export default function DocumentAccountSettingsDetailPage() {
 
   const handleRemove = (roleId: number, chartAccountId: number) => {
     updateRole(roleId, (role) => {
+      const target = role.accounts.find(
+        (account) => account.chartAccountId === chartAccountId,
+      );
+      if (target && target.canChange === false) return role;
+
       const accounts = role.accounts.filter(
         (account) => account.chartAccountId !== chartAccountId,
       );
@@ -277,23 +294,38 @@ export default function DocumentAccountSettingsDetailPage() {
   };
 
   const handleSetDefault = (roleId: number, chartAccountId: number) => {
-    updateRole(roleId, (role) => ({
-      ...role,
-      accounts: role.accounts.map((account) => ({
-        ...account,
-        isDefault: account.chartAccountId === chartAccountId,
-      })),
-    }));
+    updateRole(roleId, (role) => {
+      const target = role.accounts.find(
+        (account) => account.chartAccountId === chartAccountId,
+      );
+      if (target && target.canChange === false) return role;
+
+      return {
+        ...role,
+        accounts: role.accounts.map((account) => ({
+          ...account,
+          isDefault: account.chartAccountId === chartAccountId,
+        })),
+      };
+    });
   };
 
   const handleSave = async () => {
+    const requiredRole = roles.find(
+      (role) => role.isRequired && role.accounts.length === 0,
+    );
+    if (requiredRole) {
+      toast.error(t("common.requiredFields"));
+      return;
+    }
+
     const payload: DocumentAccountSettingsBatchPayload = {
       items: roles.map((role) => ({
         documentAccountTypeRoleId: role.documentAccountTypeRoleId,
         accounts: role.accounts.map((account, index) => ({
           chartAccountId: account.chartAccountId,
           isDefault: account.isDefault,
-          canChange: true,
+          canChange: account.canChange,
           sortOrder: index + 1,
         })),
       })),

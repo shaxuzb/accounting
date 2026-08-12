@@ -1,9 +1,10 @@
 import type { ColumnsType } from "antd/es/table";
 import { useFormik } from "formik";
 import { Landmark, Layers3, PiggyBank, Scale } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { numberSpacing } from "@/utils/utils";
+import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
@@ -16,10 +17,16 @@ const money = (value: number) => numberSpacing(value, undefined, true);
 
 export default function BalanceSheetPage() {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState<BalanceSheetQuery>({});
+  const filtersKey = useScopedStorageKey("report-state", "balance-sheet");
+  const [filters, setFilters] = usePersistedState<BalanceSheetQuery>(
+    filtersKey,
+    {},
+    { debounceMs: 0 },
+  );
   const query = useGetBalanceSheet(filters);
   const formik = useFormik<BalanceSheetQuery>({
-    initialValues,
+    initialValues: { ...initialValues, ...filters },
+    enableReinitialize: true,
     onSubmit: (values) => setFilters(values),
   });
 

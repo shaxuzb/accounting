@@ -1,24 +1,15 @@
 export interface FaReceiptAsset {
   inventoryNumber: string;
   name: string;
-  initialCost: number;
-  salvageValue: number;
-  usefulLifeMonths: number;
-  depreciationMethodId: number;
   faGroupId: number;
   okofId: number;
-  commissioningDate: string;
-  deprStartDate: string;
-  plannedUnitsTotal: number;
-  departmentId: number;
-  responsibleUserId: number;
+  initialCost: number;
   assetAccountId: number;
-  accumulatedDepreciationAccountId: number;
-  depreciationExpenseAccountId: number;
+  faGroupName?: string;
+  okofName?: string;
 }
 
 export interface FaReceiptLineItem {
-  sourceProductId: number;
   name: string;
   quantity: number;
   price: number;
@@ -31,7 +22,6 @@ export interface FaReceiptLineItem {
 export interface FaReceiptPayload {
   docDate: string;
   counterpartyId: number;
-  warehouseId: number;
   currencyId: number;
   receiptTypeId: number;
   supplierAccountId: number;
@@ -43,7 +33,12 @@ export interface FaReceiptResponse extends FaReceiptPayload {
   documentNumber?: string;
   documentDate?: string;
   comment?: string;
-  statusId?: number;
+  counterpartyName?: string;
+  currencyName?: string;
+  receiptTypeName?: string;
+  supplierAccountNumber?: string;
+  supplierAccountName?: string;
+  statusId: number;
   statusName?: string;
   stateId?: number;
   stateName?: string;

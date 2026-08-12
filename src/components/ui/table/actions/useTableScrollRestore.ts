@@ -24,6 +24,14 @@ const SCROLL_ELEMENT_SELECTORS = [
 const DEFAULT_RESTORE_TTL = 30 * 60 * 1000;
 const MAX_RESTORE_FRAMES = 30;
 
+const removeSavedPosition = (key: string) => {
+  try {
+    sessionStorage.removeItem(key);
+  } catch {
+    // Storage access errors must not interrupt table interaction.
+  }
+};
+
 /**
  * Browser historydagi har bir list holati uchun jadval scrollini saqlaydi.
  * React state ishlatilmagani uchun scroll paytida qayta render bo'lmaydi.
@@ -86,7 +94,11 @@ export const useTableScrollRestore = ({
 
     if (!position) return;
     latestPositionRef.current = position;
-    sessionStorage.setItem(scopedStorageKey, JSON.stringify(position));
+    try {
+      sessionStorage.setItem(scopedStorageKey, JSON.stringify(position));
+    } catch {
+      // Storage access/quota errors must not interrupt table interaction.
+    }
   }, [getScrollElement, scopedStorageKey]);
 
   const schedulePositionSave = useCallback(() => {
@@ -114,7 +126,12 @@ export const useTableScrollRestore = ({
     let listenerAttached = false;
 
     const readPosition = () => {
-      const savedValue = sessionStorage.getItem(scopedStorageKey);
+      let savedValue: string | null;
+      try {
+        savedValue = sessionStorage.getItem(scopedStorageKey);
+      } catch {
+        return null;
+      }
       if (!savedValue) return null;
 
       try {
@@ -125,12 +142,12 @@ export const useTableScrollRestore = ({
           Number.isFinite(position.updatedAt);
 
         if (!isValid || Date.now() - position.updatedAt > restoreTtl) {
-          sessionStorage.removeItem(scopedStorageKey);
+          removeSavedPosition(scopedStorageKey);
           return null;
         }
         return position;
       } catch {
-        sessionStorage.removeItem(scopedStorageKey);
+        removeSavedPosition(scopedStorageKey);
         return null;
       }
     };

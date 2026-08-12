@@ -5,6 +5,11 @@ import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import useLocalStorage from "@/hooks/UseLocalStorage";
+import { useScopedStorageKey } from "@/shared/persistence/usePersistedState";
+import {
+  readPersistedValue,
+  removePersistedValue,
+} from "@/shared/persistence/storage";
 import Card from "@/components/ui/card/Card";
 import LineClampCell from "@/components/widget/text/LineClampCell";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
@@ -354,9 +359,17 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     () => buildRows(document),
     [document],
   );
+  const draftKey = useScopedStorageKey(
+    "form-draft",
+    `sale-warehouse-confirm:${document.id}`,
+  );
   const [draftRows, setDraftRows] = useLocalStorage<WarehouseConfirmDraftItem[]>(
-    `sale:warehouse-confirm:${document.id}`,
-    [],
+    draftKey,
+    readPersistedValue(
+      `sale:warehouse-confirm:${document.id}`,
+      [],
+      "local",
+    ),
   );
   const rows = useMemo(
     () => mergeDraftRows(baseRows, draftRows),
@@ -465,11 +478,15 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     try {
       await confirmSale.mutateAsync(toAssemblyPayload(rows));
       setDraftRows([]);
+      removePersistedValue(
+        `sale:warehouse-confirm:${document.id}`,
+        "local",
+      );
       navigate("/main/sales/sale", { replace: true });
     } catch (error) {
       errorHandlers(error);
     }
-  }, [availableProductsQuery.isSuccess, confirmSale, hasPieceTrackedRows, navigate, rows, setDraftRows, t]);
+  }, [availableProductsQuery.isSuccess, confirmSale, document.id, hasPieceTrackedRows, navigate, rows, setDraftRows, t]);
 
   const confirmedQuantity = getConfirmedQuantity(rows);
   const totalQuantity = getTotalQuantity(rows);

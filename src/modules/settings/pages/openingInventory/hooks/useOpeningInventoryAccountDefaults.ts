@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useGetDetailDocumentAccountSettings } from "@/modules/settings/pages/documentAccountSettings/hooks";
+import { getDefaultDocumentAccount } from "@/shared/documentAccounts";
 import { openingInventoryDocumentTypeIds } from "../constants/endpoints";
 import type { OpeningInventoryMode } from "../types/type";
 
@@ -14,16 +15,11 @@ const getDefaultAccount = (
   >["data"],
   roleCode: "purchase_debit",
 ) => {
-  const role = settings?.accountSettings?.find(
-    (item) => item.documentAccountRoleCode === roleCode,
-  );
-  const account = role?.accounts?.find((item) => item.isDefault);
+  const account = getDefaultDocumentAccount(settings, roleCode);
 
   return {
-    id: account?.chartAccountId ?? null,
-    name:
-      account?.chartAccountName ??
-      (account?.chartAccountNumber ? String(account.chartAccountNumber) : ""),
+    id: account.id,
+    name: account.name,
   };
 };
 

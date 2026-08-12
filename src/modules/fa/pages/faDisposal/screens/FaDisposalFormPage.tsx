@@ -22,7 +22,7 @@ import {
 } from "../hooks";
 import type { FaDisposalFormValues } from "../types/form";
 import { faDisposalSchema } from "../types/schema";
-import type { FaDisposalPayload, FaDisposalResponse } from "../types/type";
+import type { FaDisposalPayload } from "../types/type";
 
 const defaultValues: FaDisposalFormValues = {
   disposalDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
@@ -39,8 +39,6 @@ const defaultValues: FaDisposalFormValues = {
       faAssetId: null,
       saleAmount: 0,
       note: "",
-      assetAccountId: null,
-      accumulatedDepreciationAccountId: null,
     },
   ],
 };
@@ -59,10 +57,6 @@ const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => ({
     faAssetId: Number(line.faAssetId),
     saleAmount: Number(line.saleAmount),
     note: line.note || "",
-    assetAccountId: Number(line.assetAccountId),
-    accumulatedDepreciationAccountId: Number(
-      line.accumulatedDepreciationAccountId,
-    ),
   })),
 });
 
@@ -88,8 +82,7 @@ export default function FaDisposalFormPage() {
   const cancelMutation = useCancelFaDisposal(id);
 
   const record = detailQuery.data;
-  const statusId =
-    record?.statusId ?? record?.stateId ?? faDocumentStatusIds.draft;
+  const statusId = record?.statusId ?? faDocumentStatusIds.draft;
   const isDraft = isCreate || statusId === faDocumentStatusIds.draft;
   const canSubmit = isCreate ? canCreate : isDraft && canUpdate;
   const showEditor = isCreate || (isDraft && canSubmit);
@@ -111,9 +104,6 @@ export default function FaDisposalFormPage() {
             faAssetId: line.faAssetId,
             saleAmount: line.saleAmount ?? 0,
             note: line.note ?? "",
-            assetAccountId: line.assetAccountId ?? null,
-            accumulatedDepreciationAccountId:
-              line.accumulatedDepreciationAccountId ?? null,
           }))
         : defaultValues.lines,
     }),
@@ -122,10 +112,11 @@ export default function FaDisposalFormPage() {
 
   const persistDisposal = async (
     values: FaDisposalFormValues,
-  ): Promise<FaDisposalResponse> => {
+  ): Promise<number> => {
     const payload = toPayload(values);
     if (!isCreate && id) {
-      return updateMutation.mutateAsync({ id, payload });
+      await updateMutation.mutateAsync({ id, payload });
+      return Number(id);
     }
     return createMutation.mutateAsync(payload);
   };

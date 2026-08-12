@@ -1,7 +1,7 @@
 // import LineClampAnimation from "@/components/widget/text/LineClampAnimation";
 import type { AuthToken, MenuRole } from "@/shared/types";
 import {
-  addTab,
+  pinTab,
   removeTab,
   type TabItem,
 } from "@/store/features/tabListSlice";
@@ -120,8 +120,7 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
             return;
           }
 
-          dispatch(addTab(tab));
-          navigate(tab.path);
+          dispatch(pinTab(tab));
         }}
         className={cn(
           "inline-flex size-6 shrink-0 items-center justify-center rounded-md opacity-0 outline-none transition-all duration-150 group-hover/sidebar-item:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-brand",

@@ -37,9 +37,13 @@ export interface User {
 
 export interface Paginated<T> {
   items: T[];
-  total: number;
+  total?: number;
+  totalCount?: number;
   page?: number;
   pageSize?: number;
+  totalPages?: number;
+  hasPreviousPage?: boolean;
+  hasNextPage?: boolean;
 }
 
 export interface ListParams {

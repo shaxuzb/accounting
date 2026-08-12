@@ -1,12 +1,11 @@
 import { Button, Select, Tooltip, type TableColumnType } from "antd";
-import { useQuery } from "@tanstack/react-query";
 import { Pencil, QrCode, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { $axiosPrivate } from "@/services/AxiosService";
 import {
   chartAccountSelectedLabel,
 } from "@/shared/constants/selectLists";
+import { useDocumentAccountOptions } from "@/shared/documentAccounts";
 import { numberSpacing } from "@/utils/utils";
 import PurchaseImportEditableCell from "../components/PurchaseImportEditableCell";
 import type {
@@ -17,7 +16,6 @@ import type {
 } from "../types/type";
 import type { ImportColumnConfig } from "../utils/importColumns";
 import {
-  purchaseDocumentAccountChartAccountsPath,
   purchaseDocumentTypeIds,
 } from "../constants/endpoints";
 import {
@@ -28,13 +26,6 @@ import {
   getRowVatAmount,
   toMarkingNumbers,
 } from "../utils/purchaseImport";
-
-interface PurchaseChartAccountOption {
-  id: number;
-  number?: string | number;
-  code?: string | number;
-  name?: string;
-}
 
 interface UsePurchaseImportColumnsParams {
   columnConfig: ImportColumnConfig[];
@@ -78,42 +69,16 @@ export const usePurchaseImportColumns = ({
 }: UsePurchaseImportColumnsParams): TableColumnType<PurchaseImportRow>[] => {
   const { t } = useTranslation();
   const documentTypeId = purchaseDocumentTypeIds[purchaseMode];
-  const chartAccountsPath =
-    purchaseDocumentAccountChartAccountsPath(purchaseMode);
-  const { data: debitAccounts = [] } = useQuery<
-    PurchaseChartAccountOption[]
-  >({
-    queryKey: [
-      "document-account-settings",
-      "chart-accounts",
-      documentTypeId,
-      "purchase_debit",
-    ],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<PurchaseChartAccountOption[]>(
-        chartAccountsPath,
-        { params: { documentRoleCode: "purchase_debit" } },
-      );
-      return data ?? [];
-    },
+  const { data: debitAccounts = [] } = useDocumentAccountOptions(
+    documentTypeId,
+    "purchase_debit",
     enabled,
-  });
-  const { data: vatAccounts = [] } = useQuery<PurchaseChartAccountOption[]>({
-    queryKey: [
-      "document-account-settings",
-      "chart-accounts",
-      documentTypeId,
-      "purchase_vat",
-    ],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<PurchaseChartAccountOption[]>(
-        chartAccountsPath,
-        { params: { documentRoleCode: "purchase_vat" } },
-      );
-      return data ?? [];
-    },
+  );
+  const { data: vatAccounts = [] } = useDocumentAccountOptions(
+    documentTypeId,
+    "purchase_vat",
     enabled,
-  });
+  );
   const chartAccounts = useMemo(
     () =>
       Array.from(

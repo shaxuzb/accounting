@@ -1,41 +1,18 @@
-import type {
-  FaReceiptAsset,
-  FaReceiptLineItem,
-  FaReceiptPayload,
-} from "./type";
+import type { FaReceiptPayload } from "./type";
 
-export interface FaReceiptAssetValues
-  extends Omit<
-    FaReceiptAsset,
-    | "depreciationMethodId"
-    | "faGroupId"
-    | "okofId"
-    | "departmentId"
-    | "responsibleUserId"
-    | "assetAccountId"
-    | "accumulatedDepreciationAccountId"
-    | "depreciationExpenseAccountId"
-  > {
-  depreciationMethodId: number | null;
+export interface FaReceiptAssetValues {
+  inventoryNumber: string;
+  name: string;
   faGroupId: number | null;
   okofId: number | null;
-  departmentId: number | null;
-  responsibleUserId: number | null;
+  initialCost: number | null;
   assetAccountId: number | null;
-  accumulatedDepreciationAccountId: number | null;
-  depreciationExpenseAccountId: number | null;
 }
 
-export interface FaReceiptLineValues
-  extends Omit<
-    FaReceiptLineItem,
-    | "sourceProductId"
-    | "vatRateId"
-    | "capitalInvestmentAccountId"
-    | "vatAccountId"
-    | "assets"
-  > {
-  sourceProductId: number | null;
+export interface FaReceiptLineValues {
+  name: string;
+  quantity: number;
+  price: number;
   vatRateId: number | null;
   capitalInvestmentAccountId: number | null;
   vatAccountId: number | null;
@@ -43,17 +20,8 @@ export interface FaReceiptLineValues
 }
 
 export interface FaReceiptFormValues
-  extends Omit<
-    FaReceiptPayload,
-    | "counterpartyId"
-    | "warehouseId"
-    | "currencyId"
-    | "receiptTypeId"
-    | "supplierAccountId"
-    | "lines"
-  > {
+  extends Omit<FaReceiptPayload, "counterpartyId" | "currencyId" | "receiptTypeId" | "supplierAccountId" | "lines"> {
   counterpartyId: number | null;
-  warehouseId: number | null;
   currencyId: number | null;
   receiptTypeId: number | null;
   supplierAccountId: number | null;

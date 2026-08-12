@@ -60,6 +60,9 @@ const authSlice = createSlice({
           key.startsWith("accounting:edo:auth:") ||
           key.startsWith("accounting:workspace-tabs:") ||
           key.startsWith("accounting:pinned-pages:") ||
+          key.startsWith("accounting:report-state:") ||
+          key.startsWith("accounting:report-table:") ||
+          key.startsWith("accounting:form-draft:") ||
           key.startsWith("main-layout-scroll-position:")
         ) {
           sessionStorage.removeItem(key);

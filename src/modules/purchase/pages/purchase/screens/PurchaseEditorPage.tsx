@@ -63,7 +63,11 @@ import { usePurchaseImportColumns } from "../hooks/usePurchaseImportColumns";
 import { useGetPurchaseDocumentAccountDefaults } from "../hooks/useGetPurchaseDocumentAccountDefaults";
 import { useUpdatePurchase } from "../hooks/useUpdatePurchase";
 import { purchasePermissions } from "../constants/permissions";
-import useLocalStorage from "@/hooks/UseLocalStorage";
+import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
+import {
+  readPersistedValue,
+  removePersistedValue,
+} from "@/shared/persistence/storage";
 import {
   buildMarkingQuantityPatch,
   createEmptyPurchaseRow,
@@ -82,12 +86,6 @@ import {
   toPurchaseCreatePayload,
   toPurchaseUpdatePayload,
 } from "../utils/purchaseImport";
-
-const PURCHASE_IMPORT_DRAFT_HEADER_KEY = "purchase-import:draft:header";
-const PURCHASE_IMPORT_DRAFT_LINES_KEY = "purchase-import:draft:lines";
-const PURCHASE_IMPORT_DRAFT_PRODUCT_WITH_COUNT_KEY =
-  "purchase-import:draft:product-with-count";
-const PURCHASE_IMPORT_DRAFT_MODE_KEY = "purchase-import:draft:mode";
 
 const buildTouched = () => ({
   docDate: true,
@@ -342,23 +340,33 @@ export const PurchaseEditor = ({
       ? routePurchaseId
       : 0;
   const isEdit = Boolean(purchaseId);
-  const [headerDraft, setHeaderDraft] =
-    useLocalStorage<PurchaseImportHeaderDraft>(
-      PURCHASE_IMPORT_DRAFT_HEADER_KEY,
-      getDefaultPurchaseImportHeader(),
+  const purchaseDraftKey = useScopedStorageKey("form-draft", "purchase-import");
+  const legacyDraftKey = (suffix: string) => `purchase-import:draft:${suffix}`;
+  const [headerDraft, setHeaderDraft, clearHeaderDraft] =
+    usePersistedState<PurchaseImportHeaderDraft>(
+      `${purchaseDraftKey}:header`,
+      readPersistedValue(
+        legacyDraftKey("header"),
+        getDefaultPurchaseImportHeader(),
+        "local",
+      ),
+      { storage: "local", debounceMs: 250 },
     );
-  const [excelData, setExcelData] = useLocalStorage<PurchaseImportRow[]>(
-    PURCHASE_IMPORT_DRAFT_LINES_KEY,
-    [],
+  const [excelData, setExcelData, clearExcelDataDraft] = usePersistedState<PurchaseImportRow[]>(
+    `${purchaseDraftKey}:lines`,
+    readPersistedValue(legacyDraftKey("lines"), [], "local"),
+    { storage: "local", debounceMs: 250 },
   );
-  const [productWithCountDraft, setProductWithCountDraft] = useLocalStorage<boolean>(
-    PURCHASE_IMPORT_DRAFT_PRODUCT_WITH_COUNT_KEY,
-    false,
+  const [productWithCountDraft, setProductWithCountDraft, clearProductWithCountDraft] = usePersistedState<boolean>(
+    `${purchaseDraftKey}:product-with-count`,
+    readPersistedValue(legacyDraftKey("product-with-count"), false, "local"),
+    { storage: "local", debounceMs: 250 },
   );
   const [withDiscount, _setWithWithDiscount] = useState(false);
-  const [purchaseModeDraft, setPurchaseModeDraft] = useLocalStorage<PurchaseMode>(
-    PURCHASE_IMPORT_DRAFT_MODE_KEY,
-    "goods",
+  const [purchaseModeDraft, setPurchaseModeDraft, clearPurchaseModeDraft] = usePersistedState<PurchaseMode>(
+    `${purchaseDraftKey}:mode`,
+    readPersistedValue(legacyDraftKey("mode"), "goods", "local"),
+    { storage: "local", debounceMs: 250 },
   );
   const [purchaseMode, setPurchaseMode] = useState<PurchaseMode>(
     isEdit ? "goods" : purchaseModeDraft,
@@ -635,7 +643,6 @@ export const PurchaseEditor = ({
 
   const finishNewPurchase = useCallback(() => {
     const defaultHeader = getDefaultPurchaseImportHeader();
-    const defaultDraftLines: PurchaseImportRow[] = [];
     const defaultLines = [
       createEmptyPurchaseRow({
         indexId: 1,
@@ -647,12 +654,16 @@ export const PurchaseEditor = ({
     ];
 
     isDraftStorageEnabledRef.current = false;
-    setHeaderDraft(defaultHeader);
-    setExcelData(defaultDraftLines);
+    clearHeaderDraft();
+    clearExcelDataDraft();
     setProductWithCount(false);
     setPurchaseMode("goods");
-    setProductWithCountDraft(false);
-    setPurchaseModeDraft("goods");
+    clearProductWithCountDraft();
+    clearPurchaseModeDraft();
+    removePersistedValue(legacyDraftKey("header"), "local");
+    removePersistedValue(legacyDraftKey("lines"), "local");
+    removePersistedValue(legacyDraftKey("product-with-count"), "local");
+    removePersistedValue(legacyDraftKey("mode"), "local");
     formik.resetForm({
       values: {
         ...defaultHeader,
@@ -663,10 +674,10 @@ export const PurchaseEditor = ({
   }, [
     formik,
     navigate,
-    setExcelData,
-    setHeaderDraft,
-    setProductWithCountDraft,
-    setPurchaseModeDraft,
+    clearExcelDataDraft,
+    clearHeaderDraft,
+    clearProductWithCountDraft,
+    clearPurchaseModeDraft,
   ]);
 
   const handleCreateSave = useCallback(

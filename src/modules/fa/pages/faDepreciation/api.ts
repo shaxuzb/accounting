@@ -15,13 +15,11 @@ export const faDepreciationService = {
       .get<FaDepreciationRun>(endpoints.detail(id))
       .then((res) => res.data),
 
-  run: (payload: Record<string, unknown>) =>
+  run: (period: string) =>
     $axiosPrivate
-      .post<FaDepreciationRun>(endpoints.list, payload)
+      .post<number>(endpoints.list, undefined, { params: { period } })
       .then((res) => res.data),
 
   cancel: (id: string | number) =>
-    $axiosPrivate
-      .put<FaDepreciationRun>(endpoints.cancel(id))
-      .then((res) => res.data),
+    $axiosPrivate.put<void>(endpoints.cancel(id)),
 };

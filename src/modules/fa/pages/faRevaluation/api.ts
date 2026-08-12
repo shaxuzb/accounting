@@ -17,22 +17,19 @@ export const faRevaluationService = {
 
   create: (payload: FaRevaluationPayload) =>
     $axiosPrivate
-      .post<FaRevaluation>(endpoints.list, payload)
+      .post<number>(endpoints.list, payload)
       .then((res) => res.data),
 
   update: (id: string | number, payload: FaRevaluationPayload) =>
     $axiosPrivate
-      .put<FaRevaluation>(endpoints.detail(id), payload)
-      .then((res) => res.data),
+      .put<void>(endpoints.detail(id), payload),
 
   confirm: (id: string | number) =>
     $axiosPrivate
-      .put<FaRevaluation>(endpoints.confirm(id))
-      .then((res) => res.data),
+      .put<void>(endpoints.confirm(id)),
 
   cancel: (id: string | number) =>
     $axiosPrivate
-      .put<FaRevaluation>(endpoints.cancel(id))
-      .then((res) => res.data),
+      .put<void>(endpoints.cancel(id)),
 };
 

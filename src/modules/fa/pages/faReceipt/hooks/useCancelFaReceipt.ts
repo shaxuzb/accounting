@@ -7,8 +7,8 @@ export const useCancelFaReceipt = (id: string | number) => {
 
   return useMutation({
     mutationFn: () => faReceiptService.cancel(id),
-    onSuccess: (data) => {
-      queryClient.setQueryData(queryKeys.detail(id), data);
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.detail(id) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
     },
   });

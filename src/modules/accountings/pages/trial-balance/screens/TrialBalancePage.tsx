@@ -1,6 +1,9 @@
 import { useFormik } from "formik";
 import { BookOpenText, Repeat2, Scale } from "lucide-react";
-import { useState } from "react";
+import {
+  usePersistedState,
+  useScopedStorageKey,
+} from "@/shared/persistence/usePersistedState";
 import { useTranslation } from "react-i18next";
 import AccountingReportLedgerSummary from "@/modules/accountings/pages/accounting-report/components/AccountingReportLedgerSummary";
 import TrialBalanceFilters from "../components/TrialBalanceFilters";
@@ -16,12 +19,16 @@ const initialValues: TrialBalanceQuery = {
 
 export default function TrialBalancePage() {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState<TrialBalanceQuery>({
-    includeZeroBalance: false,
-  });
+  const filtersKey = useScopedStorageKey("report-state", "trial-balance");
+  const [filters, setFilters] = usePersistedState<TrialBalanceQuery>(
+    filtersKey,
+    { includeZeroBalance: false },
+    { debounceMs: 0 },
+  );
   const query = useGetTrialBalance(filters);
   const formik = useFormik<TrialBalanceQuery>({
-    initialValues,
+    initialValues: { ...initialValues, ...filters },
+    enableReinitialize: true,
     onSubmit: (values) => setFilters(values),
   });
   const data = query.data;

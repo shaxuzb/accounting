@@ -2,8 +2,6 @@ export interface FaRevaluationLine {
   faAssetId: number;
   newValue: number | string;
   note: string;
-  assetAccountId: number;
-  accumulatedDepreciationAccountId: number;
 }
 
 export interface FaRevaluationLineResponse extends FaRevaluationLine {
@@ -15,6 +13,9 @@ export interface FaRevaluationLineResponse extends FaRevaluationLine {
   assetAccountNumber?: string;
   accumulatedDepreciationAccountName?: string;
   accumulatedDepreciationAccountNumber?: string;
+  oldValue?: number;
+  assetAccountId?: number;
+  accumulatedDepreciationAccountId?: number;
 }
 
 export interface FaRevaluationPayload {

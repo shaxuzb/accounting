@@ -19,17 +19,12 @@ type SelectResponse = SelectOption[] | { items?: SelectOption[] };
 
 const lookupDefinitions = [
   ["counterparties", selectListEndpoints.counterpartiesSelectList],
-  ["warehouses", selectListEndpoints.warehousesSelectList],
   ["currencies", selectListEndpoints.currenciesSelectList],
   ["receiptTypes", selectListEndpoints.faReceiptTypesSelectList],
-  ["products", selectListEndpoints.productsSelectList],
   ["vatRates", selectListEndpoints.vatRatesSelectList],
   ["accounts", selectListEndpoints.chartAccountsSelectList],
   ["faGroups", selectListEndpoints.faGroupsSelectList],
   ["okofs", selectListEndpoints.okofsSelectList],
-  ["depreciationMethods", selectListEndpoints.depreciationMethodsSelectList],
-  ["departments", selectListEndpoints.departmentsSelectList],
-  ["users", selectListEndpoints.usersSelectList],
 ] as const;
 
 export type FaReceiptLookupKey = (typeof lookupDefinitions)[number][0];
@@ -91,4 +86,3 @@ export default function useFaReceiptLookups() {
 
   return { label, accountLabel };
 }
-

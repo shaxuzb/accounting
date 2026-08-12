@@ -27,13 +27,11 @@ import FaReceiptReadonlyView from "../components/readonly/FaReceiptReadonlyView"
 const defaultValues: FaReceiptFormValues = {
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   counterpartyId: null,
-  warehouseId: null,
   currencyId: null,
   receiptTypeId: null,
   supplierAccountId: null,
   lines: [
     {
-      sourceProductId: null,
       name: "",
       quantity: 1,
       price: 0,
@@ -45,19 +43,9 @@ const defaultValues: FaReceiptFormValues = {
           inventoryNumber: "",
           name: "",
           initialCost: 0,
-          salvageValue: 0,
-          usefulLifeMonths: 1,
-          depreciationMethodId: null,
           faGroupId: null,
           okofId: null,
-          commissioningDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
-          deprStartDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
-          plannedUnitsTotal: 0,
-          departmentId: null,
-          responsibleUserId: null,
           assetAccountId: null,
-          accumulatedDepreciationAccountId: null,
-          depreciationExpenseAccountId: null,
         },
       ],
     },
@@ -83,16 +71,13 @@ const getFirstValidationError = (value: unknown): string | undefined => {
 
 const toPayload = (
   values: FaReceiptFormValues,
-  responsibleUserId: number | null,
 ): FaReceiptPayload => ({
   docDate: values.docDate,
   counterpartyId: Number(values.counterpartyId),
-  warehouseId: Number(values.warehouseId),
   currencyId: Number(values.currencyId),
   receiptTypeId: Number(values.receiptTypeId),
   supplierAccountId: Number(values.supplierAccountId),
   lines: values.lines.map((line) => ({
-    sourceProductId: Number(line.sourceProductId),
     name: line.name.trim(),
     quantity: Number(line.quantity),
     price: Number(line.price),
@@ -103,21 +88,9 @@ const toPayload = (
       inventoryNumber: asset.inventoryNumber.trim(),
       name: asset.name.trim(),
       initialCost: Number(asset.initialCost),
-      salvageValue: Number(asset.salvageValue),
-      usefulLifeMonths: Number(asset.usefulLifeMonths),
-      depreciationMethodId: Number(asset.depreciationMethodId),
       faGroupId: Number(asset.faGroupId),
       okofId: Number(asset.okofId),
-      commissioningDate: asset.commissioningDate,
-      deprStartDate: asset.deprStartDate,
-      plannedUnitsTotal: Number(asset.plannedUnitsTotal),
-      departmentId: Number(asset.departmentId),
-      responsibleUserId: Number(responsibleUserId),
       assetAccountId: Number(asset.assetAccountId),
-      accumulatedDepreciationAccountId: Number(
-        asset.accumulatedDepreciationAccountId,
-      ),
-      depreciationExpenseAccountId: Number(asset.depreciationExpenseAccountId),
     })),
   })),
 });
@@ -129,7 +102,6 @@ export default function FaReceiptFormPage() {
   const isCreate = !id;
 
   const { user } = useAppSelector((state) => state.auth);
-  const currentUserId = user?.user.id ?? null;
   const permissions = user?.user.permissions ?? [];
   const canCreate = permissions.includes(faReceiptPermissions.create);
   const canUpdate = permissions.includes(faReceiptPermissions.update);
@@ -143,8 +115,7 @@ export default function FaReceiptFormPage() {
   const cancelMutation = useCancelFaReceipt(id);
 
   const record = detailQuery.data;
-  const statusId =
-    record?.statusId ?? record?.stateId ?? faDocumentStatusIds.draft;
+  const statusId = record?.statusId ?? faDocumentStatusIds.draft;
   const isDraft = isCreate || statusId === faDocumentStatusIds.draft;
   const isPosted = statusId === faDocumentStatusIds.posted;
   const canSubmit = isCreate ? canCreate : isDraft && canUpdate;
@@ -154,22 +125,13 @@ export default function FaReceiptFormPage() {
     () => ({
       docDate: record?.docDate ?? defaultValues.docDate,
       counterpartyId: record?.counterpartyId ?? defaultValues.counterpartyId,
-      warehouseId: record?.warehouseId ?? defaultValues.warehouseId,
       currencyId: record?.currencyId ?? defaultValues.currencyId,
       receiptTypeId: record?.receiptTypeId ?? defaultValues.receiptTypeId,
       supplierAccountId:
         record?.supplierAccountId ?? defaultValues.supplierAccountId,
-      lines: (record?.lines?.length ? record.lines : defaultValues.lines).map(
-        (line) => ({
-          ...line,
-          assets: line.assets.map((asset) => ({
-            ...asset,
-            responsibleUserId: currentUserId,
-          })),
-        }),
-      ),
+      lines: record?.lines?.length ? record.lines : defaultValues.lines,
     }),
-    [currentUserId, record],
+    [record],
   );
 
   const formik = useFormik<FaReceiptFormValues>({
@@ -195,12 +157,12 @@ export default function FaReceiptFormPage() {
   async function persistReceipt(
     values: FaReceiptFormValues,
   ): Promise<FaReceiptResponse> {
-    const payload = toPayload(values, currentUserId);
-    const saved =
+    const payload = toPayload(values);
+    const savedId =
       !isCreate && id
-        ? await updateMutation.mutateAsync({ id, payload })
+        ? (await updateMutation.mutateAsync({ id, payload }), Number(id))
         : await createMutation.mutateAsync(payload);
-    return saved;
+    return { ...payload, id: savedId, statusId: faDocumentStatusIds.draft };
   }
 
   const validateReceipt = async () => {
@@ -296,7 +258,6 @@ export default function FaReceiptFormPage() {
           <FaReceiptFormFields
             formik={formik}
             isDraft={isDraft}
-            currentUserId={currentUserId}
           />
         </fieldset>
 

@@ -33,6 +33,7 @@ import {
   getSalePriceByMarkup,
   normalizeProductPriceDetails,
 } from "../utils/salePricingDetails";
+import { saleDocumentTypeId } from "../constants/documentAccount";
 import { getLayerCostValidationError } from "../utils/saleCostingValidation";
 import SaleWarehouseProductsModal from "./SaleWarehouseProductsModal";
 import SaleLineAccountsDrawer, {
@@ -326,7 +327,7 @@ export default function SaleProductSelection({
   });
   const vatRateOptions = vatRateData ?? EMPTY_VAT_RATE_OPTIONS;
   const { chartAccounts, defaultAccounts } =
-    useGetSaleDocumentAccountOptions(documentTypeId ?? 0);
+    useGetSaleDocumentAccountOptions(documentTypeId ?? saleDocumentTypeId);
   const chartAccountById = useMemo(
     () =>
       new Map(
@@ -344,7 +345,7 @@ export default function SaleProductSelection({
 
       const nextLine = { ...line };
       if (
-        nextLine.inventoryAccountId === null &&
+        nextLine.inventoryAccountId == null &&
         defaultAccounts.inventoryAccountId !== null
       ) {
         nextLine.inventoryAccountId = defaultAccounts.inventoryAccountId;
@@ -352,7 +353,7 @@ export default function SaleProductSelection({
         hasChanges = true;
       }
       if (
-        nextLine.incomeAccountId === null &&
+        nextLine.incomeAccountId == null &&
         defaultAccounts.incomeAccountId !== null
       ) {
         nextLine.incomeAccountId = defaultAccounts.incomeAccountId;
@@ -360,7 +361,7 @@ export default function SaleProductSelection({
         hasChanges = true;
       }
       if (
-        nextLine.costAccountId === null &&
+        nextLine.costAccountId == null &&
         defaultAccounts.costAccountId !== null
       ) {
         nextLine.costAccountId = defaultAccounts.costAccountId;
@@ -666,7 +667,7 @@ export default function SaleProductSelection({
 
     const account = chartAccountById.get(Number(accountId));
     const accountNumber = account?.number ?? account?.code;
-    return accountNumber ? String(accountNumber) : String(accountId);
+    return accountNumber ? String(accountNumber) : "—";
   };
 
   const getAccountPreview = (line: SaleSelectedProduct) =>
@@ -1376,7 +1377,7 @@ export default function SaleProductSelection({
       <SaleLineAccountsDrawer
         open={Boolean(accountLine)}
         line={accountLine}
-        documentTypeId={documentTypeId}
+        documentTypeId={documentTypeId ?? saleDocumentTypeId}
         onClose={() => setAccountLine(null)}
         onApply={applyLineAccounts}
       />

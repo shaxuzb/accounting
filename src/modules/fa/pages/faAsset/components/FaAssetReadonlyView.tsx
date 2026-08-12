@@ -4,7 +4,6 @@ import {
   Building2,
   CalendarDays,
   CircleDollarSign,
-  Package,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
@@ -85,14 +84,6 @@ export default function FaAssetReadonlyView({
           icon={<Barcode size={24} strokeWidth={1.8} />}
           label={t("fa.fields.inventoryNumber")}
           value={record.inventoryNumber || `#${record.id}`}
-        />
-        <DocumentSummaryItem
-          icon={<Package size={24} strokeWidth={1.8} />}
-          label={t("fa.fields.sourceProductTable")}
-          value={joinValues(
-            record.sourceProductTableSerialNumber,
-            record.sourceProductTableMarkingNumber,
-          )}
         />
         <DocumentSummaryItem
           icon={<CalendarDays size={24} strokeWidth={1.8} />}
@@ -192,13 +183,6 @@ export default function FaAssetReadonlyView({
             label: t("fa.fields.responsibleUser"),
             value:
               record.responsibleUserName || record.responsibleUserId || "-",
-          },
-          {
-            label: t("fa.fields.sourceProductTable"),
-            value: joinValues(
-              record.sourceProductTableSerialNumber,
-              record.sourceProductTableMarkingNumber,
-            ),
           },
         ]}
       />

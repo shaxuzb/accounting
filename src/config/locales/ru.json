@@ -155,6 +155,7 @@
     "entities": {
       "assets": "Основные средства",
       "receipts": "Приход",
+      "commissionings": "Ввод в эксплуатацию",
       "movements": "Перемещение",
       "revaluations": "Переоценка",
       "disposals": "Списание",
@@ -227,6 +228,9 @@
       "receiptCreate": "Поступление основных средств ",
       "receiptEdit": "Поступление основных средств №{{number}}",
       "receiptSubtitle": "Документ поступления основных средств",
+      "commissioningCreate": "Новый ввод в эксплуатацию",
+      "commissioningEdit": "Редактирование ввода в эксплуатацию",
+      "commissioningDetail": "Документ ввода в эксплуатацию",
       "movementCreate": "Перемещение основных средств",
       "movementEdit": "Перемещение основных средств",
       "movementDetail": "Перемещение основных средств",
@@ -291,7 +295,10 @@
       "disposalAccountRequired": "Выберите счёт выбытия",
       "customerAccountRequired": "Выберите счёт покупателя",
       "gainAccountRequired": "Выберите счёт прибыли",
-      "lossAccountRequired": "Выберите счёт убытка"
+      "lossAccountRequired": "Выберите счёт убытка",
+      "assetQuantityMismatch": "Количество основных средств должно совпадать с количеством в строке",
+      "movementDestinationRequired": "Выберите хотя бы новый отдел или ответственное лицо",
+      "saleAmountForSaleRequired": "Для продажи сумма хотя бы по одному основному средству должна быть больше нуля"
     },
     "sections": {
       "disposalDetails": "Детали выбытия",
@@ -344,7 +351,7 @@
       "increase": "При увеличении стоимости",
       "decrease": "При уменьшении стоимости",
       "assetsToRevalue": "Переоцениваемые средства",
-      "assetsDescription": "Укажите новую стоимость и счета для каждого средства.",
+      "assetsDescription": "Укажите новую стоимость для каждого средства.",
       "selectedAssets": "Выбрано средств: {{count}}",
       "assetCount": "Количество средств",
       "countValue": "{{count}}",
@@ -360,6 +367,10 @@
       "contents": "Состав списания"
     },
     "asset": {
+      "cardEditNotice": "Можно изменить только основные реквизиты карточки",
+      "cardEditDescription": "Стоимость, амортизация, размещение и счета управляются документами ОС.",
+      "identification": "Реквизиты карточки",
+      "identificationDescription": "Проверьте инвентарный номер, название, группу и код ОКОФ.",
       "identity": "Основная информация",
       "identityDescription": "Укажите инвентарный номер, наименование и исходный товар.",
       "classification": "Классификация и амортизация",
@@ -369,7 +380,23 @@
       "placement": "Расположение и ответственное лицо",
       "placementDescription": "Выберите подразделение и ответственного пользователя.",
       "accountsDescription": "Укажите счета основного средства и амортизации."
-    }
+    },
+    "commissioning": {
+      "lifecycleTitle": "Жизненный цикл ОС",
+      "lifecycleReceipt": "Поступление",
+      "lifecycleCommissioning": "Ввод в эксплуатацию",
+      "lifecycleActive": "Активное ОС",
+      "assetsTitle": "Основные средства для ввода",
+      "assetsDescription": "Выберите созданные поступлением основные средства, которые ещё не введены в эксплуатацию.",
+      "assetCount": "Количество ОС",
+      "assetSearchPlaceholder": "Поиск по инвентарному номеру, названию или подразделению",
+      "noAssets": "Основные средства не найдены",
+      "amortizationDetails": "Параметры амортизации"
+    },
+    "depreciation": { "period": "Месяц расчёта" },
+    "filters": { "dateFrom": "Дата с", "dateTo": "Дата по" },
+    "statuses": { "draft": "Черновик", "posted": "Проведён", "cancelled": "Отменён", "pending": "Ожидает" },
+    "assetStatuses": { "notCommissioned": "Не введено в эксплуатацию", "active": "Активно", "conservation": "На консервации", "disposed": "Списано" }
   },
   "settings": {
     "integrations": {

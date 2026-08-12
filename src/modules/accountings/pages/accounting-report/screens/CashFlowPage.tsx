@@ -6,9 +6,10 @@ import {
   CircleDollarSign,
   Wallet,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { numberSpacing } from "@/utils/utils";
+import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
@@ -21,10 +22,16 @@ const money = (value: number) => numberSpacing(value, undefined, true);
 
 export default function CashFlowPage() {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState<CashFlowQuery>({});
+  const filtersKey = useScopedStorageKey("report-state", "cash-flow");
+  const [filters, setFilters] = usePersistedState<CashFlowQuery>(
+    filtersKey,
+    {},
+    { debounceMs: 0 },
+  );
   const query = useGetCashFlow(filters);
   const formik = useFormik<CashFlowQuery>({
-    initialValues,
+    initialValues: { ...initialValues, ...filters },
+    enableReinitialize: true,
     onSubmit: (values) => setFilters(values),
   });
 

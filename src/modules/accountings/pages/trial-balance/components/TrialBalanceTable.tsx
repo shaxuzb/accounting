@@ -1,10 +1,14 @@
 import { Button, Checkbox, Empty, Input, Popover, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { FileSpreadsheet, Search, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 import Card from "@/components/ui/card/Card";
+import {
+  usePersistedState,
+  useScopedStorageKey,
+} from "@/shared/persistence/usePersistedState";
 import { numberSpacing } from "@/utils/utils";
 import type {
   TrialBalanceItem,
@@ -42,11 +46,18 @@ const exportDate = (value?: string | null) => value?.split("T")[0] ?? "all";
 
 export default function TrialBalanceTable({ result, filters, loading }: Props) {
   const { t } = useTranslation();
-  const [search, setSearch] = useState("");
-  const [visibleColumns, setVisibleColumns] = useState<VisibleColumnKey[]>([
-    "accountName",
-    ...financialColumnKeys,
-  ]);
+  const searchKey = useScopedStorageKey("report-table", "trial-balance:search");
+  const columnsKey = useScopedStorageKey("report-table", "trial-balance:columns");
+  const [search, setSearch] = usePersistedState(
+    searchKey,
+    "",
+    { storage: "session", debounceMs: 150 },
+  );
+  const [visibleColumns, setVisibleColumns] = usePersistedState<VisibleColumnKey[]>(
+    columnsKey,
+    ["accountName", ...financialColumnKeys],
+    { storage: "session", debounceMs: 0 },
+  );
   const visibleFinancialColumns = financialColumnKeys.filter((key) =>
     visibleColumns.includes(key),
   );

@@ -5,3 +5,4 @@ export * from "./pages/faDepreciation/constants/permissions";
 export * from "./pages/faMovement/constants/permissions";
 export * from "./pages/faReceipt/constants/permissions";
 export * from "./pages/faRevaluation/constants/permissions";
+export * from "./pages/faCommissioning/constants/permissions";

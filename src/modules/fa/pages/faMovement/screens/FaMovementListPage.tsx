@@ -4,7 +4,8 @@ import { Plus, RefreshCw } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/store/hooks";
-import SearchFilter from "@/components/ui/filters/SearchFilter";
+import SelectFilter from "@/components/ui/filters/SelectFilter";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
@@ -16,6 +17,8 @@ import { useGetListFaMovements } from "../hooks";
 
 import type { FaMovement } from "../types/type";
 import { isFaDraftStatus } from "../../../shared/constants/statuses";
+import FaListFilters from "../../../shared/components/FaListFilters";
+import FaListPagination from "../../../shared/components/FaListPagination";
 
 export default function FaMovementListPage() {
   const { t } = useTranslation();
@@ -62,16 +65,14 @@ export default function FaMovementListPage() {
       align: "center",
       render: (_, record) => (
         <ProcessStatusBadge
-          statusId={record.statusId ?? record.stateId}
-          statusName={record.statusName ?? record.stateName}
+          statusId={record.statusId}
+          statusName={record.statusName}
         />
       ),
     },
   ];
 
-  const hasActions =
-    permissions.includes(faMovementPermissions.update) ||
-    permissions.includes(faMovementPermissions.delete);
+  const hasActions = permissions.includes(faMovementPermissions.update);
 
   const columns: TableColumnType<FaMovement>[] = hasActions
     ? [
@@ -91,7 +92,6 @@ export default function FaMovementListPage() {
                   record={record}
                   permissions={permissions}
                   permissionsCode={{
-                    deleteCode: isDraft ? faMovementPermissions.delete : "",
                     editCode: isDraft ? faMovementPermissions.update : "",
                   }}
                   refetch={refetch}
@@ -105,7 +105,12 @@ export default function FaMovementListPage() {
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <SearchFilter />
+        <div className="flex flex-wrap items-center gap-2">
+          <FaListFilters>
+            <SelectFilter paramKey="departmentId" placeholder="fa.fields.department" path={selectListEndpoints.departmentsSelectList} width={180} search />
+            <SelectFilter paramKey="responsibleUserId" placeholder="fa.fields.responsibleUser" path={selectListEndpoints.usersSelectList} width={190} search />
+          </FaListFilters>
+        </div>
         <Space>
           <PermissionCard permission={faMovementPermissions.create}>
             <Link to="add">
@@ -129,6 +134,7 @@ export default function FaMovementListPage() {
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
         />
+        <FaListPagination total={data?.totalCount ?? data?.total} page={data?.page} pageSize={data?.pageSize} />
       </Card>
     </div>
   );

@@ -155,6 +155,7 @@
     "entities": {
       "assets": "Assets",
       "receipts": "Receipts",
+      "commissionings": "Commissioning",
       "movements": "Movements",
       "revaluations": "Revaluations",
       "disposals": "Disposals",
@@ -227,6 +228,9 @@
       "receiptCreate": "Fixed asset receipt",
       "receiptEdit": "Fixed asset receipt №{{number}}",
       "receiptSubtitle": "Fixed asset receipt document",
+      "commissioningCreate": "New asset commissioning",
+      "commissioningEdit": "Edit asset commissioning",
+      "commissioningDetail": "Asset commissioning document",
       "movementCreate": "Fixed asset movement",
       "movementEdit": "Fixed asset movement",
       "movementDetail": "Fixed asset movement",
@@ -291,7 +295,10 @@
       "disposalAccountRequired": "Select a disposal account",
       "customerAccountRequired": "Select a customer account",
       "gainAccountRequired": "Select a gain account",
-      "lossAccountRequired": "Select a loss account"
+      "lossAccountRequired": "Select a loss account",
+      "assetQuantityMismatch": "The number of assets must equal the quantity",
+      "movementDestinationRequired": "Select at least a destination department or responsible person",
+      "saleAmountForSaleRequired": "For a sale, at least one asset must have a sale amount greater than zero"
     },
     "sections": {
       "disposalDetails": "Disposal details",
@@ -344,7 +351,7 @@
       "increase": "When value increases",
       "decrease": "When value decreases",
       "assetsToRevalue": "Assets to revalue",
-      "assetsDescription": "Set the new value and accounts for each asset.",
+      "assetsDescription": "Set the new value for each asset.",
       "selectedAssets": "Selected assets: {{count}}",
       "assetCount": "Asset count",
       "countValue": "{{count}}",
@@ -360,6 +367,10 @@
       "contents": "Disposal contents"
     },
     "asset": {
+      "cardEditNotice": "Only the asset card's primary details can be changed",
+      "cardEditDescription": "Value, depreciation, location, and accounts are managed through FA documents.",
+      "identification": "Asset card details",
+      "identificationDescription": "Review the inventory number, name, group, and OKOF code.",
       "identity": "Basic information",
       "identityDescription": "Enter the asset inventory number, name, and source product.",
       "classification": "Classification and depreciation",
@@ -369,7 +380,23 @@
       "placement": "Location and responsible person",
       "placementDescription": "Select the department and responsible user assigned to the asset.",
       "accountsDescription": "Set the fixed asset and depreciation accounts."
-    }
+    },
+    "commissioning": {
+      "lifecycleTitle": "Asset lifecycle",
+      "lifecycleReceipt": "Receipt",
+      "lifecycleCommissioning": "Commissioning",
+      "lifecycleActive": "Active asset",
+      "assetsTitle": "Assets to commission",
+      "assetsDescription": "Select assets created by a posted receipt that have not yet been commissioned.",
+      "assetCount": "Asset count",
+      "assetSearchPlaceholder": "Search by inventory number, name, or department",
+      "noAssets": "No fixed assets found",
+      "amortizationDetails": "Depreciation parameters"
+    },
+    "depreciation": { "period": "Calculation month" },
+    "filters": { "dateFrom": "Date from", "dateTo": "Date to" },
+    "statuses": { "draft": "Draft", "posted": "Posted", "cancelled": "Cancelled", "pending": "Pending" },
+    "assetStatuses": { "notCommissioned": "Not commissioned", "active": "Active", "conservation": "Conservation", "disposed": "Disposed" }
   },
   "settings": {
     "title": "Settings",

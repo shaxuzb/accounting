@@ -7,6 +7,7 @@ import { faDepreciationPermissions } from "./pages/faDepreciation/constants/perm
 import { faMovementPermissions } from "./pages/faMovement/constants/permissions";
 import { faReceiptPermissions } from "./pages/faReceipt/constants/permissions";
 import { faRevaluationPermissions } from "./pages/faRevaluation/constants/permissions";
+import { faCommissioningPermissions } from "./pages/faCommissioning/constants/permissions";
 import FaAssetListPage from "./pages/faAsset/screens/FaAssetListPage";
 import FaAssetFormPage from "./pages/faAsset/screens/FaAssetFormPage";
 import FaReceiptListPage from "./pages/faReceipt/screens/FaReceiptListPage";
@@ -19,6 +20,8 @@ import FaDisposalListPage from "./pages/faDisposal/screens/FaDisposalListPage";
 import FaDisposalFormPage from "./pages/faDisposal/screens/FaDisposalFormPage";
 import FaDepreciationListPage from "./pages/faDepreciation/screens/FaDepreciationListPage";
 import FaDepreciationFormPage from "./pages/faDepreciation/screens/FaDepreciationFormPage";
+import FaCommissioningListPage from "./pages/faCommissioning/screens/FaCommissioningListPage";
+import FaCommissioningFormPage from "./pages/faCommissioning/screens/FaCommissioningFormPage";
 
 const withPermission = (
   element: React.ReactElement,
@@ -41,18 +44,6 @@ export const faRoutes: RouteObject = {
         {
           index: true,
           element: withPermission(<FaAssetListPage />, faAssetPermissions.view),
-        },
-        {
-          path: "add",
-          element: withPermission(
-            <FaAssetFormPage />,
-            faAssetPermissions.create,
-          ),
-          handle: {
-            title: "fa.form.create",
-            showBack: true,
-            backTo: "..",
-          },
         },
         {
           path: ":id",
@@ -126,6 +117,43 @@ export const faRoutes: RouteObject = {
             showBack: true,
             backTo: "..",
           },
+        },
+      ],
+    },
+    {
+      path: "commissionings",
+      handle: { title: "fa.entities.commissionings" },
+      children: [
+        {
+          index: true,
+          element: withPermission(
+            <FaCommissioningListPage />,
+            faCommissioningPermissions.view,
+          ),
+        },
+        {
+          path: "add",
+          element: withPermission(
+            <FaCommissioningFormPage />,
+            faCommissioningPermissions.create,
+          ),
+          handle: { title: "fa.form.commissioningCreate", showBack: true, backTo: ".." },
+        },
+        {
+          path: ":id",
+          element: withPermission(
+            <FaCommissioningFormPage />,
+            faCommissioningPermissions.detail,
+          ),
+          handle: { title: "fa.form.commissioningDetail", showBack: true, backTo: ".." },
+        },
+        {
+          path: "edit/:id",
+          element: withPermission(
+            <FaCommissioningFormPage />,
+            faCommissioningPermissions.update,
+          ),
+          handle: { title: "fa.form.commissioningEdit", showBack: true, backTo: ".." },
         },
       ],
     },

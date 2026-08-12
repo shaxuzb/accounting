@@ -6,7 +6,7 @@ import {
   BookOpenText,
   Scale,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import SelectCustom from "@/components/fields/SelectCustom";
 import {
@@ -15,6 +15,7 @@ import {
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
 import { customDate, numberSpacing } from "@/utils/utils";
+import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
@@ -33,11 +34,17 @@ const money = (value: number) => numberSpacing(value, undefined, true);
 
 export default function AccountCardPage() {
   const { t } = useTranslation();
-  const [filters, setFilters] = useState<AccountCardQuery>();
-  const query = useGetAccountCard(filters);
+  const filtersKey = useScopedStorageKey("report-state", "account-card");
+  const [filters, setFilters] = usePersistedState<AccountCardQuery>(
+    filtersKey,
+    {},
+    { debounceMs: 0 },
+  );
+  const query = useGetAccountCard(filters.accountId ? filters : undefined);
   const formik = useFormik<AccountCardQuery>({
-    initialValues,
-    onSubmit: (values) => setFilters(values.accountId ? values : undefined),
+    initialValues: { ...initialValues, ...filters },
+    enableReinitialize: true,
+    onSubmit: (values) => setFilters(values.accountId ? values : {}),
   });
 
   const columns = useMemo<ColumnsType<AccountCardTransaction>>(
@@ -151,7 +158,7 @@ export default function AccountCardPage() {
                       page: 1,
                       pageSize: 50,
                     }
-                  : undefined,
+                  : {},
               );
             }}
           />

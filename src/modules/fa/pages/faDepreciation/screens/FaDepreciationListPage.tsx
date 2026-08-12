@@ -3,15 +3,16 @@ import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import SearchFilter from "@/components/ui/filters/SearchFilter";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import Card from "@/components/ui/card/Card";
 import { useAppSelector } from "@/store/hooks";
 import { customDate, generateKeyTable } from "@/utils/utils";
-import { stateStatus } from "@/utils/helpers/statusHelper";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { faDepreciationPermissions } from "../constants/permissions";
 import { useGetListFaDepreciations } from "../hooks";
 import type { FaDepreciationRecord } from "../types/type";
+import FaListFilters from "../../../shared/components/FaListFilters";
+import FaListPagination from "../../../shared/components/FaListPagination";
 
 export default function FaDepreciationListPage() {
   const { t } = useTranslation();
@@ -47,11 +48,11 @@ export default function FaDepreciationListPage() {
       minWidth: 240,
     },
     {
-      dataIndex: "stateName",
-      title: t("fa.fields.state"),
+      dataIndex: "statusName",
+      title: t("settings.fields.status"),
       align: "center",
       width: 130,
-      render: (_, record) => stateStatus(record.stateId, record.stateName),
+      render: (_, record) => <ProcessStatusBadge statusId={record.statusId} statusName={record.statusName} />,
     },
   ];
 
@@ -76,7 +77,7 @@ export default function FaDepreciationListPage() {
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <SearchFilter />
+        <div className="flex flex-wrap items-center gap-2"><FaListFilters dateParamKeys={["periodFrom", "periodTo"]} /></div>
         <Space>
           {canRun && (
             <PermissionCard permission={faDepreciationPermissions.create}>
@@ -102,6 +103,7 @@ export default function FaDepreciationListPage() {
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
         />
+        <FaListPagination total={data?.totalCount ?? data?.total} page={data?.page} pageSize={data?.pageSize} />
       </Card>
     </div>
   );

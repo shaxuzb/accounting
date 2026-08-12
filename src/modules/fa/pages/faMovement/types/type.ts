@@ -1,51 +1,39 @@
 export interface FaMovementAssetLine {
   faAssetId: number;
-  fromDepartmentId?: number;
-  fromResponsibleUserId?: number;
-  note: string;
+  note: string | null;
 }
 
 export interface FaMovementAssetLineResponse extends FaMovementAssetLine {
   faAssetName?: string;
   faAssetInventoryNumber?: string;
-  assetName?: string;
   inventoryNumber?: string;
-  fromDepartmentId?: number;
+  assetName?: string;
+  fromDepartmentId?: number | null;
   fromDepartmentName?: string;
-  previousDepartmentId?: number;
-  previousDepartmentName?: string;
-  oldDepartmentId?: number;
-  oldDepartmentName?: string;
-  departmentId?: number;
-  departmentName?: string;
-  fromResponsibleUserId?: number;
+  fromResponsibleUserId?: number | null;
   fromResponsibleUserName?: string;
-  previousResponsibleUserId?: number;
+  previousDepartmentId?: number | null;
+  previousDepartmentName?: string;
+  previousResponsibleUserId?: number | null;
   previousResponsibleUserName?: string;
-  oldResponsibleUserId?: number;
-  oldResponsibleUserName?: string;
-  responsibleUserId?: number;
-  responsibleUserName?: string;
 }
 
 export interface FaMovementPayload {
   docDate: string;
-  toDepartmentId: number;
-  toResponsibleUserId: number;
+  toDepartmentId: number | null;
+  toResponsibleUserId: number | null;
   note: string;
-  stateId?: number;
   lines: FaMovementAssetLine[];
 }
 
-export interface FaMovement extends Omit<FaMovementPayload, "lines"> {
+export interface FaMovement extends FaMovementPayload {
   id: number;
   organizationName?: string;
   docNumber?: string;
   toDepartmentName?: string;
   toResponsibleUserName?: string;
-  statusId?: number;
+  statusId: number;
   statusName?: string;
-  // For List Page compatibility
   documentNumber?: string;
   documentDate?: string;
   comment?: string;

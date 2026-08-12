@@ -104,7 +104,7 @@ export default function ContractAddEditPage({
         stateId: Contract.stateId ?? null,
       });
     }
-  }, [Contract, isEdit]);
+  }, [Contract, formik, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -205,7 +205,6 @@ export default function ContractAddEditPage({
             block
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-            onClick={() => console.log(formik)}
             loading={isSubmitting}
           >
             {t("common.submit")}

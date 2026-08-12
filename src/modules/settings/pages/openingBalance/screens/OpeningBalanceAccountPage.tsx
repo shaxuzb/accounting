@@ -122,8 +122,6 @@ export default function OpeningBalanceAccountPage() {
     refetch: refetchAccount,
   } = useGetOpeningBalanceAccount(id, accountId, Boolean(id) && !isNew);
   const saveMutation = useSaveOpeningBalanceAccount(id);
-  console.log(accountData);
-
   const initialValues = accountData
     ? mapOpeningBalanceAccountToForm(accountData)
     : emptyAccount;

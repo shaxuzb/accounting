@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../constants/queryKeys";
 import { faDisposalService } from "../api";
-import type { FaDisposalPayload, FaDisposalResponse } from "../types/type";
+import type { FaDisposalPayload } from "../types/type";
 
 interface UpdateArgs {
   id: string | number;
@@ -14,17 +14,8 @@ export const useUpdateFaDisposal = () => {
   return useMutation({
     mutationFn: ({ id, payload }: UpdateArgs) =>
       faDisposalService.update(id, payload),
-    onSuccess: (data, variables) => {
-      if (data && typeof data === "object") {
-        queryClient.setQueryData<FaDisposalResponse>(
-          queryKeys.detail(variables.id),
-          (current) => ({
-            ...current,
-            ...data,
-            id: data.id ?? current?.id ?? Number(variables.id),
-          }),
-        );
-      }
+    onSuccess: (_, variables) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.detail(variables.id) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
     },
   });

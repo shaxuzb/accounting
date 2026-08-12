@@ -22,7 +22,7 @@ const tabListSlice = createSlice({
   name: "tabList",
   initialState,
   reducers: {
-    addTab(state, action: PayloadAction<TabItem>) {
+    pinTab(state, action: PayloadAction<TabItem>) {
       const existingTab = state.tabs.find(
         (tab) => tab.key === action.payload.key,
       );
@@ -34,8 +34,6 @@ const tabListSlice = createSlice({
       } else {
         state.tabs.push(action.payload);
       }
-
-      state.activeTabKey = action.payload.key;
     },
     removeTab(state, action: PayloadAction<string>) {
       state.tabs = state.tabs.filter((t) => t.key !== action.payload);
@@ -61,7 +59,7 @@ const tabListSlice = createSlice({
 });
 
 export const {
-  addTab,
+  pinTab,
   removeTab,
   setTabs,
   setActiveTab,

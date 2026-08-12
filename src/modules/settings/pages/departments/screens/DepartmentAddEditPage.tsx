@@ -74,7 +74,7 @@ export default function DepartmentAddEditPage({
         stateId: Departments.stateId ?? null,
       });
     }
-  }, [Departments, isEdit]);
+  }, [Departments, formik, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -120,7 +120,6 @@ export default function DepartmentAddEditPage({
             block
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-            onClick={() => console.log(formik)}
             loading={isSubmitting}
           >{t("common.submit")}</Button>
         </Form>

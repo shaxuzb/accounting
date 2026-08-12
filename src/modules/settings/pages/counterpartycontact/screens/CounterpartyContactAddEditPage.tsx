@@ -81,7 +81,7 @@ export default function CounterpartyContactAddEditPage({
         stateId: CounterpartyContacts.stateId ?? null,
       });
     }
-  }, [CounterpartyContacts, isEdit]);
+  }, [CounterpartyContacts, formik, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -173,7 +173,6 @@ export default function CounterpartyContactAddEditPage({
             block
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-            onClick={() => console.log(formik)}
             loading={isSubmitting}
           >
             {t("common.submit")}

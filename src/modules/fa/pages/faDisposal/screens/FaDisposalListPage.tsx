@@ -3,7 +3,8 @@ import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import SearchFilter from "@/components/ui/filters/SearchFilter";
+import SelectFilter from "@/components/ui/filters/SelectFilter";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
@@ -15,6 +16,8 @@ import { useGetListFaDisposals } from "../hooks";
 import type { FaDisposalResponse } from "../types/type";
 import { ProcessStatusBadge } from "@/components/ui/status";
 import { isFaDraftStatus } from "../../../shared/constants/statuses";
+import FaListFilters from "../../../shared/components/FaListFilters";
+import FaListPagination from "../../../shared/components/FaListPagination";
 
 export default function FaDisposalListPage() {
   const { t } = useTranslation();
@@ -76,16 +79,14 @@ export default function FaDisposalListPage() {
       align: "center",
       render: (_, record) => (
         <ProcessStatusBadge
-          statusId={record.statusId ?? record.stateId}
-          statusName={record.statusName ?? record.stateName}
+          statusId={record.statusId}
+          statusName={record.statusName}
         />
       ),
     },
   ];
 
-  const hasActions =
-    permissions.includes(faDisposalPermissions.update) ||
-    permissions.includes(faDisposalPermissions.delete);
+  const hasActions = permissions.includes(faDisposalPermissions.update);
 
   const columns: TableColumnType<FaDisposalResponse>[] = hasActions
     ? [
@@ -105,7 +106,6 @@ export default function FaDisposalListPage() {
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: isDraft ? faDisposalPermissions.delete : "",
                 editCode: isDraft ? faDisposalPermissions.update : "",
               }}
               refetch={refetch}
@@ -118,7 +118,11 @@ export default function FaDisposalListPage() {
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <SearchFilter />
+        <div className="flex flex-wrap items-center gap-2">
+          <FaListFilters>
+            <SelectFilter paramKey="disposalTypeId" placeholder="fa.fields.disposalType" path={selectListEndpoints.faDisposalTypesSelectList} width={180} />
+          </FaListFilters>
+        </div>
         <Space>
           <PermissionCard permission={faDisposalPermissions.create}>
             <Link to="add">
@@ -142,6 +146,7 @@ export default function FaDisposalListPage() {
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
         />
+        <FaListPagination total={data?.totalCount ?? data?.total} page={data?.page} pageSize={data?.pageSize} />
       </Card>
     </div>
   );

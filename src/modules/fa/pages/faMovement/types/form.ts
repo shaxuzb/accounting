@@ -1,21 +1,12 @@
-import type { FaMovementAssetLine, FaMovementPayload } from "./type";
-
-export interface FaMovementLineValues
-  extends Omit<
-    FaMovementAssetLine,
-    "faAssetId" | "fromDepartmentId" | "fromResponsibleUserId"
-  > {
+export interface FaMovementLineValues {
   faAssetId: number | null;
-  fromDepartmentId: number | null;
-  fromResponsibleUserId: number | null;
+  note: string;
 }
 
-export interface FaMovementFormValues
-  extends Omit<
-    FaMovementPayload,
-    "toDepartmentId" | "toResponsibleUserId" | "lines"
-  > {
+export interface FaMovementFormValues {
+  docDate: string;
   toDepartmentId: number | null;
   toResponsibleUserId: number | null;
+  note: string;
   lines: FaMovementLineValues[];
 }

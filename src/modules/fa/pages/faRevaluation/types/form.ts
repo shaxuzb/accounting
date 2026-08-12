@@ -1,13 +1,8 @@
 import type { FaRevaluationLine, FaRevaluationPayload } from "./type";
 
 export interface FaRevaluationLineValues
-  extends Omit<
-    FaRevaluationLine,
-    "faAssetId" | "assetAccountId" | "accumulatedDepreciationAccountId"
-  > {
+  extends Omit<FaRevaluationLine, "faAssetId"> {
   faAssetId: number | null;
-  assetAccountId: number | null;
-  accumulatedDepreciationAccountId: number | null;
 }
 
 export interface FaRevaluationFormValues

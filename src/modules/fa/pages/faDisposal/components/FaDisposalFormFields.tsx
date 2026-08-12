@@ -24,8 +24,6 @@ const emptyLine: FaDisposalLineValues = {
   faAssetId: null,
   saleAmount: 0,
   note: "",
-  assetAccountId: null,
-  accumulatedDepreciationAccountId: null,
 };
 
 interface DisposalLineRow extends FaDisposalLineValues {
@@ -96,6 +94,7 @@ export default function FaDisposalFormFields({
           <div className="[&_.ant-form-item]:mb-0!">
             <SelectCustom
               path={selectListEndpoints.faAssetsSelectList}
+              queryParams={{ statusId: 2 }}
               displayConfig={faDisposalAssetDisplayConfig}
               formik={formik}
               fieldName={`lines[${row.index}].faAssetId`}
@@ -118,42 +117,6 @@ export default function FaDisposalFormFields({
               min={0}
               emptyZero
               required
-            />
-          </div>
-        ),
-      },
-      {
-        title: t("fa.fields.assetAccount"),
-        dataIndex: "assetAccountId",
-        minWidth: 250,
-        render: (_, row) => (
-          <div className="[&_.ant-form-item]:mb-0!">
-            <SelectCustom
-              path={selectListEndpoints.chartAccountsSelectList}
-              displayConfig={chartAccountSelectDisplayConfig}
-              formik={formik}
-              fieldName={`lines[${row.index}].assetAccountId`}
-              search
-              required
-              marginBottom="mb-0"
-            />
-          </div>
-        ),
-      },
-      {
-        title: t("fa.fields.accumulatedDepreciationAccount"),
-        dataIndex: "accumulatedDepreciationAccountId",
-        minWidth: 280,
-        render: (_, row) => (
-          <div className="[&_.ant-form-item]:mb-0!">
-            <SelectCustom
-              path={selectListEndpoints.chartAccountsSelectList}
-              displayConfig={chartAccountSelectDisplayConfig}
-              formik={formik}
-              fieldName={`lines[${row.index}].accumulatedDepreciationAccountId`}
-              search
-              required
-              marginBottom="mb-0"
             />
           </div>
         ),

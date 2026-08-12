@@ -11,7 +11,7 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import FaDraftActionsBar from "../../../shared/components/FaDraftActionsBar";
 import { faRevaluationSchema } from "../types/schema";
 import type { FaRevaluationFormValues } from "../types/form";
-import type { FaRevaluation, FaRevaluationPayload } from "../types/type";
+import type { FaRevaluationPayload } from "../types/type";
 import {
   useCancelFaRevaluation,
   useConfirmFaRevaluation,
@@ -35,8 +35,6 @@ const defaultValues: FaRevaluationFormValues = {
       faAssetId: null,
       newValue: 0,
       note: "",
-      assetAccountId: null,
-      accumulatedDepreciationAccountId: null,
     },
   ],
 };
@@ -51,10 +49,6 @@ const toPayload = (values: FaRevaluationFormValues): FaRevaluationPayload => ({
     faAssetId: Number(line.faAssetId),
     newValue: Number(line.newValue),
     note: line.note || "",
-    assetAccountId: Number(line.assetAccountId),
-    accumulatedDepreciationAccountId: Number(
-      line.accumulatedDepreciationAccountId,
-    ),
   })),
 });
 
@@ -80,8 +74,7 @@ export default function FaRevaluationFormPage() {
   const cancelMutation = useCancelFaRevaluation(id);
 
   const record = detailQuery.data;
-  const statusId =
-    record?.statusId ?? record?.stateId ?? faDocumentStatusIds.draft;
+  const statusId = record?.statusId ?? faDocumentStatusIds.draft;
   const isDraft = isCreate || statusId === faDocumentStatusIds.draft;
   const canSubmit = isCreate ? canCreate : isDraft && canUpdate;
   const showEditor = isCreate || (isDraft && canSubmit);
@@ -101,9 +94,6 @@ export default function FaRevaluationFormPage() {
             faAssetId: line.faAssetId,
             newValue: line.newValue ?? 0,
             note: line.note ?? "",
-            assetAccountId: line.assetAccountId ?? null,
-            accumulatedDepreciationAccountId:
-              line.accumulatedDepreciationAccountId ?? null,
           }))
         : defaultValues.lines,
     }),
@@ -112,10 +102,11 @@ export default function FaRevaluationFormPage() {
 
   const persistRevaluation = async (
     values: FaRevaluationFormValues,
-  ): Promise<FaRevaluation> => {
+  ): Promise<number> => {
     const payload = toPayload(values);
     if (!isCreate && id) {
-      return updateMutation.mutateAsync({ id, payload });
+      await updateMutation.mutateAsync({ id, payload });
+      return Number(id);
     }
     return createMutation.mutateAsync(payload);
   };

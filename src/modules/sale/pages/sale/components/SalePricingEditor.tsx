@@ -11,6 +11,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import useLocalStorage from "@/hooks/UseLocalStorage";
+import { useScopedStorageKey } from "@/shared/persistence/usePersistedState";
+import {
+  readPersistedValue,
+  removePersistedValue,
+} from "@/shared/persistence/storage";
 import Card from "@/components/ui/card/Card";
 import {
   DocumentSummary,
@@ -78,9 +83,10 @@ export default function SalePricingEditor({
   const navigate = useNavigate();
   const confirmSale = useConfirmSale(document.id);
   const cancelSale = useCancelSale(document.id);
+  const draftKey = useScopedStorageKey("form-draft", `sale-pricing:${document.id}`);
   const [draftLines, setDraftLines] = useLocalStorage<SalePricingDraftLine[]>(
-    `sale:pricing:${document.id}`,
-    [],
+    draftKey,
+    readPersistedValue(`sale:pricing:${document.id}`, [], "local"),
   );
   const [editedLines, setEditedLines] = useState<SalePricingLine[] | null>(null);
   const updateLineAmounts = useCallback((line: SalePricingLine) => {
@@ -393,6 +399,7 @@ export default function SalePricingEditor({
         })),
       });
       setDraftLines([]);
+      removePersistedValue(`sale:pricing:${document.id}`, "local");
       navigate("/main/sales/sale", { replace: true });
     } catch (error) {
       errorHandlers(error);
@@ -403,6 +410,7 @@ export default function SalePricingEditor({
     try {
       await cancelSale.mutateAsync();
       setDraftLines([]);
+      removePersistedValue(`sale:pricing:${document.id}`, "local");
       toast.success(t("sale.messages.documentCancelled"));
       navigate("/main/sales/sale", { replace: true });
     } catch (error) {

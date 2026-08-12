@@ -31,23 +31,21 @@ const RESTORE_INTERVAL = 50;
 const SAVE_DELAY = 120;
 const DEFAULT_TTL = 30 * 60 * 1000;
 
-const isScrollable = (element: HTMLElement) => {
-  const styles = window.getComputedStyle(element);
-  const hasVerticalScroll =
-    /(auto|scroll|overlay)/.test(styles.overflowY) &&
-    element.scrollHeight > element.clientHeight + 1;
-  const hasHorizontalScroll =
-    /(auto|scroll|overlay)/.test(styles.overflowX) &&
-    element.scrollWidth > element.clientWidth + 1;
-
-  return hasVerticalScroll || hasHorizontalScroll;
-};
-
-const getScrollableElements = (root: HTMLElement) => [
-  root,
-  ...Array.from(root.querySelectorAll<HTMLElement>("*"))
-    .filter(isScrollable),
+const SCROLLABLE_SELECTORS = [
+  "[data-scroll-restore]",
+  ".ant-table-body",
+  ".ant-table-content",
+  ".ant-table-tbody-virtual-holder",
+  ".rc-virtual-list-holder",
 ];
+
+const getScrollableElements = (root: HTMLElement) => {
+  const elements = SCROLLABLE_SELECTORS.flatMap((selector) =>
+    Array.from(root.querySelectorAll<HTMLElement>(selector)),
+  );
+
+  return [root, ...Array.from(new Set(elements))];
+};
 
 const getDomPath = (element: HTMLElement, root: HTMLElement) => {
   const segments: string[] = [];

@@ -16,20 +16,14 @@ export const faMovementService = {
       .then((res) => res.data),
 
   create: (payload: FaMovementPayload) =>
-    $axiosPrivate.post<FaMovement>(endpoints.list, payload).then((res) => res.data),
+    $axiosPrivate.post<number>(endpoints.list, payload).then((res) => res.data),
 
   update: (id: string | number, payload: FaMovementPayload) =>
-    $axiosPrivate
-      .put<FaMovement>(endpoints.detail(id), payload)
-      .then((res) => res.data),
+    $axiosPrivate.put<void>(endpoints.detail(id), payload),
 
   confirm: (id: string | number) =>
-    $axiosPrivate
-      .put<FaMovement>(endpoints.confirm(id))
-      .then((res) => res.data),
+    $axiosPrivate.put<void>(endpoints.confirm(id)),
 
   cancel: (id: string | number) =>
-    $axiosPrivate
-      .put<FaMovement>(endpoints.cancel(id))
-      .then((res) => res.data),
+    $axiosPrivate.put<void>(endpoints.cancel(id)),
 };

@@ -24,8 +24,6 @@ const getInitialState = (): OrganizationState => {
 
       if (user) {
         const fromOrgs = user.organizations?.[0];
-        console.log(fromOrgs);
-
         if (fromOrgs) {
           return {
             id: fromOrgs.organizationId,
@@ -83,7 +81,7 @@ const organizationSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(login, (_, action) => {
       const user = action.payload.user;
-      const fromOrgs = user.organizations[0];
+      const fromOrgs = user.organizations?.[0];
       const next: OrganizationState = fromOrgs
         ? {
             id: fromOrgs.organizationId,

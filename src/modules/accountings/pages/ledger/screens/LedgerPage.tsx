@@ -1,5 +1,8 @@
 import { useFormik } from "formik";
-import { useState } from "react";
+import {
+  usePersistedState,
+  useScopedStorageKey,
+} from "@/shared/persistence/usePersistedState";
 import LedgerBalanceEquation from "../components/LedgerBalanceEquation";
 import LedgerFilters from "../components/LedgerFilters";
 import LedgerTable from "../components/LedgerTable";
@@ -15,11 +18,17 @@ const initialValues: LedgerQuery = {
 };
 
 export default function LedgerPage() {
-  const [filters, setFilters] = useState<LedgerQuery>();
-  const query = useGetLedger(filters);
-  const formik = useFormik<LedgerQuery>({
+  const filtersKey = useScopedStorageKey("report-state", "ledger");
+  const [filters, setFilters] = usePersistedState<LedgerQuery>(
+    filtersKey,
     initialValues,
-    onSubmit: (values) => setFilters(values.accountId ? values : undefined),
+    { debounceMs: 0 },
+  );
+  const query = useGetLedger(filters.accountId ? filters : undefined);
+  const formik = useFormik<LedgerQuery>({
+    initialValues: { ...initialValues, ...filters },
+    enableReinitialize: true,
+    onSubmit: (values) => setFilters(values.accountId ? values : initialValues),
   });
   const data = query.data;
 
@@ -38,7 +47,7 @@ export default function LedgerPage() {
                   page: 1,
                   pageSize: 50,
                 }
-              : undefined,
+              : initialValues,
           )
         }
         onDateChange={(dateFrom, dateTo) => {

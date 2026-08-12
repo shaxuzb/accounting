@@ -1,8 +1,8 @@
 import { useFormik } from "formik";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BookOpenText, Repeat2, Scale } from "lucide-react";
 import { useSearchParams } from "react-router";
+import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import AccountTurnoverTable from "../components/AccountTurnoverTable";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
 import AccountingReportLedgerSummary from "../components/AccountingReportLedgerSummary";
@@ -18,11 +18,17 @@ const initialValues: AccountTurnoverQuery = {
 export default function AccountTurnoverPage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const [filters, setFilters] = useState<AccountTurnoverQuery>({});
+  const filtersKey = useScopedStorageKey("report-state", "account-turnover");
+  const [filters, setFilters] = usePersistedState<AccountTurnoverQuery>(
+    filtersKey,
+    {},
+    { debounceMs: 0 },
+  );
   const query = useGetAccountTurnover(filters);
 
   const formik = useFormik<AccountTurnoverQuery>({
-    initialValues,
+    initialValues: { ...initialValues, ...filters },
+    enableReinitialize: true,
     onSubmit: (values) => setFilters({ ...values }),
   });
 

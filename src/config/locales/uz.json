@@ -155,6 +155,7 @@
     "entities": {
       "assets": "Asosiy vositalar",
       "receipts": "Kirim",
+      "commissionings": "Foydalanishga topshirish",
       "movements": "Ko'chirish",
       "revaluations": "Qayta baholash",
       "disposals": "Hisobdan chiqarish",
@@ -227,6 +228,9 @@
       "receiptCreate": "Asosiy vositalar kirimi (yangi)",
       "receiptEdit": "Asosiy vositalar kirimi №{{number}}",
       "receiptSubtitle": "Asosiy vositalar kirim hujjati",
+      "commissioningCreate": "Foydalanishga topshirish (yangi)",
+      "commissioningEdit": "Foydalanishga topshirishni o'zgartirish",
+      "commissioningDetail": "Foydalanishga topshirish hujjati",
       "movementCreate": "Asosiy vositalarni ko'chirish (yangi)",
       "movementEdit": "Asosiy vositalarni ko'chirish",
       "movementDetail": "Asosiy vositalarni ko'chirish",
@@ -292,6 +296,9 @@
       "customerAccountRequired": "Mijoz hisobvarag'ini tanlang",
       "gainAccountRequired": "Foyda hisobvarag'ini tanlang",
       "lossAccountRequired": "Zarar hisobvarag'ini tanlang"
+      ,"assetQuantityMismatch": "Vositalar soni miqdorga teng bo'lishi kerak"
+      ,"movementDestinationRequired": "Yangi bo'lim yoki mas'ul shaxsdan kamida bittasini tanlang"
+      ,"saleAmountForSaleRequired": "Sotish turida kamida bitta vosita summasi noldan katta bo'lishi kerak"
     },
     "sections": {
       "disposalDetails": "Hisobdan chiqarish tafsilotlari",
@@ -344,7 +351,7 @@
       "increase": "Qiymat oshganda",
       "decrease": "Qiymat kamayganda",
       "assetsToRevalue": "Qayta baholanadigan vositalar",
-      "assetsDescription": "Har bir vosita uchun yangi qiymat va hisobvaraqlarni belgilang.",
+      "assetsDescription": "Har bir vosita uchun yangi qiymatni belgilang.",
       "selectedAssets": "Tanlangan vositalar: {{count}} ta",
       "assetCount": "Vositalar soni",
       "countValue": "{{count}} ta",
@@ -360,6 +367,10 @@
       "contents": "Hisobdan chiqarish tarkibi"
     },
     "asset": {
+      "cardEditNotice": "Kartochkaning faqat asosiy rekvizitlari o'zgartiriladi",
+      "cardEditDescription": "Qiymat, amortizatsiya, bo'lim va hisobvaraqlar hujjatlar orqali boshqariladi.",
+      "identification": "Kartochka rekvizitlari",
+      "identificationDescription": "Inventar raqami, nomi, guruhi va O'KOF kodini tekshiring.",
       "identity": "Asosiy ma'lumotlar",
       "identityDescription": "Vositaning inventar raqami, nomi va manba mahsulotini kiriting.",
       "classification": "Tasniflash va amortizatsiya",
@@ -369,7 +380,23 @@
       "placement": "Joylashuv va mas'ul shaxs",
       "placementDescription": "Vosita biriktiriladigan bo'lim va mas'ul foydalanuvchini tanlang.",
       "accountsDescription": "Asosiy vosita va amortizatsiya uchun hisobvaraqlarni belgilang."
-    }
+    },
+    "commissioning": {
+      "lifecycleTitle": "AV hayotiy sikli",
+      "lifecycleReceipt": "Kirim",
+      "lifecycleCommissioning": "Foydalanishga topshirish",
+      "lifecycleActive": "Faol AV",
+      "assetsTitle": "Foydalanishga topshiriladigan vositalar",
+      "assetsDescription": "Kirimdan yaratilgan, hali foydalanishga topshirilmagan vositalarni tanlang.",
+      "assetCount": "Vositalar soni",
+      "assetSearchPlaceholder": "Inventar raqami, nomi yoki bo'lim bo'yicha qidirish",
+      "noAssets": "Asosiy vosita topilmadi",
+      "amortizationDetails": "Amortizatsiya parametrlari"
+    },
+    "depreciation": { "period": "Hisoblash oyi" },
+    "filters": { "dateFrom": "Boshlanish sanasi", "dateTo": "Tugash sanasi" },
+    "statuses": { "draft": "Qoralama", "posted": "O'tkazilgan", "cancelled": "Bekor qilingan", "pending": "Kutilmoqda" },
+    "assetStatuses": { "notCommissioned": "Foydalanishga topshirilmagan", "active": "Faol", "conservation": "Konservatsiyada", "disposed": "Hisobdan chiqarilgan" }
   },
   "settings": {
     "title": "Sozlamalar",

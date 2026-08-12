@@ -1,6 +1,7 @@
 import { $axiosPrivate } from "@/services/AxiosService";
 import { useAppSelector } from "@/store/hooks";
 import { getLocalizedLabel } from "@/shared/utils/localizedLabel";
+import { normalizeDocumentAccountOptions } from "@/shared/documentAccounts";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Divider, Form, type FormProps, Select } from "antd";
 import { type FormikProps, getIn } from "formik";
@@ -101,6 +102,9 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
   const { t } = useTranslation();
   const lang = useAppSelector((state) => state.lang.lang);
   const user = useAppSelector((state) => state.auth?.user);
+  const organizationId = useAppSelector(
+    (state) => state.organization.id || null,
+  );
   const {
     height = "38px",
     label = "",
@@ -168,21 +172,27 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
   const { data, isFetching, isLoading, isSuccess } = useQuery<
     SelectOptionItem[]
   >({
-    queryKey: ["selectlist", lang, path, refetchSync, requestParams],
+    queryKey: [
+      "selectlist",
+      lang,
+      organizationId,
+      path,
+      refetchSync,
+      requestParams,
+    ],
     queryFn: async () => {
-      const response = await $axiosPrivate.get<any>(path, {
+      const response = await $axiosPrivate.get<unknown>(path, {
         params: requestParams,
       });
       const data = response.data;
-      if (data && typeof data === "object" && !Array.isArray(data) && "items" in data) {
-        return data.items as SelectOptionItem[];
-      }
-      return data as SelectOptionItem[];
+      return normalizeDocumentAccountOptions<SelectOptionItem>(data);
     },
     enabled,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
-    refetchOnMount: false,
+    refetchOnMount: path.startsWith("document-account-settings/")
+      ? "always"
+      : false,
   });
   const selectOptions = React.useMemo(() => {
     const options = data ?? [];

@@ -22,12 +22,6 @@ export const faDisposalSchema = (t: TFunction) => Yup.object().shape({
           .required(t("fa.validation.saleAmountRequired"))
           .min(0, t("fa.validation.nonNegative")),
         note: Yup.string().nullable(),
-        assetAccountId: Yup.number()
-          .nullable()
-          .required(t("fa.validation.assetAccountRequired")),
-        accumulatedDepreciationAccountId: Yup.number()
-          .nullable()
-          .required(t("fa.validation.accumulatedDepreciationAccountRequired")),
       }),
     )
     .min(1, t("fa.validation.atLeastOneLine"))
@@ -36,5 +30,14 @@ export const faDisposalSchema = (t: TFunction) => Yup.object().shape({
         .map((line) => line?.faAssetId)
         .filter((assetId): assetId is number => assetId != null);
       return new Set(selectedIds).size === selectedIds.length;
-    }),
+    })
+    .test(
+      "sale-amount",
+      t("fa.validation.saleAmountForSaleRequired"),
+      function validateSaleAmount(lines) {
+        const disposalTypeId = Number(this.parent.disposalTypeId);
+        if (disposalTypeId !== 1) return true;
+        return (lines ?? []).some((line) => Number(line?.saleAmount) > 0);
+      },
+    ),
 });

@@ -1,52 +1,25 @@
 import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { $axiosPrivate } from "@/services/AxiosService";
+import { useDocumentAccountOptions } from "@/shared/documentAccounts";
 import type { BankChartAccountOption } from "../types/type";
 import {
-  bankDocumentAccountChartAccountsPath,
   bankDocumentAccountRoleCodes,
   bankDocumentTypeIds,
 } from "../constants/endpoints";
 
-type BankDocumentTypeId =
-  (typeof bankDocumentTypeIds)[keyof typeof bankDocumentTypeIds];
-type BankDocumentAccountRoleCode =
-  (typeof bankDocumentAccountRoleCodes)[keyof typeof bankDocumentAccountRoleCodes];
-
-const useGetRoleOptions = (
-  documentTypeId: BankDocumentTypeId,
-  documentRoleCode: BankDocumentAccountRoleCode,
-) =>
-  useQuery<BankChartAccountOption[]>({
-    queryKey: [
-      "document-account-settings",
-      "chart-accounts",
-      documentTypeId,
-      documentRoleCode,
-    ],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<BankChartAccountOption[]>(
-        bankDocumentAccountChartAccountsPath(documentTypeId),
-        { params: { documentRoleCode } },
-      );
-      return data ?? [];
-    },
-  });
-
 export const useGetBankDocumentAccountOptions = () => {
-  const incomeBankAccountQuery = useGetRoleOptions(
+  const incomeBankAccountQuery = useDocumentAccountOptions<BankChartAccountOption>(
     bankDocumentTypeIds.income,
     bankDocumentAccountRoleCodes.bankAccount,
   );
-  const expenseBankAccountQuery = useGetRoleOptions(
+  const expenseBankAccountQuery = useDocumentAccountOptions<BankChartAccountOption>(
     bankDocumentTypeIds.expense,
     bankDocumentAccountRoleCodes.bankAccount,
   );
-  const incomeOffsetAccountQuery = useGetRoleOptions(
+  const incomeOffsetAccountQuery = useDocumentAccountOptions<BankChartAccountOption>(
     bankDocumentTypeIds.income,
     bankDocumentAccountRoleCodes.offsetAccount,
   );
-  const expenseOffsetAccountQuery = useGetRoleOptions(
+  const expenseOffsetAccountQuery = useDocumentAccountOptions<BankChartAccountOption>(
     bankDocumentTypeIds.expense,
     bankDocumentAccountRoleCodes.offsetAccount,
   );

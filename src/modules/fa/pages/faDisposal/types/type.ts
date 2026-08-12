@@ -2,8 +2,6 @@ export interface FaDisposalLineItem {
   faAssetId: number;
   saleAmount: number;
   note: string;
-  assetAccountId: number;
-  accumulatedDepreciationAccountId: number;
   faAssetInventoryNumber?: string;
   inventoryNumber?: string;
   faAssetName?: string;
@@ -12,6 +10,8 @@ export interface FaDisposalLineItem {
   assetAccountName?: string;
   accumulatedDepreciationAccountNumber?: string;
   accumulatedDepreciationAccountName?: string;
+  assetAccountId?: number;
+  accumulatedDepreciationAccountId?: number;
 }
 
 export interface FaDisposalResponse {

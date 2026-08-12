@@ -9,6 +9,10 @@ import { ValidationError } from "yup";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { formatDate } from "@/utils/helpers";
 import { useAppSelector } from "@/store/hooks";
+import {
+  usePersistedState,
+  useScopedStorageKey,
+} from "@/shared/persistence/usePersistedState";
 import { useGetNowSaleCondition } from "@/modules/settings/pages/saleCondition/hooks";
 import DocumentProcessingModeModal from "@/components/ui/DocumentProcessingModeModal";
 import SaleProductSelection from "../../sale/components/SaleProductSelection";
@@ -58,17 +62,29 @@ const getNumber = (value: unknown, fallback = 0) => {
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
+interface RetailSaleDraft {
+  values: RetailSaleFormValues;
+  products: SaleSelectedProduct[];
+  markingModeOverride: boolean | null;
+}
+
 export default function RetailSaleEditorPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id = "" } = useParams();
   const isEdit = Boolean(id);
+  const draftKey = useScopedStorageKey("form-draft", "retail-sale:new");
+  const [savedDraft, setSavedDraft, clearSavedDraft] = usePersistedState<
+    RetailSaleDraft | null
+  >(draftKey, null, { storage: "local", debounceMs: 400 });
   const [selectedProducts, setSelectedProducts] = useState<
     SaleSelectedProduct[] | null
-  >(null);
+  >(() => (!isEdit ? savedDraft?.products ?? null : null));
   const [saleTotalAmount, setSaleTotalAmount] = useState(0);
   const [markingModeOverride, setMarkingModeOverride] =
-    useState<boolean | null>(null);
+    useState<boolean | null>(
+      () => (!isEdit ? savedDraft?.markingModeOverride ?? null : null),
+    );
   const [processingModeModalOpen, setProcessingModeModalOpen] =
     useState(false);
   const previousWarehouseId = useRef<number | null>(null);
@@ -166,7 +182,7 @@ export default function RetailSaleEditorPage() {
             transactionNumber: payment.transactionNumber ?? "",
           })),
         }
-      : defaultValues,
+      : savedDraft?.values ?? defaultValues,
     enableReinitialize: true,
     validationSchema: retailSaleSchema(t),
     onSubmit: async (values) => {
@@ -222,6 +238,28 @@ export default function RetailSaleEditorPage() {
   });
 
   useEffect(() => {
+    if (isEdit || !saleCondition) return;
+
+    const hasDraftContent = formik.dirty || products.length > 0 ||
+      formik.values.payments.length > 0;
+    if (!hasDraftContent) return;
+
+    setSavedDraft({
+      values: formik.values,
+      products,
+      markingModeOverride,
+    });
+  }, [
+    formik.dirty,
+    formik.values,
+    isEdit,
+    markingModeOverride,
+    products,
+    saleCondition,
+    setSavedDraft,
+  ]);
+
+  useEffect(() => {
     const warehouseId = formik.values.warehouseId;
     if (
       previousWarehouseId.current !== null &&
@@ -272,6 +310,7 @@ export default function RetailSaleEditorPage() {
           markingMode,
         ),
       );
+      clearSavedDraft();
       toast.success(
         processingMode === 2
           ? t("retailSale.messages.confirmed")

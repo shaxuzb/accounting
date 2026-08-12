@@ -89,16 +89,9 @@ function OpeningBalanceDetailsTable({
         ? [
             {
               title: t("openingBalance.fields.debit"),
-              align: "center" as any,
+              align: "center" as const,
               width: 165,
-              render: (
-                _value: any,
-                record: {
-                  debitAmount: number;
-                  creditAmount: any;
-                  clientKey: string;
-                },
-              ) => (
+              render: (_value: unknown, record: OpeningBalanceDetailForm) => (
                 <InputNumberFormat
                   standalone
                   emptyZero
@@ -127,8 +120,8 @@ function OpeningBalanceDetailsTable({
             {
               title: t("openingBalance.fields.credit"),
               width: 165,
-              align: "center",
-              render: (_value, record) => (
+              align: "center" as const,
+              render: (_value: unknown, record: OpeningBalanceDetailForm) => (
                 <InputNumberFormat
                   standalone
                   emptyZero
@@ -156,7 +149,7 @@ function OpeningBalanceDetailsTable({
         ? [
             {
               title: t("openingBalance.fields.quantity"),
-              align: "center",
+              align: "center" as const,
               width: 130,
               render: (_value: unknown, record: OpeningBalanceDetailForm) => (
                 <InputNumberFormat
@@ -176,8 +169,8 @@ function OpeningBalanceDetailsTable({
       {
         title: t("openingBalance.fields.analytics"),
         width: 150,
-        align: "center",
-        render: (_value, record) => {
+        align: "center" as const,
+        render: (_value: unknown, record: OpeningBalanceDetailForm) => {
           if (!definitions.length) {
             return (
               <Tag bordered={false}>
@@ -202,7 +195,7 @@ function OpeningBalanceDetailsTable({
       {
         title: t("common.actions"),
         width: 70,
-        align: "center",
+        align: "center" as const,
         fixed: "right",
         render: (_value, record) => (
           <Button

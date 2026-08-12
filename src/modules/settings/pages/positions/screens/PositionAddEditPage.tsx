@@ -73,7 +73,7 @@ export default function PositionAddEditPage({
         stateId: Positions.stateId ?? null,
       });
     }
-  }, [Positions, isEdit]);
+  }, [Positions, formik, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -115,7 +115,6 @@ export default function PositionAddEditPage({
             block
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-            onClick={() => console.log(formik)}
             loading={isSubmitting}
           >{t("common.submit")}</Button>
         </Form>

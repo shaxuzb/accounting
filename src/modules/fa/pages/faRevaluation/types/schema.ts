@@ -18,12 +18,6 @@ export const faRevaluationSchema = (t: TFunction) => Yup.object().shape({
           .min(0, t("fa.validation.nonNegative"))
           .required(t("fa.validation.newValueRequired")),
         note: Yup.string().nullable(),
-        assetAccountId: Yup.number()
-          .nullable()
-          .required(t("fa.validation.assetAccountRequired")),
-        accumulatedDepreciationAccountId: Yup.number()
-          .nullable()
-          .required(t("fa.validation.accumulatedDepreciationAccountRequired")),
       })
     )
     .min(1, t("fa.validation.atLeastOneLine"))

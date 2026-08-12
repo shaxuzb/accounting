@@ -1,10 +1,9 @@
 import { Button, Select, Tooltip, type TableColumnType } from "antd";
-import { useQuery } from "@tanstack/react-query";
 import { Pencil, QrCode, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { $axiosPrivate } from "@/services/AxiosService";
 import { chartAccountSelectedLabel } from "@/shared/constants/selectLists";
+import { useDocumentAccountOptions } from "@/shared/documentAccounts";
 import { numberSpacing } from "@/utils/utils";
 import OpeningInventoryEditableCell from "../components/OpeningInventoryEditableCell";
 import type {
@@ -13,7 +12,7 @@ import type {
   OpeningInventoryMode,
   SelectOption,
 } from "../types/type";
-import { openingInventoryChartAccountsPath } from "../constants/endpoints";
+import { openingInventoryDocumentTypeIds } from "../constants/endpoints";
 import {
   getNumber,
   getRowAmount,
@@ -22,13 +21,6 @@ import {
   getRowVatAmount,
   toMarkingNumbers,
 } from "../utils/openingInventory";
-
-interface ChartAccountOption {
-  id: number;
-  number?: string | number;
-  code?: string | number;
-  name?: string;
-}
 
 interface UseOpeningInventoryColumnsParams {
   enabled?: boolean;
@@ -70,17 +62,11 @@ export const useOpeningInventoryColumns = ({
 }: UseOpeningInventoryColumnsParams): TableColumnType<OpeningInventoryRow>[] => {
   const { t } = useTranslation();
 
-  const { data: debitAccounts = [] } = useQuery<ChartAccountOption[]>({
-    queryKey: ["document-account-settings", "chart-accounts", mode, "debit"],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<ChartAccountOption[]>(
-        openingInventoryChartAccountsPath(mode),
-        { params: { documentRoleCode: "purchase_debit" } },
-      );
-      return data ?? [];
-    },
+  const { data: debitAccounts = [] } = useDocumentAccountOptions(
+    openingInventoryDocumentTypeIds[mode],
+    "purchase_debit",
     enabled,
-  });
+  );
 
   const chartAccounts = useMemo(
     () =>

@@ -19,7 +19,6 @@ export const useUpdateOrganizations = () => {
       // queryClient.invalidateQueries({
       //   queryKey: queryKeys.detail(variables.id),
       // });
-      // console.log("sdadas");
     },
   });
 };

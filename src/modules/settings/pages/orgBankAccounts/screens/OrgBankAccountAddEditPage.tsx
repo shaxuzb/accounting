@@ -77,7 +77,7 @@ export default function OrgBankAccountAddEditPage({
         stateId: OrgBankAccounts.stateId ?? null,
       });
     }
-  }, [OrgBankAccounts, isEdit]);
+  }, [OrgBankAccounts, formik, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -144,7 +144,6 @@ export default function OrgBankAccountAddEditPage({
             block
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-            onClick={() => console.log(formik)}
             loading={isSubmitting}
           >
             {t("common.submit")}

@@ -1,54 +1,32 @@
 import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { $axiosPrivate } from "@/services/AxiosService";
 import { useGetDetailDocumentAccountSettings } from "@/modules/settings/pages/documentAccountSettings/hooks";
+import { getDefaultDocumentAccount, useDocumentAccountOptions } from "@/shared/documentAccounts";
 import type { SaleDocumentAccountOption } from "../types/type";
 import {
   saleDocumentAccountRoleCodes,
   saleDocumentTypeId,
 } from "../constants/documentAccount";
 
-const useGetRoleOptions = (
-  documentTypeId: number,
-  documentRoleCode: string,
-) =>
-  useQuery<SaleDocumentAccountOption[]>({
-    queryKey: [
-      "document-account-settings",
-      "chart-accounts",
-      documentTypeId,
-      documentRoleCode,
-    ],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<SaleDocumentAccountOption[]>(
-        `document-account-settings/${documentTypeId}/chart-accounts`,
-        { params: { documentRoleCode } },
-      );
-      return data ?? [];
-    },
-    enabled: Boolean(documentTypeId),
-  });
-
 export const useGetSaleDocumentAccountOptions = (
   documentTypeId = saleDocumentTypeId,
 ) => {
-  const customerQuery = useGetRoleOptions(
+  const customerQuery = useDocumentAccountOptions<SaleDocumentAccountOption>(
     documentTypeId,
     saleDocumentAccountRoleCodes.customerSettlement,
   );
-  const incomeQuery = useGetRoleOptions(
+  const incomeQuery = useDocumentAccountOptions<SaleDocumentAccountOption>(
     documentTypeId,
     saleDocumentAccountRoleCodes.income,
   );
-  const vatQuery = useGetRoleOptions(
+  const vatQuery = useDocumentAccountOptions<SaleDocumentAccountOption>(
     documentTypeId,
     saleDocumentAccountRoleCodes.vat,
   );
-  const costQuery = useGetRoleOptions(
+  const costQuery = useDocumentAccountOptions<SaleDocumentAccountOption>(
     documentTypeId,
     saleDocumentAccountRoleCodes.cost,
   );
-  const inventoryQuery = useGetRoleOptions(
+  const inventoryQuery = useDocumentAccountOptions<SaleDocumentAccountOption>(
     documentTypeId,
     saleDocumentAccountRoleCodes.inventory,
   );
@@ -58,12 +36,22 @@ export const useGetSaleDocumentAccountOptions = (
   );
 
   return useMemo(() => {
+    const configuredAccounts = (settingsQuery.data?.accountSettings ?? [])
+      .flatMap((role) => role.accounts ?? [])
+      .map((account) => ({
+        id: Number(account.chartAccountId),
+        number: account.chartAccountNumber,
+        code: undefined,
+        name: account.chartAccountName,
+      }))
+      .filter((account) => Number.isFinite(account.id) && account.id > 0);
     const chartAccounts = [
       ...(customerQuery.data ?? []),
       ...(incomeQuery.data ?? []),
       ...(vatQuery.data ?? []),
       ...(costQuery.data ?? []),
       ...(inventoryQuery.data ?? []),
+      ...configuredAccounts,
     ].filter(
       (account, index, accounts) =>
         accounts.findIndex(
@@ -75,20 +63,17 @@ export const useGetSaleDocumentAccountOptions = (
     );
 
     const getDefaultAccount = (documentRoleCode: string) => {
-      const role = settingsQuery.data?.accountSettings?.find(
-        (item) => item.documentAccountRoleCode === documentRoleCode,
+      const account = getDefaultDocumentAccount(
+        settingsQuery.data,
+        documentRoleCode,
       );
-      const account = role?.accounts?.find((item) => item.isDefault);
-      const option = account
-        ? chartAccountById.get(Number(account.chartAccountId))
+      const option = account.id
+        ? chartAccountById.get(Number(account.id))
         : undefined;
 
       return {
-        id: account?.chartAccountId ?? null,
-        name:
-          account?.chartAccountName ??
-          option?.name ??
-          (option?.number ? String(option.number) : ""),
+        id: account.id,
+        name: account.name || option?.name || (option?.number ? String(option.number) : ""),
       };
     };
 

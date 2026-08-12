@@ -5,7 +5,6 @@ import {
   CalendarDays,
   CircleDollarSign,
   FileText,
-  Warehouse,
   WalletCards,
 } from "lucide-react";
 import Card from "@/components/ui/card/Card";
@@ -48,9 +47,6 @@ export default function FaReceiptReadonlyView({
       "shortName",
       "inn",
     ]);
-  const warehouse =
-    getApiText(record, "warehouseName") ||
-    lookups.label("warehouses", record.warehouseId);
   const receiptType =
     getApiText(record, "receiptTypeName") ||
     lookups.label("receiptTypes", record.receiptTypeId);
@@ -96,20 +92,9 @@ export default function FaReceiptReadonlyView({
               {receiptType}
             </div>
           </div>
-          <div className="flex min-w-0 flex-1 items-center gap-3">
-            <Warehouse className="size-4 shrink-0 text-primary" />
-            <div className="min-w-0">
-              <div className="text-xs text-secondary-text">
-                {t("fa.fields.warehouseId")}
-              </div>
-              <div className="mt-0.5 truncate text-sm font-semibold text-text">
-                {warehouse}
-              </div>
-            </div>
-          </div>
           <ProcessStatusBadge
-            statusId={record.statusId ?? record.stateId}
-            statusName={record.statusName ?? record.stateName}
+            statusId={record.statusId}
+            statusName={record.statusName}
           />
         </div>
       </Card>
@@ -123,16 +108,13 @@ export default function FaReceiptReadonlyView({
           {lines.map((line, lineIndex) => {
             const lineTotal =
               Number(line.quantity || 0) * Number(line.price || 0);
-            const sourceProduct =
-              getApiText(line, "sourceProductName", "productName") ||
-              lookups.label("products", line.sourceProductId);
             const vatRate =
               getApiText(line, "vatRateName") ||
               lookups.label("vatRates", line.vatRateId);
 
             return (
               <section
-                key={`${line.sourceProductId}-${lineIndex}`}
+                key={`${line.name}-${lineIndex}`}
                 className="min-w-0"
               >
                 <div className="border-b border-border bg-brand-soft/45 px-4 py-3">
@@ -143,10 +125,7 @@ export default function FaReceiptReadonlyView({
                       </span>
                       <div className="min-w-0">
                         <div className="font-semibold text-primary">
-                          {line.name || sourceProduct}
-                        </div>
-                        <div className="mt-0.5 truncate text-xs text-secondary-text">
-                          {sourceProduct}
+                          {line.name}
                         </div>
                       </div>
                     </div>

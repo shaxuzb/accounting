@@ -8,7 +8,20 @@ export interface SaleDraft {
   saleConditionKey?: string;
 }
 
+const getUserId = () => {
+  try {
+    const raw = localStorage.getItem("login");
+    const parsed = raw ? (JSON.parse(raw) as { user?: { id?: number } }) : null;
+    return parsed?.user?.id || "anonymous";
+  } catch {
+    return "anonymous";
+  }
+};
+
 const draftKey = (organizationId: number) =>
+  `accounting:form-draft:${getUserId()}:${organizationId || "default"}:sale`;
+
+const legacyDraftKey = (organizationId: number) =>
   `accounting:sale-draft:${organizationId || "default"}`;
 
 export const getSaleConditionDraftKey = (saleCondition?: {
@@ -26,7 +39,9 @@ export const getSaleConditionDraftKey = (saleCondition?: {
 
 export const getSaleDraft = (organizationId: number): SaleDraft | null => {
   try {
-    const value = localStorage.getItem(draftKey(organizationId));
+    const value =
+      localStorage.getItem(draftKey(organizationId)) ??
+      localStorage.getItem(legacyDraftKey(organizationId));
     return value ? (JSON.parse(value) as SaleDraft) : null;
   } catch {
     return null;
@@ -42,4 +57,5 @@ export const saveSaleDraft = (
 
 export const clearSaleDraft = (organizationId: number) => {
   localStorage.removeItem(draftKey(organizationId));
+  localStorage.removeItem(legacyDraftKey(organizationId));
 };

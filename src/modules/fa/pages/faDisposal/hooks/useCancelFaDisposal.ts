@@ -7,8 +7,8 @@ export const useCancelFaDisposal = (id: string | number) => {
 
   return useMutation({
     mutationFn: () => faDisposalService.cancel(id),
-    onSuccess: (data) => {
-      queryClient.setQueryData(queryKeys.detail(id), data);
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.detail(id) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
     },
   });

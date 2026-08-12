@@ -1,4 +1,5 @@
-import { Button, Spin } from "antd";
+import { Button, DatePicker, Spin } from "antd";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
@@ -14,20 +15,22 @@ import {
   useRunFaDepreciation,
 } from "../hooks";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
+import dayjs from "@/config/dayjs";
 
 export default function FaDepreciationFormPage() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const isEdit = Boolean(id);
+  const [period, setPeriod] = useState(() => dayjs());
   const { user } = useAppSelector((state) => state.auth);
   const permissions = user?.user.permissions ?? [];
   const detailQuery = useGetDetailFaDepreciation(id);
   const runMutation = useRunFaDepreciation();
   const cancelMutation = useCancelFaDepreciation(id);
   const detail = detailQuery.data;
-  const stateId = detail?.stateId ?? faDocumentStatusIds.draft;
-  const isDraft = !isEdit || stateId === faDocumentStatusIds.draft;
+  const statusId = detail?.statusId ?? faDocumentStatusIds.posted;
+  const isPosted = isEdit && statusId === faDocumentStatusIds.posted;
 
   const isSubmitting = runMutation.isPending || cancelMutation.isPending;
 
@@ -38,7 +41,7 @@ export default function FaDepreciationFormPage() {
 
   const handleRun = async () => {
     try {
-      await runMutation.mutateAsync();
+      await runMutation.mutateAsync(period.format("YYYY-MM"));
       toast.success(t("settings.messages.created"));
       navigate(-1);
     } catch (error) {
@@ -68,6 +71,20 @@ export default function FaDepreciationFormPage() {
     <Card className="border border-border p-4">
       <div className="mb-4 text-xl font-semibold">{title}</div>
 
+      {!isEdit && (
+        <div className="mb-4 max-w-xs">
+          <div className="mb-2 text-sm font-medium">{t("fa.depreciation.period")}</div>
+          <DatePicker
+            picker="month"
+            value={period}
+            onChange={(value) => value && setPeriod(value)}
+            format="MMMM YYYY"
+            allowClear={false}
+            className="h-[38px] w-full"
+          />
+        </div>
+      )}
+
       <div className="grid gap-3 md:grid-cols-2">
         <div>
           <div className="text-sm text-muted-foreground">
@@ -89,9 +106,9 @@ export default function FaDepreciationFormPage() {
         </div>
         <div>
           <div className="text-sm text-muted-foreground">
-            {t("fa.fields.state")}
+            {t("settings.fields.status")}
           </div>
-          <div>{detail?.stateName ?? "-"}</div>
+          <div>{detail?.statusName ?? "-"}</div>
         </div>
       </div>
 
@@ -104,7 +121,7 @@ export default function FaDepreciationFormPage() {
           </PermissionCard>
         )}
 
-        {isEdit && isDraft && canCancel && (
+        {isPosted && canCancel && (
           <PermissionCard permission={faDepreciationPermissions.cancel}>
             <Button
               danger

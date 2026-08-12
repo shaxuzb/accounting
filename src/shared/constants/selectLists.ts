@@ -78,6 +78,11 @@ export const chartAccountSelectedLabel = (item: {
   name?: unknown;
 }) => String(item.number ?? item.code ?? item.name ?? "").trim();
 
+export const chartAccountNumberSelectedLabel = (item: {
+  number?: unknown;
+  code?: unknown;
+}) => String(item.number ?? item.code ?? "").trim();
+
 export const chartAccountSelectDisplayConfig = {
   optionLabel: chartAccountOptionLabel,
   selectedLabel: chartAccountSelectedLabel,

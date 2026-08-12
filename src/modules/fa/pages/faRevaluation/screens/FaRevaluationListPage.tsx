@@ -3,18 +3,19 @@ import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import SearchFilter from "@/components/ui/filters/SearchFilter";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
 import { useAppSelector } from "@/store/hooks";
 import { customDate, generateKeyTable } from "@/utils/utils";
-import { stateStatus } from "@/utils/helpers/statusHelper";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { endpoints } from "../constants/endpoints";
 import { faRevaluationPermissions } from "../constants/permissions";
 import { useGetListFaRevaluations } from "../hooks";
 import type { FaRevaluation } from "../types/type";
 import { isFaDraftStatus } from "../../../shared/constants/statuses";
+import FaListFilters from "../../../shared/components/FaListFilters";
+import FaListPagination from "../../../shared/components/FaListPagination";
 
 export default function FaRevaluationListPage() {
   const { t } = useTranslation();
@@ -53,17 +54,15 @@ export default function FaRevaluationListPage() {
       minWidth: 240,
     },
     {
-      dataIndex: "stateName",
-      title: t("fa.fields.state"),
+      dataIndex: "statusName",
+      title: t("settings.fields.status"),
       align: "center",
       width: 130,
-      render: (_, record) => stateStatus(record.stateId, record.stateName),
+      render: (_, record) => <ProcessStatusBadge statusId={record.statusId} statusName={record.statusName} />,
     },
   ];
 
-  const hasActions =
-    permissions.includes(faRevaluationPermissions.update) ||
-    permissions.includes(faRevaluationPermissions.delete);
+  const hasActions = permissions.includes(faRevaluationPermissions.update);
 
   const columns: TableColumnType<FaRevaluation>[] = hasActions
     ? [
@@ -83,7 +82,6 @@ export default function FaRevaluationListPage() {
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: isDraft ? faRevaluationPermissions.delete : "",
                 editCode: isDraft ? faRevaluationPermissions.update : "",
               }}
               refetch={refetch}
@@ -96,7 +94,7 @@ export default function FaRevaluationListPage() {
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <SearchFilter />
+        <div className="flex flex-wrap items-center gap-2"><FaListFilters /></div>
         <Space>
           <PermissionCard permission={faRevaluationPermissions.create}>
             <Link to="add">
@@ -120,6 +118,7 @@ export default function FaRevaluationListPage() {
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
         />
+        <FaListPagination total={data?.totalCount ?? data?.total} page={data?.page} pageSize={data?.pageSize} />
       </Card>
     </div>
   );

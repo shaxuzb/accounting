@@ -1,10 +1,14 @@
 import { Button, Checkbox, Empty, Input, Popover, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { FileSpreadsheet, Search, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 import Card from "@/components/ui/card/Card";
+import {
+  usePersistedState,
+  useScopedStorageKey,
+} from "@/shared/persistence/usePersistedState";
 import { customDate, numberSpacing } from "@/utils/utils";
 import type {
   LedgerQuery,
@@ -61,9 +65,18 @@ export default function LedgerTable({
   onPageChange,
 }: Props) {
   const { t } = useTranslation();
-  const [search, setSearch] = useState("");
-  const [visibleDetails, setVisibleDetails] =
-    useState<DetailColumnKey[]>(detailColumnKeys);
+  const searchKey = useScopedStorageKey("report-table", "ledger:search");
+  const columnsKey = useScopedStorageKey("report-table", "ledger:columns");
+  const [search, setSearch] = usePersistedState(
+    searchKey,
+    "",
+    { storage: "session", debounceMs: 150 },
+  );
+  const [visibleDetails, setVisibleDetails] = usePersistedState<DetailColumnKey[]>(
+    columnsKey,
+    detailColumnKeys,
+    { storage: "session", debounceMs: 0 },
+  );
   const accountName = result?.accountName ?? "";
 
   const detailColumns = useMemo<

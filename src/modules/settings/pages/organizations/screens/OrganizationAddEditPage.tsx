@@ -38,7 +38,6 @@ export default function OrganizationAddEditPage({
   onClose,
   id,
 }: OrganizationsModalProps) {
-  if(!open) return null
   const { t } = useTranslation();
   const editId = id ?? null;
   const isEdit = Boolean(editId);
@@ -79,8 +78,10 @@ export default function OrganizationAddEditPage({
         stateId: organizations.stateId ?? null,
       });
     }
-  }, [isSuccess]);
+  }, [formik, isSuccess, organizations]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
+
+  if (!open) return null;
 
   return (
     <Modal
@@ -194,7 +195,6 @@ export default function OrganizationAddEditPage({
             block
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
-            onClick={() => console.log(formik)}
             loading={isSubmitting}
           >
             {t("common.submit")}
