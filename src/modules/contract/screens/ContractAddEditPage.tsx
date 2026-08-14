@@ -104,7 +104,7 @@ export default function ContractAddEditPage({
         stateId: Contract.stateId ?? null,
       });
     }
-  }, [Contract, formik, isEdit]);
+  }, [Contract, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
