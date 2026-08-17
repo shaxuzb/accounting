@@ -13,9 +13,9 @@ export interface FaReceiptLineItem {
   name: string;
   quantity: number;
   price: number;
-  vatRateId: number;
+  vatRateId: number | null;
   capitalInvestmentAccountId: number;
-  vatAccountId: number;
+  vatAccountId: number | null;
   assets: FaReceiptAsset[];
 }
 

@@ -78,9 +78,6 @@ const initialValues: EdoOutboxFacturaCreateRequestDto = {
 const requiredPartyFields: (keyof EdoPartyDto)[] = [
   "name",
   "taxIdentifier",
-  "bankCode",
-  "accountNumber",
-  "address",
 ];
 
 function validateFactura(
@@ -95,7 +92,7 @@ function validateFactura(
     )
   ) return false;
   if (!values.lines.length || values.lines.some((line) =>
-    !line.name.trim() || !line.unitCode.trim() || line.quantity <= 0 || line.amount < 0
+    !line.name.trim() || line.quantity <= 0 || line.amount < 0
   )) return false;
   if (providerCode === "DIDOX") {
     if (!values.contractNumber?.trim() || !values.contractDate) return false;
@@ -105,7 +102,6 @@ function validateFactura(
   }
   if (providerCode === "EDOCS") {
     if (!values.seller.districtId || !values.buyer.districtId) return false;
-    if (values.lines.some((line) => !Number.isInteger(Number(line.unitCode)) || Number(line.unitCode) <= 0)) return false;
   }
   return true;
 }
@@ -127,9 +123,9 @@ function PartyFields({
       <Row gutter={[16, 4]}>
         <Col xs={24} md={12}><InputText formik={formik} fieldName={`${prefix}.name`} label="settings.integrations.edo.fields.name" required /></Col>
         <Col xs={24} md={12}><InputText formik={formik} fieldName={`${prefix}.taxIdentifier`} label="settings.integrations.edo.fields.taxIdentifier" required /></Col>
-        <Col xs={24} md={12}><InputText formik={formik} fieldName={`${prefix}.bankCode`} label="settings.integrations.edo.fields.bankCode" required /></Col>
-        <Col xs={24} md={12}><InputText formik={formik} fieldName={`${prefix}.accountNumber`} label="settings.integrations.edo.fields.accountNumber" required /></Col>
-        <Col xs={24}><InputText formik={formik} fieldName={`${prefix}.address`} label="settings.integrations.edo.fields.address" required /></Col>
+        <Col xs={24} md={12}><InputText formik={formik} fieldName={`${prefix}.bankCode`} label="settings.integrations.edo.fields.bankCode" /></Col>
+        <Col xs={24} md={12}><InputText formik={formik} fieldName={`${prefix}.accountNumber`} label="settings.integrations.edo.fields.accountNumber" /></Col>
+        <Col xs={24}><InputText formik={formik} fieldName={`${prefix}.address`} label="settings.integrations.edo.fields.address" /></Col>
         <Col xs={24} md={12}><InputText formik={formik} fieldName={`${prefix}.branchCode`} label="settings.integrations.edo.fields.branchCode" /></Col>
         <Col xs={24} md={12}><InputText formik={formik} fieldName={`${prefix}.branchName`} label="settings.integrations.edo.fields.branchName" /></Col>
         <Col xs={24} md={12}><InputText formik={formik} fieldName={`${prefix}.directorName`} label="settings.integrations.edo.fields.directorName" /></Col>
@@ -176,7 +172,11 @@ export default function EdoOutboxCreatePage() {
               : "settings.integrations.edo.messages.created",
           ),
         );
-        navigate(`../${response.document.id}`);
+        navigate(
+          response.document.id != null
+            ? `../${response.document.id}`
+            : "../../inbox?section=OUTBOX",
+        );
       } catch (error) {
         errorHandlers(error);
       }
@@ -251,7 +251,7 @@ export default function EdoOutboxCreatePage() {
                     <Col xs={24} md={12} xl={6}><InputText formik={formik} fieldName={`lines[${index}].name`} label="settings.integrations.edo.fields.name" required /></Col>
                     <Col xs={24} md={12} xl={6}><InputText formik={formik} fieldName={`lines[${index}].catalogCode`} label="settings.integrations.edo.fields.catalogCode" /></Col>
                     <Col xs={24} md={12} xl={6}><InputText formik={formik} fieldName={`lines[${index}].catalogName`} label="settings.integrations.edo.fields.catalogName" /></Col>
-                    <Col xs={24} md={12} xl={6}><InputText formik={formik} fieldName={`lines[${index}].unitCode`} label="settings.integrations.edo.fields.unitCode" required /></Col>
+                    <Col xs={24} md={12} xl={6}><InputText formik={formik} fieldName={`lines[${index}].unitCode`} label="settings.integrations.edo.fields.unitCode" /></Col>
                     <Col xs={24} md={12} xl={6}><InputText formik={formik} fieldName={`lines[${index}].unitName`} label="settings.integrations.edo.fields.unitName" /></Col>
                     <Col xs={24} md={12} xl={6}><InputNumber formik={formik} fieldName={`lines[${index}].quantity`} label="settings.integrations.edo.fields.quantity" min={0.000001} required /></Col>
                     <Col xs={24} md={12} xl={6}><InputNumber formik={formik} fieldName={`lines[${index}].amount`} label="settings.integrations.edo.fields.amount" min={0} required /></Col>
@@ -267,8 +267,8 @@ export default function EdoOutboxCreatePage() {
                               `lines[${index}].markingCodeIds`,
                               event.target.value
                                 .split(",")
-                                .map((value) => value.trim())
-                                .filter(Boolean),
+                                .map((value) => Number(value.trim()))
+                                .filter((value) => Number.isInteger(value) && value > 0),
                             )
                           }
                         />

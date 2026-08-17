@@ -23,6 +23,7 @@ export const useSignEdoOutbox = () => {
       payload: EdoOutboxSignRequestDto;
     }) => edoService.signOutbox(id, payload),
     onSuccess: (response) => {
+      if (response.document.id == null) return;
       queryClient.setQueryData(
         edoQueryKeys.status("OUTBOX", response.document.id),
         response.document.status,

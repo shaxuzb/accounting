@@ -9,12 +9,11 @@ import InputNumber from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import Card from "@/components/ui/card/Card";
-import {
-  chartAccountSelectDisplayConfig,
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { faAssetStatusIds } from "../../../shared/constants/statuses";
+import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
 import { faMovementAssetDisplayConfig } from "../../faMovement/components/useFaMovementLookups";
 import type {
   FaCommissioningFormValues,
@@ -41,12 +40,14 @@ interface FaCommissioningFormFieldsProps {
   formik: FormikProps<FaCommissioningFormValues>;
   isDraft: boolean;
   currentUserId: number | null;
+  documentTypeId?: number;
 }
 
 export default function FaCommissioningFormFields({
   formik,
   isDraft,
   currentUserId,
+  documentTypeId,
 }: FaCommissioningFormFieldsProps) {
   const { t } = useTranslation();
   const [activeLineKeys, setActiveLineKeys] = useState<string[]>(["line-0"]);
@@ -184,25 +185,27 @@ export default function FaCommissioningFormFields({
               />
             </Col>
             <Col span={5}>
-              <SelectCustom
-                path={selectListEndpoints.chartAccountsSelectList}
-                displayConfig={chartAccountSelectDisplayConfig}
+              <DocumentAccountSelect
+                documentTypeId={documentTypeId ?? 0}
+                documentRoleCode={faDocumentAccountRoleCodes.accumulatedDepreciation}
                 formik={formik}
                 fieldName={`lines[${lineIndex}].accumulatedDepreciationAccountId`}
                 label="fa.fields.accumulatedDepreciationAccount"
                 search
                 required
+                enabled={Boolean(documentTypeId)}
               />
             </Col>
             <Col span={5}>
-              <SelectCustom
-                path={selectListEndpoints.chartAccountsSelectList}
-                displayConfig={chartAccountSelectDisplayConfig}
+              <DocumentAccountSelect
+                documentTypeId={documentTypeId ?? 0}
+                documentRoleCode={faDocumentAccountRoleCodes.depreciationExpense}
                 formik={formik}
                 fieldName={`lines[${lineIndex}].depreciationExpenseAccountId`}
                 label="fa.fields.depreciationExpenseAccount"
                 search
                 required
+                enabled={Boolean(documentTypeId)}
               />
             </Col>
             <Col span={4}>

@@ -21,6 +21,7 @@ import {
 } from "../hooks";
 import { faRevaluationPermissions } from "../constants/permissions";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
+import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 import FaRevaluationFormFields from "../components/FaRevaluationFormFields";
 import FaRevaluationReadonlyView from "../components/FaRevaluationReadonlyView";
 
@@ -57,6 +58,7 @@ export default function FaRevaluationFormPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const isCreate = !id;
+  const faDocumentTypeIds = useFaDocumentTypeIds();
 
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
@@ -213,7 +215,11 @@ export default function FaRevaluationFormPage() {
   return (
     <Form layout="vertical" onFinish={formik.handleSubmit}>
       <fieldset disabled={!canSubmit} className="min-w-0">
-        <FaRevaluationFormFields formik={formik} isDraft={isDraft} />
+        <FaRevaluationFormFields
+          formik={formik}
+          isDraft={isDraft}
+          documentTypeId={faDocumentTypeIds.revaluation}
+        />
       </fieldset>
 
       <FaDraftActionsBar

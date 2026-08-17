@@ -34,6 +34,3 @@ const SettingSystem = ({ ref }: { ref: React.RefObject<HTMLDivElement> }) => {
 };
 
 export default SettingSystem;
-
-
-

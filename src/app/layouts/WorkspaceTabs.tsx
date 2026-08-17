@@ -66,9 +66,7 @@ const WorkspaceTabs = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const tabs = useAppSelector((state) => state.tabList.tabs);
-  const activeTabKey = useAppSelector(
-    (state) => state.tabList.activeTabKey,
-  );
+  const activeTabKey = useAppSelector((state) => state.tabList.activeTabKey);
   const userId = useAppSelector((state) => state.auth.user?.user?.id ?? 0);
   const organizationId = useAppSelector((state) => state.organization.id);
   const tabsViewportRef = useRef<HTMLDivElement | null>(null);
@@ -192,11 +190,12 @@ const WorkspaceTabs = () => {
 
   const dropdownItems = tabs.map((tab) => ({
     key: tab.key,
-    icon: activeTabKey === tab.key ? (
-      <Check className="size-4 text-brand" />
-    ) : (
-      <FileText className="size-4 text-secondary-text" />
-    ),
+    icon:
+      activeTabKey === tab.key ? (
+        <Check className="size-4 text-brand" />
+      ) : (
+        <FileText className="size-4 text-secondary-text" />
+      ),
     label: (
       <span className="inline-flex max-w-64 items-center gap-1">
         <span className="truncate">{t(tab.title)}</span>
@@ -214,7 +213,7 @@ const WorkspaceTabs = () => {
     <div className="flex h-11 shrink-0 border-b border-border bg-surface-muted">
       <div
         ref={tabsViewportRef}
-        className="min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="min-w-0 flex-1 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
       >
         <div className="flex h-full w-max items-center gap-1 px-2">
           {tabs.map((tab) => {

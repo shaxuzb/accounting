@@ -635,6 +635,7 @@
       "edo": {
         "title": "Elektron hujjat almashinuvi",
         "description": "Provider tanlash, E-IMZO autentifikatsiyasi va elektron hisob-fakturalarni boshqarish.",
+        "import": { "title": "EDO hujjatlarini Purchase Draftga import qilish" },
         "navigation": {
           "inbox": "Kiruvchi",
           "outbox": "Chiquvchi",
@@ -896,6 +897,9 @@
       "discount": "Chegirma",
       "docDate": "Sana",
       "docNumber": "Hujjat raqami",
+      "externalDocNumber": "Tashqi hujjat raqami",
+      "dateFrom": "Boshlanish sanasi",
+      "dateTo": "Tugash sanasi",
       "price": "Narxi",
       "product": "Mahsulot",
       "productId": "Mahsulot ID",

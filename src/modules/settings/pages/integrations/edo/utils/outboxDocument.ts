@@ -3,6 +3,7 @@ import type { EdoDocumentDto } from "../types/type";
 const storageKey = (id: string | number) => `accounting:edo:outbox:${id}`;
 
 export const saveEdoOutboxDocument = (document: EdoDocumentDto) => {
+  if (document.id == null) return;
   sessionStorage.setItem(storageKey(document.id), JSON.stringify(document));
 };
 

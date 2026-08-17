@@ -1,12 +1,12 @@
 import { Link, useSearchParams } from "react-router";
-import { Alert, Button, Empty, Space, Table } from "antd";
+import { Alert, Button, Empty, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { FileUp, ReceiptText, RefreshCw } from "lucide-react";
+import { FileUp, ReceiptText } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { useAppSelector } from "@/store/hooks";
-import { formatDate } from "@/utils/utils";
+import { formatDate, numberSpacing } from "@/utils/utils";
 import type { PurchaseData } from "@/modules/purchase/pages/purchase/types/type";
 import { purchasePermissions } from "@/modules/purchase/pages/purchase/constants/permissions";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
@@ -17,7 +17,17 @@ import {
   purchaseEndpoints,
 } from "../constants/endpoints";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
+import SelectFilter from "@/components/ui/filters/SelectFilter";
+import DateRangeFilter from "@/components/ui/filters/DateRangeFilter";
+import ListToolbar from "@/components/ui/filters/ListToolbar";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
+
+const purchaseStatusOptions = [
+  { value: 1, label: "processStatuses.draft" },
+  { value: 2, label: "processStatuses.posted" },
+  { value: 3, label: "processStatuses.cancelled" },
+  { value: 4, label: "processStatuses.pending" },
+] as const;
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const numberValue = Number(value);
@@ -68,6 +78,11 @@ export default function PurchaseListPage() {
       ),
     },
     {
+      dataIndex: "externalDocNumber",
+      title: t("purchase.fields.externalDocNumber"),
+      render: (value) => value || "—",
+    },
+    {
       dataIndex: "accountingEntriesReport",
       title: t("common.accountingEntries"),
       align: "center",
@@ -94,6 +109,21 @@ export default function PurchaseListPage() {
       dataIndex: "warehouseName",
       title: t("purchase.fields.warehouse"),
       align: "center",
+    },
+    {
+      dataIndex: "finalAmount",
+      title: t("purchase.fields.amount"),
+      align: "right",
+      render: (_, record) => {
+        const amount = record.finalAmount ?? record.totalAmount ?? 0;
+        const currency = record.currencyCode || record.currencyName || "";
+
+        return (
+          <span className="whitespace-nowrap tabular-nums">
+            {numberSpacing(amount, undefined, true)} {currency}
+          </span>
+        );
+      },
     },
     {
       dataIndex: "statusName",
@@ -150,11 +180,26 @@ export default function PurchaseListPage() {
 
   return (
     <div className="w-full">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <SearchFilter />
-        </div>
-        <Space>
+      <ListToolbar
+        filters={
+          <>
+            <SearchFilter />
+            <SelectFilter
+              paramKey="statusId"
+              placeholder="settings.fields.status"
+              options={purchaseStatusOptions}
+              width={180}
+            />
+            <DateRangeFilter
+              paramKeys={["startDate", "endDate"]}
+              placeholderKeys={[
+                "purchase.fields.dateFrom",
+                "purchase.fields.dateTo",
+              ]}
+            />
+          </>
+        }
+        actions={
           <PermissionCard permission={purchasePermissions.create}>
             <Link to="import">
               <Button type="primary" icon={<FileUp className="size-4" />}>
@@ -162,13 +207,10 @@ export default function PurchaseListPage() {
               </Button>
             </Link>
           </PermissionCard>
-          <Button
-            icon={<RefreshCw className="size-4" />}
-            loading={isFetching}
-            onClick={() => void refetch()}
-          />
-        </Space>
-      </div>
+        }
+        refreshing={isFetching}
+        onRefresh={() => void refetch()}
+      />
       <Card className="overflow-hidden border border-border">
         {isError && (
           <Alert

@@ -48,9 +48,11 @@ export interface PurchaseData {
   counterpartyName: string;
   createdDate: string;
   currencyId: number;
+  currencyCode?: string | null;
   currencyName: string;
   docDate: string;
   docNumber: string;
+  externalDocNumber?: string | null;
   finalAmount: number;
   id: number;
   organizationId: number;

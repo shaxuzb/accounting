@@ -8,11 +8,10 @@ import InputNumber from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import Card from "@/components/ui/card/Card";
-import {
-  chartAccountSelectDisplayConfig,
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
+import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
 import type {
   FaReceiptAssetValues,
   FaReceiptFormValues,
@@ -41,11 +40,13 @@ const createEmptyLine = (): FaReceiptLineValues => ({
 interface FaReceiptFormFieldsProps {
   formik: FormikProps<FaReceiptFormValues>;
   isDraft: boolean;
+  documentTypeId?: number;
 }
 
 export default function FaReceiptFormFields({
   formik,
   isDraft,
+  documentTypeId,
 }: FaReceiptFormFieldsProps) {
   const { t } = useTranslation();
   const [activeLineKeys, setActiveLineKeys] = useState<string[]>(["line-0"]);
@@ -109,8 +110,7 @@ export default function FaReceiptFormFields({
   };
 
   const handleApplyCommonAssetData = (lineIndex: number) => {
-    const [sourceAsset, ...otherAssets] =
-      formik.values.lines[lineIndex].assets;
+    const [sourceAsset, ...otherAssets] = formik.values.lines[lineIndex].assets;
     if (!sourceAsset || !otherAssets.length) return;
     const commonValues = {
       faGroupId: sourceAsset.faGroupId,
@@ -174,14 +174,15 @@ export default function FaReceiptFormFields({
           />
         </Col>
         <Col span={6}>
-          <SelectCustom
-            path={selectListEndpoints.chartAccountsSelectList}
-            displayConfig={chartAccountSelectDisplayConfig}
+          <DocumentAccountSelect
+            documentTypeId={documentTypeId ?? 0}
+            documentRoleCode={faDocumentAccountRoleCodes.fixedAsset}
             formik={formik}
             fieldName={`lines[${lineIndex}].assets[${assetIndex}].assetAccountId`}
             label="fa.fields.assetAccount"
             search
             required
+            enabled={Boolean(documentTypeId)}
           />
         </Col>
       </Row>
@@ -283,29 +284,34 @@ export default function FaReceiptFormFields({
                   formik={formik}
                   fieldName={`lines[${lineIndex}].vatRateId`}
                   label="fa.fields.vatRateId"
-                  required
+                  clearable
                 />
               </Col>
               <Col span={6}>
-                <SelectCustom
-                  path={selectListEndpoints.chartAccountsSelectList}
-                  displayConfig={chartAccountSelectDisplayConfig}
+                <DocumentAccountSelect
+                  documentTypeId={documentTypeId ?? 0}
+                  documentRoleCode={
+                    faDocumentAccountRoleCodes.capitalInvestment
+                  }
                   formik={formik}
                   fieldName={`lines[${lineIndex}].capitalInvestmentAccountId`}
                   label="fa.fields.capitalInvestmentAccount"
                   search
                   required
+                  enabled={Boolean(documentTypeId)}
                 />
               </Col>
               <Col span={6}>
-                <SelectCustom
-                  path={selectListEndpoints.chartAccountsSelectList}
-                  displayConfig={chartAccountSelectDisplayConfig}
+                <DocumentAccountSelect
+                  documentTypeId={documentTypeId ?? 0}
+                  documentRoleCode={faDocumentAccountRoleCodes.inputVat}
                   formik={formik}
                   fieldName={`lines[${lineIndex}].vatAccountId`}
                   label="fa.fields.vatAccount"
                   search
-                  required
+                  required={Boolean(line.vatRateId)}
+                  clearable
+                  enabled={Boolean(documentTypeId)}
                 />
               </Col>
             </Row>
@@ -392,14 +398,15 @@ export default function FaReceiptFormFields({
             />
           </Col>
           <Col span={6}>
-            <SelectCustom
-              path={selectListEndpoints.chartAccountsSelectList}
-              displayConfig={chartAccountSelectDisplayConfig}
+            <DocumentAccountSelect
+              documentTypeId={documentTypeId ?? 0}
+              documentRoleCode={faDocumentAccountRoleCodes.supplierSettlement}
               formik={formik}
               fieldName="supplierAccountId"
               label="fa.fields.supplierAccount"
               search
               required
+              enabled={Boolean(documentTypeId)}
             />
           </Col>
         </Row>
@@ -437,9 +444,7 @@ export default function FaReceiptFormFields({
         />
 
         {typeof formik.errors.lines === "string" && (
-          <div className="mt-3 text-sm text-red-500">
-            {formik.errors.lines}
-          </div>
+          <div className="mt-3 text-sm text-red-500">{formik.errors.lines}</div>
         )}
       </Card>
     </div>

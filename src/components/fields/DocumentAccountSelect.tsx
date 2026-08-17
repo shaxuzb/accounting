@@ -5,6 +5,7 @@ import {
   chartAccountNumberSelectedLabel,
   chartAccountSelectDisplayConfig,
 } from "@/shared/constants/selectLists";
+import { documentAccountChartAccountsPath } from "@/shared/documentAccounts";
 
 type SelectCustomProps = ComponentProps<typeof SelectCustom>;
 
@@ -37,22 +38,33 @@ export default function DocumentAccountSelect({
   const defaultAccount = configuredRole?.accounts?.find(
     (account) => account.isDefault,
   );
+  const selectedDefaultAccount =
+    defaultAccount ?? configuredRole?.accounts?.[0];
+  const isAccountLocked = selectedDefaultAccount?.canChange === false;
   const isEnabled = props.enabled !== false && !settingsQuery.isLoading;
 
   return (
     <SelectCustom
       {...props}
       enabled={isEnabled}
-      autoSelectValue={props.autoSelectValue ?? defaultAccount?.chartAccountId}
+      autoSelectValue={
+        props.autoSelectValue ?? selectedDefaultAccount?.chartAccountId
+      }
       autoSelectKeys={
         props.autoSelectKeys?.length ? props.autoSelectKeys : ["id"]
       }
-      path={`document-account-settings/${documentTypeId}/chart-accounts`}
+      path={documentAccountChartAccountsPath(documentTypeId)}
       queryParams={{ documentRoleCode }}
       displayConfig={{
         ...chartAccountSelectDisplayConfig,
         selectedLabel: chartAccountNumberSelectedLabel,
       }}
+      disabled={
+        props.disabled ||
+        props.enabled === false ||
+        settingsQuery.isLoading ||
+        isAccountLocked
+      }
     />
   );
 }

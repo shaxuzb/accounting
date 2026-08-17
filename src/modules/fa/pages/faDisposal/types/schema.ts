@@ -9,7 +9,7 @@ export const faDisposalSchema = (t: TFunction) => Yup.object().shape({
   reason: Yup.string().required(t("fa.validation.reasonRequired")),
   disposalAccountId: Yup.number().nullable().required(t("fa.validation.disposalAccountRequired")),
   customerAccountId: Yup.number().nullable().required(t("fa.validation.customerAccountRequired")),
-  vatAccountId: Yup.number().nullable().required(t("fa.validation.vatAccountRequired")),
+  vatAccountId: Yup.number().nullable().default(null),
   gainAccountId: Yup.number().nullable().required(t("fa.validation.gainAccountRequired")),
   lossAccountId: Yup.number().nullable().required(t("fa.validation.lossAccountRequired")),
   lines: Yup.array()

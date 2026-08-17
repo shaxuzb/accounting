@@ -635,6 +635,7 @@
       "edo": {
         "title": "Electronic document exchange",
         "description": "Select a provider, authenticate with E-IMZO, and manage electronic invoices.",
+        "import": { "title": "Import EDO documents into Purchase Drafts" },
         "navigation": { "inbox": "Incoming", "outbox": "Outgoing", "drafts": "Drafts", "all": "All documents", "templates": "Templates", "excelImport": "Excel upload", "received": "Received", "pendingSignature": "Signature pending", "pendingPartnerSignature": "Partner signature pending", "signed": "Signed", "rejected": "Rejected", "deleted": "Deleted", "powerOfAttorney": "Power of attorney", "notAvailable": "Not available yet", "sectionUnavailable": "This section is waiting for its backend endpoint." },
         "capabilityUnavailable": "This action is unavailable for the selected provider",
         "previewUnavailable": "This file cannot be previewed in the browser. Download it to open it.",
@@ -757,6 +758,9 @@
       "discount": "Discount",
       "docDate": "Date",
       "docNumber": "Document number",
+      "externalDocNumber": "External document number",
+      "dateFrom": "Date from",
+      "dateTo": "Date to",
       "price": "Price",
       "product": "Product",
       "productId": "Product ID",

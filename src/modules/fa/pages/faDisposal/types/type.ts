@@ -26,7 +26,7 @@ export interface FaDisposalResponse {
   statusName?: string;
   disposalAccountId: number;
   customerAccountId: number;
-  vatAccountId: number;
+  vatAccountId: number | null;
   gainAccountId: number;
   lossAccountId: number;
   lines: FaDisposalLineItem[];
@@ -54,7 +54,7 @@ export interface FaDisposalPayload {
   stateId: number;
   disposalAccountId: number;
   customerAccountId: number;
-  vatAccountId: number;
+  vatAccountId: number | null;
   gainAccountId: number;
   lossAccountId: number;
   lines: FaDisposalLineItem[];

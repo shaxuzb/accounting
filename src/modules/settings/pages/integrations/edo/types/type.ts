@@ -143,9 +143,9 @@ export interface EdoAuthCompleteDto {
 export interface EdoPartyDto {
   name: string;
   taxIdentifier: string;
-  bankCode: string;
-  accountNumber: string;
-  address: string;
+  bankCode?: string | null;
+  accountNumber?: string | null;
+  address?: string | null;
   branchCode?: string | null;
   branchName?: string | null;
   directorName?: string | null;
@@ -166,14 +166,14 @@ export interface EdoFacturaLineDto {
   name: string;
   catalogCode?: string | null;
   catalogName?: string | null;
-  unitCode: string;
+  unitCode?: string | null;
   unitName?: string | null;
   quantity: number;
   amount: number;
-  taxRate: number;
-  taxAmount: number;
+  taxRate?: number | null;
+  taxAmount?: number | null;
   isTaxFree: boolean;
-  markingCodeIds: string[];
+  markingCodeIds: number[];
 }
 
 export interface EdoOutboxFacturaCreateRequestDto {
@@ -191,7 +191,6 @@ export interface EdoOutboxFacturaCreateRequestDto {
 }
 
 export type EdoDocumentStatusCode =
-  | "ALL"
   | "UNKNOWN"
   | "PENDING_SIGNATURE"
   | "PARTNER_SIGNATURE_PENDING"
@@ -230,7 +229,7 @@ export interface EdoDocumentStatusDto {
 }
 
 export interface EdoDocumentDto {
-  id: number;
+  id?: number | null;
   statusCheckable: boolean;
   providerCode: EdoProviderCode;
   documentIdentity?: string | null;
@@ -238,8 +237,8 @@ export interface EdoDocumentDto {
   direction: EdoDocumentDirection;
   category: EdoDocumentCategory;
   documentType: string;
-  documentNumber: string;
-  documentDate: string;
+  documentNumber?: string | null;
+  documentDate?: string | null;
   status: EdoDocumentStatusDto;
   seller?: EdoPartyDto | null;
   buyer?: EdoPartyDto | null;

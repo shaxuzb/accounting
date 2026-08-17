@@ -60,7 +60,7 @@ import EdoInboxDocumentPreview from "../components/EdoInboxDocumentPreview";
 import EdoSectionNavigation from "../components/EdoSectionNavigation";
 
 const getDocumentRowKey = (document: EdoDocumentDto) =>
-  document.id > 0
+  document.id != null && document.id > 0
     ? document.id
     : document.documentIdentity ||
       document.providerDocumentId ||
@@ -363,6 +363,7 @@ export default function EdoInboxPage() {
   );
 
   const download = useCallback(async (document: EdoDocumentDto) => {
+    if (document.id == null) return;
     try {
       const file = await downloadMutation.mutateAsync(document.id);
       saveDownloadedEdoFile(file);
@@ -397,12 +398,14 @@ export default function EdoInboxPage() {
         title: t("settings.integrations.edo.fields.documentNumber"),
         dataIndex: "documentNumber",
         minWidth: 160,
+        render: (value?: string | null) => value || "—",
       },
       {
         title: t("settings.integrations.edo.fields.documentDate"),
         dataIndex: "documentDate",
         width: 140,
-        render: (value: string) => dayjs(value).format("DD.MM.YYYY"),
+        render: (value?: string | null) =>
+          value ? dayjs(value).format("DD.MM.YYYY") : "—",
       },
       {
         title: t("settings.integrations.edo.fields.seller"),
@@ -441,7 +444,7 @@ export default function EdoInboxPage() {
               <Button
                 type="text"
                 icon={<Download className="size-4" />}
-                disabled={!canDownload || downloadMutation.isPending}
+                disabled={!canDownload || record.id == null || downloadMutation.isPending}
                 onClick={() => void download(record)}
               />
             </Tooltip>
@@ -450,7 +453,7 @@ export default function EdoInboxPage() {
                 type="text"
                 danger
                 icon={<Ban className="size-4" />}
-                disabled={!canReject || record.status.isTerminal}
+                disabled={!canReject || record.id == null || record.status.isTerminal}
                 onClick={() => setRejectDocument(record)}
               />
             </Tooltip>
@@ -640,7 +643,8 @@ export default function EdoInboxPage() {
           loading={activeQuery.isLoading || activeQuery.isFetching}
           scroll={{ x: 1150 }}
           expandable={{
-            rowExpandable: (record) => canDownload && record.id > 0,
+            rowExpandable: (record) =>
+              canDownload && record.id != null && record.id > 0,
             expandedRowKeys:
               expandedDocumentId == null ? [] : [expandedDocumentId],
             onExpand: (expanded, record) =>

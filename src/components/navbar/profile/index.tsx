@@ -9,6 +9,7 @@ import { setMode } from "@/store/features/modeSlice";
 import toast from "react-hot-toast";
 import { useEffectiveTheme } from "@/shared/hooks/useEffectiveTheme";
 import { useTranslation } from "react-i18next";
+import { cancelActiveEdoImportJob } from "@/store/middleware/edoImportLogoutCleanup";
 const ProfileNav: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const ProfileNav: React.FC = () => {
   const effectiveTheme = useEffectiveTheme();
   const [mainPopover, setMainPopover] = useState(false);
   const handleLogout = async () => {
+    await cancelActiveEdoImportJob();
     dispatch(logout());
     await navigate("/login", { replace: true });
 

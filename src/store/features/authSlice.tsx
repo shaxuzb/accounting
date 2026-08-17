@@ -49,7 +49,12 @@ const authSlice = createSlice({
     },
 
     logout: () => {
-      clearLocalStorageExcept(["mode", "lang", "theme"]);
+      clearLocalStorageExcept([
+        "mode",
+        "lang",
+        "theme",
+        "accounting:edo-import:active-job",
+      ]);
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("accounting:edo:auth:")) {
           localStorage.removeItem(key);

@@ -23,6 +23,7 @@ import { faReceiptPermissions } from "../constants/permissions";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import FaReceiptFormFields from "../components/FaReceiptFormFields";
 import FaReceiptReadonlyView from "../components/readonly/FaReceiptReadonlyView";
+import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 
 const defaultValues: FaReceiptFormValues = {
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
@@ -81,9 +82,12 @@ const toPayload = (
     name: line.name.trim(),
     quantity: Number(line.quantity),
     price: Number(line.price),
-    vatRateId: Number(line.vatRateId),
+    vatRateId: line.vatRateId == null ? null : Number(line.vatRateId),
     capitalInvestmentAccountId: Number(line.capitalInvestmentAccountId),
-    vatAccountId: Number(line.vatAccountId),
+    vatAccountId:
+      line.vatRateId == null || line.vatAccountId == null
+        ? null
+        : Number(line.vatAccountId),
     assets: line.assets.map((asset) => ({
       inventoryNumber: asset.inventoryNumber.trim(),
       name: asset.name.trim(),
@@ -100,6 +104,7 @@ export default function FaReceiptFormPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const isCreate = !id;
+  const faDocumentTypeIds = useFaDocumentTypeIds();
 
   const { user } = useAppSelector((state) => state.auth);
   const permissions = user?.user.permissions ?? [];
@@ -258,6 +263,7 @@ export default function FaReceiptFormPage() {
           <FaReceiptFormFields
             formik={formik}
             isDraft={isDraft}
+            documentTypeId={faDocumentTypeIds.receipt}
           />
         </fieldset>
 

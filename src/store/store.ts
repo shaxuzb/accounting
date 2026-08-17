@@ -6,6 +6,7 @@ import modeReducer from "./features/modeSlice";
 import organizationReducer from "./features/organizationSlice";
 import sidebarReducer from "./features/sidebarCloseSlice";
 import tabListReducer from "./features/tabListSlice";
+import { edoImportLogoutCleanupMiddleware } from "./middleware/edoImportLogoutCleanup";
 
 const combined = combineReducers({
   lang: langReducer,
@@ -30,5 +31,9 @@ const rootReducer = (
   return combined(state, action);
 };
 
-export const store = configureStore({ reducer: rootReducer });
+export const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().prepend(edoImportLogoutCleanupMiddleware),
+});
 export type AppDispatch = typeof store.dispatch;

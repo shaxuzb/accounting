@@ -1,5 +1,5 @@
 import { Button, Card as AntCard, Statistic, Tooltip } from "antd";
-import { Inbox } from "lucide-react";
+import { DatabaseZap, Inbox } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import EdoProviderPanel from "../components/EdoProviderPanel";
@@ -49,24 +49,32 @@ export default function EdoWorkspacePage() {
             {t("settings.integrations.edo.description")}
           </p>
         </div> */}
-        <Tooltip
-          title={
-            canOpenInbox
-              ? undefined
-              : t("settings.integrations.edo.errors.notConnected")
-          }
-        >
-          <span>
-            <Button
-              type="primary"
-              icon={<Inbox className="size-4" />}
-              disabled={!canOpenInbox}
-              onClick={() => navigate("inbox")}
-            >
-              {t("settings.integrations.edo.inbox.title")}
-            </Button>
-          </span>
-        </Tooltip>
+        <div className="flex flex-wrap gap-2">
+          <Tooltip
+            title={
+              canOpenInbox
+                ? undefined
+                : t("settings.integrations.edo.errors.notConnected")
+            }
+          >
+            <span>
+              <Button
+                type="primary"
+                icon={<Inbox className="size-4" />}
+                disabled={!canOpenInbox}
+                onClick={() => navigate("inbox")}
+              >
+                {t("settings.integrations.edo.inbox.title")}
+              </Button>
+            </span>
+          </Tooltip>
+          <Button
+            icon={<DatabaseZap className="size-4" />}
+            onClick={() => navigate("import")}
+          >
+            EDO Import
+          </Button>
+        </div>
       </div>
 
       {canLoadSummary && summaryQuery.data && (

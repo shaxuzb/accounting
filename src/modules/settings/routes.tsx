@@ -58,6 +58,7 @@ import EdoInboxPage from "./pages/integrations/edo/screens/EdoInboxPage";
 import EdoOutboxCreatePage from "./pages/integrations/edo/screens/EdoOutboxCreatePage";
 import EdoOutboxDetailPage from "./pages/integrations/edo/screens/EdoOutboxDetailPage";
 import EdoSessionGuard from "./pages/integrations/edo/components/EdoSessionGuard";
+import EdoImportPage from "./pages/integrations/edo/import/screens/EdoImportPage";
 import FiscalCashRegisterListPage from "./pages/fiscalCashRegister/screens/FiscalCashRegisterListPage";
 import { fiscalCashRegisterPermissions } from "./pages/fiscalCashRegister/constants/permissions";
 import BankTerminalListPage from "./pages/bankTerminal/screens/BankTerminalListPage";
@@ -161,6 +162,18 @@ export const settingsRoutes: RouteObject = {
       },
       element: withPermission(
         withEimzo(withEdoSession(<EdoInboxPage />, true)),
+        integrationPermissions.view,
+      ),
+    },
+    {
+      path: "integrations/edo/import",
+      handle: {
+        title: "settings.integrations.edo.import.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        withEimzo(withEdoSession(<EdoImportPage />)),
         integrationPermissions.view,
       ),
     },

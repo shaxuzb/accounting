@@ -10,6 +10,7 @@ import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import FaDraftActionsBar from "../../../shared/components/FaDraftActionsBar";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
+import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 import FaCommissioningFormFields from "../components/FaCommissioningFormFields";
 import FaCommissioningReadonlyView from "../components/readonly/FaCommissioningReadonlyView";
 import { faCommissioningPermissions } from "../constants/permissions";
@@ -74,6 +75,7 @@ export default function FaCommissioningFormPage() {
   const location = useLocation();
   const { id = "" } = useParams();
   const isCreate = !id;
+  const faDocumentTypeIds = useFaDocumentTypeIds();
   const isReadonlyRoute = !isCreate && !location.pathname.includes("/edit/");
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
@@ -206,6 +208,7 @@ export default function FaCommissioningFormPage() {
           formik={formik}
           isDraft={isDraft}
           currentUserId={currentUserId}
+          documentTypeId={faDocumentTypeIds.commissioning}
         />
       </fieldset>
       {isDraft ? (

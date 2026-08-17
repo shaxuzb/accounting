@@ -8,12 +8,11 @@ import InputNumber from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import Card from "@/components/ui/card/Card";
-import {
-  chartAccountSelectDisplayConfig,
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { faAssetStatusIds } from "../../../shared/constants/statuses";
+import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
 import type {
   FaRevaluationFormValues,
   FaRevaluationLineValues,
@@ -34,11 +33,13 @@ interface RevaluationLineRow extends FaRevaluationLineValues {
 interface FaRevaluationFormFieldsProps {
   formik: FormikProps<FaRevaluationFormValues>;
   isDraft: boolean;
+  documentTypeId?: number;
 }
 
 export default function FaRevaluationFormFields({
   formik,
   isDraft,
+  documentTypeId,
 }: FaRevaluationFormFieldsProps) {
   const { t } = useTranslation();
 
@@ -155,25 +156,27 @@ export default function FaRevaluationFormFields({
           </Col>
 
           <Col span={5}>
-            <SelectCustom
-              path={selectListEndpoints.chartAccountsSelectList}
-              displayConfig={chartAccountSelectDisplayConfig}
+            <DocumentAccountSelect
+              documentTypeId={documentTypeId ?? 0}
+              documentRoleCode={faDocumentAccountRoleCodes.revaluationReserve}
               formik={formik}
               fieldName="revaluationReserveAccountId"
               label="fa.fields.revaluationReserveAccount"
               search
               required
+              enabled={Boolean(documentTypeId)}
             />
           </Col>
           <Col span={5}>
-            <SelectCustom
-              path={selectListEndpoints.chartAccountsSelectList}
-              displayConfig={chartAccountSelectDisplayConfig}
+            <DocumentAccountSelect
+              documentTypeId={documentTypeId ?? 0}
+              documentRoleCode={faDocumentAccountRoleCodes.revaluationLoss}
               formik={formik}
               fieldName="revaluationLossAccountId"
               label="fa.fields.revaluationLossAccount"
               search
               required
+              enabled={Boolean(documentTypeId)}
             />
           </Col>
           <Col span={8}>

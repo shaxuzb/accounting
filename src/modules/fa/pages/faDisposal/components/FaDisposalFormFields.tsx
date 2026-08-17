@@ -8,12 +8,11 @@ import InputNumber from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import Card from "@/components/ui/card/Card";
-import {
-  chartAccountSelectDisplayConfig,
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { numberSpacing } from "@/utils/utils";
+import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
 import type {
   FaDisposalFormValues,
   FaDisposalLineValues,
@@ -34,11 +33,13 @@ interface DisposalLineRow extends FaDisposalLineValues {
 interface FaDisposalFormFieldsProps {
   formik: FormikProps<FaDisposalFormValues>;
   isDraft: boolean;
+  documentTypeId?: number;
 }
 
 export default function FaDisposalFormFields({
   formik,
   isDraft,
+  documentTypeId,
 }: FaDisposalFormFieldsProps) {
   const { t } = useTranslation();
 
@@ -181,21 +182,21 @@ export default function FaDisposalFormFields({
           </Col>
 
           {[
-            ["disposalAccountId", "fa.fields.disposalAccount"],
-            ["customerAccountId", "fa.fields.customerAccount"],
-            ["vatAccountId", "fa.fields.vatAccount"],
-            ["gainAccountId", "fa.fields.gainAccount"],
-            ["lossAccountId", "fa.fields.lossAccount"],
-          ].map(([fieldName, label]) => (
+            ["disposalAccountId", "fa.fields.disposalAccount", faDocumentAccountRoleCodes.disposal],
+            ["customerAccountId", "fa.fields.customerAccount", faDocumentAccountRoleCodes.customerSettlement],
+            ["gainAccountId", "fa.fields.gainAccount", faDocumentAccountRoleCodes.disposalGain],
+            ["lossAccountId", "fa.fields.lossAccount", faDocumentAccountRoleCodes.disposalLoss],
+          ].map(([fieldName, label, roleCode]) => (
             <Col key={fieldName} span={6}>
-              <SelectCustom
-                path={selectListEndpoints.chartAccountsSelectList}
-                displayConfig={chartAccountSelectDisplayConfig}
+              <DocumentAccountSelect
+                documentTypeId={documentTypeId ?? 0}
+                documentRoleCode={roleCode}
                 formik={formik}
-                fieldName={fieldName}
-                label={label}
+                fieldName={fieldName as string}
+                label={label as string}
                 search
                 required
+                enabled={Boolean(documentTypeId)}
               />
             </Col>
           ))}

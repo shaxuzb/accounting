@@ -10,6 +10,7 @@ import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import FaDraftActionsBar from "../../../shared/components/FaDraftActionsBar";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
+import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 import FaDisposalFormFields from "../components/FaDisposalFormFields";
 import FaDisposalReadonlyView from "../components/FaDisposalReadonlyView";
 import { faDisposalPermissions } from "../constants/permissions";
@@ -50,7 +51,7 @@ const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => ({
   stateId: values.stateId ?? faDocumentStatusIds.draft,
   disposalAccountId: Number(values.disposalAccountId),
   customerAccountId: Number(values.customerAccountId),
-  vatAccountId: Number(values.vatAccountId),
+  vatAccountId: null,
   gainAccountId: Number(values.gainAccountId),
   lossAccountId: Number(values.lossAccountId),
   lines: values.lines.map((line) => ({
@@ -65,6 +66,7 @@ export default function FaDisposalFormPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const isCreate = !id;
+  const faDocumentTypeIds = useFaDocumentTypeIds();
 
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
@@ -96,7 +98,7 @@ export default function FaDisposalFormPage() {
       stateId: record?.stateId ?? defaultValues.stateId,
       disposalAccountId: record?.disposalAccountId ?? null,
       customerAccountId: record?.customerAccountId ?? null,
-      vatAccountId: record?.vatAccountId ?? null,
+      vatAccountId: null,
       gainAccountId: record?.gainAccountId ?? null,
       lossAccountId: record?.lossAccountId ?? null,
       lines: record?.lines?.length
@@ -223,7 +225,11 @@ export default function FaDisposalFormPage() {
   return (
     <Form layout="vertical" onFinish={formik.handleSubmit}>
       <fieldset disabled={!canSubmit} className="min-w-0">
-        <FaDisposalFormFields formik={formik} isDraft={isDraft} />
+        <FaDisposalFormFields
+          formik={formik}
+          isDraft={isDraft}
+          documentTypeId={faDocumentTypeIds.disposal}
+        />
       </fieldset>
 
       <FaDraftActionsBar
