@@ -9,15 +9,19 @@ import {
 } from "antd";
 import { isAxiosError } from "axios";
 import dayjs, { type Dayjs } from "dayjs";
-import { CalendarRange, CheckCircle2, ClipboardCopy, PauseCircle, Play, RefreshCw } from "lucide-react";
+import {
+  CalendarRange,
+  CheckCircle2,
+  ClipboardCopy,
+  PauseCircle,
+  Play,
+  RefreshCw,
+} from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Card from "@/components/ui/card/Card";
 import { edoImportService } from "../api";
-import {
-  useCancelEdoImportJob,
-  useCreateEdoImportPreflight,
-} from "../hooks";
+import { useCancelEdoImportJob, useCreateEdoImportPreflight } from "../hooks";
 import type { EdoImportJobDto } from "../types";
 import {
   formatImportNumber,
@@ -26,7 +30,6 @@ import {
   isActiveImportJob,
   isPreflightReady,
   isScanning,
-  safeErrorLabel,
 } from "./presentation";
 
 interface EdoImportDiscoveryPanelProps {
@@ -66,7 +69,9 @@ export default function EdoImportDiscoveryPanel({
       return;
     }
     if (dateFrom && dateFrom.isAfter(dateTo, "day")) {
-      toast.error("Boshlanish sanasi tugash sanasidan katta bo‘lishi mumkin emas.");
+      toast.error(
+        "Boshlanish sanasi tugash sanasidan katta bo‘lishi mumkin emas.",
+      );
       return;
     }
     try {
@@ -118,7 +123,8 @@ export default function EdoImportDiscoveryPanel({
     (job?.mappingRequiredCount ?? 0) +
     (job?.duplicateCount ?? 0) +
     (job?.skippedCount ?? 0);
-  const progress = discovered > 0 ? Math.min(100, (processed / discovered) * 100) : 0;
+  const progress =
+    discovered > 0 ? Math.min(100, (processed / discovered) * 100) : 0;
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.6fr)]">
@@ -189,10 +195,12 @@ export default function EdoImportDiscoveryPanel({
                 <CheckCircle2 className="size-5" />
               </span>
               <div>
-                <h2 className="font-semibold text-success">Tekshiruv yakunlandi</h2>
+                <h2 className="font-semibold text-success">
+                  Tekshiruv yakunlandi
+                </h2>
                 <p className="mt-1 text-sm text-secondary-text">
-                  Tanlangan davr uchun barcha provayderlar yuzasidan preflight tekshiruvi
-                  muvaffaqiyatli yakunlandi.
+                  Tanlangan davr uchun barcha provayderlar yuzasidan preflight
+                  tekshiruvi muvaffaqiyatli yakunlandi.
                 </p>
               </div>
             </div>
@@ -204,14 +212,21 @@ export default function EdoImportDiscoveryPanel({
         {jobLoading && !job ? (
           <Skeleton active paragraph={{ rows: 4 }} />
         ) : jobError ? (
-          <Alert type="error" showIcon message={getImportErrorMessage(jobError)} />
+          <Alert
+            type="error"
+            showIcon
+            message={getImportErrorMessage(jobError)}
+          />
         ) : !job ? (
           <div className="grid min-h-64 place-items-center rounded-xl border border-dashed border-border bg-surface-muted/25 p-8 text-center">
             <div>
               <ScanSearchArtwork />
-              <h2 className="mt-4 font-semibold text-heading">Hali import job yo‘q</h2>
+              <h2 className="mt-4 font-semibold text-heading">
+                Hali import job yo‘q
+              </h2>
               <p className="mt-1 max-w-md text-sm text-secondary-text">
-                Sana oralig‘ini tanlab preflight boshlang. Topilgan hujjatlar keyingi bosqichlarda mapping va Draft importga tayyorlanadi.
+                Sana oralig‘ini tanlab preflight boshlang. Topilgan hujjatlar
+                keyingi bosqichlarda mapping va Draft importga tayyorlanadi.
               </p>
             </div>
           </div>
@@ -233,7 +248,8 @@ export default function EdoImportDiscoveryPanel({
                   )}
                 </div>
                 <h2 className="mt-2 text-lg font-semibold text-heading">
-                  {dayjs(job.dateFrom).format("DD.MM.YYYY")} — {dayjs(job.dateTo).format("DD.MM.YYYY")}
+                  {dayjs(job.dateFrom).format("DD.MM.YYYY")} —{" "}
+                  {dayjs(job.dateTo).format("DD.MM.YYYY")}
                 </h2>
               </div>
               <div className="flex gap-2">
@@ -259,13 +275,15 @@ export default function EdoImportDiscoveryPanel({
 
             {/* ── Progress bar ── */}
             <Progress
-              percent={isPreflightReady(job.status) ? 100 : Math.round(progress)}
+              percent={
+                isPreflightReady(job.status) ? 100 : Math.round(progress)
+              }
               status={
                 job.status === "FAILED"
                   ? "exception"
                   : isPreflightReady(job.status)
-                  ? "success"
-                  : "active"
+                    ? "success"
+                    : "active"
               }
             />
 
@@ -278,11 +296,16 @@ export default function EdoImportDiscoveryPanel({
                 ["Duplicate", job.duplicateCount],
                 ["O'tkazildi", job.skippedCount],
               ].map(([label, value]) => (
-                <div key={String(label)} className="rounded-xl bg-surface-muted/55 p-3">
+                <div
+                  key={String(label)}
+                  className="rounded-xl bg-surface-muted/55 p-3"
+                >
                   <div className="text-xl font-semibold tabular-nums text-heading">
                     {formatImportNumber(Number(value))}
                   </div>
-                  <div className="mt-1 text-xs text-secondary-text">{label}</div>
+                  <div className="mt-1 text-xs text-secondary-text">
+                    {label}
+                  </div>
                 </div>
               ))}
             </div>
@@ -290,28 +313,35 @@ export default function EdoImportDiscoveryPanel({
             {/* ── PREFLIGHT_READY: yakunlandi banner — faqat o'ng panelda yashirin ── */}
 
             {/* ── Job darajasidagi safeErrorCode ── */}
-            {job.safeErrorCode && (
-              <SafeErrorAlert code={job.safeErrorCode} />
-            )}
+            {job.safeErrorCode && <SafeErrorAlert code={job.safeErrorCode} />}
 
             {/* ── Provider kartalar ── */}
             <div className="grid gap-3 md:grid-cols-2">
               {job.providers.map((provider) => {
                 const scanning = isScanning(provider.status);
-                const ready = isPreflightReady(provider.status) ||
+                const ready =
+                  isPreflightReady(provider.status) ||
                   (!scanning && provider.status !== "FAILED");
                 const percent = provider.providerTotal
-                  ? Math.min(100, (provider.scannedCount / provider.providerTotal) * 100)
+                  ? Math.min(
+                      100,
+                      (provider.scannedCount / provider.providerTotal) * 100,
+                    )
                   : undefined;
                 // PREFLIGHT_READY yoki tugagan holatda 100% ko'rsatamiz,
                 // skanerda hisoblangan percent ishlatamiz.
-                const displayPercent = ready && !scanning ? (percent ?? 100) : percent;
-                const progressStatus: "active" | "success" | "exception" | "normal" =
+                const displayPercent =
+                  ready && !scanning ? (percent ?? 100) : percent;
+                const progressStatus:
+                  | "active"
+                  | "success"
+                  | "exception"
+                  | "normal" =
                   provider.status === "FAILED"
                     ? "exception"
                     : !scanning && ready
-                    ? "success"
-                    : "active";
+                      ? "success"
+                      : "active";
 
                 return (
                   <div
@@ -321,7 +351,9 @@ export default function EdoImportDiscoveryPanel({
                     {/* Header */}
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-heading">{provider.providerCode}</span>
+                        <span className="font-semibold text-heading">
+                          {provider.providerCode}
+                        </span>
                         {scanning && <Spin size="small" />}
                       </div>
                       {importStatusTag(provider.status)}
@@ -344,7 +376,11 @@ export default function EdoImportDiscoveryPanel({
 
                     {/* Auth kerak */}
                     {provider.isWaitingAuth && (
-                      <Button type="link" className="mt-2 p-0" onClick={onOpenAuthentication}>
+                      <Button
+                        type="link"
+                        className="mt-2 p-0"
+                        onClick={onOpenAuthentication}
+                      >
                         Providerga autentifikatsiya qilish
                       </Button>
                     )}
@@ -379,7 +415,11 @@ const getExistingJobId = (error: unknown) => {
     | undefined;
   const headerJobId = error.response?.headers?.["x-job-id"];
   const candidate =
-    data?.jobId ?? data?.job?.id ?? data?.activeJob?.id ?? data?.id ?? headerJobId;
+    data?.jobId ??
+    data?.job?.id ??
+    data?.activeJob?.id ??
+    data?.id ??
+    headerJobId;
   const jobId = Number(candidate);
 
   return Number.isInteger(jobId) && jobId > 0 ? jobId : 0;
@@ -387,7 +427,10 @@ const getExistingJobId = (error: unknown) => {
 
 function ScanSearchArtwork() {
   return (
-    <div aria-hidden className="mx-auto grid size-20 place-items-center rounded-2xl border border-brand/15 bg-brand-soft text-brand">
+    <div
+      aria-hidden
+      className="mx-auto grid size-20 place-items-center rounded-2xl border border-brand/15 bg-brand-soft text-brand"
+    >
       <CalendarRange className="size-8" />
     </div>
   );
@@ -411,9 +454,7 @@ function SafeErrorAlert({ code }: { code: string }) {
       type="info"
       showIcon
       className="text-xs"
-      message={
-        <span className="capitalize">{label}</span>
-      }
+      message={<span className="capitalize">{label}</span>}
       description={
         <div className="mt-1 flex items-center gap-2">
           <code className="rounded bg-surface-muted px-1.5 py-0.5 font-mono text-[11px] text-secondary-text">

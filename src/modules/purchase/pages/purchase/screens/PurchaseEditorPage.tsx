@@ -63,7 +63,10 @@ import { usePurchaseImportColumns } from "../hooks/usePurchaseImportColumns";
 import { useGetPurchaseDocumentAccountDefaults } from "../hooks/useGetPurchaseDocumentAccountDefaults";
 import { useUpdatePurchase } from "../hooks/useUpdatePurchase";
 import { purchasePermissions } from "../constants/permissions";
-import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
+import {
+  usePersistedState,
+  useScopedStorageKey,
+} from "@/shared/persistence/usePersistedState";
 import {
   readPersistedValue,
   removePersistedValue,
@@ -101,9 +104,7 @@ const getNumberValue = (value: unknown, fallback = 0) => {
   return Number.isFinite(numberValue) ? numberValue : fallback;
 };
 
-const getServiceProductId = (
-  serviceLine: Record<string, unknown>,
-) => {
+const getServiceProductId = (serviceLine: Record<string, unknown>) => {
   const candidates = [
     serviceLine.ownerId,
     serviceLine.serviceId,
@@ -207,7 +208,9 @@ const mapDetailLinesToRows = (
           "",
       ).trim();
       const detailServiceCandidateId = getNumberValue(detailServiceId, NaN);
-      const nameMatchedProductId = productNameToId.get(serviceName.toLowerCase());
+      const nameMatchedProductId = productNameToId.get(
+        serviceName.toLowerCase(),
+      );
       const mappedProductId = Number.isFinite(detailServiceCandidateId)
         ? productMap.has(detailServiceCandidateId)
           ? detailServiceCandidateId
@@ -219,11 +222,13 @@ const mapDetailLinesToRows = (
           : null;
       const resolvedProduct =
         mappedProductId !== null ? productMap.get(mappedProductId) : null;
-      const markingNumbers = (Array.isArray(detailLine.items)
-        ? detailLine.items
-        : [])
+      const markingNumbers = (
+        Array.isArray(detailLine.items) ? detailLine.items : []
+      )
         .map((item: Record<string, unknown>) =>
-          typeof item.markingNumber === "string" ? item.markingNumber.trim() : "",
+          typeof item.markingNumber === "string"
+            ? item.markingNumber.trim()
+            : "",
         )
         .filter((item): item is string => Boolean(item));
       const price = getNumberValue(
@@ -352,22 +357,29 @@ export const PurchaseEditor = ({
       ),
       { storage: "local", debounceMs: 250 },
     );
-  const [excelData, setExcelData, clearExcelDataDraft] = usePersistedState<PurchaseImportRow[]>(
+  const [excelData, setExcelData, clearExcelDataDraft] = usePersistedState<
+    PurchaseImportRow[]
+  >(
     `${purchaseDraftKey}:lines`,
     readPersistedValue(legacyDraftKey("lines"), [], "local"),
     { storage: "local", debounceMs: 250 },
   );
-  const [productWithCountDraft, setProductWithCountDraft, clearProductWithCountDraft] = usePersistedState<boolean>(
+  const [
+    productWithCountDraft,
+    setProductWithCountDraft,
+    clearProductWithCountDraft,
+  ] = usePersistedState<boolean>(
     `${purchaseDraftKey}:product-with-count`,
     readPersistedValue(legacyDraftKey("product-with-count"), false, "local"),
     { storage: "local", debounceMs: 250 },
   );
   const [withDiscount, _setWithWithDiscount] = useState(false);
-  const [purchaseModeDraft, setPurchaseModeDraft, clearPurchaseModeDraft] = usePersistedState<PurchaseMode>(
-    `${purchaseDraftKey}:mode`,
-    readPersistedValue(legacyDraftKey("mode"), "goods", "local"),
-    { storage: "local", debounceMs: 250 },
-  );
+  const [purchaseModeDraft, setPurchaseModeDraft, clearPurchaseModeDraft] =
+    usePersistedState<PurchaseMode>(
+      `${purchaseDraftKey}:mode`,
+      readPersistedValue(legacyDraftKey("mode"), "goods", "local"),
+      { storage: "local", debounceMs: 250 },
+    );
   const [purchaseMode, setPurchaseMode] = useState<PurchaseMode>(
     isEdit ? "goods" : purchaseModeDraft,
   );
@@ -475,12 +487,7 @@ export const PurchaseEditor = ({
   );
 
   const detailLines = useMemo(
-    () =>
-      mapDetailLinesToRows(
-        detailData,
-        itemOptions,
-        detailPurchaseMode,
-      ),
+    () => mapDetailLinesToRows(detailData, itemOptions, detailPurchaseMode),
     [detailData, detailPurchaseMode, itemOptions],
   );
 
@@ -638,7 +645,15 @@ export const PurchaseEditor = ({
         return false;
       }
     },
-    [formik, importPurchase, isEdit, purchaseId, purchaseMode, t, updatePurchase],
+    [
+      formik,
+      importPurchase,
+      isEdit,
+      purchaseId,
+      purchaseMode,
+      t,
+      updatePurchase,
+    ],
   );
 
   const finishNewPurchase = useCallback(() => {
@@ -786,15 +801,14 @@ export const PurchaseEditor = ({
       const updated = rows.map((item) => {
         const normalizedMxik = getRowMxik(item);
         const product =
-          (item.productId
-            ? itemOptionsById.get(item.productId)
-            : undefined) ?? productByMxik.get(normalizedMxik);
+          (item.productId ? itemOptionsById.get(item.productId) : undefined) ??
+          productByMxik.get(normalizedMxik);
         const unitPrice = getProductPrice(product);
         const currentMarkings = toMarkingNumbers(item);
         const isPieceTracked = Boolean(
           item.isPieceTracked ||
-            product?.isPieceTracked ||
-            currentMarkings.length,
+          product?.isPieceTracked ||
+          currentMarkings.length,
         );
         const resolvedMxik =
           item.productId && product
@@ -824,7 +838,9 @@ export const PurchaseEditor = ({
         };
 
         const normalizedMarkingNumbers = currentMarkings.join("|");
-        const resolvedMarkingNumbers = (resolved.markingNumbers ?? []).join("|");
+        const resolvedMarkingNumbers = (resolved.markingNumbers ?? []).join(
+          "|",
+        );
         const changed =
           resolved.productId !== item.productId ||
           resolved.product !== item.product ||
@@ -978,10 +994,7 @@ export const PurchaseEditor = ({
 
   const updateRowMarkings = useCallback(
     (rowIndex: number, markingNumbers: string[]) => {
-      handleRowValueChange(
-        rowIndex,
-        buildMarkingQuantityPatch(markingNumbers),
-      );
+      handleRowValueChange(rowIndex, buildMarkingQuantityPatch(markingNumbers));
     },
     [handleRowValueChange],
   );
@@ -1146,10 +1159,7 @@ export const PurchaseEditor = ({
           targetRow.markingNumbers = [];
           targetRow.qty = getNumber(targetRow.qty) || 1;
         } else {
-          Object.assign(
-            targetRow,
-            buildMarkingQuantityPatch(currentMarkings),
-          );
+          Object.assign(targetRow, buildMarkingQuantityPatch(currentMarkings));
         }
         targetRow.debitAccountId =
           targetRow.debitAccountId ?? defaultAccounts.debitAccountId;
@@ -1162,7 +1172,9 @@ export const PurchaseEditor = ({
           targetRow.vatAccountId ?? defaultAccounts.vatAccountId;
         targetRow.vatAccountName =
           targetRow.vatAccountName ||
-          (targetRow.vatAccountId == null ? defaultAccounts.vatAccountName : "");
+          (targetRow.vatAccountId == null
+            ? defaultAccounts.vatAccountName
+            : "");
       }
 
       const previousValue = (currentRows[rowIndex] as Record<string, unknown>)[
@@ -1219,8 +1231,7 @@ export const PurchaseEditor = ({
 
       return {
         ...item,
-        debitAccountId:
-          item.debitAccountId ?? defaultAccounts.debitAccountId,
+        debitAccountId: item.debitAccountId ?? defaultAccounts.debitAccountId,
         debitAccountName:
           item.debitAccountName ||
           (item.debitAccountId == null ? defaultAccounts.debitAccountName : ""),
@@ -1302,19 +1313,16 @@ export const PurchaseEditor = ({
     setMissingProductRows([]);
   }, []);
 
-  const missingMxikCount = useMemo(
-    () => {
-      if (!isSuccess) return 0;
+  const missingMxikCount = useMemo(() => {
+    if (!isSuccess) return 0;
 
-      return (
-        formik.values.lines?.filter((item) => {
-          const mxik = getRowMxik(item);
-          return mxik && !item.productId && !knownMxiks.has(mxik);
-        }).length ?? 0
-      );
-    },
-    [formik.values.lines, isSuccess, knownMxiks],
-  );
+    return (
+      formik.values.lines?.filter((item) => {
+        const mxik = getRowMxik(item);
+        return mxik && !item.productId && !knownMxiks.has(mxik);
+      }).length ?? 0
+    );
+  }, [formik.values.lines, isSuccess, knownMxiks]);
 
   const hasSelectedRows = useMemo(
     () => formik.values.lines.some((item) => Boolean(item.productId)),
@@ -1387,7 +1395,14 @@ export const PurchaseEditor = ({
     } catch (error) {
       errorHandlers(error);
     }
-  }, [confirmMutation, ensureSavedBeforeConfirm, isDraft, navigate, purchaseId, t]);
+  }, [
+    confirmMutation,
+    ensureSavedBeforeConfirm,
+    isDraft,
+    navigate,
+    purchaseId,
+    t,
+  ]);
 
   const handleCommentChange = useCallback(
     (value: string) => draftFormik.setFieldValue("comment", value, false),
@@ -1526,7 +1541,7 @@ export const PurchaseEditor = ({
           line={
             accountRowIndex === null
               ? null
-              : formik.values.lines[accountRowIndex] ?? null
+              : (formik.values.lines[accountRowIndex] ?? null)
           }
           onClose={() => setAccountRowIndex(null)}
           onApply={handleApplyLineAccounts}

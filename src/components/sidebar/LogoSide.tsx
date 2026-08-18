@@ -9,13 +9,9 @@ const LogoSide = () => {
 
   return (
     <div
-      className={`h-16 flex ${sidebarInline.sidebar ? "px-2" : "px-4"} items-center border-b border-border`}
+      className={`h-16 flex ${sidebarInline.sidebar ? "px-2" : "px-4"}  border-b border-border`}
     >
-      <div
-        className={`flex items-center gap-3 w-full ${
-          sidebarInline.sidebar ? "justify-evenly" : "justify-start"
-        }`}
-      >
+      <div className={`flex items-center gap-3 w-full `}>
         {/* Logo */}
 
         {/* <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-200">
@@ -27,8 +23,8 @@ const LogoSide = () => {
           <div>
             <img
               src={logo1}
-              alt="HisobKitob"
-              className="brand-logo h-10 w-70 object-contain"
+              alt="Accounting"
+              className="brand-logo h-10 w-auto object-contain object-left"
             />
             {/* <h1 className="text-blue-600  text-xl font-bold leading-none">
               HisobKitob
@@ -41,7 +37,7 @@ const LogoSide = () => {
           <div>
             <img
               src={logo}
-              alt="HisobKitob"
+              alt="Accounting"
               className="brand-logo h-10 w-10 object-contain"
             />
           </div>
