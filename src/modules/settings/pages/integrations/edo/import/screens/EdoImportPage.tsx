@@ -1,7 +1,5 @@
-import { Alert, Button, Tag } from "antd";
-import { ArrowLeft, DatabaseZap, ShieldCheck } from "lucide-react";
+import { Alert, Button } from "antd";
 import { useNavigate, useSearchParams } from "react-router";
-import Card from "@/components/ui/card/Card";
 import EdoImportCandidatesPanel from "../components/EdoImportCandidatesPanel";
 import EdoImportDiscoveryPanel from "../components/EdoImportDiscoveryPanel";
 import EdoImportDraftPanel from "../components/EdoImportDraftPanel";
@@ -11,7 +9,7 @@ import EdoImportWorkflowRail, {
 } from "../components/EdoImportWorkflowRail";
 import { useEdoImportJob } from "../hooks";
 import type { EdoImportJobDto } from "../types";
-import { getImportErrorMessage, importStatusTag } from "../components/presentation";
+import { getImportErrorMessage } from "../components/presentation";
 import { getActiveEdoImportJobId } from "@/store/middleware/edoImportLogoutCleanup";
 
 const sections = new Set<EdoImportSection>([
@@ -30,7 +28,8 @@ export default function EdoImportPage() {
       ? rawJobId
       : getActiveEdoImportJobId();
   const rawSection = searchParams.get("stage") as EdoImportSection | null;
-  const activeSection = rawSection && sections.has(rawSection) ? rawSection : "DISCOVERY";
+  const activeSection =
+    rawSection && sections.has(rawSection) ? rawSection : "DISCOVERY";
   const jobQuery = useEdoImportJob(jobId, jobId > 0);
   const job = jobQuery.data;
 
@@ -48,36 +47,42 @@ export default function EdoImportPage() {
   let currentPanel;
   if (activeSection === "DISCOVERY") {
     currentPanel = (
-        <EdoImportDiscoveryPanel
-          job={job}
-          jobLoading={jobQuery.isLoading || jobQuery.isFetching}
-          jobError={jobQuery.error}
-          onJobCreated={onJobCreated}
-          onRefresh={() => void jobQuery.refetch()}
-          onOpenAuthentication={() => navigate("..")}
-        />
-      );
+      <EdoImportDiscoveryPanel
+        job={job}
+        jobLoading={jobQuery.isLoading || jobQuery.isFetching}
+        jobError={jobQuery.error}
+        onJobCreated={onJobCreated}
+        onRefresh={() => void jobQuery.refetch()}
+        onOpenAuthentication={() => navigate("..")}
+      />
+    );
   } else if (!jobId) {
     currentPanel = (
-        <Alert
-          type="info"
-          showIcon
-          message="Avval preflight job yarating"
-          description="Candidate, mapping va import ma’lumotlari job ID bilan olinadi."
-          action={<Button onClick={() => setParams({ stage: "DISCOVERY" })}>Preflightga qaytish</Button>}
-        />
-      );
+      <Alert
+        type="info"
+        showIcon
+        message="Avval preflight job yarating"
+        description="Candidate, mapping va import ma'lumotlari job ID bilan olinadi."
+        action={
+          <Button onClick={() => setParams({ stage: "DISCOVERY" })}>
+            Preflightga qaytish
+          </Button>
+        }
+      />
+    );
   } else if (activeSection === "CANDIDATES") {
     currentPanel = <EdoImportCandidatesPanel jobId={jobId} />;
   } else if (activeSection === "RESOLUTION") {
     currentPanel = <EdoImportResolutionPanel jobId={jobId} />;
   } else {
-    currentPanel = <EdoImportDraftPanel jobId={jobId} jobStatus={job?.status} />;
+    currentPanel = (
+      <EdoImportDraftPanel jobId={jobId} jobStatus={job?.status} />
+    );
   }
 
   return (
     <div className="w-full space-y-4">
-      <Card className="relative overflow-hidden border border-border p-5">
+      {/* <Card className="relative overflow-hidden border border-border p-5">
         <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-72 overflow-hidden lg:block" aria-hidden>
           <div className="absolute -right-16 -top-24 size-64 rounded-full border-[34px] border-brand/5" />
           <div className="absolute bottom-5 right-10 grid grid-cols-6 gap-1 opacity-30">
@@ -118,7 +123,7 @@ export default function EdoImportPage() {
             </div>
           </div>
         </div>
-      </Card>
+      </Card> */}
 
       <EdoImportWorkflowRail
         active={activeSection}
@@ -130,7 +135,11 @@ export default function EdoImportPage() {
       />
 
       {jobQuery.isError && activeSection !== "DISCOVERY" && (
-        <Alert type="error" showIcon message={getImportErrorMessage(jobQuery.error)} />
+        <Alert
+          type="error"
+          showIcon
+          message={getImportErrorMessage(jobQuery.error)}
+        />
       )}
 
       {currentPanel}

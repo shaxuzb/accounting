@@ -150,6 +150,15 @@ body {
     color 160ms ease;
 }
 
+.brand-logo {
+  object-fit: contain;
+  display: block;
+}
+
+.theme-dark .brand-logo {
+  filter: brightness(0) invert(1);
+}
+
 .theme-light,
 .theme-dark {
   min-height: 100vh;

@@ -55,6 +55,21 @@ export const isActiveBulkImport = (status?: EdoImportBulkStatus) =>
     ),
   );
 
+/** Job yoki provider hali skanerlanayotgan (loading) holatda */
+export const isScanning = (status?: string | null) =>
+  Boolean(status && new Set(["QUEUED", "SCANNING"]).has(status));
+
+/** Preflight muvaffaqiyatli tugagan va import boshlashga tayyor */
+export const isPreflightReady = (status?: string | null) =>
+  status === "PREFLIGHT_READY";
+
+/**
+ * safeErrorCode ni o'qilishi mumkin bo'lgan matn sifatida qaytaradi.
+ * Underscore → bo'shliq, kichik harfga o'tkazish.
+ */
+export const safeErrorLabel = (code?: string | null) =>
+  code ? code.replaceAll("_", " ").toLowerCase() : null;
+
 export const getImportErrorMessage = (error: unknown) => {
   if (!isAxiosError(error)) {
     return error instanceof Error

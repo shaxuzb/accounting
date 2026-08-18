@@ -5,10 +5,11 @@ import {
   Modal,
   Progress,
   Skeleton,
+  Spin,
 } from "antd";
 import { isAxiosError } from "axios";
 import dayjs, { type Dayjs } from "dayjs";
-import { CalendarRange, PauseCircle, Play, RefreshCw } from "lucide-react";
+import { CalendarRange, CheckCircle2, ClipboardCopy, PauseCircle, Play, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Card from "@/components/ui/card/Card";
@@ -23,6 +24,9 @@ import {
   getImportErrorMessage,
   importStatusTag,
   isActiveImportJob,
+  isPreflightReady,
+  isScanning,
+  safeErrorLabel,
 } from "./presentation";
 
 interface EdoImportDiscoveryPanelProps {
@@ -118,62 +122,83 @@ export default function EdoImportDiscoveryPanel({
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.6fr)]">
-      <Card className="border border-border p-5">
-        <div className="flex items-start gap-3">
-          <span className="grid size-10 place-items-center rounded-xl bg-brand-soft text-brand">
-            <CalendarRange className="size-5" />
-          </span>
-          <div>
-            <h2 className="font-semibold text-heading">Qidiruv davri</h2>
-            <p className="mt-1 text-sm text-secondary-text">
-              DIDOX va EDOCS xarid hujjatlari shu oraliqda tekshiriladi.
-            </p>
+      {/* ── Chap ustun: sana tanlov + (agar tayyor bo'lsa) yakunlandi card ── */}
+      <div className="flex flex-col gap-4">
+        <Card className="border border-border p-5">
+          <div className="flex items-start gap-3">
+            <span className="grid size-10 place-items-center rounded-xl bg-brand-soft text-brand">
+              <CalendarRange className="size-5" />
+            </span>
+            <div>
+              <h2 className="font-semibold text-heading">Qidiruv davri</h2>
+              <p className="mt-1 text-sm text-secondary-text">
+                DIDOX va EDOCS xarid hujjatlari shu oraliqda tekshiriladi.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-          <label className="space-y-2 text-sm font-medium text-heading">
-            <span>Boshlanish sanasi</span>
-            <DatePicker
-              value={dateFrom}
-              onChange={setDateFrom}
-              format="DD.MM.YYYY"
-              className="w-full"
-              placeholder="Ixtiyoriy"
-            />
-          </label>
-          <label className="space-y-2 text-sm font-medium text-heading">
-            <span>Tugash sanasi</span>
-            <DatePicker
-              value={dateTo}
-              onChange={setDateTo}
-              format="DD.MM.YYYY"
-              className="w-full"
-              placeholder="Majburiy"
-            />
-          </label>
-        </div>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+            <label className="space-y-2 text-sm font-medium text-heading">
+              <span>Boshlanish sanasi</span>
+              <DatePicker
+                value={dateFrom}
+                onChange={setDateFrom}
+                format="DD.MM.YYYY"
+                className="w-full"
+                placeholder="Ixtiyoriy"
+              />
+            </label>
+            <label className="space-y-2 text-sm font-medium text-heading">
+              <span>Tugash sanasi</span>
+              <DatePicker
+                value={dateTo}
+                onChange={setDateTo}
+                format="DD.MM.YYYY"
+                className="w-full"
+                placeholder="Majburiy"
+              />
+            </label>
+          </div>
 
-        <Button
-          type="primary"
-          icon={<Play className="size-4" />}
-          loading={preflight.isPending}
-          disabled={activeJobLocked}
-          onClick={() => void startPreflight()}
-          className="mt-5 w-full"
-        >
-          Preflight boshlash
-        </Button>
-        {activeJobLocked && job && (
-          <Alert
-            className="mt-4"
-            type="warning"
-            showIcon
-            message={`#${job.id} job hali faol`}
-            description="Yangi preflight boshlashdan oldin o‘ng tomondagi To‘xtatish tugmasini bosing va status CANCELLED bo‘lishini kuting."
-          />
+          <Button
+            type="primary"
+            icon={<Play className="size-4" />}
+            loading={preflight.isPending}
+            disabled={activeJobLocked}
+            onClick={() => void startPreflight()}
+            className="mt-5 w-full"
+          >
+            Preflight boshlash
+          </Button>
+          {activeJobLocked && job && (
+            <Alert
+              className="mt-4"
+              type="warning"
+              showIcon
+              message={`#${job.id} job hali faol`}
+              description="Yangi preflight boshlashdan oldin o‘ng tomondagi To‘xtatish tugmasini bosing va status CANCELLED bo‘lishini kuting."
+            />
+          )}
+        </Card>
+
+        {/* ── PREFLIGHT_READY: alohida yashil yakunlandi card ── */}
+        {job && isPreflightReady(job.status) && (
+          <Card className="border border-success/30 bg-success/5 p-5">
+            <div className="flex items-start gap-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-success/15 text-success">
+                <CheckCircle2 className="size-5" />
+              </span>
+              <div>
+                <h2 className="font-semibold text-success">Tekshiruv yakunlandi</h2>
+                <p className="mt-1 text-sm text-secondary-text">
+                  Tanlangan davr uchun barcha provayderlar yuzasidan preflight tekshiruvi
+                  muvaffaqiyatli yakunlandi.
+                </p>
+              </div>
+            </div>
+          </Card>
         )}
-      </Card>
+      </div>
 
       <Card className="border border-border p-5">
         {jobLoading && !job ? (
@@ -192,6 +217,7 @@ export default function EdoImportDiscoveryPanel({
           </div>
         ) : (
           <div className="space-y-5">
+            {/* ── Job sarlavha + tugmalar ── */}
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -199,6 +225,12 @@ export default function EdoImportDiscoveryPanel({
                     Import job #{job.id}
                   </span>
                   {importStatusTag(job.status)}
+                  {isScanning(job.status) && (
+                    <span className="inline-flex items-center gap-1.5 text-xs text-secondary-text">
+                      <Spin size="small" />
+                      Yuklanayotgan…
+                    </span>
+                  )}
                 </div>
                 <h2 className="mt-2 text-lg font-semibold text-heading">
                   {dayjs(job.dateFrom).format("DD.MM.YYYY")} — {dayjs(job.dateTo).format("DD.MM.YYYY")}
@@ -219,21 +251,32 @@ export default function EdoImportDiscoveryPanel({
                     loading={cancelJob.isPending}
                     onClick={confirmCancel}
                   >
-                    To‘xtatish
+                    To'xtatish
                   </Button>
                 )}
               </div>
             </div>
 
-            <Progress percent={Math.round(progress)} status={job.status === "FAILED" ? "exception" : "active"} />
+            {/* ── Progress bar ── */}
+            <Progress
+              percent={isPreflightReady(job.status) ? 100 : Math.round(progress)}
+              status={
+                job.status === "FAILED"
+                  ? "exception"
+                  : isPreflightReady(job.status)
+                  ? "success"
+                  : "active"
+              }
+            />
 
+            {/* ── Stat cards ── */}
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
               {[
                 ["Topildi", job.discoveredCount],
                 ["Tayyor", job.readyCount],
                 ["Mapping", job.mappingRequiredCount],
                 ["Duplicate", job.duplicateCount],
-                ["O‘tkazildi", job.skippedCount],
+                ["O'tkazildi", job.skippedCount],
               ].map(([label, value]) => (
                 <div key={String(label)} className="rounded-xl bg-surface-muted/55 p-3">
                   <div className="text-xl font-semibold tabular-nums text-heading">
@@ -244,33 +287,73 @@ export default function EdoImportDiscoveryPanel({
               ))}
             </div>
 
+            {/* ── PREFLIGHT_READY: yakunlandi banner — faqat o'ng panelda yashirin ── */}
+
+            {/* ── Job darajasidagi safeErrorCode ── */}
             {job.safeErrorCode && (
-              <Alert type="warning" showIcon message={`Xavfsiz xato kodi: ${job.safeErrorCode}`} />
+              <SafeErrorAlert code={job.safeErrorCode} />
             )}
 
+            {/* ── Provider kartalar ── */}
             <div className="grid gap-3 md:grid-cols-2">
               {job.providers.map((provider) => {
+                const scanning = isScanning(provider.status);
+                const ready = isPreflightReady(provider.status) ||
+                  (!scanning && provider.status !== "FAILED");
                 const percent = provider.providerTotal
                   ? Math.min(100, (provider.scannedCount / provider.providerTotal) * 100)
                   : undefined;
+                // PREFLIGHT_READY yoki tugagan holatda 100% ko'rsatamiz,
+                // skanerda hisoblangan percent ishlatamiz.
+                const displayPercent = ready && !scanning ? (percent ?? 100) : percent;
+                const progressStatus: "active" | "success" | "exception" | "normal" =
+                  provider.status === "FAILED"
+                    ? "exception"
+                    : !scanning && ready
+                    ? "success"
+                    : "active";
+
                 return (
-                  <div key={provider.providerCode} className="rounded-xl border border-border p-4">
+                  <div
+                    key={provider.providerCode}
+                    className="rounded-xl border border-border p-4 transition-colors"
+                  >
+                    {/* Header */}
                     <div className="flex items-center justify-between gap-2">
-                      <div className="font-semibold text-heading">{provider.providerCode}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-heading">{provider.providerCode}</span>
+                        {scanning && <Spin size="small" />}
+                      </div>
                       {importStatusTag(provider.status)}
                     </div>
+
+                    {/* Skanerlanganlar */}
                     <div className="mt-3 flex items-center justify-between text-xs text-secondary-text">
                       <span>{provider.scannedCount} ta tekshirildi</span>
                       <span>Sahifa {provider.currentPage}</span>
                     </div>
-                    <Progress percent={percent} showInfo={percent != null} size="small" className="mb-0 mt-1" />
+
+                    {/* Progress */}
+                    <Progress
+                      percent={displayPercent}
+                      showInfo={displayPercent != null}
+                      size="small"
+                      status={progressStatus}
+                      className="mb-0 mt-1"
+                    />
+
+                    {/* Auth kerak */}
                     {provider.isWaitingAuth && (
                       <Button type="link" className="mt-2 p-0" onClick={onOpenAuthentication}>
                         Providerga autentifikatsiya qilish
                       </Button>
                     )}
+
+                    {/* Provider safeErrorCode */}
                     {provider.safeErrorCode && (
-                      <div className="mt-2 text-xs text-danger">{provider.safeErrorCode}</div>
+                      <div className="mt-3">
+                        <SafeErrorAlert code={provider.safeErrorCode} />
+                      </div>
                     )}
                   </div>
                 );
@@ -307,5 +390,46 @@ function ScanSearchArtwork() {
     <div aria-hidden className="mx-auto grid size-20 place-items-center rounded-2xl border border-brand/15 bg-brand-soft text-brand">
       <CalendarRange className="size-8" />
     </div>
+  );
+}
+
+/**
+ * Backend yuborgan safeErrorCode ni foydalanuvchiga info bloк sifatida ko'rsatadi.
+ * Kodni clipboard ga nusxalash imkoni bor.
+ */
+function SafeErrorAlert({ code }: { code: string }) {
+  const label = code.replaceAll("_", " ").toLowerCase();
+
+  const handleCopy = () => {
+    void navigator.clipboard.writeText(code).then(() => {
+      // toast chiqarish shart emas, icon o'zi yetarli
+    });
+  };
+
+  return (
+    <Alert
+      type="info"
+      showIcon
+      className="text-xs"
+      message={
+        <span className="capitalize">{label}</span>
+      }
+      description={
+        <div className="mt-1 flex items-center gap-2">
+          <code className="rounded bg-surface-muted px-1.5 py-0.5 font-mono text-[11px] text-secondary-text">
+            {code}
+          </code>
+          <button
+            type="button"
+            onClick={handleCopy}
+            title="Kodni nusxalash"
+            className="inline-flex items-center gap-1 rounded px-1 py-0.5 text-[11px] text-secondary-text transition-colors hover:text-brand"
+          >
+            <ClipboardCopy className="size-3" />
+            Nusxa
+          </button>
+        </div>
+      }
+    />
   );
 }

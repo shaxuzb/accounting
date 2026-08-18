@@ -11,9 +11,7 @@ const terminalStatuses = new Set<EdoImportJobDto["status"]>([
   "CANCELLED",
 ]);
 
-const jobPollingInterval = (query: {
-  state: { data?: EdoImportJobDto };
-}) =>
+const jobPollingInterval = (query: { state: { data?: EdoImportJobDto } }) =>
   query.state.data && terminalStatuses.has(query.state.data.status)
     ? false
     : 15_000;
@@ -30,10 +28,7 @@ export const useCreateEdoImportPreflight = () => {
   });
 };
 
-export const useEdoImportJob = (
-  jobId: string | number,
-  enabled = true,
-) =>
+export const useEdoImportJob = (jobId: string | number, enabled = true) =>
   useQuery({
     queryKey: edoImportQueryKeys.job(jobId),
     queryFn: async () => {

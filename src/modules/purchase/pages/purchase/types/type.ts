@@ -35,7 +35,7 @@ export interface ProductSelectOption {
   purchasePrice?: number | null;
   pricePerUom?: number | null;
   isPieceTracked?: boolean;
-  isService?: boolean
+  isService?: boolean;
 }
 
 export interface ProductListResponse {
@@ -182,6 +182,8 @@ export interface PurchaseDetailData extends PurchaseData {
   organizationName: string;
   vatAmount: number;
   supplierAccountId?: number | null;
+  externalDocNumber?: string | null;
+  externalId?: string | null;
 }
 
 export interface PurchaseForm {
@@ -190,4 +192,6 @@ export interface PurchaseForm {
   warehouseId: number | null;
   currencyId: number | null;
   comment: string;
+  externalDocNumber?: string | null;
+  externalId?: string | null;
 }

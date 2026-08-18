@@ -71,7 +71,9 @@ const hasGoodsSignature = (line: Record<string, unknown>) =>
   hasPositiveNumericValue(line.productId) ||
   hasPositiveNumericValue(line.unitId);
 
-export const isServiceDetailLine = (line: unknown): line is Record<string, unknown> => {
+export const isServiceDetailLine = (
+  line: unknown,
+): line is Record<string, unknown> => {
   if (!line || typeof line !== "object") return false;
 
   const record = line as Record<string, unknown>;
@@ -333,9 +335,10 @@ const toPurchaseDocumentPayload = (
   lines: completedRows.map((item) => {
     const markingNumbers = toMarkingNumbers(item);
     const hasMarking = purchaseMode === "goods" && markingNumbers.length > 0;
-    const quantity = hasMarking || item.isPieceTracked
-      ? markingNumbers.length
-      : Number(item.qty ?? 1);
+    const quantity =
+      hasMarking || item.isPieceTracked
+        ? markingNumbers.length
+        : Number(item.qty ?? 1);
 
     const line = {
       productId: Number(item.productId),

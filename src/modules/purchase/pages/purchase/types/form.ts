@@ -29,6 +29,8 @@ export interface PurchaseDocumentPayload {
   contractId: number | null;
   supplierAccountId: number;
   lines: PurchaseDocLineDto[];
+  externalDocNumber?: string | null;
+  externalId?: string | null;
 }
 
 export interface PurchaseImportForm {

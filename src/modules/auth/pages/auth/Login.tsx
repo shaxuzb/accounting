@@ -1,8 +1,8 @@
-﻿import InputPassword from "@/components/fields/InputPassword";
+﻿﻿import InputPassword from "@/components/fields/InputPassword";
 import InputText from "@/components/fields/InputText";
 import { Button, Checkbox, Form } from "antd";
 import { useFormik } from "formik";
-import logo from "@/assets/images/logo/logo.svg";
+import logo1 from "@/assets/images/logo/logo1.svg";
 import loginP from "@/assets/loginP.png";
 import { createAuthSchema } from "../../types/auth";
 import { authService, type LoginPayload } from "@/services/authService";
@@ -49,21 +49,21 @@ function Login() {
           <div className="flex flex-col flex-1 justify-center max-w-90 mx-auto w-full">
             <div className="flex items-center gap-3 mb-10">
               <img
-                src={logo}
+                src={logo1}
                 alt="HisobKitob"
-                className="h-11 w-11 object-contain"
+                className="brand-logo h-11 w-70"
               />
               {/* <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-200">
                 HK
               </div> */}
-              <div>
+              {/* <div>
                 <h1 className="text-xl font-bold text-gray-900 leading-none">
                   HisobKitob
                 </h1>
                 <p className="text-[11px] text-blue-600 font-semibold mt-0.5 tracking-wider">
                   {t("auth.systemName")}
                 </p>
-              </div>
+              </div> */}
             </div>
 
             <div className="mb-7">
@@ -121,7 +121,7 @@ function Login() {
                 className="hover:text-blue-600 cursor-pointer transition-all"
                 onClick={() => {
                   dispatch(setLang("uz"));
-                   i18n.changeLanguage("uz");
+                  i18n.changeLanguage("uz");
                 }}
               >
                 {t("profile.languages.uz")}
@@ -252,4 +252,3 @@ function Login() {
 }
 
 export default Login;
-

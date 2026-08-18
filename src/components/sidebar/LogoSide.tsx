@@ -1,9 +1,10 @@
 import { useAppSelector } from "@/store/hooks";
-import { useTranslation } from "react-i18next";
+// import { useTranslation } from "react-i18next";
 import logo from "@/assets/images/logo/logo.svg";
+import logo1 from "@/assets/images/logo/logo1.svg";
 
 const LogoSide = () => {
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   const sidebarInline = useAppSelector((state) => state.sidebar);
 
   return (
@@ -12,24 +13,37 @@ const LogoSide = () => {
     >
       <div
         className={`flex items-center gap-3 w-full ${
-          sidebarInline.sidebar ? "justify-center" : "justify-start"
+          sidebarInline.sidebar ? "justify-evenly" : "justify-start"
         }`}
       >
         {/* Logo */}
-        <img src={logo} alt="HisobKitob" className="h-10 w-10 object-contain" />
+
         {/* <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-200">
           HK
         </div> */}
 
         {/* Title */}
-        {!sidebarInline.sidebar && (
+        {!sidebarInline.sidebar ? (
           <div>
-            <h1 className="text-blue-600  text-xl font-bold leading-none">
+            <img
+              src={logo1}
+              alt="HisobKitob"
+              className="brand-logo h-10 w-70 object-contain"
+            />
+            {/* <h1 className="text-blue-600  text-xl font-bold leading-none">
               HisobKitob
             </h1>
             <p className="text-blue-600 mt-0.5 text-[10px] font-semibold tracking-wider">
               {t("auth.systemName")}
-            </p>
+            </p> */}
+          </div>
+        ) : (
+          <div>
+            <img
+              src={logo}
+              alt="HisobKitob"
+              className="brand-logo h-10 w-10 object-contain"
+            />
           </div>
         )}
       </div>

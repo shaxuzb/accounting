@@ -21,7 +21,10 @@ import {
   clearIdempotencyKey,
   getOrCreateIdempotencyKey,
 } from "../utils/idempotency";
-import { readEdoOutboxDocument, saveEdoOutboxDocument } from "../utils/outboxDocument";
+import {
+  readEdoOutboxDocument,
+  saveEdoOutboxDocument,
+} from "../utils/outboxDocument";
 import EdoDocumentStatusPanel from "../components/EdoDocumentStatusPanel";
 import { createEimzoSignature } from "../utils/eimzoSignature";
 import { getEimzoSigningDataBase64 } from "../utils/signingPayload";
@@ -32,7 +35,11 @@ export default function EdoOutboxDetailPage() {
   const activeProviderQuery = useEdoActiveProvider();
   const provider = activeProviderQuery.data;
   const capabilitiesQuery = useEdoCapabilities(provider?.code);
-  const canGetDetail = hasSupportedCapability(provider, "GetDetail", capabilitiesQuery.data);
+  const canGetDetail = hasSupportedCapability(
+    provider,
+    "GetDetail",
+    capabilitiesQuery.data,
+  );
   const detailQuery = useEdoDocumentDetail(id, canGetDetail && Boolean(id));
   const statusQuery = useEdoDocumentStatus("OUTBOX", id, Boolean(id));
   const signMutation = useSignEdoOutbox();
@@ -41,14 +48,29 @@ export default function EdoOutboxDetailPage() {
   const [selectedSerial, setSelectedSerial] = useState<string>();
   const [preparedPkcs7, setPreparedPkcs7] = useState("");
   const document = readEdoOutboxDocument(id);
-  const certificates = useMemo(() => keyList.filter((item) => !item.expired), [keyList]);
-  const certificate = certificates.find((item) => item.serialNumber === selectedSerial);
+  const certificates = useMemo(
+    () => keyList.filter((item) => !item.expired),
+    [keyList],
+  );
+  const certificate = certificates.find(
+    (item) => item.serialNumber === selectedSerial,
+  );
   const status = statusQuery.data ?? document?.status;
-  const canSign = hasSupportedCapability(provider, "SignOutbox", capabilitiesQuery.data) && !status?.isTerminal && status?.code !== "FAILED" && status?.code !== "RECONCILIATION_REQUIRED";
-  const canDownload = hasSupportedCapability(provider, "GetFile", capabilitiesQuery.data);
+  const canSign =
+    hasSupportedCapability(provider, "SignOutbox", capabilitiesQuery.data) &&
+    !status?.isTerminal &&
+    status?.code !== "FAILED" &&
+    status?.code !== "RECONCILIATION_REQUIRED";
+  const canDownload = hasSupportedCapability(
+    provider,
+    "GetFile",
+    capabilitiesQuery.data,
+  );
   const resolvedDocument = detailQuery.data ?? document;
 
-  const finishSign = (response: Awaited<ReturnType<typeof signMutation.mutateAsync>>) => {
+  const finishSign = (
+    response: Awaited<ReturnType<typeof signMutation.mutateAsync>>,
+  ) => {
     saveEdoOutboxDocument(response.document);
     clearIdempotencyKey(`sign:${id}`);
     toast.success(t("settings.integrations.edo.messages.signed"));
@@ -61,30 +83,40 @@ export default function EdoOutboxDetailPage() {
     try {
       if (provider.code === "EDOCS") {
         if (!preparedPkcs7.trim()) return;
-        finishSign(await signMutation.mutateAsync({ id, payload: { idempotencyKey, preparedPkcs7: preparedPkcs7.trim() } }));
+        finishSign(
+          await signMutation.mutateAsync({
+            id,
+            payload: { idempotencyKey, preparedPkcs7: preparedPkcs7.trim() },
+          }),
+        );
         return;
       }
       if (!certificate) return;
-      const challenge = await signMutation.mutateAsync({ id, payload: { idempotencyKey } });
-      const session = challenge.signingSession;
-      if (!session || new Date(session.expiresAt).getTime() <= Date.now()) throw new Error(t("settings.integrations.edo.errors.challengeExpired"));
-      const keyId = await prepareKey(certificate);
-      const { preparedPkcs7: pkcs7, signatureHex } =
-        await createEimzoSignature(
-          keyId,
-          getEimzoSigningDataBase64(session.payload, session.payloadFormat),
-        );
-      finishSign(await signMutation.mutateAsync({
+      const challenge = await signMutation.mutateAsync({
         id,
-        payload: {
-          idempotencyKey,
-          certificateSerialNumber: certificate.serialNumber,
-          signingSessionId: session.sessionId,
-          signingMode: session.signingMode,
-          preparedPkcs7: pkcs7,
-          signatureHex,
-        },
-      }));
+        payload: { idempotencyKey },
+      });
+      const session = challenge.signingSession;
+      if (!session || new Date(session.expiresAt).getTime() <= Date.now())
+        throw new Error(t("settings.integrations.edo.errors.challengeExpired"));
+      const keyId = await prepareKey(certificate);
+      const { preparedPkcs7: pkcs7, signatureHex } = await createEimzoSignature(
+        keyId,
+        getEimzoSigningDataBase64(session.payload, session.payloadFormat),
+      );
+      finishSign(
+        await signMutation.mutateAsync({
+          id,
+          payload: {
+            idempotencyKey,
+            certificateSerialNumber: certificate.serialNumber,
+            signingSessionId: session.sessionId,
+            signingMode: session.signingMode,
+            preparedPkcs7: pkcs7,
+            signatureHex,
+          },
+        }),
+      );
     } catch (error) {
       errorHandlers(error);
     }
@@ -101,39 +133,119 @@ export default function EdoOutboxDetailPage() {
   return (
     <div className="w-full space-y-4">
       <div className="px-1">
-        <h1 className="text-2xl font-semibold text-heading">{t("settings.integrations.edo.outbox.document", { id })}</h1>
-        <p className="mt-1 text-sm text-secondary-text">{t("settings.integrations.edo.outbox.detailDescription")}</p>
+        <h1 className="text-2xl font-semibold text-heading">
+          {t("settings.integrations.edo.outbox.document", { id })}
+        </h1>
+        <p className="mt-1 text-sm text-secondary-text">
+          {t("settings.integrations.edo.outbox.detailDescription")}
+        </p>
       </div>
 
-      {status?.isReconciliationRequired && <Alert type="warning" showIcon message={t("settings.integrations.edo.status.reconciliation")} />}
+      {status?.isReconciliationRequired && (
+        <Alert
+          type="warning"
+          showIcon
+          message={t("settings.integrations.edo.status.reconciliation")}
+        />
+      )}
       <Card className="border border-border p-5">
-        <Descriptions bordered size="small" column={{ xs: 1, md: 2, xl: 4 }} items={[
-          { key: "id", label: "ID", children: id },
-          { key: "number", label: t("settings.integrations.edo.fields.documentNumber"), children: resolvedDocument?.documentNumber ?? "—" },
-          { key: "providerId", label: t("settings.integrations.edo.fields.providerDocumentId"), children: resolvedDocument?.providerDocumentId ?? "—" },
-          { key: "type", label: t("settings.integrations.edo.fields.documentType"), children: resolvedDocument?.documentType ?? "—" },
-        ]} />
+        <Descriptions
+          bordered
+          size="small"
+          column={{ xs: 1, md: 2, xl: 4 }}
+          items={[
+            { key: "id", label: "ID", children: id },
+            {
+              key: "number",
+              label: t("settings.integrations.edo.fields.documentNumber"),
+              children: resolvedDocument?.documentNumber ?? "—",
+            },
+            {
+              key: "providerId",
+              label: t("settings.integrations.edo.fields.providerDocumentId"),
+              children: resolvedDocument?.providerDocumentId ?? "—",
+            },
+            {
+              key: "type",
+              label: t("settings.integrations.edo.fields.documentType"),
+              children: resolvedDocument?.documentType ?? "—",
+            },
+          ]}
+        />
       </Card>
 
-      <Card className="border border-border p-5"><EdoDocumentStatusPanel id={id} direction="OUTBOX" providerDocumentId={resolvedDocument?.providerDocumentId} /></Card>
+      <Card className="border border-border p-5">
+        <EdoDocumentStatusPanel
+          id={id}
+          direction="OUTBOX"
+          providerDocumentId={resolvedDocument?.providerDocumentId}
+        />
+      </Card>
 
       <Card className="border border-border p-5">
-        <h2 className="mb-4 font-semibold">{t("settings.integrations.edo.outbox.sign")}</h2>
-        {!canSign && <Alert type="warning" showIcon message={t("settings.integrations.edo.outbox.signUnavailable")} className="mb-4" />}
+        <h2 className="mb-4 font-semibold">
+          {t("settings.integrations.edo.outbox.sign")}
+        </h2>
+        {!canSign && (
+          <Alert
+            type="warning"
+            showIcon
+            message={t("settings.integrations.edo.outbox.signUnavailable")}
+            className="mb-4"
+          />
+        )}
         {provider?.code === "EDOCS" ? (
           <div>
-            <label className="mb-2 block text-sm font-medium">{t("settings.integrations.edo.fields.preparedPkcs7")}</label>
-            <Input.TextArea rows={5} value={preparedPkcs7} onChange={(event) => setPreparedPkcs7(event.target.value)} />
+            <label className="mb-2 block text-sm font-medium">
+              {t("settings.integrations.edo.fields.preparedPkcs7")}
+            </label>
+            <Input.TextArea
+              rows={5}
+              value={preparedPkcs7}
+              onChange={(event) => setPreparedPkcs7(event.target.value)}
+            />
           </div>
         ) : (
           <div>
-            <label className="mb-2 block text-sm font-medium">{t("settings.integrations.eimzo.selectCertificate")}</label>
-            <Select className="w-full" value={selectedSerial} onChange={setSelectedSerial} options={certificates.map((item) => ({ value: item.serialNumber, label: `${item.ownerName || item.CN} — ${item.serialNumber}` }))} showSearch optionFilterProp="label" />
+            <label className="mb-2 block text-sm font-medium">
+              {t("settings.integrations.eimzo.selectCertificate")}
+            </label>
+            <Select
+              className="w-full"
+              value={selectedSerial}
+              onChange={setSelectedSerial}
+              options={certificates.map((item) => ({
+                value: item.serialNumber,
+                label: `${item.ownerName || item.CN} — ${item.serialNumber}`,
+              }))}
+              showSearch
+              optionFilterProp="label"
+            />
           </div>
         )}
         <div className="mt-4 flex flex-wrap justify-end gap-2">
-          <Button icon={<Download className="size-4" />} disabled={!canDownload} loading={downloadMutation.isPending} onClick={() => void download()}>{t("settings.integrations.edo.actions.download")}</Button>
-          <Button type="primary" icon={<FileSignature className="size-4" />} disabled={!canSign || (provider?.code === "EDOCS" ? !preparedPkcs7.trim() : !certificate || !isInstalled)} loading={signMutation.isPending} onClick={() => void handleSign()}>{t("settings.integrations.edo.actions.sign")}</Button>
+          <Button
+            icon={<Download className="size-4" />}
+            disabled={!canDownload}
+            loading={downloadMutation.isPending}
+            onClick={() => void download()}
+          >
+            {t("settings.integrations.edo.actions.download")}
+          </Button>
+          <Button
+            type="primary"
+            icon={<FileSignature className="size-4" />}
+            disabled={
+              !canSign ||
+              (provider?.code === "EDOCS"
+                ? !preparedPkcs7.trim()
+                : !certificate || !isInstalled)
+            }
+            loading={signMutation.isPending}
+            onClick={() => void handleSign()}
+          >
+            {t("settings.integrations.edo.actions.sign")}
+          </Button>
         </div>
       </Card>
     </div>
