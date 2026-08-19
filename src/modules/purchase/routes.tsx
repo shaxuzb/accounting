@@ -39,6 +39,7 @@ export const purchaseRoutes: RouteObject = {
             title: "purchase.importTitle",
             showBack: true,
             backTo: "..",
+            tabSuffix: "docNumber",
           },
         },
         {
@@ -51,6 +52,7 @@ export const purchaseRoutes: RouteObject = {
             title: "purchase.detailTitle",
             showBack: true,
             backTo: "..",
+            tabSuffix: "docNumber",
           },
         },
         {
@@ -63,6 +65,7 @@ export const purchaseRoutes: RouteObject = {
             title: "purchase.detailTitle",
             showBack: true,
             backTo: "..",
+            tabSuffix: "docNumber",
           },
         },
       ],

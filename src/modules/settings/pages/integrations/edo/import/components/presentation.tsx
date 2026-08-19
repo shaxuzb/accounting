@@ -2,6 +2,7 @@ import { isAxiosError } from "axios";
 import { Tag } from "antd";
 import type { ReactNode } from "react";
 import type { EdoImportBulkStatus, EdoImportJobStatus } from "../types";
+import i18n from "@/config/i18n";
 
 const statusColors: Record<string, string> = {
   QUEUED: "blue",
@@ -30,14 +31,26 @@ export const formatImportNumber = (value?: number | null) =>
         value,
       );
 
-export const importStatusTag = (status?: string | null): ReactNode =>
-  status ? (
+export const importStatusLabel = (status?: string | null): string => {
+  if (!status) return "—";
+
+  const fallback = status.replaceAll("_", " ");
+  const translated = i18n.t(`settings.integrations.edo.import.statuses.${status}`, {
+    defaultValue: fallback,
+  }) as string;
+
+  return translated || fallback;
+};
+
+export const importStatusTag = (status?: string | null): ReactNode => {
+  if (!status) return "—";
+
+  return (
     <Tag color={statusColors[status] ?? "default"} className="m-0 font-medium">
-      {status.replaceAll("_", " ")}
+      {importStatusLabel(status)}
     </Tag>
-  ) : (
-    "—"
   );
+};
 
 export const isActiveImportJob = (status?: EdoImportJobStatus) =>
   Boolean(
@@ -74,7 +87,7 @@ export const getImportErrorMessage = (error: unknown) => {
   if (!isAxiosError(error)) {
     return error instanceof Error
       ? error.message
-      : "So‘rovni bajarib bo‘lmadi.";
+      : "So'rovni bajarib bo'lmadi.";
   }
 
   const data = error.response?.data as
@@ -88,7 +101,7 @@ export const getImportErrorMessage = (error: unknown) => {
   const correlation = data?.correlationId ? ` · ID: ${data.correlationId}` : "";
 
   if (error.response?.status === 409) {
-    return `Reja yangilangan. Eng so‘nggi ma’lumot qayta yuklandi${correlation}.`;
+    return `Reja yangilangan. Eng so'nggi ma'lumot qayta yuklandi${correlation}.`;
   }
   if (error.response?.status === 401) {
     return "EDO provider autentifikatsiyasi talab qilinadi.";
@@ -100,5 +113,5 @@ export const getImportErrorMessage = (error: unknown) => {
     return "Import job yoki hujjat topilmadi.";
   }
 
-  return `${code ? `Xato: ${code}` : "So‘rovni bajarib bo‘lmadi"}${correlation}.`;
+  return `${code ? `Xato: ${code}` : "So'rovni bajarib bo'lmadi"}${correlation}.`;
 };

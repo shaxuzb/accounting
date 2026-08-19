@@ -66,14 +66,14 @@ const ProfileNav: React.FC = () => {
             size={40}
             className="border border-border shadow-sm"
           />
-          <div className="flex flex-col justify-center">
+          {/* <div className="flex flex-col justify-center">
             <h2 className="text-[14px] text-text font-bold leading-tight m-0 flex items-center">
               {user?.user?.userName}
             </h2>
             <p className="text-muted-second m-0 mt-0.5 text-[12px] font-medium leading-none">
               {user?.user?.roleName}
             </p>
-          </div>
+          </div> */}
           {/* <ChevronDown className="size-4 text-text" /> */}
         </Space>
       </div>

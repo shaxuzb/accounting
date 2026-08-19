@@ -118,6 +118,9 @@ export default function ContractAddEditPage({
       footer={null}
       centered
       width={600}
+      mask={{closable: false}}
+   
+
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>

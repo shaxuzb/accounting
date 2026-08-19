@@ -635,7 +635,28 @@
       "edo": {
         "title": "Elektron hujjat almashinuvi",
         "description": "Provider tanlash, E-IMZO autentifikatsiyasi va elektron hisob-fakturalarni boshqarish.",
-        "import": { "title": "EDO hujjatlarini Purchase Draftga import qilish" },
+        "import": {
+          "title": "EDO hujjatlarini Purchase Draftga import qilish",
+          "statuses": {
+            "QUEUED": "Navbatga qo‘yilgan",
+            "SCANNING": "Tekshirilmoqda",
+            "WAITING_AUTH": "Autentifikatsiya kutilmoqda",
+            "PREFLIGHT_READY": "Tekshiruv tayyor",
+            "IMPORTING": "Import qilinmoqda",
+            "PARTIAL": "Qisman",
+            "COMPLETED": "Tugallangan",
+            "FAILED": "Xatolik",
+            "CANCEL_REQUESTED": "Bekor qilish so‘ralmoqda",
+            "CANCELLED": "Bekor qilingan",
+            "RUNNING": "Ishlayapti",
+            "PAUSED": "To‘xtatilgan",
+            "READY": "Tayyor",
+            "MAPPING_REQUIRED": "Mapping kerak",
+            "DUPLICATE": "Takroriy",
+            "IMPORTED": "Import qilindi",
+            "SKIPPED": "O‘tkazib yuborilgan"
+          }
+        },
         "navigation": {
           "inbox": "Kiruvchi",
           "outbox": "Chiquvchi",

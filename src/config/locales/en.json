@@ -635,7 +635,28 @@
       "edo": {
         "title": "Electronic document exchange",
         "description": "Select a provider, authenticate with E-IMZO, and manage electronic invoices.",
-        "import": { "title": "Import EDO documents into Purchase Drafts" },
+        "import": {
+          "title": "Import EDO documents into Purchase Drafts",
+          "statuses": {
+            "QUEUED": "Queued",
+            "SCANNING": "Scanning",
+            "WAITING_AUTH": "Waiting authentication",
+            "PREFLIGHT_READY": "Preflight ready",
+            "IMPORTING": "Importing",
+            "PARTIAL": "Partial",
+            "COMPLETED": "Completed",
+            "FAILED": "Failed",
+            "CANCEL_REQUESTED": "Cancellation requested",
+            "CANCELLED": "Cancelled",
+            "RUNNING": "Running",
+            "PAUSED": "Paused",
+            "READY": "Ready",
+            "MAPPING_REQUIRED": "Mapping required",
+            "DUPLICATE": "Duplicate",
+            "IMPORTED": "Imported",
+            "SKIPPED": "Skipped"
+          }
+        },
         "navigation": { "inbox": "Incoming", "outbox": "Outgoing", "drafts": "Drafts", "all": "All documents", "templates": "Templates", "excelImport": "Excel upload", "received": "Received", "pendingSignature": "Signature pending", "pendingPartnerSignature": "Partner signature pending", "signed": "Signed", "rejected": "Rejected", "deleted": "Deleted", "powerOfAttorney": "Power of attorney", "notAvailable": "Not available yet", "sectionUnavailable": "This section is waiting for its backend endpoint." },
         "capabilityUnavailable": "This action is unavailable for the selected provider",
         "previewUnavailable": "This file cannot be previewed in the browser. Download it to open it.",

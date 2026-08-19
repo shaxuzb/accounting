@@ -1,45 +1,17 @@
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  hydrateTabs,
-  removeTab,
-  setActiveTab,
-  type TabItem,
-} from "@/store/features/tabListSlice";
+import { useAppSelector } from "@/store/hooks";
+import { hydrateTabs, type TabItem } from "@/store/features/tabListSlice";
+import { useWorkspaceNavigation } from "@/app/navigation/useWorkspaceNavigation";
 import { cn } from "@/utils/utils";
 import { Button, Dropdown } from "antd";
-import {
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  FileText,
-  List,
-  X,
-} from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Check, ChevronLeft, ChevronRight, FileText, Menu, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router";
+import { useAppDispatch } from "@/store/hooks";
+import type { WheelEvent } from "react";
 
 type PersistedTabs = {
   tabs: TabItem[];
   activeTabKey: string | null;
-};
-
-const normalizePath = (pathname: string) =>
-  pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
-
-const findActiveTabKey = (tabs: TabItem[], pathname: string) => {
-  const normalizedPathname = normalizePath(pathname);
-
-  return (
-    tabs
-      .filter(
-        (tab) =>
-          normalizedPathname === tab.key ||
-          normalizedPathname.startsWith(`${tab.key}/`),
-      )
-      .sort((firstTab, secondTab) => secondTab.key.length - firstTab.key.length)
-      .at(0)?.key ?? null
-  );
 };
 
 const isPersistedTabs = (value: unknown): value is PersistedTabs => {
@@ -62,19 +34,16 @@ const isPersistedTabs = (value: unknown): value is PersistedTabs => {
 
 const WorkspaceTabs = () => {
   const { t } = useTranslation();
-  const location = useLocation();
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const tabs = useAppSelector((state) => state.tabList.tabs);
   const activeTabKey = useAppSelector((state) => state.tabList.activeTabKey);
   const userId = useAppSelector((state) => state.auth.user?.user?.id ?? 0);
   const organizationId = useAppSelector((state) => state.organization.id);
+  const { activateWorkspace, closeWorkspace, clearWorkspaces } = useWorkspaceNavigation();
   const tabsViewportRef = useRef<HTMLDivElement | null>(null);
   const tabElementsRef = useRef(new Map<string, HTMLDivElement>());
   const hydratedStorageKeyRef = useRef<string | null>(null);
   const skipNextPersistenceRef = useRef(false);
-  const skipNextRouteSyncRef = useRef(false);
-  const [initialPathname] = useState(location.pathname);
 
   const storageKey = useMemo(
     () => `accounting:pinned-pages:${userId}:${organizationId}`,
@@ -99,29 +68,21 @@ const WorkspaceTabs = () => {
       // Invalid or unavailable session storage must not block navigation.
     }
 
+    const activeTabKey = restoredTabs.tabs.some(
+      (tab) => tab.key === restoredTabs.activeTabKey,
+    )
+      ? restoredTabs.activeTabKey
+      : null;
+
     skipNextPersistenceRef.current = true;
-    skipNextRouteSyncRef.current = true;
     hydratedStorageKeyRef.current = storageKey;
     dispatch(
       hydrateTabs({
         tabs: restoredTabs.tabs,
-        activeTabKey: findActiveTabKey(restoredTabs.tabs, initialPathname),
+        activeTabKey,
       }),
     );
-  }, [dispatch, initialPathname, storageKey]);
-
-  useEffect(() => {
-    if (hydratedStorageKeyRef.current !== storageKey) return;
-    if (skipNextRouteSyncRef.current) {
-      skipNextRouteSyncRef.current = false;
-      return;
-    }
-
-    const nextActiveTabKey = findActiveTabKey(tabs, location.pathname);
-    if (nextActiveTabKey !== activeTabKey) {
-      dispatch(setActiveTab(nextActiveTabKey));
-    }
-  }, [activeTabKey, dispatch, location.pathname, storageKey, tabs]);
+  }, [dispatch, storageKey]);
 
   useEffect(() => {
     if (hydratedStorageKeyRef.current !== storageKey) return;
@@ -133,7 +94,7 @@ const WorkspaceTabs = () => {
     try {
       sessionStorage.setItem(
         storageKey,
-        JSON.stringify({ tabs, activeTabKey } satisfies PersistedTabs),
+        JSON.stringify({ tabs, activeTabKey }),
       );
     } catch {
       // Storage quota or privacy mode should not break workspace tabs.
@@ -146,7 +107,7 @@ const WorkspaceTabs = () => {
       : null;
 
     activeTabElement?.scrollIntoView({
-      behavior: "smooth",
+      behavior: "auto",
       block: "nearest",
       inline: "nearest",
     });
@@ -154,39 +115,37 @@ const WorkspaceTabs = () => {
 
   const openTab = useCallback(
     (tab: TabItem) => {
-      dispatch(setActiveTab(tab.key));
-      navigate(tab.path);
+      activateWorkspace(tab.key);
     },
-    [dispatch, navigate],
+    [activateWorkspace],
   );
 
   const closeTab = useCallback(
     (tabKey: string) => {
-      const closingTabIndex = tabs.findIndex((tab) => tab.key === tabKey);
-      if (closingTabIndex < 0) return;
-
-      const isClosingActiveTab = activeTabKey === tabKey;
-      const nextTab =
-        tabs[closingTabIndex + 1] ?? tabs[closingTabIndex - 1] ?? null;
-
-      dispatch(removeTab(tabKey));
-
-      if (isClosingActiveTab && nextTab) {
-        dispatch(setActiveTab(nextTab.key));
-        navigate(nextTab.path, { replace: true });
-      } else if (isClosingActiveTab) {
-        navigate("/main", { replace: true });
-      }
+      closeWorkspace(tabKey);
     },
-    [activeTabKey, dispatch, navigate, tabs],
+    [closeWorkspace],
   );
 
   const scrollTabs = useCallback((direction: -1 | 1) => {
     tabsViewportRef.current?.scrollBy({
       left: direction * 280,
-      behavior: "smooth",
+      behavior: "auto",
     });
   }, []);
+
+  const handleWheel = useCallback((event: WheelEvent<HTMLDivElement>) => {
+    if (Math.abs(event.deltaY) < 1) return;
+
+    event.preventDefault();
+    if (!tabsViewportRef.current) return;
+
+    tabsViewportRef.current.scrollLeft += event.deltaY;
+  }, []);
+
+  const clearAllTabs = useCallback(() => {
+    clearWorkspaces();
+  }, [clearWorkspaces]);
 
   const dropdownItems = tabs.map((tab) => ({
     key: tab.key,
@@ -207,12 +166,26 @@ const WorkspaceTabs = () => {
     onClick: () => openTab(tab),
   }));
 
+  const menuItems = [
+    {
+      key: "clear-all-tabs",
+      label: "Barcha tablarni yopish",
+      danger: true,
+      onClick: clearAllTabs,
+    },
+    {
+      type: "divider" as const,
+    },
+    ...dropdownItems,
+  ];
+
   if (!tabs.length) return null;
 
   return (
     <div className="flex h-11 shrink-0 border-b border-border bg-surface-muted">
       <div
         ref={tabsViewportRef}
+        onWheel={handleWheel}
         className="min-w-0 flex-1 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
       >
         <div className="flex h-full w-max items-center gap-1 px-2">
@@ -282,12 +255,12 @@ const WorkspaceTabs = () => {
           icon={<ChevronRight className="size-4" />}
           onClick={() => scrollTabs(1)}
         />
-        <Dropdown menu={{ items: dropdownItems }} trigger={["click"]}>
+        <Dropdown menu={{ items: menuItems }} trigger={["click"]}>
           <Button
             type="text"
             size="small"
             aria-label="Barcha ochiq tablar"
-            icon={<List className="size-4" />}
+            icon={<Menu className="size-4" />}
           />
         </Dropdown>
       </div>

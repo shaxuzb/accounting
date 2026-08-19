@@ -1,0 +1,49 @@
+<svg width="1200" height="340" viewBox="0 0 1200 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="1200" height="340" rx="0" fill="#f7f8fc"/>
+  <rect x="20" y="40" width="1160" height="120" rx="14" stroke="#d9dceb" fill="#f2f4f8" stroke-width="2"/>
+  <line x1="20" y1="104" x2="1180" y2="104" stroke="#d9dceb" stroke-width="1"/>
+
+  <!-- Tabs -->
+  <rect x="30" y="60" width="220" height="36" rx="10" fill="#edf2ff" stroke="#2f6df6" stroke-width="2"/>
+  <text x="52" y="82" fill="#1f2b4d" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="600">Purchase · 2026-000123</text>
+  <rect x="206" y="73" y="73" width="34" height="18" rx="9" fill="#2f6df6"/>
+  <line x1="216" y1="82" x2="227" y2="82" stroke="#ffffff" stroke-width="2"/>
+  <line x1="221.5" y1="76.5" x2="221.5" y2="87.5" stroke="#ffffff" stroke-width="2"/>
+
+  <rect x="258" y="60" width="186" height="36" rx="10" fill="#ffffff" stroke="#d9dceb" stroke-width="2"/>
+  <text x="280" y="82" fill="#4b5870" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="600">Hujjatlar</text>
+  <circle cx="422" cy="78" r="9" fill="#e7edf7"/>
+  <line x1="417" y1="78" x2="427" y2="78" stroke="#4b5870" stroke-width="2"/>
+  <line x1="422" y1="73" x2="422" y2="83" stroke="#4b5870" stroke-width="2"/>
+
+  <rect x="452" y="60" width="186" height="36" rx="10" fill="#ffffff" stroke="#d9dceb" stroke-width="2"/>
+  <text x="474" y="82" fill="#4b5870" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="600">Kassa № 2</text>
+  <circle cx="614" cy="78" r="9" fill="#e7edf7"/>
+  <line x1="609" y1="78" x2="619" y2="78" stroke="#4b5870" stroke-width="2"/>
+  <line x1="614" y1="73" x2="614" y2="83" stroke="#4b5870" stroke-width="2"/>
+
+  <rect x="646" y="60" width="186" height="36" rx="10" fill="#ffffff" stroke="#d9dceb" stroke-width="2"/>
+  <text x="668" y="82" fill="#4b5870" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="600">Hisobotlar</text>
+  <circle cx="808" cy="78" r="9" fill="#e7edf7"/>
+  <line x1="803" y1="78" x2="813" y2="78" stroke="#4b5870" stroke-width="2"/>
+  <line x1="808" y1="73" x2="808" y2="83" stroke="#4b5870" stroke-width="2"/>
+
+  <!-- Right actions panel -->
+  <rect x="1050" y="55" width="128" height="44" rx="0" fill="#f2f4f8" stroke="#d9dceb"/>
+  <text x="1068" y="82" fill="#4b5870" font-family="Arial, Helvetica, sans-serif" font-size="18">◀</text>
+  <text x="1104" y="82" fill="#4b5870" font-family="Arial, Helvetica, sans-serif" font-size="18">▶</text>
+  <rect x="1132" y="63" width="30" height="28" rx="6" fill="#ffffff" stroke="#d9dceb"/>
+  <text x="1147" y="82" text-anchor="middle" fill="#4b5870" font-family="Arial, Helvetica, sans-serif" font-size="18">☰</text>
+
+  <!-- Dropdown -->
+  <text x="1085" y="35" fill="#4b5870" font-family="Arial, Helvetica, sans-serif" font-size="12">List</text>
+  <rect x="1068" y="140" width="180" height="104" fill="white" stroke="#cdd6e8" rx="8"/>
+  <text x="1084" y="164" fill="#4b5870" font-family="Arial, Helvetica, sans-serif" font-size="16">☑ Barcha tablarni yopish</text>
+  <line x1="1080" y1="152" x2="1242" y2="152" stroke="#eef2f9" stroke-width="1"/>
+  <text x="1084" y="188" fill="#7f8ca6" font-family="Arial, Helvetica, sans-serif" font-size="14">• Purchase · 2026-000123</text>
+  <text x="1084" y="208" fill="#7f8ca6" font-family="Arial, Helvetica, sans-serif" font-size="14">• Hujjatlar</text>
+
+  <text x="20" y="240" fill="#27324a" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700">“Hamma tabni yopish” bu yerga: List menyusi ichida</text>
+  <text x="20" y="266" fill="#4f5a71" font-family="Arial, Helvetica, sans-serif" font-size="14">variantini qo‘shamiz (yuqoridagi ☰ menyu ichida).</text>
+  <text x="20" y="290" fill="#4f5a71" font-family="Arial, Helvetica, sans-serif" font-size="14">Xohlasangiz, shu bilan birga alohida to‘g‘ri tugma ham beramiz.</text>
+</svg>

@@ -1,11 +1,8 @@
 // import LineClampAnimation from "@/components/widget/text/LineClampAnimation";
 import type { AuthToken, MenuRole } from "@/shared/types";
-import {
-  pinTab,
-  removeTab,
-  type TabItem,
-} from "@/store/features/tabListSlice";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useWorkspaceNavigation } from "@/app/navigation/useWorkspaceNavigation";
+import type { TabItem } from "@/store/features/tabListSlice";
+import { useAppSelector } from "@/store/hooks";
 import { cn } from "@/utils/utils";
 import { Badge, Menu } from "antd";
 import type { MenuProps } from "antd/lib/menu";
@@ -57,7 +54,6 @@ const subItemClassName = cn(
 );
 
 const MenuCustom: FC<LinkProps> = ({ route }) => {
-  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth?.user) as AuthToken | null;
   const pinnedTabs = useAppSelector((state) => state.tabList.tabs);
   const params = new URLSearchParams();
@@ -69,6 +65,7 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const sidebarInline = useAppSelector((state) => state.sidebar);
+  const { pinWorkspace, unpinWorkspace } = useWorkspaceNavigation();
   const getSelectedKey = (pathname: string) => {
     for (const item of route) {
       const basePath = item.linkData?.path;
@@ -116,11 +113,13 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
           event.stopPropagation();
 
           if (isPinned) {
-            dispatch(removeTab(tab.key));
+            unpinWorkspace(tab.key);
             return;
           }
 
-          dispatch(pinTab(tab));
+          pinWorkspace({
+            ...tab,
+          });
         }}
         className={cn(
           "inline-flex size-6 shrink-0 items-center justify-center rounded-md opacity-0 outline-none transition-all duration-150 group-hover/sidebar-item:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-brand",
@@ -129,10 +128,7 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
             : "text-muted hover:bg-brand-soft hover:text-brand",
         )}
       >
-        <Pin
-          className="size-3.5"
-          fill={isPinned ? "currentColor" : "none"}
-        />
+        <Pin className="size-3.5" fill={isPinned ? "currentColor" : "none"} />
       </button>
     );
   };

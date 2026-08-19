@@ -92,7 +92,7 @@ export default function DepartmentAddEditPage({
             formik={formik}
             fieldName="organizationId"
             label="settings.fields.organization"
-            path={selectListEndpoints.operationTypesSelectList}
+            path={selectListEndpoints.organizationsSelectList}
           />
           <InputPasword formik={formik} fieldName="code" label="settings.fields.code" />
        

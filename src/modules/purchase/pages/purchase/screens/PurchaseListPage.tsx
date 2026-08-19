@@ -57,6 +57,10 @@ export default function PurchaseListPage() {
     ...item,
     indexId: (currentPage - 1) * pageSize + index + 1,
   }));
+  const getDocumentPath = (id: number, docNumber?: string) => {
+    const documentKey = encodeURIComponent(docNumber || String(id));
+    return `${id}?docNumber=${documentKey}`;
+  };
 
   const handlePaginationChange = (page: number, nextPageSize: number) => {
     const nextParams = new URLSearchParams(searchParams);
@@ -74,7 +78,9 @@ export default function PurchaseListPage() {
       dataIndex: "docNumber",
       title: t("purchase.fields.docNumber"),
       render: (value, record) => (
-        <Link to={`${record.id}`}>{value || record.id}</Link>
+        <Link to={getDocumentPath(record.id, record.docNumber || undefined)}>
+          {value || record.id}
+        </Link>
       ),
     },
     {
@@ -158,8 +164,12 @@ export default function PurchaseListPage() {
                 deletePath={purchaseEndpoints.purchase.list}
                 customPath={
                   record.statusId === 1
-                    ? `/main/purchases/purchase/edit/${record.id}`
-                    : `/main/purchases/purchase/${record.id}`
+                    ? `/main/purchases/purchase/edit/${record.id}?docNumber=${encodeURIComponent(
+                        record.docNumber || String(record.id),
+                      )}`
+                    : `/main/purchases/purchase/${record.id}?docNumber=${encodeURIComponent(
+                        record.docNumber || String(record.id),
+                      )}`
                 }
                 record={record}
                 permissions={user?.user.permissions}

@@ -469,7 +469,28 @@
       "edo": {
         "title": "Электронный документооборот",
         "description": "Выбор провайдера, авторизация через E-IMZO и управление электронными счетами-фактурами.",
-        "import": { "title": "Импорт документов ЭДО в черновики закупок" },
+        "import": {
+          "title": "Импорт документов ЭДО в черновики закупок",
+          "statuses": {
+            "QUEUED": "В очереди",
+            "SCANNING": "Сканируется",
+            "WAITING_AUTH": "Ожидает аутентификации",
+            "PREFLIGHT_READY": "Подготовка завершена",
+            "IMPORTING": "Импортируется",
+            "PARTIAL": "Частично",
+            "COMPLETED": "Завершено",
+            "FAILED": "Ошибка",
+            "CANCEL_REQUESTED": "Запрошено прекращение",
+            "CANCELLED": "Отменено",
+            "RUNNING": "Выполняется",
+            "PAUSED": "Приостановлено",
+            "READY": "Готово",
+            "MAPPING_REQUIRED": "Требуется сопоставление",
+            "DUPLICATE": "Дубликат",
+            "IMPORTED": "Импортировано",
+            "SKIPPED": "Пропущено"
+          }
+        },
         "navigation": { "inbox": "Входящие", "outbox": "Исходящие", "drafts": "Черновики", "all": "Все документы", "templates": "Шаблоны", "excelImport": "Загрузка Excel", "received": "Полученные", "pendingSignature": "Ожидают подписи", "pendingPartnerSignature": "Ожидает подписи партнёра", "signed": "Подписанные", "rejected": "Отклонённые", "deleted": "Удалённые", "powerOfAttorney": "Доверенности", "notAvailable": "Пока недоступно", "sectionUnavailable": "Для этого раздела ожидается backend endpoint." },
         "capabilityUnavailable": "Действие недоступно у выбранного провайдера",
         "previewUnavailable": "Этот файл нельзя просмотреть в браузере. Скачайте его, чтобы открыть.",

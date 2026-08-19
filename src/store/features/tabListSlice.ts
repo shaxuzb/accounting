@@ -6,6 +6,9 @@ export interface TabItem {
   title: string;
   path: string;
   suffix?: string;
+  isPinned?: boolean;
+  parentPath?: string;
+  parentKey?: string;
 }
 
 interface TabListState {
@@ -22,6 +25,24 @@ const tabListSlice = createSlice({
   name: "tabList",
   initialState,
   reducers: {
+    upsertTab(state, action: PayloadAction<TabItem>) {
+      const existingTab = state.tabs.find(
+        (tab) => tab.key === action.payload.key,
+      );
+
+      if (existingTab) {
+        existingTab.path = action.payload.path;
+        existingTab.title = action.payload.title;
+        existingTab.suffix = action.payload.suffix;
+        existingTab.parentPath = action.payload.parentPath;
+        existingTab.parentKey = action.payload.parentKey;
+        if (typeof action.payload.isPinned === "boolean") {
+          existingTab.isPinned = action.payload.isPinned;
+        }
+      } else {
+        state.tabs.push(action.payload);
+      }
+    },
     pinTab(state, action: PayloadAction<TabItem>) {
       const existingTab = state.tabs.find(
         (tab) => tab.key === action.payload.key,
@@ -31,8 +52,14 @@ const tabListSlice = createSlice({
         existingTab.path = action.payload.path;
         existingTab.title = action.payload.title;
         existingTab.suffix = action.payload.suffix;
+        existingTab.parentPath = action.payload.parentPath;
+        existingTab.parentKey = action.payload.parentKey;
+        existingTab.isPinned = true;
       } else {
-        state.tabs.push(action.payload);
+        state.tabs.push({
+          ...action.payload,
+          isPinned: true,
+        });
       }
     },
     removeTab(state, action: PayloadAction<string>) {
@@ -59,6 +86,7 @@ const tabListSlice = createSlice({
 });
 
 export const {
+  upsertTab,
   pinTab,
   removeTab,
   setTabs,

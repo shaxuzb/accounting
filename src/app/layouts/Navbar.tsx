@@ -1,66 +1,34 @@
 import Messages from "@/components/navbar/messages";
 import OrgSwitcher from "@/components/navbar/org-switcher";
 import ProfileNav from "@/components/navbar/profile";
+import { useWorkspaceNavigation } from "@/app/navigation/useWorkspaceNavigation";
 import { setClose } from "@/store/features/sidebarCloseSlice";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Button } from "antd";
 import { ArrowLeft, PanelLeft, PanelLeftOpen } from "lucide-react";
 import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { useMatches, useNavigate } from "react-router";
-
-type NavbarRouteHandle = {
-  title?: string | ((params: Record<string, string | undefined>) => string);
-  showBack?: boolean;
-  backTo?: string;
-  hideNavbarTitle?: boolean;
-};
 
 const Navbar = () => {
-  const { t } = useTranslation();
-  const matches = useMatches();
+  const {
+    isBackAvailable,
+    hideNavbarTitle,
+    titleText,
+    goBack,
+  } = useWorkspaceNavigation();
   const sidebarInline = useAppSelector((state) => state.sidebar);
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
-  const currentRouteMatch = [...matches].reverse().find((item) => {
-    const handle = item.handle as NavbarRouteHandle | undefined;
-    return (
-      handle?.title ||
-      handle?.showBack ||
-      handle?.backTo ||
-      handle?.hideNavbarTitle
-    );
-  });
-  const currentRouteHandle = currentRouteMatch?.handle as
-    | NavbarRouteHandle
-    | undefined;
-  const titleKey =
-    typeof currentRouteHandle?.title === "function"
-      ? currentRouteHandle.title(currentRouteMatch?.params ?? {})
-      : currentRouteHandle?.title;
-
-  const pageTitle = titleKey ? t(titleKey) : "";
-  const showBack = !!currentRouteHandle?.showBack;
-  const hideNavbarTitle = !!currentRouteHandle?.hideNavbarTitle;
 
   const handleClickMenu = useCallback(() => {
     dispatch(setClose(!sidebarInline.sidebar));
   }, [dispatch, sidebarInline.sidebar]);
 
   const handleGoBack = useCallback(() => {
-    if (window.history.length > 1) {
-      navigate(-1);
-      return;
-    }
-    if (currentRouteHandle?.backTo) {
-      navigate(currentRouteHandle.backTo);
-    }
-  }, [currentRouteHandle, navigate]);
+    goBack();
+  }, [goBack]);
 
   return (
- <div className="flex h-16 shrink-0 items-center border-b border-border bg-primary-bg">
+    <div className="flex h-16 shrink-0 items-center border-b border-border bg-primary-bg">
       <div className={`flex justify-between py-1.5 items-center w-full px-4`}>
         <div className="flex gap-3 items-center">
           <Button onClick={handleClickMenu} className="p-0!" type="link">
@@ -73,7 +41,7 @@ const Navbar = () => {
               />
             )}
           </Button>
-          {showBack && (
+          {isBackAvailable && (
             <Button
               type="text"
               onClick={handleGoBack}
@@ -83,10 +51,10 @@ const Navbar = () => {
               <ArrowLeft className="size-5" />
             </Button>
           )}
-          {pageTitle && !hideNavbarTitle && (
+          {titleText && !hideNavbarTitle && (
             <div>
               <span className="text-lg font-medium text-wrap text-text">
-                {pageTitle}
+                {titleText}
               </span>
             </div>
           )}

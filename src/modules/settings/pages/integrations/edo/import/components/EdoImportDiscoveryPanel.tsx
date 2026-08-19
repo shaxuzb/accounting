@@ -12,7 +12,6 @@ import dayjs, { type Dayjs } from "dayjs";
 import {
   CalendarRange,
   CheckCircle2,
-  ClipboardCopy,
   PauseCircle,
   Play,
   RefreshCw,
@@ -27,6 +26,7 @@ import {
   formatImportNumber,
   getImportErrorMessage,
   importStatusTag,
+  importStatusLabel,
   isActiveImportJob,
   isPreflightReady,
   isScanning,
@@ -60,7 +60,9 @@ export default function EdoImportDiscoveryPanel({
   const startPreflight = async () => {
     if (activeJobLocked) {
       toast.error(
-        `Avval #${job?.id} jobni bekor qiling. Status: ${job?.status}.`,
+        `Avval #${job?.id} jobni bekor qiling. Holat: ${importStatusLabel(
+          job?.status,
+        )}.`,
       );
       return;
     }
@@ -172,7 +174,7 @@ export default function EdoImportDiscoveryPanel({
             loading={preflight.isPending}
             disabled={activeJobLocked}
             onClick={() => void startPreflight()}
-            className="mt-5 w-full"
+            className="mt-5 mb-5 w-full"
           >
             Preflight boshlash
           </Button>
@@ -181,31 +183,30 @@ export default function EdoImportDiscoveryPanel({
               className="mt-4"
               type="warning"
               showIcon
-              message={`#${job.id} job hali faol`}
-              description="Yangi preflight boshlashdan oldin o‘ng tomondagi To‘xtatish tugmasini bosing va status CANCELLED bo‘lishini kuting."
+              description={`Yangi preflight boshlashdan oldin o‘ng tomondagi To‘xtatish tugmasini bosing va status ${importStatusLabel("CANCELLED")} bo‘lishini kuting.`}
             />
+          )}
+          {job && isPreflightReady(job.status) && (
+            <Card className="border border-success/30 bg-success/5 p-5 mt-5">
+              <div className="flex items-start gap-3">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-success/15 text-success">
+                  <CheckCircle2 className="size-5" />
+                </span>
+                <div>
+                  <h2 className="font-semibold text-success">
+                    Tekshiruv yakunlandi
+                  </h2>
+                  <p className="mt-1 text-sm text-secondary-text">
+                    Tanlangan davr uchun barcha provayderlar yuzasidan preflight
+                    tekshiruvi muvaffaqiyatli yakunlandi.
+                  </p>
+                </div>
+              </div>
+            </Card>
           )}
         </Card>
 
         {/* ── PREFLIGHT_READY: alohida yashil yakunlandi card ── */}
-        {job && isPreflightReady(job.status) && (
-          <Card className="border border-success/30 bg-success/5 p-5">
-            <div className="flex items-start gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-success/15 text-success">
-                <CheckCircle2 className="size-5" />
-              </span>
-              <div>
-                <h2 className="font-semibold text-success">
-                  Tekshiruv yakunlandi
-                </h2>
-                <p className="mt-1 text-sm text-secondary-text">
-                  Tanlangan davr uchun barcha provayderlar yuzasidan preflight
-                  tekshiruvi muvaffaqiyatli yakunlandi.
-                </p>
-              </div>
-            </div>
-          </Card>
-        )}
       </div>
 
       <Card className="border border-border p-5">
@@ -236,9 +237,9 @@ export default function EdoImportDiscoveryPanel({
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-secondary-text">
+                  {/* <span className="text-xs font-semibold uppercase tracking-[0.16em] text-secondary-text">
                     Import job #{job.id}
-                  </span>
+                  </span> */}
                   {importStatusTag(job.status)}
                   {isScanning(job.status) && (
                     <span className="inline-flex items-center gap-1.5 text-xs text-secondary-text">
@@ -316,7 +317,7 @@ export default function EdoImportDiscoveryPanel({
             {job.safeErrorCode && <SafeErrorAlert code={job.safeErrorCode} />}
 
             {/* ── Provider kartalar ── */}
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="w-full">
               {job.providers.map((provider) => {
                 const scanning = isScanning(provider.status);
                 const ready =
@@ -344,9 +345,9 @@ export default function EdoImportDiscoveryPanel({
                       : "active";
 
                 return (
-                  <div
+                  <Card
                     key={provider.providerCode}
-                    className="rounded-xl border border-border p-4 transition-colors"
+                    className="rounded-xl border border-border p-4 transition-colors hover:border-brand/50 hover:bg-surface-muted/70"
                   >
                     {/* Header */}
                     <div className="flex items-center justify-between gap-2">
@@ -360,7 +361,7 @@ export default function EdoImportDiscoveryPanel({
                     </div>
 
                     {/* Skanerlanganlar */}
-                    <div className="mt-3 flex items-center justify-between text-xs text-secondary-text">
+                    <div className="mt-3 flex items-center justify-between text-ms text-secondary-text">
                       <span>{provider.scannedCount} ta tekshirildi</span>
                       <span>Sahifa {provider.currentPage}</span>
                     </div>
@@ -391,7 +392,7 @@ export default function EdoImportDiscoveryPanel({
                         <SafeErrorAlert code={provider.safeErrorCode} />
                       </div>
                     )}
-                  </div>
+                  </Card>
                 );
               })}
             </div>
@@ -443,34 +444,33 @@ function ScanSearchArtwork() {
 function SafeErrorAlert({ code }: { code: string }) {
   const label = code.replaceAll("_", " ").toLowerCase();
 
-  const handleCopy = () => {
-    void navigator.clipboard.writeText(code).then(() => {
-      // toast chiqarish shart emas, icon o'zi yetarli
-    });
-  };
+  // const handleCopy = () => {
+  //   void navigator.clipboard.writeText(code).then(() => {
+  //     // toast chiqarish shart emas, icon o'zi yetarli
+  //   });
+  // };
 
   return (
     <Alert
       type="info"
       showIcon
-      className="text-xs"
       message={<span className="capitalize">{label}</span>}
-      description={
-        <div className="mt-1 flex items-center gap-2">
-          <code className="rounded bg-surface-muted px-1.5 py-0.5 font-mono text-[11px] text-secondary-text">
-            {code}
-          </code>
-          <button
-            type="button"
-            onClick={handleCopy}
-            title="Kodni nusxalash"
-            className="inline-flex items-center gap-1 rounded px-1 py-0.5 text-[11px] text-secondary-text transition-colors hover:text-brand"
-          >
-            <ClipboardCopy className="size-3" />
-            Nusxa
-          </button>
-        </div>
-      }
+      // description={
+      //   <div className="mt-1 flex items-center gap-2">
+      //     <code className="rounded bg-surface-muted px-1.5 py-0.5 font-mono text-[11px] text-secondary-text">
+      //       {code}
+      //     </code>
+      //     <button
+      //       type="button"
+      //       onClick={handleCopy}
+      //       title="Kodni nusxalash"
+      //       className="inline-flex items-center gap-1 rounded px-1 py-0.5 text-[11px] text-secondary-text transition-colors hover:text-brand"
+      //     >
+      //       <ClipboardCopy className="size-3" />
+      //       Nusxa
+      //     </button>
+      //   </div>
+      // }
     />
   );
 }

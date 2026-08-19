@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import WorkspaceTabs from "./WorkspaceTabs";
+import WorkspaceNavigationManager from "@/app/navigation/WorkspaceNavigationManager";
 // import SettingSystem from "@/components/navbar/settings";
 import { useRef } from "react";
 import { motion } from "motion/react";
@@ -26,12 +27,13 @@ const MainLayout = () => {
       className="relative h-screen overflow-hidden"
     >
       <div className="relative z-10! flex h-full box-border!">
-        <Sidebar />
-        <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
-          <Navbar />
-          <WorkspaceTabs key={`${userId}:${organizationId}`} />
+          <Sidebar />
+          <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
+            <Navbar />
+            <WorkspaceNavigationManager />
+            <WorkspaceTabs key={`${userId}:${organizationId}`} />
 
-          <div
+            <div
             ref={scrollContainerRef}
             className="relative min-h-0 flex-1 overflow-auto"
           >

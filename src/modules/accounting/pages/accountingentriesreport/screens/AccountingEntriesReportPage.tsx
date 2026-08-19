@@ -56,7 +56,6 @@ export default function AccountingEntriesReportPage() {
     documentIdParam,
     documentTypeIdParam,
   );
-  
 
   const columns = useMemo<TableColumnsType<AccountingEntriesReportPosting>>(
     () => [
@@ -230,7 +229,7 @@ export default function AccountingEntriesReportPage() {
               bordered
               dataSource={generateKeyTable(data?.postings)}
               pagination={false}
-              scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
+              scroll={{ x: "max-content", y: "max-content" }}
               // expandable={{
               //   expandIcon: ({ expanded, onExpand, record }) => (
               //     <Button

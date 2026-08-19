@@ -71,10 +71,14 @@ const Sidebar = () => {
       className={`${sidebarInline.sidebar ? "w-16" : "w-70"} h-screen sticky overflow-hidden top-0 border-r border-border bg-primary-bg flex flex-col`}
     >
       <LogoSide />
-      <CustomScroller className={`duration-300 flex-1 overflow-auto`}>
-        {/* {!sidebarInline.sidebar && <ProfileSide />} */}
-        <MenuCustom route={memoizedMenus.TOP} />
-      </CustomScroller>
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <CustomScroller className="h-full">
+          {/* {!sidebarInline.sidebar && <ProfileSide />} */}
+          {/* <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden"> */}
+          <MenuCustom route={memoizedMenus.TOP} />
+          {/* </div> */}
+        </CustomScroller>
+      </div>
       <MenuCustom route={memoizedMenus.BOTTOM} />
     </div>
   );
