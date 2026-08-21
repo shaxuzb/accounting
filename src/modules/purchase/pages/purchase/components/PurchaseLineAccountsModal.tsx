@@ -55,7 +55,7 @@ export default function PurchaseLineAccountsModal({
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("app.modals.accountSelectionTitle")}
       centered
       width={600}

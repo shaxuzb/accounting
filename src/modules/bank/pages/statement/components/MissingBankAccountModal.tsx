@@ -209,7 +209,7 @@ export default function MissingBankAccountModal({
   ]);
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("bank.import.assignMissingBankInfo")}
       open={open}
       onCancel={handleClose}

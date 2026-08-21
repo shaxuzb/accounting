@@ -114,7 +114,7 @@ export default function ProductItemModal({
       : "products.modal.createProduct";
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t(titleKey)}
       open={open}
       width={600}

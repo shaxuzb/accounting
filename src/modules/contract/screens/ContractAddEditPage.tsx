@@ -119,6 +119,7 @@ export default function ContractAddEditPage({
       centered
       width={600}
       mask={{closable: false}}
+      maskClosable={false}
    
 
     >

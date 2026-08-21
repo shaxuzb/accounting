@@ -45,7 +45,7 @@ export default function InventoryAdjustmentMarkingModal({
   );
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       open={open}
       title={title}
       width={1000}

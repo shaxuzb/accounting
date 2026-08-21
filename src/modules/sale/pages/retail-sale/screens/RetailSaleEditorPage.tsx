@@ -16,10 +16,7 @@ import {
 import { useGetNowSaleCondition } from "@/modules/settings/pages/saleCondition/hooks";
 import DocumentProcessingModeModal from "@/components/ui/DocumentProcessingModeModal";
 import SaleProductSelection from "../../sale/components/SaleProductSelection";
-import {
-  hasRequiredSaleMarkings,
-} from "../../sale/utils/saleCreatePayload";
-import { getSaleCostingValidationError } from "../../sale/utils/saleCostingValidation";
+// import { getSaleCostingValidationError } from "../../sale/utils/saleCostingValidation";
 import { saleDocLinesSchema } from "../../sale/types/schema";
 import type { SaleSelectedProduct } from "../../sale/types/type";
 import {
@@ -65,7 +62,6 @@ const getNumber = (value: unknown, fallback = 0) => {
 interface RetailSaleDraft {
   values: RetailSaleFormValues;
   products: SaleSelectedProduct[];
-  markingModeOverride: boolean | null;
 }
 
 export default function RetailSaleEditorPage() {
@@ -81,13 +77,10 @@ export default function RetailSaleEditorPage() {
     SaleSelectedProduct[] | null
   >(() => (!isEdit ? savedDraft?.products ?? null : null));
   const [saleTotalAmount, setSaleTotalAmount] = useState(0);
-  const [markingModeOverride, setMarkingModeOverride] =
-    useState<boolean | null>(
-      () => (!isEdit ? savedDraft?.markingModeOverride ?? null : null),
-    );
   const [processingModeModalOpen, setProcessingModeModalOpen] =
     useState(false);
   const previousWarehouseId = useRef<number | null>(null);
+  const draftPersistenceDisabled = useRef(false);
   const detailQuery = useGetRetailSale(id);
   const document = detailQuery.data;
   const createMutation = useCreateRetailSale();
@@ -147,11 +140,7 @@ export default function RetailSaleEditorPage() {
     (totalAmount: number) => setSaleTotalAmount(totalAmount),
     [],
   );
-  const markingMode =
-    markingModeOverride ??
-    savedProducts.some(
-      (product) => product.markings && product.markings.length > 0,
-    );
+  const markingMode = true;
   const activeSaleCondition = saleCondition ?? {
     id: 0,
     costingMethodId: 3,
@@ -199,21 +188,23 @@ export default function RetailSaleEditorPage() {
         return;
       }
 
-      const costingError = getSaleCostingValidationError(
-        {
-          costingMethodId: activeSaleCondition.costingMethodId,
-          products,
-        },
-        t,
-      );
-      if (costingError) {
-        toast.error(costingError);
-        return;
-      }
-      if (markingMode && !hasRequiredSaleMarkings(products)) {
-        toast.error(t("sale.messages.markingQuantityRequired"));
-        return;
-      }
+      // Turli partiyalarning tannarxi har xil bo'lishiga vaqtincha ruxsat berildi.
+      // const costingError = getSaleCostingValidationError(
+      //   {
+      //     costingMethodId: activeSaleCondition.costingMethodId,
+      //     products,
+      //   },
+      //   t,
+      // );
+      // if (costingError) {
+      //   toast.error(costingError);
+      //   return;
+      // }
+      // Markirovka soni va tovar soni tengligi tekshiruvi vaqtincha o'chirilgan.
+      // if (markingMode && !hasRequiredSaleMarkings(products)) {
+      //   toast.error(t("sale.messages.markingQuantityRequired"));
+      //   return;
+      // }
 
       try {
         if (isEdit && document) {
@@ -238,7 +229,7 @@ export default function RetailSaleEditorPage() {
   });
 
   useEffect(() => {
-    if (isEdit || !saleCondition) return;
+    if (isEdit || !saleCondition || draftPersistenceDisabled.current) return;
 
     const hasDraftContent = formik.dirty || products.length > 0 ||
       formik.values.payments.length > 0;
@@ -247,13 +238,11 @@ export default function RetailSaleEditorPage() {
     setSavedDraft({
       values: formik.values,
       products,
-      markingModeOverride,
     });
   }, [
     formik.dirty,
     formik.values,
     isEdit,
-    markingModeOverride,
     products,
     saleCondition,
     setSavedDraft,
@@ -310,6 +299,7 @@ export default function RetailSaleEditorPage() {
           markingMode,
         ),
       );
+      draftPersistenceDisabled.current = true;
       clearSavedDraft();
       toast.success(
         processingMode === 2
@@ -364,7 +354,8 @@ export default function RetailSaleEditorPage() {
           onTotalsChange={handleSaleTotalChange}
           documentTypeId={retailSaleDocumentTypeIds.goods}
           markingMode={markingMode}
-          onMarkingModeChange={setMarkingModeOverride}
+          aggregateStockMode
+          disableMarkingQuantityValidation
           onCancel={() => navigate(-1)}
           submitting={isSubmitting}
           disabled={isSubmitting}

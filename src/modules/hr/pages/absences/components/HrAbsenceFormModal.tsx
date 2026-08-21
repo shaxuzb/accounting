@@ -119,7 +119,7 @@ export default function HrAbsenceFormModal({ open, id, onClose }: Props) {
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t(isEdit ? "hr.absences.editTitle" : "hr.absences.createTitle")}
       open={open}
       onCancel={handleClose}

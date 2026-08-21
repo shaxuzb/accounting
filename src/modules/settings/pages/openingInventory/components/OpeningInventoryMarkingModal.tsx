@@ -27,7 +27,7 @@ export default function OpeningInventoryMarkingModal({
   const { t } = useTranslation();
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("openingInventory.actions.enterMarkings")}
       open={open}
       onCancel={onClose}

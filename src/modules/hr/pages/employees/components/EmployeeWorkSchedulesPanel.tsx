@@ -9,10 +9,7 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import {
-  useDeleteHrWorkSchedule,
-  useHrWorkSchedules,
-} from "../hooks";
+import { useDeleteHrWorkSchedule, useHrWorkSchedules } from "../hooks";
 import type { HrWorkSchedule } from "../types/type";
 import WorkScheduleModal from "./WorkScheduleModal";
 
@@ -29,8 +26,9 @@ export default function EmployeeWorkSchedulesPanel({ employeeId }: Props) {
   const { data = [], isLoading } = useHrWorkSchedules(employeeId);
   const deleteMutation = useDeleteHrWorkSchedule(employeeId);
   const [isOpen, setIsOpen] = useState(false);
-  const [activeSchedule, setActiveSchedule] =
-    useState<HrWorkSchedule | null>(null);
+  const [activeSchedule, setActiveSchedule] = useState<HrWorkSchedule | null>(
+    null,
+  );
   const canUpdate = permissions.includes(hrEmployeePermissions.update);
   const canDelete = permissions.includes(hrEmployeePermissions.delete);
 
@@ -103,8 +101,9 @@ export default function EmployeeWorkSchedulesPanel({ employeeId }: Props) {
       fixed: "right",
       width: 92,
       render: (_, record) => (
-          <div className="flex justify-center">
-            {canUpdate && <Tooltip title={t("common.edit")}>
+        <div className="flex justify-center">
+          {canUpdate && (
+            <Tooltip title={t("common.edit")}>
               <Button
                 type="text"
                 icon={<Pencil className="size-4" />}
@@ -113,19 +112,21 @@ export default function EmployeeWorkSchedulesPanel({ employeeId }: Props) {
                   setIsOpen(true);
                 }}
               />
-            </Tooltip>}
-            {canDelete && <Tooltip title={t("common.delete")}>
+            </Tooltip>
+          )}
+          {canDelete && (
+            <Tooltip title={t("common.delete")}>
               <Button
                 type="text"
                 danger
                 icon={<Trash2 className="size-4" />}
                 onClick={() => handleDelete(record)}
               />
-            </Tooltip>}
-          </div>
+            </Tooltip>
+          )}
+        </div>
       ),
-    },
-    );
+    });
   }
 
   return (

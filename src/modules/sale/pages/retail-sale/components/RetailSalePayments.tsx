@@ -372,7 +372,7 @@ export default function RetailSalePayments({
         </>
       )}
 
-      <Modal
+      <Modal maskClosable={false}
         title={t("retailSale.payments.add")}
         open={paymentModalOpen}
         onCancel={() => setPaymentModalOpen(false)}

@@ -485,10 +485,20 @@
             "RUNNING": "Выполняется",
             "PAUSED": "Приостановлено",
             "READY": "Готово",
+            "RESOLVED": "Сопоставлено",
+            "MAPPED": "Сопоставлено",
             "MAPPING_REQUIRED": "Требуется сопоставление",
+            "PENDING_MAPPING": "Ожидает сопоставления",
+            "UNRESOLVED": "Не сопоставлено",
+            "NOT_MAPPED": "Не сопоставлено",
             "DUPLICATE": "Дубликат",
             "IMPORTED": "Импортировано",
-            "SKIPPED": "Пропущено"
+            "SKIPPED": "Пропущено",
+            "PROCESSING": "В обработке",
+            "NEW": "Новое",
+            "DRAFT": "Черновик",
+            "INVALID": "Некорректно",
+            "REJECTED": "Отклонено"
           }
         },
         "navigation": { "inbox": "Входящие", "outbox": "Исходящие", "drafts": "Черновики", "all": "Все документы", "templates": "Шаблоны", "excelImport": "Загрузка Excel", "received": "Полученные", "pendingSignature": "Ожидают подписи", "pendingPartnerSignature": "Ожидает подписи партнёра", "signed": "Подписанные", "rejected": "Отклонённые", "deleted": "Удалённые", "powerOfAttorney": "Доверенности", "notAvailable": "Пока недоступно", "sectionUnavailable": "Для этого раздела ожидается backend endpoint." },

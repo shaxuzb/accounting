@@ -40,7 +40,7 @@ const steps = [
   {
     id: "RESOLUTION" as const,
     eyebrow: "03 · Tayyorlash",
-    title: "Mapping va konfliktlar",
+    title: "Moslashtirish va ziddiyatlar",
     description: "Master data va marking",
     icon: GitMerge,
   },

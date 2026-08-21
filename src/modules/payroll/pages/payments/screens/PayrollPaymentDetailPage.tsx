@@ -2,13 +2,12 @@ import InputTextArea from "@/components/fields/InputTextArea";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectStatic from "@/components/fields/SelectStatic";
-import DocumentActionsCard from "@/components/ui/card/DocumentActionsCard";
+import Card from "@/components/ui/card/Card";
 import {
   DocumentSummary,
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
 import SectionCard from "@/components/ui/card/SectionCard";
-import PayrollDocumentHeader from "@/modules/payroll/components/PayrollDocumentHeader";
 import PayrollPeriodSelect from "@/modules/payroll/components/PayrollPeriodSelect";
 import {
   isDraftStatus,
@@ -25,8 +24,9 @@ import {
   chartAccountSelectDisplayConfig,
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
+import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { Col, Form, Row, Select, Spin, Tag } from "antd";
+import { Button, Col, Form, Popconfirm, Row, Select, Spin } from "antd";
 import { useFormik } from "formik";
 import {
   Banknote,
@@ -37,6 +37,7 @@ import {
   Save,
   Users,
   Wallet,
+  X,
 } from "lucide-react";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
@@ -64,6 +65,9 @@ export default function PayrollPaymentDetailPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const isCreate = !id;
+  const permissions = useAppSelector(
+    (state) => state.auth.user?.user.permissions ?? [],
+  );
 
   const detailQuery = useGetDetailPayrollPayment(id);
   const createMutation = useCreatePayrollPayment();
@@ -73,6 +77,16 @@ export default function PayrollPaymentDetailPage() {
   const record = detailQuery.data;
   const statusId = record?.statusId ?? 1;
   const isDraft = isCreate || isDraftStatus(statusId);
+  const canSave =
+    isCreate && permissions.includes(payrollPaymentPermissions.create);
+  const canConfirm =
+    !isCreate &&
+    isDraft &&
+    permissions.includes(payrollPaymentPermissions.confirm);
+  const canCancel =
+    !isCreate &&
+    statusId !== 3 &&
+    permissions.includes(payrollPaymentPermissions.cancel);
 
   const initialValues = useMemo<PayrollPaymentForm>(
     () => (isCreate ? createDefaultPaymentForm() : mapPaymentToForm(record)),
@@ -157,6 +171,11 @@ export default function PayrollPaymentDetailPage() {
     }
   };
 
+  const isBusy =
+    createMutation.isPending ||
+    confirmMutation.isPending ||
+    cancelMutation.isPending;
+
   if (detailQuery.isLoading && !isCreate) {
     return (
       <div className="flex justify-center p-10">
@@ -166,29 +185,7 @@ export default function PayrollPaymentDetailPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <PayrollDocumentHeader
-        title="payroll.payments.title"
-        docNumber={record?.docNumber}
-        docDate={record?.docDate}
-        statusId={record?.statusId}
-        statusName={record?.statusName}
-        isCreate={isCreate}
-        onBack={() => navigate(LIST_PATH)}
-        extra={
-          !isCreate && (
-            <Tag
-              className="m-0!"
-              color={record?.paymentKind === "ADVANCE" ? "gold" : "blue"}
-            >
-              {t(`payroll.enums.paymentKind.${record?.paymentKind}`, {
-                defaultValue: record?.paymentKind ?? "",
-              })}
-            </Tag>
-          )
-        }
-      />
-
+    <div className="min-w-0 space-y-4">
       {/* {!isCreate && !isDraft && (
         <Alert
           type="success"
@@ -206,15 +203,13 @@ export default function PayrollPaymentDetailPage() {
         />
       )} */}
 
-      <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="min-w-0 space-y-4">
-          <SectionCard
-            title="payroll.payments.headerTitle"
-            description="payroll.payments.headerHint"
-            icon={<CalendarDays className="size-4" />}
-          >
-            <Form layout="vertical">
-              <Row gutter={[16, 0]}>
+      <SectionCard
+        title="payroll.payments.headerTitle"
+        description="payroll.payments.headerHint"
+        icon={<CalendarDays className="size-4" />}
+      >
+        <Form layout="vertical">
+          <Row gutter={[16, 0]}>
                 <Col xs={24} md={8}>
                   <SelectStatic
                     formik={formik}
@@ -361,11 +356,11 @@ export default function PayrollPaymentDetailPage() {
                     disabled={!isCreate}
                   />
                 </Col>
-              </Row>
-            </Form>
-          </SectionCard>
+          </Row>
+        </Form>
+      </SectionCard>
 
-          <DocumentSummary>
+      <DocumentSummary>
             <DocumentSummaryItem
               icon={<Users className="size-5" />}
               label={t("payroll.fields.employeeCount")}
@@ -409,83 +404,110 @@ export default function PayrollPaymentDetailPage() {
                 (payrollDocument?.docNumber ?? "—")
               }
             />
-          </DocumentSummary>
+      </DocumentSummary>
 
-          <PaymentLinesEditor
-            formik={formik}
-            disabled={!isCreate}
-            payrollDocument={payrollDocument}
-            currencyName={record?.currencyName}
-          />
-        </div>
+      <PaymentLinesEditor
+        formik={formik}
+        disabled={!isCreate}
+        payrollDocument={payrollDocument}
+        currencyName={record?.currencyName}
+      />
 
-        <div className="space-y-4">
-          <DocumentActionsCard
-            actions={[
-              {
-                key: "save",
-                label: "payroll.payments.save",
-                icon: <Save className="size-4" />,
-                type: "primary",
-                onClick: handleSave,
-                loading: createMutation.isPending,
-                hidden: !isCreate,
-                permission: payrollPaymentPermissions.create,
-              },
-              {
-                key: "confirm",
-                label: "payroll.actions.confirmAndPay",
-                icon: <CheckCircle2 className="size-4" />,
-                type: "primary",
-                onClick: () =>
-                  runMutation(
-                    () => confirmMutation.mutateAsync(),
-                    "payroll.messages.paymentConfirmed",
-                  ),
-                loading: confirmMutation.isPending,
-                hidden: isCreate || !isDraft,
-                permission: payrollPaymentPermissions.confirm,
-                confirm: {
-                  title: "payroll.payments.confirmTitle",
-                  content: "payroll.payments.confirmText",
-                  okText: "payroll.actions.confirm",
-                },
-                hint: "payroll.payments.confirmHint",
-              },
-              {
-                key: "cancel",
-                label: "payroll.actions.cancel",
-                icon: <CircleX className="size-4" />,
-                danger: true,
-                onClick: () =>
-                  runMutation(
-                    () => cancelMutation.mutateAsync(),
-                    "payroll.messages.paymentCancelled",
-                  ),
-                loading: cancelMutation.isPending,
-                hidden: isCreate || statusId === 3,
-                permission: payrollPaymentPermissions.cancel,
-                confirm: {
-                  title: "payroll.payments.cancelTitle",
-                  content: "payroll.payments.cancelText",
-                  okText: "payroll.actions.cancel",
-                  danger: true,
-                },
-              },
-            ]}
-            footer={
-              !isCreate && record?.payrollDocId ? (
-                <Link
-                  to={`/main/payroll/documents/${record.payrollDocId}`}
-                  className="mt-1 block text-center text-sm text-primary"
+      {(isCreate || canSave || canConfirm || canCancel || record?.payrollDocId) && (
+        <Card className="sticky bottom-0 z-20 border border-border bg-primary-bg/95 px-4 py-3 shadow-sm backdrop-blur sm:px-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {!isCreate && record?.payrollDocId ? (
+              <Link
+                to={`/main/payroll/documents/${record.payrollDocId}`}
+                className="text-sm text-primary"
+              >
+                {t("payroll.payments.openPayrollDocument")}
+              </Link>
+            ) : (
+              <span />
+            )}
+
+            <div className="flex flex-wrap justify-end gap-3">
+              {isCreate && (
+                <Button
+                  icon={<X className="size-4" />}
+                  disabled={isBusy}
+                  onClick={() => navigate(LIST_PATH)}
                 >
-                  {t("payroll.payments.openPayrollDocument")}
-                </Link>
-              ) : null
-            }
-          />
-        </div>
-      </div>
+                  {t("common.cancel")}
+                </Button>
+              )}
+
+              {canCancel && (
+                <Popconfirm
+                  title={t("payroll.payments.cancelTitle")}
+                  description={t("payroll.payments.cancelText")}
+                  okText={t("payroll.actions.cancel")}
+                  cancelText={t("common.cancel")}
+                  okButtonProps={{ danger: true }}
+                  onConfirm={() =>
+                    runMutation(
+                      () => cancelMutation.mutateAsync(),
+                      "payroll.messages.paymentCancelled",
+                    )
+                  }
+                >
+                  <Button
+                    danger
+                    icon={<CircleX className="size-4" />}
+                    loading={cancelMutation.isPending}
+                    disabled={
+                      createMutation.isPending || confirmMutation.isPending
+                    }
+                  >
+                    {t("payroll.actions.cancel")}
+                  </Button>
+                </Popconfirm>
+              )}
+
+              {canSave && (
+                <Button
+                  type="primary"
+                  icon={<Save className="size-4" />}
+                  loading={createMutation.isPending}
+                  disabled={
+                    confirmMutation.isPending || cancelMutation.isPending
+                  }
+                  onClick={handleSave}
+                >
+                  {t("common.save")}
+                </Button>
+              )}
+
+              {canConfirm && (
+                <Popconfirm
+                  title={t("payroll.payments.confirmTitle")}
+                  description={t("payroll.payments.confirmText")}
+                  okText={t("payroll.actions.confirm")}
+                  cancelText={t("common.cancel")}
+                  onConfirm={() =>
+                    runMutation(
+                      () => confirmMutation.mutateAsync(),
+                      "payroll.messages.paymentConfirmed",
+                    )
+                  }
+                >
+                  <Button
+                    type="primary"
+                    icon={<CheckCircle2 className="size-4" />}
+                    loading={confirmMutation.isPending}
+                    disabled={
+                      createMutation.isPending || cancelMutation.isPending
+                    }
+                  >
+                    {t("payroll.actions.confirmAndPay")}
+                  </Button>
+                </Popconfirm>
+              )}
+            </div>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

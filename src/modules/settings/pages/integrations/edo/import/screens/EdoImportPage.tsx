@@ -62,7 +62,7 @@ export default function EdoImportPage() {
         type="info"
         showIcon
         message="Avval preflight job yarating"
-        description="Candidate, mapping va import ma'lumotlari job ID bilan olinadi."
+        description="Topilgan hujjatlar, moslashtirish va import ma’lumotlari job ID bilan olinadi."
         action={
           <Button onClick={() => setParams({ stage: "DISCOVERY" })}>
             Preflightga qaytish

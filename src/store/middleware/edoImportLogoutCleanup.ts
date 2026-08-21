@@ -4,6 +4,12 @@ import { logout } from "../features/authSlice";
 
 export const ACTIVE_EDO_IMPORT_JOB_KEY = "accounting:edo-import:active-job";
 const terminalStatuses = new Set(["COMPLETED", "FAILED", "CANCELLED"]);
+const activeBulkStatuses = new Set([
+  "QUEUED",
+  "RUNNING",
+  "PAUSED",
+  "CANCEL_REQUESTED",
+]);
 
 interface ActiveEdoImportJob {
   jobId: number;
@@ -108,7 +114,6 @@ export const cancelActiveEdoImportJob = async () => {
   }
 
   const apiBaseUrl = `${import.meta.env.VITE_API_BASE_URL_PATH}/api`;
-  const url = `${apiBaseUrl}/purchase-docs/edo-imports/${activeJob.jobId}/cancel`;
   const headers = new Headers({
     Accept: "application/json",
     Authorization: `Bearer ${auth.token}`,
@@ -116,19 +121,45 @@ export const cancelActiveEdoImportJob = async () => {
     "X-OrganizationId": String(organizationId),
   });
 
+  const waitFor = <T,>(request: Promise<T>) =>
+    Promise.race([
+      request,
+      new Promise<null>((resolve) => {
+        window.setTimeout(() => resolve(null), 5000);
+      }),
+    ]);
+
+  // Bulk cancel is a separate backend operation. Check its status first so
+  // logout does not leave a background worker running after the session ends.
+  const bulkStatusRequest = fetch(
+    `${apiBaseUrl}/purchase-docs/edo-imports/${activeJob.jobId}/bulk-import/status`,
+    { method: "GET", headers, keepalive: true },
+  )
+    .then(async (response) =>
+      response.ok
+        ? ((await response.json()) as { status?: string })
+        : null,
+    )
+    .catch(() => null);
+  const bulkStatus = await waitFor(bulkStatusRequest);
+
+  if (bulkStatus && activeBulkStatuses.has(bulkStatus.status ?? "")) {
+    await fetch(
+      `${apiBaseUrl}/purchase-docs/edo-imports/${activeJob.jobId}/bulk-import/cancel`,
+      { method: "POST", headers, keepalive: true },
+    ).catch(() => null);
+  }
+
   // keepalive lets the request finish even when logout immediately navigates
   // away and unmounts the authenticated application tree.
-  const request = fetch(url, {
-    method: "POST",
-    headers,
-    keepalive: true,
-  })
-    .catch(() => null);
-  const timeout = new Promise<null>((resolve) => {
-    window.setTimeout(() => resolve(null), 5000);
-  });
-  const response = await Promise.race([request, timeout]);
-  const cancelled = Boolean(response && (response.ok || response.status === 404));
+  const jobCancelRequest = fetch(
+    `${apiBaseUrl}/purchase-docs/edo-imports/${activeJob.jobId}/cancel`,
+    { method: "POST", headers, keepalive: true },
+  ).catch(() => null);
+  const response = await waitFor(jobCancelRequest);
+  const cancelled = Boolean(
+    response && (response.ok || response.status === 404),
+  );
 
   if (cancelled) {
     clearActiveEdoImportJob(activeJob.jobId);

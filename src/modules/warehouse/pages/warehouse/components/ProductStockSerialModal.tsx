@@ -57,7 +57,7 @@ export default function ProductStockSerialModal({
   ];
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       open={open}
       title={title}
       footer={null}

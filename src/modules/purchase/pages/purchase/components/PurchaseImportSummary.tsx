@@ -10,12 +10,14 @@ interface PurchaseImportSummaryProps {
     totalAmount: number;
   };
   onCommentChange: (value: string) => void;
+  showComment?: boolean;
 }
 
 export default function PurchaseImportSummary({
   comment,
   totals,
   onCommentChange,
+  showComment = true,
 }: PurchaseImportSummaryProps) {
   const { t } = useTranslation();
   return (
@@ -40,14 +42,16 @@ export default function PurchaseImportSummary({
           </div>
         </div>
       </div>
-      <Form.Item label={t("purchase.fields.comment")} className="mb-0!">
-        <Input.TextArea
-          rows={2}
-          value={comment}
-          placeholder={t("purchase.messages.commentPlaceholder")}
-          onChange={(event) => onCommentChange(event.target.value)}
-        />
-      </Form.Item>
+      {showComment ? (
+        <Form.Item label={t("purchase.fields.comment")} className="mb-0!">
+          <Input.TextArea
+            rows={2}
+            value={comment}
+            placeholder={t("purchase.messages.commentPlaceholder")}
+            onChange={(event) => onCommentChange(event.target.value)}
+          />
+        </Form.Item>
+      ) : null}
     </div>
   );
 }

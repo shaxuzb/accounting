@@ -651,10 +651,20 @@
             "RUNNING": "Ishlayapti",
             "PAUSED": "To‘xtatilgan",
             "READY": "Tayyor",
-            "MAPPING_REQUIRED": "Mapping kerak",
+            "RESOLVED": "Moslashtirilgan",
+            "MAPPED": "Moslashtirilgan",
+            "MAPPING_REQUIRED": "Moslashtirish kerak",
+            "PENDING_MAPPING": "Moslashtirish kutilmoqda",
+            "UNRESOLVED": "Moslashtirilmagan",
+            "NOT_MAPPED": "Moslashtirilmagan",
             "DUPLICATE": "Takroriy",
             "IMPORTED": "Import qilindi",
-            "SKIPPED": "O‘tkazib yuborilgan"
+            "SKIPPED": "O‘tkazib yuborilgan",
+            "PROCESSING": "Jarayonda",
+            "NEW": "Yangi",
+            "DRAFT": "Qoralama",
+            "INVALID": "Noto‘g‘ri",
+            "REJECTED": "Rad etilgan"
           }
         },
         "navigation": {

@@ -50,7 +50,7 @@ export default function OpeningInventoryLineAccountsModal({
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("openingInventory.actions.selectAccounts")}
       centered
       width={600}

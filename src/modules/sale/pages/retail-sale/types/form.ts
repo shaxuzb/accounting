@@ -30,6 +30,8 @@ export interface RetailSaleLinePayload {
   unitId: number;
   unitPrice: number;
   costPrice: number;
+  amount: number;
+  vatAmount: number;
   vatRateId: number | null;
   inventoryAccountId: number | null;
   incomeAccountId: number | null;

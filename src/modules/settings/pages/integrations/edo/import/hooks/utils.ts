@@ -35,6 +35,18 @@ export const invalidateEdoImportResolution = (
       queryKey: edoImportQueryKeys.mappingSummary(jobId),
     }),
     queryClient.invalidateQueries({
+      queryKey: edoImportQueryKeys.masterDataPlan(jobId),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: edoImportQueryKeys.productConflicts(jobId),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: edoImportQueryKeys.pieceTrackingPlan(jobId),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: edoImportQueryKeys.markingConflicts(jobId),
+    }),
+    queryClient.invalidateQueries({
       queryKey: edoImportQueryKeys.importPlan(jobId),
     }),
   ]);

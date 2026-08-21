@@ -77,7 +77,7 @@ export default function PayrollPeriodModal({ open, onClose }: Props) {
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("payroll.periods.createTitle")}
       open={open}
       onCancel={handleClose}
@@ -99,7 +99,7 @@ export default function PayrollPeriodModal({ open, onClose }: Props) {
               formik={formik}
               fieldName="year"
               label="payroll.fields.year"
-              min={2000}
+              min={0}
               max={2200}
               precision={0}
               onValueChange={(value) => {

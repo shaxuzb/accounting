@@ -142,7 +142,10 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
       (_, organizationIndex) => organizationIndex !== index,
     );
 
-    if (organizations.length > 0 && !organizations.some((item) => item.isDefault)) {
+    if (
+      organizations.length > 0 &&
+      !organizations.some((item) => item.isDefault)
+    ) {
       organizations[0] = { ...organizations[0], isDefault: true };
     }
 
@@ -165,6 +168,7 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
 
   return (
     <Modal
+      mask={{ closable: false }}
       title={
         isEdit ? t("settings.form.editUser") : t("settings.form.createUser")
       }
@@ -245,7 +249,10 @@ function UserAddEditPage({ open, onClose, editId }: UserAddEditPageProps) {
             <h3 className="m-0 text-base font-semibold text-text">
               {t("settings.entities.organizations")}
             </h3>
-            <Button icon={<Plus className="size-4" />} onClick={handleAddOrganization}>
+            <Button
+              icon={<Plus className="size-4" />}
+              onClick={handleAddOrganization}
+            >
               {t("common.add")}
             </Button>
           </div>

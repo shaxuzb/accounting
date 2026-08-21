@@ -63,7 +63,7 @@ export default function OpeningBalanceAddEditModal({
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={
         isEdit
           ? t("openingBalance.form.editTitle")

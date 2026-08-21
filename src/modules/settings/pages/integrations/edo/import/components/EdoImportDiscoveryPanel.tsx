@@ -10,15 +10,21 @@ import {
 import { isAxiosError } from "axios";
 import dayjs, { type Dayjs } from "dayjs";
 import {
+  Building2,
   CalendarRange,
   CheckCircle2,
+  Copy,
+  FileSearch,
   PauseCircle,
   Play,
   RefreshCw,
+  SkipForward,
+  SlidersHorizontal,
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Card from "@/components/ui/card/Card";
+import { getActiveEdoImportJobId } from "@/store/middleware/edoImportLogoutCleanup";
 import { edoImportService } from "../api";
 import { useCancelEdoImportJob, useCreateEdoImportPreflight } from "../hooks";
 import type { EdoImportJobDto } from "../types";
@@ -84,7 +90,8 @@ export default function EdoImportDiscoveryPanel({
       onJobCreated(created);
       toast.success(`Import qidiruvi yaratildi · #${created.id}`);
     } catch (error) {
-      const existingJobId = getExistingJobId(error);
+      const existingJobId =
+        getExistingJobId(error) || getActiveEdoImportJobId();
       if (existingJobId) {
         try {
           const existingJob = await edoImportService.job(existingJobId);
@@ -227,7 +234,8 @@ export default function EdoImportDiscoveryPanel({
               </h2>
               <p className="mt-1 max-w-md text-sm text-secondary-text">
                 Sana oralig‘ini tanlab preflight boshlang. Topilgan hujjatlar
-                keyingi bosqichlarda mapping va Draft importga tayyorlanadi.
+                keyingi bosqichlarda moslashtirish bajarilib, qoralama importga
+                tayyorlanadi.
               </p>
             </div>
           </div>
@@ -291,20 +299,53 @@ export default function EdoImportDiscoveryPanel({
             {/* ── Stat cards ── */}
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
               {[
-                ["Topildi", job.discoveredCount],
-                ["Tayyor", job.readyCount],
-                ["Mapping", job.mappingRequiredCount],
-                ["Duplicate", job.duplicateCount],
-                ["O'tkazildi", job.skippedCount],
-              ].map(([label, value]) => (
+                {
+                  label: "Topildi",
+                  value: job.discoveredCount,
+                  icon: FileSearch,
+                  iconClass: "bg-brand-soft text-brand",
+                },
+                {
+                  label: "Tayyor",
+                  value: job.readyCount,
+                  icon: CheckCircle2,
+                  iconClass: "bg-success/10 text-success",
+                },
+                {
+                  label: "Moslashtirish kerak",
+                  value: job.mappingRequiredCount,
+                  icon: SlidersHorizontal,
+                  iconClass: "bg-warning/10 text-warning",
+                },
+                {
+                  label: "Takroriy",
+                  value: job.duplicateCount,
+                  icon: Copy,
+                  iconClass: "bg-violet-500/10 text-violet-600",
+                },
+                {
+                  label: "O‘tkazib yuborilgan",
+                  value: job.skippedCount,
+                  icon: SkipForward,
+                  iconClass: "bg-surface-muted text-secondary-text",
+                },
+              ].map(({ label, value, icon: Icon, iconClass }) => (
                 <div
-                  key={String(label)}
-                  className="rounded-xl bg-surface-muted/55 p-3"
+                  key={label}
+                  className="rounded-xl border border-border/70 bg-surface-muted/45 p-3"
                 >
-                  <div className="text-xl font-semibold tabular-nums text-heading">
-                    {formatImportNumber(Number(value))}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="text-xl font-semibold tabular-nums text-heading">
+                      {formatImportNumber(Number(value))}
+                    </div>
+                    <span
+                      aria-hidden
+                      className={`grid size-7 shrink-0 place-items-center rounded-lg ${iconClass}`}
+                    >
+                      <Icon className="size-4" />
+                    </span>
                   </div>
-                  <div className="mt-1 text-xs text-secondary-text">
+                  <div className="mt-1 text-xs leading-4 text-secondary-text">
                     {label}
                   </div>
                 </div>
@@ -316,85 +357,133 @@ export default function EdoImportDiscoveryPanel({
             {/* ── Job darajasidagi safeErrorCode ── */}
             {job.safeErrorCode && <SafeErrorAlert code={job.safeErrorCode} />}
 
-            {/* ── Provider kartalar ── */}
-            <div className="w-full">
-              {job.providers.map((provider) => {
-                const scanning = isScanning(provider.status);
-                const ready =
-                  isPreflightReady(provider.status) ||
-                  (!scanning && provider.status !== "FAILED");
-                const percent = provider.providerTotal
-                  ? Math.min(
-                      100,
-                      (provider.scannedCount / provider.providerTotal) * 100,
-                    )
-                  : undefined;
-                // PREFLIGHT_READY yoki tugagan holatda 100% ko'rsatamiz,
-                // skanerda hisoblangan percent ishlatamiz.
-                const displayPercent =
-                  ready && !scanning ? (percent ?? 100) : percent;
-                const progressStatus:
-                  | "active"
-                  | "success"
-                  | "exception"
-                  | "normal" =
-                  provider.status === "FAILED"
-                    ? "exception"
-                    : !scanning && ready
-                      ? "success"
-                      : "active";
+            {/* ── Providerlar ro‘yxati ── */}
+            <div className="overflow-hidden rounded-xl border border-border">
+              <div className="flex items-center justify-between gap-3 border-b border-border bg-surface-muted/25 px-4 py-3">
+                <div>
+                  <h3 className="font-semibold text-heading">Providerlar</h3>
+                  <p className="mt-0.5 text-xs text-secondary-text">
+                    Har bir manbaning qidiruv natijasi va tekshiruv jarayoni
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-muted px-2.5 py-1 text-xs font-medium text-secondary-text">
+                  <Building2 className="size-3.5" />
+                  {job.providers.length} ta
+                </span>
+              </div>
 
-                return (
-                  <Card
-                    key={provider.providerCode}
-                    className="rounded-xl border border-border p-4 transition-colors hover:border-brand/50 hover:bg-surface-muted/70"
-                  >
-                    {/* Header */}
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-heading">
-                          {provider.providerCode}
-                        </span>
-                        {scanning && <Spin size="small" />}
-                      </div>
-                      {importStatusTag(provider.status)}
-                    </div>
+              {job.providers.length === 0 ? (
+                <div className="px-4 py-8 text-center text-sm text-secondary-text">
+                  Provider natijasi hali mavjud emas.
+                </div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {job.providers.map((provider) => {
+                    const scanning = isScanning(provider.status);
+                    const ready =
+                      isPreflightReady(provider.status) ||
+                      (!scanning && provider.status !== "FAILED");
+                    const percent = provider.providerTotal
+                      ? Math.min(
+                          100,
+                          (provider.scannedCount / provider.providerTotal) * 100,
+                        )
+                      : undefined;
+                    // PREFLIGHT_READY yoki tugagan holatda 100% ko'rsatamiz,
+                    // skanerda hisoblangan percent ishlatamiz.
+                    const displayPercent =
+                      ready && !scanning ? (percent ?? 100) : percent;
+                    const progressStatus:
+                      | "active"
+                      | "success"
+                      | "exception"
+                      | "normal" =
+                      provider.status === "FAILED"
+                        ? "exception"
+                        : !scanning && ready
+                          ? "success"
+                          : "active";
 
-                    {/* Skanerlanganlar */}
-                    <div className="mt-3 flex items-center justify-between text-ms text-secondary-text">
-                      <span>{provider.scannedCount} ta tekshirildi</span>
-                      <span>Sahifa {provider.currentPage}</span>
-                    </div>
-
-                    {/* Progress */}
-                    <Progress
-                      percent={displayPercent}
-                      showInfo={displayPercent != null}
-                      size="small"
-                      status={progressStatus}
-                      className="mb-0 mt-1"
-                    />
-
-                    {/* Auth kerak */}
-                    {provider.isWaitingAuth && (
-                      <Button
-                        type="link"
-                        className="mt-2 p-0"
-                        onClick={onOpenAuthentication}
+                    return (
+                      <div
+                        key={provider.providerCode}
+                        className="p-4 transition-colors hover:bg-surface-muted/35 sm:p-5"
                       >
-                        Providerga autentifikatsiya qilish
-                      </Button>
-                    )}
+                        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,0.85fr)] lg:items-start">
+                          <div>
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <div className="flex items-center gap-2.5">
+                                <span className="grid size-9 place-items-center rounded-lg bg-brand-soft text-brand">
+                                  <Building2 className="size-4" />
+                                </span>
+                                <div>
+                                  <div className="font-semibold text-heading">
+                                    {provider.providerCode}
+                                  </div>
+                                  <div className="text-xs text-secondary-text">
+                                    {provider.scannedCount} ta tekshirildi
+                                  </div>
+                                </div>
+                                {scanning && <Spin size="small" />}
+                              </div>
+                              {importStatusTag(provider.status)}
+                            </div>
 
-                    {/* Provider safeErrorCode */}
-                    {provider.safeErrorCode && (
-                      <div className="mt-3">
-                        <SafeErrorAlert code={provider.safeErrorCode} />
+                            <div className="mt-4 flex items-center justify-between text-xs text-secondary-text">
+                              <span>Qidiruv jarayoni</span>
+                              <span>
+                                Sahifa {formatImportNumber(provider.currentPage)}
+                              </span>
+                            </div>
+                            <Progress
+                              percent={displayPercent}
+                              showInfo={displayPercent != null}
+                              size="small"
+                              status={progressStatus}
+                              className="mb-0 mt-1"
+                            />
+
+                            {provider.isWaitingAuth && (
+                              <Button
+                                type="link"
+                                className="mt-2 px-0"
+                                onClick={onOpenAuthentication}
+                              >
+                                Providerga autentifikatsiya qilish
+                              </Button>
+                            )}
+
+                            {provider.safeErrorCode && (
+                              <div className="mt-3">
+                                <SafeErrorAlert code={provider.safeErrorCode} />
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2 rounded-xl border border-border/70 bg-surface-muted/25 p-3 text-sm">
+                            <ProviderMetric
+                              label="Jami hujjatlar"
+                              value={provider.providerTotal}
+                            />
+                            <ProviderMetric
+                              label="Tekshirilgan"
+                              value={provider.scannedCount}
+                            />
+                            <ProviderMetric
+                              label="Sahifa hajmi"
+                              value={provider.pageSize}
+                            />
+                            <ProviderMetric
+                              label="Yakuniy sahifa"
+                              value={provider.currentPage}
+                            />
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </Card>
-                );
-              })}
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -433,6 +522,23 @@ function ScanSearchArtwork() {
       className="mx-auto grid size-20 place-items-center rounded-2xl border border-brand/15 bg-brand-soft text-brand"
     >
       <CalendarRange className="size-8" />
+    </div>
+  );
+}
+
+function ProviderMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value?: number | null;
+}) {
+  return (
+    <div className="rounded-lg bg-primary-bg/70 px-2.5 py-2">
+      <div className="text-[11px] leading-4 text-secondary-text">{label}</div>
+      <div className="mt-1 font-semibold tabular-nums text-heading">
+        {value == null ? "—" : formatImportNumber(value)}
+      </div>
     </div>
   );
 }

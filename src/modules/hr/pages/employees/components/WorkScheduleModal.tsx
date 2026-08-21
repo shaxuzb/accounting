@@ -103,9 +103,8 @@ export default function WorkScheduleModal({
 
   return (
     <Modal
-      title={t(
-        isEdit ? "hr.schedules.editTitle" : "hr.schedules.createTitle",
-      )}
+      mask={{ closable: false }}
+      title={t(isEdit ? "hr.schedules.editTitle" : "hr.schedules.createTitle")}
       open={open}
       onCancel={onClose}
       footer={null}
@@ -170,9 +169,7 @@ export default function WorkScheduleModal({
                         precision={1}
                         disabled={!selectedDay}
                         value={selectedDay?.workHours ?? null}
-                        onValueChange={(value) =>
-                          setDayHours(dayOfWeek, value)
-                        }
+                        onValueChange={(value) => setDayHours(dayOfWeek, value)}
                       />
                       <span className="text-xs text-secondary-text">
                         {t("hr.units.hour")}

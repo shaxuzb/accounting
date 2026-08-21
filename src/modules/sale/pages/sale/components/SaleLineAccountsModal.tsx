@@ -70,7 +70,7 @@ export default function SaleLineAccountsModal({
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("app.modals.accountSelectionTitle")}
       centered
       width={600}

@@ -18,6 +18,8 @@ export interface SaleDocProductForm {
   costPrice: number;
   unitId: number;
   unitPrice: number;
+  amount?: number;
+  vatAmount?: number;
   vatRateId: number | null;
   inventoryAccountId?: number;
   incomeAccountId?: number;

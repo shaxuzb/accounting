@@ -7,6 +7,7 @@ import type {
   RetailSaleProcessingMode,
   RetailSaleUpdatePayload,
 } from "../types/form";
+import { roundMoney } from "../../sale/utils/pricing";
 
 const toPayments = (
   payments: RetailSaleFormValues["payments"],
@@ -30,8 +31,10 @@ const toLines = (
       productId: product.productId,
       quantity: product.quantity,
       unitId: product.unitId,
-      unitPrice: product.unitPrice,
+      unitPrice: roundMoney(product.unitPrice),
       costPrice: product.costPrice,
+      amount: roundMoney(product.amount ?? product.quantity * product.unitPrice),
+      vatAmount: roundMoney(product.vatAmount ?? 0),
       vatRateId: product.vatRateId ?? null,
       inventoryAccountId: product.inventoryAccountId ?? null,
       incomeAccountId: product.incomeAccountId ?? null,

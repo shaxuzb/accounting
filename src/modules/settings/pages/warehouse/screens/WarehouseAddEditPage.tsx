@@ -81,6 +81,7 @@ export default function WarehouseAddEditPage({
 
   return (
     <Modal
+      mask={{ closable: false }}
       title={
         isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
       }

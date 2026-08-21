@@ -486,7 +486,7 @@ export default function MissingCounterpartyModal({
   }, [formik, open, rows, t, updateRow]);
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("app.missingCounterparty.title")}
       open={open}
       onCancel={handleClose}

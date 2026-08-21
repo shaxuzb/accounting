@@ -167,7 +167,7 @@ const ProductsCreateModal = ({
   }, [rows, setFormValues]);
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("products.modal.createProduct")}
       footer={false}
       open={open}

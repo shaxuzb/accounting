@@ -4,7 +4,6 @@ import {
   Checkbox,
   Collapse,
   Empty,
-  InputNumber,
   Modal,
   Select,
   Skeleton,
@@ -22,6 +21,8 @@ import {
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import Card from "@/components/ui/card/Card";
+import SelectCustom from "@/components/fields/SelectCustom";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import {
   useApplyEdoImportMarkingConflicts,
   useApplyEdoImportMasterData,
@@ -36,6 +37,7 @@ import {
   useResolveEdoImportMappings,
 } from "../hooks";
 import type {
+  EdoImportMappingIssueCountsDto,
   EdoImportMarkingConflictItemDto,
   EdoImportMasterDataAction,
   EdoImportPieceTrackingProductDto,
@@ -61,6 +63,39 @@ const normalizeAction = (
       ? "USE_EXISTING"
       : "CREATE";
 
+const actionLabel = (action: string) => {
+  switch (action) {
+    case "USE_EXISTING":
+      return "Mavjudidan foydalaniladi";
+    case "CREATE":
+      return "Yangi yaratiladi";
+    case "NO_CHANGE":
+      return "O‘zgarish kerak emas";
+    default:
+      return action.replaceAll("_", " ");
+  }
+};
+
+const issueLabel: Record<string, string> = {
+  counterparty: "Kontragent",
+  contract: "Shartnoma",
+  product: "Mahsulot",
+  currency: "Valuta",
+  warehouse: "Ombor",
+  unit: "Birlik",
+  vatRate: "QQS stavkasi",
+  marking: "Marking",
+};
+
+const errorLabel = (code?: string | null) => {
+  switch (code) {
+    case "MARKING_COUNT_MISMATCH":
+      return "Marking soni yetishmaydi";
+    default:
+      return code?.replaceAll("_", " ") || "Noma’lum muammo";
+  }
+};
+
 export default function EdoImportResolutionPanel({
   jobId,
 }: EdoImportResolutionPanelProps) {
@@ -71,7 +106,7 @@ export default function EdoImportResolutionPanel({
   const resolveMappings = async () => {
     try {
       await resolve.mutateAsync();
-      toast.success("Mappinglar qayta tekshirildi.");
+      toast.success("Moslashtirishlar qayta tekshirildi.");
     } catch (error) {
       toast.error(getImportErrorMessage(error));
     }
@@ -80,7 +115,7 @@ export default function EdoImportResolutionPanel({
   const items: CollapseProps["items"] = [
     {
       key: "master-data",
-      label: "Master data rejasi",
+      label: "Asosiy ma’lumotlar rejasi",
       extra: summary.data
         ? importStatusTag(
             summary.data.mappingRequiredCount > 0
@@ -94,21 +129,21 @@ export default function EdoImportResolutionPanel({
     },
     {
       key: "product-conflicts",
-      label: "Mahsulot konfliktlari",
+      label: "Mahsulot mos kelmasligi",
       children: openKeys.includes("product-conflicts") ? (
         <ProductConflictSection jobId={jobId} />
       ) : null,
     },
     {
       key: "piece-tracking",
-      label: "Piece tracking",
+      label: "Dona hisobini tekshirish",
       children: openKeys.includes("piece-tracking") ? (
         <PieceTrackingSection jobId={jobId} />
       ) : null,
     },
     {
       key: "marking-conflicts",
-      label: "Marking konfliktlari",
+      label: "Marking muammolari",
       children: openKeys.includes("marking-conflicts") ? (
         <MarkingConflictSection jobId={jobId} />
       ) : null,
@@ -120,10 +155,11 @@ export default function EdoImportResolutionPanel({
       <Card className="border border-border p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-semibold text-heading">Mapping nazorati</h2>
+            <h2 className="font-semibold text-heading">
+              Moslashtirish nazorati
+            </h2>
             <p className="mt-1 text-sm text-secondary-text">
-              Yetishmayotgan master data va konfliktlar Draft importdan oldin
-              hal qilinadi.
+              Draft importdan oldin hujjatlar va mahsulot ma’lumotlari tekshiriladi.
             </p>
           </div>
           <div className="flex gap-2">
@@ -140,7 +176,7 @@ export default function EdoImportResolutionPanel({
               loading={resolve.isPending}
               onClick={() => void resolveMappings()}
             >
-              Mappinglarni resolve qilish
+              Natijani qayta tekshirish
             </Button>
           </div>
         </div>
@@ -156,17 +192,34 @@ export default function EdoImportResolutionPanel({
           />
         ) : summary.data ? (
           <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
-            {Object.entries(summary.data.issueCounts).map(([key, value]) => (
-              <div key={key} className="rounded-xl bg-surface-muted/50 p-3">
+            {[
+              ["Jami hujjatlar", summary.data.totalCandidates],
+              ["Takroriy hujjatlar", summary.data.duplicateCount],
+              ["Tayyor", summary.data.readyCount],
+              ["Amal kerak", summary.data.mappingRequiredCount],
+              ...Object.entries(summary.data.issueCounts)
+                .filter(([, value]) => value > 0)
+                .map(([key, value]) => [issueLabel[key] ?? key, value]),
+            ].map(([label, value]) => (
+              <div key={String(label)} className="rounded-xl bg-surface-muted/50 p-3">
                 <div className="text-lg font-semibold tabular-nums text-heading">
                   {value}
                 </div>
-                <div className="mt-1 truncate text-xs capitalize text-secondary-text">
-                  {key}
+                <div className="mt-1 truncate text-xs text-secondary-text">
+                  {label}
                 </div>
               </div>
             ))}
           </div>
+        ) : null}
+        {summary.data?.mappingRequiredCount ? (
+          <Alert
+            className="mt-4"
+            type="warning"
+            showIcon
+            message={`${summary.data.mappingRequiredCount} ta hujjat bo‘yicha amal kerak`}
+            description={getMappingIssueDescription(summary.data.issueCounts)}
+          />
         ) : null}
       </Card>
 
@@ -178,6 +231,18 @@ export default function EdoImportResolutionPanel({
       />
     </div>
   );
+}
+
+function getMappingIssueDescription(
+  issueCounts: EdoImportMappingIssueCountsDto,
+) {
+  const issues = Object.entries(issueCounts)
+    .filter(([, count]) => count > 0)
+    .map(([key, count]) => `${issueLabel[key] ?? key}: ${count} ta`);
+
+  return issues.length > 0
+    ? `${issues.join(", ")}. Avval ko‘rsatilgan muammolarni hal qiling, keyin qayta tekshiring.`
+    : "Hujjatlarni moslashtiring va natijani qayta tekshiring.";
 }
 
 function MasterDataSection({ jobId }: { jobId: number }) {
@@ -199,6 +264,20 @@ function MasterDataSection({ jobId }: { jobId: number }) {
       ),
     [plan.data?.products],
   );
+  const resolvedUnitMappings = useMemo(() => {
+    const mappings: Record<string, number | null> = {};
+    (plan.data?.products ?? []).forEach((product) => {
+      const packageName = product.packageName?.trim();
+      if (packageName && mappings[packageName] == null) {
+        mappings[packageName] = product.resolvedUnitId ?? null;
+      }
+    });
+    return mappings;
+  }, [plan.data?.products]);
+  const getSelectedUnitId = (packageName: string) =>
+    Object.prototype.hasOwnProperty.call(unitMappings, packageName)
+      ? unitMappings[packageName]
+      : resolvedUnitMappings[packageName] ?? null;
 
   const submitPlan = () => {
     if (!plan.data) return;
@@ -265,16 +344,17 @@ function MasterDataSection({ jobId }: { jobId: number }) {
     if (!plan.data) return;
     const mappings = packageNames.map((packageName) => ({
       packageName,
-      unitId: unitMappings[packageName] ?? 0,
+      unitId: getSelectedUnitId(packageName) ?? 0,
     }));
     if (!mappings.length || mappings.some((item) => item.unitId <= 0)) {
       toast.error("Har bir package uchun musbat unit ID kiriting.");
       return;
     }
     Modal.confirm({
-      title: "Mahsulot defaultlarini qo‘llash",
-      content: "Package-unit mapping va piece tracking siyosati tasdiqlanadi.",
-      okText: "Qo‘llash",
+      title: "Qadoq birliklarini tasdiqlash",
+      content:
+        "Tanlangan birliklar ushbu importdagi mos keladigan EDO qadoqlariga qo‘llanadi.",
+      okText: "Tasdiqlash",
       cancelText: "Bekor qilish",
       onOk: async () => {
         try {
@@ -368,39 +448,77 @@ function MasterDataSection({ jobId }: { jobId: number }) {
       </div>
 
       {packageNames.length > 0 && (
-        <div className="rounded-xl border border-border p-4">
-          <div className="mb-3 font-semibold text-heading">
-            Package → unit defaultlari
+        <div className="rounded-xl border border-border bg-surface-muted/20 p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="font-semibold text-heading">
+                Qadoq birliklarini moslashtirish
+              </div>
+              <p className="mt-1 max-w-2xl text-sm text-secondary-text">
+                EDO hujjatidagi qadoq nomini tizimdagi birlik bilan bog‘lang.
+                Bu miqdor emas, mahsulot birligi hisoblanadi.
+              </p>
+            </div>
+            <Tag color="blue" className="m-0">
+              {packageNames.length} ta qadoq
+            </Tag>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-4 overflow-hidden rounded-lg border border-border bg-primary-bg">
+            <div className="hidden grid-cols-[minmax(0,1fr)_minmax(220px,0.8fr)_160px] gap-4 border-b border-border bg-surface-muted/30 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-secondary-text md:grid">
+              <span>EDO qadoq nomi</span>
+              <span>Tizimdagi birlik</span>
+              <span>Holat</span>
+            </div>
             {packageNames.map((packageName) => (
-              <label
+              <div
                 key={packageName}
-                className="space-y-2 text-sm text-heading"
+                className="grid gap-3 border-b border-border px-4 py-4 last:border-b-0 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.8fr)_160px] md:items-center md:gap-4"
               >
-                <span>{packageName}</span>
-                <InputNumber
-                  min={1}
-                  precision={0}
-                  value={unitMappings[packageName]}
+                <div className="min-w-0">
+                  <div className="text-sm font-medium text-heading">
+                    {packageName}
+                  </div>
+                  <div className="mt-1 text-xs text-secondary-text">
+                    EDO’dan kelgan qadoq
+                  </div>
+                </div>
+                <SelectCustom
+                  path={selectListEndpoints.unitsSelectList}
+                  value={getSelectedUnitId(packageName)}
                   onChange={(value) =>
                     setUnitMappings((current) => ({
                       ...current,
-                      [packageName]: value,
+                      [packageName]: value == null ? null : Number(value),
                     }))
                   }
-                  placeholder="Unit ID"
-                  className="w-full"
+                  search
+                  clearable
+                  marginBottom="mb-0"
+                  placeholder="Birlikni tanlang"
                 />
-              </label>
+                <div className="text-xs md:text-sm">
+                  {Object.prototype.hasOwnProperty.call(unitMappings, packageName) ? (
+                    getSelectedUnitId(packageName) ? (
+                      <Tag color="blue" className="m-0">Qo‘lda tanlandi</Tag>
+                    ) : (
+                      <Tag color="warning" className="m-0">Tanlash kerak</Tag>
+                    )
+                  ) : getSelectedUnitId(packageName) ? (
+                    <Tag color="success" className="m-0">Avtomatik topildi</Tag>
+                  ) : (
+                    <Tag color="warning" className="m-0">Tanlash kerak</Tag>
+                  )}
+                </div>
+              </div>
             ))}
           </div>
           <Button
             className="mt-4"
             loading={applyDefaults.isPending}
+            disabled={packageNames.some((packageName) => !getSelectedUnitId(packageName))}
             onClick={submitDefaults}
           >
-            Defaultlarni qo‘llash
+            Birliklarni tasdiqlash
           </Button>
         </div>
       )}
@@ -449,7 +567,7 @@ function PlanList({
                   color={item.action === "CREATE" ? "blue" : "green"}
                   className="m-0"
                 >
-                  {item.action}
+                  {actionLabel(item.action)}
                 </Tag>
               </div>
               <div className="mt-1 text-xs text-secondary-text">
@@ -578,8 +696,8 @@ function ProductConflictSection({ jobId }: { jobId: number }) {
           value={decisions[record.identityKey]?.action}
           placeholder="Tanlang"
           options={[
-            { value: "CREATE", label: "CREATE" },
-            { value: "USE_EXISTING", label: "USE_EXISTING" },
+            { value: "CREATE", label: actionLabel("CREATE") },
+            { value: "USE_EXISTING", label: actionLabel("USE_EXISTING") },
           ]}
           onChange={(action) =>
             setDecisions((current) => ({
@@ -694,7 +812,7 @@ function ProductConflictSection({ jobId }: { jobId: number }) {
       />
       <div className="mt-4 flex justify-end">
         <Button type="primary" loading={apply.isPending} onClick={submit}>
-          Tanlangan mappinglarni qo‘llash
+          Tanlangan moslashtirishlarni qo‘llash
         </Button>
       </div>
     </div>
@@ -707,6 +825,9 @@ function PieceTrackingSection({ jobId }: { jobId: number }) {
   const [selected, setSelected] = useState<number[]>([]);
 
   const products = plan.data?.products ?? [];
+  const actionableProducts = products.filter(
+    (product) => product.safeAction !== "NO_CHANGE",
+  );
   const submit = () => {
     if (
       !plan.data ||
@@ -756,9 +877,17 @@ function PieceTrackingSection({ jobId }: { jobId: number }) {
     { title: "Candidate", dataIndex: "affectedCandidateCount", width: 110 },
     { title: "Marking", dataIndex: "markingCount", width: 100 },
     {
+      title: "Hozirgi holat",
+      key: "currentState",
+      width: 150,
+      render: (_: unknown, record) =>
+        record.isPieceTracked ? "Yoqilgan" : "Yoqilmagan",
+    },
+    {
       title: "Safe action",
       dataIndex: "safeAction",
-      render: (value) => importStatusTag(value),
+      render: (value) =>
+        value === "NO_CHANGE" ? actionLabel(value) : importStatusTag(value),
     },
   ];
 
@@ -773,17 +902,29 @@ function PieceTrackingSection({ jobId }: { jobId: number }) {
         rowSelection={{
           selectedRowKeys: selected,
           onChange: (keys) => setSelected(keys.map(Number)),
+          getCheckboxProps: (record) => ({
+            disabled: record.safeAction === "NO_CHANGE",
+          }),
         }}
         scroll={{ x: 720 }}
       />
+      {actionableProducts.length === 0 ? (
+        <Alert
+          className="mt-4"
+          type="success"
+          showIcon
+          message="Dona hisobi bo‘yicha o‘zgarish kerak emas"
+          description="Barcha mahsulotlarda dona hisobini yuritish allaqachon yoqilgan."
+        />
+      ) : null}
       <div className="mt-4 flex justify-end">
         <Button
           type="primary"
-          disabled={!selected.length}
+          disabled={!selected.length || actionableProducts.length === 0}
           loading={apply.isPending}
           onClick={submit}
         >
-          Tanlanganlarni qo‘llash
+          Tanlanganlarni yoqish
         </Button>
       </div>
     </div>
@@ -798,10 +939,10 @@ function MarkingConflictSection({ jobId }: { jobId: number }) {
   const submit = () => {
     if (!plan.data || !selected.length) return;
     Modal.confirm({
-      title: "Marking konfliktlarini o‘tkazib yuborish",
+      title: "Hujjatlarni importdan chiqarish",
       icon: <ShieldAlert className="size-5 text-warning" />,
-      content: `${selected.length} ta candidate SKIP holatiga o‘tkaziladi. Raw marking kodlari ko‘rsatilmaydi.`,
-      okText: "SKIP qilish",
+      content: `${selected.length} ta hujjat import qilinmaydi va “O‘tkazib yuborilgan” holatiga o‘tadi. Bu amal yetishmayotgan markingni tiklamaydi.`,
+      okText: "Importdan chiqarish",
       okButtonProps: { danger: true },
       cancelText: "Bekor qilish",
       onOk: async () => {
@@ -845,7 +986,7 @@ function MarkingConflictSection({ jobId }: { jobId: number }) {
     {
       title: "Safe error",
       dataIndex: "safeErrorCode",
-      render: (value) => <Tag color="orange">{value}</Tag>,
+      render: (value) => <Tag color="orange">{errorLabel(value)}</Tag>,
     },
     {
       title: "Kutilgan",
@@ -854,11 +995,34 @@ function MarkingConflictSection({ jobId }: { jobId: number }) {
       render: formatImportNumber,
     },
     { title: "Marking", dataIndex: "actualMarkingCount", align: "right" },
+    {
+      title: "Yetishmayapti",
+      key: "missingMarking",
+      align: "right",
+      render: (_: unknown, record) => {
+        const missing = Math.max(
+          0,
+          Number(record.expectedQuantity ?? 0) - record.actualMarkingCount,
+        );
+        return missing > 0 ? (
+          <Tag color="red">{formatImportNumber(missing)} ta</Tag>
+        ) : (
+          "—"
+        );
+      },
+    },
     { title: "Konflikt", dataIndex: "conflictCount", align: "right" },
   ];
 
   return (
     <div>
+      <Alert
+        className="mb-4"
+        type="warning"
+        showIcon
+        message="Marking soni hujjatdagi miqdorga mos emas"
+        description="Importdan chiqarish tanlangan hujjatlarni o‘tkazib yuboradi. Agar hujjatni import qilish kerak bo‘lsa, avval manba hujjatdagi marking ma’lumotlarini to‘g‘rilang."
+      />
       <Table
         rowKey="candidateId"
         size="small"
@@ -894,7 +1058,7 @@ function MarkingConflictSection({ jobId }: { jobId: number }) {
           loading={apply.isPending}
           onClick={submit}
         >
-          Tanlanganlarni SKIP qilish
+          Tanlanganlarni importdan chiqarish
         </Button>
       </div>
     </div>

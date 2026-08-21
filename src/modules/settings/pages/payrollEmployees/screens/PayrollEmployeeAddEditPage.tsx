@@ -141,6 +141,7 @@ export default function PayrollEmployeeAddEditPage({
 
   return (
     <Modal
+      mask={{ closable: false }}
       title={
         isEdit
           ? t("payroll.employees.editTitle")

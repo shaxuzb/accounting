@@ -77,7 +77,7 @@ export default function PositionAddEditPage({
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
       open={open}
       onCancel={() => {
@@ -94,7 +94,7 @@ export default function PositionAddEditPage({
             formik={formik}
             fieldName="organizationId"
             label="settings.fields.organization"
-            path={selectListEndpoints.operationTypesSelectList}
+            path={selectListEndpoints.organizationsSelectList}
           />
 
           <InputText formik={formik} fieldName="code" label="settings.fields.code" />

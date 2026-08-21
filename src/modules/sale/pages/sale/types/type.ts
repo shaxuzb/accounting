@@ -213,6 +213,9 @@ export interface SaleSelectedProduct {
   quantity: number;
   availableQuantity: number;
   costPrice: number;
+  costPriceType?: "automatic" | "manual";
+  amount?: number;
+  vatAmount?: number;
   unitId: number;
   unitPrice: number;
   inventoryAccountId: number | null;

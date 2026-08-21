@@ -743,7 +743,7 @@ export default function InventoryCountDetailPage() {
         </Card>
       </div>
 
-      <Modal
+      <Modal maskClosable={false}
         title={t("warehouse.count.confirmTitle")}
         open={isConfirmDialogOpen}
         onCancel={closeActionModals}
@@ -763,7 +763,7 @@ export default function InventoryCountDetailPage() {
         </div>
       </Modal>
 
-      <Modal
+      <Modal maskClosable={false}
         title={t("warehouse.count.cancelTitle")}
         open={isCancelDialogOpen}
         onCancel={closeActionModals}

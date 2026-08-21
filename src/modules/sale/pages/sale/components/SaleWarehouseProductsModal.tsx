@@ -14,6 +14,7 @@ interface Props {
   products: SaleProductStock[];
   loading: boolean;
   disabled?: boolean;
+  aggregateStockMode?: boolean;
   search: string;
   loadingProductId?: number | null;
   onSearch: (value: string) => void;
@@ -22,6 +23,7 @@ interface Props {
     product: SaleProductStock,
     layers: SaleProductPriceLayer[],
     salePrice: number,
+    quantity?: number,
   ) => void | Promise<void>;
 }
 
@@ -58,6 +60,7 @@ export default function SaleWarehouseProductsModal({
   products,
   loading,
   disabled = false,
+  aggregateStockMode = false,
   search,
   loadingProductId,
   onSearch,
@@ -68,6 +71,9 @@ export default function SaleWarehouseProductsModal({
   const [quantities, setQuantities] = useState<Record<string, number | null>>(
     {},
   );
+  const [productQuantities, setProductQuantities] = useState<
+    Record<number, number | null>
+  >({});
   const [salePrices, setSalePrices] = useState<Record<number, number | null>>(
     {},
   );
@@ -92,17 +98,34 @@ export default function SaleWarehouseProductsModal({
   }, [products, t]);
 
   const visibleProducts = useMemo(
-    () =>
-      products.filter((product) => {
+    () => {
+      const query = searchValue.trim().toLowerCase();
+
+      return products.filter((product) => {
         const productGroupKey = String(
           product.productGroupId ?? product.productGroupName ?? "",
         );
+        const searchableText = [
+          product.productName,
+          product.name,
+          product.productMxik,
+          product.mxik,
+          product.barcode,
+          product.sapCode,
+          product.productId,
+        ]
+          .filter((value) => value !== null && value !== undefined)
+          .join(" ")
+          .toLowerCase();
+
         return (
+          (!query || searchableText.includes(query)) &&
           (!groupFilter || productGroupKey === groupFilter) &&
           (!onlyAvailable || getAvailableQuantity(product) > 0)
         );
-      }),
-    [groupFilter, onlyAvailable, products],
+      });
+    },
+    [groupFilter, onlyAvailable, products, searchValue],
   );
 
   const layersByProductId = useMemo(() => {
@@ -134,6 +157,32 @@ export default function SaleWarehouseProductsModal({
   };
 
   const selectedSummary = useMemo(() => {
+    if (aggregateStockMode) {
+      return visibleProducts.reduce(
+        (summary, product) => {
+          const productId = getStockProductId(product);
+          const quantity = Math.min(
+            Number(productQuantities[productId] ?? 0),
+            getAvailableQuantity(product),
+          );
+          if (quantity <= 0) return summary;
+
+          const salePrice =
+            salePrices[productId] ??
+            getDefaultSalePrice(product, layersByProductId.get(productId) ?? []);
+          const costPrice = Number(product.costPrice ?? product.price ?? 0);
+
+          return {
+            products: summary.products + 1,
+            quantity: summary.quantity + quantity,
+            totalCost: summary.totalCost + quantity * costPrice,
+            totalSale: summary.totalSale + quantity * salePrice,
+          };
+        },
+        { products: 0, quantity: 0, totalCost: 0, totalSale: 0 },
+      );
+    }
+
     return visibleProducts.reduce(
       (summary, product) => {
         const productId = getStockProductId(product);
@@ -154,7 +203,14 @@ export default function SaleWarehouseProductsModal({
       },
       { products: 0, quantity: 0, totalCost: 0, totalSale: 0 },
     );
-  }, [layersByProductId, quantities, salePrices, visibleProducts]);
+  }, [
+    aggregateStockMode,
+    layersByProductId,
+    productQuantities,
+    quantities,
+    salePrices,
+    visibleProducts,
+  ]);
 
   const handleQuantityChange = (
     productId: number,
@@ -166,7 +222,58 @@ export default function SaleWarehouseProductsModal({
     setQuantities((current) => ({ ...current, [key]: quantity }));
   };
 
+  const handleProductQuantityChange = (
+    productId: number,
+    value: number | null,
+    availableQuantity: number,
+  ) => {
+    const quantity =
+      value === null ? null : Math.min(Math.max(value, 0), availableQuantity);
+    setProductQuantities((current) => ({ ...current, [productId]: quantity }));
+  };
+
   const handleAddSelected = async () => {
+    if (aggregateStockMode) {
+      const selected = visibleProducts
+        .map((product) => {
+          const productId = getStockProductId(product);
+          const quantity = Math.min(
+            Number(productQuantities[productId] ?? 0),
+            getAvailableQuantity(product),
+          );
+          if (quantity <= 0) return null;
+
+          const layers = layersByProductId.get(productId) ?? [];
+          const salePrice =
+            salePrices[productId] ?? getDefaultSalePrice(product, layers);
+          return { product, salePrice, quantity };
+        })
+        .filter(
+          (
+            item,
+          ): item is {
+            product: SaleProductStock;
+            salePrice: number;
+            quantity: number;
+          } => Boolean(item),
+        );
+
+      if (!selected.length) return;
+
+      setIsAdding(true);
+      try {
+        await Promise.all(
+          selected.map(({ product, salePrice, quantity }) =>
+            onAdd(product, [], salePrice, quantity),
+          ),
+        );
+        onClose();
+      } finally {
+        setIsAdding(false);
+      }
+      return;
+    }
+
     const selected = visibleProducts
       .map((product) => {
         const productId = getStockProductId(product);
@@ -308,6 +415,29 @@ export default function SaleWarehouseProductsModal({
       title: t("sale.fields.selected"),
       align: "center",
       render: (_, product) => {
+        if (aggregateStockMode) {
+          const productId = getStockProductId(product);
+          return (
+            <InputNumberFormat
+              standalone
+              emptyZero
+              min={0}
+              max={getAvailableQuantity(product)}
+              precision={3}
+              value={productQuantities[productId] ?? null}
+              disabled={disabled || !getAvailableQuantity(product)}
+              placeholder={t("openingInventory.fields.quantity")}
+              onValueChange={(value) =>
+                handleProductQuantityChange(
+                  productId,
+                  value,
+                  getAvailableQuantity(product),
+                )
+              }
+            />
+          );
+        }
+
         const selectedLayers = getSelectedLayers(product);
         return numberSpacing(
           selectedLayers.reduce((sum, layer) => sum + layer.writeOffQuantity, 0),
@@ -319,7 +449,7 @@ export default function SaleWarehouseProductsModal({
   ];
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       open={open}
       title={t("menu.warehouse")}
       footer={null}
@@ -368,7 +498,7 @@ export default function SaleWarehouseProductsModal({
             }),
         }}
         scroll={{ x: "max-content", y: 560 }}
-        expandable={{
+        expandable={aggregateStockMode ? undefined : {
           defaultExpandAllRows: false,
           rowExpandable: (product) =>
             Boolean(layersByProductId.get(getStockProductId(product))?.length),

@@ -90,7 +90,7 @@ export default function EdoRejectModal({
   }));
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       open={open}
       title={t("settings.integrations.edo.inbox.rejectTitle")}
       onCancel={rejectMutation.isPending ? undefined : onClose}

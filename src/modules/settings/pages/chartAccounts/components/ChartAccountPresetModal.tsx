@@ -63,7 +63,7 @@ export default function ChartAccountPresetModal({
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("app.modals.addAccount")}
       open={open}
       onCancel={onClose}

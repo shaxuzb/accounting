@@ -93,7 +93,7 @@ export default function ProductCreateModal({
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("products.modal.createProduct")}
       footer={null}
       open={open}

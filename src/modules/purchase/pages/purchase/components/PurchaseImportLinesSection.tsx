@@ -24,6 +24,9 @@ interface PurchaseImportLinesSectionProps extends PurchaseImportActionsProps {
     vatAmount: number;
     totalAmount: number;
   };
+  showActions?: boolean;
+  showAddLine?: boolean;
+  showComment?: boolean;
 }
 
 export default function PurchaseImportLinesSection({
@@ -48,6 +51,9 @@ export default function PurchaseImportLinesSection({
   setSelectBoxOptions,
   totals,
   height,
+  showActions = true,
+  showAddLine = true,
+  showComment = true,
 }: PurchaseImportLinesSectionProps) {
   const { t } = useTranslation();
   const loading = isLoading || isFetching;
@@ -55,22 +61,24 @@ export default function PurchaseImportLinesSection({
 
   return (
     <Card className="mt-1 overflow-hidden border border-border">
-      <div className="border-b border-border p-3">
-        <PurchaseImportActions
-          formik={formik}
-          hasSelectedRows={hasSelectedRows}
-          onAddManualRow={onAddManualRow}
-          onBack={onBack}
-          onSave={onSave}
-          saveLoading={saveLoading}
-          onExcelDataChange={onExcelDataChange}
-          onClearExcelData={onClearExcelData}
-          onPurchaseModeChange={onPurchaseModeChange}
-          purchaseMode={purchaseMode}
-          selectBoxOptions={selectBoxOptions}
-          setSelectBoxOptions={setSelectBoxOptions}
-        />
-      </div>
+      {showActions ? (
+        <div className="border-b border-border p-3">
+          <PurchaseImportActions
+            formik={formik}
+            hasSelectedRows={hasSelectedRows}
+            onAddManualRow={onAddManualRow}
+            onBack={onBack}
+            onSave={onSave}
+            saveLoading={saveLoading}
+            onExcelDataChange={onExcelDataChange}
+            onClearExcelData={onClearExcelData}
+            onPurchaseModeChange={onPurchaseModeChange}
+            purchaseMode={purchaseMode}
+            selectBoxOptions={selectBoxOptions}
+            setSelectBoxOptions={setSelectBoxOptions}
+          />
+        </div>
+      ) : null}
 
       <div className="rounded-lg relative">
         <Table
@@ -86,20 +94,23 @@ export default function PurchaseImportLinesSection({
           comment={comment}
           totals={totals}
           onCommentChange={onCommentChange}
+          showComment={showComment}
         />
-        <div className="sticky bottom-0 z-10 flex justify-center border-t border-border bg-primary-bg/95 py-2 backdrop-blur">
-          <Tooltip title={t("purchase.actions.addLine")}>
-            <Button
-              type="primary"
-              htmlType="button"
-              shape="circle"
-              size="large"
-              className="shadow-md"
-              icon={<Plus className="size-5" />}
-              onClick={onAddManualRow}
-            />
-          </Tooltip>
-        </div>
+        {showAddLine ? (
+          <div className="sticky bottom-0 z-10 flex justify-center border-t border-border bg-primary-bg/95 py-2 backdrop-blur">
+            <Tooltip title={t("purchase.actions.addLine")}>
+              <Button
+                type="primary"
+                htmlType="button"
+                shape="circle"
+                size="large"
+                className="shadow-md"
+                icon={<Plus className="size-5" />}
+                onClick={onAddManualRow}
+              />
+            </Tooltip>
+          </div>
+        ) : null}
       </div>
     </Card>
   );

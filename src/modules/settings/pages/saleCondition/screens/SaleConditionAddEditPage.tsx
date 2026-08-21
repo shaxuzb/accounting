@@ -49,6 +49,7 @@ export default function SaleConditionAddEditPage({
 
   return (
     <Modal
+      mask={{ closable: false }}
       title={t("settings.form.createSaleCondition")}
       open={open}
       onCancel={() => {

@@ -127,7 +127,7 @@ export default function PayrollComponentAddEditPage({
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={
         isEdit
           ? t("payroll.components.editTitle")

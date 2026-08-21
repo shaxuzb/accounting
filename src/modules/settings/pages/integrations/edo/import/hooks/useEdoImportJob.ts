@@ -14,7 +14,7 @@ const terminalStatuses = new Set<EdoImportJobDto["status"]>([
 const jobPollingInterval = (query: { state: { data?: EdoImportJobDto } }) =>
   query.state.data && terminalStatuses.has(query.state.data.status)
     ? false
-    : 15_000;
+    : 3_000;
 
 export const useCreateEdoImportPreflight = () => {
   const queryClient = useQueryClient();

@@ -97,6 +97,7 @@ export default function PurchaseServiceAddEditPage({
 
   return (
     <Modal
+      mask={{ closable: false }}
       title={
         isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
       }

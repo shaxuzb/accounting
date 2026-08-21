@@ -157,7 +157,7 @@ const ExcelImportFile: FC<ExcelImportFileProps> = (propsSheet) => {
         sheetData.SheetNames &&
         sheetData.SheetNames.length > 0 &&
         modalOpen && (
-          <Modal
+          <Modal maskClosable={false}
             open={modalOpen}
             width={"100%"}
             centered

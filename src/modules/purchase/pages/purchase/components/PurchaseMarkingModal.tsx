@@ -26,7 +26,7 @@ export default function PurchaseMarkingModal({
 }: PurchaseMarkingModalProps) {
   const { t } = useTranslation();
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("purchase.actions.enterMarkings")}
       open={open}
       onCancel={onClose}

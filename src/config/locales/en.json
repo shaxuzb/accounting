@@ -651,10 +651,20 @@
             "RUNNING": "Running",
             "PAUSED": "Paused",
             "READY": "Ready",
+            "RESOLVED": "Resolved",
+            "MAPPED": "Mapped",
             "MAPPING_REQUIRED": "Mapping required",
+            "PENDING_MAPPING": "Mapping pending",
+            "UNRESOLVED": "Unresolved",
+            "NOT_MAPPED": "Not mapped",
             "DUPLICATE": "Duplicate",
             "IMPORTED": "Imported",
-            "SKIPPED": "Skipped"
+            "SKIPPED": "Skipped",
+            "PROCESSING": "Processing",
+            "NEW": "New",
+            "DRAFT": "Draft",
+            "INVALID": "Invalid",
+            "REJECTED": "Rejected"
           }
         },
         "navigation": { "inbox": "Incoming", "outbox": "Outgoing", "drafts": "Drafts", "all": "All documents", "templates": "Templates", "excelImport": "Excel upload", "received": "Received", "pendingSignature": "Signature pending", "pendingPartnerSignature": "Partner signature pending", "signed": "Signed", "rejected": "Rejected", "deleted": "Deleted", "powerOfAttorney": "Power of attorney", "notAvailable": "Not available yet", "sectionUnavailable": "This section is waiting for its backend endpoint." },

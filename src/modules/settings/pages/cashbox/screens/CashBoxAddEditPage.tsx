@@ -80,7 +80,7 @@ export default function CashBoxAddEditPage({
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
       open={open}
       onCancel={() => {

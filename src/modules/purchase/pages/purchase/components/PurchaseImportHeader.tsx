@@ -24,11 +24,21 @@ import { purchaseDocumentTypeIds } from "../constants/endpoints";
 interface PurchaseImportHeaderProps {
   formik: FormikProps<PurchaseImportForm>;
   purchaseMode: PurchaseMode;
+  readOnlyDate?: boolean;
+  showCurrency?: boolean;
+  showSupplierAccount?: boolean;
+  allowCreateOptions?: boolean;
+  disabled?: boolean;
 }
 
 export default function PurchaseImportHeader({
   formik,
   purchaseMode,
+  readOnlyDate = false,
+  showCurrency = false,
+  showSupplierAccount = true,
+  allowCreateOptions = true,
+  disabled = false,
 }: PurchaseImportHeaderProps) {
   const { t } = useTranslation();
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
@@ -71,7 +81,9 @@ export default function PurchaseImportHeader({
               label="purchase.fields.docDate"
               formik={formik}
               fieldName="docDate"
-              onChange={clearContract}
+              readOnly={readOnlyDate || disabled}
+              disabled={readOnlyDate || disabled}
+              onChange={readOnlyDate || disabled ? undefined : clearContract}
             />
           </Col>
           <Col span={24} sm={12} lg={8} xl={4}>
@@ -84,9 +96,10 @@ export default function PurchaseImportHeader({
                   : t("purchase.fields.supplier")
               }
               formik={formik}
-              onChange={clearContract}
+              disabled={disabled}
+              onChange={disabled ? undefined : clearContract}
               addOption={{
-                bool: true,
+                bool: allowCreateOptions,
                 permissionCode: counterpartyPermissions.create,
                 onClick: () => {
                   setCounterpartyCreateOpen(true);
@@ -105,14 +118,14 @@ export default function PurchaseImportHeader({
                 [filterIds.counterparty]: formik.values.counterpartyId,
               }}
               enabled={hasCounterparty}
-              disabled={!hasCounterparty}
+              disabled={!hasCounterparty || disabled}
               label="purchase.fields.contract"
               fieldName="contractId"
               formik={formik}
-              getFirst
+              getFirst={allowCreateOptions}
               required
               addOption={{
-                bool: true,
+                bool: allowCreateOptions,
                 permissionCode: contractPermissions.create,
                 onClick: () => {
                   setContractCreateOpen(true);
@@ -127,31 +140,38 @@ export default function PurchaseImportHeader({
               label="purchase.fields.warehouse"
               fieldName="warehouseId"
               formik={formik}
+              disabled={disabled}
               required
             />
           </Col>
-          {/* <Col span={24} sm={12} lg={8} xl={4}>
-            <SelectCustom
-              path={selectListEndpoints.currenciesSelectList}
-              label="Valyuta"
-              fieldName="currencyId"
-              formik={formik}
-              getFirst={true}
-            />
-          </Col> */}
+          {showCurrency ? (
+            <Col span={24} sm={12} lg={8} xl={4}>
+              <SelectCustom
+                path={selectListEndpoints.currenciesSelectList}
+                label="Valuta"
+                fieldName="currencyId"
+                formik={formik}
+                disabled={disabled}
+                getFirst={allowCreateOptions}
+                required
+              />
+            </Col>
+          ) : null}
 
-          <Col span={24} sm={12} lg={8} xl={4}>
-            <DocumentAccountSelect
-              fieldName="supplierAccountId"
-              label="purchase.fields.supplierAccount"
-              documentTypeId={purchaseDocumentTypeIds[purchaseMode]}
-              documentRoleCode="supplier_settlement"
-              formik={formik}
-              getFirst
-              search
-              required
-            />
-          </Col>
+          {showSupplierAccount ? (
+            <Col span={24} sm={12} lg={8} xl={4}>
+              <DocumentAccountSelect
+                fieldName="supplierAccountId"
+                label="purchase.fields.supplierAccount"
+                documentTypeId={purchaseDocumentTypeIds[purchaseMode]}
+                documentRoleCode="supplier_settlement"
+                formik={formik}
+                getFirst
+                search
+                required
+              />
+            </Col>
+          ) : null}
         </Row>
       </div>
       <CounterpartyAddEditPage

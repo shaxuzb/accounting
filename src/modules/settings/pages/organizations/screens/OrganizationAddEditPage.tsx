@@ -84,7 +84,7 @@ export default function OrganizationAddEditPage({
   if (!open) return null;
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={
         isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
       }

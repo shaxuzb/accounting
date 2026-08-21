@@ -20,7 +20,7 @@ export default function ContractDetailModal({
   const isSaleContract = (data?.contractTypeId ?? contractTypeId) === 2;
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={`${t("contract.title")}${data?.contractNumber ? `: ${data.contractNumber}` : ""}`}
       open={Boolean(id)}
       onCancel={onClose}

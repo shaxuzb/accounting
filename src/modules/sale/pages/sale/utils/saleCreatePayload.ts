@@ -4,6 +4,7 @@ import type {
   SaleProcessingMode,
 } from "../types/form";
 import type { SaleSelectedProduct } from "../types/type";
+import { roundMoney } from "./pricing";
 
 export const getSaleMarkingCount = (product: SaleSelectedProduct) =>
   product.markings?.length ?? 0;
@@ -65,7 +66,9 @@ export const toSaleCreatePayload = (
       quantity: product.quantity,
       costPrice: product.costPrice,
       unitId: product.unitId,
-      unitPrice: product.unitPrice,
+      unitPrice: roundMoney(product.unitPrice),
+      amount: roundMoney(product.amount ?? product.quantity * product.unitPrice),
+      vatAmount: roundMoney(product.vatAmount ?? 0),
       vatRateId: product.vatRateId ?? null,
       inventoryAccountId: product.inventoryAccountId ?? 0,
       incomeAccountId: product.incomeAccountId ?? 0,

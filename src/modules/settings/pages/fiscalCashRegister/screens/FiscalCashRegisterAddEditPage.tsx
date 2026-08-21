@@ -89,7 +89,7 @@ export default function FiscalCashRegisterAddEditPage({
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={
         isEdit
           ? t("settings.form.editFiscalCashRegister")

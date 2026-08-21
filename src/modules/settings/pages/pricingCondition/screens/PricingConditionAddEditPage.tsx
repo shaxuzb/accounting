@@ -75,6 +75,7 @@ export default function PricingConditionAddEditPage({
 
   return (
     <Modal
+      mask={{ closable: false }}
       title={
         isView
           ? t("settings.form.viewPricingCondition")

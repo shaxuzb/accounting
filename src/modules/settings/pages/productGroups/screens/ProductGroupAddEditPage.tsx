@@ -44,7 +44,7 @@ export default function ProductGroupAddEditPage({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
-      parentId: null
+      parentId: null,
     },
     enableReinitialize: true,
     validationSchema: productGroupsSchema(isEdit),
@@ -80,7 +80,10 @@ export default function ProductGroupAddEditPage({
 
   return (
     <Modal
-      title={isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")}
+      mask={{ closable: false }}
+      title={
+        isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
+      }
       open={open}
       onCancel={() => {
         formik.resetForm();
@@ -98,9 +101,9 @@ export default function ProductGroupAddEditPage({
             label="settings.fields.organization"
             path={selectListEndpoints.operationTypesSelectList}
           />
-         <InputText
+          <InputText
             formik={formik}
-            fieldName="name"  
+            fieldName="name"
             label="settings.fields.name"
           />
 
@@ -109,7 +112,7 @@ export default function ProductGroupAddEditPage({
             fieldName="code"
             label="settings.fields.code"
           />
-    
+
           {isEdit && (
             <SelectCustom
               formik={formik}
@@ -126,7 +129,9 @@ export default function ProductGroupAddEditPage({
             size="large"
             className="h-12 rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
             loading={isSubmitting}
-          >{t("common.submit")}</Button>
+          >
+            {t("common.submit")}
+          </Button>
         </Form>
       </Spin>
     </Modal>

@@ -49,6 +49,8 @@ interface UsePurchaseImportColumnsParams {
   purchaseMode: PurchaseMode;
   unitOptions: SelectOption[];
   vatRateOptions: SelectOption[];
+  readOnlyValues?: boolean;
+  disabled?: boolean;
 }
 
 export const usePurchaseImportColumns = ({
@@ -66,6 +68,8 @@ export const usePurchaseImportColumns = ({
   purchaseMode,
   unitOptions,
   vatRateOptions,
+  readOnlyValues = false,
+  disabled = false,
 }: UsePurchaseImportColumnsParams): TableColumnType<PurchaseImportRow>[] => {
   const { t } = useTranslation();
   const documentTypeId = purchaseDocumentTypeIds[purchaseMode];
@@ -175,6 +179,7 @@ export const usePurchaseImportColumns = ({
                 label: item.name,
               }))}
               onChange={(value) => handleItemSelect(rowIndex, Number(value))}
+              disabled={disabled}
               size="medium"
             />
           ),
@@ -200,7 +205,7 @@ export const usePurchaseImportColumns = ({
               rowIndex={rowIndex ?? 0}
               onCommit={handleCellCommit}
               isInvalid={invalidMxik}
-              disabled={isMxikCell && Boolean(record.productId)}
+              disabled={readOnlyValues || (isMxikCell && Boolean(record.productId))}
             />
           );
         },
@@ -227,7 +232,7 @@ export const usePurchaseImportColumns = ({
           >
             <Button
               type="text"
-              disabled={!isTracked}
+              disabled={disabled || readOnlyValues || !isTracked}
               className="text-primary"
               icon={<QrCode className="size-5" />}
               onClick={() => openMarkingModal(rowIndex)}
@@ -266,6 +271,7 @@ export const usePurchaseImportColumns = ({
                 value: item.id,
                 label: item.name,
               }))}
+              disabled={disabled}
               onChange={(value) =>
                 handleRowValueChange(rowIndex, { unitId: Number(value) })
               }
@@ -283,7 +289,7 @@ export const usePurchaseImportColumns = ({
             dataIndex="qty"
             rowIndex={rowIndex ?? 0}
             onCommit={handleCellCommit}
-            disabled={purchaseMode === "goods" && Boolean(record.isPieceTracked)}
+            disabled={disabled || readOnlyValues || (purchaseMode === "goods" && Boolean(record.isPieceTracked))}
           />
         ),
       } satisfies TableColumnType<PurchaseImportRow>,
@@ -298,6 +304,7 @@ export const usePurchaseImportColumns = ({
             dataIndex="price"
             rowIndex={rowIndex ?? 0}
             onCommit={handleCellCommit}
+            disabled={disabled || readOnlyValues}
           />
         ),
       } satisfies TableColumnType<PurchaseImportRow>,
@@ -331,6 +338,7 @@ export const usePurchaseImportColumns = ({
                   value: item.id,
                   label: item.name,
                 }))}
+                disabled={disabled}
                 onChange={(value) =>
                   handleRowValueChange(rowIndex, {
                     vatRateId: value ? Number(value) : null,
@@ -373,6 +381,7 @@ export const usePurchaseImportColumns = ({
               icon={<Pencil className="size-4" />}
               title={t("purchase.actions.selectAccounts")}
               onClick={() => openAccountModal(rowIndex)}
+              disabled={disabled}
             />
           </div>
         ),
@@ -380,7 +389,7 @@ export const usePurchaseImportColumns = ({
       {
         dataIndex: "actions",
         // title: "Amallar",
-        render: (_: unknown, __: PurchaseImportRow, rowIndex: number) => (
+        render: (_: unknown, __: PurchaseImportRow, rowIndex: number) => readOnlyValues ? null : (
           <Tooltip title={t("purchase.actions.deleteLine")}>
             <Button
               danger
@@ -407,6 +416,8 @@ export const usePurchaseImportColumns = ({
     unitOptions,
     vatRateOptions,
     chartAccountById,
+    readOnlyValues,
+    disabled,
     t,
   ]);
 };

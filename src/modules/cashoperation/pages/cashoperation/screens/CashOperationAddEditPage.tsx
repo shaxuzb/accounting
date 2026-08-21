@@ -84,7 +84,7 @@ export default function CashOperationAddEditPage({
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
   if (!open) return null;
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={
         id ? t("settings.form.editTitle") : t("settings.form.createTitle")
       }

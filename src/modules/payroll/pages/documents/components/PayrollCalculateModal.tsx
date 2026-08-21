@@ -106,7 +106,7 @@ export default function PayrollCalculateModal({
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("payroll.documents.calculateTitle")}
       open={open}
       onCancel={handleClose}

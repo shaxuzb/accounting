@@ -99,7 +99,7 @@ export default function SaleMarkingModal({
   ];
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       open={open}
       title={t("sale.actions.confirmMarking")}
       destroyOnHidden

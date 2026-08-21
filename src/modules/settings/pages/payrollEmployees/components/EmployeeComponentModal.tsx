@@ -89,7 +89,7 @@ export default function EmployeeComponentModal({
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={t("payroll.employees.assignComponentTitle")}
       open={open}
       onCancel={handleClose}

@@ -84,7 +84,7 @@ export default function BankTerminalAddEditPage({
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={
         isEdit
           ? t("settings.form.editBankTerminal")

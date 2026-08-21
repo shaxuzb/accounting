@@ -30,7 +30,7 @@ import {
   hasRequiredSaleMarkings,
   toSaleCreatePayload,
 } from "../utils/saleCreatePayload";
-import { getSaleCostingValidationError } from "../utils/saleCostingValidation";
+// import { getSaleCostingValidationError } from "../utils/saleCostingValidation";
 import { useTranslation } from "react-i18next";
 
 const toPositiveNumber = (value: unknown) => {
@@ -167,14 +167,15 @@ export default function SaleAddEditPage() {
         return;
       }
 
-      const costingValidationError = getSaleCostingValidationError({
-        costingMethodId: activeSaleCondition.costingMethodId,
-        products,
-      }, t);
-      if (costingValidationError) {
-        toast.error(costingValidationError);
-        return;
-      }
+      // Turli partiyalarning tannarxi har xil bo'lishiga vaqtincha ruxsat berildi.
+      // const costingValidationError = getSaleCostingValidationError({
+      //   costingMethodId: activeSaleCondition.costingMethodId,
+      //   products,
+      // }, t);
+      // if (costingValidationError) {
+      //   toast.error(costingValidationError);
+      //   return;
+      // }
 
       const validProducts = products;
 
@@ -355,6 +356,7 @@ export default function SaleAddEditPage() {
           }
           onChange={setSelectedProducts}
           markingMode={!isEdit && processingMode === 2}
+          aggregateStockMode
           onMarkingModeChange={
             isEdit
               ? undefined

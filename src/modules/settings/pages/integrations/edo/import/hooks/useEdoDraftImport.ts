@@ -26,7 +26,7 @@ const bulkPollingInterval = (query: {
 }) =>
   query.state.data && !activeBulkStatuses.has(query.state.data.status)
     ? false
-    : 15_000;
+    : 3_000;
 
 const invalidateDraftState = (
   queryClient: ReturnType<typeof useQueryClient>,

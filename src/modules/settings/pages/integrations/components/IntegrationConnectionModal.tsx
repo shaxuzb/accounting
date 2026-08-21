@@ -166,7 +166,7 @@ export default function IntegrationConnectionModal({
       width={620}
       onCancel={isSigning ? undefined : onClose}
       closable={!isSigning}
-      maskClosable={!isSigning}
+      maskClosable={false}
       keyboard={!isSigning}
       footer={null}
     >

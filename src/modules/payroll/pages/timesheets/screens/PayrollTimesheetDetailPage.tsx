@@ -1,18 +1,18 @@
 import InputTextArea from "@/components/fields/InputTextArea";
 import SelectDate from "@/components/fields/SelectDate";
-import DocumentActionsCard from "@/components/ui/card/DocumentActionsCard";
+import Card from "@/components/ui/card/Card";
 import {
   DocumentSummary,
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
 import SectionCard from "@/components/ui/card/SectionCard";
-import PayrollDocumentHeader from "@/modules/payroll/components/PayrollDocumentHeader";
 import PayrollPeriodSelect from "@/modules/payroll/components/PayrollPeriodSelect";
 import { isDraftStatus } from "@/modules/payroll/constants/options";
 import { payrollTimesheetPermissions } from "@/modules/payroll/constants/permissions";
 import { usePayrollPeriodLookup } from "@/modules/payroll/pages/periods/hooks";
+import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { Col, Form, Row, Spin } from "antd";
+import { Button, Col, Form, Popconfirm, Row, Spin } from "antd";
 import { useFormik } from "formik";
 import {
   CalendarClock,
@@ -22,6 +22,7 @@ import {
   Clock,
   Save,
   Users,
+  X,
 } from "lucide-react";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
@@ -51,6 +52,9 @@ export default function PayrollTimesheetDetailPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const isCreate = !id;
+  const permissions = useAppSelector(
+    (state) => state.auth.user?.user.permissions ?? [],
+  );
 
   const detailQuery = useGetDetailPayrollTimesheet(id);
   const createMutation = useCreatePayrollTimesheet();
@@ -62,6 +66,17 @@ export default function PayrollTimesheetDetailPage() {
   const record = detailQuery.data;
   const statusId = record?.statusId ?? 1;
   const isDraft = isCreate || isDraftStatus(statusId);
+  const canSave = isCreate
+    ? permissions.includes(payrollTimesheetPermissions.create)
+    : isDraft && permissions.includes(payrollTimesheetPermissions.update);
+  const canConfirm =
+    !isCreate &&
+    isDraft &&
+    permissions.includes(payrollTimesheetPermissions.confirm);
+  const canCancel =
+    !isCreate &&
+    statusId !== 3 &&
+    permissions.includes(payrollTimesheetPermissions.cancel);
 
   const initialValues = useMemo<PayrollTimesheetForm>(
     () => (isCreate ? createDefaultTimesheetForm() : mapTimesheetToForm(record)),
@@ -144,6 +159,10 @@ export default function PayrollTimesheetDetailPage() {
     }
   };
 
+  const isSaving = createMutation.isPending || updateMutation.isPending;
+  const isBusy =
+    isSaving || confirmMutation.isPending || cancelMutation.isPending;
+
   if (detailQuery.isLoading && !isCreate) {
     return (
       <div className="flex justify-center p-10">
@@ -153,157 +172,166 @@ export default function PayrollTimesheetDetailPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <PayrollDocumentHeader
-        title="payroll.timesheets.title"
-        docNumber={record?.docNumber}
-        docDate={record?.docDate}
-        statusId={record?.statusId}
-        statusName={record?.statusName}
-        isCreate={isCreate}
-        onBack={() => navigate(LIST_PATH)}
-      />
-     
-      <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="min-w-0 space-y-4">
-          <SectionCard
-            title="payroll.timesheets.headerTitle"
-            description="payroll.timesheets.headerHint"
-            icon={<CalendarDays className="size-4" />}
-          >
-            <Form layout="vertical">
-              <Row gutter={[16, 0]}>
-                <Col xs={24} md={8}>
-                  <PayrollPeriodSelect
-                    formik={formik}
-                    fieldName="periodId"
-                    onlyOpen={isCreate}
-                    required
-                    disabled={!isDraft || !isCreate}
-                  />
-                </Col>
-                <Col xs={24} md={8}>
-                  <SelectDate
-                    formik={formik}
-                    fieldName="docDate"
-                    label="payroll.fields.docDate"
-                    required
-                    disabled={!isDraft}
-                  />
-                </Col>
-                <Col xs={24} md={8}>
-                  <InputTextArea
-                    formik={formik}
-                    fieldName="note"
-                    label="payroll.fields.note"
-                    rows={1}
-                    disabled={!isDraft}
-                  />
-                </Col>
-              </Row>
-            </Form>
-          </SectionCard>
+    <div className="min-w-0 space-y-4">
+      <SectionCard
+        title="payroll.timesheets.headerTitle"
+        description="payroll.timesheets.headerHint"
+        icon={<CalendarDays className="size-4" />}
+      >
+        <Form layout="vertical">
+          <Row gutter={[16, 0]}>
+            <Col xs={24} md={8}>
+              <PayrollPeriodSelect
+                formik={formik}
+                fieldName="periodId"
+                onlyOpen={isCreate}
+                required
+                disabled={!isDraft || !isCreate}
+              />
+            </Col>
+            <Col xs={24} md={8}>
+              <SelectDate
+                formik={formik}
+                fieldName="docDate"
+                label="payroll.fields.docDate"
+                required
+                disabled={!isDraft}
+              />
+            </Col>
+            <Col xs={24} md={8}>
+              <InputTextArea
+                formik={formik}
+                fieldName="note"
+                label="payroll.fields.note"
+                rows={1}
+                disabled={!isDraft}
+              />
+            </Col>
+          </Row>
+        </Form>
+      </SectionCard>
 
-          <DocumentSummary>
-            <DocumentSummaryItem
-              icon={<Users className="size-5" />}
-              label={t("payroll.fields.employeeCount")}
-              value={totals.employees}
-              emphasized
-            />
-            <DocumentSummaryItem
-              icon={<CalendarDays className="size-5" />}
-              label={t("payroll.fields.totalWorkedDays")}
-              value={totals.workedDays}
-            />
-            <DocumentSummaryItem
-              icon={<Clock className="size-5" />}
-              label={t("payroll.fields.totalWorkedHours")}
-              value={totals.workedHours}
-            />
-            <DocumentSummaryItem
-              icon={<CalendarClock className="size-5" />}
-              label={t("payroll.fields.normWorkDays")}
-              value={selectedPeriod?.normWorkDays ?? "—"}
-            />
-            <DocumentSummaryItem
-              icon={<Clock className="size-5" />}
-              label={t("payroll.fields.normWorkHours")}
-              value={selectedPeriod?.normWorkHours ?? "—"}
-            />
-          </DocumentSummary>
-
-          {visibleCalendar ? (
-            <TimesheetCalendarView calendar={visibleCalendar} />
-          ) : (
-            <TimesheetLinesEditor
-              formik={formik}
-              disabled={!isDraft}
-              normWorkDays={selectedPeriod?.normWorkDays}
-              normWorkHours={selectedPeriod?.normWorkHours}
-              periodId={formik.values.periodId}
-            />
-          )}
-        </div>
-
-        <DocumentActionsCard
-          actions={[
-            {
-              key: "save",
-              label: "common.save",
-              icon: <Save className="size-4" />,
-              onClick: handleSave,
-              loading: createMutation.isPending || updateMutation.isPending,
-              hidden: !isDraft,
-              disabled: isPeriodClosed,
-              permission: isCreate
-                ? payrollTimesheetPermissions.create
-                : payrollTimesheetPermissions.update,
-            },
-            {
-              key: "confirm",
-              label: "payroll.actions.confirm",
-              icon: <CheckCircle2 className="size-4" />,
-              type: "primary",
-              onClick: () =>
-                runMutation(
-                  () => confirmMutation.mutateAsync(),
-                  "payroll.messages.timesheetConfirmed",
-                ),
-              loading: confirmMutation.isPending,
-              hidden: isCreate || !isDraft,
-              permission: payrollTimesheetPermissions.confirm,
-              confirm: {
-                title: "payroll.timesheets.confirmTitle",
-                content: "payroll.timesheets.confirmText",
-                okText: "payroll.actions.confirm",
-              },
-              hint: "payroll.timesheets.confirmHint",
-            },
-            {
-              key: "cancel",
-              label: "payroll.actions.cancel",
-              icon: <CircleX className="size-4" />,
-              danger: true,
-              onClick: () =>
-                runMutation(
-                  () => cancelMutation.mutateAsync(),
-                  "payroll.messages.timesheetCancelled",
-                ),
-              loading: cancelMutation.isPending,
-              hidden: isCreate || statusId === 3,
-              permission: payrollTimesheetPermissions.cancel,
-              confirm: {
-                title: "payroll.timesheets.cancelTitle",
-                content: "payroll.timesheets.cancelText",
-                okText: "payroll.actions.cancel",
-                danger: true,
-              },
-            },
-          ]}
+      <DocumentSummary>
+        <DocumentSummaryItem
+          icon={<Users className="size-5" />}
+          label={t("payroll.fields.employeeCount")}
+          value={totals.employees}
+          emphasized
         />
-      </div>
+        <DocumentSummaryItem
+          icon={<CalendarDays className="size-5" />}
+          label={t("payroll.fields.totalWorkedDays")}
+          value={totals.workedDays}
+        />
+        <DocumentSummaryItem
+          icon={<Clock className="size-5" />}
+          label={t("payroll.fields.totalWorkedHours")}
+          value={totals.workedHours}
+        />
+        <DocumentSummaryItem
+          icon={<CalendarClock className="size-5" />}
+          label={t("payroll.fields.normWorkDays")}
+          value={selectedPeriod?.normWorkDays ?? "—"}
+        />
+        <DocumentSummaryItem
+          icon={<Clock className="size-5" />}
+          label={t("payroll.fields.normWorkHours")}
+          value={selectedPeriod?.normWorkHours ?? "—"}
+        />
+      </DocumentSummary>
 
+      {visibleCalendar ? (
+        <TimesheetCalendarView calendar={visibleCalendar} />
+      ) : (
+        <TimesheetLinesEditor
+          formik={formik}
+          disabled={!isDraft}
+          normWorkDays={selectedPeriod?.normWorkDays}
+          normWorkHours={selectedPeriod?.normWorkHours}
+          periodId={formik.values.periodId}
+        />
+      )}
+
+      {(isCreate || canSave || canConfirm || canCancel) && (
+        <Card className="sticky bottom-0 z-20 border border-border bg-primary-bg/95 px-4 py-3 shadow-sm backdrop-blur sm:px-5">
+          <div className="flex flex-wrap justify-end gap-3">
+            {isCreate && (
+              <Button
+                icon={<X className="size-4" />}
+                disabled={isBusy}
+                onClick={() => navigate(LIST_PATH)}
+              >
+                {t("common.cancel")}
+              </Button>
+            )}
+
+            {canCancel && (
+              <Popconfirm
+                title={t("payroll.timesheets.cancelTitle")}
+                description={t("payroll.timesheets.cancelText")}
+                okText={t("payroll.actions.cancel")}
+                cancelText={t("common.cancel")}
+                okButtonProps={{ danger: true }}
+                onConfirm={() =>
+                  runMutation(
+                    () => cancelMutation.mutateAsync(),
+                    "payroll.messages.timesheetCancelled",
+                  )
+                }
+              >
+                <Button
+                  danger
+                  icon={<CircleX className="size-4" />}
+                  loading={cancelMutation.isPending}
+                  disabled={isSaving || confirmMutation.isPending}
+                >
+                  {t("payroll.actions.cancel")}
+                </Button>
+              </Popconfirm>
+            )}
+
+            {canSave && (
+              <Button
+                type={isCreate || !canConfirm ? "primary" : "default"}
+                icon={<Save className="size-4" />}
+                loading={isSaving}
+                disabled={
+                  isPeriodClosed ||
+                  confirmMutation.isPending ||
+                  cancelMutation.isPending
+                }
+                onClick={handleSave}
+              >
+                {t("common.save")}
+              </Button>
+            )}
+
+            {canConfirm && (
+              <Popconfirm
+                title={t("payroll.timesheets.confirmTitle")}
+                description={t("payroll.timesheets.confirmText")}
+                okText={t("payroll.actions.confirm")}
+                cancelText={t("common.cancel")}
+                onConfirm={() =>
+                  runMutation(
+                    () => confirmMutation.mutateAsync(),
+                    "payroll.messages.timesheetConfirmed",
+                  )
+                }
+              >
+                <Button
+                  type="primary"
+                  icon={<CheckCircle2 className="size-4" />}
+                  loading={confirmMutation.isPending}
+                  disabled={isSaving || cancelMutation.isPending}
+                >
+                  {t("payroll.actions.confirm")}
+                </Button>
+              </Popconfirm>
+            )}
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

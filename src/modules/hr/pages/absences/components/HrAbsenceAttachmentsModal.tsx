@@ -132,7 +132,7 @@ export default function HrAbsenceAttachmentsModal({
 
   return (
     <>
-      <Modal
+      <Modal maskClosable={false}
         title={t("hr.absences.attachmentsTitle")}
         open={open}
         onCancel={onClose}
@@ -239,7 +239,7 @@ export default function HrAbsenceAttachmentsModal({
         </Spin>
       </Modal>
 
-      <Modal
+      <Modal maskClosable={false}
         title={preview?.name}
         open={Boolean(preview)}
         onCancel={closePreview}
