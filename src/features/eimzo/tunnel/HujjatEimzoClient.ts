@@ -113,7 +113,7 @@ export class HujjatEimzoClient {
     if (!installationPromise) {
       installationPromise = withTimeout(
         Promise.resolve().then(() => this.runtime!.install()),
-        "E-IMZO tunnel javob bermadi. E-IMZO ishga tushganini tekshiring",
+        "Hujjat E-IMZO tunnelidan javob kelmadi. E-IMZO ishga tushgan bo'lsa ham, bu domen tunnel whitelistida bo'lmasligi yoki brauzer xavfsizlik siyosati so'rovni bloklagan bo'lishi mumkin.",
         TUNNEL_CALL_TIMEOUT_MS,
       )
         .then(() => this.runtime!)
