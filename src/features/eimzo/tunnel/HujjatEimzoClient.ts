@@ -3,6 +3,8 @@ import type { EimzoSignatureDto } from "../types";
 
 const DEFAULT_TUNNEL_SCRIPT_URL =
   "https://hujjat.uz/services/platon-core/web/v1/store/file/js/eimzo-browser.js";
+const SCRIPT_LOAD_TIMEOUT_MS = 12_000;
+const TUNNEL_CALL_TIMEOUT_MS = 20_000;
 
 type RawPkcs7Response = {
   pkcs7?: string;
@@ -30,6 +32,29 @@ declare global {
 
 let scriptPromise: Promise<HujjatEimzoRuntime> | null = null;
 
+const withTimeout = <T>(
+  promise: Promise<T>,
+  message: string,
+  timeoutMs: number,
+) =>
+  new Promise<T>((resolve, reject) => {
+    const timeout = window.setTimeout(
+      () => reject(new Error(message)),
+      timeoutMs,
+    );
+
+    promise.then(
+      (value) => {
+        window.clearTimeout(timeout);
+        resolve(value);
+      },
+      (cause) => {
+        window.clearTimeout(timeout);
+        reject(cause);
+      },
+    );
+  });
+
 const getScriptUrl = () =>
   import.meta.env.VITE_EIMZO_TUNNEL_SCRIPT_URL || DEFAULT_TUNNEL_SCRIPT_URL;
 
@@ -40,7 +65,7 @@ const loadRuntime = (): Promise<HujjatEimzoRuntime> => {
   if (currentRuntime) return Promise.resolve(currentRuntime);
   if (scriptPromise) return scriptPromise;
 
-  scriptPromise = new Promise<HujjatEimzoRuntime>((resolve, reject) => {
+  const pendingScript = new Promise<HujjatEimzoRuntime>((resolve, reject) => {
     const existingScript = document.querySelector<HTMLScriptElement>(
       'script[data-eimzo-tunnel-client="true"]',
     );
@@ -64,7 +89,13 @@ const loadRuntime = (): Promise<HujjatEimzoRuntime> => {
       script.dataset.eimzoTunnelClient = "true";
       document.head.appendChild(script);
     }
-  }).catch((error) => {
+  });
+
+  scriptPromise = withTimeout(
+    pendingScript,
+    "E-IMZO tunnel skripti 12 soniyada yuklanmadi",
+    SCRIPT_LOAD_TIMEOUT_MS,
+  ).catch((error) => {
     scriptPromise = null;
     throw error;
   });
@@ -80,8 +111,11 @@ export class HujjatEimzoClient {
   async install() {
     this.runtime = await loadRuntime();
     if (!installationPromise) {
-      installationPromise = this.runtime
-        .install()
+      installationPromise = withTimeout(
+        Promise.resolve().then(() => this.runtime!.install()),
+        "E-IMZO tunnel javob bermadi. E-IMZO ishga tushganini tekshiring",
+        TUNNEL_CALL_TIMEOUT_MS,
+      )
         .then(() => this.runtime!)
         .catch((error) => {
           installationPromise = null;
@@ -93,22 +127,38 @@ export class HujjatEimzoClient {
 
   async getVersion() {
     const runtime = await this.install();
-    return runtime.checkVersion();
+    return withTimeout(
+      runtime.checkVersion(),
+      "E-IMZO versiyasi olinmadi",
+      TUNNEL_CALL_TIMEOUT_MS,
+    );
   }
 
   async listAllUserKeys() {
     const runtime = await this.install();
-    return runtime.listAllUserKeys();
+    return withTimeout(
+      runtime.listAllUserKeys(),
+      "E-IMZO sertifikatlari 20 soniyada olinmadi",
+      TUNNEL_CALL_TIMEOUT_MS,
+    );
   }
 
   async loadKey(certificate: ICertificate) {
     const runtime = await this.install();
-    return runtime.loadKey(certificate);
+    return withTimeout(
+      runtime.loadKey(certificate),
+      "E-IMZO kaliti yuklanmadi",
+      TUNNEL_CALL_TIMEOUT_MS,
+    );
   }
 
   async createPkcs7(keyId: string, data: string) {
     const runtime = await this.install();
-    return runtime.createPkcs7(keyId, data);
+    return withTimeout(
+      runtime.createPkcs7(keyId, data),
+      "E-IMZO imzolash javobi olinmadi",
+      TUNNEL_CALL_TIMEOUT_MS,
+    );
   }
 
   async createSignature(
@@ -120,10 +170,11 @@ export class HujjatEimzoClient {
       throw new Error("E-IMZO tunnel imzo ma'lumotlarini qaytarmadi");
     }
 
-    const raw = (await runtime._call("createPkcs7", {
-      id: keyId,
-      data,
-    })) as RawPkcs7Response;
+    const raw = (await withTimeout(
+      runtime._call("createPkcs7", { id: keyId, data }),
+      "E-IMZO imzolash javobi olinmadi",
+      TUNNEL_CALL_TIMEOUT_MS,
+    )) as RawPkcs7Response;
     const preparedPkcs7 = raw.pkcs7;
     const signatureHex = raw.signatureHex || raw.signature_hex;
 
@@ -136,10 +187,14 @@ export class HujjatEimzoClient {
 
   async getDeviceStatus() {
     const runtime = await this.install();
-    const [idcard, ckc] = await Promise.allSettled([
-      runtime.isIDCardPlugged?.() || Promise.resolve(false),
-      runtime.isCKCPLuggedIn?.() || Promise.resolve(false),
-    ]);
+    const [idcard, ckc] = await withTimeout(
+      Promise.allSettled([
+        runtime.isIDCardPlugged?.() || Promise.resolve(false),
+        runtime.isCKCPLuggedIn?.() || Promise.resolve(false),
+      ]),
+      "E-IMZO qurilma holati olinmadi",
+      TUNNEL_CALL_TIMEOUT_MS,
+    );
 
     return {
       idcard: idcard.status === "fulfilled" && idcard.value,

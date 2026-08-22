@@ -34,7 +34,9 @@ export function HujjatEimzoAdapter({
     void clientRef.current
       .getVersion()
       .then(async (version) => {
-        const deviceStatus = await clientRef.current.getDeviceStatus();
+        const deviceStatus = await clientRef.current
+          .getDeviceStatus()
+          .catch(() => initialStatus.deviceStatus);
         if (!active) return;
         setStatus({
           status: "ready",
@@ -62,11 +64,11 @@ export function HujjatEimzoAdapter({
     async (_options: ILoadKeysOptions = {}) => {
       setIsLoading(true);
       try {
-        const [keys, version, deviceStatus] = await Promise.all([
-          clientRef.current.listAllUserKeys(),
-          clientRef.current.getVersion(),
-          clientRef.current.getDeviceStatus(),
-        ]);
+        const keys = await clientRef.current.listAllUserKeys();
+        const version = await clientRef.current.getVersion();
+        const deviceStatus = await clientRef.current
+          .getDeviceStatus()
+          .catch(() => initialStatus.deviceStatus);
         setKeyList(keys);
         setStatus({
           status: "ready",
