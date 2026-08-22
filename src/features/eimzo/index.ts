@@ -13,3 +13,8 @@ export {
 } from "./provider/EimzoProvider";
 export { getEimzoBridgeClient } from "./client/EimzoBridgeClient";
 export { isEimzoBridgeEnabled } from "./config";
+export { isEimzoTunnelEnabled } from "./config";
+export {
+  createHujjatEimzoSignature,
+  getHujjatEimzoClient,
+} from "./tunnel/HujjatEimzoClient";

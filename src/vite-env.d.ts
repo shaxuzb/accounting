@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   readonly VITE_EIMZO_BRIDGE_ENABLED?: string;
   readonly VITE_EIMZO_BRIDGE_ORIGIN?: string;
   readonly VITE_EIMZO_PARENT_ORIGIN?: string;
+  readonly VITE_EIMZO_TUNNEL_ENABLED?: string;
+  readonly VITE_EIMZO_TUNNEL_SCRIPT_URL?: string;
   readonly VITE_INTEGRATIONS_MOCK_MODE?: string;
 }
 

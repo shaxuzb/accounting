@@ -7,22 +7,22 @@ import {
   type ILoadKeysOptions,
 } from "@islom929/react-eimzo";
 import {
-  createContext,
   useCallback,
   useContext,
   useEffect,
   useRef,
   useState,
 } from "react";
+import { EimzoContext } from "./EimzoContext";
 import {
   EimzoBridgeClient,
   getEimzoBridgeClient,
 } from "../client/EimzoBridgeClient";
 import { isEimzoBridgeEnabled } from "../config";
+import { isEimzoTunnelEnabled } from "../config";
+import { HujjatEimzoAdapter } from "./HujjatEimzoAdapter";
 import type { EimzoBridgeStatusPayload } from "../types";
 import { toCertificate } from "../types";
-
-const EimzoContext = createContext<IEimzoContext | null>(null);
 
 const toErrorMessage = (cause: unknown) =>
   cause instanceof Error ? cause.message : String(cause);
@@ -175,6 +175,10 @@ export function EimzoProvider({
   children,
   apiKeys,
 }: IEimzoProviderProps) {
+  if (isEimzoTunnelEnabled()) {
+    return <HujjatEimzoAdapter>{children}</HujjatEimzoAdapter>;
+  }
+
   if (isEimzoBridgeEnabled()) {
     return <BridgeEimzoAdapter>{children}</BridgeEimzoAdapter>;
   }

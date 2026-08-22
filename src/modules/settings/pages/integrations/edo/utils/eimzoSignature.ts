@@ -1,4 +1,9 @@
-import { getEimzoBridgeClient, isEimzoBridgeEnabled } from "@/features/eimzo";
+import {
+  createHujjatEimzoSignature,
+  getEimzoBridgeClient,
+  isEimzoBridgeEnabled,
+  isEimzoTunnelEnabled,
+} from "@/features/eimzo";
 
 interface CapiWsSignatureResponse {
   success?: boolean;
@@ -38,6 +43,10 @@ export const createEimzoSignature = (
   keyId: string,
   dataBase64: string,
 ): Promise<EimzoSignatureResult> => {
+  if (isEimzoTunnelEnabled()) {
+    return createHujjatEimzoSignature(keyId, dataBase64);
+  }
+
   if (isEimzoBridgeEnabled()) {
     return getEimzoBridgeClient().createSignature({
       certificateId: keyId,

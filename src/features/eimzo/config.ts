@@ -18,3 +18,6 @@ export const isEimzoBridgeEnabled = () => {
 
   return Boolean(import.meta.env.VITE_EIMZO_BRIDGE_ORIGIN);
 };
+
+export const isEimzoTunnelEnabled = () =>
+  import.meta.env.VITE_EIMZO_TUNNEL_ENABLED === "true";
