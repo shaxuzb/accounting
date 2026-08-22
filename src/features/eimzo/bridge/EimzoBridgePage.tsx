@@ -46,7 +46,7 @@ function BridgeController() {
     prepareKey,
     signAsync,
   } = useEimzo();
-  const parentOrigin = useMemo(getEimzoParentOrigin, []);
+  const parentOrigin = useMemo(() => getEimzoParentOrigin(), []);
   const keyListRef = useRef<ICertificate[]>(keyList);
   const [initialized, setInitialized] = useState(false);
 
