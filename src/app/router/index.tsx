@@ -13,8 +13,13 @@ import { accountingRoutes } from "@/modules/accounting/routes";
 import { faRoutes } from "@/modules/fa";
 import { payrollRoutes } from "@/modules/payroll";
 import { hrRoutes } from "@/modules/hr";
+import EimzoBridgePage from "@/features/eimzo/bridge/EimzoBridgePage";
 
 export const router = createBrowserRouter([
+  {
+    path: "/eimzo-bridge",
+    element: <EimzoBridgePage />,
+  },
   {
     path: "/",
     element: <ProtectAuthLayout />,

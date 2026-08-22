@@ -1,4 +1,4 @@
-import { getEimzoBridgeClient, isEimzoBridgeEnabled } from "@/features/eimzo";
+import type { EimzoSignatureDto } from "../types";
 
 interface CapiWsSignatureResponse {
   success?: boolean;
@@ -23,29 +23,17 @@ type EimzoGlobal = typeof globalThis & {
   CAPIWS?: CapiWsClient;
 };
 
-export interface EimzoSignatureResult {
-  preparedPkcs7: string;
-  signatureHex: string;
-}
-
 const toError = (cause: unknown, fallback: string) => {
   if (cause instanceof Error) return cause;
   if (typeof cause === "string" && cause) return new Error(cause);
   return new Error(fallback);
 };
 
-export const createEimzoSignature = (
+export const createBridgeEimzoSignature = (
   keyId: string,
   dataBase64: string,
-): Promise<EimzoSignatureResult> => {
-  if (isEimzoBridgeEnabled()) {
-    return getEimzoBridgeClient().createSignature({
-      certificateId: keyId,
-      data: dataBase64,
-    });
-  }
-
-  return new Promise((resolve, reject) => {
+): Promise<EimzoSignatureDto> =>
+  new Promise((resolve, reject) => {
     const capiws = (globalThis as EimzoGlobal).CAPIWS;
     if (!capiws) {
       reject(new Error("E-IMZO SDK ishga tushmagan"));
@@ -79,4 +67,3 @@ export const createEimzoSignature = (
       (cause) => reject(toError(cause, "E-IMZO bilan aloqa uzildi")),
     );
   });
-};

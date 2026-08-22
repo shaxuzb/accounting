@@ -2,7 +2,7 @@ import { Alert, Button, Empty, Select, Spin } from "antd";
 import { CheckCircle2, KeyRound, RefreshCw, ShieldCheck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useEimzo, type ICertificate } from "@islom929/react-eimzo";
+import { useEimzo, type ICertificate } from "@/features/eimzo";
 import toast from "react-hot-toast";
 import { isAxiosError } from "axios";
 import Card from "@/components/ui/card/Card";
