@@ -107,7 +107,10 @@ const withEimzo = (element: React.ReactElement) => (
   <EimzoProvider
     apiKeys={
       import.meta.env.VITE_EIMZO_DOMAIN && import.meta.env.VITE_EIMZO_API_KEY
-        ? [import.meta.env.VITE_EIMZO_DOMAIN, import.meta.env.VITE_EIMZO_API_KEY]
+        ? [
+            import.meta.env.VITE_EIMZO_DOMAIN,
+            import.meta.env.VITE_EIMZO_API_KEY,
+          ]
         : undefined
     }
   >
@@ -186,9 +189,7 @@ export const settingsRoutes: RouteObject = {
         backTo: "../../..",
       },
       element: withPermission(
-        withEimzo(
-          withEdoSession(<EdoImportCandidateMappingPage />),
-        ),
+        withEimzo(withEdoSession(<EdoImportCandidateMappingPage />)),
         integrationPermissions.view,
       ),
     },
