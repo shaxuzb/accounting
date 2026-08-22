@@ -2,7 +2,7 @@ import type { ICertificate, IEimzoVersion } from "@islom929/react-eimzo";
 import type { EimzoSignatureDto } from "../types";
 
 const DEFAULT_TUNNEL_SCRIPT_URL =
-  "https://hujjat.uz/services/platon-core/web/v1/store/file/js/eimzo-browser.js";
+  "/eimzo-browser.js";
 const SCRIPT_LOAD_TIMEOUT_MS = 12_000;
 const TUNNEL_CALL_TIMEOUT_MS = 20_000;
 
