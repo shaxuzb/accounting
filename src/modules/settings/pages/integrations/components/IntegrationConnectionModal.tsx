@@ -9,7 +9,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { useEimzo, type ICertificate } from "@islom929/react-eimzo";
+import { useEimzo, type ICertificate } from "@/features/eimzo";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { integrationPermissions } from "../constants/permissions";
 import { integrationService } from "../services/integrationService";

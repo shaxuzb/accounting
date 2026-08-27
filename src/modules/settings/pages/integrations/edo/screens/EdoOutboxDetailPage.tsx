@@ -3,7 +3,7 @@ import { Download, FileSignature } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { useEimzo } from "@islom929/react-eimzo";
+import { useEimzo } from "@/features/eimzo";
 import toast from "react-hot-toast";
 import Card from "@/components/ui/card/Card";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";

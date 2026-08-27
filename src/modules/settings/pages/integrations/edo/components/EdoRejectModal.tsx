@@ -1,7 +1,7 @@
 import { Alert, Button, Input, Modal, Select } from "antd";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useEimzo, type ICertificate } from "@islom929/react-eimzo";
+import { useEimzo, type ICertificate } from "@/features/eimzo";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { useRejectEdoInbox } from "../hooks";

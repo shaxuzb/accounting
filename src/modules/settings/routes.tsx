@@ -46,7 +46,7 @@ import { openingBalancePermissions } from "./pages/openingBalance/constants/perm
 import OpeningInventoryListPage from "./pages/openingInventory/screens/OpeningInventoryListPage";
 import OpeningInventoryEditorPage from "./pages/openingInventory/screens/OpeningInventoryEditorPage";
 import { openingInventoryPermissions } from "./pages/openingInventory/constants/permissions";
-import { EimzoProvider } from "@islom929/react-eimzo";
+import { EimzoProvider } from "@/features/eimzo";
 import IntegrationsPage from "./pages/integrations/screens/IntegrationsPage";
 import { integrationPermissions } from "./pages/integrations/constants/permissions";
 import PayrollComponentListPage from "./pages/payrollComponents/screens/PayrollComponentListPage";
