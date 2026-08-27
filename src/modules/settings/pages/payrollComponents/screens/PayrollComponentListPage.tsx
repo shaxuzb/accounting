@@ -55,24 +55,22 @@ export default function PayrollComponentListPage() {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
       align: "center",
-      width: 70,
+      width: 45,
     },
     {
       dataIndex: "sortOrder",
       title: t("payroll.fields.sortOrder"),
       align: "center",
-      width: 90,
     },
-    {
-      dataIndex: "code",
-      title: t("payroll.fields.componentCode"),
-      width: 130,
-      render: (value: string) => <span className="font-medium">{value}</span>,
-    },
+    // {
+    //   dataIndex: "code",
+    //   title: t("payroll.fields.componentCode"),
+    //   width: 130,
+    //   render: (value: string) => <span className="font-medium">{value}</span>,
+    // },
     {
       dataIndex: "name",
       title: t("payroll.fields.componentName"),
-      minWidth: 220,
       render: (value: string, record) => (
         <div className="flex flex-col">
           <span>{value}</span>
@@ -88,7 +86,6 @@ export default function PayrollComponentListPage() {
       dataIndex: "componentType",
       title: t("payroll.fields.componentType"),
       align: "center",
-      width: 160,
       render: (_, record) => (
         <Tag
           className="m-0!"
@@ -103,17 +100,17 @@ export default function PayrollComponentListPage() {
     {
       dataIndex: "calculationMethod",
       title: t("payroll.fields.calculationMethod"),
-      width: 190,
+      align: "center",
       render: (_, record) =>
         t(`payroll.enums.calculationMethod.${record.calculationMethod}`, {
-          defaultValue: record.calculationMethodName ?? record.calculationMethod,
+          defaultValue:
+            record.calculationMethodName ?? record.calculationMethod,
         }),
     },
     {
       dataIndex: "defaultAmount",
       title: t("payroll.fields.defaultValue"),
-      align: "right",
-      width: 150,
+      align: "center",
       render: (_, record) => {
         if (record.calculationMethod === "PERCENT_OF_GROSS") {
           return record.defaultRate != null ? `${record.defaultRate} %` : "—";
@@ -132,7 +129,6 @@ export default function PayrollComponentListPage() {
       dataIndex: "effectiveFrom",
       title: t("payroll.fields.effectivePeriod"),
       align: "center",
-      width: 190,
       render: (_, record) => (
         <span className="text-xs">
           {formatDate(record.effectiveFrom)} —{" "}
@@ -143,7 +139,7 @@ export default function PayrollComponentListPage() {
     {
       dataIndex: "liabilityAccountId",
       title: t("payroll.fields.accounts"),
-      width: 170,
+      align: "center",
       render: (_, record) => (
         <Tooltip
           title={
@@ -171,7 +167,6 @@ export default function PayrollComponentListPage() {
       dataIndex: "stateId",
       title: t("settings.fields.status"),
       align: "center",
-      width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
   ];
@@ -180,14 +175,13 @@ export default function PayrollComponentListPage() {
     permissions.includes(payrollComponentPermissions.update) ||
     permissions.includes(payrollComponentPermissions.delete);
 
-  const tableColumns = hasActions
+  const tableColumns: TableColumnsType<PayrollComponent> = hasActions
     ? [
         ...columns,
         {
           dataIndex: "actions",
           title: t("common.actions"),
-          align: "center" as const,
-          width: 90,
+          align: "center",
           fixed: "right" as const,
           render: (_: unknown, record: PayrollComponent) => (
             <ActionColumn

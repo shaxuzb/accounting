@@ -26,7 +26,6 @@ import {
   Users,
   Wallet,
   Warehouse,
-  Wrench,
   PlugZap,
   Boxes,
   BadgeDollarSign,
@@ -686,15 +685,6 @@ export const menuPermissions: MainMenu = {
         title: "settings.entities.warehouse",
         // img: role,
         description: "settings.descriptions.warehouse",
-      },
-    },
-    {
-      code: purchasePermissions.view,
-      iconName: <Wrench className="size-5" />,
-      linkData: {
-        path: "purchase-services",
-        title: "settings.entities.purchaseServices",
-        description: "settings.descriptions.purchaseServices",
       },
     },
     {

@@ -340,14 +340,15 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     availableProducts.forEach((product) => {
       product.batches.forEach((batch) => {
         batch.productTables.forEach((productTable) => {
-          const markingKey = productTable.markingNumber.trim();
+          const markingKey = String(productTable.markingNumber ?? "").trim();
+          if (!markingKey) return;
           if (index.has(markingKey)) return;
 
           index.set(markingKey, {
             productId: product.productId,
             batchId: batch.batchId,
             productTableId: productTable.productTableId,
-            markingNumber: productTable.markingNumber,
+            markingNumber: markingKey,
           });
         });
       });
@@ -406,7 +407,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
         return;
       }
 
-      const normalizedMarkingNumber = markingNumber.trim();
+      const normalizedMarkingNumber = String(markingNumber ?? "").trim();
       const matchedProduct = availableMarkingByNumber.get(
         normalizedMarkingNumber,
       );

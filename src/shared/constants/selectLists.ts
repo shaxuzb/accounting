@@ -10,6 +10,8 @@ export const selectListEndpoints = {
   paymentTypesSelectList: "manuals/payment-types",
   paymentPurposesSelectList: "manuals/payment-purposes",
   banksSelectList: "manuals/banks",
+  bankBranchesSelectList: "manuals/bank-branches",
+  bankOperationCategoriesSelectList: "manuals/bank-operation-categories",
   documentTypesSelectList: "manuals/document-types",
   productTypesSelectList: "manuals/product-types",
   organizationsSelectList: "manuals/organizations",

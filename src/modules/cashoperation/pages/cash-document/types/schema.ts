@@ -15,10 +15,10 @@ export const cashDocumentSchema = (t: TFunction) => Yup.object({
   offsetAccountId: requiredNumber(
     "cash.fields.offsetAccount",
   ).moreThan(0, t("cash.validation.offsetAccountRequired")),
-  counterpartyId: requiredNumber("settings.entities.counterparty").moreThan(
-    0,
-    "settings.entities.counterparty",
-  ),
+  // counterpartyId: requiredNumber("settings.entities.counterparty").moreThan(
+  //   0,
+  //   "settings.entities.counterparty",
+  // ),
   docDate: Yup.string().required(t("cash.validation.dateRequired")),
   currencyId: requiredNumber("settings.fields.currency"),
   amount: Yup.number()

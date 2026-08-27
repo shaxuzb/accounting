@@ -90,7 +90,8 @@ export default function EmployeeEmploymentModal({
   };
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       title={
         isEdit
           ? t("payroll.employments.editTitle")

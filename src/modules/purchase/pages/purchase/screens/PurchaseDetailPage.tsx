@@ -48,6 +48,15 @@ const getMarkedLineItems = (
 ): PurchaseDetailLineItem[] =>
   (line?.items ?? []).filter((item) => Boolean(item.markingNumber?.trim()));
 
+const getLineMarkingCount = (line?: PurchaseDetailLine | null) => {
+  const actualMarkingCount = getMarkedLineItems(line).length;
+  const serverMarkingCount = (line?.items ?? []).reduce(
+    (count, item) => count + toFiniteNumber(item.markingCount),
+    0,
+  );
+  return Math.max(actualMarkingCount, serverMarkingCount);
+};
+
 const PurchaseDetailPage = () => {
   const params = useParams();
   const { t } = useTranslation();
@@ -124,6 +133,7 @@ const PurchaseDetailPage = () => {
       width: 110,
       render: (_, record) => {
         const canLoadMarkings = getMarkedLineItems(record).length > 0;
+        const markingCount = getLineMarkingCount(record);
         return (
           <Button
             shape="circle"
@@ -138,7 +148,9 @@ const PurchaseDetailPage = () => {
                 ? t("purchase.actions.viewMarkings")
                 : t("purchase.actions.noMarkingData")
             }
-          />
+          >
+            {markingCount || ""}
+          </Button>
         );
       },
     },

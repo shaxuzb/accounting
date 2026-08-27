@@ -40,10 +40,16 @@ const normalizeBankOperationList = (
   };
 };
 
+export interface BankStatementParsePayload {
+  file: File;
+  bankId: number;
+}
+
 export const bankStatementParserService = {
-  parse: async (file: File) => {
+  parse: async ({ file, bankId }: BankStatementParsePayload) => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("File", file);
+    formData.append("BankId", String(bankId));
 
     const { data } = await $axiosPrivate.post<unknown>(
       bankStatementEndpoints.parser.parse,
@@ -70,7 +76,7 @@ export const bankStatementParserService = {
     return data;
   },
   createManyOperations: async (payload: BankOperationsCreatePayload) => {
-    const { data } = await $axiosPrivate.post<BankOperationData[]>(
+    const { data } = await $axiosPrivate.post<number[]>(
       bankStatementEndpoints.operations.createMany,
       payload,
     );

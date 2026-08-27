@@ -99,7 +99,7 @@ export default function ProductGroupAddEditPage({
             formik={formik}
             fieldName="organizationId"
             label="settings.fields.organization"
-            path={selectListEndpoints.operationTypesSelectList}
+            path={selectListEndpoints.organizationsSelectList}
           />
           <InputText
             formik={formik}

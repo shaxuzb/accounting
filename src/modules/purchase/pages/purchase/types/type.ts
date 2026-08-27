@@ -106,6 +106,7 @@ export interface PurchaseImportRow {
   /** Eski local draftlarni o'qish uchun. Yangi oqim bu maydonga yozmaydi. */
   sapCode?: string;
   qty: number | null;
+  amount?: number | null;
   serialNumber: string;
   currencyId: number;
   currency?: string;
@@ -118,6 +119,8 @@ export interface PurchaseImportRow {
   unitName?: string | null;
   mxik: string;
   vatRateId: number | null;
+  vatAmount?: number | null;
+  totalAmount?: number | null;
   vatRates: number | null;
   debitAccountId?: number | null;
   vatAccountId?: number | null;
@@ -125,6 +128,7 @@ export interface PurchaseImportRow {
   vatAccountName?: string;
   isSerial?: boolean;
   isPieceTracked?: boolean;
+  markingCount?: number;
   [key: string]: unknown;
 }
 export interface PurchasePayment {
@@ -143,6 +147,7 @@ export interface PurchaseDetailLine {
   ownerId: number;
   price: number;
   productId?: number;
+  productMxik?: string | null;
   productName: string;
   productTableId: number;
   quantity: number;
@@ -150,6 +155,9 @@ export interface PurchaseDetailLine {
   vatAmount: number;
   vatRateId: number;
   vatRateName: string;
+  unitId?: number | null;
+  unitCode?: string | null;
+  unitName?: string | null;
   unitPrice: number;
   debitAccountId?: number | null;
   vatAccountId?: number | null;
@@ -160,6 +168,8 @@ export interface PurchaseDetailLine {
 export interface PurchaseDetailLineItem {
   id?: number;
   productId?: number;
+  hasMarking?: boolean;
+  markingCount?: number | null;
   serialNumber?: string | null;
   markingNumber?: string | null;
 }

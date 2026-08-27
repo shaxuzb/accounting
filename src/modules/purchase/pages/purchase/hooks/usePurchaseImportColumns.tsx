@@ -21,10 +21,10 @@ import {
 import {
   getNumber,
   getRowAmount,
+  getRowMarkingCount,
   getRowUnitLabel,
   getRowUnitPrice,
   getRowVatAmount,
-  toMarkingNumbers,
 } from "../utils/purchaseImport";
 
 interface UsePurchaseImportColumnsParams {
@@ -218,21 +218,18 @@ export const usePurchaseImportColumns = ({
       width: 130,
       align: "center",
       render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => {
-        const markingCount = toMarkingNumbers(record).length;
-        const isTracked = Boolean(record.isPieceTracked);
+        const markingCount = getRowMarkingCount(record);
         return (
           <Tooltip
             title={
-              isTracked
-                ? markingCount
-                  ? t("purchase.messages.markingCount", { count: markingCount })
-                  : t("purchase.actions.enterMarking")
-                : t("purchase.messages.notPieceTracked")
+              markingCount
+                ? t("purchase.messages.markingCount", { count: markingCount })
+                : t("purchase.actions.enterMarking")
             }
           >
             <Button
               type="text"
-              disabled={disabled || readOnlyValues || !isTracked}
+              disabled={disabled || readOnlyValues}
               className="text-primary"
               icon={<QrCode className="size-5" />}
               onClick={() => openMarkingModal(rowIndex)}

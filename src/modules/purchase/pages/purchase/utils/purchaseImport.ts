@@ -229,7 +229,15 @@ export const getRowAmount = (row: PurchaseImportRow) =>
 export const getRowVatAmount = (
   row: PurchaseImportRow,
   options: SelectOption[],
-) => (getRowAmount(row) * getVatPercent(row.vatRateId, options)) / 100;
+) => {
+  const vatOption = options.find((item) => item.id === Number(row.vatRateId));
+  if (!vatOption) return getNumber(row.vatAmount);
+
+  const vatPercent = getVatPercent(row.vatRateId, options);
+  return vatPercent > 0
+    ? (getRowAmount(row) * vatPercent) / 100
+    : getNumber(row.vatAmount);
+};
 
 export const getPurchaseImportTotals = (
   rows: PurchaseImportRow[],
@@ -270,6 +278,10 @@ export const toMarkingNumbers = (row?: PurchaseImportRow) => {
   return parseMarkingInput(String(row.markingNumber ?? ""));
 };
 
+/** EDO can return the count while omitting the actual marking codes. */
+export const getRowMarkingCount = (row?: PurchaseImportRow) =>
+  Math.max(toMarkingNumbers(row).length, getNumber(row?.markingCount));
+
 export const buildMarkingQuantityPatch = (markingNumbers: string[]) => {
   const normalizedMarkingNumbers = markingNumbers
     .map((item) => item.trim())
@@ -278,10 +290,11 @@ export const buildMarkingQuantityPatch = (markingNumbers: string[]) => {
   return {
     markingNumber: normalizedMarkingNumbers.join("\n"),
     markingNumbers: normalizedMarkingNumbers,
+    markingCount: normalizedMarkingNumbers.length,
     qty: normalizedMarkingNumbers.length,
   } satisfies Pick<
     PurchaseImportRow,
-    "markingNumber" | "markingNumbers" | "qty"
+    "markingNumber" | "markingNumbers" | "markingCount" | "qty"
   >;
 };
 
@@ -336,9 +349,7 @@ const toPurchaseDocumentPayload = (
     const markingNumbers = toMarkingNumbers(item);
     const hasMarking = purchaseMode === "goods" && markingNumbers.length > 0;
     const quantity =
-      hasMarking || item.isPieceTracked
-        ? markingNumbers.length
-        : Number(item.qty ?? 1);
+      hasMarking ? markingNumbers.length : Number(item.qty ?? 1);
 
     const line = {
       productId: Number(item.productId),

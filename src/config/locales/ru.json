@@ -636,6 +636,14 @@
     },
     "title": "Настройки",
     "description": "Параметры системы",
+    "lookup": {
+      "identifier": "ИНН или ПИНФЛ",
+      "invalidIdentifier": "Введите {{lengths}} цифр",
+      "personWarning": "Введённый ИНН принадлежит физическому лицу. Данные организации не заполнены автоматически.",
+      "success": "Данные организации найдены",
+      "mismatch": "Ответ поиска не соответствует введённому номеру",
+      "counterpartySuccess": "Данные контрагента найдены"
+    },
     "entities": {
       "role": "Роль",
       "roles": "Роли",
@@ -709,6 +717,7 @@
       "bankAccount": "Банковский счёт",
       "branch": "Филиал",
       "branchName": "Название филиала",
+      "bankBranch": "Филиал банка",
       "code": "Код",
       "comment": "Комментарий",
       "counterparty": "Контрагент",
@@ -1010,6 +1019,8 @@
       "operationType": "Тип операции",
       "counterparty": "Контрагент",
       "date": "Дата",
+      "dateFrom": "Дата начала",
+      "dateTo": "Дата окончания",
       "amount": "Сумма",
       "comment": "Комментарий",
       "debit": "Дебет",
@@ -1026,7 +1037,11 @@
       "card": "Карточка",
       "accountingEntries": "Проводки",
       "status": "Статус",
-      "currentAmount": "Текущая сумма"
+      "currentAmount": "Текущая сумма",
+      "bankDocumentNumber": "Номер банковского документа",
+      "classification": "Классификация",
+      "closingBalance": "Конечный остаток",
+      "bankBranch": "Филиал банка"
     },
     "messages": {
       "imported": "Банковская выписка импортирована",
@@ -1037,6 +1052,7 @@
       "missingRequired": "В {{count}} операциях не хватает обязательных данных",
       "noData": "Импортированных банковских выписок пока нет",
       "noTransactions": "Операции не найдены",
+      "requiresReview": "Требуется проверка",
       "counterpartyMissing": "Контрагент не найден",
       "bankAccountMissing": "Банковский счёт не найден",
       "bankAccountMissingDescription": "Операции этой карточки не будут сохранены, потому что банковский счёт не найден.",
@@ -1056,6 +1072,9 @@
     "import": {
       "title": "Импорт банковской выписки",
       "description": "Загрузите файл Excel, и система автоматически извлечёт данные.",
+      "bankTypeLabel": "Выберите тип банка",
+      "bankTypePlaceholder": "Выберите тип банка",
+      "bankTypeHint": "Сначала выберите тип банка. После этого можно загрузить файл.",
       "uploadText": "Нажмите для загрузки файла или перетащите его сюда",
       "uploadHint": "Поддерживаются банковские выписки в формате XLS или XLSX.",
       "statements": "Банковские выписки",
@@ -1076,7 +1095,8 @@
       "selectBankChartAccount": "Выберите банковский счёт учёта",
       "selectContract": "Выберите договор",
       "selectCounterpartyFirst": "Сначала выберите контрагента",
-      "selectCounterpartyAccount": "Выберите банковский счёт контрагента"
+      "selectCounterpartyAccount": "Выберите банковский счёт контрагента",
+      "selectClassification": "Выберите классификацию"
     },
     "validation": {
       "bankAccountRequired": "Выберите банковский счёт",
@@ -1194,6 +1214,7 @@
       "saleAmount": "Сумма продажи",
       "quantityToSell": "Количество к продаже",
       "amountWithoutVat": "Сумма без НДС",
+      "totalWithVat": "Итого (с НДС)",
       "vatRateAndAmount": "НДС (ставка и сумма)",
       "comment": "Комментарий",
       "customer": "Клиент",
@@ -1713,6 +1734,10 @@
     }
   },
   "payroll": {
+    "lookup": {
+      "success": "Данные сотрудника найдены",
+      "notPerson": "Введённый ПИНФЛ не соответствует данным физического лица."
+    },
     "title": "Заработная плата",
     "description": "Сотрудники, табель, расчёт зарплаты и выплаты",
     "common": {

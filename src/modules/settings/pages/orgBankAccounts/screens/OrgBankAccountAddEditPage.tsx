@@ -16,6 +16,7 @@ import { orgBankAccountsSchema } from "../types/schema";
 const defaultValues: OrgBankAccountsForm = {
   organizationId: null,
   bankId: null,
+  bankBranchId: null,
   accountNumber: null,
   currencyId: null,
   isMain: true,
@@ -71,6 +72,7 @@ export default function OrgBankAccountAddEditPage({
       formik.setValues({
         organizationId: OrgBankAccounts.organizationId ?? null,
         bankId: OrgBankAccounts.bankId ?? null,
+        bankBranchId: OrgBankAccounts.bankBranchId ?? null,
         accountNumber: OrgBankAccounts.accountNumber ?? null,
         currencyId: OrgBankAccounts.currencyId ?? null,
         isMain: OrgBankAccounts.isMain ?? true,
@@ -101,7 +103,7 @@ export default function OrgBankAccountAddEditPage({
                 formik={formik}
                 fieldName="organizationId"
                 label="settings.fields.organization"
-                path={selectListEndpoints.operationTypesSelectList}
+                path={selectListEndpoints.organizationsSelectList}
               />
 
               <SelectCustom
@@ -109,6 +111,25 @@ export default function OrgBankAccountAddEditPage({
                 fieldName="bankId"
                 label="settings.fields.bank"
                 path={selectListEndpoints.banksSelectList}
+                onChange={() => formik.setFieldValue("bankBranchId", null)}
+              />
+
+              <SelectCustom
+                formik={formik}
+                fieldName="bankBranchId"
+                label="settings.fields.bankBranch"
+                path={selectListEndpoints.bankBranchesSelectList}
+                queryParams={{ bankId: formik.values.bankId }}
+                enabled={Boolean(formik.values.bankId)}
+                disabled={!formik.values.bankId}
+                clearable
+                search
+                displayConfig={{
+                  optionLabel: (item) =>
+                    [item.name, item.mfo, item.code].filter(Boolean).join(" - "),
+                  selectedLabel: (item) => String(item.name ?? item.mfo ?? item.code ?? ""),
+                  searchFields: ["name", "mfo", "code"],
+                }}
               />
 
 

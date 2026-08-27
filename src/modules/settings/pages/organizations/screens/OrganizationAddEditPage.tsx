@@ -1,7 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import { Button, Col, Form, Modal, Row, Spin } from "antd";
+import toast from "react-hot-toast";
+import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { organizationsSchema } from "../types/schema";
 import type { organizationCreate } from "../types/form";
 import { useCreateOrganization } from "../hooks";
@@ -12,6 +14,9 @@ import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import DistrictSelect from "@/components/fields/DistrictSelect";
+import SearchInnField from "@/components/fields/SearchInnField";
+import { mergeLookupValues } from "@/modules/settings/shared/taxpayerLookup";
+import { useLookupOrganization } from "../hooks/useLookupOrganization";
 
 const defaultValues: organizationCreate = {
   shortName: "",
@@ -25,6 +30,17 @@ const defaultValues: organizationCreate = {
   regionId: null,
   districtId: null,
   stateId: null,
+};
+
+const emptyLookupValues: Partial<organizationCreate> = {
+  shortName: "",
+  fullName: "",
+  inn: "",
+  phoneNumber: "",
+  address: "",
+  director: "",
+  regionId: null,
+  districtId: null,
 };
 
 interface OrganizationsModalProps {
@@ -45,6 +61,8 @@ export default function OrganizationAddEditPage({
     useGetDetailOrganizations(editId ?? "");
   const createMutation = useCreateOrganization();
   const updateMutation = useUpdateOrganizations();
+  const lookupMutation = useLookupOrganization();
+  const previousLookupValues = useRef<Partial<organizationCreate>>({});
 
   const formik = useFormik<organizationCreate>({
     initialValues: { ...defaultValues, stateId: isEdit ? null : 1 },
@@ -57,13 +75,15 @@ export default function OrganizationAddEditPage({
           await createMutation.mutateAsync(values);
         }
         helpers.resetForm();
+        previousLookupValues.current = {};
+        lookupMutation.reset();
         onClose();
      
     },
   });
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isEdit && isSuccess && organizations) {
       formik.setValues({
         shortName: organizations.shortName ?? "",
         fullName: organizations.fullName ?? "",
@@ -78,8 +98,58 @@ export default function OrganizationAddEditPage({
         stateId: organizations.stateId ?? null,
       });
     }
-  }, [formik, isSuccess, organizations]);
+  }, [formik, isEdit, isSuccess, organizations]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
+
+  const handleLookupIdentifierChange = (value: string) => {
+    if (Object.keys(previousLookupValues.current).length > 0) {
+      const clearedValues = mergeLookupValues(
+        formik.values,
+        previousLookupValues.current,
+        {},
+        emptyLookupValues,
+      );
+      previousLookupValues.current = {};
+      formik.setValues({ ...clearedValues, inn: value }, false);
+      return;
+    }
+
+    formik.setFieldValue("inn", value, false);
+  };
+
+  const handleLookup = async (identifier: string) => {
+    try {
+      const result = await lookupMutation.mutateAsync(identifier);
+      if (!result.isMatch) {
+        toast.error(t("settings.lookup.mismatch"));
+        return;
+      }
+      if (!result.isLegalEntity) {
+        toast.error(t("settings.lookup.personWarning"));
+        return;
+      }
+      formik.setValues(
+        mergeLookupValues(
+          formik.values,
+          previousLookupValues.current,
+          result.values,
+          emptyLookupValues,
+        ),
+        false,
+      );
+      previousLookupValues.current = result.values;
+      toast.success(t("settings.lookup.success"));
+    } catch (error: unknown) {
+      errorHandlers(error);
+    }
+  };
+
+  const handleClose = () => {
+    previousLookupValues.current = {};
+    lookupMutation.reset();
+    formik.resetForm();
+    onClose();
+  };
 
   if (!open) return null;
 
@@ -89,7 +159,7 @@ export default function OrganizationAddEditPage({
         isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
       }
       open={open}
-      onCancel={onClose}
+      onCancel={handleClose}
       footer={null}
       centered
       width={650}
@@ -140,11 +210,22 @@ export default function OrganizationAddEditPage({
             </Col>
 
             <Col span={12}>
-              <InputText
-                formik={formik}
-                fieldName="inn"
-                label="settings.fields.inn"
-              />
+              {isEdit ? (
+                <InputText
+                  formik={formik}
+                  fieldName="inn"
+                  label="settings.fields.inn"
+                />
+              ) : (
+                <SearchInnField
+                  mode="inn"
+                  value={formik.values.inn}
+                  onChange={handleLookupIdentifierChange}
+                  onSearch={handleLookup}
+                  loading={lookupMutation.isPending}
+                  label="settings.fields.inn"
+                />
+              )}
             </Col>
             <Col span={12}>
               <InputPhoneNumber

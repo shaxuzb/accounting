@@ -41,6 +41,12 @@ export default function CounterpartyBankAccountListPage() {
       minWidth: 180,
     },
     {
+      title: t("settings.fields.bankBranch"),
+      dataIndex: "bankBranchName",
+      minWidth: 180,
+      render: (_, record) => record.bankBranchName ?? "-",
+    },
+    {
       title: t("settings.fields.counterpartyName"),
       dataIndex: "counterpartyName",
       minWidth: 160,

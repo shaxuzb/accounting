@@ -67,8 +67,9 @@ export const toSaleCreatePayload = (
       costPrice: product.costPrice,
       unitId: product.unitId,
       unitPrice: roundMoney(product.unitPrice),
-      amount: roundMoney(product.amount ?? product.quantity * product.unitPrice),
-      vatAmount: roundMoney(product.vatAmount ?? 0),
+      amount: roundMoney(
+        product.netAmount ?? product.quantity * product.unitPrice,
+      ),
       vatRateId: product.vatRateId ?? null,
       inventoryAccountId: product.inventoryAccountId ?? 0,
       incomeAccountId: product.incomeAccountId ?? 0,

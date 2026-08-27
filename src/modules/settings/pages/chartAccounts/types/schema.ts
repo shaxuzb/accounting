@@ -10,7 +10,7 @@ export const chartAccountsSchema = (isEdit = false) =>
   Yup.object({
     parentId: optionalNumber(),
     number: requiredString("settings.fields.number"),
-    code: requiredString("settings.fields.code"),
+    // code: requiredString("settings.fields.code"),
     name: requiredString("settings.fields.name"),
     isGroup: Yup.boolean(),
     accountTypeId: requiredNumber("settings.fields.accountType"),

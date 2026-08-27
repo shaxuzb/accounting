@@ -45,17 +45,12 @@ const toPositiveNumber = (value: unknown) => {
   return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : null;
 };
 
-type BankOperationForm = Omit<
-  BankOperationCreatePayload,
-  | "bankAccountId"
-  | "operationTypeId"
-  | "paymentTypeId"
-  | "counterpartyId"
-  | "currencyId"
-  | "amount"
-  | "comment"
-> & {
+type BankOperationForm = {
   bankAccountId: number | null;
+  bankChartAccountId: number | null;
+  offsetAccountId: number | null;
+  docDate: string;
+  directionId: number | null;
   operationTypeId: number | null;
   paymentTypeId: number | null;
   counterpartyId: number | null;
@@ -66,10 +61,14 @@ type BankOperationForm = Omit<
   counterpartyBankAccountId: number | null;
   contractId: number | null;
   exchangeRate: number | null;
+  bankDocumentNumber: string;
+  classificationCategoryId: number | null;
+  classificationRuleId: number | null;
 };
 
 const defaultValues: BankOperationForm = {
   bankAccountId: null,
+  directionId: 1,
   bankChartAccountId: null,
   offsetAccountId: null,
   operationTypeId: 1,
@@ -83,6 +82,9 @@ const defaultValues: BankOperationForm = {
   amount: null,
   comment: "",
   stateId: null,
+  bankDocumentNumber: "",
+  classificationCategoryId: null,
+  classificationRuleId: null,
 };
 
 export default function BankOperationAddEditPage() {
@@ -103,6 +105,7 @@ export default function BankOperationAddEditPage() {
   const initialValues = useMemo<BankOperationForm>(
     () => ({
       bankAccountId: record?.bankAccountId ?? null,
+      directionId: record?.directionId ?? (record?.operationTypeId === 2 ? -1 : 1),
       bankChartAccountId: record?.bankChartAccountId ?? null,
       offsetAccountId: record?.offsetAccountId ?? null,
       operationTypeId: record?.operationTypeId ?? null,
@@ -116,6 +119,9 @@ export default function BankOperationAddEditPage() {
       amount: record?.amount ?? null,
       comment: record?.comment ?? "",
       stateId: record?.stateId ?? null,
+      bankDocumentNumber: record?.bankDocumentNumber ?? "",
+      classificationCategoryId: record?.classificationCategoryId ?? null,
+      classificationRuleId: record?.classificationRuleId ?? null,
     }),
     [record],
   );
@@ -128,17 +134,20 @@ export default function BankOperationAddEditPage() {
       try {
         const payload: BankOperationCreatePayload = {
           bankAccountId: Number(values.bankAccountId),
-          bankChartAccountId: Number(values.bankChartAccountId),
-          offsetAccountId: Number(values.offsetAccountId),
-          operationTypeId: Number(values.operationTypeId),
-          paymentTypeId: Number(values.paymentTypeId),
-          counterpartyId: Number(values.counterpartyId),
-          counterpartyBankAccountId: Number(values.counterpartyBankAccountId),
+          directionId: values.directionId ?? (Number(values.operationTypeId) === 2 ? -1 : 1),
+          bankChartAccountId: toPositiveNumber(values.bankChartAccountId),
+          offsetAccountId: toPositiveNumber(values.offsetAccountId),
+          paymentTypeId: toPositiveNumber(values.paymentTypeId),
+          counterpartyId: toPositiveNumber(values.counterpartyId),
+          counterpartyBankAccountId: toPositiveNumber(values.counterpartyBankAccountId),
+          bankDocumentNumber: values.bankDocumentNumber.trim() || null,
+          classificationCategoryId: toPositiveNumber(values.classificationCategoryId),
+          classificationRuleId: toPositiveNumber(values.classificationRuleId),
           docDate: dayjs(values.docDate).toISOString(),
           currencyId: Number(values.currencyId),
           amount: Number(values.amount),
-          exchangeRate: Number(values.exchangeRate),
-          contractId: Number(values.contractId),
+          exchangeRate: Number(values.exchangeRate) || 1,
+          contractId: toPositiveNumber(values.contractId),
           comment: values.comment.trim() || null,
           ...(isEdit ? { stateId: Number(values.stateId) } : {}),
         };
@@ -235,6 +244,7 @@ export default function BankOperationAddEditPage() {
                   (previousValues) => ({
                     ...previousValues,
                     operationTypeId: Number(value),
+                    directionId: Number(value) === 2 ? -1 : 1,
                     bankChartAccountId: null,
                     offsetAccountId: null,
                   }),
@@ -341,6 +351,14 @@ export default function BankOperationAddEditPage() {
               </Col>
 
               <Col span={8}>
+                <InputText
+                  formik={formik}
+                  fieldName="bankDocumentNumber"
+                  label="bank.fields.bankDocumentNumber"
+                />
+              </Col>
+
+              <Col span={8}>
                 <SelectCustom
                   formik={formik}
                   fieldName="currencyId"
@@ -354,6 +372,18 @@ export default function BankOperationAddEditPage() {
                   formik={formik}
                   fieldName="amount"
                   label="bank.fields.amount"
+                />
+              </Col>
+
+              <Col span={8}>
+                <SelectCustom
+                  formik={formik}
+                  fieldName="classificationCategoryId"
+                  label="bank.fields.classification"
+                  path={selectListEndpoints.bankOperationCategoriesSelectList}
+                  clearable
+                  search
+                  onChange={() => formik.setFieldValue("classificationRuleId", null)}
                 />
               </Col>
 

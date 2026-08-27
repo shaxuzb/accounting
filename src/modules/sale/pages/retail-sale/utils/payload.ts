@@ -33,7 +33,9 @@ const toLines = (
       unitId: product.unitId,
       unitPrice: roundMoney(product.unitPrice),
       costPrice: product.costPrice,
-      amount: roundMoney(product.amount ?? product.quantity * product.unitPrice),
+      amount: roundMoney(
+        product.netAmount ?? product.quantity * product.unitPrice,
+      ),
       vatAmount: roundMoney(product.vatAmount ?? 0),
       vatRateId: product.vatRateId ?? null,
       inventoryAccountId: product.inventoryAccountId ?? null,

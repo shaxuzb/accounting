@@ -33,6 +33,7 @@ import type {
   PurchaseImportHeaderDraft,
   PurchaseProcessingMode,
 } from "@/modules/purchase/pages/purchase/types/form";
+import { isCompletePurchaseLine } from "../types/schema";
 import {
   createPurchaseValidationSchema,
   isCompletePurchaseLineWithAccounts,
@@ -82,7 +83,6 @@ import {
   getPurchaseImportTotals,
   isServiceDetailLine,
   getDuplicateMarkingNumber,
-  getUnmarkedPieceTrackedRow,
   parseMarkingInput,
   getRowMxik,
   toMarkingNumbers,
@@ -284,6 +284,11 @@ const mapDetailLinesToRows = (
     const detailLine = line as PurchaseDetailLine;
     const productId = Number(detailLine.productId ?? detailLine.productTableId);
     const product = productMap.get(productId);
+    const lineUnitId = getNumberValue(detailLine.unitId, NaN);
+    const serverMarkingCount = (detailLine.items ?? []).reduce(
+      (count, item) => count + getNumberValue(item.markingCount, 0),
+      0,
+    );
     const markingNumbers = (detailLine.items ?? [])
       .map((item) => item.markingNumber?.trim())
       .filter((item): item is string => Boolean(item));
@@ -306,20 +311,34 @@ const mapDetailLinesToRows = (
       currency: detail.currencyName,
       markingNumber: markingNumbers.join("\n"),
       markingNumbers,
+      markingCount: Math.max(markingNumbers.length, serverMarkingCount),
+      amount: detailLine.amount ?? null,
       price: detailLine.unitPrice ?? detailLine.price ?? null,
       pricePerUom: detailLine.unitPrice ?? detailLine.price ?? null,
-      unitId: product?.unitId ?? null,
-      unitCode: product?.unitCode ?? null,
-      unitName: product?.unitName ?? product?.unit ?? null,
-      mxik: getProductMxik(product),
+      // The document line is the source of truth. Product catalog data is a
+      // fallback because its unit can be missing or changed later.
+      unitId: Number.isFinite(lineUnitId)
+        ? lineUnitId
+        : product?.unitId ?? null,
+      unitCode: detailLine.unitCode ?? product?.unitCode ?? null,
+      unitName:
+        detailLine.unitName ?? product?.unitName ?? product?.unit ?? null,
+      mxik: detailLine.productMxik?.trim() || getProductMxik(product),
       vatRateId: detailLine.vatRateId ?? null,
+      vatAmount: detailLine.vatAmount ?? null,
+      totalAmount: detailLine.totalAmount ?? null,
       vatRates: null,
       debitAccountId: detailLine.debitAccountId ?? null,
       vatAccountId: detailLine.vatAccountId ?? null,
       debitAccountName: detailLine.debitAccountName,
       vatAccountName: detailLine.vatAccountName,
       isSerial: false,
-      isPieceTracked: Boolean(product?.isPieceTracked || markingNumbers.length),
+      isPieceTracked: Boolean(
+        product?.isPieceTracked ||
+          markingNumbers.length ||
+          serverMarkingCount > 0 ||
+          detailLine.items?.some((item) => item.hasMarking),
+      ),
     };
   });
 };
@@ -587,23 +606,6 @@ export const PurchaseEditor = ({
         return false;
       }
 
-      const unmarkedRow = getUnmarkedPieceTrackedRow(
-        completedRows,
-        purchaseMode,
-      );
-
-      if (unmarkedRow) {
-        toast.error(
-          t("purchase.messages.markingRequired", {
-            product:
-              unmarkedRow.product ||
-              unmarkedRow.productName ||
-              t("purchase.fields.product"),
-          }),
-        );
-        return false;
-      }
-
       if (!completedRows.length) {
         toast.error(t("purchase.messages.lineRequired"));
         return false;
@@ -815,10 +817,13 @@ export const PurchaseEditor = ({
             ? getProductMxik(product) || normalizedMxik
             : normalizedMxik || getProductMxik(product);
         const markingPatch = isPieceTracked
-          ? buildMarkingQuantityPatch(currentMarkings)
+          ? currentMarkings.length
+            ? buildMarkingQuantityPatch(currentMarkings)
+            : { markingCount: item.markingCount ?? 0 }
           : {
               markingNumber: "",
               markingNumbers: [],
+              markingCount: 0,
             };
         const resolved = {
           ...item,
@@ -977,14 +982,10 @@ export const PurchaseEditor = ({
 
   const openMarkingModal = useCallback(
     (rowIndex: number) => {
-      if (!linesRef.current[rowIndex]?.isPieceTracked) {
-        toast.error(t("purchase.messages.notPieceTracked"));
-        return;
-      }
       setMarkingRowIndex(rowIndex);
       setMarkingInput("");
     },
-    [t],
+    [],
   );
 
   const closeMarkingModal = useCallback(() => {
@@ -993,10 +994,42 @@ export const PurchaseEditor = ({
   }, []);
 
   const updateRowMarkings = useCallback(
-    (rowIndex: number, markingNumbers: string[]) => {
-      handleRowValueChange(rowIndex, buildMarkingQuantityPatch(markingNumbers));
+    async (rowIndex: number, markingNumbers: string[]) => {
+      const nextRows = linesRef.current.map((item, index) =>
+        index === rowIndex
+          ? { ...item, ...buildMarkingQuantityPatch(markingNumbers) }
+          : item,
+      );
+      const nextValues = { ...formik.values, lines: nextRows };
+
+      commitRows(nextRows);
+
+      if (!isEdit || !purchaseId || !isDraft) return;
+
+      try {
+        const payloadRows = nextRows.filter(isCompletePurchaseLine);
+        await updatePurchase.mutateAsync({
+          id: purchaseId,
+          payload: toPurchaseUpdatePayload(
+            nextValues,
+            payloadRows,
+            purchaseMode,
+          ),
+        });
+        formik.resetForm({ values: nextValues });
+      } catch (error) {
+        errorHandlers(error);
+      }
     },
-    [handleRowValueChange],
+    [
+      commitRows,
+      formik,
+      isDraft,
+      isEdit,
+      purchaseId,
+      purchaseMode,
+      updatePurchase,
+    ],
   );
 
   const handleAddMarking = useCallback(() => {
@@ -1017,7 +1050,7 @@ export const PurchaseEditor = ({
       return;
     }
 
-    updateRowMarkings(markingRowIndex, [...current, ...uniqueMarkings]);
+    void updateRowMarkings(markingRowIndex, [...current, ...uniqueMarkings]);
     setMarkingInput("");
   }, [markingInput, markingRowIndex, t, updateRowMarkings]);
 
@@ -1042,7 +1075,7 @@ export const PurchaseEditor = ({
       const nextMarkings = toMarkingNumbers(
         linesRef.current[markingRowIndex],
       ).filter((item) => item !== marking);
-      updateRowMarkings(markingRowIndex, nextMarkings);
+      void updateRowMarkings(markingRowIndex, nextMarkings);
     },
     [markingRowIndex, updateRowMarkings],
   );

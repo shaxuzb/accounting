@@ -15,8 +15,21 @@ export default function BankReadonlyDetailsCard({
     <ReadonlyDetailsCard
       items={[
         { label: t("bank.fields.date"), value: customDate(record.docDate) },
+        {
+          label: t("bank.fields.bankDocumentNumber"),
+          value: record.bankDocumentNumber,
+        },
         { label: t("bank.fields.bankAccount"), value: record.bankAccountName },
-        { label: t("bank.fields.operationType"), value: record.operationTypeName },
+        {
+          label: t("bank.fields.operationType"),
+          value:
+            record.direction ??
+            (record.directionId === 1
+              ? t("bank.operation.income")
+              : record.directionId === -1
+                ? t("bank.operation.expense")
+                : record.operationTypeName),
+        },
         { label: t("bank.fields.counterparty"), value: record.counterpartyName },
         {
           label: t("bank.fields.bankChartAccount"),
@@ -38,6 +51,10 @@ export default function BankReadonlyDetailsCard({
           value: `${numberSpacing(record.amount)} ${record.currencyName ?? ""}`,
         },
         { label: t("bank.fields.exchangeRate"), value: record.exchangeRate },
+        {
+          label: t("bank.fields.classification"),
+          value: record.classificationName ?? record.classificationCode,
+        },
         {
           label: t("bank.fields.contract"),
           value: record.contractName ?? record.contractNumber,

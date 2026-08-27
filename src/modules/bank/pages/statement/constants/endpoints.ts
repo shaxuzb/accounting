@@ -15,6 +15,9 @@ export const bankStatementEndpoints = {
   counterpartyCards: {
     createMany: "counterparty-cards/many",
   },
+  manuals: {
+    categories: "manuals/bank-operation-categories",
+  },
 } as const;
 
 export const bankDocumentTypeIds = {

@@ -6,5 +6,6 @@ export { useConfirmBankOperation } from "./useConfirmBankOperation";
 export { useGetDetailBankOperation } from "./useGetDetailBankOperation";
 export { useGetBankOperations } from "./useGetBankOperations";
 export { useParseBankStatement } from "./useParseBankStatement";
+export { useGetBankOperationCategories } from "./useGetBankOperationCategories";
 export { useUpdateBankOperation } from "./useUpdateBankOperation";
 export { useGetBankDocumentAccountOptions } from "./useGetBankDocumentAccountOptions";

@@ -401,6 +401,14 @@
   "settings": {
     "title": "Settings",
     "description": "System parameters",
+    "lookup": {
+      "identifier": "TIN or PINFL",
+      "invalidIdentifier": "Enter {{lengths}} digits",
+      "personWarning": "The entered TIN belongs to an individual. Organization fields were not filled automatically.",
+      "success": "Organization data found",
+      "mismatch": "The lookup response does not match the entered number",
+      "counterpartySuccess": "Counterparty data found"
+    },
     "entities": {
       "role": "Role",
       "roles": "Roles",
@@ -474,6 +482,7 @@
       "bankAccount": "Bank account",
       "branch": "Branch",
       "branchName": "Branch name",
+      "bankBranch": "Bank branch",
       "code": "Code",
       "comment": "Comment",
       "counterparty": "Counterparty",
@@ -895,6 +904,8 @@
       "operationType": "Operation type",
       "counterparty": "Counterparty",
       "date": "Date",
+      "dateFrom": "Start date",
+      "dateTo": "End date",
       "amount": "Amount",
       "comment": "Comment",
       "debit": "Debit",
@@ -911,7 +922,11 @@
       "card": "Card",
       "accountingEntries": "Accounting entries",
       "status": "Status",
-      "currentAmount": "Current amount"
+      "currentAmount": "Current amount",
+      "bankDocumentNumber": "Bank document number",
+      "classification": "Classification",
+      "closingBalance": "Closing balance",
+      "bankBranch": "Bank branch"
     },
     "messages": {
       "imported": "Bank statement imported",
@@ -922,6 +937,7 @@
       "missingRequired": "{{count}} operations are missing required data",
       "noData": "No imported bank statements yet",
       "noTransactions": "No operations found",
+      "requiresReview": "Review required",
       "counterpartyMissing": "Counterparty not found",
       "bankAccountMissing": "Bank account not found",
       "bankAccountMissingDescription": "Operations in this card will not be saved because the bank account was not found.",
@@ -941,6 +957,9 @@
     "import": {
       "title": "Bank statement import",
       "description": "Upload an Excel file and the system will extract its data automatically.",
+      "bankTypeLabel": "Select bank type",
+      "bankTypePlaceholder": "Select bank type",
+      "bankTypeHint": "Select a bank type first. You can upload a file after that.",
       "uploadText": "Click to upload a file or drag it here",
       "uploadHint": "XLS and XLSX bank statements are supported.",
       "statements": "Bank statements",
@@ -961,7 +980,8 @@
       "selectBankChartAccount": "Select a bank ledger account",
       "selectContract": "Select a contract",
       "selectCounterpartyFirst": "Select a counterparty first",
-      "selectCounterpartyAccount": "Select a counterparty bank account"
+      "selectCounterpartyAccount": "Select a counterparty bank account",
+      "selectClassification": "Select classification"
     },
     "validation": {
       "bankAccountRequired": "Select a bank account",
@@ -1079,6 +1099,7 @@
       "saleAmount": "Sale amount",
       "quantityToSell": "Quantity to sell",
       "amountWithoutVat": "Amount before VAT",
+      "totalWithVat": "Total (incl. VAT)",
       "vatRateAndAmount": "VAT (rate and amount)",
       "comment": "Comment",
       "customer": "Customer",
@@ -1603,6 +1624,10 @@
     }
   },
   "payroll": {
+    "lookup": {
+      "success": "Employee data found",
+      "notPerson": "The entered PINFL does not match an individual."
+    },
     "title": "Payroll",
     "description": "Employees, timesheets, payroll calculation and payments",
     "common": {

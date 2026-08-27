@@ -1,11 +1,12 @@
 import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import InputText from "@/components/fields/InputText";
+import SearchInnField from "@/components/fields/SearchInnField";
 import SelectDate from "@/components/fields/SelectDate";
 import { emptyToNull, normalizePhone } from "@/modules/payroll/utils/format";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { Alert, Button, Col, Divider, Form, Modal, Row, Spin } from "antd";
 import { useFormik } from "formik";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import EmploymentFormFields from "../components/EmploymentFormFields";
@@ -13,12 +14,14 @@ import {
   useCreatePayrollEmployee,
   useGetDetailPayrollEmployee,
   useUpdatePayrollEmployee,
+  useLookupEmployee,
 } from "../hooks";
 import type {
   PayrollEmployeeForm,
   PayrollEmployeeMainForm,
 } from "../types/form";
 import { employeeCreateSchema, employeeMainSchema } from "../types/schema";
+import { mergeLookupValues } from "@/modules/settings/shared/taxpayerLookup";
 
 const defaultValues: PayrollEmployeeForm = {
   employeeNumber: "",
@@ -45,6 +48,17 @@ const defaultValues: PayrollEmployeeForm = {
   },
 };
 
+const emptyLookupValues: Partial<PayrollEmployeeForm> = {
+  pinfl: null,
+  tin: null,
+  firstName: "",
+  lastName: "",
+  middleName: null,
+  birthDate: null,
+  phoneNumber: null,
+  email: null,
+};
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -68,6 +82,8 @@ export default function PayrollEmployeeAddEditPage({
   const { data: employee, isFetching } = useGetDetailPayrollEmployee(editId);
   const createMutation = useCreatePayrollEmployee();
   const updateMutation = useUpdatePayrollEmployee();
+  const lookupMutation = useLookupEmployee();
+  const previousLookupValues = useRef<Partial<PayrollEmployeeForm>>({});
 
   const formik = useFormik<PayrollEmployeeForm>({
     initialValues: defaultValues,
@@ -102,6 +118,7 @@ export default function PayrollEmployeeAddEditPage({
           toast.success(t("settings.messages.created"));
         }
         helpers.resetForm({ values: defaultValues });
+        previousLookupValues.current = {};
         onClose();
       } catch (error) {
         errorHandlers(error);
@@ -134,7 +151,51 @@ export default function PayrollEmployeeAddEditPage({
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
+  const handleLookupIdentifierChange = (value: string) => {
+    if (Object.keys(previousLookupValues.current).length > 0) {
+      const clearedValues = mergeLookupValues(
+        formik.values,
+        previousLookupValues.current,
+        {},
+        emptyLookupValues,
+      );
+      previousLookupValues.current = {};
+      formik.setValues({ ...clearedValues, tin: value }, false);
+      return;
+    }
+
+    formik.setFieldValue("tin", value, false);
+  };
+
+  const handleLookup = async (identifier: string) => {
+    try {
+      const result = await lookupMutation.mutateAsync(identifier);
+      if (!result.isMatch) {
+        toast.error(t("settings.lookup.mismatch"));
+        return;
+      }
+      if (!result.isPerson) {
+        toast.error(t("payroll.lookup.notPerson"));
+        return;
+      }
+      resetForm({
+        values: mergeLookupValues(
+          formik.values,
+          previousLookupValues.current,
+          result.values as Partial<PayrollEmployeeForm>,
+          emptyLookupValues,
+        ),
+      });
+      previousLookupValues.current = result.values;
+      toast.success(t("payroll.lookup.success"));
+    } catch (error) {
+      errorHandlers(error);
+    }
+  };
+
   const handleClose = () => {
+    previousLookupValues.current = {};
+    lookupMutation.reset();
     resetForm({ values: defaultValues });
     onClose();
   };
@@ -194,10 +255,13 @@ export default function PayrollEmployeeAddEditPage({
               />
             </Col>
             <Col xs={24} md={8}>
-              <InputText
-                formik={formik}
-                fieldName="tin"
-                label="payroll.fields.tin"
+              <SearchInnField
+                mode="auto"
+                value={formik.values.tin ?? ""}
+                onChange={handleLookupIdentifierChange}
+                onSearch={handleLookup}
+                loading={lookupMutation.isPending}
+                label="settings.lookup.identifier"
               />
             </Col>
 
@@ -239,12 +303,12 @@ export default function PayrollEmployeeAddEditPage({
               <Divider titlePlacement="start" className="text-sm!">
                 {t("payroll.employees.employmentSection")}
               </Divider>
-              <Alert
+              {/* <Alert
                 type="info"
                 showIcon
                 className="mb-4"
                 message={t("payroll.employees.employmentHint")}
-              />
+              /> */}
               <EmploymentFormFields formik={formik} prefix="employment." />
             </>
           )}
@@ -253,13 +317,12 @@ export default function PayrollEmployeeAddEditPage({
             <Alert
               type="info"
               showIcon
-              className="mb-4"
               message={t("payroll.employees.editEmploymentHint")}
             />
           )}
 
-          <div className="flex justify-end gap-2">
-            <Button onClick={handleClose} size="large" className="h-11!">
+          <div className="flex justify-end gap-2 mt-3">
+            <Button onClick={handleClose} size="large" className="h-10!">
               {t("common.cancel")}
             </Button>
             <Button
@@ -267,7 +330,7 @@ export default function PayrollEmployeeAddEditPage({
               htmlType="submit"
               size="large"
               loading={isSubmitting}
-              className="h-11! min-w-40 font-semibold"
+              className="h-10! min-w-40 font-semibold"
             >
               {t("common.save")}
             </Button>

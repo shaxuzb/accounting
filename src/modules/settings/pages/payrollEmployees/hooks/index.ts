@@ -5,3 +5,4 @@ export { useGetListPayrollEmployees } from "./useGetListPayrollEmployees";
 export { useRemovePayrollComponent } from "./useRemovePayrollComponent";
 export { useSavePayrollEmployment } from "./useSavePayrollEmployment";
 export { useUpdatePayrollEmployee } from "./useUpdatePayrollEmployee";
+export { useLookupEmployee } from "./useLookupEmployee";

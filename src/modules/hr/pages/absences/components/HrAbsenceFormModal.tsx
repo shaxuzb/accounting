@@ -125,7 +125,7 @@ export default function HrAbsenceFormModal({ open, id, onClose }: Props) {
       onCancel={handleClose}
       footer={null}
       centered
-      width={760}
+      width={700}
       destroyOnHidden
     >
       <Spin spinning={isEdit && isFetching}>

@@ -21,8 +21,6 @@ import { hrAbsenceEndpoints } from "../constants/endpoints";
 import { useDeleteHrAbsence, useHrAbsences } from "../hooks";
 import type { HrAbsence } from "../types/type";
 
-
-
 export default function HrAbsenceListPage() {
   const { t } = useTranslation();
   const { modal } = App.useApp();
@@ -65,12 +63,11 @@ export default function HrAbsenceListPage() {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
       align: "center",
-      width: 70,
+      width: 45,
     },
     {
       dataIndex: "docNumber",
       title: t("hr.fields.docNumber"),
-      width: 160,
       align: "center",
       render: (value: string | null) => value ?? "-",
     },
@@ -99,28 +96,24 @@ export default function HrAbsenceListPage() {
       dataIndex: "startDate",
       title: t("hr.fields.dateFrom"),
       align: "center",
-      width: 130,
       render: displayDate,
     },
     {
       dataIndex: "endDate",
       title: t("hr.fields.dateTo"),
       align: "center",
-      width: 130,
       render: displayDate,
     },
     {
       dataIndex: "calendarDays",
       title: t("hr.fields.calendarDays"),
       align: "center",
-      width: 110,
       render: (value: number | null) => value ?? "-",
     },
     {
       dataIndex: "attachmentCount",
       title: t("hr.fields.attachments"),
       align: "center",
-      width: 125,
       render: (value: number | null, record) =>
         value ? (
           <Tooltip title={t("hr.absences.viewDocuments")}>
@@ -141,14 +134,12 @@ export default function HrAbsenceListPage() {
       dataIndex: "docDate",
       title: t("hr.fields.documentDate"),
       align: "center",
-      width: 130,
       render: displayDate,
     },
     {
       dataIndex: "statusName",
       title: t("hr.fields.status"),
       align: "center",
-      width: 140,
       render: (value: string | null, record) =>
         value || record.statusCode ? (
           <Tag className="m-0!">{value ?? record.statusCode}</Tag>
@@ -159,7 +150,6 @@ export default function HrAbsenceListPage() {
     {
       dataIndex: "note",
       title: t("hr.fields.note"),
-      minWidth: 180,
       ellipsis: true,
       render: (value: string | null) => value ?? "-",
     },
@@ -171,7 +161,6 @@ export default function HrAbsenceListPage() {
       title: t("common.actions"),
       align: "center",
       fixed: "right",
-      width: 92,
       render: (_, record) => (
         <div className="flex justify-center">
           {canUpdate && (

@@ -401,6 +401,14 @@
   "settings": {
     "title": "Sozlamalar",
     "description": "Tizim parametrlari",
+    "lookup": {
+      "identifier": "STIR yoki JShShIR",
+      "invalidIdentifier": "{{lengths}} ta raqam kiriting",
+      "personWarning": "Kiritilgan INN jismoniy shaxsga tegishli. Tashkilot ma'lumotlari avtomatik to'ldirilmadi.",
+      "success": "Tashkilot ma'lumotlari topildi",
+      "mismatch": "Qidiruv javobi kiritilgan raqamga mos kelmadi",
+      "counterpartySuccess": "Kontragent ma'lumotlari topildi"
+    },
     "entities": {
       "role": "Rol",
       "roles": "Rollar",
@@ -474,6 +482,7 @@
       "bankAccount": "Bank hisobi",
       "branch": "Filial",
       "branchName": "Filial nomi",
+      "bankBranch": "Bank filiali",
       "code": "Kod",
       "comment": "Izoh",
       "counterparty": "Kontragent",
@@ -1034,6 +1043,8 @@
       "operationType": "Operatsiya turi",
       "counterparty": "Kontragent",
       "date": "Sana",
+      "dateFrom": "Boshlanish sanasi",
+      "dateTo": "Tugash sanasi",
       "amount": "Summa",
       "comment": "Izoh",
       "debit": "Debet",
@@ -1050,7 +1061,11 @@
       "card": "Kartochka",
       "accountingEntries": "Provodkalar",
       "status": "Holati",
-      "currentAmount": "Joriy summa"
+      "currentAmount": "Joriy summa",
+      "bankDocumentNumber": "Bank hujjat raqami",
+      "classification": "Tasniflash",
+      "closingBalance": "Yakuniy qoldiq",
+      "bankBranch": "Bank filiali"
     },
     "messages": {
       "imported": "Bank ko'chirmasi import qilindi",
@@ -1061,6 +1076,7 @@
       "missingRequired": "{{count}} ta operatsiyada majburiy ma'lumot yetishmaydi",
       "noData": "Hali bank ko'chirmasi import qilinmagan",
       "noTransactions": "Operatsiyalar topilmadi",
+      "requiresReview": "Tekshiruv kerak",
       "counterpartyMissing": "Kontragent topilmadi",
       "bankAccountMissing": "Bank hisobi topilmadi",
       "bankAccountMissingDescription": "Bu kartochkadagi operatsiyalar bank hisobi topilmagani uchun saqlanmaydi.",
@@ -1080,6 +1096,9 @@
     "import": {
       "title": "Bank ko'chirmasini import qilish",
       "description": "Excel faylini yuklang, tizim ma'lumotlarni avtomatik ajratadi.",
+      "bankTypeLabel": "Bank turini tanlang",
+      "bankTypePlaceholder": "Bank turini tanlang",
+      "bankTypeHint": "Avval bank turini tanlang. Shundan keyin fayl yuklash mumkin.",
       "uploadText": "Faylni yuklash uchun bosing yoki uni shu yerga olib keling",
       "uploadHint": "XLS yoki XLSX formatidagi bank ko'chirmalari qo'llab-quvvatlanadi.",
       "statements": "Bank ko'chirmalari",
@@ -1100,7 +1119,8 @@
       "selectBankChartAccount": "Bank hisobvarag'ini tanlang",
       "selectContract": "Shartnomani tanlang",
       "selectCounterpartyFirst": "Avval kontragentni tanlang",
-      "selectCounterpartyAccount": "Kontragentning bank hisobini tanlang"
+      "selectCounterpartyAccount": "Kontragentning bank hisobini tanlang",
+      "selectClassification": "Tasnifni tanlang"
     },
     "validation": {
       "bankAccountRequired": "Bank hisobini tanlang",
@@ -1218,6 +1238,7 @@
       "saleAmount": "Sotuv summasi",
       "quantityToSell": "Sotiladigan miqdor",
       "amountWithoutVat": "QQSsiz summa",
+      "totalWithVat": "Jami (QQS bilan)",
       "vatRateAndAmount": "QQS (stavka va summa)",
       "comment": "Izoh",
       "customer": "Mijoz",
@@ -1742,6 +1763,10 @@
     }
   },
   "payroll": {
+    "lookup": {
+      "success": "Xodim ma'lumotlari topildi",
+      "notPerson": "Kiritilgan JShShIR jismoniy shaxs ma'lumotiga mos kelmadi."
+    },
     "title": "Oylik maosh",
     "description": "Xodimlar, tabel, maosh hisoblash va to'lovlar",
     "common": {

@@ -64,3 +64,8 @@ export interface organizationCreate {
   defaultLanguageId: number;
   stateId: number;
 }
+
+export type {
+  DictionaryItem as OrganizationDictionaryItem,
+  TaxpayerLookupDto as OrganizationTaxpayerLookup,
+} from "@/modules/settings/shared/taxpayerLookup";

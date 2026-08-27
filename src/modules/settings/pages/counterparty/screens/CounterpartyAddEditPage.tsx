@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import { Button, Col, Form, Modal, Row, Spin } from "antd";
 import toast from "react-hot-toast";
@@ -15,6 +15,9 @@ import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import DistrictSelect from "@/components/fields/DistrictSelect";
+import SearchInnField from "@/components/fields/SearchInnField";
+import { mergeLookupValues } from "@/modules/settings/shared/taxpayerLookup";
+import { useLookupCounterparty } from "../hooks/useLookupCounterparty";
 
 const defaultValues: CounterpartyForm = {
   organizationId: null,
@@ -27,6 +30,16 @@ const defaultValues: CounterpartyForm = {
   districtId: null,
   address: "",
   stateId: null,
+};
+
+const emptyLookupValues: Partial<CounterpartyForm> = {
+  shortName: "",
+  fullName: "",
+  inn: "",
+  phoneNumber: "",
+  regionId: null,
+  districtId: null,
+  address: "",
 };
 
 interface CounterpartyAddEditPageProps {
@@ -49,6 +62,8 @@ export default function CounterpartyAddEditPage({
     useGetDetailCounteryParty(editId ?? "");
   const createMutation = useCreateCounteryParty();
   const updateMutation = useUpdateCounteryParty();
+  const lookupMutation = useLookupCounterparty();
+  const previousLookupValues = useRef<Partial<CounterpartyForm>>({});
 
   const formik = useFormik<CounterpartyForm>({
     initialValues: defaultValues,
@@ -64,6 +79,8 @@ export default function CounterpartyAddEditPage({
           onCreated?.(createdCounterparty);
           toast.success(t("settings.messages.created"));
         }
+        previousLookupValues.current = {};
+        lookupMutation.reset();
         onClose();
         formik.resetForm();
       } catch (err: unknown) {
@@ -90,16 +107,60 @@ export default function CounterpartyAddEditPage({
   }, [counterpartyDetail, formik, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
+  const handleLookupIdentifierChange = (value: string) => {
+    if (Object.keys(previousLookupValues.current).length > 0) {
+      const clearedValues = mergeLookupValues(
+        formik.values,
+        previousLookupValues.current,
+        {},
+        emptyLookupValues,
+      );
+      previousLookupValues.current = {};
+      formik.setValues({ ...clearedValues, inn: value }, false);
+      return;
+    }
+
+    formik.setFieldValue("inn", value, false);
+  };
+
+  const handleLookup = async (identifier: string) => {
+    try {
+      const result = await lookupMutation.mutateAsync(identifier);
+      if (!result.isMatch) {
+        toast.error(t("settings.lookup.mismatch"));
+        return;
+      }
+
+      formik.setValues(
+        mergeLookupValues(
+          formik.values,
+          previousLookupValues.current,
+          result.values,
+          emptyLookupValues,
+        ),
+        false,
+      );
+      previousLookupValues.current = result.values;
+      toast.success(t("settings.lookup.counterpartySuccess"));
+    } catch (error: unknown) {
+      errorHandlers(error);
+    }
+  };
+
+  const handleClose = () => {
+    previousLookupValues.current = {};
+    lookupMutation.reset();
+    formik.resetForm();
+    onClose();
+  };
+
   return (
     <Modal maskClosable={false}
       title={
         isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
       }
       open={open}
-      onCancel={() => {
-        formik.resetForm();
-        onClose();
-      }}
+      onCancel={handleClose}
       footer={null}
       centered
       width={650}
@@ -140,18 +201,29 @@ export default function CounterpartyAddEditPage({
               />
             </Col>
             <Col span={12}>
-              <InputText
-                formik={formik}
-                fieldName="inn"
-                label="settings.fields.inn"
-              />
+              {isEdit ? (
+                <InputText
+                  formik={formik}
+                  fieldName="inn"
+                  label="settings.fields.inn"
+                />
+              ) : (
+                <SearchInnField
+                  mode="auto"
+                  value={formik.values.inn}
+                  onChange={handleLookupIdentifierChange}
+                  onSearch={handleLookup}
+                  loading={lookupMutation.isPending}
+                  label="settings.lookup.identifier"
+                />
+              )}
             </Col>
             <Col span={12}>
               <SelectCustom
                 formik={formik}
                 fieldName="organizationId"
                 label="settings.fields.organization"
-                path={selectListEndpoints.operationTypesSelectList}
+                path={selectListEndpoints.organizationsSelectList}
               />
             </Col>
             <Col span={12}>

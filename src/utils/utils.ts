@@ -22,6 +22,11 @@ export function customDate(date: string | undefined) {
   const format = "DD.MM.YYYY HH:mm";
   return dayjs(date).format(format);
 }
+export function customDate2(date: string | undefined) {
+  const format = "DD.MM.YYYY";
+  return dayjs(date).format(format);
+}
+
 
 export function numberSpacingWithCurrency(
   item: number,

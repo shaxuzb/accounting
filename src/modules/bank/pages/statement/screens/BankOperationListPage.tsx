@@ -1,7 +1,7 @@
 import { Link } from "react-router";
-import { Button, Space, Tooltip } from "antd";
+import { Button, Tooltip } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { FileUp, Plus, ReceiptText, RefreshCw } from "lucide-react";
+import { FileUp, Plus, ReceiptText } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import RestorableTable from "@/components/ui/table/RestorableTable";
@@ -17,6 +17,10 @@ import SearchFilter from "@/components/ui/filters/SearchFilter";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import { usePaginationParams } from "@/shared/hooks/usePaginationParams";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
+import SelectFilter from "@/components/ui/filters/SelectFilter";
+import DateRangeFilter from "@/components/ui/filters/DateRangeFilter";
+import ListToolbar from "@/components/ui/filters/ListToolbar";
 
 export default function BankOperationListPage() {
   const { t } = useTranslation();
@@ -40,6 +44,11 @@ export default function BankOperationListPage() {
       render: (value, record) => (
         <Link to={`${record.id}`}>{value ?? record.id}</Link>
       ),
+    },
+    {
+      dataIndex: "bankDocumentNumber",
+      title: t("bank.fields.bankDocumentNumber"),
+      render: (value) => value ?? "-",
     },
     {
       dataIndex: "docDate",
@@ -68,14 +77,25 @@ export default function BankOperationListPage() {
     {
       dataIndex: "operationTypeName",
       title: t("bank.fields.operationType"),
-      render: (_, record) => record.operationTypeName ?? record.operationTypeId,
+      render: (_, record) =>
+        record.direction ??
+        (record.directionId === 1
+          ? t("bank.operation.income")
+          : record.directionId === -1
+            ? t("bank.operation.expense")
+            : (record.operationTypeName ?? record.operationTypeId ?? "-")),
       align: "center",
     },
 
     {
+      dataIndex: "classificationName",
+      title: t("bank.fields.classification"),
+      render: (_, record) =>
+        record.classificationName ?? record.classificationCode ?? "-",
+    },
+    {
       dataIndex: "counterpartyName",
       title: t("bank.fields.counterparty"),
-      width: 200,
       align: "center",
       render: (value) => {
         return (
@@ -94,7 +114,6 @@ export default function BankOperationListPage() {
     {
       dataIndex: "comment",
       title: t("bank.fields.comment"),
-      width: 200,
       render: (value) => {
         return (
           <Tooltip title={value}>
@@ -147,29 +166,54 @@ export default function BankOperationListPage() {
 
   return (
     <div className="w-full">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <SearchFilter />
-        <Space>
-          <PermissionCard permission={[bankPermissions.create, "ROLE_VIEW"]}>
-            <Link to="add">
-              <Button type="primary" icon={<Plus className="size-4" />}>
-                {t("common.add")}
-              </Button>
-            </Link>
-          </PermissionCard>
-          <PermissionCard permission={[bankPermissions.create, "ROLE_VIEW"]}>
-            <Link to="import">
-              <Button type="primary" icon={<FileUp className="size-4" />}>
-                {t("common.import")}
-              </Button>
-            </Link>
-          </PermissionCard>
-          <Button
-            icon={<RefreshCw className="size-4" />}
-            onClick={() => refetch()}
-          />
-        </Space>
-      </div>
+      <ListToolbar
+        filters={
+          <>
+            <SearchFilter />
+            <SelectFilter
+              paramKey="bankAccountId"
+              placeholder="bank.fields.bankAccount"
+              path={selectListEndpoints.orgBankAccountsSelectList}
+              width={220}
+              search
+            />
+            <SelectFilter
+              paramKey="directionId"
+              placeholder="bank.fields.operationType"
+              options={[
+                { value: 1, label: "bank.operation.income" },
+                { value: -1, label: "bank.operation.expense" },
+              ]}
+              width={150}
+            />
+            <DateRangeFilter
+              paramKeys={["dateFrom", "dateTo"]}
+              placeholderKeys={["bank.fields.dateFrom", "bank.fields.dateTo"]}
+              width={260}
+            />
+          </>
+        }
+        actions={
+          <>
+            <PermissionCard permission={[bankPermissions.create, "ROLE_VIEW"]}>
+              <Link to="add">
+                <Button type="primary" icon={<Plus className="size-4" />}>
+                  {t("common.add")}
+                </Button>
+              </Link>
+            </PermissionCard>
+            <PermissionCard permission={[bankPermissions.create, "ROLE_VIEW"]}>
+              <Link to="import">
+                <Button type="primary" icon={<FileUp className="size-4" />}>
+                  {t("common.import")}
+                </Button>
+              </Link>
+            </PermissionCard>
+          </>
+        }
+        refreshing={isFetching}
+        onRefresh={() => void refetch()}
+      />
       <Card className="overflow-hidden border border-border">
         <RestorableTable<BankOperationData>
           scrollStorageKey="bank-operation-list-scroll"

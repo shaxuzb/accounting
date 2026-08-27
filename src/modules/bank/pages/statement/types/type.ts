@@ -1,23 +1,31 @@
 export interface BankStatementTransaction {
   date: string;
   docNumber: string;
+  bankDocumentNumber?: string | null;
   operationTypeId: number;
   operationCode: string;
   mfoCounterparty: string;
   counterpartyAccount: string;
   counterpartyInn: string;
   counterpartyName: string;
-  counterpartyId: number;
+  counterpartyId: number | null;
   debit: number;
   credit: number;
   purpose: string;
   direction: string;
+  directionId?: number | null;
   amount: number;
   currencyId?: number;
   currencyName?: string;
   offsetAccountId?: number | null;
   contractId?: number | null;
   counterpartyBankAccountId?: number | null;
+  classificationCategoryId?: number | null;
+  classificationCode?: string | null;
+  classificationName?: string | null;
+  classificationRuleId?: number | null;
+  classificationRuleCode?: string | null;
+  requiresReview?: boolean;
 }
 
 export interface BankChartAccountOption {
@@ -31,10 +39,24 @@ export interface BankStatementCardData {
   fileName?: string;
   title: string;
   bankAccountId?: number | null;
+  bankId?: number | null;
+  bankBranchId?: number | null;
+  bankMfo?: string;
+  bankName?: string;
+  bankInn?: string | null;
+  companyName?: string;
+  companyInn?: string;
   bankChartAccountId?: number | null;
   accountNumber?: string;
   currencyId?: number | null;
   operationTypeId?: number | null;
+  totalDebit?: number | null;
+  totalCredit?: number | null;
+  openingBalance?: number | null;
+  closingBalance?: number | null;
+  hasActivity?: boolean;
+  periodFrom?: string;
+  periodTo?: string;
   dateFrom?: string;
   dateTo?: string;
   transactions: BankStatementTransaction[];
@@ -50,7 +72,9 @@ export interface BankOperationData {
   offsetAccountNumber: number;
   offsetAccountId?: number | null;
   bankAccountName?: string;
-  operationTypeId: number;
+  operationTypeId?: number | null;
+  directionId?: number | null;
+  direction?: string | null;
   operationTypeName?: string;
   paymentTypeId?: number | null;
   paymentTypeName?: string | null;
@@ -64,6 +88,12 @@ export interface BankOperationData {
   currencyName?: string;
   amount: number;
   comment?: string | null;
+  bankDocumentNumber?: string | null;
+  classificationCategoryId?: number | null;
+  classificationCode?: string | null;
+  classificationName?: string | null;
+  classificationRuleId?: number | null;
+  classificationRuleCode?: string | null;
   stateId?: number;
   stateName?: string;
   statusId?: number | null;

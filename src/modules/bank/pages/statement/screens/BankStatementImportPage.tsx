@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
+import SelectCustom from "@/components/fields/SelectCustom";
 import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
 import type { Contract } from "@/modules/contract/types/type";
 import CounterpartyBankAccountAddEditPage from "@/modules/settings/pages/counterpartybankaccount/screens/CounterpartyBankAccountAddEditPage";
@@ -21,6 +22,7 @@ import MissingBankAccountModal, {
 import MissingCounterpartyModal from "../components/MissingCounterpartyModal";
 import {
   useCreateBankOperations,
+  useGetBankOperationCategories,
   useGetBankDocumentAccountOptions,
   useParseBankStatement,
 } from "../hooks";
@@ -34,27 +36,24 @@ import type { BankStatementOperationCreatePayload } from "../types/form";
 
 const toValidNumber = (value: unknown) => {
   const numberValue = Number(value);
-  return Number.isFinite(numberValue) && numberValue > 0
-    ? numberValue
-    : null;
+  return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : null;
 };
 
 const normalizeAccountNumber = (value: unknown) =>
-  String(value ?? "").replace(/\s/g, "").trim();
+  String(value ?? "")
+    .replace(/\s/g, "")
+    .trim();
 
 const hasMissingBankInfo = (card: BankStatementCardData) => {
-  const needsOperationType =
-    !toValidNumber(card.operationTypeId) &&
-    card.transactions.some(
-      (transaction) => !toValidNumber(transaction.operationTypeId),
-    );
   const needsCurrency =
     !toValidNumber(card.currencyId) &&
     card.transactions.some(
       (transaction) => !toValidNumber(transaction.currencyId),
     );
 
-  return !toValidNumber(card.bankAccountId) || needsOperationType || needsCurrency;
+  return (
+    !toValidNumber(card.bankAccountId) || needsCurrency
+  );
 };
 
 interface ContractCreateTarget {
@@ -79,14 +78,20 @@ export default function BankStatementImportPage() {
   const queryClient = useQueryClient();
   const parseMutation = useParseBankStatement();
   const createOperations = useCreateBankOperations();
+  const { data: classificationOptions = [] } = useGetBankOperationCategories();
   const [cards, setCards] = useState<BankStatementCardData[]>([]);
+  const [selectedBankId, setSelectedBankId] = useState<number | null>(
+    null,
+  );
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [bankAssignOpen, setBankAssignOpen] = useState(false);
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const [contractCreateTarget, setContractCreateTarget] =
     useState<ContractCreateTarget | null>(null);
-  const [counterpartyBankAccountCreateTarget, setCounterpartyBankAccountCreateTarget] =
-    useState<CounterpartyBankAccountCreateTarget | null>(null);
+  const [
+    counterpartyBankAccountCreateTarget,
+    setCounterpartyBankAccountCreateTarget,
+  ] = useState<CounterpartyBankAccountCreateTarget | null>(null);
   const {
     bankAccountOptionsByDocumentType,
     offsetAccountOptionsByDocumentType,
@@ -108,6 +113,12 @@ export default function BankStatementImportPage() {
     ): BankStatementOperationCreatePayload | null => {
       const bankAccountId = toValidNumber(card.bankAccountId);
       const operationTypeId = getTransactionOperationTypeId(card, transaction);
+      const parsedDirectionId = Number(transaction.directionId);
+      const directionId =
+        (parsedDirectionId === 1 || parsedDirectionId === -1
+          ? parsedDirectionId
+          : null) ??
+        (operationTypeId === 2 ? -1 : operationTypeId === 1 ? 1 : null);
       const counterpartyId = toValidNumber(transaction.counterpartyId);
       const bankChartAccountId = toValidNumber(card.bankChartAccountId);
       const offsetAccountId = toValidNumber(transaction.offsetAccountId);
@@ -117,20 +128,17 @@ export default function BankStatementImportPage() {
       );
       const currencyId =
         toValidNumber(transaction.currencyId) ?? toValidNumber(card.currencyId);
-      const amount = toValidNumber(
-        transaction.amount || transaction.credit || transaction.debit,
+      const differenceAmount = Math.abs(
+        (transaction.debit ?? 0) - (transaction.credit ?? 0),
       );
+      const amount =
+        toValidNumber(transaction.amount) ?? toValidNumber(differenceAmount);
       const rawDate = transaction.date;
       const docDate = rawDate ? dayjs(rawDate) : null;
 
       if (
         !bankAccountId ||
-        !bankChartAccountId ||
-        !offsetAccountId ||
-        !contractId ||
-        !counterpartyBankAccountId ||
-        !operationTypeId ||
-        !counterpartyId ||
+        !directionId ||
         !currencyId ||
         !amount ||
         !docDate?.isValid()
@@ -140,11 +148,14 @@ export default function BankStatementImportPage() {
 
       return {
         bankAccountId,
+        directionId,
         bankChartAccountId,
         offsetAccountId,
-        operationTypeId,
         counterpartyId,
         counterpartyBankAccountId,
+        bankDocumentNumber: transaction.bankDocumentNumber ?? null,
+        classificationCategoryId: transaction.classificationCategoryId ?? null,
+        classificationRuleId: transaction.classificationRuleId ?? null,
         docDate: docDate.toISOString(),
         currencyId,
         exchangeRate: 1,
@@ -165,8 +176,8 @@ export default function BankStatementImportPage() {
       cards.flatMap((card) =>
         card.transactions
           .map((transaction) => buildOperationPayload(card, transaction))
-          .filter(
-            (item): item is BankStatementOperationCreatePayload => Boolean(item),
+          .filter((item): item is BankStatementOperationCreatePayload =>
+            Boolean(item),
           ),
       ),
     [cards, buildOperationPayload],
@@ -193,15 +204,19 @@ export default function BankStatementImportPage() {
     [cards],
   );
   const missingBankChartAccountCount = useMemo(
-    () => cards.filter((card) => !toValidNumber(card.bankChartAccountId)).length,
+    () =>
+      cards.filter((card) => !toValidNumber(card.bankChartAccountId)).length,
     [cards],
   );
   const missingOffsetAccountCount = useMemo(
     () =>
       cards.reduce((sum, card) => {
-        return sum + card.transactions.filter(
-          (transaction) => !toValidNumber(transaction.offsetAccountId),
-        ).length;
+        return (
+          sum +
+          card.transactions.filter(
+            (transaction) => !toValidNumber(transaction.offsetAccountId),
+          ).length
+        );
       }, 0),
     [cards],
   );
@@ -237,21 +252,36 @@ export default function BankStatementImportPage() {
     accept: ".xlsx,.xls",
     showUploadList: false,
     beforeUpload: (file) => {
-      parseMutation.mutate(file, {
-        onSuccess: (response) => {
-          const parsedCards = normalizeBankStatements(response, file.name);
-          setCards((prev) => [...parsedCards, ...prev]);
-          setExpandedIds((prev) => {
-            const next = new Set(prev);
-            parsedCards.forEach((item) => next.add(item.id));
-            return next;
-          });
-          toast.success(t("bank.messages.imported"));
+      if (!selectedBankId) return false;
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Excel fayl hajmi 5 MB dan oshmasligi kerak");
+        return false;
+      }
+
+      parseMutation.mutate(
+        { file, bankId: selectedBankId },
+        {
+          onSuccess: (response) => {
+            const parsedCards = normalizeBankStatements(response, file.name);
+            setCards((prev) => [...parsedCards, ...prev]);
+            setExpandedIds((prev) => {
+              const next = new Set(prev);
+              parsedCards.forEach((item) => next.add(item.id));
+              return next;
+            });
+            toast.success(t("bank.messages.imported"));
+          },
+          onError: (error) => errorHandlers(error),
         },
-        onError: (error) => errorHandlers(error),
-      });
+      );
       return false;
     },
+  };
+
+  const handleClearImport = () => {
+    setCards([]);
+    setExpandedIds(new Set());
+    setSelectedBankId(null);
   };
 
   const handleDeleteCard = (id: string) => {
@@ -263,7 +293,10 @@ export default function BankStatementImportPage() {
     });
   };
 
-  const handleDeleteTransaction = (cardId: string, transactionIndex: number) => {
+  const handleDeleteTransaction = (
+    cardId: string,
+    transactionIndex: number,
+  ) => {
     setCards((prev) =>
       prev.map((item) =>
         item.id === cardId
@@ -364,6 +397,27 @@ export default function BankStatementImportPage() {
     );
   };
 
+  const handleClassificationChange = (
+    cardId: string,
+    transactionIndex: number,
+    classificationCategoryId: number | null,
+  ) => {
+    setCards((prev) =>
+      prev.map((card) =>
+        card.id === cardId
+          ? {
+              ...card,
+              transactions: card.transactions.map((transaction, index) =>
+                index === transactionIndex
+                  ? { ...transaction, classificationCategoryId, classificationRuleId: null }
+                  : transaction,
+              ),
+            }
+          : card,
+      ),
+    );
+  };
+
   const handleAddCounterpartyBankAccount = (
     card: BankStatementCardData,
     transactionIndex: number,
@@ -392,7 +446,8 @@ export default function BankStatementImportPage() {
         ...card,
         transactions: card.transactions.map((transaction, index) => {
           const sameCounterparty =
-            Number(transaction.counterpartyId) === Number(account.counterpartyId);
+            Number(transaction.counterpartyId) ===
+            Number(account.counterpartyId);
           const sameAccountNumber =
             normalizeAccountNumber(transaction.counterpartyAccount) ===
             createdAccountNumber;
@@ -467,7 +522,9 @@ export default function BankStatementImportPage() {
     setBankAssignOpen(false);
   };
 
-  const applyCounterpartyAssignments = (assignments: Record<string, number>) => {
+  const applyCounterpartyAssignments = (
+    assignments: Record<string, number>,
+  ) => {
     setCards((prev) =>
       prev.map((card) => ({
         ...card,
@@ -495,28 +552,6 @@ export default function BankStatementImportPage() {
   };
 
   const handleSave = async () => {
-    if (missingBankChartAccountCount) {
-      toast.error(t("bank.messages.selectAllBankAccounts"));
-      return;
-    }
-
-    if (missingOffsetAccountCount) {
-      toast.error(t("bank.messages.selectAllOffsetAccounts"));
-      return;
-    }
-
-    if (missingContractCount) {
-      toast.error(t("bank.messages.selectAllContracts"));
-      return;
-    }
-
-    if (missingCounterpartyBankAccountCount) {
-      toast.error(
-        t("bank.messages.selectAllCounterpartyAccounts"),
-      );
-      return;
-    }
-
     if (!validOperations.length) {
       toast.error(t("bank.messages.noValidTransactions"));
       return;
@@ -537,8 +572,7 @@ export default function BankStatementImportPage() {
           } else {
             toast.success(t("bank.messages.saved"));
           }
-          setCards([]);
-          setExpandedIds(new Set());
+          handleClearImport();
           navigate("/main/bank");
         },
         onError: (error) => errorHandlers(error),
@@ -562,10 +596,7 @@ export default function BankStatementImportPage() {
             <Button
               icon={<Trash2 className="size-4" />}
               disabled={!cards.length}
-              onClick={() => {
-                setCards([]);
-                setExpandedIds(new Set());
-              }}
+              onClick={handleClearImport}
             >
               {t("common.clear")}
             </Button>
@@ -582,13 +613,33 @@ export default function BankStatementImportPage() {
         </div>
 
         {!cards.length && (
-          <Dragger {...uploadProps} disabled={parseMutation.isPending}>
-            <div className="my-3 flex justify-center">
-              <UploadIcon className="size-10" />
-            </div>
-            <p className="ant-upload-text">{t("bank.import.uploadText")}</p>
-            <p className="ant-upload-hint">{t("bank.import.uploadHint")}</p>
-          </Dragger>
+          <div className="space-y-4">
+            <SelectCustom
+               label="bank.import.bankTypeLabel"
+               placeholder="bank.import.bankTypePlaceholder"
+               path={selectListEndpoints.banksSelectList}
+               value={selectedBankId}
+               onChange={(value) => setSelectedBankId(toValidNumber(value))}
+              search
+              clearable
+              disabled={parseMutation.isPending}
+              marginBottom="mb-0"
+            />
+            <Dragger
+              {...uploadProps}
+               disabled={!selectedBankId || parseMutation.isPending}
+            >
+              <div className="my-3 flex justify-center">
+                <UploadIcon className="size-10" />
+              </div>
+              <p className="ant-upload-text">{t("bank.import.uploadText")}</p>
+              <p className="ant-upload-hint">
+                 {selectedBankId
+                  ? t("bank.import.uploadHint")
+                  : t("bank.import.bankTypeHint")}
+              </p>
+            </Dragger>
+          </div>
         )}
       </Card>
 
@@ -645,7 +696,8 @@ export default function BankStatementImportPage() {
                 disabled={!missingBankInfoCount}
                 onClick={() => setBankAssignOpen(true)}
               >
-                {t("bank.import.assignMissingBankInfo")} ({missingBankInfoCount})
+                {t("bank.import.assignMissingBankInfo")} ({missingBankInfoCount}
+                )
               </Button>
               <Button
                 icon={<Users className="size-4" />}
@@ -673,8 +725,12 @@ export default function BankStatementImportPage() {
                 handleDeleteTransaction(item.id, transactionId)
               }
               chartAccountLoading={chartAccountLoading}
-              bankAccountOptionsByDocumentType={bankAccountOptionsByDocumentType}
-              offsetAccountOptionsByDocumentType={offsetAccountOptionsByDocumentType}
+              bankAccountOptionsByDocumentType={
+                bankAccountOptionsByDocumentType
+              }
+              offsetAccountOptionsByDocumentType={
+                offsetAccountOptionsByDocumentType
+              }
               onBankChartAccountChange={(bankChartAccountId) =>
                 handleBankChartAccountChange(item.id, bankChartAccountId)
               }
@@ -692,11 +748,23 @@ export default function BankStatementImportPage() {
                 handleAddContract(item, transactionId, transaction)
               }
               onCounterpartyBankAccountChange={(transactionId, accountId) =>
-                handleCounterpartyBankAccountChange(item.id, transactionId, accountId)
+                handleCounterpartyBankAccountChange(
+                  item.id,
+                  transactionId,
+                  accountId,
+                )
               }
               onAddCounterpartyBankAccount={(transactionId, transaction) =>
-                handleAddCounterpartyBankAccount(item, transactionId, transaction)
+                handleAddCounterpartyBankAccount(
+                  item,
+                  transactionId,
+                  transaction,
+                )
               }
+              onClassificationChange={(transactionId, categoryId) =>
+                handleClassificationChange(item.id, transactionId, categoryId)
+              }
+              classificationOptions={classificationOptions}
             />
           ))}
         </div>
@@ -730,8 +798,12 @@ export default function BankStatementImportPage() {
 
       <CounterpartyBankAccountAddEditPage
         open={Boolean(counterpartyBankAccountCreateTarget)}
-        initialCounterpartyId={counterpartyBankAccountCreateTarget?.counterpartyId}
-        initialAccountNumber={counterpartyBankAccountCreateTarget?.accountNumber}
+        initialCounterpartyId={
+          counterpartyBankAccountCreateTarget?.counterpartyId
+        }
+        initialAccountNumber={
+          counterpartyBankAccountCreateTarget?.accountNumber
+        }
         onCreated={handleCounterpartyBankAccountCreated}
         onClose={() => setCounterpartyBankAccountCreateTarget(null)}
       />

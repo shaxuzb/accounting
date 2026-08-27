@@ -1,18 +1,21 @@
 export interface BankOperationCreatePayload {
   bankAccountId: number;
-  bankChartAccountId: number;
-  offsetAccountId: number;
-  operationTypeId: number;
-  paymentTypeId: number;
-  counterpartyId: number;
-  counterpartyBankAccountId: number;
-  contractId: number;
-  exchangeRate: number;
+  directionId: number;
+  paymentTypeId?: number | null;
+  bankChartAccountId?: number | null;
+  offsetAccountId?: number | null;
+  counterpartyId?: number | null;
+  counterpartyBankAccountId?: number | null;
+  bankDocumentNumber?: string | null;
+  classificationCategoryId?: number | null;
+  classificationRuleId?: number | null;
   docDate: string;
   currencyId: number;
   amount: number;
-  comment: string | null;
-  stateId?: number;
+  exchangeRate?: number | null;
+  comment?: string | null;
+  contractId?: number | null;
+  stateId?: number | null;
 }
 
 export type BankStatementOperationCreatePayload = Omit<

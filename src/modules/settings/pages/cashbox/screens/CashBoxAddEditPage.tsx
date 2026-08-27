@@ -105,7 +105,7 @@ export default function CashBoxAddEditPage({
                 formik={formik}
                 fieldName="organizationId"
                 label="settings.fields.organization"
-                path={selectListEndpoints.operationTypesSelectList}
+                path={selectListEndpoints.organizationsSelectList}
               />
             </Col>
             <Col span={12}>

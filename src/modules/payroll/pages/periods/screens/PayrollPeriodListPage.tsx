@@ -46,10 +46,7 @@ export default function PayrollPeriodListPage() {
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  const runAction = (
-    record: PayrollPeriod,
-    action: "close" | "reopen",
-  ) => {
+  const runAction = (record: PayrollPeriod, action: "close" | "reopen") => {
     modal.confirm({
       title: t(
         action === "close"
@@ -61,7 +58,9 @@ export default function PayrollPeriodListPage() {
           ? "payroll.periods.closeConfirmText"
           : "payroll.periods.reopenConfirmText",
       ),
-      okText: t(action === "close" ? "payroll.periods.close" : "payroll.periods.reopen"),
+      okText: t(
+        action === "close" ? "payroll.periods.close" : "payroll.periods.reopen",
+      ),
       cancelText: t("common.cancel"),
       okButtonProps: { type: "primary", danger: action === "close" },
       onOk: async () => {
@@ -85,12 +84,11 @@ export default function PayrollPeriodListPage() {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
       align: "center",
-      width: 70,
+      width: 45,
     },
     {
       dataIndex: "month",
       title: t("payroll.fields.period"),
-      minWidth: 180,
       render: (_, record) => (
         <span className="font-medium">
           {t(`payroll.months.${record.month}`, {
@@ -104,7 +102,6 @@ export default function PayrollPeriodListPage() {
       dataIndex: "startDate",
       title: t("payroll.fields.periodRange"),
       align: "center",
-      width: 220,
       render: (_, record) =>
         record.startDate
           ? `${displayDate(record.startDate)} — ${displayDate(record.endDate)}`
@@ -114,19 +111,16 @@ export default function PayrollPeriodListPage() {
       dataIndex: "normWorkDays",
       title: t("payroll.fields.normWorkDays"),
       align: "center",
-      width: 140,
     },
     {
       dataIndex: "normWorkHours",
       title: t("payroll.fields.normWorkHours"),
       align: "center",
-      width: 150,
     },
     {
       dataIndex: "status",
       title: t("settings.fields.status"),
       align: "center",
-      width: 140,
       render: (_, record) => (
         <Tag
           className="m-0!"
@@ -142,7 +136,6 @@ export default function PayrollPeriodListPage() {
       dataIndex: "closedDate",
       title: t("payroll.fields.closedDate"),
       align: "center",
-      width: 150,
       render: (value: string | null) => (value ? displayDate(value) : "—"),
     },
   ];
@@ -152,7 +145,6 @@ export default function PayrollPeriodListPage() {
       dataIndex: "actions",
       title: t("common.actions"),
       align: "center",
-      width: 170,
       fixed: "right",
       render: (_, record) =>
         record.status === "OPEN" ? (

@@ -61,11 +61,14 @@ const commentKeys = [
 const debitKeys = ["debit", "debitAmount", "outcome", "expense"];
 const creditKeys = ["credit", "creditAmount", "income", "receipt"];
 const amountKeys = ["amount", "sum", "total", "paymentAmount"];
+const directionKeys = ["direction"];
+const directionIdKeys = ["directionId"];
 const bankAccountIdKeys = ["bankAccountId", "accountId", "orgBankAccountId"];
 const operationTypeIdKeys = ["operationTypeId", "operationId"];
 const currencyIdKeys = ["currencyId"];
 const counterpartyIdKeys = ["counterpartyId"];
 const contractIdKeys = ["contractId"];
+const bankDocumentNumberKeys = ["bankDocumentNumber", "bankDocNumber"];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -101,6 +104,33 @@ const getStringByKeys = (record: Record<string, unknown>, keys: string[]) => {
 const getNumberByKeys = (record: Record<string, unknown>, keys: string[]) =>
   toNumber(getByKeys(record, keys));
 
+const getOperationTypeIdByDirection = (
+  direction: string,
+  directionId: number | null,
+) => {
+  const normalizedDirection = direction.trim().toLowerCase();
+
+  if (
+    normalizedDirection === "incoming" ||
+    normalizedDirection === "in" ||
+    normalizedDirection === "credit" ||
+    directionId === 1
+  ) {
+    return 1;
+  }
+
+  if (
+    normalizedDirection === "outgoing" ||
+    normalizedDirection === "out" ||
+    normalizedDirection === "debit" ||
+    directionId === -1
+  ) {
+    return 2;
+  }
+
+  return null;
+};
+
 const getTransactionArray = (record: Record<string, unknown>) => {
   for (const key of transactionKeys) {
     const value = getByKeys(record, [key]);
@@ -116,14 +146,29 @@ const normalizeTransaction = (
   cardDefaults?: Partial<BankStatementCardData>,
 ): BankStatementTransaction => {
   const fields = isRecord(value) ? value : { value };
-  const debit = toNumber(getByKeys(fields, debitKeys));
-  const credit = toNumber(getByKeys(fields, creditKeys));
-  const amount = toNumber(getByKeys(fields, amountKeys)) ?? credit ?? debit;
+  const sourceDebit = toNumber(getByKeys(fields, debitKeys));
+  const sourceCredit = toNumber(getByKeys(fields, creditKeys));
+  const direction = getStringByKeys(fields, directionKeys) ?? "";
+  const directionId = getNumberByKeys(fields, directionIdKeys);
+  const directionOperationTypeId = getOperationTypeIdByDirection(
+    direction,
+    directionId,
+  );
+  // The parser already reports debit/credit relative to the organization.
+  // Keep the DTO semantics intact; directionId is the source of truth for logic.
+  const debit = sourceDebit ?? 0;
+  const credit = sourceCredit ?? 0;
+  const dtoAmount = toNumber(getByKeys(fields, amountKeys));
+  const amount =
+    dtoAmount ?? Math.abs((sourceCredit ?? 0) - (sourceDebit ?? 0));
 
   return {
     date: getStringByKeys(fields, dateKeys) ?? "",
     docNumber: getStringByKeys(fields, ["docNumber", "documentNumber"]) ?? "",
+    bankDocumentNumber:
+      getStringByKeys(fields, bankDocumentNumberKeys) ?? null,
     operationTypeId:
+      directionOperationTypeId ??
       getNumberByKeys(fields, operationTypeIdKeys) ??
       cardDefaults?.operationTypeId ??
       0,
@@ -133,15 +178,34 @@ const normalizeTransaction = (
     counterpartyInn: getStringByKeys(fields, ["counterpartyInn", "inn"]) ?? "",
     counterpartyName:
       getStringByKeys(fields, ["counterpartyName", ...counterpartyKeys]) ?? "",
-    counterpartyId: getNumberByKeys(fields, counterpartyIdKeys) ?? 0,
-    debit: debit ?? 0,
-    credit: credit ?? 0,
+    counterpartyId: getNumberByKeys(fields, counterpartyIdKeys),
+    debit,
+    credit,
     purpose: getStringByKeys(fields, commentKeys) ?? "",
-    direction: getStringByKeys(fields, ["direction"]) ?? "",
-    amount: amount ?? 0,
+    direction,
+    directionId,
+    amount,
     currencyId: getNumberByKeys(fields, currencyIdKeys) ?? undefined,
     currencyName: getStringByKeys(fields, ["currencyName", "currency"]) ?? undefined,
     contractId: getNumberByKeys(fields, contractIdKeys) ?? null,
+    counterpartyBankAccountId: getNumberByKeys(
+      fields,
+      ["counterpartyBankAccountId"],
+    ),
+    classificationCategoryId: getNumberByKeys(fields, [
+      "classificationCategoryId",
+    ]),
+    classificationCode:
+      getStringByKeys(fields, ["classificationCode"]) ?? null,
+    classificationName:
+      getStringByKeys(fields, ["classificationName"]) ?? null,
+    classificationRuleId: getNumberByKeys(fields, ["classificationRuleId"]),
+    classificationRuleCode:
+      getStringByKeys(fields, ["classificationRuleCode"]) ?? null,
+    requiresReview:
+      getByKeys(fields, ["requiresReview"]) === true ||
+      String(getByKeys(fields, ["requiresReview"]) ?? "").toLowerCase() ===
+        "true",
   };
 };
 
@@ -169,11 +233,25 @@ const normalizeCard = (
   const record = isRecord(value) ? value : { transactions: [value] };
   const cardDefaults: Partial<BankStatementCardData> = {
     bankAccountId: getNumberByKeys(record, bankAccountIdKeys),
+    bankId: getNumberByKeys(record, ["bankId"]),
+    bankBranchId: getNumberByKeys(record, ["bankBranchId"]),
+    bankMfo: getStringByKeys(record, ["bankMfo"]),
+    bankName: getStringByKeys(record, ["bankName"]),
+    bankInn: getStringByKeys(record, ["bankInn"]) ?? null,
+    companyName: getStringByKeys(record, ["companyName"]),
+    companyInn: getStringByKeys(record, ["companyInn"]),
     accountNumber: getStringByKeys(record, accountKeys),
     currencyId: getNumberByKeys(record, currencyIdKeys),
     operationTypeId: getNumberByKeys(record, operationTypeIdKeys),
-    dateFrom: getStringByKeys(record, ["dateFrom", "startDate", "fromDate"]),
-    dateTo: getStringByKeys(record, ["dateTo", "endDate", "toDate"]),
+    totalDebit: getNumberByKeys(record, ["totalDebit"]),
+    totalCredit: getNumberByKeys(record, ["totalCredit"]),
+    openingBalance: getNumberByKeys(record, ["openingBalance"]),
+    closingBalance: getNumberByKeys(record, ["closingBalance"]),
+    hasActivity: getByKeys(record, ["hasActivity"]) as boolean | undefined,
+    periodFrom: getStringByKeys(record, ["periodFrom"]),
+    periodTo: getStringByKeys(record, ["periodTo"]),
+    dateFrom: getStringByKeys(record, ["periodFrom", "dateFrom", "startDate", "fromDate"]),
+    dateTo: getStringByKeys(record, ["periodTo", "dateTo", "endDate", "toDate"]),
   };
   const transactions = getTransactionArray(record).map((transaction, txIndex) =>
     normalizeTransaction(transaction, txIndex, cardDefaults),
@@ -208,6 +286,7 @@ export const normalizeBankStatements = (
   const payload = unwrapResponse(response);
 
   if (Array.isArray(payload)) {
+    if (payload.length === 0) return [];
     const hasNestedTransactions = payload.some(
       (item) => isRecord(item) && getTransactionArray(item).length > 0,
     );

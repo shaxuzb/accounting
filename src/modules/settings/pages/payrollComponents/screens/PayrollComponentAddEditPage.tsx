@@ -127,7 +127,8 @@ export default function PayrollComponentAddEditPage({
   };
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       title={
         isEdit
           ? t("payroll.components.editTitle")
@@ -137,32 +138,32 @@ export default function PayrollComponentAddEditPage({
       onCancel={handleClose}
       footer={null}
       centered
-      width={760}
+      width={700}
       destroyOnHidden
     >
       <Spin spinning={isEdit && isFetching}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
-          <Alert
+          {/* <Alert
             type="info"
             showIcon
             className="mb-4"
             message={t("payroll.components.hintTitle")}
             description={t("payroll.components.hintText")}
-          />
+          /> */}
 
           <Row gutter={[16, 0]}>
-            <Col xs={24} md={8}>
-              <InputText
-                formik={formik}
-                fieldName="code"
-                label="payroll.fields.componentCode"
-              />
-            </Col>
             <Col xs={24} md={16}>
               <InputText
                 formik={formik}
                 fieldName="name"
                 label="payroll.fields.componentName"
+              />
+            </Col>
+            <Col xs={24} md={8}>
+              <InputText
+                formik={formik}
+                fieldName="code"
+                label="payroll.fields.componentCode"
               />
             </Col>
 
@@ -283,21 +284,17 @@ export default function PayrollComponentAddEditPage({
             <Alert
               type="warning"
               showIcon
-              className="mb-4"
               message={t("payroll.components.employerTaxNote")}
             />
           )}
 
-          <div className="flex justify-end gap-2">
-            <Button onClick={handleClose} size="large" className="h-11!">
-              {t("common.cancel")}
-            </Button>
+          <div className="flex justify-end gap-2 mt-3">
             <Button
               type="primary"
               htmlType="submit"
               size="large"
               loading={isSubmitting}
-              className="h-11! min-w-40 font-semibold"
+              className="w-full  rounded-xl bg-blue-600! hover:bg-blue-700! font-semibold text-base"
             >
               {t("common.save")}
             </Button>

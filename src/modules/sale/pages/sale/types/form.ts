@@ -38,7 +38,7 @@ export interface SaleDocCreateProductBatchForm {
 }
 
 export interface SaleDocCreateLineForm
-  extends Omit<SaleDocProductForm, "id"> {
+  extends Omit<SaleDocProductForm, "id" | "vatAmount"> {
   assembled: true;
   items?: SaleDocCreateLineItemForm[];
   productBatches?: SaleDocCreateProductBatchForm[];

@@ -33,6 +33,7 @@ export default function BankTransactionOffsetAccountSelect({
       value={value || undefined}
       placeholder={t("bank.placeholders.selectAccount")}
       loading={loading}
+      optionFilterProp="label"
       options={options.map((option) => ({
         value: option.id,
         label: chartAccountOptionLabel(option),
@@ -42,9 +43,7 @@ export default function BankTransactionOffsetAccountSelect({
         return option ? chartAccountSelectedLabel(option) : props.label;
       }}
       allowClear
-      onChange={(accountId) =>
-        onChange(accountId ? Number(accountId) : null)
-      }
+      onChange={(accountId) => onChange(accountId ? Number(accountId) : null)}
       onClear={() => onChange(null)}
       disabled={loading}
     />

@@ -102,9 +102,9 @@ export default function RetailSaleListPage() {
       render: (value, record) => value || record.cashRegisterId || "-",
     },
     {
-      dataIndex: "totalAmount",
+      dataIndex: "finalAmount",
       title: t("retailSale.fields.totalAmount"),
-      align: "right",
+      align: "center",
       render: (value, record) =>
         `${numberSpacing(Number(value ?? 0))} ${record.currencyCode || "UZS"}`,
     },

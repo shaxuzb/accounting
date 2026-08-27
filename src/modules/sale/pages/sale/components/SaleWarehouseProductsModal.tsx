@@ -6,6 +6,7 @@ import InputNumberFormat from "@/components/fields/InputNumber";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { formatDate, numberSpacing } from "@/utils/utils";
 import type { SaleProductPriceLayer, SaleProductStock } from "../types/type";
+import { roundMoney } from "../utils/pricing";
 import { normalizeProductPriceDetails } from "../utils/salePricingDetails";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +16,7 @@ interface Props {
   loading: boolean;
   disabled?: boolean;
   aggregateStockMode?: boolean;
+  vatPercent?: number;
   search: string;
   loadingProductId?: number | null;
   onSearch: (value: string) => void;
@@ -51,6 +53,25 @@ const getDefaultSalePrice = (
       0,
   );
 
+const getDefaultTotalSale = (
+  product: SaleProductStock,
+  layers: SaleProductPriceLayer[],
+  quantity: number,
+  vatPercent: number,
+) =>
+  roundMoney(
+    quantity * getDefaultSalePrice(product, layers) * (1 + vatPercent / 100),
+  );
+
+const getSalePriceFromTotal = (
+  totalSale: number,
+  quantity: number,
+  vatPercent: number,
+) =>
+  quantity > 0
+    ? roundMoney(totalSale / quantity / (1 + vatPercent / 100))
+    : 0;
+
 interface BatchRow extends SaleProductPriceLayer {
   rowKey: string;
 }
@@ -61,6 +82,7 @@ export default function SaleWarehouseProductsModal({
   loading,
   disabled = false,
   aggregateStockMode = false,
+  vatPercent = 0,
   search,
   loadingProductId,
   onSearch,
@@ -74,7 +96,7 @@ export default function SaleWarehouseProductsModal({
   const [productQuantities, setProductQuantities] = useState<
     Record<number, number | null>
   >({});
-  const [salePrices, setSalePrices] = useState<Record<number, number | null>>(
+  const [saleTotals, setSaleTotals] = useState<Record<number, number | null>>(
     {},
   );
   const [groupFilter, setGroupFilter] = useState<string>();
@@ -167,16 +189,17 @@ export default function SaleWarehouseProductsModal({
           );
           if (quantity <= 0) return summary;
 
-          const salePrice =
-            salePrices[productId] ??
-            getDefaultSalePrice(product, layersByProductId.get(productId) ?? []);
+          const layers = layersByProductId.get(productId) ?? [];
+          const totalSale =
+            saleTotals[productId] ??
+            getDefaultTotalSale(product, layers, quantity, vatPercent);
           const costPrice = Number(product.costPrice ?? product.price ?? 0);
 
           return {
             products: summary.products + 1,
             quantity: summary.quantity + quantity,
             totalCost: summary.totalCost + quantity * costPrice,
-            totalSale: summary.totalSale + quantity * salePrice,
+            totalSale: summary.totalSale + totalSale,
           };
         },
         { products: 0, quantity: 0, totalCost: 0, totalSale: 0 },
@@ -196,10 +219,15 @@ export default function SaleWarehouseProductsModal({
             ),
           }))
           .filter((item) => item.quantity > 0);
-        const salePrice =
-          salePrices[productId] ?? getDefaultSalePrice(product, layers);
+        const selectedQuantity = selectedLayers.reduce(
+          (sum, item) => sum + item.quantity,
+          0,
+        );
+        const totalSale =
+          saleTotals[productId] ??
+          getDefaultTotalSale(product, layers, selectedQuantity, vatPercent);
 
-        return selectedSummaryForProduct(summary, selectedLayers, salePrice);
+        return selectedSummaryForProduct(summary, selectedLayers, totalSale);
       },
       { products: 0, quantity: 0, totalCost: 0, totalSale: 0 },
     );
@@ -208,7 +236,8 @@ export default function SaleWarehouseProductsModal({
     layersByProductId,
     productQuantities,
     quantities,
-    salePrices,
+    saleTotals,
+    vatPercent,
     visibleProducts,
   ]);
 
@@ -244,8 +273,14 @@ export default function SaleWarehouseProductsModal({
           if (quantity <= 0) return null;
 
           const layers = layersByProductId.get(productId) ?? [];
-          const salePrice =
-            salePrices[productId] ?? getDefaultSalePrice(product, layers);
+          const totalSale =
+            saleTotals[productId] ??
+            getDefaultTotalSale(product, layers, quantity, vatPercent);
+          const salePrice = getSalePriceFromTotal(
+            totalSale,
+            quantity,
+            vatPercent,
+          );
           return { product, salePrice, quantity };
         })
         .filter(
@@ -280,8 +315,18 @@ export default function SaleWarehouseProductsModal({
         const layers = getSelectedLayers(product);
         if (!layers.length) return null;
 
-        const salePrice =
-          salePrices[productId] ?? getDefaultSalePrice(product, layers);
+        const quantity = layers.reduce(
+          (sum, layer) => sum + layer.writeOffQuantity,
+          0,
+        );
+        const totalSale =
+          saleTotals[productId] ??
+          getDefaultTotalSale(product, layers, quantity, vatPercent);
+        const salePrice = getSalePriceFromTotal(
+          totalSale,
+          quantity,
+          vatPercent,
+        );
         return { product, layers, salePrice };
       })
       .filter(
@@ -384,21 +429,33 @@ export default function SaleWarehouseProductsModal({
     },
     {
       dataIndex: "salePrice",
-      title: t("sale.fields.salePrice"),
+      title: t("sale.fields.totalWithVat"),
       width: 170,
       render: (_, product) => {
         const productId = getStockProductId(product);
         const layers = layersByProductId.get(productId) ?? [];
+        const quantity = Math.min(
+          Number(productQuantities[productId] ?? 0),
+          getAvailableQuantity(product),
+        );
+        const hasManualTotal = Object.prototype.hasOwnProperty.call(
+          saleTotals,
+          productId,
+        );
         return (
           <InputNumberFormat
             standalone
             emptyZero
             min={0}
             precision={2}
-            value={salePrices[productId] ?? getDefaultSalePrice(product, layers)}
+            value={
+              hasManualTotal
+                ? saleTotals[productId]
+                : getDefaultTotalSale(product, layers, quantity, vatPercent)
+            }
             disabled={disabled}
             onValueChange={(value) =>
-              setSalePrices((current) => ({ ...current, [productId]: value }))
+              setSaleTotals((current) => ({ ...current, [productId]: value }))
             }
           />
         );
@@ -569,7 +626,7 @@ function selectedSummaryForProduct(
     totalSale: number;
   },
   selectedLayers: { layer: SaleProductPriceLayer; quantity: number }[],
-  salePrice: number,
+  totalSale: number,
 ) {
   if (!selectedLayers.length) return summary;
 
@@ -584,8 +641,6 @@ function selectedSummaryForProduct(
         (sum, item) => sum + item.quantity * item.layer.unitPrice,
         0,
       ),
-    totalSale:
-      summary.totalSale +
-      selectedLayers.reduce((sum, item) => sum + item.quantity * salePrice, 0),
+    totalSale: summary.totalSale + totalSale,
   };
 }

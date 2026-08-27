@@ -77,7 +77,8 @@ export default function PayrollPeriodModal({ open, onClose }: Props) {
   };
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       title={t("payroll.periods.createTitle")}
       open={open}
       onCancel={handleClose}
@@ -87,21 +88,19 @@ export default function PayrollPeriodModal({ open, onClose }: Props) {
       destroyOnHidden
     >
       <Form layout="vertical" onFinish={formik.handleSubmit}>
-        <Alert
+        {/* <Alert
           type="info"
           showIcon
           className="mb-4"
           message={t("payroll.periods.createHint")}
-        />
+        /> */}
         <Row gutter={[16, 0]}>
           <Col xs={24} md={12}>
             <InputNumber
               formik={formik}
               fieldName="year"
               label="payroll.fields.year"
-              min={0}
               max={2200}
-              precision={0}
               onValueChange={(value) => {
                 void setFieldValue("year", value, true);
                 suggestNorms(value, formik.values.month);
@@ -144,7 +143,7 @@ export default function PayrollPeriodModal({ open, onClose }: Props) {
         </Row>
 
         <div className="flex justify-end gap-2">
-          <Button onClick={handleClose} size="large" className="h-11!">
+          <Button onClick={handleClose} size="large" className="h-10!">
             {t("common.cancel")}
           </Button>
           <Button
@@ -152,7 +151,7 @@ export default function PayrollPeriodModal({ open, onClose }: Props) {
             htmlType="submit"
             size="large"
             loading={createMutation.isPending}
-            className="h-11! min-w-40 font-semibold"
+            className="h-10! min-w-40 font-semibold"
           >
             {t("common.create")}
           </Button>

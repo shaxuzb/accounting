@@ -215,6 +215,7 @@ export interface SaleSelectedProduct {
   costPrice: number;
   costPriceType?: "automatic" | "manual";
   amount?: number;
+  netAmount?: number;
   vatAmount?: number;
   unitId: number;
   unitPrice: number;

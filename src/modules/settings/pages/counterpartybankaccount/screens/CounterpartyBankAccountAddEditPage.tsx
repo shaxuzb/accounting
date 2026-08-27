@@ -18,6 +18,7 @@ const defaultValues: CounterpartybankaccountForm = {
   organizationId: null,
   counterpartyId: null,
   bankId: null,
+  bankBranchId: null,
   accountNumber: null,
   currencyId: null,
   isMain: null,
@@ -86,6 +87,7 @@ export default function CounterpartyBankAccountAddEditPage({
         organizationId: counterpartybankaccount.organizationId ?? null,
         counterpartyId: counterpartybankaccount.counterpartyId ?? null,
         bankId: counterpartybankaccount.bankId ?? null,
+        bankBranchId: counterpartybankaccount.bankBranchId ?? null,
         accountNumber: counterpartybankaccount.accountNumber ?? null,
         currencyId: counterpartybankaccount.currencyId ?? null,
         isMain: counterpartybankaccount.isMain ?? true,
@@ -125,7 +127,7 @@ export default function CounterpartyBankAccountAddEditPage({
                 formik={formik}
                 fieldName="organizationId"
                 label="settings.fields.organization"
-                path={selectListEndpoints.operationTypesSelectList}
+                path={selectListEndpoints.organizationsSelectList}
               />
             </Col>
             <Col span={12}>
@@ -134,6 +136,27 @@ export default function CounterpartyBankAccountAddEditPage({
                 fieldName="bankId"
                 label="settings.fields.bank"
                 path={selectListEndpoints.banksSelectList}
+                onChange={() => formik.setFieldValue("bankBranchId", null)}
+              />
+            </Col>
+
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="bankBranchId"
+                label="settings.fields.bankBranch"
+                path={selectListEndpoints.bankBranchesSelectList}
+                queryParams={{ bankId: formik.values.bankId }}
+                enabled={Boolean(formik.values.bankId)}
+                disabled={!formik.values.bankId}
+                clearable
+                search
+                displayConfig={{
+                  optionLabel: (item) =>
+                    [item.name, item.mfo, item.code].filter(Boolean).join(" - "),
+                  selectedLabel: (item) => String(item.name ?? item.mfo ?? item.code ?? ""),
+                  searchFields: ["name", "mfo", "code"],
+                }}
               />
             </Col>
 

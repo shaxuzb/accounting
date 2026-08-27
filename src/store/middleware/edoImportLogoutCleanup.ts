@@ -99,7 +99,9 @@ export const getActiveEdoImportJobId = () => {
   return activeJob.jobId;
 };
 
-export const cancelActiveEdoImportJob = async () => {
+let activeCancellation: Promise<boolean> | null = null;
+
+const cancelActiveEdoImportJobRequest = async () => {
   const activeJob = readActiveJob();
   const { auth, organizationId, userId } = getAuthContext();
 
@@ -166,6 +168,16 @@ export const cancelActiveEdoImportJob = async () => {
   }
 
   return cancelled;
+};
+
+export const cancelActiveEdoImportJob = () => {
+  if (activeCancellation) return activeCancellation;
+
+  activeCancellation = cancelActiveEdoImportJobRequest().finally(() => {
+    activeCancellation = null;
+  });
+
+  return activeCancellation;
 };
 
 export const edoImportLogoutCleanupMiddleware: Middleware =

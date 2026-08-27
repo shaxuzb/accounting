@@ -43,18 +43,14 @@ export default function PayrollEmployeeListPage() {
       dataIndex: "indexId",
       title: t("common.rowNumber"),
       align: "center",
-      width: 70,
+      width: 45,
     },
     {
       dataIndex: "employeeNumber",
       title: t("payroll.fields.employeeNumber"),
-      width: 150,
       align: "center",
       render: (value: string, record) => (
-        <Link
-          to={`/main/hr/employees/${record.id}`}
-          className="font-medium"
-        >
+        <Link to={`/main/hr/employees/${record.id}`} className="font-medium">
           {value || record.id}
         </Link>
       ),
@@ -62,6 +58,7 @@ export default function PayrollEmployeeListPage() {
     {
       dataIndex: "fullName",
       title: t("payroll.fields.employee"),
+      align: "center",
       render: (_, record) => (
         <Link to={`/main/hr/employees/${record.id}`}>
           {employeeFullName(record)}
@@ -72,21 +69,18 @@ export default function PayrollEmployeeListPage() {
       dataIndex: "departmentName",
       title: t("payroll.fields.department"),
       align: "center",
-      minWidth: 160,
       render: (value: string | null) => value ?? "—",
     },
     {
       dataIndex: "positionName",
       title: t("payroll.fields.position"),
       align: "center",
-      minWidth: 160,
       render: (value: string | null) => value ?? "—",
     },
     {
       dataIndex: "employmentType",
       title: t("payroll.fields.employmentType"),
       align: "center",
-      width: 150,
       render: (_, record) =>
         record.employmentType ? (
           <Tag className="m-0!" color="blue">
@@ -102,7 +96,6 @@ export default function PayrollEmployeeListPage() {
       dataIndex: "monthlySalary",
       title: t("payroll.fields.monthlySalary"),
       align: "center",
-      width: 160,
       render: (_, record) => (
         <span className="font-medium">
           {money(record.monthlySalary)}{" "}
@@ -116,14 +109,12 @@ export default function PayrollEmployeeListPage() {
       dataIndex: "phoneNumber",
       title: t("settings.fields.phoneNumber"),
       align: "center",
-      width: 160,
       render: (value: string | null) => value ?? "—",
     },
     {
       dataIndex: "stateId",
       title: t("settings.fields.status"),
       align: "center",
-      width: 120,
       render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
   ];
@@ -139,7 +130,6 @@ export default function PayrollEmployeeListPage() {
           dataIndex: "actions",
           title: t("common.actions"),
           align: "center" as const,
-          width: 90,
           fixed: "right" as const,
           render: (_: unknown, record: PayrollEmployee) => (
             <ActionColumn

@@ -1,7 +1,7 @@
 import { Button, Input, Select, Switch, Table, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import { Pencil, Plus, QrCode, Save, Trash2, X } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import InputNumberFormat from "@/components/fields/InputNumber";
@@ -17,6 +17,7 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   useGetAvailableSaleProductMarkings,
   useGetProductPriceDetails,
+  useGetProductByMarking,
   useGetSaleProductStocks,
   useGetSaleDocumentAccountOptions,
 } from "../hooks";
@@ -97,9 +98,6 @@ const getVatAmount = (
   return percent ? roundMoney((amount * percent) / 100) : 0;
 };
 
-const getLineAmount = (line: SaleSelectedProduct) =>
-  roundMoney(line.quantity * line.unitPrice);
-
 const getNetAmountFromGross = (
   grossAmount: number,
   vatRateId: number | null | undefined,
@@ -108,25 +106,67 @@ const getNetAmountFromGross = (
   const percent = getVatPercent(vatRateId, options);
   return percent
     ? roundMoney(grossAmount / (1 + percent / 100))
-    : roundMoney(grossAmount);
+      : roundMoney(grossAmount);
 };
 
-const getLineTotal = (line: SaleSelectedProduct, vatRates: VatRateOption[]) =>
+const getLineAmount = (line: SaleSelectedProduct) =>
+  roundMoney(line.quantity * line.unitPrice);
+
+const getGrossUnitPrice = (
+  line: SaleSelectedProduct,
+  vatRates: VatRateOption[],
+) =>
   roundMoney(
-    getLineAmount(line) +
-      getVatAmount(getLineAmount(line), line.vatRateId, vatRates),
+    line.unitPrice + getVatAmount(line.unitPrice, line.vatRateId, vatRates),
   );
+
+const getGrossUnitPriceFromTotal = (
+  grossTotal: number | null | undefined,
+  quantity: number | null | undefined,
+) => {
+  const lineQuantity = Number(quantity ?? 0);
+  return lineQuantity > 0
+    ? roundMoney(Number(grossTotal ?? 0) / lineQuantity)
+    : 0;
+};
 
 const getLayerSaleAmount = (layer: SaleProductPriceLayer) =>
   layer.writeOffQuantity * layer.salePrice;
+
+const getLayerVatAmount = (
+  layer: SaleProductPriceLayer,
+  vatRateId: number | null | undefined,
+  vatRates: VatRateOption[],
+) =>
+  roundMoney(
+    getVatAmount(layer.salePrice, vatRateId, vatRates) *
+      layer.writeOffQuantity,
+  );
+
+// QQS dona narxidan hisoblanadi. Shu usulda 2 571 428,56 QQS saqlanadi,
+// satr jami esa 24 000 000 bo‘lib qoladi.
+const getLineTotal = (line: SaleSelectedProduct, vatRates: VatRateOption[]) =>
+  roundMoney(getLineAmount(line) + getLineVatAmount(line, vatRates));
+
+const getLineVatAmount = (
+  line: SaleSelectedProduct,
+  vatRates: VatRateOption[],
+) =>
+  roundMoney(
+    getVatAmount(line.unitPrice, line.vatRateId, vatRates) * line.quantity,
+  );
+
+const getLineNetAmount = (line: SaleSelectedProduct) =>
+  getLineAmount(line);
 
 const getLayerTotal = (
   layer: SaleProductPriceLayer,
   vatRateId: number | null | undefined,
   vatRates: VatRateOption[],
 ) => {
-  const amount = getLayerSaleAmount(layer);
-  return amount + getVatAmount(amount, vatRateId, vatRates);
+  const amount = roundMoney(getLayerSaleAmount(layer));
+  const vatAmount = getLayerVatAmount(layer, vatRateId, vatRates);
+  return roundMoney(amount + vatAmount);
 };
 
 const getAvailableQuantity = (product: SaleProductStock, fallback = 0) =>
@@ -139,7 +179,7 @@ const getLayerIdentity = (layer: SaleProductPriceLayer) =>
       layer.purchaseId ??
       layer.id ??
       layer.purchaseDate ??
-    "layer",
+      "layer",
   );
 
 const trimMarkingsForLayers = (
@@ -148,7 +188,8 @@ const trimMarkingsForLayers = (
   quantity: number,
 ) => {
   if (!markings?.length) return [];
-  if (!layers.length) return markings.slice(0, Math.max(0, Math.round(quantity)));
+  if (!layers.length)
+    return markings.slice(0, Math.max(0, Math.round(quantity)));
 
   const remainingByBatch = new Map<number, number>();
   layers.forEach((layer) => {
@@ -280,6 +321,14 @@ export default function SaleProductSelection({
     null,
   );
   const [emptyRowKeys, setEmptyRowKeys] = useState<string[]>([newRowKey]);
+  const [manualTotalValues, setManualTotalValues] = useState<
+    Record<string, number | null>
+  >({});
+  const [manualSalePriceValues, setManualSalePriceValues] = useState<
+    Record<string, number | null>
+  >({});
+  const manualTotalValuesRef = useRef<Record<string, number | null>>({});
+  const manualSalePriceValuesRef = useRef<Record<string, number | null>>({});
   const [loadingProductId, setLoadingProductId] = useState<number | null>(null);
   const getProductPriceDetails = useGetProductPriceDetails();
   const {
@@ -292,15 +341,19 @@ export default function SaleProductSelection({
   );
   const availableMarkingProducts =
     availableMarkingProductsData ?? EMPTY_MARKING_PRODUCTS;
+  const getProductByMarking = useGetProductByMarking();
   const {
     data: productStockData,
     isLoading: isProductStocksLoading,
     isFetching: isProductStocksFetching,
-  } = useGetSaleProductStocks({
-    page: 1,
-    pageSize: 1000,
-    ...(warehouseId ? { warehouseId } : {}),
-  }, Boolean(warehouseId));
+  } = useGetSaleProductStocks(
+    {
+      page: 1,
+      pageSize: 1000,
+      ...(warehouseId ? { warehouseId } : {}),
+    },
+    Boolean(warehouseId),
+  );
   const stockProducts = productStockData?.items ?? EMPTY_STOCK_PRODUCTS;
   const productById = useMemo(
     () =>
@@ -350,11 +403,8 @@ export default function SaleProductSelection({
     (line: SaleSelectedProduct): SaleSelectedProduct => ({
       ...line,
       amount: getLineTotal(line, vatRateOptions),
-      vatAmount: getVatAmount(
-        getLineAmount(line),
-        line.vatRateId,
-        vatRateOptions,
-      ),
+      netAmount: getLineNetAmount(line),
+      vatAmount: getLineVatAmount(line, vatRateOptions),
     }),
     [vatRateOptions],
   );
@@ -381,8 +431,9 @@ export default function SaleProductSelection({
     if (hasChanges) onChange(nextProducts);
   }, [onChange, products, syncLineAmounts, vatRateOptions]);
 
-  const { chartAccounts, defaultAccounts } =
-    useGetSaleDocumentAccountOptions(documentTypeId ?? saleDocumentTypeId);
+  const { chartAccounts, defaultAccounts } = useGetSaleDocumentAccountOptions(
+    documentTypeId ?? saleDocumentTypeId,
+  );
   const chartAccountById = useMemo(
     () =>
       new Map(
@@ -642,6 +693,70 @@ export default function SaleProductSelection({
     );
   };
 
+  const clearManualTotal = (rowKey?: string) => {
+    if (!rowKey) return;
+
+    const nextRefValues = { ...manualTotalValuesRef.current };
+    delete nextRefValues[rowKey];
+    manualTotalValuesRef.current = nextRefValues;
+    setManualTotalValues((current) => {
+      if (!Object.prototype.hasOwnProperty.call(current, rowKey)) {
+        return current;
+      }
+
+      const next = { ...current };
+      delete next[rowKey];
+      return next;
+    });
+  };
+
+  const clearManualSalePrice = (rowKey?: string) => {
+    if (!rowKey) return;
+
+    const nextRefValues = { ...manualSalePriceValuesRef.current };
+    delete nextRefValues[rowKey];
+    manualSalePriceValuesRef.current = nextRefValues;
+    setManualSalePriceValues((current) => {
+      if (!Object.prototype.hasOwnProperty.call(current, rowKey)) {
+        return current;
+      }
+
+      const next = { ...current };
+      delete next[rowKey];
+      return next;
+    });
+  };
+
+  const applyManualTotal = (
+    rowKey: string | undefined,
+    grossAmount: number | null | undefined,
+  ) => {
+    if (!rowKey) return;
+
+    clearManualSalePrice(rowKey);
+
+    updateLine(rowKey, (line) => {
+      const gross = roundMoney(Number(grossAmount ?? 0));
+      const netAmount = getNetAmountFromGross(
+        gross,
+        line.vatRateId,
+        vatRateOptions,
+      );
+      const quantity = Number(line.quantity ?? 0);
+      const unitPrice = quantity > 0 ? roundMoney(netAmount / quantity) : 0;
+
+      return recalculateLine({
+        line: {
+          ...line,
+          priceType: "manual",
+          markupPercent: getMarkupPercent(line.costPrice, unitPrice),
+        },
+        unitPrice,
+        costingMethodId: saleCondition.costingMethodId,
+      });
+    });
+  };
+
   const removeEmptyRow = (rowKey?: string) => {
     if (!rowKey) return;
     setEmptyRowKeys((current) => {
@@ -659,6 +774,8 @@ export default function SaleProductSelection({
     batch: SaleProductPriceLayer,
     value: number | null,
   ) => {
+    clearManualTotal(rowKey);
+    clearManualSalePrice(rowKey);
     updateLine(rowKey, (line) => {
       const availableLayers = line.priceLayers ?? [];
       const selectedQuantityByLayer = new Map(
@@ -778,10 +895,11 @@ export default function SaleProductSelection({
       return;
     }
 
-    if (!(line.layers ?? []).some((layer) => layer.batchId && layer.writeOffQuantity > 0)) {
-      toast.error(t("sale.messages.enterBatchQuantityFirst"));
-      return;
-    }
+    // Partiya bo'yicha miqdor kiritilganini majburiy tekshirish vaqtincha o'chirildi.
+    // if (!(line.layers ?? []).some((layer) => layer.batchId && layer.writeOffQuantity > 0)) {
+    //   toast.error(t("sale.messages.enterBatchQuantityFirst"));
+    //   return;
+    // }
 
     setMarkingLine({ ...line, isPieceTracked: true });
   };
@@ -806,16 +924,16 @@ export default function SaleProductSelection({
     closeMarkingModal();
   };
 
-  const handleAddMarking = (inputValue: string) => {
+  const handleAddMarking = async (inputValue: string) => {
     if (!activeMarkingLine) return;
 
-    if (isAvailableMarkingsFetching) {
+    if (!aggregateStockMode && isAvailableMarkingsFetching) {
       toast(t("sale.messages.markingsChecking"));
       return;
     }
 
     const values = inputValue
-      .split(/[\s,;]+/)
+      .split(/[\r\n]+/)
       .map((item) => item.trim())
       .filter(Boolean);
     if (!values.length) return;
@@ -825,7 +943,8 @@ export default function SaleProductSelection({
     ];
 
     const availableProduct = availableMarkingProducts.find(
-      (product) => Number(product.productId) === Number(activeMarkingLine.productId),
+      (product) =>
+        Number(product.productId) === Number(activeMarkingLine.productId),
     );
     const availableBatches = availableProduct?.batches ?? [];
     const remainingByBatch = new Map<number, number>();
@@ -835,11 +954,13 @@ export default function SaleProductSelection({
         remainingByBatch.set(layer.batchId, layer.writeOffQuantity);
       }
     });
+    const hasSelectedBatches = remainingByBatch.size > 0;
 
-    if (!remainingByBatch.size) {
-      toast.error(t("sale.messages.enterBatchQuantityFirst"));
-      return;
-    }
+    // Partiya bo'yicha miqdor kiritilganini majburiy tekshirish vaqtincha o'chirildi.
+    // if (!remainingByBatch.size) {
+    //   toast.error(t("sale.messages.enterBatchQuantityFirst"));
+    //   return;
+    // }
 
     nextMarkings.forEach((marking) => {
       if (!marking.batchId) return;
@@ -850,9 +971,12 @@ export default function SaleProductSelection({
     });
 
     let hasNewMarkings = false;
+    const showMarkingError = (message: string, id: string) =>
+      toast.error(message, { id: `sale-marking-${id}` });
+
     for (const markingNumber of values) {
       if (nextMarkings.length >= Math.round(activeMarkingLine.quantity)) {
-        toast.error(t("sale.messages.allMarkingsEntered"));
+        showMarkingError(t("sale.messages.allMarkingsEntered"), "all-entered");
         break;
       }
 
@@ -860,15 +984,51 @@ export default function SaleProductSelection({
         nextMarkings.some(
           (marking) => marking.markingNumber === markingNumber,
         ) ||
-        products.some((product) =>
-          product.rowKey !== activeMarkingLine.rowKey &&
-          product.markings?.some(
-            (marking) => marking.markingNumber === markingNumber,
-          ),
+        products.some(
+          (product) =>
+            product.rowKey !== activeMarkingLine.rowKey &&
+            product.markings?.some(
+              (marking) => marking.markingNumber === markingNumber,
+            ),
         )
       ) {
-        toast.error(t("sale.messages.duplicateMarking"));
+        showMarkingError(t("sale.messages.duplicateMarking"), "duplicate");
         continue;
+      }
+
+      if (aggregateStockMode) {
+        try {
+          const markingProduct =
+            await getProductByMarking.mutateAsync(markingNumber);
+          const productTableId = Number(
+            markingProduct.productTableId ?? markingProduct.id ?? 0,
+          );
+
+          if (
+            Number(markingProduct.productId) !==
+              Number(activeMarkingLine.productId) ||
+            !productTableId
+          ) {
+            showMarkingError(
+              t("sale.messages.markingProductNotFound"),
+              "not-found",
+            );
+            continue;
+          }
+
+          nextMarkings.push({
+            markingNumber: markingProduct.markingNumber || markingNumber,
+            productTableId,
+          });
+          hasNewMarkings = true;
+          continue;
+        } catch {
+          showMarkingError(
+            t("sale.messages.markingProductNotFound"),
+            "not-found",
+          );
+          continue;
+        }
       }
 
       const availableBatch = availableBatches.find((batch) =>
@@ -881,13 +1041,17 @@ export default function SaleProductSelection({
       );
 
       if (!availableBatch || !availableTable) {
-        toast.error(t("sale.messages.markingProductNotFound"));
+        showMarkingError(
+          t("sale.messages.markingProductNotFound"),
+          "not-found",
+        );
         continue;
       }
 
-      const remainingQuantity = remainingByBatch.get(availableBatch.batchId) ?? 0;
-      if (remainingQuantity <= 0) {
-        toast.error(t("sale.messages.batchQuantityFull"));
+      const remainingQuantity =
+        remainingByBatch.get(availableBatch.batchId) ?? 0;
+      if (hasSelectedBatches && remainingQuantity <= 0) {
+        showMarkingError(t("sale.messages.batchQuantityFull"), "batch-full");
         continue;
       }
 
@@ -896,7 +1060,9 @@ export default function SaleProductSelection({
         productTableId: availableTable.productTableId,
         batchId: availableBatch.batchId,
       });
-      remainingByBatch.set(availableBatch.batchId, remainingQuantity - 1);
+      if (hasSelectedBatches) {
+        remainingByBatch.set(availableBatch.batchId, remainingQuantity - 1);
+      }
       hasNewMarkings = true;
     }
 
@@ -1031,7 +1197,9 @@ export default function SaleProductSelection({
             precision={3}
             value={value}
             disabled={disabled || Boolean(record.priceLayers?.length)}
-            onValueChange={(quantity) =>
+            onValueChange={(quantity) => {
+              clearManualTotal(record.rowKey);
+              clearManualSalePrice(record.rowKey);
               updateLine(record.rowKey, (line) =>
                 recalculateLine({
                   line,
@@ -1039,8 +1207,8 @@ export default function SaleProductSelection({
                   costingMethodId: saleCondition.costingMethodId,
                   keepManualPrice: false,
                 }),
-              )
-            }
+              );
+            }}
           />
         ),
     },
@@ -1066,10 +1234,7 @@ export default function SaleProductSelection({
                 ...line,
                 costPrice: nextCostPrice,
                 costPriceType: "manual",
-                markupPercent: getMarkupPercent(
-                  nextCostPrice,
-                  line.unitPrice,
-                ),
+                markupPercent: getMarkupPercent(nextCostPrice, line.unitPrice),
               };
             })
           }
@@ -1080,7 +1245,75 @@ export default function SaleProductSelection({
       dataIndex: "unitPrice",
       title: t("sale.fields.salePrice"),
       width: 170,
-      render: (value) => numberSpacing(Number(value ?? 0)),
+      render: (_, record) => {
+        const priceInputKey = record.rowKey ?? `product-${record.productId}`;
+        const hasManualSalePrice = Object.prototype.hasOwnProperty.call(
+          manualSalePriceValues,
+          priceInputKey,
+        );
+        const hasManualTotal = Object.prototype.hasOwnProperty.call(
+          manualTotalValues,
+          priceInputKey,
+        );
+
+        return (
+          <InputNumberFormat
+            standalone
+            height={tableControlHeight}
+            emptyZero
+            min={0}
+            precision={2}
+            value={
+              hasManualSalePrice
+                ? manualSalePriceValues[priceInputKey]
+                : hasManualTotal
+                  ? getGrossUnitPriceFromTotal(
+                      manualTotalValues[priceInputKey],
+                      record.quantity,
+                    )
+                  : getGrossUnitPrice(record, vatRateOptions)
+            }
+            disabled={isNewRow(record.rowKey) || disabled}
+            onValueChange={(salePrice) => {
+              clearManualTotal(record.rowKey);
+              manualSalePriceValuesRef.current = {
+                ...manualSalePriceValuesRef.current,
+                [priceInputKey]: salePrice,
+              };
+              setManualSalePriceValues((current) => ({
+                ...current,
+                [priceInputKey]: salePrice,
+              }));
+            }}
+            onBlur={() => {
+              const grossSalePrice =
+                manualSalePriceValuesRef.current[priceInputKey];
+              clearManualTotal(record.rowKey);
+              clearManualSalePrice(record.rowKey);
+              updateLine(record.rowKey, (line) => {
+                const nextSalePrice = getNetAmountFromGross(
+                  Number(grossSalePrice ?? 0),
+                  line.vatRateId,
+                  vatRateOptions,
+                );
+
+                return recalculateLine({
+                  line: {
+                    ...line,
+                    priceType: "manual",
+                    markupPercent: getMarkupPercent(
+                      line.costPrice,
+                      nextSalePrice,
+                    ),
+                  },
+                  unitPrice: nextSalePrice,
+                  costingMethodId: saleCondition.costingMethodId,
+                });
+              });
+            }}
+          />
+        );
+      },
     },
     {
       dataIndex: "vatRateId",
@@ -1098,17 +1331,15 @@ export default function SaleProductSelection({
               value: item.id,
               label: item.name,
             }))}
-            onChange={(vatRateId) =>
-              updateLine(record.rowKey, (line) => ({ ...line, vatRateId }))
-            }
+            onChange={(vatRateId) => {
+              clearManualTotal(record.rowKey);
+              clearManualSalePrice(record.rowKey);
+              updateLine(record.rowKey, (line) => ({ ...line, vatRateId }));
+            }}
           />
           <span className="min-w-24 text-right">
             {numberSpacing(
-              getVatAmount(
-                getLineAmount(record),
-                record.vatRateId,
-                vatRateOptions,
-              ),
+              getLineVatAmount(record, vatRateOptions),
               undefined,
               true,
             )}
@@ -1118,43 +1349,62 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "total",
-      title: t("common.total"),
+      title: t("sale.fields.totalWithVat"),
       align: "center",
       width: 190,
-      render: (_, record) => (
-        <InputNumberFormat
-          standalone
-          height={tableControlHeight}
-          emptyZero
-          min={0}
-          value={getLineTotal(record, vatRateOptions)}
-          disabled={isNewRow(record.rowKey) || disabled}
-          precision={2}
-          onValueChange={(grossAmount) =>
-            updateLine(record.rowKey, (line) => {
-              const gross = roundMoney(Number(grossAmount ?? 0));
-              const netAmount = getNetAmountFromGross(
-                gross,
-                line.vatRateId,
-                vatRateOptions,
-              );
-              const quantity = Number(line.quantity ?? 0);
-              const unitPrice =
-                quantity > 0 ? roundMoney(netAmount / quantity) : 0;
+      render: (_, record) => {
+        const totalInputKey = record.rowKey ?? `product-${record.productId}`;
+        const hasManualTotal = Object.prototype.hasOwnProperty.call(
+          manualTotalValues,
+          totalInputKey,
+        );
 
-              return recalculateLine({
-                line: {
-                  ...line,
-                  priceType: "manual",
-                  markupPercent: getMarkupPercent(line.costPrice, unitPrice),
-                },
-                unitPrice,
-                costingMethodId: saleCondition.costingMethodId,
-              });
-            })
-          }
-        />
-      ),
+        return (
+          <InputNumberFormat
+            standalone
+            height={tableControlHeight}
+            emptyZero
+            min={0}
+            value={
+              hasManualTotal
+                ? manualTotalValues[totalInputKey]
+                : getLineTotal(record, vatRateOptions)
+            }
+            disabled={isNewRow(record.rowKey) || disabled}
+            precision={2}
+            onValueChange={(grossAmount) => {
+              manualTotalValuesRef.current = {
+                ...manualTotalValuesRef.current,
+                [totalInputKey]: grossAmount,
+              };
+              setManualTotalValues((current) => ({
+                ...current,
+                [totalInputKey]: grossAmount,
+              }));
+              manualSalePriceValuesRef.current = {
+                ...manualSalePriceValuesRef.current,
+                [totalInputKey]: getGrossUnitPriceFromTotal(
+                  grossAmount,
+                  record.quantity,
+                ),
+              };
+              setManualSalePriceValues((current) => ({
+                ...current,
+                [totalInputKey]: getGrossUnitPriceFromTotal(
+                  grossAmount,
+                  record.quantity,
+                ),
+              }));
+            }}
+            onBlur={() =>
+              applyManualTotal(
+                record.rowKey,
+                manualTotalValuesRef.current[totalInputKey],
+              )
+            }
+          />
+        );
+      },
     },
     {
       dataIndex: "accounts",
@@ -1273,8 +1523,8 @@ export default function SaleProductSelection({
       align: "center",
       render: (_, record) =>
         numberSpacing(
-          getVatAmount(
-            getLayerSaleAmount({ ...record, salePrice: line.unitPrice }),
+          getLayerVatAmount(
+            { ...record, salePrice: line.unitPrice },
             line.vatRateId,
             vatRateOptions,
           ),
@@ -1303,12 +1553,8 @@ export default function SaleProductSelection({
     () =>
       products.reduce(
         (summary, item) => {
-          const lineAmount = getLineAmount(item);
-          const lineVatAmount = getVatAmount(
-            lineAmount,
-            item.vatRateId,
-            vatRateOptions,
-          );
+          const lineAmount = getLineNetAmount(item);
+          const lineVatAmount = getLineVatAmount(item, vatRateOptions);
 
           return {
             amount: summary.amount + lineAmount,
@@ -1393,26 +1639,33 @@ export default function SaleProductSelection({
         pagination={false}
         tableLayout="auto"
         scroll={{ x: 2450 }}
-        expandable={aggregateStockMode ? undefined : {
-          expandedRowRender: (record) =>
-            record.priceLayers?.length ? (
-              <div className="px-5 py-3">
-                <div className="mb-2 font-semibold">
-                  {t("sale.fields.batches")}
-                </div>
-                <Table<SaleProductPriceLayer>
-                  size="small"
-                  columns={getLayerColumns(record)}
-                  dataSource={generateKeyTable(record.priceLayers, "batchId")}
-                  pagination={false}
-                  tableLayout="auto"
-                  scroll={{ x: 900 }}
-                />
-              </div>
-            ) : null,
-          rowExpandable: (record) => Boolean(record.priceLayers?.length),
-          defaultExpandAllRows: false,
-        }}
+        expandable={
+          aggregateStockMode
+            ? undefined
+            : {
+                expandedRowRender: (record) =>
+                  record.priceLayers?.length ? (
+                    <div className="px-5 py-3">
+                      <div className="mb-2 font-semibold">
+                        {t("sale.fields.batches")}
+                      </div>
+                      <Table<SaleProductPriceLayer>
+                        size="small"
+                        columns={getLayerColumns(record)}
+                        dataSource={generateKeyTable(
+                          record.priceLayers,
+                          "batchId",
+                        )}
+                        pagination={false}
+                        tableLayout="auto"
+                        scroll={{ x: 900 }}
+                      />
+                    </div>
+                  ) : null,
+                rowExpandable: (record) => Boolean(record.priceLayers?.length),
+                defaultExpandAllRows: false,
+              }
+        }
       />
       <div className="border-t border-border p-4">
         <div className="mb-4">
@@ -1471,6 +1724,7 @@ export default function SaleProductSelection({
         products={stockProducts}
         loading={isProductStocksLoading || isProductStocksFetching}
         aggregateStockMode={aggregateStockMode}
+        vatPercent={getVatPercent(saleCondition.vatRateId, vatRateOptions)}
         disabled={disabled}
         search={search}
         loadingProductId={loadingProductId}
@@ -1499,7 +1753,10 @@ export default function SaleProductSelection({
         quantity={Math.round(activeMarkingLine?.quantity ?? 0)}
         markings={activeMarkingLine?.markings ?? []}
         batches={markingBatchSummary}
-        loading={isAvailableMarkingsFetching}
+        loading={
+          (aggregateStockMode ? false : isAvailableMarkingsFetching) ||
+          getProductByMarking.isPending
+        }
         onScan={handleAddMarking}
         onConfirm={confirmMarkingModal}
         onClose={closeMarkingModal}

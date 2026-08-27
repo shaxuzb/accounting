@@ -5,6 +5,8 @@ export interface Counterpartybankaccount {
   counterpartyName: string;
   bankId: number;
   bankName: string;
+  bankBranchId?: number | null;
+  bankBranchName?: string | null;
   accountNumber: string;
   currencyId: number;
   currencyName: string;

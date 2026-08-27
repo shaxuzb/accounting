@@ -9,6 +9,7 @@ export const orgBankAccountsSchema = (isEdit = false) =>
   Yup.object({
     organizationId: requiredNumber("settings.fields.organization"),
     bankId: requiredNumber("settings.fields.bank"),
+    bankBranchId: Yup.number().nullable(),
     accountNumber: requiredString("settings.fields.accountNumber"),
     currencyId: requiredNumber("settings.fields.currency"),
     isMain: Yup.boolean(),

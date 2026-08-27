@@ -9,7 +9,6 @@ import { setMode } from "@/store/features/modeSlice";
 import toast from "react-hot-toast";
 import { useEffectiveTheme } from "@/shared/hooks/useEffectiveTheme";
 import { useTranslation } from "react-i18next";
-import { cancelActiveEdoImportJob } from "@/store/middleware/edoImportLogoutCleanup";
 const ProfileNav: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -18,10 +17,10 @@ const ProfileNav: React.FC = () => {
   const user = useAppSelector((state) => state.auth?.user);
   const effectiveTheme = useEffectiveTheme();
   const [mainPopover, setMainPopover] = useState(false);
-  const handleLogout = async () => {
-    await cancelActiveEdoImportJob();
+  const handleLogout = () => {
+    // The logout middleware cancels the active EDO import before auth state is cleared.
     dispatch(logout());
-    await navigate("/login", { replace: true });
+    void navigate("/login", { replace: true });
 
     toast.success(t("auth.loggedOut"));
   };

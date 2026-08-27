@@ -110,7 +110,6 @@ export default function PayrollEmployeeDetailPage() {
       dataIndex: "employmentType",
       title: t("payroll.fields.employmentType"),
       align: "center",
-      width: 150,
       render: (_, record) => (
         <Tag className="m-0!" color="blue">
           {t(`payroll.enums.employmentType.${record.employmentType}`, {
@@ -123,14 +122,12 @@ export default function PayrollEmployeeDetailPage() {
       dataIndex: "departmentName",
       title: t("payroll.fields.department"),
       align: "center",
-      minWidth: 150,
       render: (value: string | null) => value ?? "—",
     },
     {
       dataIndex: "positionName",
       title: t("payroll.fields.position"),
       align: "center",
-      minWidth: 150,
       render: (value: string | null) => value ?? "—",
     },
     {
@@ -138,7 +135,6 @@ export default function PayrollEmployeeDetailPage() {
       title: t("payroll.fields.monthlySalary"),
       align: "center",
 
-      width: 160,
       render: (_, record) => (
         <span className="font-medium">
           {money(record.monthlySalary)}{" "}
@@ -152,28 +148,24 @@ export default function PayrollEmployeeDetailPage() {
       dataIndex: "employmentRate",
       title: t("payroll.fields.employmentRate"),
       align: "center",
-      width: 100,
     },
     {
       dataIndex: "weeklyHours",
       title: t("payroll.fields.weeklyHours"),
       align: "center",
-      width: 130,
     },
   ];
 
   const componentColumns: TableColumnsType<PayrollEmployeeComponent> = [
-    {
-      dataIndex: "componentCode",
-      title: t("payroll.fields.componentCode"),
-      width: 120,
-      align: "center",
-      render: (value: string | null) => value ?? "—",
-    },
+    // {
+    //   dataIndex: "componentCode",
+    //   title: t("payroll.fields.componentCode"),
+    //   align: "center",
+    //   render: (value: string | null) => value ?? "—",
+    // },
     {
       dataIndex: "componentName",
       title: t("payroll.fields.componentName"),
-      minWidth: 200,
       align: "center",
       render: (value: string | null) => value ?? "—",
     },
@@ -181,7 +173,6 @@ export default function PayrollEmployeeDetailPage() {
       dataIndex: "componentType",
       title: t("payroll.fields.componentType"),
       align: "center",
-      width: 150,
       render: (_, record) =>
         record.componentType ? (
           <Tag
@@ -200,7 +191,6 @@ export default function PayrollEmployeeDetailPage() {
       dataIndex: "amount",
       title: t("payroll.fields.value"),
       align: "center",
-      width: 140,
       render: (_, record) =>
         methodUsesRate(record.calculationMethod)
           ? record.rate != null
@@ -212,7 +202,6 @@ export default function PayrollEmployeeDetailPage() {
       dataIndex: "effectiveFrom",
       title: t("payroll.fields.effectivePeriod"),
       align: "center",
-      width: 190,
       render: (_, record) => (
         <span className="text-sm">
           {displayDate(record.effectiveFrom)} —{" "}
@@ -223,7 +212,6 @@ export default function PayrollEmployeeDetailPage() {
     {
       dataIndex: "note",
       title: t("payroll.fields.note"),
-      minWidth: 160,
       render: (value: string | null) => value ?? "—",
     },
   ];
@@ -233,7 +221,6 @@ export default function PayrollEmployeeDetailPage() {
       dataIndex: "actions",
       title: t("common.actions"),
       align: "center",
-      width: 80,
       fixed: "right",
       render: (_, record) => (
         <Button
@@ -263,8 +250,8 @@ export default function PayrollEmployeeDetailPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <Card className="border border-border p-4">
+    <div className="space-y-2">
+      {/* <Card className="border border-border p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -288,7 +275,7 @@ export default function PayrollEmployeeDetailPage() {
             </Button>
           </PermissionCard>
         </div>
-      </Card>
+      </Card> */}
 
       <DocumentSummary className="lg:grid-cols-3 2xl:grid-cols-5">
         <DocumentSummaryItem
