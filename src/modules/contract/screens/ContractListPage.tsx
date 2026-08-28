@@ -17,6 +17,7 @@ import type { Contract } from "../types/type";
 import { contractPermissions } from "../constants/permissions";
 import ContractDetailModal from "./ContractDetailModal";
 import LineClampCell from "@/components/widget/text/LineClampCell";
+import ListPagination from "@/components/ui/table/ListPagination";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const numberValue = Number(value);
@@ -194,16 +195,13 @@ export default function ContractListPage() {
           }}
           dataSource={tableData}
           rowKey="id"
-          pagination={{
-            current: currentPage,
-            pageSize,
-            total: data?.total ?? 0,
-            showSizeChanger: true,
-            pageSizeOptions: [10, 20, 50, 100],
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} / ${total} ta`,
-            onChange: handlePaginationChange,
-          }}
+          pagination={false}
+        />
+        <ListPagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={data?.total ?? 0}
+          onChange={handlePaginationChange}
         />
       </Card>
       <ContractAddEditPage

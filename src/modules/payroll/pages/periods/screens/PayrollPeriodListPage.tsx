@@ -8,6 +8,7 @@ import { displayDate } from "@/modules/payroll/utils/format";
 import { usePaginationParams } from "@/shared/hooks/usePaginationParams";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import ListPagination from "@/components/ui/table/ListPagination";
 import { App, Button, Space, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import dayjs from "dayjs";
@@ -209,9 +210,10 @@ export default function PayrollPeriodListPage() {
           columns={columns}
           dataSource={withRowNumbers(data?.items)}
           scroll={{ x: "max-content", y: "calc(100vh - 330px)" }}
-          pagination={paginationProps(data?.total)}
+          pagination={false}
           size="middle"
         />
+        <ListPagination {...paginationProps(data?.total)} />
       </Card>
 
       <PayrollPeriodModal

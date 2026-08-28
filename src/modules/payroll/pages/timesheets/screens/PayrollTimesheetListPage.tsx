@@ -15,6 +15,7 @@ import { Button, Table } from "antd";
 import type { TableColumnsType } from "antd";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import ListPagination from "@/components/ui/table/ListPagination";
 import { Link, useSearchParams } from "react-router";
 import { payrollTimesheetEndpoints } from "../constants/endpoints";
 import { useGetPayrollTimesheets } from "../hooks";
@@ -174,9 +175,10 @@ export default function PayrollTimesheetListPage() {
           columns={tableColumns}
           dataSource={withRowNumbers(data?.items)}
           scroll={{ x: "max-content", y: "calc(100vh - 330px)" }}
-          pagination={paginationProps(data?.total)}
+          pagination={false}
           size="middle"
         />
+        <ListPagination {...paginationProps(data?.total)} />
       </Card>
     </div>
   );

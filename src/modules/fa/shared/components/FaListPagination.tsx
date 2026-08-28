@@ -1,5 +1,5 @@
-import { Pagination } from "antd";
 import { useSearchParams } from "react-router";
+import ListPagination from "@/components/ui/table/ListPagination";
 
 interface FaListPaginationProps {
   total?: number;
@@ -16,23 +16,17 @@ export default function FaListPagination({
   const current = page ?? Number(searchParams.get("page") || 1);
   const size = pageSize ?? Number(searchParams.get("pageSize") || 20);
 
-  if (total <= size && current === 1) return null;
-
   return (
-    <div className="flex justify-end border-t border-border px-4 py-3">
-      <Pagination
-        current={current}
-        pageSize={size}
-        total={total}
-        showSizeChanger
-        pageSizeOptions={[10, 20, 50, 100]}
-        onChange={(nextPage, nextPageSize) => {
-          const nextParams = new URLSearchParams(searchParams);
-          nextParams.set("page", String(nextPageSize === size ? nextPage : 1));
-          nextParams.set("pageSize", String(nextPageSize));
-          setSearchParams(nextParams, { replace: true });
-        }}
-      />
-    </div>
+    <ListPagination
+      current={current}
+      pageSize={size}
+      total={total}
+      onChange={(nextPage, nextPageSize) => {
+        const nextParams = new URLSearchParams(searchParams);
+        nextParams.set("page", String(nextPageSize === size ? nextPage : 1));
+        nextParams.set("pageSize", String(nextPageSize));
+        setSearchParams(nextParams, { replace: true });
+      }}
+    />
   );
 }

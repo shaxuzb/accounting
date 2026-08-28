@@ -4,5 +4,10 @@ import AccountingEntriesReportPage from "./pages/accountingentriesreport/screens
 export const accountingRoutes: RouteObject = {
   path: "accountingentriesreport",
   element: <AccountingEntriesReportPage />,
-  handle: { title: "app.routes.accountingEntries", showBack: true, backTo: ".." },
+  handle: {
+    title: "app.routes.accountingEntries",
+    showBack: true,
+    backTo: "..",
+    tabSuffix: "documentId",
+  },
 };

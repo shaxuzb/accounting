@@ -97,7 +97,9 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
     selectedParentKey ? [`main/${selectedParentKey}`] : [],
   );
   const renderPinButton = (tab: TabItem) => {
-    const isPinned = pinnedTabs.some((pinnedTab) => pinnedTab.key === tab.key);
+    const isPinned = pinnedTabs.some(
+      (pinnedTab) => pinnedTab.key === tab.key && pinnedTab.isPinned === true,
+    );
     const accessibleLabel = isPinned
       ? t("app.tabs.unpin", { defaultValue: "Tabdan olib tashlash" })
       : t("app.tabs.pin", { defaultValue: "Tabga biriktirish" });

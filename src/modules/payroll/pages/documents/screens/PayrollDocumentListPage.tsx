@@ -11,6 +11,7 @@ import {
 } from "@/modules/payroll/constants/options";
 import { payrollDocumentPermissions } from "@/modules/payroll/constants/permissions";
 import { displayDate, money } from "@/modules/payroll/utils/format";
+import ListPagination from "@/components/ui/table/ListPagination";
 import { usePaginationParams } from "@/shared/hooks/usePaginationParams";
 import { Button, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
@@ -190,12 +191,13 @@ export default function PayrollDocumentListPage() {
           columns={columns}
           dataSource={withRowNumbers(data?.items)}
           scroll={{ x: "max-content", y: "calc(100vh - 330px)" }}
-          pagination={paginationProps(data?.total)}
+          pagination={false}
           size="middle"
           onRow={(record) => ({
             onDoubleClick: () => navigate(`${LIST_PATH}/${record.id}`),
           })}
         />
+        <ListPagination {...paginationProps(data?.total)} />
       </Card>
 
       <PayrollCalculateModal

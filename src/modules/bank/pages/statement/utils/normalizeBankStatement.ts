@@ -108,13 +108,15 @@ const getOperationTypeIdByDirection = (
   direction: string,
   directionId: number | null,
 ) => {
+  if (directionId === 1) return 1;
+  if (directionId === -1) return 2;
+
   const normalizedDirection = direction.trim().toLowerCase();
 
   if (
     normalizedDirection === "incoming" ||
     normalizedDirection === "in" ||
-    normalizedDirection === "credit" ||
-    directionId === 1
+    normalizedDirection === "credit"
   ) {
     return 1;
   }
@@ -122,8 +124,7 @@ const getOperationTypeIdByDirection = (
   if (
     normalizedDirection === "outgoing" ||
     normalizedDirection === "out" ||
-    normalizedDirection === "debit" ||
-    directionId === -1
+    normalizedDirection === "debit"
   ) {
     return 2;
   }
@@ -287,11 +288,23 @@ export const normalizeBankStatements = (
 
   if (Array.isArray(payload)) {
     if (payload.length === 0) return [];
-    const hasNestedTransactions = payload.some(
-      (item) => isRecord(item) && getTransactionArray(item).length > 0,
-    );
+    const hasNestedStatements = payload.some((item) => {
+      if (!isRecord(item)) return false;
 
-    if (hasNestedTransactions) {
+      return (
+        getTransactionArray(item).length > 0 ||
+        [
+          "accountNumber",
+          "bankAccountId",
+          "openingBalance",
+          "closingBalance",
+          "totalDebit",
+          "totalCredit",
+        ].some((key) => getByKeys(item, [key]) !== undefined)
+      );
+    });
+
+    if (hasNestedStatements) {
       return payload.map((item, index) => normalizeCard(item, index, fileName));
     }
 

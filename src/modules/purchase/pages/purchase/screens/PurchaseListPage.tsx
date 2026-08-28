@@ -21,6 +21,7 @@ import SelectFilter from "@/components/ui/filters/SelectFilter";
 import DateRangeFilter from "@/components/ui/filters/DateRangeFilter";
 import ListToolbar from "@/components/ui/filters/ListToolbar";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
+import ListPagination from "@/components/ui/table/ListPagination";
 
 const purchaseStatusOptions = [
   { value: 1, label: "processStatuses.draft" },
@@ -53,6 +54,7 @@ export default function PurchaseListPage() {
     searchParams.get("pageSize"),
     data?.pageSize ?? 20,
   );
+  const total = data?.total ?? 0;
   const tableData = (data?.items ?? []).map((item, index) => ({
     ...item,
     indexId: (currentPage - 1) * pageSize + index + 1,
@@ -248,17 +250,14 @@ export default function PurchaseListPage() {
               />
             ),
           }}
-          pagination={{
-            current: currentPage,
-            pageSize,
-            total: data?.total ?? 0,
-            showSizeChanger: true,
-            pageSizeOptions: [10, 20, 50, 100],
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} / ${total} ta`,
-            onChange: handlePaginationChange,
-          }}
+          pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 280px)" }}
+        />
+        <ListPagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={total}
+          onChange={handlePaginationChange}
         />
       </Card>
     </div>

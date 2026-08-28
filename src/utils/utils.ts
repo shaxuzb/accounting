@@ -27,7 +27,6 @@ export function customDate2(date: string | undefined) {
   return dayjs(date).format(format);
 }
 
-
 export function numberSpacingWithCurrency(
   item: number,
   currency: string | number,

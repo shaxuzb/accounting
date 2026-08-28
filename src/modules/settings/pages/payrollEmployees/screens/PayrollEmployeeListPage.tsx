@@ -11,6 +11,7 @@ import { usePaginationParams } from "@/shared/hooks/usePaginationParams";
 import { useAppSelector } from "@/store/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { stateStatus } from "@/utils/helpers/statusHelper";
+import ListPagination from "@/components/ui/table/ListPagination";
 import { Button, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import { Plus } from "lucide-react";
@@ -210,9 +211,10 @@ export default function PayrollEmployeeListPage() {
           columns={tableColumns}
           dataSource={withRowNumbers(data?.items)}
           scroll={{ x: "max-content", y: "calc(100vh - 330px)" }}
-          pagination={paginationProps(data?.total)}
+          pagination={false}
           size="middle"
         />
+        <ListPagination {...paginationProps(data?.total)} />
       </Card>
 
       <PayrollEmployeeAddEditPage

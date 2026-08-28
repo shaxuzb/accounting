@@ -28,6 +28,9 @@ export const mapTaxpayerToCounterparty = (
   if (meaningful(taxpayer.PhoneNumber)) {
     mapped.phoneNumber = normalizeLookupPhone(taxpayer.PhoneNumber);
   }
+  if (meaningful(taxpayer.Email)) {
+    mapped.email = taxpayer.Email.trim();
+  }
   if (location?.regionId !== null && location?.regionId !== undefined) {
     mapped.regionId = location.regionId;
   }

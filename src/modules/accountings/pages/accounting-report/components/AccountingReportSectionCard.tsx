@@ -4,6 +4,7 @@ import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { ReactNode } from "react";
 import Card from "@/components/ui/card/Card";
 import { generateKeyTable } from "@/utils/utils";
+import ListPagination from "@/components/ui/table/ListPagination";
 
 interface Props<T extends object> {
   title: string;
@@ -76,12 +77,13 @@ export default function AccountingReportSectionCard<T extends object>({
         dataSource={generateKeyTable(dataSource)}
         loading={loading}
         rowKey={rowKey}
-        pagination={pagination}
+        pagination={false}
         locale={{
           emptyText: <Empty description={emptyText ?? t("app.common.noData")} />,
         }}
         scroll={{ x: "max-content" }}
       />
+      {pagination && <ListPagination {...pagination} />}
     </Card>
   );
 }

@@ -108,7 +108,13 @@ export default function BankOperationAddEditPage() {
       directionId: record?.directionId ?? (record?.operationTypeId === 2 ? -1 : 1),
       bankChartAccountId: record?.bankChartAccountId ?? null,
       offsetAccountId: record?.offsetAccountId ?? null,
-      operationTypeId: record?.operationTypeId ?? null,
+      operationTypeId:
+        record?.operationTypeId ??
+        (record?.directionId === -1
+          ? 2
+          : record?.directionId === 1
+            ? 1
+            : null),
       paymentTypeId: record?.paymentTypeId ?? null,
       counterpartyId: record?.counterpartyId ?? null,
       counterpartyBankAccountId: record?.counterpartyBankAccountId ?? null,

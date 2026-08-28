@@ -92,6 +92,7 @@ export const usePageScrollRestore = ({
   );
 
   const latestPositionsRef = useRef<SavedScrollPosition[] | null>(null);
+  const restoreInProgressRef = useRef(false);
 
   const collectCurrentScroll = useCallback(() => {
     const root = containerRef.current;
@@ -160,6 +161,8 @@ export const usePageScrollRestore = ({
 
     let saveTimer = 0;
     const scheduleSave = (event: Event) => {
+      if (restoreInProgressRef.current) return;
+
       const target = event.target;
       if (target instanceof HTMLElement) {
         updateLatestPosition(target);
@@ -216,22 +219,71 @@ export const usePageScrollRestore = ({
 
     let attempt = 0;
     let timer = 0;
+    let pendingPositions = [...saved];
+    let cancelledByUser = false;
+
+    const cancelRestore = () => {
+      cancelledByUser = true;
+      window.clearTimeout(timer);
+      restoreInProgressRef.current = false;
+    };
+
     const restore = () => {
-      const restored = saved.filter((position) => {
+      if (cancelledByUser) return;
+
+      pendingPositions = pendingPositions.filter((position) => {
         const element = findByPath(root, position.path);
-        if (!element) return false;
-        element.scrollTop = position.top;
-        element.scrollLeft = position.left;
-        return true;
-      }).length;
+        if (!element) return true;
+
+        const maxTop = Math.max(0, element.scrollHeight - element.clientHeight);
+        const maxLeft = Math.max(
+          0,
+          element.scrollWidth - element.clientWidth,
+        );
+        const isReady =
+          position.top <= maxTop + 1 && position.left <= maxLeft + 1;
+
+        if (!isReady && attempt < RESTORE_ATTEMPTS - 1) return true;
+
+        element.scrollTop = Math.min(position.top, maxTop);
+        element.scrollLeft = Math.min(position.left, maxLeft);
+        updateLatestPosition(element);
+        return false;
+      });
 
       attempt += 1;
-      if (restored < saved.length && attempt < RESTORE_ATTEMPTS) {
+      if (pendingPositions.length && attempt < RESTORE_ATTEMPTS) {
         timer = window.setTimeout(restore, RESTORE_INTERVAL);
+      } else {
+        restoreInProgressRef.current = false;
       }
     };
 
+    restoreInProgressRef.current = true;
+    root.addEventListener("wheel", cancelRestore, { capture: true, passive: true });
+    root.addEventListener("touchstart", cancelRestore, {
+      capture: true,
+      passive: true,
+    });
+    root.addEventListener("pointerdown", cancelRestore, {
+      capture: true,
+      passive: true,
+    });
+    root.addEventListener("keydown", cancelRestore, true);
     restore();
-    return () => window.clearTimeout(timer);
-  }, [containerRef, enabled, restoreTtl, scopedStorageKey]);
+    return () => {
+      window.clearTimeout(timer);
+      restoreInProgressRef.current = false;
+      root.removeEventListener("wheel", cancelRestore, true);
+      root.removeEventListener("touchstart", cancelRestore, true);
+      root.removeEventListener("pointerdown", cancelRestore, true);
+      root.removeEventListener("keydown", cancelRestore, true);
+    };
+  }, [
+    containerRef,
+    enabled,
+    restoreTtl,
+    scopedStorageKey,
+    updateLatestPosition,
+  ]);
 };

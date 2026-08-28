@@ -21,6 +21,7 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import SelectFilter from "@/components/ui/filters/SelectFilter";
 import DateRangeFilter from "@/components/ui/filters/DateRangeFilter";
 import ListToolbar from "@/components/ui/filters/ListToolbar";
+import ListPagination from "@/components/ui/table/ListPagination";
 
 export default function BankOperationListPage() {
   const { t } = useTranslation();
@@ -114,6 +115,7 @@ export default function BankOperationListPage() {
     {
       dataIndex: "comment",
       title: t("bank.fields.comment"),
+      width: 300,
       render: (value) => {
         return (
           <Tooltip title={value}>
@@ -223,10 +225,11 @@ export default function BankOperationListPage() {
           columns={columns}
           dataSource={withRowNumbers(data?.items)}
           rowKey="id"
-          pagination={paginationProps(data?.total)}
+          pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 230px)" }}
           size="small"
         />
+        <ListPagination {...paginationProps(data?.total)} />
       </Card>
     </div>
   );

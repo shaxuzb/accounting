@@ -14,11 +14,17 @@ export interface TabItem {
 interface TabListState {
   tabs: TabItem[];
   activeTabKey: string | null;
+  hydratedStorageKey: string | null;
 }
+
+type HydrateTabsPayload = Omit<TabListState, "hydratedStorageKey"> & {
+  storageKey: string;
+};
 
 const initialState: TabListState = {
   tabs: [],
   activeTabKey: null,
+  hydratedStorageKey: null,
 };
 
 const tabListSlice = createSlice({
@@ -62,6 +68,15 @@ const tabListSlice = createSlice({
         });
       }
     },
+    unpinTab(state, action: PayloadAction<string>) {
+      const existingTab = state.tabs.find(
+        (tab) => tab.key === action.payload,
+      );
+
+      if (existingTab) {
+        existingTab.isPinned = false;
+      }
+    },
     removeTab(state, action: PayloadAction<string>) {
       state.tabs = state.tabs.filter((t) => t.key !== action.payload);
       if (state.activeTabKey === action.payload) {
@@ -74,9 +89,10 @@ const tabListSlice = createSlice({
     setActiveTab(state, action: PayloadAction<string | null>) {
       state.activeTabKey = action.payload;
     },
-    hydrateTabs(state, action: PayloadAction<TabListState>) {
+    hydrateTabs(state, action: PayloadAction<HydrateTabsPayload>) {
       state.tabs = action.payload.tabs;
       state.activeTabKey = action.payload.activeTabKey;
+      state.hydratedStorageKey = action.payload.storageKey;
     },
     clearTabs(state) {
       state.tabs = [];
@@ -88,6 +104,7 @@ const tabListSlice = createSlice({
 export const {
   upsertTab,
   pinTab,
+  unpinTab,
   removeTab,
   setTabs,
   setActiveTab,

@@ -2,12 +2,14 @@ import { useCallback, useMemo, useState } from "react";
 import { Button, Empty, Upload, type UploadProps } from "antd";
 import { Building2, Save, Trash2, UploadIcon, Users } from "lucide-react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import SelectCustom from "@/components/fields/SelectCustom";
+import DateRangeFilter from "@/components/ui/filters/DateRangeFilter";
+import SelectFilter from "@/components/ui/filters/SelectFilter";
 import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
 import type { Contract } from "@/modules/contract/types/type";
 import CounterpartyBankAccountAddEditPage from "@/modules/settings/pages/counterpartybankaccount/screens/CounterpartyBankAccountAddEditPage";
@@ -32,6 +34,12 @@ import type {
 } from "../types/type";
 import { getMissingCounterpartyKey } from "../utils/missingCounterpartyKey";
 import { normalizeBankStatements } from "../utils/normalizeBankStatement";
+import {
+  canMapBankCounterparty,
+  formatBankOperationDate,
+  getBankClassificationMetadata,
+  isBankStatementDateInRange,
+} from "../utils/bankImportRules";
 import type { BankStatementOperationCreatePayload } from "../types/form";
 
 const toValidNumber = (value: unknown) => {
@@ -75,6 +83,7 @@ export default function BankStatementImportPage() {
   const { t } = useTranslation();
   const { Dragger } = Upload;
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const parseMutation = useParseBankStatement();
   const createOperations = useCreateBankOperations();
@@ -84,6 +93,10 @@ export default function BankStatementImportPage() {
     null,
   );
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const dateFrom = searchParams.get("dateFrom") ?? "";
+  const dateTo = searchParams.get("dateTo") ?? "";
+  const classificationCategoryId =
+    searchParams.get("classificationCategoryId") ?? "";
   const [bankAssignOpen, setBankAssignOpen] = useState(false);
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const [contractCreateTarget, setContractCreateTarget] =
@@ -106,6 +119,52 @@ export default function BankStatementImportPage() {
     },
     [],
   );
+  const filteredCardViews = useMemo(
+    () =>
+      cards
+        .map((card) => {
+          const transactionIndices = card.transactions.reduce<number[]>(
+            (indices, transaction, index) => {
+              const matchesDate = isBankStatementDateInRange(
+                transaction.date,
+                dateFrom,
+                dateTo,
+              );
+              const matchesClassification =
+                !classificationCategoryId ||
+                String(transaction.classificationCategoryId ?? "") ===
+                  classificationCategoryId;
+
+              if (matchesDate && matchesClassification) {
+                indices.push(index);
+              }
+              return indices;
+            },
+            [],
+          );
+
+          return {
+            item: {
+              ...card,
+              transactions: transactionIndices.map(
+                (index) => card.transactions[index],
+              ),
+            },
+            transactionIndices,
+          };
+        })
+        .filter(
+          ({ item }) =>
+            !dateFrom && !dateTo && !classificationCategoryId
+              ? true
+              : item.transactions.length > 0,
+        ),
+    [cards, classificationCategoryId, dateFrom, dateTo],
+  );
+  const filteredCards = useMemo(
+    () => filteredCardViews.map(({ item }) => item),
+    [filteredCardViews],
+  );
   const buildOperationPayload = useCallback(
     (
       card: BankStatementCardData,
@@ -118,13 +177,20 @@ export default function BankStatementImportPage() {
         (parsedDirectionId === 1 || parsedDirectionId === -1
           ? parsedDirectionId
           : null) ??
-        (operationTypeId === 2 ? -1 : operationTypeId === 1 ? 1 : null);
-      const counterpartyId = toValidNumber(transaction.counterpartyId);
+          (operationTypeId === 2 ? -1 : operationTypeId === 1 ? 1 : null);
+      const canMapCounterparty = canMapBankCounterparty(
+        transaction.classificationCode,
+      );
+      const counterpartyId = canMapCounterparty
+        ? toValidNumber(transaction.counterpartyId)
+        : null;
       const bankChartAccountId = toValidNumber(card.bankChartAccountId);
       const offsetAccountId = toValidNumber(transaction.offsetAccountId);
-      const contractId = toValidNumber(transaction.contractId);
+      const contractId = canMapCounterparty
+        ? toValidNumber(transaction.contractId)
+        : null;
       const counterpartyBankAccountId = toValidNumber(
-        transaction.counterpartyBankAccountId,
+        canMapCounterparty ? transaction.counterpartyBankAccountId : null,
       );
       const currencyId =
         toValidNumber(transaction.currencyId) ?? toValidNumber(card.currencyId);
@@ -134,14 +200,14 @@ export default function BankStatementImportPage() {
       const amount =
         toValidNumber(transaction.amount) ?? toValidNumber(differenceAmount);
       const rawDate = transaction.date;
-      const docDate = rawDate ? dayjs(rawDate) : null;
+      const docDate = formatBankOperationDate(rawDate);
 
       if (
         !bankAccountId ||
         !directionId ||
         !currencyId ||
         !amount ||
-        !docDate?.isValid()
+        !docDate
       ) {
         return null;
       }
@@ -156,7 +222,7 @@ export default function BankStatementImportPage() {
         bankDocumentNumber: transaction.bankDocumentNumber ?? null,
         classificationCategoryId: transaction.classificationCategoryId ?? null,
         classificationRuleId: transaction.classificationRuleId ?? null,
-        docDate: docDate.toISOString(),
+        docDate,
         currencyId,
         exchangeRate: 1,
         contractId,
@@ -168,49 +234,55 @@ export default function BankStatementImportPage() {
   );
 
   const totalTransactions = useMemo(
-    () => cards.reduce((sum, item) => sum + item.transactions.length, 0),
-    [cards],
+    () =>
+      filteredCards.reduce((sum, item) => sum + item.transactions.length, 0),
+    [filteredCards],
   );
   const validOperations = useMemo(
     () =>
-      cards.flatMap((card) =>
+      filteredCards.flatMap((card) =>
         card.transactions
           .map((transaction) => buildOperationPayload(card, transaction))
           .filter((item): item is BankStatementOperationCreatePayload =>
             Boolean(item),
           ),
       ),
-    [cards, buildOperationPayload],
+    [filteredCards, buildOperationPayload],
   );
   const missingBankInfoCount = useMemo(
-    () => cards.filter(hasMissingBankInfo).length,
-    [cards],
+    () => filteredCards.filter(hasMissingBankInfo).length,
+    [filteredCards],
   );
   const missingBankInfoCards = useMemo(
-    () => cards.filter(hasMissingBankInfo),
-    [cards],
+    () => filteredCards.filter(hasMissingBankInfo),
+    [filteredCards],
   );
   const missingCounterpartyRows = useMemo(
     () =>
-      cards.flatMap((card) =>
-        card.transactions
-          .map((transaction, transactionIndex) => ({
-            cardId: card.id,
-            transactionIndex,
+      filteredCardViews.flatMap(({ item, transactionIndices }) =>
+        item.transactions
+          .map((transaction, index) => ({
+            cardId: item.id,
+            transactionIndex: transactionIndices[index] ?? index,
             transaction,
           }))
-          .filter((item) => !item.transaction.counterpartyId),
+          .filter(
+            (item) =>
+              canMapBankCounterparty(item.transaction.classificationCode) &&
+              !item.transaction.counterpartyId,
+          ),
       ),
-    [cards],
+    [filteredCardViews],
   );
   const missingBankChartAccountCount = useMemo(
     () =>
-      cards.filter((card) => !toValidNumber(card.bankChartAccountId)).length,
-    [cards],
+      filteredCards.filter((card) => !toValidNumber(card.bankChartAccountId))
+        .length,
+    [filteredCards],
   );
   const missingOffsetAccountCount = useMemo(
     () =>
-      cards.reduce((sum, card) => {
+      filteredCards.reduce((sum, card) => {
         return (
           sum +
           card.transactions.filter(
@@ -218,32 +290,37 @@ export default function BankStatementImportPage() {
           ).length
         );
       }, 0),
-    [cards],
+    [filteredCards],
   );
   const missingContractCount = useMemo(
     () =>
-      cards.reduce(
-        (sum, card) =>
-          sum +
-          card.transactions.filter(
-            (transaction) => !toValidNumber(transaction.contractId),
-          ).length,
-        0,
-      ),
-    [cards],
-  );
-  const missingCounterpartyBankAccountCount = useMemo(
-    () =>
-      cards.reduce(
+      filteredCards.reduce(
         (sum, card) =>
           sum +
           card.transactions.filter(
             (transaction) =>
+              canMapBankCounterparty(transaction.classificationCode) &&
+              Boolean(transaction.counterpartyId) &&
+              !toValidNumber(transaction.contractId),
+          ).length,
+        0,
+      ),
+    [filteredCards],
+  );
+  const missingCounterpartyBankAccountCount = useMemo(
+    () =>
+      filteredCards.reduce(
+        (sum, card) =>
+          sum +
+          card.transactions.filter(
+            (transaction) =>
+              canMapBankCounterparty(transaction.classificationCode) &&
+              Boolean(transaction.counterpartyId) &&
               !toValidNumber(transaction.counterpartyBankAccountId),
           ).length,
         0,
       ),
-    [cards],
+    [filteredCards],
   );
 
   const uploadProps: UploadProps = {
@@ -282,6 +359,11 @@ export default function BankStatementImportPage() {
     setCards([]);
     setExpandedIds(new Set());
     setSelectedBankId(null);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("dateFrom");
+    nextParams.delete("dateTo");
+    nextParams.delete("classificationCategoryId");
+    setSearchParams(nextParams, { replace: true });
   };
 
   const handleDeleteCard = (id: string) => {
@@ -402,6 +484,11 @@ export default function BankStatementImportPage() {
     transactionIndex: number,
     classificationCategoryId: number | null,
   ) => {
+    const classification = getBankClassificationMetadata(
+      classificationOptions,
+      classificationCategoryId,
+    );
+
     setCards((prev) =>
       prev.map((card) =>
         card.id === cardId
@@ -409,7 +496,21 @@ export default function BankStatementImportPage() {
               ...card,
               transactions: card.transactions.map((transaction, index) =>
                 index === transactionIndex
-                  ? { ...transaction, classificationCategoryId, classificationRuleId: null }
+                  ? {
+                      ...transaction,
+                      classificationCategoryId,
+                      classificationCode: classification.code,
+                      classificationName: classification.name,
+                      classificationRuleId: null,
+                      classificationRuleCode: null,
+                      ...(canMapBankCounterparty(classification.code)
+                        ? {}
+                        : {
+                            counterpartyId: null,
+                            counterpartyBankAccountId: null,
+                            contractId: null,
+                          }),
+                    }
                   : transaction,
               ),
             }
@@ -423,6 +524,7 @@ export default function BankStatementImportPage() {
     transactionIndex: number,
     transaction: BankStatementTransaction,
   ) => {
+    if (!canMapBankCounterparty(transaction.classificationCode)) return;
     const counterpartyId = toValidNumber(transaction.counterpartyId);
     if (!counterpartyId) return;
 
@@ -445,6 +547,9 @@ export default function BankStatementImportPage() {
       prev.map((card) => ({
         ...card,
         transactions: card.transactions.map((transaction, index) => {
+          if (!canMapBankCounterparty(transaction.classificationCode)) {
+            return transaction;
+          }
           const sameCounterparty =
             Number(transaction.counterpartyId) ===
             Number(account.counterpartyId);
@@ -472,6 +577,7 @@ export default function BankStatementImportPage() {
     transactionIndex: number,
     transaction: BankStatementTransaction,
   ) => {
+    if (!canMapBankCounterparty(transaction.classificationCode)) return;
     const counterpartyId = toValidNumber(transaction.counterpartyId);
     const operationTypeId = getTransactionOperationTypeId(card, transaction);
     if (!counterpartyId || !operationTypeId) return;
@@ -529,7 +635,12 @@ export default function BankStatementImportPage() {
       prev.map((card) => ({
         ...card,
         transactions: card.transactions.map((transaction, index) => {
-          if (transaction.counterpartyId) return transaction;
+          if (
+            transaction.counterpartyId ||
+            !canMapBankCounterparty(transaction.classificationCode)
+          ) {
+            return transaction;
+          }
           const nextId =
             assignments[
               getMissingCounterpartyKey({
@@ -603,7 +714,7 @@ export default function BankStatementImportPage() {
             <Button
               type="primary"
               icon={<Save className="size-4" />}
-              disabled={!cards.length}
+              disabled={!validOperations.length}
               loading={createOperations.isPending}
               onClick={() => handleSave()}
             >
@@ -615,11 +726,11 @@ export default function BankStatementImportPage() {
         {!cards.length && (
           <div className="space-y-4">
             <SelectCustom
-               label="bank.import.bankTypeLabel"
-               placeholder="bank.import.bankTypePlaceholder"
-               path={selectListEndpoints.banksSelectList}
-               value={selectedBankId}
-               onChange={(value) => setSelectedBankId(toValidNumber(value))}
+              label="bank.import.bankTypeLabel"
+              placeholder="bank.import.bankTypePlaceholder"
+              path={selectListEndpoints.banksSelectList}
+              value={selectedBankId}
+              onChange={(value) => setSelectedBankId(toValidNumber(value))}
               search
               clearable
               disabled={parseMutation.isPending}
@@ -627,14 +738,14 @@ export default function BankStatementImportPage() {
             />
             <Dragger
               {...uploadProps}
-               disabled={!selectedBankId || parseMutation.isPending}
+              disabled={!selectedBankId || parseMutation.isPending}
             >
               <div className="my-3 flex justify-center">
                 <UploadIcon className="size-10" />
               </div>
               <p className="ant-upload-text">{t("bank.import.uploadText")}</p>
               <p className="ant-upload-hint">
-                 {selectedBankId
+                {selectedBankId
                   ? t("bank.import.uploadHint")
                   : t("bank.import.bankTypeHint")}
               </p>
@@ -643,12 +754,36 @@ export default function BankStatementImportPage() {
         )}
       </Card>
 
+      {cards.length > 0 && (
+        <Card className="border border-border p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <DateRangeFilter
+              paramKeys={["dateFrom", "dateTo"]}
+              placeholderKeys={["bank.fields.dateFrom", "bank.fields.dateTo"]}
+              width={260}
+            />
+            <SelectFilter
+              paramKey="classificationCategoryId"
+              placeholder="bank.fields.classification"
+              options={classificationOptions.map((option) => ({
+                value: option.id,
+                label: option.name ?? option.code ?? String(option.id),
+              }))}
+              search
+              width={240}
+            />
+          </div>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         <Card className="border border-border p-4">
           <div className="text-sm text-gray-500">
             {t("bank.import.statements")}
           </div>
-          <div className="mt-1 text-2xl font-semibold">{cards.length}</div>
+          <div className="mt-1 text-2xl font-semibold">
+            {filteredCardViews.length}
+          </div>
         </Card>
         <Card className="border border-border p-4">
           <div className="text-sm text-gray-500">
@@ -712,12 +847,13 @@ export default function BankStatementImportPage() {
         </Card>
       </div>
 
-      {cards.length > 0 ? (
+      {filteredCardViews.length > 0 ? (
         <div className="flex flex-col gap-3">
-          {cards.map((item) => (
+          {filteredCardViews.map(({ item, transactionIndices }) => (
             <BankStatementCard
               key={item.id}
               item={item}
+              transactionIndices={transactionIndices}
               expanded={expandedIds.has(item.id)}
               onToggle={() => handleToggle(item.id)}
               onDelete={() => handleDeleteCard(item.id)}

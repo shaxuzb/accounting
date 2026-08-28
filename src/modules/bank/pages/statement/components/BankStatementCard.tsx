@@ -1,4 +1,4 @@
-import { Button, Select, Table, Tag, Tooltip } from "antd";
+import { Button, Modal, Select, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import clsx from "clsx";
@@ -18,6 +18,7 @@ import { customDate, customDate2, numberSpacing } from "@/utils/utils";
 import BankTransactionContractSelect from "./BankTransactionContractSelect";
 import BankTransactionCounterpartyAccountSelect from "./BankTransactionCounterpartyAccountSelect";
 import BankTransactionOffsetAccountSelect from "./BankTransactionOffsetAccountSelect";
+import { canMapBankCounterparty } from "../utils/bankImportRules";
 
 const stringifyValue = (value: unknown) => {
   if (value === null || value === undefined || value === "") return "-";
@@ -31,6 +32,7 @@ const TABLE_SCROLL_Y = 560;
 
 interface BankStatementCardProps {
   item: BankStatementCardData;
+  transactionIndices?: number[];
   expanded: boolean;
   onToggle: () => void;
   onDelete: () => void;
@@ -59,12 +61,16 @@ interface BankStatementCardProps {
     transactionIndex: number,
     transaction: BankStatementTransaction,
   ) => void;
-  onClassificationChange: (transactionIndex: number, categoryId: number | null) => void;
+  onClassificationChange: (
+    transactionIndex: number,
+    categoryId: number | null,
+  ) => void;
   classificationOptions: { id: number; code?: string; name?: string }[];
 }
 
 function BankStatementCard({
   item,
+  transactionIndices,
   expanded,
   onToggle,
   onDelete,
@@ -94,30 +100,38 @@ function BankStatementCard({
       (sum, transaction) => sum + (transaction.credit ?? 0),
       0,
     );
-  const netAmount = Math.abs(totalDebit - totalCredit);
   const hasBankAccount = Boolean(item.bankAccountId);
   const hasMissingCounterparty = item.transactions.some(
-    (transaction) => !transaction.counterpartyId,
+    (transaction) =>
+      canMapBankCounterparty(transaction.classificationCode) &&
+      !transaction.counterpartyId,
   );
   const hasBankChartAccount = Boolean(item.bankChartAccountId);
   const hasReviewRows = item.transactions.some(
     (transaction) => transaction.requiresReview,
   );
-  const getDocumentTypeId = (directionId: unknown, operationTypeId?: unknown) =>
-    Number(directionId) === -1 || Number(operationTypeId) === 2 ? 6 : 5;
+  const getDocumentTypeId = (
+    directionId: unknown,
+    operationTypeId?: unknown,
+  ) => (Number(directionId) === -1 || Number(operationTypeId) === 2 ? 6 : 5);
   const itemOperationTypeId =
     item.operationTypeId ||
     item.transactions.find((transaction) => transaction.operationTypeId)
       ?.operationTypeId;
   const itemDocumentTypeId = getDocumentTypeId(
-    item.transactions.find((transaction) => transaction.directionId)?.directionId,
+    item.transactions.find((transaction) => transaction.directionId)
+      ?.directionId,
     itemOperationTypeId,
   );
   const bankAccountOptions =
     bankAccountOptionsByDocumentType[itemDocumentTypeId] ?? [];
   const getTransactionDocumentTypeId = (
     transaction: BankStatementTransaction,
-  ) => getDocumentTypeId(transaction.directionId, transaction.operationTypeId || item.operationTypeId);
+  ) =>
+    getDocumentTypeId(
+      transaction.directionId,
+      transaction.operationTypeId || item.operationTypeId,
+    );
   const getSelectedLabel = (
     value: unknown,
     options: BankChartAccountOption[],
@@ -151,7 +165,7 @@ function BankStatementCard({
       title: t("bank.fields.date"),
       dataIndex: "date",
       width: 100,
-      align:"center",
+      align: "center",
       render: (_, record) => customDate2(record.date),
     },
     {
@@ -176,17 +190,23 @@ function BankStatementCard({
       title: t("settings.fields.accountNumber"),
       dataIndex: "counterpartyBankAccountId",
       width: 240,
-      render: (_, record, index) => (
-        <BankTransactionCounterpartyAccountSelect
-          counterpartyId={record.counterpartyId}
-          importedAccountNumber={record.counterpartyAccount}
-          value={record.counterpartyBankAccountId}
-          onChange={(accountId) =>
-            onCounterpartyBankAccountChange(index, accountId)
-          }
-          onAdd={() => onAddCounterpartyBankAccount(index, record)}
-        />
-      ),
+      render: (_, record, index) => {
+        const sourceIndex = transactionIndices?.[index] ?? index;
+
+        return canMapBankCounterparty(record.classificationCode) ? (
+          <BankTransactionCounterpartyAccountSelect
+            counterpartyId={record.counterpartyId}
+            importedAccountNumber={record.counterpartyAccount}
+            value={record.counterpartyBankAccountId}
+            onChange={(accountId) =>
+              onCounterpartyBankAccountChange(sourceIndex, accountId)
+            }
+            onAdd={() => onAddCounterpartyBankAccount(sourceIndex, record)}
+          />
+        ) : (
+          "-"
+        );
+      },
     },
 
     {
@@ -199,11 +219,17 @@ function BankStatementCard({
           value={record.classificationCategoryId}
           options={classificationOptions.map((option) => ({
             value: option.id,
-            label: option.name
+            label: option.name,
           }))}
-          onChange={(value) => onClassificationChange(index, value ? Number(value) : null)}
+          onChange={(value) =>
+            onClassificationChange(
+              transactionIndices?.[index] ?? index,
+              value ? Number(value) : null,
+            )
+          }
           allowClear
           showSearch
+          optionFilterProp="label"
           placeholder={t("bank.placeholders.selectClassification")}
           className="w-full"
         />
@@ -223,23 +249,7 @@ function BankStatementCard({
         );
       },
     },
-    {
-      title: t("bank.fields.offsetAccount"),
-      dataIndex: "offsetAccountId",
-      width: 220,
-      render: (_, record, index) => (
-        <BankTransactionOffsetAccountSelect
-          options={
-            offsetAccountOptionsByDocumentType[
-              getTransactionDocumentTypeId(record)
-            ] ?? []
-          }
-          value={record.offsetAccountId}
-          loading={chartAccountLoading}
-          onChange={(accountId) => onOffsetAccountChange(index, accountId)}
-        />
-      ),
-    },
+
     // {
     //   title: t("bank.fields.counterpartyId"),
     //   dataIndex: "counterpartyId",
@@ -257,15 +267,21 @@ function BankStatementCard({
       title: t("purchase.fields.contract"),
       dataIndex: "contractId",
       width: 220,
-      render: (_, record, index) => (
-        <BankTransactionContractSelect
-          counterpartyId={record.counterpartyId}
-          transactionDate={record.date}
-          value={record.contractId}
-          onChange={(contractId) => onContractChange(index, contractId)}
-          onAdd={() => onAddContract(index, record)}
-        />
-      ),
+      render: (_, record, index) => {
+        const sourceIndex = transactionIndices?.[index] ?? index;
+
+        return canMapBankCounterparty(record.classificationCode) ? (
+          <BankTransactionContractSelect
+            counterpartyId={record.counterpartyId}
+            transactionDate={record.date}
+            value={record.contractId}
+            onChange={(contractId) => onContractChange(sourceIndex, contractId)}
+            onAdd={() => onAddContract(sourceIndex, record)}
+          />
+        ) : (
+          "-"
+        );
+      },
     },
     {
       title: t("bank.fields.debit"),
@@ -277,9 +293,31 @@ function BankStatementCard({
     {
       title: t("bank.fields.credit"),
       dataIndex: "credit",
-            width: 120,
+      width: 120,
       align: "center",
       render: (value) => numberSpacing(value),
+    },
+    {
+      title: t("bank.fields.offsetAccount"),
+      dataIndex: "offsetAccountId",
+      width: 220,
+      render: (_, record, index) => (
+        <BankTransactionOffsetAccountSelect
+          options={
+            offsetAccountOptionsByDocumentType[
+              getTransactionDocumentTypeId(record)
+            ] ?? []
+          }
+          value={record.offsetAccountId}
+          loading={chartAccountLoading}
+          onChange={(accountId) =>
+            onOffsetAccountChange(
+              transactionIndices?.[index] ?? index,
+              accountId,
+            )
+          }
+        />
+      ),
     },
     // {
     //   title: t("bank.fields.amount"),
@@ -292,14 +330,24 @@ function BankStatementCard({
       title: t("common.actions"),
       dataIndex: "actions",
       align: "center",
-            width: 120,
+      width: 120,
       fixed: "right",
       render: (_, __, index) => (
         <Button
           type="text"
           danger
           icon={<Trash2 className="size-4" />}
-          onClick={() => onDeleteTransaction(index)}
+          onClick={() => {
+            Modal.confirm({
+              title: t("actions.deleteConfirmTitle"),
+              content: t("actions.deleteConfirmContent"),
+              okText: t("actions.confirm"),
+              cancelText: t("actions.cancel"),
+              okButtonProps: { danger: true },
+              onOk: () =>
+                onDeleteTransaction(transactionIndices?.[index] ?? index),
+            });
+          }}
         />
       ),
     },
@@ -309,9 +357,7 @@ function BankStatementCard({
     <Card
       className={clsx(
         "overflow-hidden border",
-        hasBankAccount &&
-          hasBankChartAccount &&
-          !hasReviewRows
+        hasBankAccount && hasBankChartAccount && !hasReviewRows
           ? "border-border"
           : "border-danger/40 bg-danger-soft/40!",
       )}
@@ -347,9 +393,13 @@ function BankStatementCard({
                 <Tag color="red">{t("bank.messages.counterpartyMissing")}</Tag>
               )}
               {!hasBankChartAccount && (
-                <Tag color="red">{t("bank.messages.bankChartAccountMissing")}</Tag>
+                <Tag color="red">
+                  {t("bank.messages.bankChartAccountMissing")}
+                </Tag>
               )}
-              {hasReviewRows && <Tag color="orange">{t("bank.messages.requiresReview")}</Tag>}
+              {hasReviewRows && (
+                <Tag color="orange">{t("bank.messages.requiresReview")}</Tag>
+              )}
               {item.accountNumber && <Tag>{item.accountNumber}</Tag>}
             </span>
           </span>
@@ -357,7 +407,9 @@ function BankStatementCard({
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="rounded-lg bg-surface-muted px-3 py-2">
-            <div className="text-xs text-secondary-text">{t("bank.fields.date")}</div>
+            <div className="text-xs text-secondary-text">
+              {t("bank.fields.date")}
+            </div>
             <div className="font-semibold">
               {customDate(dateFrom)}
               {dateTo && dateTo !== dateFrom ? ` - ${customDate(dateTo)}` : ""}
@@ -380,12 +432,16 @@ function BankStatementCard({
               {t("openingBalance.title")}
             </div>
             <div className="font-semibold">
-              {numberSpacing(item.openingBalance ?? 0)}
+              {numberSpacing(item.openingBalance ?? 0, undefined, true)}
             </div>
           </div>
           <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
-            <div className="text-xs text-secondary-text">{t("bank.fields.closingBalance")}</div>
-            <div className="font-semibold">{numberSpacing(item.closingBalance ?? 0)}</div>
+            <div className="text-xs text-secondary-text">
+              {t("bank.fields.closingBalance")}
+            </div>
+            <div className="font-semibold">
+              {numberSpacing(item.closingBalance ?? 0)}
+            </div>
           </div>
           <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
             <div className="text-xs text-secondary-text">
@@ -398,12 +454,6 @@ function BankStatementCard({
               {t("bank.fields.credit")}
             </div>
             <div className="font-semibold">{numberSpacing(totalCredit)}</div>
-          </div>
-          <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
-            <div className="text-xs text-secondary-text">
-              {t("bank.fields.amount")}
-            </div>
-            <div className="font-semibold">{numberSpacing(netAmount)}</div>
           </div>
           <Button
             danger
@@ -439,7 +489,9 @@ function BankStatementCard({
       {expanded && (
         <div className="border-t border-border p-4">
           <Table<BankStatementTransaction>
-            rowKey={(_, index) => `${item.id}-${index ?? 0}`}
+            rowKey={(_, index) =>
+              `${item.id}-${transactionIndices?.[index ?? 0] ?? index ?? 0}`
+            }
             columns={columns}
             dataSource={item.transactions}
             pagination={false}

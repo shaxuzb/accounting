@@ -975,6 +975,12 @@
       "income": "Receipt",
       "expense": "Expense"
     },
+    "readonlySections": {
+      "general": "General information",
+      "bank": "Bank information",
+      "counterparty": "Counterparty and contract",
+      "comment": "Comment"
+    },
     "placeholders": {
       "selectAccount": "Select an account",
       "selectBankChartAccount": "Select a bank ledger account",

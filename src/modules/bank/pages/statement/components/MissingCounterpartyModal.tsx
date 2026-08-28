@@ -1,6 +1,6 @@
 import { Button, Input, Modal, Table, type TableColumnsType } from "antd";
 import { useFormik } from "formik";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -10,6 +10,7 @@ import { useCreateBankCounterparties } from "../hooks";
 import type { BankStatementTransaction } from "../types/type";
 import { getMissingCounterpartyKey } from "../utils/missingCounterpartyKey";
 import DistrictSelect from "@/components/fields/DistrictSelect";
+import { useLookupCounterparty } from "@/modules/settings/pages/counterparty/hooks/useLookupCounterparty";
 
 export interface MissingCounterpartyItem {
   cardId: string;
@@ -193,6 +194,9 @@ export default function MissingCounterpartyModal({
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const createCounterparties = useCreateBankCounterparties();
+  const { mutateAsync: lookupCounterparty } = useLookupCounterparty();
+  const lookedUpKeys = useRef(new Set<string>());
+  const formikValuesRef = useRef<CounterpartyDraftForm | null>(null);
 
   const duplicateGroups = useMemo(() => {
     const grouped = new Map<string, MissingCounterpartyItem[]>();
@@ -312,11 +316,92 @@ export default function MissingCounterpartyModal({
       }
     },
   });
-
+  const setFieldValue = formik.setFieldValue;
   const rows = useMemo(
     () => Object.values(formik.values.rows),
     [formik.values.rows],
   );
+  const baseRowsByFormKey = useMemo(
+    () => new Map(baseRows.map((row) => [row.formKey, row])),
+    [baseRows],
+  );
+
+  useEffect(() => {
+    formikValuesRef.current = formik.values;
+  }, [formik.values]);
+
+  useEffect(() => {
+    if (!open) {
+      lookedUpKeys.current.clear();
+      return;
+    }
+
+    let cancelled = false;
+
+    const lookupRows = async () => {
+      await Promise.all(
+        rows.map(async (row) => {
+          const inn = row.inn.trim();
+          if (!inn) return;
+
+          const lookupKey = `${row.key}:${inn}`;
+          if (lookedUpKeys.current.has(lookupKey)) return;
+          lookedUpKeys.current.add(lookupKey);
+
+          try {
+            const result = await lookupCounterparty(inn);
+            if (cancelled || !result.isMatch) return;
+
+            const values = result.values;
+            const currentRow = formikValuesRef.current?.rows[row.formKey];
+            const originalRow = baseRowsByFormKey.get(row.formKey);
+            if (!currentRow) return;
+
+            const updateIfAvailable = (
+              fieldName: keyof CounterpartyDraftRow,
+              value: unknown,
+            ) => {
+              if (value === null || value === undefined || value === "") {
+                return;
+              }
+
+              const nextValue =
+                fieldName === "phoneNumber"
+                  ? formatUzbekPhoneForInput(String(value))
+                  : value;
+              const currentValue = currentRow[fieldName];
+              const originalValue = originalRow?.[fieldName];
+
+              if (!currentValue || currentValue === originalValue) {
+                setFieldValue(
+                  getFieldName(row, fieldName),
+                  nextValue,
+                  false,
+                );
+              }
+            };
+
+            updateIfAvailable("shortName", values.shortName);
+            updateIfAvailable("fullName", values.fullName);
+            updateIfAvailable("inn", values.inn);
+            updateIfAvailable("phoneNumber", values.phoneNumber);
+            updateIfAvailable("email", values.email);
+            updateIfAvailable("regionId", values.regionId);
+            updateIfAvailable("districtId", values.districtId);
+            updateIfAvailable("address", values.address);
+          } catch {
+            // Lookup failure should not block manual completion of the row.
+          }
+        }),
+      );
+    };
+
+    void lookupRows();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [baseRowsByFormKey, lookupCounterparty, open, rows, setFieldValue]);
 
   const updateRow = useCallback(
     <K extends keyof CounterpartyDraftRow>(
@@ -375,6 +460,7 @@ export default function MissingCounterpartyModal({
         render: (_, record) =>
           record.readonlyShortName ? null : (
             <CounterpartyDraftTextCell
+              key={`${record.formKey}-shortName-${record.shortName}`}
               value={record.shortName}
               onCommit={(value) => updateRow(record, "shortName", value)}
             />
@@ -390,6 +476,7 @@ export default function MissingCounterpartyModal({
         render: (_, record) =>
           record.readonlyFullName ? null : (
             <CounterpartyDraftTextCell
+              key={`${record.formKey}-fullName-${record.fullName}`}
               value={record.fullName}
               onCommit={(value) => updateRow(record, "fullName", value)}
             />
@@ -405,6 +492,7 @@ export default function MissingCounterpartyModal({
         render: (_, record) =>
           record.readonlyInn ? null : (
             <CounterpartyDraftTextCell
+              key={`${record.formKey}-inn-${record.inn}`}
               value={record.inn}
               onCommit={(value) => updateRow(record, "inn", value)}
             />
@@ -419,6 +507,7 @@ export default function MissingCounterpartyModal({
       width: 160,
       render: (_, record) => (
         <CounterpartyDraftPhoneCell
+          key={`${record.formKey}-phoneNumber-${record.phoneNumber}`}
           value={record.phoneNumber}
           onCommit={(value) =>
             updateRow(record, "phoneNumber", formatUzbekPhoneForInput(value))
@@ -432,6 +521,7 @@ export default function MissingCounterpartyModal({
       width: 190,
       render: (_, record) => (
         <CounterpartyDraftTextCell
+          key={`${record.formKey}-email-${record.email}`}
           value={record.email}
           placeholder={t("settings.fields.email")}
           onCommit={(value) => updateRow(record, "email", value)}
@@ -474,6 +564,7 @@ export default function MissingCounterpartyModal({
       width: 220,
       render: (_, record) => (
         <CounterpartyDraftTextCell
+          key={`${record.formKey}-address-${record.address}`}
           value={record.address}
           placeholder={t("settings.fields.address")}
           onCommit={(value) => updateRow(record, "address", value)}

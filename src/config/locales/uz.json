@@ -1114,6 +1114,12 @@
       "income": "Kirim",
       "expense": "Chiqim"
     },
+    "readonlySections": {
+      "general": "Asosiy ma'lumotlar",
+      "bank": "Bank ma'lumotlari",
+      "counterparty": "Kontragent va shartnoma",
+      "comment": "Izoh"
+    },
     "placeholders": {
       "selectAccount": "Hisobvaraqni tanlang",
       "selectBankChartAccount": "Bank hisobvarag'ini tanlang",

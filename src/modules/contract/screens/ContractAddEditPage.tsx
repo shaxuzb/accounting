@@ -74,12 +74,16 @@ export default function ContractAddEditPage({
     enableReinitialize: true,
     validationSchema: contractSchema(isEdit),
     onSubmit: async (values, helpers) => {
+      const payload = {
+        ...values,
+        endDate: values.endDate?.trim() || null,
+      };
       try {
         if (isEdit && editId) {
           await updateMutation.mutateAsync({ id: editId, payload: values });
           toast.success(t("settings.messages.updated"));
         } else {
-          const createdContract = await createMutation.mutateAsync(values);
+          const createdContract = await createMutation.mutateAsync(payload);
           onCreated?.(createdContract);
           toast.success(t("settings.messages.created"));
         }
@@ -99,7 +103,7 @@ export default function ContractAddEditPage({
         contractTypeId: Contract.contractTypeId ?? null,
         contractDate: Contract.contractDate ?? "",
         startDate: Contract.startDate ?? "",
-        endDate: Contract.endDate ?? "",
+        endDate: Contract.endDate ?? null,
         comment: Contract.comment ?? "",
         stateId: Contract.stateId ?? null,
       });
@@ -118,10 +122,8 @@ export default function ContractAddEditPage({
       footer={null}
       centered
       width={600}
-      mask={{closable: false}}
+      mask={{ closable: false }}
       maskClosable={false}
-   
-
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>

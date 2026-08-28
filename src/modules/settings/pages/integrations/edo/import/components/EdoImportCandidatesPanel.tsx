@@ -11,6 +11,7 @@ import { ExternalLink, FilePenLine, RefreshCw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import Card from "@/components/ui/card/Card";
+import ListPagination from "@/components/ui/table/ListPagination";
 import { useEdoImportCandidates } from "../hooks";
 import type { EdoImportCandidateListDto } from "../types";
 import {
@@ -177,16 +178,16 @@ export default function EdoImportCandidatesPanel({
         locale={{
           emptyText: <Empty description="Bu job uchun candidate topilmadi" />,
         }}
-        pagination={{
-          current: page,
-          pageSize,
-          total: candidates.data?.totalCount ?? undefined,
-          showSizeChanger: true,
-          pageSizeOptions: [10, 20, 50, 100],
-          onChange: (nextPage, nextSize) => {
-            setPage(nextSize !== pageSize ? 1 : nextPage);
-            setPageSize(Math.min(100, nextSize));
-          },
+        pagination={false}
+      />
+      <ListPagination
+        current={page}
+        pageSize={pageSize}
+        total={candidates.data?.totalCount ?? 0}
+        pageSizeOptions={[10, 20, 50, 100]}
+        onChange={(nextPage, nextSize) => {
+          setPage(nextSize !== pageSize ? 1 : nextPage);
+          setPageSize(Math.min(100, nextSize));
         }}
       />
 

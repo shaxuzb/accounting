@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
+import ListPagination from "@/components/ui/table/ListPagination";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { numberSpacing } from "@/utils/utils";
@@ -686,13 +687,13 @@ export default function EdoInboxPage() {
               />
             ),
           }}
-            pagination={{
-            current: activeQuery.data?.page ?? params.page,
-            pageSize: activeQuery.data?.pageSize ?? params.pageSize,
-            total: activeQuery.data?.totalCount ?? undefined,
-            showSizeChanger: true,
-            onChange: (page, pageSize) => updateParams({ page, pageSize }),
-          }}
+            pagination={false}
+          />
+          <ListPagination
+            current={activeQuery.data?.page ?? params.page}
+            pageSize={activeQuery.data?.pageSize ?? params.pageSize}
+            total={activeQuery.data?.totalCount ?? 0}
+            onChange={(page, pageSize) => updateParams({ page, pageSize })}
           />
         </Card>
       ) : !capabilitiesLoading && !capabilitiesQuery.isError ? (

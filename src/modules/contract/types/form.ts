@@ -4,7 +4,7 @@ export interface ContractForm {
   contractTypeId: number | null;
   contractDate: string;
   startDate: string;
-  endDate: string;
+  endDate: string | null;
   comment: string;
   stateId?: number | null;
 }

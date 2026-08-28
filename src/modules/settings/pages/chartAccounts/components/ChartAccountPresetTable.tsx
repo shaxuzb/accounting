@@ -3,6 +3,7 @@ import type { TableColumnsType, TableProps } from "antd";
 import type { Key } from "react";
 import type { ChartAccountPresetAccount } from "../types/preset";
 import { useTranslation } from "react-i18next";
+import ListPagination from "@/components/ui/table/ListPagination";
 
 interface ChartAccountPresetTableProps {
   rows: ChartAccountPresetAccount[];
@@ -74,24 +75,24 @@ export default function ChartAccountPresetTable({
   }
 
   return (
-    <Table<ChartAccountPresetAccount>
-      rowKey="id"
-      size="small"
-      columns={columns}
-      dataSource={rows}
-      rowSelection={rowSelection}
-      pagination={{
-        ...pagination,
-        showTotal: (total, range) =>
-          t("common.resultRange", {
-            from: range[0],
-            to: range[1],
-            total,
-          }),
-      }}
-      scroll={{ y: 430 }}
-      rowClassName={(record) => (record.hasChartAccount ? "opacity-60" : "")}
-    />
+    <>
+      <Table<ChartAccountPresetAccount>
+        rowKey="id"
+        size="small"
+        columns={columns}
+        dataSource={rows}
+        rowSelection={rowSelection}
+        pagination={false}
+        scroll={{ y: 430 }}
+        rowClassName={(record) => (record.hasChartAccount ? "opacity-60" : "")}
+      />
+      <ListPagination
+        current={pagination.current}
+        pageSize={pagination.pageSize}
+        total={pagination.total}
+        onChange={(page) => pagination.onChange(page)}
+      />
+    </>
   );
 }
 

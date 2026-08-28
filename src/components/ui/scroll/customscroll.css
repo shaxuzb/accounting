@@ -1,0 +1,44 @@
+/* Visual layer for react-custom-scroller. The library keeps scrolling native. */
+.src_main .src_track {
+  right: 3px;
+  width: 3px;
+  min-height: 12px;
+  background: #9aa4b2;
+  border-radius: 999px;
+  opacity: 0;
+  transition:
+    width 160ms ease,
+    right 160ms ease,
+    opacity 160ms ease,
+    background-color 160ms ease;
+}
+
+.src_main:hover .src_track,
+.src_main:focus-within .src_track {
+  opacity: 0.78;
+}
+
+.src_main .src_track:hover,
+.src_main .src_track:active {
+  right: 1px !important;
+  width: 5px !important;
+  background: #707b8a;
+  opacity: 1;
+}
+
+/* Keep the library's fallback native scrollbar free of arrow buttons. */
+.src_main .src_inner::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.src_main .src_inner {
+  scrollbar-width: thin;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .src_main .src_track {
+    transition: none;
+  }
+}

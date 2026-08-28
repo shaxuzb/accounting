@@ -18,6 +18,7 @@ import {
 import { retailSalePermissions } from "../constants/permissions";
 import { useGetRetailSales } from "../hooks";
 import type { RetailSaleDoc } from "../types/type";
+import ListPagination from "@/components/ui/table/ListPagination";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const parsed = Number(value);
@@ -204,17 +205,14 @@ export default function RetailSaleListPage() {
               />
             ),
           }}
-          pagination={{
-            current: currentPage,
-            pageSize,
-            total: data?.total ?? 0,
-            showSizeChanger: true,
-            pageSizeOptions: [10, 20, 50, 100],
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} / ${total} ta`,
-            onChange: handlePaginationChange,
-          }}
+          pagination={false}
           scroll={{ x: "max-content" }}
+        />
+        <ListPagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={data?.total ?? 0}
+          onChange={handlePaginationChange}
         />
       </Card>
     </div>

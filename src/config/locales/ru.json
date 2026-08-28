@@ -1090,6 +1090,12 @@
       "income": "Поступление",
       "expense": "Списание"
     },
+    "readonlySections": {
+      "general": "Основные данные",
+      "bank": "Банковские данные",
+      "counterparty": "Контрагент и договор",
+      "comment": "Комментарий"
+    },
     "placeholders": {
       "selectAccount": "Выберите счёт",
       "selectBankChartAccount": "Выберите банковский счёт учёта",

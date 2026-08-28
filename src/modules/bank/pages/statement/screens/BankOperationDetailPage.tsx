@@ -20,10 +20,7 @@ import SelectDate from "@/components/fields/SelectDate";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
-import {
-  filterIds,
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
+import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
 import { formatDateWithOutTime } from "@/utils/helpers";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, numberSpacing } from "@/utils/utils";
@@ -103,10 +100,13 @@ export default function BankOperationDetailPage() {
   const initialValues = useMemo<BankOperationForm>(
     () => ({
       bankAccountId: record?.bankAccountId ?? null,
-      directionId: record?.directionId ?? (record?.operationTypeId === 2 ? -1 : 1),
+      directionId:
+        record?.directionId ?? (record?.operationTypeId === 2 ? -1 : 1),
       bankChartAccountId: record?.bankChartAccountId ?? null,
       offsetAccountId: record?.offsetAccountId ?? null,
-      operationTypeId: record?.operationTypeId ?? 1,
+      operationTypeId:
+        record?.operationTypeId ??
+        (record?.directionId === -1 ? 2 : record?.directionId === 1 ? 1 : 1),
       paymentTypeId: record?.paymentTypeId ?? null,
       counterpartyId: record?.counterpartyId ?? null,
       counterpartyBankAccountId: record?.counterpartyBankAccountId ?? null,
@@ -131,14 +131,20 @@ export default function BankOperationDetailPage() {
       try {
         const payload: BankOperationCreatePayload = {
           bankAccountId: Number(values.bankAccountId),
-          directionId: values.directionId ?? (Number(values.operationTypeId) === 2 ? -1 : 1),
+          directionId:
+            values.directionId ??
+            (Number(values.operationTypeId) === 2 ? -1 : 1),
           bankChartAccountId: toPositiveNumber(values.bankChartAccountId),
           offsetAccountId: toPositiveNumber(values.offsetAccountId),
           paymentTypeId: toPositiveNumber(values.paymentTypeId),
           counterpartyId: toPositiveNumber(values.counterpartyId),
-          counterpartyBankAccountId: toPositiveNumber(values.counterpartyBankAccountId),
+          counterpartyBankAccountId: toPositiveNumber(
+            values.counterpartyBankAccountId,
+          ),
           bankDocumentNumber: values.bankDocumentNumber.trim() || null,
-          classificationCategoryId: toPositiveNumber(values.classificationCategoryId),
+          classificationCategoryId: toPositiveNumber(
+            values.classificationCategoryId,
+          ),
           classificationRuleId: toPositiveNumber(values.classificationRuleId),
           docDate: dayjs(values.docDate).toISOString(),
           currencyId: Number(values.currencyId),
@@ -186,41 +192,39 @@ export default function BankOperationDetailPage() {
 
   return (
     <div className="space-y-4">
-      <Card className="p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="text-sm text-muted-foreground">{t("bank.operation.title")}</div>
-            <div className="text-lg font-semibold">
-              {record.docNumber ?? record.id}
-            </div>
-          </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="size-4 text-primary" />
-              <span className="font-semibold">{t("bank.fields.date")}</span>
-            </div>
-            <p className="font-semibold text-foreground">
-              {customDate(record.docDate)}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <ProcessStatusBadge
-              statusId={record.statusId}
-              statusName={record.statusName}
-            />
-            {/* <Button
-              icon={<ArrowLeft className="size-4" />}
-              onClick={() => navigate("..")}
-            >
-              Orqaga
-            </Button> */}
-          </div>
-        </div>
-      </Card>
-
-      <div className="grid gap-4 lg:grid-cols-[1.8fr_0.9fr]">
+      {isDraft && (
         <Card className="p-4">
-          {isDraft ? (
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div className="text-sm text-muted-foreground">
+                {t("bank.operation.title")}
+              </div>
+              <div className="text-lg font-semibold">
+                {record.docNumber ?? record.id}
+              </div>
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Calendar className="size-4 text-primary" />
+                <span className="font-semibold">{t("bank.fields.date")}</span>
+              </div>
+              <p className="font-semibold text-foreground">
+                {customDate(record.docDate)}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <ProcessStatusBadge
+                statusId={record.statusId}
+                statusName={record.statusName}
+              />
+            </div>
+          </div>
+        </Card>
+      )}
+
+      <div className={isDraft ? "grid gap-4 lg:grid-cols-[1.8fr_0.9fr]" : ""}>
+        {isDraft ? (
+          <Card className="p-4">
             <Form layout="vertical" onFinish={formik.handleSubmit}>
               <Row gutter={[24, 8]}>
                 <Col span={8}>
@@ -269,7 +273,9 @@ export default function BankOperationDetailPage() {
                     fieldName="offsetAccountId"
                     label="bank.fields.offsetAccount"
                     documentTypeId={documentTypeId}
-                    documentRoleCode={bankDocumentAccountRoleCodes.offsetAccount}
+                    documentRoleCode={
+                      bankDocumentAccountRoleCodes.offsetAccount
+                    }
                     getFirst
                   />
                 </Col>
@@ -320,7 +326,9 @@ export default function BankOperationDetailPage() {
                     path={selectListEndpoints.bankOperationCategoriesSelectList}
                     clearable
                     search
-                    onChange={() => formik.setFieldValue("classificationRuleId", null)}
+                    onChange={() =>
+                      formik.setFieldValue("classificationRuleId", null)
+                    }
                   />
                 </Col>
                 <Col span={8}>
@@ -382,95 +390,97 @@ export default function BankOperationDetailPage() {
                 </Col>
               </Row>
             </Form>
-          ) : (
-            <BankReadonlyDetailsCard record={record} />
-          )}
-        </Card>
+          </Card>
+        ) : (
+          <BankReadonlyDetailsCard record={record} />
+        )}
 
-        <Card className="space-y-3 p-4">
-          <div className="text-sm font-semibold">{t("common.actions")}</div>
-          {isDraft && (
-            <PermissionCard permission={bankPermissions.update}>
-              <Button
-                block
-                icon={<Save className="size-4" />}
-                onClick={() => formik.submitForm()}
-                loading={updateMutation.isPending}
+        {isDraft && (
+          <Card className="space-y-3 p-4">
+            <div className="text-sm font-semibold">{t("common.actions")}</div>
+            {isDraft && (
+              <PermissionCard permission={bankPermissions.update}>
+                <Button
+                  block
+                  icon={<Save className="size-4" />}
+                  onClick={() => formik.submitForm()}
+                  loading={updateMutation.isPending}
+                >
+                  {t("common.save")}
+                </Button>
+              </PermissionCard>
+            )}
+            {isDraft && (
+              <PermissionCard
+                permission={[bankPermissions.confirm, bankPermissions.update]}
               >
-                {t("common.save")}
-              </Button>
-            </PermissionCard>
-          )}
-          {isDraft && (
-            <PermissionCard
-              permission={[bankPermissions.confirm, bankPermissions.update]}
-            >
-              <Button
-                type="primary"
-                block
-                icon={<CheckCircle2 className="size-4" />}
-                loading={confirmMutation.isPending}
-                onClick={async () => {
-                  try {
-                    await confirmMutation.mutateAsync();
-                    toast.success(t("bank.messages.documentConfirmed"));
-                    navigate(-1);
-                  } catch (error) {
-                    errorHandlers(error);
-                  }
-                }}
+                <Button
+                  type="primary"
+                  block
+                  icon={<CheckCircle2 className="size-4" />}
+                  loading={confirmMutation.isPending}
+                  onClick={async () => {
+                    try {
+                      await confirmMutation.mutateAsync();
+                      toast.success(t("bank.messages.documentConfirmed"));
+                      navigate(-1);
+                    } catch (error) {
+                      errorHandlers(error);
+                    }
+                  }}
+                >
+                  {t("common.confirm")}
+                </Button>
+              </PermissionCard>
+            )}
+            {isDraft && (
+              <PermissionCard
+                permission={[bankPermissions.cancel, bankPermissions.update]}
               >
-                {t("common.confirm")}
-              </Button>
-            </PermissionCard>
-          )}
-          {isDraft && (
-            <PermissionCard
-              permission={[bankPermissions.cancel, bankPermissions.update]}
-            >
-              <Button
-                danger
-                block
-                icon={<CircleX className="size-4" />}
-                loading={cancelMutation.isPending}
-                onClick={async () => {
-                  try {
-                    await cancelMutation.mutateAsync();
-                    toast.success(t("bank.messages.documentCancelled"));
-                    navigate(-1);
-                  } catch (error) {
-                    errorHandlers(error);
-                  }
-                }}
-              >
-                {t("common.cancel")}
-              </Button>
-            </PermissionCard>
-          )}
-          <div className="grid gap-4 md:grid-cols-2">
-            <AntCard size="small">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Landmark className="size-4" />
-                <span>{t("bank.fields.status")}</span>
-              </div>
-              <div className="mt-2">
-                <ProcessStatusBadge
-                  statusId={record.statusId}
-                  statusName={record.statusName}
-                />
-              </div>
-            </AntCard>
-            <AntCard size="small">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Wallet className="size-4" />
-                <span>{t("bank.fields.currentAmount")}</span>
-              </div>
-              <div className="mt-2 font-semibold">
-                {numberSpacing(record.amount)} {record.currencyName ?? ""}
-              </div>
-            </AntCard>
-          </div>
-        </Card>
+                <Button
+                  danger
+                  block
+                  icon={<CircleX className="size-4" />}
+                  loading={cancelMutation.isPending}
+                  onClick={async () => {
+                    try {
+                      await cancelMutation.mutateAsync();
+                      toast.success(t("bank.messages.documentCancelled"));
+                      navigate(-1);
+                    } catch (error) {
+                      errorHandlers(error);
+                    }
+                  }}
+                >
+                  {t("common.cancel")}
+                </Button>
+              </PermissionCard>
+            )}
+            <div className="grid gap-4 md:grid-cols-2">
+              <AntCard size="small">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Landmark className="size-4" />
+                  <span>{t("bank.fields.status")}</span>
+                </div>
+                <div className="mt-2">
+                  <ProcessStatusBadge
+                    statusId={record.statusId}
+                    statusName={record.statusName}
+                  />
+                </div>
+              </AntCard>
+              <AntCard size="small">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Wallet className="size-4" />
+                  <span>{t("bank.fields.currentAmount")}</span>
+                </div>
+                <div className="mt-2 font-semibold">
+                  {numberSpacing(record.amount)} {record.currencyName ?? ""}
+                </div>
+              </AntCard>
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   );

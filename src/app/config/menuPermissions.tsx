@@ -205,7 +205,6 @@ export const menuPermissions: MainMenu = {
         title: "bank.title",
       },
       iconName: <Landmark className="size-5" />,
-      filterCode: bankPermissions.view,
     },
     {
       code: "DROPDOWN",

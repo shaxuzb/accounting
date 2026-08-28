@@ -192,7 +192,7 @@ export default function AccountingEntriesReportPage() {
   // };
 
   return (
-    <div className="mt-2 space-y-4">
+    <div className="space-y-2">
       {/* <h1 className="text-2xl font-bold">Accounting entries report</h1>
       <div className="flex flex-wrap items-end gap-3">
         <label className="flex flex-col gap-1">

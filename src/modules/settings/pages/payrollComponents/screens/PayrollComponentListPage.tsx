@@ -14,6 +14,7 @@ import { useAppSelector } from "@/store/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { numberSpacing } from "@/utils/utils";
+import ListPagination from "@/components/ui/table/ListPagination";
 import { Button, Table, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import dayjs from "dayjs";
@@ -254,9 +255,10 @@ export default function PayrollComponentListPage() {
           columns={tableColumns}
           dataSource={withRowNumbers(data?.items)}
           scroll={{ x: "max-content", y: "calc(100vh - 330px)" }}
-          pagination={paginationProps(data?.total)}
+          pagination={false}
           size="middle"
         />
+        <ListPagination {...paginationProps(data?.total)} />
       </Card>
 
       <PayrollComponentAddEditPage

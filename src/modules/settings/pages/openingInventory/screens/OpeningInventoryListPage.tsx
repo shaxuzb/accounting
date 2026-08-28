@@ -11,6 +11,7 @@ import PermissionCard from "@/components/ui/card/PermissionCard";
 import Card from "@/components/ui/card/Card";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { openingInventoryPermissions } from "../constants/permissions";
+import ListPagination from "@/components/ui/table/ListPagination";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const numberValue = Number(value);
@@ -186,21 +187,14 @@ export default function OpeningInventoryListPage() {
                 />
               ),
             }}
-            pagination={{
-              current: currentPage,
-              pageSize,
-              total: data?.total ?? 0,
-              showSizeChanger: true,
-              pageSizeOptions: [10, 20, 50, 100],
-              showTotal: (total, range) =>
-                t("common.resultRange", {
-                  from: range[0],
-                  to: range[1],
-                  total,
-                }),
-              onChange: handlePaginationChange,
-            }}
+            pagination={false}
             scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
+          />
+          <ListPagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={data?.total ?? 0}
+            onChange={handlePaginationChange}
           />
         </Card>
       </div>

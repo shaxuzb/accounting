@@ -8,6 +8,7 @@ import { displayDate } from "@/modules/payroll/utils/format";
 import { usePaginationParams } from "@/shared/hooks/usePaginationParams";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import ListPagination from "@/components/ui/table/ListPagination";
 import { App, Button, Table, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import { FilePlus2, Paperclip, Pencil, Trash2 } from "lucide-react";
@@ -227,10 +228,11 @@ export default function HrAbsenceListPage() {
           loading={isLoading || isFetching}
           columns={columns}
           dataSource={withRowNumbers(data?.items)}
-          pagination={paginationProps(data?.total)}
+          pagination={false}
           size="middle"
           scroll={{ x: "max-content", y: "calc(100vh - 330px)" }}
         />
+        <ListPagination {...paginationProps(data?.total)} />
       </Card>
 
       <HrAbsenceFormModal

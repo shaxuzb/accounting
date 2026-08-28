@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import {
   useLocation,
   useMatches,
   useNavigate,
+  useNavigationType,
   type UIMatch,
   resolvePath,
 } from "react-router";
@@ -11,10 +12,12 @@ import {
   clearTabs,
   removeTab,
   setActiveTab,
+  unpinTab,
   upsertTab,
   type TabItem,
 } from "@/store/features/tabListSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { getNavigationSourceTab } from "./backNavigation";
 
 type WorkspaceTitle =
   | string
@@ -58,6 +61,28 @@ export const normalizePath = (pathname: string): string => {
   return basePath.endsWith("/") ? basePath.slice(0, -1) : basePath;
 };
 
+const normalizeSearch = (search: string): string => {
+  const query = search.startsWith("?") ? search.slice(1) : search;
+  if (!query) return "";
+
+  const params = [...new URLSearchParams(query).entries()].sort(
+    ([leftKey, leftValue], [rightKey, rightValue]) =>
+      leftKey.localeCompare(rightKey) || leftValue.localeCompare(rightValue),
+  );
+
+  return params.length ? `?${new URLSearchParams(params).toString()}` : "";
+};
+
+export const normalizeWorkspacePath = (value: string): string => {
+  const [pathAndSearch] = value.split("#");
+  const queryIndex = pathAndSearch.indexOf("?");
+  const pathname =
+    queryIndex === -1 ? pathAndSearch : pathAndSearch.slice(0, queryIndex);
+  const search = queryIndex === -1 ? "" : pathAndSearch.slice(queryIndex);
+
+  return `${normalizePath(pathname)}${normalizeSearch(search)}`;
+};
+
 const hasRelevantHandle = (value: unknown): value is WorkspaceHandle => {
   if (!value || typeof value !== "object") {
     return false;
@@ -76,10 +101,7 @@ const hasRelevantHandle = (value: unknown): value is WorkspaceHandle => {
 const resolveWorkspaceTitle = (
   title: WorkspaceHandle["title"],
   params: Record<string, string | undefined>,
-): string =>
-  typeof title === "function"
-    ? title(params)
-    : title ?? "";
+): string => (typeof title === "function" ? title(params) : (title ?? ""));
 
 const deriveSuffixFromParams = (
   params: Record<string, string | undefined>,
@@ -119,13 +141,8 @@ const resolveParentPath = (
   }
 
   if (handle.backTo) {
-      return normalizePath(
-        resolvePath(
-          handle.backTo,
-          match.pathname,
-        ).pathname,
-      );
-    }
+    return normalizePath(resolvePath(handle.backTo, match.pathname).pathname);
+  }
 
   if (handle.workspace?.parentRoute) {
     return normalizePath(
@@ -147,7 +164,7 @@ const getActiveRouteContext = (
   pathname: string,
   search: string,
 ): WorkspaceRouteContext => {
-  const normalizedPath = normalizePath(pathname);
+  const workspacePath = normalizeWorkspacePath(`${pathname}${search}`);
   const reverseMatches = [...matches].reverse();
   const activeMatch =
     reverseMatches.find((match) => hasRelevantHandle(match.handle)) ?? null;
@@ -156,10 +173,10 @@ const getActiveRouteContext = (
     return {
       match: null,
       handle: null,
-      key: normalizedPath,
+      key: workspacePath,
       title: "",
       suffix: undefined,
-      path: normalizedPath,
+      path: workspacePath,
       parentPath: null,
       isWorkspace: false,
       showBack: false,
@@ -171,23 +188,21 @@ const getActiveRouteContext = (
   const suffix = resolveTabSuffix(activeHandle, activeMatch.params, search);
   const explicitType = activeHandle.workspace?.tabBehavior;
   const isWorkspace =
-    explicitType === "auto" || explicitType === "manual" ? explicitType === "auto" : Boolean(activeHandle.showBack);
+    explicitType === "auto" || explicitType === "manual"
+      ? explicitType === "auto"
+      : Boolean(activeHandle.showBack);
   const parentPath = isWorkspace
-    ? resolveParentPath(
-        activeMatch,
-        activeHandle,
-        activeMatch.pathname,
-      )
+    ? resolveParentPath(activeMatch, activeHandle, activeMatch.pathname)
     : null;
   const parentKey = parentPath ? parentPath : undefined;
 
   return {
     match: activeMatch,
     handle: activeHandle,
-    key: normalizedPath,
+    key: workspacePath,
     title: title,
     suffix,
-    path: normalizedPath,
+    path: workspacePath,
     parentPath,
     parentKey,
     isWorkspace,
@@ -201,7 +216,8 @@ export const useWorkspaceNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const matches = useMatches();
-  const path = normalizePath(location.pathname);
+  const navigationType = useNavigationType();
+  const path = normalizeWorkspacePath(`${location.pathname}${location.search}`);
   const tabs = useAppSelector((state) => state.tabList.tabs);
   const activeTabKey = useAppSelector((state) => state.tabList.activeTabKey);
   const previousActiveTabKey = useRef<string | null>(null);
@@ -218,36 +234,51 @@ export const useWorkspaceNavigation = () => {
       )
     : "";
 
-  useEffect(() => {
-    if (
-      activeTabKey &&
-      activeTabKey !== previousActiveTabKey.current
-    ) {
-      previousActiveTabKey.current = activeTabKey;
-    }
-  }, [activeTabKey]);
-
-  const syncFromCurrentRoute = useCallback(() => {
+  const syncFromCurrentRoute = useCallback((previousPath?: string) => {
     if (skipNextSyncFromCurrentRoute.current) {
       skipNextSyncFromCurrentRoute.current = false;
       return;
     }
 
-    if (!routeContext.match || !routeContext.isWorkspace) {
+    if (!routeContext.match) {
       return;
     }
+
+    if (!routeContext.isWorkspace) {
+      const existingTab = tabs.find(
+        (tab) => normalizeWorkspacePath(tab.path) === path,
+      );
+      if (existingTab && activeTabKey !== existingTab.key) {
+        previousActiveTabKey.current = activeTabKey;
+        dispatch(setActiveTab(existingTab.key));
+      }
+      return;
+    }
+
+    const existingTab = tabs.find((tab) => tab.key === routeContext.key);
+    const sourceTab = getNavigationSourceTab(
+      navigationType,
+      previousPath
+        ? tabs.find((tab) => normalizeWorkspacePath(tab.path) === previousPath) ??
+            { path: previousPath }
+        : undefined,
+      path,
+    );
+    const parentPath =
+      sourceTab?.path ?? existingTab?.parentPath ?? routeContext.parentPath;
+    const parentKey =
+      sourceTab?.key ?? existingTab?.parentKey ?? routeContext.parentKey;
 
     const payload: TabItem = {
       key: routeContext.key,
       title: routeContext.title || routeContext.path,
       path: routeContext.path,
       suffix: routeContext.suffix,
-      parentPath: routeContext.parentPath ?? undefined,
-      parentKey: routeContext.parentKey,
+      parentPath: parentPath ?? undefined,
+      parentKey,
       isPinned: undefined,
     };
 
-    const existingTab = tabs.find((tab) => tab.key === payload.key);
     if (existingTab) {
       if (
         existingTab.path !== payload.path ||
@@ -264,26 +295,31 @@ export const useWorkspaceNavigation = () => {
         );
       }
       if (activeTabKey !== routeContext.key) {
+        previousActiveTabKey.current = activeTabKey;
         dispatch(setActiveTab(routeContext.key));
       }
       return;
     }
 
     dispatch(upsertTab(payload));
+    previousActiveTabKey.current = activeTabKey;
     dispatch(setActiveTab(routeContext.key));
-  }, [dispatch, routeContext, activeTabKey, tabs]);
+  }, [activeTabKey, dispatch, navigationType, path, routeContext, tabs]);
 
   const activateWorkspace = useCallback(
     (tabKey: string) => {
       const targetTab = tabs.find((tab) => tab.key === tabKey);
       if (!targetTab) return;
 
+      if (activeTabKey && activeTabKey !== tabKey) {
+        previousActiveTabKey.current = activeTabKey;
+      }
       dispatch(setActiveTab(tabKey));
-      if (normalizePath(targetTab.path) !== path) {
+      if (normalizeWorkspacePath(targetTab.path) !== path) {
         navigate(targetTab.path, { replace: true });
       }
     },
-    [dispatch, navigate, path, tabs],
+    [activeTabKey, dispatch, navigate, path, tabs],
   );
 
   const closeWorkspace = useCallback(
@@ -301,16 +337,20 @@ export const useWorkspaceNavigation = () => {
       }
 
       const existingTabs = tabs.filter((tab) => tab.key !== tabKey);
-      let nextTarget = existingTabs.find((tab) => tab.key === previousActiveTabKey.current);
+      let nextTarget = existingTabs.find(
+        (tab) => tab.key === previousActiveTabKey.current,
+      );
 
       if (!nextTarget && closingTab.parentPath) {
         const parentMatch =
           existingTabs.find(
-            (tab) => tab.key === closingTab.parentKey || tab.path === closingTab.parentPath,
+            (tab) =>
+              tab.key === closingTab.parentKey ||
+              tab.path === closingTab.parentPath,
           ) ?? null;
         if (parentMatch) {
           nextTarget = parentMatch;
-          if (normalizePath(path) !== normalizePath(parentMatch.path)) {
+          if (path !== normalizeWorkspacePath(parentMatch.path)) {
             dispatch(setActiveTab(parentMatch.key));
             navigate(parentMatch.path, { replace: true });
             return;
@@ -356,7 +396,7 @@ export const useWorkspaceNavigation = () => {
 
   const unpinWorkspace = useCallback(
     (tabKey: string) => {
-      dispatch(removeTab(tabKey));
+      dispatch(unpinTab(tabKey));
     },
     [dispatch],
   );
@@ -368,13 +408,37 @@ export const useWorkspaceNavigation = () => {
   }, [dispatch]);
 
   const goBack = useCallback(() => {
-    if (!routeContext.isWorkspace || !routeContext.showBack || !routeContext.parentPath) {
+    if (!routeContext.isWorkspace || !routeContext.showBack) {
       return false;
     }
 
-    navigate(routeContext.parentPath, { replace: true });
+    const currentTab = tabs.find((tab) => tab.key === routeContext.key);
+    const parentTab = currentTab?.parentKey
+      ? tabs.find((tab) => tab.key === currentTab.parentKey)
+      : undefined;
+
+    if (parentTab) {
+      dispatch(setActiveTab(parentTab.key));
+      navigate(parentTab.path, { replace: true });
+      return true;
+    }
+
+    const parentPath = currentTab?.parentPath ?? routeContext.parentPath;
+    if (!parentPath) {
+      return false;
+    }
+
+    navigate(parentPath, { replace: true });
     return true;
-  }, [navigate, routeContext.isWorkspace, routeContext.parentPath, routeContext.showBack]);
+  }, [
+    dispatch,
+    navigate,
+    routeContext.isWorkspace,
+    routeContext.key,
+    routeContext.parentPath,
+    routeContext.showBack,
+    tabs,
+  ]);
 
   const currentTitle = sidebarTitle || "";
   const titleText = t(currentTitle);

@@ -15,6 +15,7 @@ import { salePermissions } from "../constants/permissions";
 import { useGetListSale } from "../hooks";
 import type { SaleDoc } from "../types/type";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
+import ListPagination from "@/components/ui/table/ListPagination";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const numberValue = Number(value);
@@ -169,17 +170,14 @@ export default function SaleListPage() {
           columns={columns}
           dataSource={tableData}
           rowKey="id"
-          pagination={{
-            current: currentPage,
-            pageSize,
-            total: data?.total ?? 0,
-            showSizeChanger: true,
-            pageSizeOptions: [10, 20, 50, 100],
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} / ${total} ta`,
-            onChange: handlePaginationChange,
-          }}
+          pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
+        />
+        <ListPagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={data?.total ?? 0}
+          onChange={handlePaginationChange}
         />
       </Card>
     </div>
