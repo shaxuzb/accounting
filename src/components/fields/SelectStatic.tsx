@@ -55,8 +55,8 @@ const SelectStatic: React.FC<SelectStaticProps> = ({
   const currentValue = formik ? getIn(formik.values, fieldName) : value;
   const hasError = Boolean(
     formik &&
-      getIn(formik.touched, fieldName) &&
-      getIn(formik.errors, fieldName),
+    getIn(formik.touched, fieldName) &&
+    getIn(formik.errors, fieldName),
   );
 
   const handleChange = (nextValue: string | number | null) => {
@@ -88,7 +88,9 @@ const SelectStatic: React.FC<SelectStaticProps> = ({
         );
         return (
           <div className="flex flex-col">
-            <span>{t(source?.label ?? "", { defaultValue: source?.label ?? "" })}</span>
+            <span>
+              {t(source?.label ?? "", { defaultValue: source?.label ?? "" })}
+            </span>
             {source?.description && (
               <span className="text-xs text-secondary-text">
                 {t(source.description, { defaultValue: source.description })}

@@ -1,15 +1,26 @@
 import { Button, Modal, Table, type TableColumnsType } from "antd";
 import { useFormik } from "formik";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import SelectCustom from "@/components/fields/SelectCustom";
+import { useAppSelector } from "@/store/hooks";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
+import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
+import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import { useCreateOrgBankAccounts } from "@/modules/settings/pages/orgBankAccounts/hooks";
 import type { BankStatementCardData } from "../types/type";
+import {
+  buildMissingOrgBankAccountPayload,
+  getBankAccountIdFromResponse,
+  normalizeBankAccountNumber,
+} from "../utils/bankImportRules";
 
 interface MissingBankAccountModalProps {
   open: boolean;
   items: BankStatementCardData[];
+  bankIdFallback?: number | null;
   onClose: () => void;
   onApply: (assignments: Record<string, BankInfoAssignment>) => void;
 }
@@ -44,10 +55,15 @@ const getFieldName = (
 export default function MissingBankAccountModal({
   open,
   items,
+  bankIdFallback,
   onClose,
   onApply,
 }: MissingBankAccountModalProps) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const organizationId = useAppSelector((state) => state.organization.id);
+  const createOrgBankAccount = useCreateOrgBankAccounts();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const rows = useMemo<MissingBankInfoRow[]>(
     () =>
       items.map((item, index) => ({
@@ -69,17 +85,11 @@ export default function MissingBankAccountModal({
   );
   const formik = useFormik<MissingBankInfoForm>({
     initialValues: { assignments: {} },
-    onSubmit: (values, helpers) => {
+    onSubmit: async (values, helpers) => {
       const assignments: Record<string, BankInfoAssignment> = {};
       const hasEmpty = rows.some((row) => {
         const rowAssignment = values.assignments[row.formKey] ?? {};
 
-        if (
-          row.needsBankAccount &&
-          !hasValidNumber(rowAssignment.bankAccountId)
-        ) {
-          return true;
-        }
         if (
           row.needsOperationType &&
           !hasValidNumber(rowAssignment.operationTypeId)
@@ -90,18 +100,6 @@ export default function MissingBankAccountModal({
           return true;
         }
 
-        assignments[row.id] = {
-          ...(row.needsBankAccount && rowAssignment.bankAccountId
-            ? { bankAccountId: Number(rowAssignment.bankAccountId) }
-            : {}),
-          ...(row.needsOperationType && rowAssignment.operationTypeId
-            ? { operationTypeId: Number(rowAssignment.operationTypeId) }
-            : {}),
-          ...(row.needsCurrency && rowAssignment.currencyId
-            ? { currencyId: Number(rowAssignment.currencyId) }
-            : {}),
-        };
-
         return false;
       });
 
@@ -110,8 +108,90 @@ export default function MissingBankAccountModal({
         return;
       }
 
-      onApply(assignments);
-      helpers.resetForm();
+      setIsSubmitting(true);
+      try {
+        const createdAccountIds = new Map<string, number>();
+        let createdAccountCount = 0;
+
+        for (const row of rows) {
+          const rowAssignment = values.assignments[row.formKey] ?? {};
+          let bankAccountId = hasValidNumber(rowAssignment.bankAccountId)
+            ? Number(rowAssignment.bankAccountId)
+            : hasValidNumber(row.bankAccountId)
+              ? Number(row.bankAccountId)
+              : null;
+
+          if (!bankAccountId && row.needsBankAccount) {
+            const currencyId =
+              rowAssignment.currencyId ??
+              row.currencyId ??
+              row.transactions.find((transaction) =>
+                hasValidNumber(transaction.currencyId),
+              )?.currencyId;
+            const payload = buildMissingOrgBankAccountPayload(
+              { ...row, bankId: row.bankId ?? bankIdFallback },
+              organizationId,
+              currencyId,
+            );
+
+            if (!payload) {
+              toast.error(t("bank.messages.selectCompleteBankInfo"));
+              return;
+            }
+
+            const accountKey = [
+              payload.organizationId,
+              payload.bankId,
+              payload.bankBranchId ?? "",
+              normalizeBankAccountNumber(payload.accountNumber),
+              payload.currencyId,
+            ].join(":");
+            const cachedAccountId = createdAccountIds.get(accountKey);
+
+            if (cachedAccountId) {
+              bankAccountId = cachedAccountId;
+            } else {
+              const response = await createOrgBankAccount.mutateAsync(payload);
+              const createdAccountId = getBankAccountIdFromResponse(response);
+
+              if (!createdAccountId) {
+                toast.error(t("bank.messages.selectCompleteBankInfo"));
+                return;
+              }
+
+              createdAccountIds.set(accountKey, createdAccountId);
+              bankAccountId = createdAccountId;
+              createdAccountCount += 1;
+            }
+          }
+
+          assignments[row.id] = {
+            ...(bankAccountId ? { bankAccountId } : {}),
+            ...(row.needsOperationType && rowAssignment.operationTypeId
+              ? { operationTypeId: Number(rowAssignment.operationTypeId) }
+              : {}),
+            ...(row.needsCurrency && rowAssignment.currencyId
+              ? { currencyId: Number(rowAssignment.currencyId) }
+              : {}),
+          };
+        }
+
+        if (createdAccountCount > 0) {
+          invalidateSelectListQuery(
+            queryClient,
+            "bankAccountId",
+            selectListEndpoints.orgBankAccountsSelectList,
+          );
+          toast.success(t("bank.messages.bankAccountsCreated"));
+        }
+
+        onApply(assignments);
+        helpers.resetForm();
+      } catch (error) {
+        errorHandlers(error);
+      } finally {
+        setIsSubmitting(false);
+      }
     },
   });
   const hasBankAccountColumn = rows.some((row) => row.needsBankAccount);
@@ -232,6 +312,8 @@ export default function MissingBankAccountModal({
         className="mt-3"
         onClick={() => formik.handleSubmit()}
         size="large"
+        loading={isSubmitting}
+        disabled={isSubmitting}
       >
         {t("common.submit")}
       </Button>

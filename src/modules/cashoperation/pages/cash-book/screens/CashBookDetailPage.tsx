@@ -88,7 +88,8 @@ export default function CashBookDetailPage() {
               <span className="font-semibold">{t("cash.fields.cashBox")}</span>
             </div>
             <div className="text-lg font-bold text-foreground">
-              {data?.cashBoxName ?? t("cash.book.cashBoxWithId", { id: cashBoxId })}
+              {data?.cashBoxName ??
+                t("cash.book.cashBoxWithId", { id: cashBoxId })}
             </div>
           </div>
           <div className="flex gap-2">
@@ -110,25 +111,33 @@ export default function CashBookDetailPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="p-4">
-          <div className="text-sm text-muted-foreground">{t("cash.book.openingBalance")}</div>
+          <div className="text-sm text-muted-foreground">
+            {t("cash.book.openingBalance")}
+          </div>
           <div className="mt-1 text-xl font-semibold">
             {numberSpacing(data?.openingBalance ?? 0)}
           </div>
         </Card>
         <Card className="p-4">
-          <div className="text-sm text-muted-foreground">{t("cash.book.totalIncome")}</div>
+          <div className="text-sm text-muted-foreground">
+            {t("cash.book.totalIncome")}
+          </div>
           <div className="mt-1 text-xl font-semibold text-green-600">
             {numberSpacing(data?.totalReceipt ?? 0)}
           </div>
         </Card>
         <Card className="p-4">
-          <div className="text-sm text-muted-foreground">{t("cash.book.totalExpense")}</div>
+          <div className="text-sm text-muted-foreground">
+            {t("cash.book.totalExpense")}
+          </div>
           <div className="mt-1 text-xl font-semibold text-red-600">
             {numberSpacing(data?.totalPayment ?? 0)}
           </div>
         </Card>
         <Card className="p-4">
-          <div className="text-sm text-muted-foreground">{t("cash.book.closingBalance")}</div>
+          <div className="text-sm text-muted-foreground">
+            {t("cash.book.closingBalance")}
+          </div>
           <div className="mt-1 text-xl font-semibold">
             {numberSpacing(data?.closingBalance ?? 0)}
           </div>
@@ -139,7 +148,10 @@ export default function CashBookDetailPage() {
         <Table<CashBookEntry>
           loading={isLoading || isFetching}
           columns={columns}
-          dataSource={generateKeyTable(data?.items ?? [], "moneyRegisterEntryId")}
+          dataSource={generateKeyTable(
+            data?.items ?? [],
+            "moneyRegisterEntryId",
+          )}
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
         />

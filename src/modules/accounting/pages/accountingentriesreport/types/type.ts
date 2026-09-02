@@ -15,6 +15,7 @@ export interface AccountingEntriesReportPosting {
   creditAccountNumber: number;
   amount: number;
   currency: string;
+  // debitQuantity: number;
   documentNumber: string;
   subkonto: AccountingEntriesReportSubkontoItem[];
   debitDetails: AccountingEntriesReportSubkontoItem[];

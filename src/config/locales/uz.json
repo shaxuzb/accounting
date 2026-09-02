@@ -36,7 +36,11 @@
     "accountingEntries": "Provodkalar",
     "accountingEntriesPostedOnly": "Provodkalar faqat o'tkazilgan hujjatda mavjud",
     "piece": "dona",
-    "and": "va"
+    "and": "va",
+    "income": "Kirim",
+    "expense": "Chiqim",
+    "status": "Holat",
+    "notFound": "Topilmadi"
   },
   "actions": {
     "deleteSuccess": "Element {{id}} muvaffaqiyatli o'chirildi",
@@ -503,12 +507,15 @@
       "externalRegisterId": "Tashqi kassa ID",
       "merchantId": "Merchant ID",
       "externalTerminalId": "Tashqi terminal ID",
+      "externalId": "Tashqi ID",
+      "paymentAcceptancePointType": "To'lovni qabul qilish nuqtasi turi",
       "model": "Model",
       "serialNumber": "Seriya raqami",
       "fiscalModuleNumber": "Fiskal modul raqami",
       "organization": "Tashkilot",
       "organizationName": "Tashkilot nomi",
       "partyType": "Kontragent turi",
+      "isVatPayer": "QQS to'lovchisi",
       "password": "Parol",
       "phoneNumber": "Telefon raqami",
       "position": "Lavozim",
@@ -543,6 +550,8 @@
       "editFiscalCashRegister": "Fiskal kassani tahrirlash",
       "createBankTerminal": "Bank terminali qo'shish",
       "editBankTerminal": "Bank terminalini tahrirlash",
+      "createPaymentAcceptancePoint": "To'lovni qabul qilish nuqtasini qo'shish",
+      "editPaymentAcceptancePoint": "To'lovni qabul qilish nuqtasini tahrirlash",
       "createUser": "Foydalanuvchi qo'shish",
       "editUser": "Foydalanuvchini o'zgartirish",
       "createRole": "Rol qo'shish",
@@ -1070,11 +1079,17 @@
     "messages": {
       "imported": "Bank ko'chirmasi import qilindi",
       "saved": "Bank operatsiyalari saqlandi",
+      "existingSkipped": "{{count}} ta mavjud operatsiya o'tkazib yuborildi",
       "partialSaved": "{{saved}} ta operatsiya saqlandi, {{skipped}} tasi o'tkazib yuborildi",
+      "partialSaveConfirmTitle": "Qisman saqlashni tasdiqlaysizmi?",
+      "partialSaveConfirmDescription": "{{saved}} ta operatsiya saqlanadi, {{skipped}} ta operatsiya o'tkazib yuboriladi. Davom etasizmi?",
       "noValidTransactions": "Saqlash uchun to'liq operatsiya topilmadi",
       "saveNextStep": "Saqlash keyingi bosqichda bank operatsiyalari API siga ulanadi",
       "missingRequired": "{{count}} ta operatsiyada majburiy ma'lumot yetishmaydi",
       "noData": "Hali bank ko'chirmasi import qilinmagan",
+      "noNewOperations": "Yangi operatsiyalar topilmadi",
+      "noExistingOperations": "Tizimda mavjud operatsiyalar topilmadi",
+      "existingOperationHint": "Bu operatsiya avval import qilingan va qayta saqlanmaydi",
       "noTransactions": "Operatsiyalar topilmadi",
       "requiresReview": "Tekshiruv kerak",
       "counterpartyMissing": "Kontragent topilmadi",
@@ -1090,6 +1105,7 @@
       "selectAllContracts": "Barcha operatsiyalar uchun shartnomani tanlang",
       "selectAllCounterpartyAccounts": "Barcha operatsiyalar uchun kontragentning bank hisobini tanlang",
       "documentSaved": "Hujjat saqlandi",
+      "bankAccountsCreated": "Bank hisoblari muvaffaqiyatli qo'shildi",
       "documentConfirmed": "Hujjat tasdiqlandi",
       "documentCancelled": "Hujjat bekor qilindi"
     },
@@ -1103,6 +1119,13 @@
       "uploadHint": "XLS yoki XLSX formatidagi bank ko'chirmalari qo'llab-quvvatlanadi.",
       "statements": "Bank ko'chirmalari",
       "transactions": "Operatsiyalar",
+      "operationStatus": "Holat",
+      "newOperation": "Yangi",
+      "existingOperation": "Tizimda mavjud",
+      "newOperations": "Yangi: {{count}}",
+      "existingOperations": "Mavjud: {{count}}",
+      "allOperations": "Barchasi: {{count}}",
+      "saveNewOperations": "{{count}} ta yangi operatsiyani saqlash",
       "status": "Holat",
       "readyToSave": "Saqlashga tayyor",
       "assignMissingBankInfo": "Yetishmayotgan bank ma'lumotlarini belgilash",
@@ -1367,6 +1390,7 @@
       "totalAmount": "Jami summa",
       "paymentMethod": "To'lov usuli",
       "bankTerminal": "Bank terminali",
+      "paymentAcceptancePoint": "To'lovni qabul qilish nuqtasi",
       "debitAccount": "Debet hisobvarag'i",
       "amount": "Summa",
       "transactionNumber": "Tranzaksiya raqami"
@@ -1390,6 +1414,7 @@
       "paymentMethodRequired": "To'lov usulini tanlang",
       "debitAccountRequired": "Debet hisobvarag'ini tanlang",
       "paymentAmountRequired": "To'lov summasini kiriting",
+      "paymentAcceptancePointRequired": "Naqd pulsiz to'lov uchun qabul qilish nuqtasini tanlang",
       "checkProductData": "Mahsulot ma'lumotlarini tekshiring",
       "listLoadError": "Chakana savdo hujjatlarini yuklab bo'lmadi",
       "listEmpty": "Chakana savdo hujjatlari topilmadi",
@@ -1567,6 +1592,7 @@
       "incomeOrders": "Kirim orderlari",
       "expenseOrders": "Chiqim orderlari",
       "cashBook": "Kassa hisobi",
+      "paymentAcceptancePoints": "To'lovni qabul qilish nuqtalari",
       "sales": "Sotuv",
       "salesList": "Sotuvlar",
       "retailSales": "Chakana savdo",
@@ -1608,7 +1634,10 @@
       "number": "Raqam",
       "count": "Soni",
       "marking": "Markirovka",
-      "serial": "Seriya"
+      "serial": "Seriya",
+      "cashOperation": "Kassa operatsiyasi",
+      "cashOperationIncome": "Kassa kirimi",
+      "cashOperationExpense": "Kassa chiqimi"
     },
     "modals": {
       "accountSelectionTitle": "Satr uchun hisobvaraqlar",
@@ -1898,6 +1927,8 @@
       "sourceChartAccount": "Pul chiqadigan hisobvaraq",
       "bankOperation": "Bank operatsiyasi",
       "cashOperation": "Kassa operatsiyasi",
+      "cashOperationIncome": "Kassa kirimi",
+      "cashOperationExpense": "Kassa chiqimi",
       "quantity": "Miqdor"
     },
     "enums": {
@@ -2380,6 +2411,9 @@
       "empty": "Hisob davri bo'yicha natija mavjud emas"
     }
   },
+  "documents": {
+    "relatedDocument": "Bog'langan hujjat"
+  },
   "cash": {
     "fields": {
       "date": "Sana",
@@ -2399,7 +2433,8 @@
       "expense": "Chiqim",
       "balance": "Qoldiq",
       "status": "Holati",
-      "currentStatus": "Joriy holat"
+      "currentStatus": "Joriy holat",
+      "direction": "Yo'nalish"
     },
     "book": {
       "cashBoxWithId": "Kassa #{{id}}",
@@ -2418,7 +2453,13 @@
       "operationTypeRequired": "Operatsiya turini tanlang",
       "amountRequired": "Musbat summa kiriting",
       "exchangeRateRequired": "Valyuta kursini kiriting",
-      "dateRequired": "Sanani kiriting"
+      "dateRequired": "Sanani kiriting",
+      "cashBoxRequired": "Kassani tanlang",
+      "bankAccountRequired": "Bank hisobvarag'ini tanlang",
+      "currencyRequired": "Valyutani tanlang",
+      "directionRequired": "Yo'nalishni tanlang",
+      "paymentAcceptancePointRequired": "To'lovni qabul qilish nuqtasini tanlang",
+      "fiscalCashRegisterRequired": "Fiskal kassani tanlang"
     },
     "messages": {
       "documentCreated": "Hujjat yaratildi",
@@ -2428,6 +2469,45 @@
       "fillRequired": "Majburiy maydonlarni to'ldiring",
       "operationConfirmed": "Kassa operatsiyasi tasdiqlandi",
       "operationCancelled": "Kassa operatsiyasi bekor qilindi"
+    },
+    "collection": {
+      "title": "Inkassatsiya",
+      "create": "Inkassatsiya yaratish",
+      "created": "Inkassatsiya yaratildi",
+      "saved": "Inkassatsiya saqlandi",
+      "sent": "Inkassatsiya bankka yuborildi",
+      "cancelled": "Inkassatsiya bekor qilindi",
+      "sendToBank": "Bankka yuborish",
+      "cashInTransitAccount": "Yo'ldagi pul hisobvarag'i",
+      "bankChartAccount": "Bank hisobvarag'i"
+    },
+    "paymentAcceptancePointOperation": {
+      "title": "To'lovni qabul qilish nuqtasi operatsiyalari",
+      "create": "Nuqta operatsiyasini yaratish",
+      "created": "Operatsiya yaratildi",
+      "saved": "Operatsiya saqlandi",
+      "confirm": "Operatsiya tasdiqlandi",
+      "cancelled": "Operatsiya bekor qilindi",
+      "externalTransactionNumber": "Tashqi tranzaksiya raqami"
+    },
+    "fiscalTransfer": {
+      "title": "Fiskal kassa o'tkazmalari",
+      "create": "Fiskal o'tkazma yaratish",
+      "created": "Fiskal o'tkazma yaratildi",
+      "saved": "Fiskal o'tkazma saqlandi",
+      "confirmed": "Fiskal o'tkazma tasdiqlandi",
+      "cancelled": "Fiskal o'tkazma bekor qilindi",
+      "fiscalCashAccount": "Fiskal kassa hisobvarag'i",
+      "cashBoxAccount": "Asosiy kassa hisobvarag'i"
     }
+  },
+  "rental": {
+      "title": "Ijara",
+      "contracts": { "title": "Ijara shartnomalari", "create": "Ijara shartnomasini yaratish", "edit": "Ijara shartnomasini tahrirlash", "detail": "Ijara shartnomasi", "general": "Umumiy ma'lumotlar", "objects": "Ijara obyektlari", "objectNumber": "Ijara obyekti {{number}}", "newObject": "Yangi obyekt", "objectsDescription": "Har bir ijara obyektining ma'lumotlarini alohida ochiladigan blokda kiriting.", "noObjects": "Ijara obyektlari mavjud emas" },
+      "accruals": { "title": "Ijara hisob-kitoblari", "detail": "Ijara hisob-kitobi", "items": "Hisob-kitob satrlari", "itemNumber": "Hisob-kitob satri {{number}}", "editDetails": "Hisob-kitob ma'lumotlarini tahrirlash", "generateTitle": "Hisob-kitoblarni yaratish" },
+      "fields": { "lessorFullName": "Ijaraga beruvchi F.I.Sh.", "lessorInn": "STIR", "lessorPinfl": "JShShIR", "contractNumber": "Shartnoma raqami", "contractDate": "Shartnoma sanasi", "startDate": "Boshlanish sanasi", "endDate": "Tugash sanasi", "currency": "Valyuta", "lessorPayableAccount": "Ijaraga beruvchi hisobvarag'i", "taxPayableAccount": "Soliq hisobvarag'i", "comment": "Izoh", "objectType": "Obyekt turi", "objectName": "Obyekt nomi", "identifier": "Identifikator", "address": "Manzil", "period": "Davriylik", "periodValue": "Davr qiymati", "periodUnit": "Davr birligi", "dates": "Ijara davri", "contractAmount": "Shartnoma summasi", "taxBaseAmount": "Soliq bazasi", "taxRate": "Soliq stavkasi", "expenseAccount": "Xarajat hisobvarag'i", "objectCount": "Obyektlar soni", "docNumber": "Hujjat raqami", "docDate": "Hujjat sanasi", "taxAmount": "Soliq summasi", "payableAmount": "To'lanadigan summa", "amount": "Jami summa", "exchangeRate": "Valyuta kursi", "dateFrom": "Sanadan", "dateTo": "Shu sanagacha", "asOfDate": "Hisoblash sanasi" },
+      "period": { "month": "Oy", "day": "Kun" },
+      "actions": { "activate": "Faollashtirish", "post": "O'tkazish", "cancel": "Bekor qilish", "generate": "Hisob-kitob yaratish", "activateConfirm": "Shartnomani faollashtirasizmi?", "postConfirm": "Hisob-kitobni o'tkazasizmi?", "cancelConfirm": "Hujjatni bekor qilasizmi?", "deleteConfirm": "Qoralama hujjatni o'chirasizmi?" },
+       "messages": { "generated": "{{count}} ta hisob-kitob hujjati yaratildi", "lessorFound": "Ijaraga beruvchi ma'lumotlari topildi" }
   }
 }

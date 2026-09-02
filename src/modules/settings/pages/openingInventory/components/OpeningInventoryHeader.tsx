@@ -123,7 +123,7 @@ export default function OpeningInventoryHeader({
           invalidateSelectListQuery(
             queryClient,
             "counterpartyId",
-            selectListEndpoints.suppliersSelectList,
+            selectListEndpoints.counterpartiesSelectList,
           );
         }}
       />

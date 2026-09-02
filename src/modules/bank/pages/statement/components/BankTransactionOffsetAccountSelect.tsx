@@ -11,6 +11,7 @@ interface BankTransactionOffsetAccountSelectProps {
   options: BankChartAccountOption[];
   value?: number | null;
   loading: boolean;
+  disabled?: boolean;
   onChange: (accountId: number | null) => void;
 }
 
@@ -18,14 +19,15 @@ export default function BankTransactionOffsetAccountSelect({
   options,
   value,
   loading,
+  disabled = false,
   onChange,
 }: BankTransactionOffsetAccountSelectProps) {
   const { t } = useTranslation();
   useEffect(() => {
-    if (!value && options.length === 1) {
+    if (!disabled && !value && options.length === 1) {
       onChange(options[0].id);
     }
-  }, [onChange, options, value]);
+  }, [disabled, onChange, options, value]);
 
   return (
     <Select
@@ -45,7 +47,7 @@ export default function BankTransactionOffsetAccountSelect({
       allowClear
       onChange={(accountId) => onChange(accountId ? Number(accountId) : null)}
       onClear={() => onChange(null)}
-      disabled={loading}
+      disabled={loading || disabled}
     />
   );
 }

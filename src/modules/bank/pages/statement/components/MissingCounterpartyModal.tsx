@@ -1,4 +1,4 @@
-import { Button, Input, Modal, Table, type TableColumnsType } from "antd";
+import { Button, Checkbox, Input, Modal, Table, type TableColumnsType } from "antd";
 import { useFormik } from "formik";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -27,7 +27,7 @@ interface CounterpartyDraftRow {
   readonlyShortName: boolean;
   readonlyFullName: boolean;
   readonlyInn: boolean;
-  counterpartyTypeId: number | null;
+  isVatPayer: boolean;
   shortName: string;
   fullName: string;
   inn: string;
@@ -225,7 +225,7 @@ export default function MissingCounterpartyModal({
           readonlyShortName: Boolean(name),
           readonlyFullName: Boolean(name),
           readonlyInn: Boolean(inn),
-          counterpartyTypeId: null,
+          isVatPayer: false,
           shortName: name || inn,
           fullName: name || inn,
           inn,
@@ -259,7 +259,6 @@ export default function MissingCounterpartyModal({
 
       const hasEmpty = rows.some(
         (row) =>
-          !row.counterpartyTypeId ||
           !row.shortName.trim() ||
           !row.fullName.trim() ||
           !row.inn.trim() ||
@@ -278,7 +277,7 @@ export default function MissingCounterpartyModal({
       try {
         const payload = {
           counterparties: rows.map((row) => ({
-            counterpartyTypeId: Number(row.counterpartyTypeId),
+            isVatPayer: row.isVatPayer,
             shortName: row.shortName.trim(),
             fullName: row.fullName.trim(),
             inn: row.inn.trim(),
@@ -435,18 +434,16 @@ export default function MissingCounterpartyModal({
         render: (value) => t("app.missingCounterparty.count", { count: value }),
       },
       {
-        title: t("settings.fields.partyType"),
-        dataIndex: "counterpartyTypeId",
-        width: 190,
-        render: (_, record) => (
-          <SelectCustom
-            formik={formik}
-            fieldName={getFieldName(record, "counterpartyTypeId")}
-            path={selectListEndpoints.counterpartyTypesSelectList}
-            placeholder="settings.fields.partyType"
-            marginBottom="mb-0"
-            search
-            enabled={open}
+        title: t("settings.fields.isVatPayer"),
+        dataIndex: "isVatPayer",
+        width: 130,
+        align: "center",
+        render: (value, record) => (
+          <Checkbox
+            checked={Boolean(value)}
+            onChange={(event) =>
+              updateRow(record, "isVatPayer", event.target.checked)
+            }
           />
         ),
       },

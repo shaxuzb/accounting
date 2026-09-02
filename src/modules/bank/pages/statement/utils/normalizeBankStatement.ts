@@ -162,6 +162,15 @@ const normalizeTransaction = (
   const dtoAmount = toNumber(getByKeys(fields, amountKeys));
   const amount =
     dtoAmount ?? Math.abs((sourceCredit ?? 0) - (sourceDebit ?? 0));
+  const rawIsNewOperation = getByKeys(fields, ["isNewOperation"]);
+  const isNewOperation =
+    typeof rawIsNewOperation === "boolean"
+      ? rawIsNewOperation
+      : String(rawIsNewOperation ?? "").toLowerCase() === "true"
+        ? true
+        : String(rawIsNewOperation ?? "").toLowerCase() === "false"
+          ? false
+          : undefined;
 
   return {
     date: getStringByKeys(fields, dateKeys) ?? "",
@@ -203,6 +212,8 @@ const normalizeTransaction = (
     classificationRuleId: getNumberByKeys(fields, ["classificationRuleId"]),
     classificationRuleCode:
       getStringByKeys(fields, ["classificationRuleCode"]) ?? null,
+    relatedDocumentId: getNumberByKeys(fields, ["relatedDocumentId"]),
+    isNewOperation,
     requiresReview:
       getByKeys(fields, ["requiresReview"]) === true ||
       String(getByKeys(fields, ["requiresReview"]) ?? "").toLowerCase() ===

@@ -55,9 +55,7 @@ export default function ContractAddEditPage({
   const createMutation = useCreateContract();
   const updateMutation = useUpdateContract();
   const isSaleContract = contractTypeId === 2;
-  const counterpartyPath = isSaleContract
-    ? selectListEndpoints.clients
-    : selectListEndpoints.suppliersSelectList;
+  const counterpartyPath = selectListEndpoints.counterpartiesSelectList;
   const counterpartyLabel = isSaleContract
     ? "contract.fields.customerName"
     : "contract.fields.supplierName";

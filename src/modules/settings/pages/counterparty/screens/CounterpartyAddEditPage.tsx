@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef } from "react";
 import { useFormik } from "formik";
-import { Button, Col, Form, Modal, Row, Spin } from "antd";
+import { Button, Checkbox, Col, Form, Modal, Row, Spin } from "antd";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { counterpartySchema } from "../types/schema";
@@ -20,8 +20,8 @@ import { mergeLookupValues } from "@/modules/settings/shared/taxpayerLookup";
 import { useLookupCounterparty } from "../hooks/useLookupCounterparty";
 
 const defaultValues: CounterpartyForm = {
-  organizationId: null,
-  counterpartyTypeId: null,
+  code: "",
+  isVatPayer: false,
   shortName: "",
   fullName: "",
   inn: "",
@@ -92,8 +92,8 @@ export default function CounterpartyAddEditPage({
   useEffect(() => {
     if (counterpartyDetail && isEdit) {
       formik.setValues({
-        organizationId: counterpartyDetail.organizationId ?? null,
-        counterpartyTypeId: counterpartyDetail.counterpartyTypeId ?? null,
+        code: counterpartyDetail.code ?? "",
+        isVatPayer: counterpartyDetail.isVatPayer ?? false,
         shortName: counterpartyDetail.shortName ?? "",
         fullName: counterpartyDetail.fullName ?? "",
         inn: counterpartyDetail.inn ?? "",
@@ -219,11 +219,10 @@ export default function CounterpartyAddEditPage({
               )}
             </Col>
             <Col span={12}>
-              <SelectCustom
+              <InputText
                 formik={formik}
-                fieldName="organizationId"
-                label="settings.fields.organization"
-                path={selectListEndpoints.organizationsSelectList}
+                fieldName="code"
+                label="settings.fields.code"
               />
             </Col>
             <Col span={12}>
@@ -234,12 +233,14 @@ export default function CounterpartyAddEditPage({
               />
             </Col>
             <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="counterpartyTypeId"
-                label="settings.fields.partyType"
-                path={selectListEndpoints.counterpartyTypesSelectList}
-              />
+              <Checkbox
+                checked={formik.values.isVatPayer}
+                onChange={(event) =>
+                  formik.setFieldValue("isVatPayer", event.target.checked)
+                }
+              >
+                {t("settings.fields.isVatPayer")}
+              </Checkbox>
             </Col>
             {isEdit ? (
               <>

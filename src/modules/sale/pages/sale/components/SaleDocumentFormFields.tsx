@@ -167,7 +167,7 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
             invalidateSelectListQuery(
               queryClient,
               "counterpartyId",
-              selectListEndpoints.clients,
+              selectListEndpoints.counterpartiesSelectList,
             );
           }}
         />

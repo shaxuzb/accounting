@@ -36,7 +36,9 @@
     "accountingEntries": "Accounting entries",
     "accountingEntriesPostedOnly": "Accounting entries are available only for posted documents",
     "piece": "pcs",
-    "and": "and"
+    "and": "and",
+    "income": "Inflow",
+    "expense": "Outflow"
   },
   "actions": {
     "deleteSuccess": "Element {{id}} was deleted successfully",
@@ -503,12 +505,15 @@
       "externalRegisterId": "External register ID",
       "merchantId": "Merchant ID",
       "externalTerminalId": "External terminal ID",
+      "externalId": "External ID",
+      "paymentAcceptancePointType": "Payment acceptance point type",
       "model": "Model",
       "serialNumber": "Serial number",
       "fiscalModuleNumber": "Fiscal module number",
       "organization": "Organization",
       "organizationName": "Organization name",
       "partyType": "Counterparty type",
+      "isVatPayer": "VAT payer",
       "password": "Password",
       "phoneNumber": "Phone number",
       "position": "Position",
@@ -543,6 +548,8 @@
       "editFiscalCashRegister": "Edit fiscal cash register",
       "createBankTerminal": "Add bank terminal",
       "editBankTerminal": "Edit bank terminal",
+      "createPaymentAcceptancePoint": "Add payment acceptance point",
+      "editPaymentAcceptancePoint": "Edit payment acceptance point",
       "createUser": "Add user",
       "editUser": "Edit user",
       "createRole": "Add role",
@@ -931,11 +938,17 @@
     "messages": {
       "imported": "Bank statement imported",
       "saved": "Bank operations saved",
+      "existingSkipped": "{{count}} existing operations skipped",
       "partialSaved": "{{saved}} operations saved, {{skipped}} skipped",
+      "partialSaveConfirmTitle": "Confirm partial save?",
+      "partialSaveConfirmDescription": "{{saved}} operations will be saved and {{skipped}} will be skipped. Continue?",
       "noValidTransactions": "No complete operations found to save",
       "saveNextStep": "Saving will be connected to the bank operations API in the next step",
       "missingRequired": "{{count}} operations are missing required data",
       "noData": "No imported bank statements yet",
+      "noNewOperations": "No new operations found",
+      "noExistingOperations": "No existing operations found",
+      "existingOperationHint": "This operation was already imported and will not be saved again",
       "noTransactions": "No operations found",
       "requiresReview": "Review required",
       "counterpartyMissing": "Counterparty not found",
@@ -951,6 +964,7 @@
       "selectAllContracts": "Select a contract for every operation",
       "selectAllCounterpartyAccounts": "Select a counterparty bank account for every operation",
       "documentSaved": "Document saved",
+      "bankAccountsCreated": "Bank accounts added successfully",
       "documentConfirmed": "Document confirmed",
       "documentCancelled": "Document cancelled"
     },
@@ -964,6 +978,13 @@
       "uploadHint": "XLS and XLSX bank statements are supported.",
       "statements": "Bank statements",
       "transactions": "Operations",
+      "operationStatus": "Status",
+      "newOperation": "New",
+      "existingOperation": "Already in system",
+      "newOperations": "New: {{count}}",
+      "existingOperations": "Existing: {{count}}",
+      "allOperations": "All: {{count}}",
+      "saveNewOperations": "Save {{count}} new operations",
       "status": "Status",
       "readyToSave": "Ready to save",
       "assignMissingBankInfo": "Assign missing bank information",
@@ -973,7 +994,9 @@
     "operation": {
       "title": "Bank operation",
       "income": "Receipt",
-      "expense": "Expense"
+    "expense": "Expense",
+    "status": "Status",
+    "notFound": "Not found"
     },
     "readonlySections": {
       "general": "General information",
@@ -1228,6 +1251,7 @@
       "totalAmount": "Total amount",
       "paymentMethod": "Payment method",
       "bankTerminal": "Bank terminal",
+      "paymentAcceptancePoint": "Payment acceptance point",
       "debitAccount": "Debit account",
       "amount": "Amount",
       "transactionNumber": "Transaction number"
@@ -1251,6 +1275,7 @@
       "paymentMethodRequired": "Select a payment method",
       "debitAccountRequired": "Select a debit account",
       "paymentAmountRequired": "Enter a payment amount",
+      "paymentAcceptancePointRequired": "Select a payment acceptance point for non-cash payments",
       "checkProductData": "Check the product data",
       "listLoadError": "Could not load retail sale documents",
       "listEmpty": "No retail sale documents found",
@@ -1428,6 +1453,7 @@
       "incomeOrders": "Cash receipt orders",
       "expenseOrders": "Cash expense orders",
       "cashBook": "Cash book",
+      "paymentAcceptancePoints": "Payment acceptance points",
       "sales": "Sales",
       "salesList": "Sales documents",
       "retailSales": "Retail sales",
@@ -1469,7 +1495,10 @@
       "number": "No.",
       "count": "Count",
       "marking": "Marking",
-      "serial": "Serial"
+      "serial": "Serial",
+      "cashOperation": "Cash operation",
+      "cashOperationIncome": "Cash receipt",
+      "cashOperationExpense": "Cash expense"
     },
     "modals": {
       "accountSelectionTitle": "Accounts for line",
@@ -1759,6 +1788,8 @@
       "sourceChartAccount": "Source account",
       "bankOperation": "Bank operation",
       "cashOperation": "Cash operation",
+      "cashOperationIncome": "Cash receipt",
+      "cashOperationExpense": "Cash expense",
       "quantity": "Quantity"
     },
     "enums": {
@@ -2241,6 +2272,9 @@
       "empty": "No accounting period result available"
     }
   },
+  "documents": {
+    "relatedDocument": "Related document"
+  },
   "cash": {
     "fields": {
       "date": "Date",
@@ -2260,7 +2294,8 @@
       "expense": "Expense",
       "balance": "Balance",
       "status": "Status",
-      "currentStatus": "Current status"
+      "currentStatus": "Current status",
+      "direction": "Direction"
     },
     "book": {
       "cashBoxWithId": "Cash register #{{id}}",
@@ -2279,7 +2314,13 @@
       "operationTypeRequired": "Select an operation type",
       "amountRequired": "Enter a positive amount",
       "exchangeRateRequired": "Enter an exchange rate",
-      "dateRequired": "Enter a date"
+      "dateRequired": "Enter a date",
+      "cashBoxRequired": "Select a cash register",
+      "bankAccountRequired": "Select a bank account",
+      "currencyRequired": "Select a currency",
+      "directionRequired": "Select a direction",
+      "paymentAcceptancePointRequired": "Select a payment acceptance point",
+      "fiscalCashRegisterRequired": "Select a fiscal cash register"
     },
     "messages": {
       "documentCreated": "Document created",
@@ -2289,6 +2330,45 @@
       "fillRequired": "Complete all required fields",
       "operationConfirmed": "Cash operation confirmed",
       "operationCancelled": "Cash operation cancelled"
+    },
+    "collection": {
+      "title": "Cash collection",
+      "create": "Create cash collection",
+      "created": "Cash collection created",
+      "saved": "Cash collection saved",
+      "sent": "Cash collection sent to bank",
+      "cancelled": "Cash collection cancelled",
+      "sendToBank": "Send to bank",
+      "cashInTransitAccount": "Cash in transit account",
+      "bankChartAccount": "Bank ledger account"
+    },
+    "paymentAcceptancePointOperation": {
+      "title": "Payment acceptance point operations",
+      "create": "Create point operation",
+      "created": "Operation created",
+      "saved": "Operation saved",
+      "confirm": "Operation confirmed",
+      "cancelled": "Operation cancelled",
+      "externalTransactionNumber": "External transaction number"
+    },
+    "fiscalTransfer": {
+      "title": "Fiscal cash transfers",
+      "create": "Create fiscal cash transfer",
+      "created": "Fiscal cash transfer created",
+      "saved": "Fiscal cash transfer saved",
+      "confirmed": "Fiscal cash transfer confirmed",
+      "cancelled": "Fiscal cash transfer cancelled",
+      "fiscalCashAccount": "Fiscal cash account",
+      "cashBoxAccount": "Main cash account"
     }
+  },
+  "rental": {
+      "title": "Rental",
+      "contracts": { "title": "Rental contracts", "create": "Create rental contract", "edit": "Edit rental contract", "detail": "Rental contract", "general": "General information", "objects": "Rental objects", "objectNumber": "Rental object {{number}}", "newObject": "New object", "objectsDescription": "Enter each rental object in its own expandable section.", "noObjects": "No rental objects" },
+      "accruals": { "title": "Rental accruals", "detail": "Rental accrual", "items": "Accrual items", "itemNumber": "Accrual item {{number}}", "editDetails": "Edit accrual details", "generateTitle": "Generate accruals" },
+      "fields": { "lessorFullName": "Lessor full name", "lessorInn": "TIN", "lessorPinfl": "PINFL", "contractNumber": "Contract number", "contractDate": "Contract date", "startDate": "Start date", "endDate": "End date", "currency": "Currency", "lessorPayableAccount": "Lessor payable account", "taxPayableAccount": "Tax payable account", "comment": "Comment", "objectType": "Object type", "objectName": "Object name", "identifier": "Identifier", "address": "Address", "period": "Period", "periodValue": "Period value", "periodUnit": "Period unit", "dates": "Rental period", "contractAmount": "Contract amount", "taxBaseAmount": "Tax base amount", "taxRate": "Tax rate", "expenseAccount": "Expense account", "objectCount": "Object count", "docNumber": "Document number", "docDate": "Document date", "taxAmount": "Tax amount", "payableAmount": "Amount payable", "amount": "Total amount", "exchangeRate": "Exchange rate", "dateFrom": "From date", "dateTo": "To date", "asOfDate": "Calculation date" },
+      "period": { "month": "Month", "day": "Day" },
+      "actions": { "activate": "Activate", "post": "Post", "cancel": "Cancel", "generate": "Generate accruals", "activateConfirm": "Activate this contract?", "postConfirm": "Post this accrual?", "cancelConfirm": "Cancel this document?", "deleteConfirm": "Delete this draft?" },
+      "messages": { "generated": "{{count}} accrual document(s) created", "lessorFound": "Lessor data found" }
   }
 }

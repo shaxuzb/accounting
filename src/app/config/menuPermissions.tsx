@@ -30,6 +30,7 @@ import {
   Boxes,
   BadgeDollarSign,
   SlidersHorizontal,
+  KeyRound,
 } from "lucide-react";
 import { salePermissions } from "@/modules/sale";
 import { retailSalePermissions } from "@/modules/sale/pages/retail-sale/constants/permissions";
@@ -60,12 +61,10 @@ import {
 } from "@/modules/hr/constants/permissions";
 import { payrollComponentPermissions } from "@/modules/settings/pages/payrollComponents/constants/permissions";
 import { fiscalCashRegisterPermissions } from "@/modules/settings/pages/fiscalCashRegister/constants/permissions";
-import { bankTerminalPermissions } from "@/modules/settings/pages/bankTerminal/constants/permissions";
-import {
-  cashBookPermissions,
-  cashDocumentPermissions,
-  cashOperationPermissions,
-} from "@/modules/cashoperation";
+import { cashCollectionPermissions } from "@/modules/cashoperation/pages/cash-collection/constants/permissions";
+import { paymentAcceptancePointOperationPermissions } from "@/modules/cashoperation/pages/payment-acceptance-point-operation/constants/permissions";
+import { cashFiscalTransferPermissions } from "@/modules/cashoperation/pages/cash-fiscal-transfer/constants/permissions";
+import { cashBookPermissions } from "@/modules/cashoperation";
 import {
   faAssetPermissions,
   faDisposalPermissions,
@@ -78,6 +77,9 @@ import {
 import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
 import { ledgerPermissions } from "@/modules/accountings/pages/ledger/constants/permissions";
 import { trialBalancePermissions } from "@/modules/accountings/pages/trial-balance/constants/permissions";
+import { paymentAcceptancePointPermissions } from "@/modules/cashoperation/pages/paymentAcceptancePoint/constants/permissions";
+import { rentalContractPermissions } from "@/modules/rental/pages/contracts/constants/permissions";
+import { rentalAccrualPermissions } from "@/modules/rental/pages/accruals/constants/permissions";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -101,7 +103,6 @@ export const settingsViewPermissions = [
   "PRODUCT_GROUP_VIEW",
   "CASH_BOX_VIEW",
   fiscalCashRegisterPermissions.view,
-  bankTerminalPermissions.view,
   "COUNTERPARTY_CONTACT_VIEW",
   "WAREHOUSE_VIEW",
   purchasePermissions.view,
@@ -124,6 +125,26 @@ export const menuPermissions: MainMenu = {
     //   iconName: <LayoutDashboard className="size-5" />,
     // },
 
+    {
+      code: "DROPDOWN",
+      dropdown: true,
+      dropdownName: "rental.title",
+      iconName: <KeyRound className="size-5" />,
+      linkData: {
+        path: "rentals",
+        title: "rental.title",
+      },
+      items: [
+        {
+          code: rentalContractPermissions.view,
+          linkData: { path: "contracts", title: "rental.contracts.title" },
+        },
+        {
+          code: rentalAccrualPermissions.view,
+          linkData: { path: "accruals", title: "rental.accruals.title" },
+        },
+      ],
+    },
     {
       code: "DROPDOWN",
       iconName: <ShoppingCart className="size-5" />,
@@ -216,32 +237,57 @@ export const menuPermissions: MainMenu = {
         title: "app.menu.cash",
       },
       items: [
-        {
-          code: cashOperationPermissions.view,
-          linkData: {
-            path: "cash-operations",
-            title: "app.menu.cashOperations",
-          },
-        },
-        {
-          code: cashDocumentPermissions.view,
-          linkData: {
-            path: "cash-documents/pko",
-            title: "app.menu.incomeOrders",
-          },
-        },
-        {
-          code: cashDocumentPermissions.view,
-          linkData: {
-            path: "cash-documents/rko",
-            title: "app.menu.expenseOrders",
-          },
-        },
+        // {
+        //   code: cashOperationPermissions.view,
+        //   linkData: {
+        //     path: "cash-operations",
+        //     title: "app.menu.cashOperations",
+        //   },
+        // },
+        // {
+        //   code: cashDocumentPermissions.view,
+        //   linkData: {
+        //     path: "cash-documents/pko",
+        //     title: "app.menu.incomeOrders",
+        //   },
+        // },
+        // {
+        //   code: cashDocumentPermissions.view,
+        //   linkData: {
+        //     path: "cash-documents/rko",
+        //     title: "app.menu.expenseOrders",
+        //   },
+        // },
         {
           code: cashBookPermissions.view,
           linkData: {
             path: "cash-book",
             title: "app.menu.cashBook",
+          },
+        },
+        {
+          code: paymentAcceptancePointPermissions.view,
+          linkData: {
+            path: "payment-acceptance-points",
+            title: "app.menu.paymentAcceptancePoints",
+          },
+        },
+        {
+          code: cashCollectionPermissions.view,
+          linkData: { path: "cash-collection", title: "cash.collection.title" },
+        },
+        {
+          code: paymentAcceptancePointOperationPermissions.view,
+          linkData: {
+            path: "payment-acceptance-point-operations",
+            title: "cash.paymentAcceptancePointOperation.title",
+          },
+        },
+        {
+          code: cashFiscalTransferPermissions.view,
+          linkData: {
+            path: "cash-fiscal-transfers",
+            title: "cash.fiscalTransfer.title",
           },
         },
       ],
@@ -655,15 +701,6 @@ export const menuPermissions: MainMenu = {
         path: "fiscal-cash-registers",
         title: "settings.entities.fiscalCashRegisters",
         description: "settings.descriptions.fiscalCashRegisters",
-      },
-    },
-    {
-      code: bankTerminalPermissions.view,
-      iconName: <CreditCard className="size-5" />,
-      linkData: {
-        path: "bank-terminals",
-        title: "settings.entities.bankTerminals",
-        description: "settings.descriptions.bankTerminals",
       },
     },
     {

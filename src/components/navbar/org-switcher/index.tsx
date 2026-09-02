@@ -65,7 +65,7 @@ const OrgSwitcher: React.FC = () => {
           label: org.name,
         }))}
         variant="outlined"
-        className="min-w-32! max-w-48! border border-border rounded-lg shadow-sm "
+        className="min-w-32! border border-border rounded-lg shadow-sm "
         // className="min-w-32 max-w-48 [&_.ant-select-selector]:!px-0 [&_.ant-select-selection-item]:!text-sm [&_.ant-select-selection-item]:!font-medium [&_.ant-select-selection-item]:!text-text"
         popupMatchSelectWidth={false}
         placeholder={t("settings.fields.organization")}

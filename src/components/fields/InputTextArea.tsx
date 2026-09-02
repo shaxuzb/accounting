@@ -25,7 +25,10 @@ const InputTextArea = <T extends object>({
   marginBottom = "",
 }: InputTextAreaProps<T>) => {
   const { t } = useTranslation();
-  const fieldValue = getIn(formik.values, fieldName) as string | null | undefined;
+  const fieldValue = getIn(formik.values, fieldName) as
+    | string
+    | null
+    | undefined;
   const fieldError = getIn(formik.errors, fieldName);
   const fieldTouched = getIn(formik.touched, fieldName);
 

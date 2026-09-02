@@ -4,7 +4,9 @@ export type RetailSaleProcessingMode = 1 | 2;
 export interface RetailSalePaymentForm {
   id?: number;
   paymentMethodId: number | null;
-  bankTerminalId: number | null;
+  paymentMethodCode?: string | null;
+  paymentMethodName?: string | null;
+  paymentAcceptancePointId: number | null;
   debitAccountId: number | null;
   amount: number | null;
   transactionNumber: string;
@@ -41,7 +43,7 @@ export interface RetailSaleLinePayload {
 
 export interface RetailSalePaymentPayload {
   paymentMethodId: number;
-  bankTerminalId: number | null;
+  paymentAcceptancePointId: number | null;
   debitAccountId: number;
   amount: number;
   transactionNumber: string | null;

@@ -24,6 +24,17 @@ export const retailSaleSchema = (t: TFunction) =>
           .nullable()
           .required(t("retailSale.messages.paymentAmountRequired"))
           .moreThan(0, t("retailSale.messages.paymentAmountRequired")),
+        paymentAcceptancePointId: Yup.number()
+          .nullable()
+          .test(
+            "payment-acceptance-point-rule",
+            t("retailSale.messages.paymentAcceptancePointRequired"),
+            function (value) {
+              const method = `${this.parent.paymentMethodCode ?? ""} ${this.parent.paymentMethodName ?? ""}`.toUpperCase();
+              if (method.includes("CASH") || method.includes("NAQD") || method.includes("НАЛИЧ")) return value == null;
+              return Number(value) > 0;
+            },
+          ),
       }),
     ),
   });

@@ -25,6 +25,8 @@ export interface BankStatementTransaction {
   classificationName?: string | null;
   classificationRuleId?: number | null;
   classificationRuleCode?: string | null;
+  relatedDocumentId?: number | null;
+  isNewOperation?: boolean;
   requiresReview?: boolean;
 }
 
@@ -102,6 +104,12 @@ export interface BankOperationData {
   contractName?: string | null;
   counterpartyBankAccountNumber?: string | null;
   contractNumber?: string | null;
+  relatedDocumentId?: number | null;
+  relatedDocumentTypeId?: number | null;
+  relatedDocumentTypeName?: string | null;
+  relatedDocumentEntityId?: number | null;
+  relatedDocumentNumber?: string | null;
+  relatedDocumentDate?: string | null;
   lines?: BankOperationLine[] | null;
 }
 

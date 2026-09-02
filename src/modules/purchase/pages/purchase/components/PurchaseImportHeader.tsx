@@ -181,7 +181,7 @@ export default function PurchaseImportHeader({
           invalidateSelectListQuery(
             queryClient,
             "counterpartyId",
-            selectListEndpoints.suppliersSelectList,
+            selectListEndpoints.counterpartiesSelectList,
           );
         }}
       />

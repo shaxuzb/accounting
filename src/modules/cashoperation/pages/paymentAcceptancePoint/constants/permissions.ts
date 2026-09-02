@@ -1,0 +1,7 @@
+export const paymentAcceptancePointPermissions = {
+  view: "PAYMENT_ACCEPTANCE_POINT_VIEW",
+  detail: "PAYMENT_ACCEPTANCE_POINT_VIEW_DETAIL",
+  create: "PAYMENT_ACCEPTANCE_POINT_CREATE",
+  update: "PAYMENT_ACCEPTANCE_POINT_UPDATE",
+  delete: "PAYMENT_ACCEPTANCE_POINT_DELETE",
+} as const;

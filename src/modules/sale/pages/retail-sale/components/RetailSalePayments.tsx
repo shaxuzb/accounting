@@ -51,7 +51,8 @@ const paymentDocumentTypeIdByMethodCode: Record<string, number> = {
 
 const createEmptyPayment = (): RetailSalePaymentForm => ({
   paymentMethodId: null,
-  bankTerminalId: null,
+  paymentMethodCode: null,
+  paymentAcceptancePointId: null,
   debitAccountId: null,
   amount: null,
   transactionNumber: "",
@@ -327,9 +328,9 @@ export default function RetailSalePayments({
                         <div className="mt-1 truncate text-xs text-secondary-text">
                           {payment.debitAccountId ?? "—"} — {t("retailSale.fields.debitAccount")}
                         </div>
-                        {payment.bankTerminalId && (
+                        {payment.paymentAcceptancePointId && (
                           <div className="mt-1 truncate text-xs text-secondary-text">
-                            {t("retailSale.fields.bankTerminal")}: {payment.bankTerminalId}
+                            {t("retailSale.fields.paymentAcceptancePoint")}: {payment.paymentAcceptancePointId}
                           </div>
                         )}
                       </div>
@@ -398,7 +399,9 @@ export default function RetailSalePayments({
                 setDraftPayment((current) => ({
                   ...current,
                   paymentMethodId: toNullableId(value),
-                  bankTerminalId: null,
+                  paymentMethodCode: getPaymentMethodCode(toNullableId(value)) ?? null,
+                  paymentMethodName: paymentMethods.find((method) => method.id === toNullableId(value))?.name ?? null,
+                  paymentAcceptancePointId: null,
                   debitAccountId: null,
                 }))
               }
@@ -406,19 +409,24 @@ export default function RetailSalePayments({
           </div>
           <div className={paymentFieldClass}>
             <SelectCustom
-              label="retailSale.fields.bankTerminal"
-              path={selectListEndpoints.bankTerminalsSelectList}
-              value={draftPayment.bankTerminalId}
+              label="retailSale.fields.paymentAcceptancePoint"
+              path={selectListEndpoints.paymentAcceptancePointsSelectList}
+              value={draftPayment.paymentAcceptancePointId}
               marginBottom="mb-0"
               height="38px"
-              disabled={disabled || !draftPayment.paymentMethodId}
+              disabled={
+                disabled ||
+                !draftPayment.paymentMethodId ||
+                getPaymentMethodCode(draftPayment.paymentMethodId)?.toUpperCase() === "CASH"
+              }
               clearable
-              optional
+              optional={getPaymentMethodCode(draftPayment.paymentMethodId)?.toUpperCase() === "CASH"}
               search
+              required={getPaymentMethodCode(draftPayment.paymentMethodId)?.toUpperCase() !== "CASH"}
               onChange={(value) =>
                 setDraftPayment((current) => ({
                   ...current,
-                  bankTerminalId: toNullableId(value),
+                  paymentAcceptancePointId: toNullableId(value),
                 }))
               }
             />

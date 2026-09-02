@@ -1,6 +1,6 @@
 export interface CounterpartyForm {
-  organizationId: number;
-  counterpartyTypeId: number;
+  code?: string;
+  isVatPayer: boolean;
   shortName: string;
   fullName: string;
   inn: string;
@@ -10,4 +10,6 @@ export interface CounterpartyForm {
   address: string;
   stateId?: number;
   email?: string | null;
+  oked?: string | null;
+  externalId?: string | null;
 }

@@ -18,7 +18,11 @@ import { customDate, customDate2, numberSpacing } from "@/utils/utils";
 import BankTransactionContractSelect from "./BankTransactionContractSelect";
 import BankTransactionCounterpartyAccountSelect from "./BankTransactionCounterpartyAccountSelect";
 import BankTransactionOffsetAccountSelect from "./BankTransactionOffsetAccountSelect";
-import { canMapBankCounterparty } from "../utils/bankImportRules";
+import BankTransactionRelatedDocumentSelect from "./BankTransactionRelatedDocumentSelect";
+import {
+  canMapBankCounterparty,
+  isExistingBankOperation,
+} from "../utils/bankImportRules";
 
 const stringifyValue = (value: unknown) => {
   if (value === null || value === undefined || value === "") return "-";
@@ -65,6 +69,10 @@ interface BankStatementCardProps {
     transactionIndex: number,
     categoryId: number | null,
   ) => void;
+  onRelatedDocumentChange: (
+    transactionIndex: number,
+    documentId: number | null,
+  ) => void;
   classificationOptions: { id: number; code?: string; name?: string }[];
 }
 
@@ -85,6 +93,7 @@ function BankStatementCard({
   onCounterpartyBankAccountChange,
   onAddCounterpartyBankAccount,
   onClassificationChange,
+  onRelatedDocumentChange,
   classificationOptions,
 }: BankStatementCardProps) {
   const { t } = useTranslation();
@@ -101,14 +110,22 @@ function BankStatementCard({
       0,
     );
   const hasBankAccount = Boolean(item.bankAccountId);
+  const newOperationCount = item.transactions.filter(
+    (transaction) => !isExistingBankOperation(transaction),
+  ).length;
+  const existingOperationCount = item.transactions.filter(
+    isExistingBankOperation,
+  ).length;
   const hasMissingCounterparty = item.transactions.some(
     (transaction) =>
+      !isExistingBankOperation(transaction) &&
       canMapBankCounterparty(transaction.classificationCode) &&
       !transaction.counterpartyId,
   );
   const hasBankChartAccount = Boolean(item.bankChartAccountId);
   const hasReviewRows = item.transactions.some(
-    (transaction) => transaction.requiresReview,
+    (transaction) =>
+      !isExistingBankOperation(transaction) && transaction.requiresReview,
   );
   const getDocumentTypeId = (
     directionId: unknown,
@@ -150,6 +167,21 @@ function BankStatementCard({
       .find(Boolean);
 
   const columns: ColumnsType<BankStatementTransaction> = [
+    {
+      title: t("bank.import.operationStatus"),
+      dataIndex: "isNewOperation",
+      width: 150,
+      align: "center",
+      fixed: "left",
+      render: (_, record) =>
+        isExistingBankOperation(record) ? (
+          <Tooltip title={t("bank.messages.existingOperationHint")}>
+            <Tag>{t("bank.import.existingOperation")}</Tag>
+          </Tooltip>
+        ) : (
+          <Tag color="green">{t("bank.import.newOperation")}</Tag>
+        ),
+    },
     // {
     //   title: t("bank.fields.operationType"),
     //   dataIndex: "directionId",
@@ -198,6 +230,7 @@ function BankStatementCard({
             counterpartyId={record.counterpartyId}
             importedAccountNumber={record.counterpartyAccount}
             value={record.counterpartyBankAccountId}
+            disabled={isExistingBankOperation(record)}
             onChange={(accountId) =>
               onCounterpartyBankAccountChange(sourceIndex, accountId)
             }
@@ -232,6 +265,28 @@ function BankStatementCard({
           optionFilterProp="label"
           placeholder={t("bank.placeholders.selectClassification")}
           className="w-full"
+          disabled={isExistingBankOperation(record)}
+        />
+      ),
+    },
+    {
+      title: t("documents.relatedDocument"),
+      dataIndex: "relatedDocumentId",
+      width: 260,
+      render: (_, record, index) => (
+        <BankTransactionRelatedDocumentSelect
+          classificationCode={record.classificationCode}
+          directionId={record.directionId}
+          debit={record.debit}
+          credit={record.credit}
+          value={record.relatedDocumentId}
+          disabled={isExistingBankOperation(record)}
+          onChange={(documentId) =>
+            onRelatedDocumentChange(
+              transactionIndices?.[index] ?? index,
+              documentId,
+            )
+          }
         />
       ),
     },
@@ -275,6 +330,7 @@ function BankStatementCard({
             counterpartyId={record.counterpartyId}
             transactionDate={record.date}
             value={record.contractId}
+            disabled={isExistingBankOperation(record)}
             onChange={(contractId) => onContractChange(sourceIndex, contractId)}
             onAdd={() => onAddContract(sourceIndex, record)}
           />
@@ -310,6 +366,7 @@ function BankStatementCard({
           }
           value={record.offsetAccountId}
           loading={chartAccountLoading}
+          disabled={isExistingBankOperation(record)}
           onChange={(accountId) =>
             onOffsetAccountChange(
               transactionIndices?.[index] ?? index,
@@ -337,6 +394,7 @@ function BankStatementCard({
           type="text"
           danger
           icon={<Trash2 className="size-4" />}
+          disabled={isExistingBankOperation(item.transactions[index])}
           onClick={() => {
             Modal.confirm({
               title: t("actions.deleteConfirmTitle"),
@@ -357,7 +415,8 @@ function BankStatementCard({
     <Card
       className={clsx(
         "overflow-hidden border",
-        hasBankAccount && hasBankChartAccount && !hasReviewRows
+        newOperationCount === 0 ||
+          (hasBankAccount && hasBankChartAccount && !hasReviewRows)
           ? "border-border"
           : "border-danger/40 bg-danger-soft/40!",
       )}
@@ -384,6 +443,20 @@ function BankStatementCard({
               <Tag color="blue">
                 {item.transactions.length} {t("bank.import.transactions")}
               </Tag>
+              {newOperationCount > 0 && (
+                <Tag color="green">
+                  {t("bank.import.newOperations", {
+                    count: newOperationCount,
+                  })}
+                </Tag>
+              )}
+              {existingOperationCount > 0 && (
+                <Tag>
+                  {t("bank.import.existingOperations", {
+                    count: existingOperationCount,
+                  })}
+                </Tag>
+              )}
               <Tag color={hasBankAccount ? "green" : "red"}>
                 {hasBankAccount
                   ? `${t("bank.fields.bankAccount")}: ${item.bankAccountId}`
@@ -481,7 +554,7 @@ function BankStatementCard({
               onBankChartAccountChange(value ? Number(value) : null)
             }
             onClear={() => onBankChartAccountChange(null)}
-            disabled={chartAccountLoading}
+            disabled={chartAccountLoading || newOperationCount === 0}
           />
         </div>
       </div>
@@ -498,9 +571,11 @@ function BankStatementCard({
             virtual={item.transactions.length > VIRTUAL_ROW_THRESHOLD}
             scroll={{ x: TABLE_SCROLL_X, y: TABLE_SCROLL_Y }}
             rowClassName={(record) =>
-              record.requiresReview
-                ? "[&_.ant-table-cell]:!bg-danger-soft [&_.ant-table-cell]:!text-text hover:[&_.ant-table-cell]:!bg-danger-soft"
-                : ""
+              isExistingBankOperation(record)
+                ? "opacity-60"
+                : record.requiresReview
+                  ? "[&_.ant-table-cell]:!bg-danger-soft [&_.ant-table-cell]:!text-text hover:[&_.ant-table-cell]:!bg-danger-soft"
+                  : ""
             }
             locale={{ emptyText: t("bank.messages.noTransactions") }}
           />

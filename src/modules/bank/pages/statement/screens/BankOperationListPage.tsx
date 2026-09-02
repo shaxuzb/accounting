@@ -43,7 +43,9 @@ export default function BankOperationListPage() {
       dataIndex: "docNumber",
       title: t("purchase.fields.docNumber"),
       render: (value, record) => (
-        <Link to={`${record.id}`}>{value ?? record.id}</Link>
+        <Link to={record.statusId === 1 ? `edit/${record.id}` : `${record.id}`}>
+          {value ?? record.id}
+        </Link>
       ),
     },
     {
@@ -159,7 +161,7 @@ export default function BankOperationListPage() {
                 editCode: record.statusId === 1 ? bankPermissions.update : "",
               }}
               refetch={refetch}
-              customPath={`/main/bank/${record.id}`}
+              customPath={`/main/bank/edit/${record.id}`}
             />
           ),
         },

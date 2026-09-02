@@ -149,7 +149,7 @@ export default function AccountingEntriesReportPage() {
         ),
       },
       {
-        dataIndex: "quantity",
+        dataIndex: "debitQuantity",
         title: t("app.fields.quantity"),
         width: 110,
         align: "center",

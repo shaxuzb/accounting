@@ -3,24 +3,13 @@ import type {
   RetailSaleCreatePayload,
   RetailSaleFormValues,
   RetailSaleLinePayload,
-  RetailSalePaymentPayload,
   RetailSaleProcessingMode,
   RetailSaleUpdatePayload,
 } from "../types/form";
 import { roundMoney } from "../../sale/utils/pricing";
+export { toRetailSalePaymentPayloads } from "./paymentPayload";
 
-const toPayments = (
-  payments: RetailSaleFormValues["payments"],
-): RetailSalePaymentPayload[] =>
-  payments.map((payment) => ({
-    paymentMethodId: Number(payment.paymentMethodId),
-    bankTerminalId: payment.bankTerminalId
-      ? Number(payment.bankTerminalId)
-      : null,
-    debitAccountId: Number(payment.debitAccountId),
-    amount: Number(payment.amount),
-    transactionNumber: payment.transactionNumber.trim() || null,
-  }));
+import { toRetailSalePaymentPayloads as toPayments } from "./paymentPayload";
 
 const toLines = (
   products: SaleSelectedProduct[],
@@ -92,5 +81,3 @@ export const toRetailSaleUpdatePayload = (
   ...toBasePayload(values, products, withMarking),
   stateId: values.stateId,
 });
-
-export const toRetailSalePaymentPayloads = toPayments;

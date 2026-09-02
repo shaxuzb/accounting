@@ -1,5 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
-import { Button, Empty, Upload, type UploadProps } from "antd";
+import {
+  Button,
+  Empty,
+  Modal,
+  Segmented,
+  Upload,
+  type UploadProps,
+} from "antd";
 import { Building2, Save, Trash2, UploadIcon, Users } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router";
@@ -14,9 +21,11 @@ import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage"
 import type { Contract } from "@/modules/contract/types/type";
 import CounterpartyBankAccountAddEditPage from "@/modules/settings/pages/counterpartybankaccount/screens/CounterpartyBankAccountAddEditPage";
 import type { Counterpartybankaccount } from "@/modules/settings/pages/counterpartybankaccount/types/type";
+import { useGetListOrgBankAccounts } from "@/modules/settings/pages/orgBankAccounts/hooks";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import { useAppSelector } from "@/store/hooks";
 import BankStatementCard from "../components/BankStatementCard";
 import MissingBankAccountModal, {
   type BankInfoAssignment,
@@ -36,8 +45,11 @@ import { getMissingCounterpartyKey } from "../utils/missingCounterpartyKey";
 import { normalizeBankStatements } from "../utils/normalizeBankStatement";
 import {
   canMapBankCounterparty,
+  findMatchingOrgBankAccount,
   formatBankOperationDate,
   getBankClassificationMetadata,
+  isExistingBankOperation,
+  isImportableBankOperation,
   isBankStatementDateInRange,
 } from "../utils/bankImportRules";
 import type { BankStatementOperationCreatePayload } from "../types/form";
@@ -52,15 +64,21 @@ const normalizeAccountNumber = (value: unknown) =>
     .replace(/\s/g, "")
     .trim();
 
+type OperationFilter = "new" | "existing" | "all";
+
 const hasMissingBankInfo = (card: BankStatementCardData) => {
+  const importableTransactions = card.transactions.filter(
+    isImportableBankOperation,
+  );
   const needsCurrency =
     !toValidNumber(card.currencyId) &&
-    card.transactions.some(
+    importableTransactions.some(
       (transaction) => !toValidNumber(transaction.currencyId),
     );
 
   return (
-    !toValidNumber(card.bankAccountId) || needsCurrency
+    importableTransactions.length > 0 &&
+    (!toValidNumber(card.bankAccountId) || needsCurrency)
   );
 };
 
@@ -85,14 +103,29 @@ export default function BankStatementImportPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
+  const organizationId = useAppSelector((state) => state.organization.id);
   const parseMutation = useParseBankStatement();
   const createOperations = useCreateBankOperations();
   const { data: classificationOptions = [] } = useGetBankOperationCategories();
   const [cards, setCards] = useState<BankStatementCardData[]>([]);
-  const [selectedBankId, setSelectedBankId] = useState<number | null>(
-    null,
-  );
+  const [selectedBankId, setSelectedBankId] = useState<number | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [operationFilter, setOperationFilter] =
+    useState<OperationFilter>("new");
+  const bankAccountLookupParams = useMemo(() => {
+    const params = new URLSearchParams();
+    params.set("page", "1");
+    params.set("pageSize", "1000");
+    if (organizationId) {
+      params.set("organizationId", String(organizationId));
+    }
+    return params;
+  }, [organizationId]);
+  const {
+    data: organizationBankAccounts,
+    isFetched: areOrganizationBankAccountsFetched,
+    refetch: refetchOrganizationBankAccounts,
+  } = useGetListOrgBankAccounts(bankAccountLookupParams);
   const dateFrom = searchParams.get("dateFrom") ?? "";
   const dateTo = searchParams.get("dateTo") ?? "";
   const classificationCategoryId =
@@ -119,7 +152,7 @@ export default function BankStatementImportPage() {
     },
     [],
   );
-  const filteredCardViews = useMemo(
+  const dateFilteredCardViews = useMemo(
     () =>
       cards
         .map((card) => {
@@ -153,17 +186,94 @@ export default function BankStatementImportPage() {
             transactionIndices,
           };
         })
-        .filter(
-          ({ item }) =>
-            !dateFrom && !dateTo && !classificationCategoryId
-              ? true
-              : item.transactions.length > 0,
+        .filter(({ item }) =>
+          !dateFrom && !dateTo && !classificationCategoryId
+            ? true
+            : item.transactions.length > 0,
         ),
     [cards, classificationCategoryId, dateFrom, dateTo],
   );
-  const filteredCards = useMemo(
-    () => filteredCardViews.map(({ item }) => item),
-    [filteredCardViews],
+  const filteredCardViews = useMemo(
+    () =>
+      dateFilteredCardViews
+        .map(({ item, transactionIndices }) => {
+          const visibleTransactions = item.transactions.reduce<
+            { transaction: BankStatementTransaction; sourceIndex: number }[]
+          >((rows, transaction, index) => {
+            const matchesOperation =
+              operationFilter === "all" ||
+              (operationFilter === "existing"
+                ? isExistingBankOperation(transaction)
+                : isImportableBankOperation(transaction));
+
+            if (matchesOperation) {
+              rows.push({
+                transaction,
+                sourceIndex: transactionIndices[index] ?? index,
+              });
+            }
+            return rows;
+          }, []);
+
+          return {
+            item: {
+              ...item,
+              transactions: visibleTransactions.map((row) => row.transaction),
+            },
+            transactionIndices: visibleTransactions.map(
+              (row) => row.sourceIndex,
+            ),
+          };
+        })
+        .filter(({ item }) => item.transactions.length > 0),
+    [dateFilteredCardViews, operationFilter],
+  );
+  const filteredTransactions = useMemo(
+    () => dateFilteredCardViews.flatMap(({ item }) => item.transactions),
+    [dateFilteredCardViews],
+  );
+  const newOperationCount = useMemo(
+    () => filteredTransactions.filter(isImportableBankOperation).length,
+    [filteredTransactions],
+  );
+  const existingOperationCount = useMemo(
+    () => filteredTransactions.filter(isExistingBankOperation).length,
+    [filteredTransactions],
+  );
+  const importableCardViews = useMemo(
+    () =>
+      dateFilteredCardViews
+        .map(({ item, transactionIndices }) => {
+          const importableTransactions = item.transactions.reduce<
+            { transaction: BankStatementTransaction; sourceIndex: number }[]
+          >((rows, transaction, index) => {
+            if (isImportableBankOperation(transaction)) {
+              rows.push({
+                transaction,
+                sourceIndex: transactionIndices[index] ?? index,
+              });
+            }
+            return rows;
+          }, []);
+
+          return {
+            item: {
+              ...item,
+              transactions: importableTransactions.map(
+                (row) => row.transaction,
+              ),
+            },
+            transactionIndices: importableTransactions.map(
+              (row) => row.sourceIndex,
+            ),
+          };
+        })
+        .filter(({ item }) => item.transactions.length > 0),
+    [dateFilteredCardViews],
+  );
+  const importableCards = useMemo(
+    () => importableCardViews.map(({ item }) => item),
+    [importableCardViews],
   );
   const buildOperationPayload = useCallback(
     (
@@ -177,7 +287,7 @@ export default function BankStatementImportPage() {
         (parsedDirectionId === 1 || parsedDirectionId === -1
           ? parsedDirectionId
           : null) ??
-          (operationTypeId === 2 ? -1 : operationTypeId === 1 ? 1 : null);
+        (operationTypeId === 2 ? -1 : operationTypeId === 1 ? 1 : null);
       const canMapCounterparty = canMapBankCounterparty(
         transaction.classificationCode,
       );
@@ -226,6 +336,7 @@ export default function BankStatementImportPage() {
         currencyId,
         exchangeRate: 1,
         contractId,
+        relatedDocumentId: toValidNumber(transaction.relatedDocumentId),
         amount,
         comment: transaction.purpose || null,
       };
@@ -234,32 +345,31 @@ export default function BankStatementImportPage() {
   );
 
   const totalTransactions = useMemo(
-    () =>
-      filteredCards.reduce((sum, item) => sum + item.transactions.length, 0),
-    [filteredCards],
+    () => filteredTransactions.length,
+    [filteredTransactions],
   );
   const validOperations = useMemo(
     () =>
-      filteredCards.flatMap((card) =>
+      importableCards.flatMap((card) =>
         card.transactions
           .map((transaction) => buildOperationPayload(card, transaction))
           .filter((item): item is BankStatementOperationCreatePayload =>
             Boolean(item),
           ),
       ),
-    [filteredCards, buildOperationPayload],
+    [importableCards, buildOperationPayload],
   );
   const missingBankInfoCount = useMemo(
-    () => filteredCards.filter(hasMissingBankInfo).length,
-    [filteredCards],
+    () => importableCards.filter(hasMissingBankInfo).length,
+    [importableCards],
   );
   const missingBankInfoCards = useMemo(
-    () => filteredCards.filter(hasMissingBankInfo),
-    [filteredCards],
+    () => importableCards.filter(hasMissingBankInfo),
+    [importableCards],
   );
   const missingCounterpartyRows = useMemo(
     () =>
-      filteredCardViews.flatMap(({ item, transactionIndices }) =>
+      importableCardViews.flatMap(({ item, transactionIndices }) =>
         item.transactions
           .map((transaction, index) => ({
             cardId: item.id,
@@ -268,21 +378,22 @@ export default function BankStatementImportPage() {
           }))
           .filter(
             (item) =>
+              isImportableBankOperation(item.transaction) &&
               canMapBankCounterparty(item.transaction.classificationCode) &&
               !item.transaction.counterpartyId,
           ),
       ),
-    [filteredCardViews],
+    [importableCardViews],
   );
   const missingBankChartAccountCount = useMemo(
     () =>
-      filteredCards.filter((card) => !toValidNumber(card.bankChartAccountId))
+      importableCards.filter((card) => !toValidNumber(card.bankChartAccountId))
         .length,
-    [filteredCards],
+    [importableCards],
   );
   const missingOffsetAccountCount = useMemo(
     () =>
-      filteredCards.reduce((sum, card) => {
+      importableCards.reduce((sum, card) => {
         return (
           sum +
           card.transactions.filter(
@@ -290,11 +401,11 @@ export default function BankStatementImportPage() {
           ).length
         );
       }, 0),
-    [filteredCards],
+    [importableCards],
   );
   const missingContractCount = useMemo(
     () =>
-      filteredCards.reduce(
+      importableCards.reduce(
         (sum, card) =>
           sum +
           card.transactions.filter(
@@ -305,11 +416,11 @@ export default function BankStatementImportPage() {
           ).length,
         0,
       ),
-    [filteredCards],
+    [importableCards],
   );
   const missingCounterpartyBankAccountCount = useMemo(
     () =>
-      filteredCards.reduce(
+      importableCards.reduce(
         (sum, card) =>
           sum +
           card.transactions.filter(
@@ -320,7 +431,7 @@ export default function BankStatementImportPage() {
           ).length,
         0,
       ),
-    [filteredCards],
+    [importableCards],
   );
 
   const uploadProps: UploadProps = {
@@ -338,12 +449,50 @@ export default function BankStatementImportPage() {
       parseMutation.mutate(
         { file, bankId: selectedBankId },
         {
-          onSuccess: (response) => {
+          onSuccess: async (response) => {
             const parsedCards = normalizeBankStatements(response, file.name);
-            setCards((prev) => [...parsedCards, ...prev]);
+            let bankAccounts = organizationBankAccounts?.items ?? [];
+
+            if (!areOrganizationBankAccountsFetched) {
+              try {
+                const result = await refetchOrganizationBankAccounts();
+                bankAccounts = result.data?.items ?? bankAccounts;
+              } catch (error) {
+                errorHandlers(error);
+              }
+            }
+
+            const reconciledCards = parsedCards.map((card) => {
+              const parserBankAccountId = toValidNumber(card.bankAccountId);
+              const accountById = parserBankAccountId
+                ? bankAccounts.find(
+                    (account) => account.id === parserBankAccountId,
+                  )
+                : undefined;
+              const matchedAccount =
+                accountById ??
+                findMatchingOrgBankAccount(
+                  card,
+                  bankAccounts,
+                  organizationId,
+                  selectedBankId,
+                );
+
+              if (!matchedAccount) return card;
+
+              return {
+                ...card,
+                bankAccountId: matchedAccount.id,
+                currencyId:
+                  toValidNumber(card.currencyId) ??
+                  toValidNumber(matchedAccount.currencyId),
+              };
+            });
+
+            setCards((prev) => [...reconciledCards, ...prev]);
             setExpandedIds((prev) => {
               const next = new Set(prev);
-              parsedCards.forEach((item) => next.add(item.id));
+              reconciledCards.forEach((item) => next.add(item.id));
               return next;
             });
             toast.success(t("bank.messages.imported"));
@@ -359,6 +508,7 @@ export default function BankStatementImportPage() {
     setCards([]);
     setExpandedIds(new Set());
     setSelectedBankId(null);
+    setOperationFilter("new");
     const nextParams = new URLSearchParams(searchParams);
     nextParams.delete("dateFrom");
     nextParams.delete("dateTo");
@@ -479,6 +629,27 @@ export default function BankStatementImportPage() {
     );
   };
 
+  const handleRelatedDocumentChange = (
+    cardId: string,
+    transactionIndex: number,
+    documentId: number | null,
+  ) => {
+    setCards((prev) =>
+      prev.map((card) =>
+        card.id === cardId
+          ? {
+              ...card,
+              transactions: card.transactions.map((transaction, index) =>
+                index === transactionIndex
+                  ? { ...transaction, relatedDocumentId: documentId }
+                  : transaction,
+              ),
+            }
+          : card,
+      ),
+    );
+  };
+
   const handleClassificationChange = (
     cardId: string,
     transactionIndex: number,
@@ -503,6 +674,7 @@ export default function BankStatementImportPage() {
                       classificationName: classification.name,
                       classificationRuleId: null,
                       classificationRuleCode: null,
+                      relatedDocumentId: null,
                       ...(canMapBankCounterparty(classification.code)
                         ? {}
                         : {
@@ -668,27 +840,53 @@ export default function BankStatementImportPage() {
       return;
     }
 
-    const skippedCount = totalTransactions - validOperations.length;
-    await createOperations.mutateAsync(
-      { operations: validOperations },
-      {
-        onSuccess: () => {
-          if (skippedCount > 0) {
-            toast.success(
-              t("bank.messages.partialSaved", {
-                saved: validOperations.length,
-                skipped: skippedCount,
-              }),
-            );
-          } else {
-            toast.success(t("bank.messages.saved"));
-          }
-          handleClearImport();
-          navigate("/main/bank");
+    const invalidNewOperationCount =
+      newOperationCount - validOperations.length;
+    const persistOperations = async () => {
+      await createOperations.mutateAsync(
+        { operations: validOperations },
+        {
+          onSuccess: () => {
+            if (invalidNewOperationCount > 0) {
+              toast.success(
+                t("bank.messages.partialSaved", {
+                  saved: validOperations.length,
+                  skipped: invalidNewOperationCount,
+                }),
+              );
+            } else {
+              toast.success(t("bank.messages.saved"));
+            }
+            if (existingOperationCount > 0) {
+              toast.success(
+                t("bank.messages.existingSkipped", {
+                  count: existingOperationCount,
+                }),
+              );
+            }
+            handleClearImport();
+            navigate("/main/bank");
+          },
+          onError: (error) => errorHandlers(error),
         },
-        onError: (error) => errorHandlers(error),
-      },
-    );
+      );
+    };
+
+    if (invalidNewOperationCount > 0) {
+      Modal.confirm({
+        title: t("bank.messages.partialSaveConfirmTitle"),
+        content: t("bank.messages.partialSaveConfirmDescription", {
+          saved: validOperations.length,
+          skipped: invalidNewOperationCount,
+        }),
+        okText: t("common.confirm"),
+        cancelText: t("common.cancel"),
+        onOk: persistOperations,
+      });
+      return;
+    }
+
+    await persistOperations();
   };
 
   return (
@@ -718,13 +916,15 @@ export default function BankStatementImportPage() {
               loading={createOperations.isPending}
               onClick={() => handleSave()}
             >
-              {t("common.save")}
+              {t("bank.import.saveNewOperations", {
+                count: validOperations.length,
+              })}
             </Button>
           </div>
         </div>
 
         {!cards.length && (
-          <div className="space-y-4">
+          <div className="space-y-2">
             <SelectCustom
               label="bank.import.bankTypeLabel"
               placeholder="bank.import.bankTypePlaceholder"
@@ -772,6 +972,30 @@ export default function BankStatementImportPage() {
               search
               width={240}
             />
+            <Segmented<OperationFilter>
+              value={operationFilter}
+              onChange={(value) => setOperationFilter(value)}
+              options={[
+                {
+                  value: "new",
+                  label: t("bank.import.newOperations", {
+                    count: newOperationCount,
+                  }),
+                },
+                {
+                  value: "existing",
+                  label: t("bank.import.existingOperations", {
+                    count: existingOperationCount,
+                  }),
+                },
+                {
+                  value: "all",
+                  label: t("bank.import.allOperations", {
+                    count: totalTransactions,
+                  }),
+                },
+              ]}
+            />
           </div>
         </Card>
       )}
@@ -790,6 +1014,12 @@ export default function BankStatementImportPage() {
             {t("bank.import.transactions")}
           </div>
           <div className="mt-1 text-2xl font-semibold">{totalTransactions}</div>
+          <div className="mt-1 text-xs text-gray-500">
+            {t("bank.import.newOperations", { count: newOperationCount })} · {" "}
+            {t("bank.import.existingOperations", {
+              count: existingOperationCount,
+            })}
+          </div>
         </Card>
         <Card className="border border-border p-4">
           <div className="text-sm text-gray-500">{t("bank.import.status")}</div>
@@ -809,9 +1039,16 @@ export default function BankStatementImportPage() {
             </div>
             <div className="text-sm text-gray-500">
               {t("bank.messages.missingRequired", {
-                count: totalTransactions - validOperations.length,
+                count: newOperationCount - validOperations.length,
               })}
             </div>
+            {existingOperationCount > 0 && (
+              <div className="text-xs text-gray-500">
+                {t("bank.import.existingOperations", {
+                  count: existingOperationCount,
+                })}
+              </div>
+            )}
             {(missingBankChartAccountCount > 0 ||
               missingOffsetAccountCount > 0 ||
               missingContractCount > 0 ||
@@ -900,18 +1137,30 @@ export default function BankStatementImportPage() {
               onClassificationChange={(transactionId, categoryId) =>
                 handleClassificationChange(item.id, transactionId, categoryId)
               }
+              onRelatedDocumentChange={(transactionId, documentId) =>
+                handleRelatedDocumentChange(item.id, transactionId, documentId)
+              }
               classificationOptions={classificationOptions}
             />
           ))}
         </div>
       ) : (
         <Card className="border border-border p-10">
-          <Empty description={t("bank.messages.noData")} />
+          <Empty
+            description={
+              operationFilter === "new"
+                ? t("bank.messages.noNewOperations")
+                : operationFilter === "existing"
+                  ? t("bank.messages.noExistingOperations")
+                  : t("bank.messages.noTransactions")
+            }
+          />
         </Card>
       )}
       <MissingBankAccountModal
         open={bankAssignOpen}
         items={missingBankInfoCards}
+        bankIdFallback={selectedBankId}
         onClose={() => setBankAssignOpen(false)}
         onApply={applyBankAssignments}
       />

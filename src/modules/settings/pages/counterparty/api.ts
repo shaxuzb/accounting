@@ -4,6 +4,7 @@ import type { QueryParams } from "@/shared/types/api";
 import { endpoints } from "./constants/endpoints";
 import type { Counterparty } from "./types/type";
 import type { CounterpartyForm } from "./types/form";
+import { toCounterpartyCreatePayload } from "./utils/payload";
 
 export const counterpartyService = {
   list: (params?: QueryParams) =>
@@ -11,7 +12,9 @@ export const counterpartyService = {
   detail: (id: string | number) =>
     $axiosPrivate.get<Counterparty>(endpoints.detail(id)).then((res) => res.data),
   create: (payload: CounterpartyForm) =>
-    $axiosPrivate.post<Counterparty>(endpoints.create, payload).then((res) => res.data),
+    $axiosPrivate
+      .post<Counterparty>(endpoints.create, toCounterpartyCreatePayload(payload))
+      .then((res) => res.data),
   update: (id: string | number, payload: Partial<CounterpartyForm>) =>
     $axiosPrivate.put<Counterparty>(endpoints.update(id), payload).then((res) => res.data),
 };

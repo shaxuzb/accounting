@@ -1,0 +1,15 @@
+export const emptyObject = (startDate = "", endDate = "") => ({
+  id: null,
+  rentalObjectTypeId: null,
+  objectName: "",
+  objectIdentifier: "",
+  objectAddress: "",
+  startDate,
+  endDate,
+  periodUnit: "MONTH" as const,
+  periodValue: 1,
+  contractAmount: null,
+  taxBaseAmount: null,
+  taxRate: 0,
+  expenseAccountId: null,
+});

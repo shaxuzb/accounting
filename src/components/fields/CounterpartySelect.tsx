@@ -22,8 +22,8 @@ type CounterpartySelectProps = Omit<
 };
 
 const endpointByKind: Record<CounterpartyKind, string> = {
-  supplier: selectListEndpoints.suppliersSelectList,
-  client: selectListEndpoints.clients,
+  supplier: selectListEndpoints.counterpartiesSelectList,
+  client: selectListEndpoints.counterpartiesSelectList,
 };
 
 export default function CounterpartySelect({

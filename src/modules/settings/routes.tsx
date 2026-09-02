@@ -60,8 +60,6 @@ import EdoImportPage from "./pages/integrations/edo/import/screens/EdoImportPage
 import EdoImportCandidateMappingPage from "./pages/integrations/edo/import/screens/EdoImportCandidateMappingPage";
 import FiscalCashRegisterListPage from "./pages/fiscalCashRegister/screens/FiscalCashRegisterListPage";
 import { fiscalCashRegisterPermissions } from "./pages/fiscalCashRegister/constants/permissions";
-import BankTerminalListPage from "./pages/bankTerminal/screens/BankTerminalListPage";
-import { bankTerminalPermissions } from "./pages/bankTerminal/constants/permissions";
 
 const settingsPermissions = [
   rolePermissions.view,
@@ -79,7 +77,6 @@ const settingsPermissions = [
   productGroupsPermissions.view,
   cashBoxPermissions.view,
   fiscalCashRegisterPermissions.view,
-  bankTerminalPermissions.view,
   counterpartyContactPermissions.view,
   warehousePermissions.view,
   purchasePermissions.view,
@@ -442,18 +439,6 @@ export const settingsRoutes: RouteObject = {
       element: withPermission(
         <FiscalCashRegisterListPage />,
         fiscalCashRegisterPermissions.view,
-      ),
-    },
-    {
-      path: "bank-terminals",
-      handle: {
-        title: "settings.entities.bankTerminals",
-        showBack: true,
-        backTo: "..",
-      },
-      element: withPermission(
-        <BankTerminalListPage />,
-        bankTerminalPermissions.view,
       ),
     },
     {

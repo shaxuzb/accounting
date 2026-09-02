@@ -15,6 +15,7 @@ export interface BankOperationCreatePayload {
   exchangeRate?: number | null;
   comment?: string | null;
   contractId?: number | null;
+  relatedDocumentId?: number | null;
   stateId?: number | null;
 }
 
@@ -28,7 +29,7 @@ export interface BankOperationsCreatePayload {
 }
 
 export interface BankCounterpartyCreatePayload {
-  counterpartyTypeId: number;
+  isVatPayer: boolean;
   shortName: string;
   fullName: string;
   inn: string;

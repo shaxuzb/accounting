@@ -52,9 +52,8 @@ export const bankRoutes: RouteObject = {
     },
     {
       path: "edit/:id",
-      element: withPermission(<BankOperationDetailPage />, [
-        bankPermissions.detail,
-        bankPermissions.view,
+      element: withPermission(<BankOperationAddEditPage />, [
+        bankPermissions.update,
         "ROLE_VIEW",
       ]),
       handle: {

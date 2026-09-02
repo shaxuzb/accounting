@@ -8,8 +8,7 @@ import {
 
 export const counterpartySchema = (isEdit = false) =>
   Yup.object({
-    organizationId: requiredNumber("settings.fields.organization"),
-    counterpartyTypeId: requiredNumber("settings.fields.partyType"),
+    isVatPayer: Yup.boolean().required(),
     fullName: requiredString("settings.fields.fullName"),
     shortName: requiredString("settings.fields.shortName"),
     inn: requiredString("settings.fields.inn"),

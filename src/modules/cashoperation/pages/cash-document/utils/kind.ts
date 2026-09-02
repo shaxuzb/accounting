@@ -4,14 +4,14 @@ const kindLabels: Record<CashDocumentKind, CashDocumentLabels> = {
   pko: {
     kind: "pko",
     listTitle: "app.menu.incomeOrders",
-    addTitle: "app.routes.newIncomeOrder",
-    detailTitle: "app.routes.incomeOrder",
+    addTitle: "app.fields.cashOperationIncome",
+    detailTitle: "app.fields.cashOperationIncome",
   },
   rko: {
     kind: "rko",
     listTitle: "app.menu.expenseOrders",
-    addTitle: "app.routes.newExpenseOrder",
-    detailTitle: "app.routes.expenseOrder",
+    addTitle: "app.fields.cashOperationExpense",
+    detailTitle: "app.fields.cashOperationExpense",
   },
 };
 

@@ -8,8 +8,9 @@ export interface RetailSalePayment {
   id?: number;
   paymentMethodId: number;
   paymentMethodName?: string | null;
-  bankTerminalId: number | null;
-  bankTerminalName?: string | null;
+  paymentMethodCode?: string | null;
+  paymentAcceptancePointId: number | null;
+  paymentAcceptancePointName?: string | null;
   debitAccountId: number;
   debitAccountName?: string | null;
   amount: number;

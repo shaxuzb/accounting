@@ -16,6 +16,7 @@ interface BankTransactionCounterpartyAccountSelectProps {
   counterpartyId?: number | null;
   importedAccountNumber?: string | null;
   value?: number | null;
+  disabled?: boolean;
   onChange: (accountId: number | null) => void;
   onAdd: () => void;
 }
@@ -27,6 +28,7 @@ export default function BankTransactionCounterpartyAccountSelect({
   counterpartyId,
   importedAccountNumber,
   value,
+  disabled = false,
   onChange,
   onAdd,
 }: BankTransactionCounterpartyAccountSelectProps) {
@@ -40,7 +42,7 @@ export default function BankTransactionCounterpartyAccountSelect({
       }}
       refetchSync={String(counterpartyId ?? "")}
       enabled={Boolean(counterpartyId)}
-      disabled={!counterpartyId}
+      disabled={disabled || !counterpartyId}
       search
       clearable
       marginBottom="mb-0"

@@ -23,6 +23,7 @@ interface BankTransactionContractSelectProps {
   counterpartyId?: number | null;
   transactionDate?: string;
   value?: number | null;
+  disabled?: boolean;
   onChange: (contractId: number | null) => void;
   onAdd: () => void;
 }
@@ -31,6 +32,7 @@ export default function BankTransactionContractSelect({
   counterpartyId,
   transactionDate,
   value,
+  disabled = false,
   onChange,
   onAdd,
 }: BankTransactionContractSelectProps) {
@@ -50,7 +52,7 @@ export default function BankTransactionContractSelect({
       }}
       refetchSync={`${counterpartyId ?? ""}-${selectedDate ?? ""}`}
       enabled={Boolean(counterpartyId)}
-      disabled={!counterpartyId}
+      disabled={disabled || !counterpartyId}
       search
       clearable
       getFirst

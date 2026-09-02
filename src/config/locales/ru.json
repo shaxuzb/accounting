@@ -36,7 +36,11 @@
     "accountingEntries": "Проводки",
     "accountingEntriesPostedOnly": "Проводки доступны только для проведённых документов",
     "piece": "шт.",
-    "and": "и"
+    "and": "и",
+    "income": "Приход",
+    "expense": "Расход",
+    "status": "Статус",
+    "notFound": "Не найдено"
   },
   "actions": {
     "deleteSuccess": "Элемент {{id}} успешно удалён",
@@ -738,12 +742,15 @@
       "externalRegisterId": "Внешний ID кассы",
       "merchantId": "ID мерчанта",
       "externalTerminalId": "Внешний ID терминала",
+      "externalId": "Внешний ID",
+      "paymentAcceptancePointType": "Тип точки приёма платежей",
       "model": "Модель",
       "serialNumber": "Серийный номер",
       "fiscalModuleNumber": "Номер фискального модуля",
       "organization": "Организация",
       "organizationName": "Название организации",
       "partyType": "Тип контрагента",
+      "isVatPayer": "Плательщик НДС",
       "password": "Пароль",
       "phoneNumber": "Телефон",
       "position": "Должность",
@@ -778,6 +785,8 @@
       "editFiscalCashRegister": "Редактировать фискальную кассу",
       "createBankTerminal": "Добавить банковский терминал",
       "editBankTerminal": "Редактировать банковский терминал",
+      "createPaymentAcceptancePoint": "Добавить точку приёма платежей",
+      "editPaymentAcceptancePoint": "Редактировать точку приёма платежей",
       "createUser": "Добавить пользователя",
       "editUser": "Редактировать пользователя",
       "createRole": "Добавить роль",
@@ -1047,10 +1056,16 @@
       "imported": "Банковская выписка импортирована",
       "saved": "Банковские операции сохранены",
       "partialSaved": "Сохранено операций: {{saved}}, пропущено: {{skipped}}",
+      "existingSkipped": "Пропущено существующих операций: {{count}}",
+      "partialSaveConfirmTitle": "Подтвердить частичное сохранение?",
+      "partialSaveConfirmDescription": "Будет сохранено операций: {{saved}}, пропущено: {{skipped}}. Продолжить?",
       "noValidTransactions": "Нет заполненных операций для сохранения",
       "saveNextStep": "Сохранение будет подключено к API банковских операций на следующем этапе",
       "missingRequired": "В {{count}} операциях не хватает обязательных данных",
       "noData": "Импортированных банковских выписок пока нет",
+      "noNewOperations": "Новые операции не найдены",
+      "noExistingOperations": "Существующие операции не найдены",
+      "existingOperationHint": "Эта операция уже импортирована и повторно сохранена не будет",
       "noTransactions": "Операции не найдены",
       "requiresReview": "Требуется проверка",
       "counterpartyMissing": "Контрагент не найден",
@@ -1066,6 +1081,7 @@
       "selectAllContracts": "Выберите договор для всех операций",
       "selectAllCounterpartyAccounts": "Выберите банковский счёт контрагента для всех операций",
       "documentSaved": "Документ сохранён",
+      "bankAccountsCreated": "Банковские счета успешно добавлены",
       "documentConfirmed": "Документ подтверждён",
       "documentCancelled": "Документ отменён"
     },
@@ -1079,6 +1095,13 @@
       "uploadHint": "Поддерживаются банковские выписки в формате XLS или XLSX.",
       "statements": "Банковские выписки",
       "transactions": "Операции",
+      "operationStatus": "Статус",
+      "newOperation": "Новая",
+      "existingOperation": "Уже в системе",
+      "newOperations": "Новые: {{count}}",
+      "existingOperations": "Существующие: {{count}}",
+      "allOperations": "Все: {{count}}",
+      "saveNewOperations": "Сохранить новые операции: {{count}}",
       "status": "Статус",
       "readyToSave": "Готово к сохранению",
       "assignMissingBankInfo": "Указать недостающие банковские данные",
@@ -1343,6 +1366,7 @@
       "totalAmount": "Общая сумма",
       "paymentMethod": "Способ оплаты",
       "bankTerminal": "Банковский терминал",
+      "paymentAcceptancePoint": "Точка приема платежей",
       "debitAccount": "Дебетовый счёт",
       "amount": "Сумма",
       "transactionNumber": "Номер транзакции"
@@ -1361,6 +1385,7 @@
       "paymentMethodRequired": "Выберите способ оплаты",
       "debitAccountRequired": "Выберите дебетовый счёт",
       "paymentAmountRequired": "Введите сумму платежа",
+      "paymentAcceptancePointRequired": "Выберите точку приема для безналичной оплаты",
       "checkProductData": "Проверьте данные товара",
       "listLoadError": "Не удалось загрузить документы розничных продаж",
       "listEmpty": "Документы розничных продаж не найдены",
@@ -1538,6 +1563,7 @@
       "incomeOrders": "Приходные ордера",
       "expenseOrders": "Расходные ордера",
       "cashBook": "Кассовая книга",
+      "paymentAcceptancePoints": "Точки приёма платежей",
       "sales": "Продажи",
       "salesList": "Продажи",
       "retailSales": "Розничные продажи",
@@ -1579,7 +1605,10 @@
       "number": "№",
       "count": "Количество",
       "marking": "Маркировка",
-      "serial": "Серия"
+      "serial": "Серия",
+      "cashOperation": "Кассовая операция",
+      "cashOperationIncome": "Приход кассы",
+      "cashOperationExpense": "Расход кассы"
     },
     "modals": {
       "accountSelectionTitle": "Счета для строки",
@@ -1869,6 +1898,8 @@
       "sourceChartAccount": "Счёт списания",
       "bankOperation": "Банковская операция",
       "cashOperation": "Кассовая операция",
+      "cashOperationIncome": "Приход кассы",
+      "cashOperationExpense": "Расход кассы",
       "quantity": "Количество"
     },
     "enums": {
@@ -2351,6 +2382,9 @@
       "empty": "Результат по учётному периоду отсутствует"
     }
   },
+  "documents": {
+    "relatedDocument": "Связанный документ"
+  },
   "cash": {
     "fields": {
       "date": "Дата",
@@ -2370,7 +2404,8 @@
       "expense": "Расход",
       "balance": "Остаток",
       "status": "Статус",
-      "currentStatus": "Текущий статус"
+      "currentStatus": "Текущий статус",
+      "direction": "Направление"
     },
     "book": {
       "cashBoxWithId": "Касса №{{id}}",
@@ -2389,7 +2424,13 @@
       "operationTypeRequired": "Выберите тип операции",
       "amountRequired": "Введите положительную сумму",
       "exchangeRateRequired": "Введите курс валюты",
-      "dateRequired": "Введите дату"
+      "dateRequired": "Введите дату",
+      "cashBoxRequired": "Выберите кассу",
+      "bankAccountRequired": "Выберите банковский счёт",
+      "currencyRequired": "Выберите валюту",
+      "directionRequired": "Выберите направление",
+      "paymentAcceptancePointRequired": "Выберите точку приёма платежей",
+      "fiscalCashRegisterRequired": "Выберите фискальную кассу"
     },
     "messages": {
       "documentCreated": "Документ создан",
@@ -2399,6 +2440,45 @@
       "fillRequired": "Заполните обязательные поля",
       "operationConfirmed": "Кассовая операция подтверждена",
       "operationCancelled": "Кассовая операция отменена"
+    },
+    "collection": {
+      "title": "Инкассация",
+      "create": "Создать инкассацию",
+      "created": "Инкассация создана",
+      "saved": "Инкассация сохранена",
+      "sent": "Инкассация отправлена в банк",
+      "cancelled": "Инкассация отменена",
+      "sendToBank": "Отправить в банк",
+      "cashInTransitAccount": "Счет денег в пути",
+      "bankChartAccount": "Банковский счет"
+    },
+    "paymentAcceptancePointOperation": {
+      "title": "Операции точек приема платежей",
+      "create": "Создать операцию точки",
+      "created": "Операция создана",
+      "saved": "Операция сохранена",
+      "confirm": "Операция подтверждена",
+      "cancelled": "Операция отменена",
+      "externalTransactionNumber": "Внешний номер транзакции"
+    },
+    "fiscalTransfer": {
+      "title": "Переводы между кассами",
+      "create": "Создать перевод",
+      "created": "Перевод создан",
+      "saved": "Перевод сохранен",
+      "confirmed": "Перевод подтвержден",
+      "cancelled": "Перевод отменен",
+      "fiscalCashAccount": "Счет фискальной кассы",
+      "cashBoxAccount": "Счет основной кассы"
     }
+  },
+  "rental": {
+      "title": "Аренда",
+      "contracts": { "title": "Договоры аренды", "create": "Создание договора аренды", "edit": "Редактирование договора аренды", "detail": "Договор аренды", "general": "Общая информация", "objects": "Объекты аренды", "objectNumber": "Объект аренды {{number}}", "newObject": "Новый объект", "objectsDescription": "Заполняйте данные каждого объекта аренды в отдельном раскрываемом блоке.", "noObjects": "Объекты аренды отсутствуют" },
+      "accruals": { "title": "Начисления по аренде", "detail": "Начисление по аренде", "items": "Строки начисления", "itemNumber": "Строка начисления {{number}}", "editDetails": "Редактирование начисления", "generateTitle": "Создание начислений" },
+      "fields": { "lessorFullName": "Ф.И.О. арендодателя", "lessorInn": "ИНН", "lessorPinfl": "ПИНФЛ", "contractNumber": "Номер договора", "contractDate": "Дата договора", "startDate": "Дата начала", "endDate": "Дата окончания", "currency": "Валюта", "lessorPayableAccount": "Счет задолженности арендодателю", "taxPayableAccount": "Счет налогов", "comment": "Комментарий", "objectType": "Тип объекта", "objectName": "Название объекта", "identifier": "Идентификатор", "address": "Адрес", "period": "Периодичность", "periodValue": "Значение периода", "periodUnit": "Единица периода", "dates": "Период аренды", "contractAmount": "Сумма договора", "taxBaseAmount": "Налоговая база", "taxRate": "Налоговая ставка", "expenseAccount": "Счет расходов", "objectCount": "Количество объектов", "docNumber": "Номер документа", "docDate": "Дата документа", "taxAmount": "Сумма налога", "payableAmount": "Сумма к выплате", "amount": "Итоговая сумма", "exchangeRate": "Курс валюты", "dateFrom": "С даты", "dateTo": "По дату", "asOfDate": "Дата расчета" },
+      "period": { "month": "Месяц", "day": "День" },
+      "actions": { "activate": "Активировать", "post": "Провести", "cancel": "Отменить", "generate": "Создать начисления", "activateConfirm": "Активировать договор?", "postConfirm": "Провести начисление?", "cancelConfirm": "Отменить документ?", "deleteConfirm": "Удалить черновик?" },
+      "messages": { "generated": "Создано документов начисления: {{count}}", "lessorFound": "Данные арендодателя найдены" }
   }
 }

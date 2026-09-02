@@ -17,6 +17,7 @@ export const createBankOperationSchema = (t: TFunction) =>
     counterpartyId: Yup.number().nullable(),
     counterpartyBankAccountId: Yup.number().nullable(),
     contractId: Yup.number().nullable(),
+    relatedDocumentId: Yup.number().nullable(),
     exchangeRate: Yup.number().nullable(),
     docDate: Yup.string().required(),
     currencyId: Yup.number()

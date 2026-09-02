@@ -29,9 +29,10 @@ export default function RetailSalePaymentDetails({
       render: (value, record) => value || record.paymentMethodId || "-",
     },
     {
-      title: t("retailSale.fields.bankTerminal"),
-      dataIndex: "bankTerminalName",
-      render: (value, record) => value || record.bankTerminalId || "-",
+      title: t("retailSale.fields.paymentAcceptancePoint"),
+      dataIndex: "paymentAcceptancePointName",
+      render: (value, record) =>
+        value || record.paymentAcceptancePointId || "-",
     },
     {
       title: t("retailSale.fields.debitAccount"),

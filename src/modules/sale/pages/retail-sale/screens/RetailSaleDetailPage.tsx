@@ -56,7 +56,9 @@ export default function RetailSaleDetailPage() {
           payments.map((payment) => ({
             id: payment.id,
             paymentMethodId: payment.paymentMethodId,
-            bankTerminalId: payment.bankTerminalId,
+            paymentMethodCode: payment.paymentMethodCode,
+            paymentMethodName: payment.paymentMethodName,
+            paymentAcceptancePointId: payment.paymentAcceptancePointId,
             debitAccountId: payment.debitAccountId,
             amount: payment.amount,
             transactionNumber: payment.transactionNumber ?? "",

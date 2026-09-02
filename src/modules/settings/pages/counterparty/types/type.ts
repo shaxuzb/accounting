@@ -2,8 +2,8 @@ export interface Counterparty {
   id: number;
   organizationId: number;
   organizationName: string;
-  counterpartyTypeId: number;
-  counterpartyTypeName: string;
+  code?: string | null;
+  isVatPayer: boolean;
   shortName: string;
   fullName: string;
   inn: string;
@@ -16,6 +16,9 @@ export interface Counterparty {
   stateName: string;
   createdDate: string;
   address: string;
+  email?: string | null;
+  oked?: string | null;
+  externalId?: string | null;
 }
 
 export interface CounterpartyModule {

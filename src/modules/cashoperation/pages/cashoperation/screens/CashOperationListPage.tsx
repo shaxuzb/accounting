@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { Button, Space, Table, Tooltip } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, ReceiptText, RefreshCw } from "lucide-react";
@@ -14,15 +13,13 @@ import { cashOperationEndpoints } from "../constants/endpoints";
 import { cashOperationPermissions } from "../constants/permissions";
 import { useGetCashOperations } from "../hooks";
 import type { CashOperation } from "../types/type";
-import CashOperationAddEditPage from "./CashOperationAddEditPage";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 
 export default function CashOperationListPage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
+  const navigate = useNavigate();
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
@@ -128,12 +125,7 @@ export default function CashOperationListPage() {
                   record.statusId === 1 ? cashOperationPermissions.update : "",
               }}
               refetch={() => refetch()}
-              editModal={{
-                isModal: true,
-                setOpenEditModal: setIsAddOpen,
-                setEditData: (value: unknown) =>
-                  setEditId((value as CashOperation)?.id ?? null),
-              }}
+              customPath={`${record.id}/edit`}
             />
           ),
         },
@@ -149,10 +141,7 @@ export default function CashOperationListPage() {
             <Button
               type="primary"
               icon={<Plus className="size-4" />}
-              onClick={() => {
-                setEditId(null);
-                setIsAddOpen(true);
-              }}
+              onClick={() => navigate("add")}
             >
               {t("common.add")}
             </Button>
@@ -172,14 +161,6 @@ export default function CashOperationListPage() {
           scroll={{ x: "max-content", y: "calc(100vh - 180px)" }}
         />
       </Card>
-      <CashOperationAddEditPage
-        open={isAddOpen}
-        id={editId}
-        onClose={() => {
-          setIsAddOpen(false);
-          setEditId(null);
-        }}
-      />
     </div>
   );
 }

@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Col, Row } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import InputNumberFormat from "@/components/fields/InputNumber";
-import InputText from "@/components/fields/InputText";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
@@ -20,12 +19,10 @@ import {
 
 interface CashOperationFormFieldsProps {
   formik: FormikProps<CashOperationForm>;
-  disabled?: boolean;
 }
 
 export default function CashOperationFormFields({
   formik,
-  disabled = false,
 }: CashOperationFormFieldsProps) {
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -34,17 +31,8 @@ export default function CashOperationFormFields({
 
   return (
     <>
-      <Row gutter={[16, 8]}>
-        <Col span={12}>
-          <SelectCustom
-            formik={formik}
-            fieldName="cashBoxId"
-            label="settings.entities.cashBox"
-            path={selectListEndpoints.cashBoxesSelectList}
-            disabled={disabled}
-          />
-        </Col>
-        <Col span={12}>
+      <Row gutter={[16, 0]}>
+        <Col span={4}>
           <SelectCustom
             formik={formik}
             fieldName="operationTypeId"
@@ -57,10 +45,25 @@ export default function CashOperationFormFields({
               formik.setFieldValue("cashChartAccountId", null, false);
               formik.setFieldValue("offsetAccountId", null, false);
             }}
-            disabled={disabled}
           />
         </Col>
-        <Col span={12}>
+        <Col span={4}>
+          <SelectCustom
+            formik={formik}
+            fieldName="cashBoxId"
+            label="settings.entities.cashBox"
+            path={selectListEndpoints.cashBoxesSelectList}
+          />
+        </Col>
+        <Col span={4}>
+          <SelectCustom
+            formik={formik}
+            fieldName="paymentTypeId"
+            label="cash.fields.paymentType"
+            path={selectListEndpoints.paymentTypesSelectList}
+          />
+        </Col>
+        <Col span={4}>
           <DocumentAccountSelect
             formik={formik}
             fieldName="cashChartAccountId"
@@ -68,11 +71,11 @@ export default function CashOperationFormFields({
             documentTypeId={documentTypeId ?? cashDocumentTypeIds.income}
             documentRoleCode={cashDocumentAccountRoleCodes.cashAccount}
             getFirst
-            enabled={canUseDocumentAccounts && !disabled}
-            disabled={disabled || !canUseDocumentAccounts}
+            enabled={canUseDocumentAccounts}
+            disabled={!canUseDocumentAccounts}
           />
         </Col>
-        <Col span={12}>
+        <Col span={4}>
           <DocumentAccountSelect
             formik={formik}
             fieldName="offsetAccountId"
@@ -80,21 +83,19 @@ export default function CashOperationFormFields({
             documentTypeId={documentTypeId ?? cashDocumentTypeIds.income}
             documentRoleCode={cashDocumentAccountRoleCodes.offsetAccount}
             getFirst
-            enabled={canUseDocumentAccounts && !disabled}
-            disabled={disabled || !canUseDocumentAccounts}
+            enabled={canUseDocumentAccounts}
+            disabled={!canUseDocumentAccounts}
           />
         </Col>
-
-        <Col span={12}>
+        <Col span={4}>
           <SelectCustom
             formik={formik}
-            fieldName="paymentTypeId"
-            label="cash.fields.paymentType"
-            path={selectListEndpoints.paymentTypesSelectList}
-            disabled={disabled}
+            fieldName="currencyId"
+            label="settings.fields.currency"
+            path={selectListEndpoints.currenciesSelectList}
           />
         </Col>
-        <Col span={12}>
+        <Col span={4}>
           <SelectCustom
             formik={formik}
             fieldName="counterpartyId"
@@ -105,42 +106,23 @@ export default function CashOperationFormFields({
               permissionCode: counterpartyPermissions.create,
               onClick: () => setCounterpartyCreateOpen(true),
             }}
-            disabled={disabled}
           />
         </Col>
-        <Col span={12}>
+        <Col span={4}>
           <SelectDate
             formik={formik}
             fieldName="docDate"
             label="bank.fields.date"
-            disabled={disabled}
           />
         </Col>
-        <Col span={12}>
-          <SelectCustom
-            formik={formik}
-            fieldName="currencyId"
-            label="settings.fields.currency"
-            path={selectListEndpoints.currenciesSelectList}
-            disabled={disabled}
-          />
-        </Col>
-        <Col span={12}>
+
+        <Col span={4}>
           <InputNumberFormat
             formik={formik}
             fieldName="amount"
             label="bank.fields.amount"
             min={0}
             precision={2}
-            disabled={disabled}
-          />
-        </Col>
-        <Col span={24}>
-          <InputText
-            formik={formik}
-            fieldName="comment"
-            label="bank.fields.comment"
-            disabled={disabled}
           />
         </Col>
       </Row>

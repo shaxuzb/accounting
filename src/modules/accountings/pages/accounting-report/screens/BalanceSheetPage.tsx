@@ -4,7 +4,10 @@ import { Landmark, Layers3, PiggyBank, Scale } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { numberSpacing } from "@/utils/utils";
-import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
+import {
+  usePersistedState,
+  useScopedStorageKey,
+} from "@/shared/persistence/usePersistedState";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
