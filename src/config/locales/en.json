@@ -102,6 +102,26 @@
     "services": "Services",
     "documents": "Documents"
   },
+  "dashboard": {
+    "eyebrow": "Financial control center",
+    "title": "Accounting data at a glance",
+    "subtitle": "Your organization’s key financial indicators in one place.",
+    "filter": "Filter",
+    "dateRange": "Date range",
+    "currency": "Currency",
+    "allCurrencies": "All currencies",
+    "allPeriod": "All time",
+    "notAvailable": "Data unavailable",
+    "status": { "available": "Data ready", "partial": "Partial data", "unavailable": "Source unavailable" },
+    "loadError": "Dashboard data could not be loaded",
+    "loadErrorDescription": "Check the connection and try again.",
+    "cash": { "title": "Cash balances", "description": "Period movement across bank accounts and cash boxes.", "account": "Account", "unnamedAccount": "Unnamed account", "bankAccount": "Bank account", "cashBox": "Cash box", "opening": "Opening balance", "inflow": "Inflow", "outflow": "Outflow", "closing": "Closing balance", "empty": "No account data available" },
+    "relationships": { "title": "Relationships", "description": "Incoming and outgoing document counts.", "incoming": "Incoming", "outgoing": "Outgoing" },
+    "debts": { "title": "Receivables and payables", "description": "Current debt by counterparty.", "receivable": "Receivables", "payable": "Payables", "overdueUnavailable": "Overdue amount unavailable", "overdue": "Overdue: {{amount}}", "unknownCounterparty": "Unknown counterparty", "empty": "No debt data available" },
+    "tax": { "title": "Tax indicators", "description": "VAT from sale and purchase documents.", "total": "Total VAT", "vatPayer": "VAT payer", "yes": "Yes", "no": "No", "empty": "No tax data available" },
+    "documents": { "title": "Electronic documents", "description": "Document indicators by type, status, and direction.", "count": "items", "total": "Total documents", "empty": "No electronic documents", "byStatus": "By status", "countByStatus": "By count", "byType": "By type", "byDirection": "By direction", "directionSummary": "Direction", "incoming": "Incoming", "outgoing": "Outgoing", "filters": { "all": "All", "incoming": "Incoming", "outgoing": "Outgoing" }, "amountPeriod": "Amount", "amountMissing": "Amount unavailable", "amountReady": "Amount data is ready.", "realDataNote": "Metrics are based on API data", "typeLabels": { "CONTRACT": "Contracts", "POWER_OF_ATTORNEY": "Power of attorney", "FACTURA": "Invoices", "WAYBILL": "Waybills", "WAYBILL_LOCAL": "Waybills", "TTYU": "Waybills" }, "statusLabels": { "SIGNED": "Signed", "SENT": "In progress", "REJECTED": "Rejected", "CANCELLED": "Cancelled", "CANCELED": "Cancelled" } },
+    "tasks": { "title": "Task calendar", "description": "The generic task table is not available in the backend yet." }
+  },
   "menu": {
     "dashboard": "Dashboard",
     "warehouse": "Warehouse",
@@ -436,6 +456,7 @@
       "saleConditions": "Sale conditions",
       "integrations": "Integrations",
       "documentAccountSettings": "Document account settings",
+      "regulatedObligationSettings": "Regulated obligations",
       "openingBalance": "Opening balance",
       "openingInventory": "Opening inventory"
     },
@@ -461,6 +482,7 @@
       "pricingConditions": "Manage pricing methods and rounding rules.",
       "saleConditions": "Manage costing method and VAT rate for sales.",
       "documentAccountSettings": "Configure accounts used by documents.",
+      "regulatedObligationSettings": "Manage tax, contribution and other obligation settings.",
       "openingBalance": "Enter the organization's opening balances by account.",
       "openingInventory": "Manage opening inventory.",
       "integrations": "Manage dDocs and Asl Belgisi integrations."
@@ -539,7 +561,15 @@
       "conditionId": "Condition ID",
       "organizationId": "Organization ID",
       "defaultOrganization": "Default",
-      "owner": "Owner"
+      "owner": "Owner",
+      "regulatedObligation": "Obligation",
+      "category": "Category",
+      "periodicity": "Periodicity",
+      "classifierCode": "Classifier code",
+      "rate": "Rate (%)",
+      "chartAccount": "Chart account",
+      "effectiveFrom": "Effective from",
+      "effectiveTo": "Effective to"
     },
     "form": {
       "createTitle": "Add new record",
@@ -556,7 +586,10 @@
       "editRole": "Edit role",
       "createPricingCondition": "Add pricing condition",
       "viewPricingCondition": "Pricing condition",
-      "createSaleCondition": "Create sale condition"
+      "createSaleCondition": "Create sale condition",
+      "createRegulatedObligationSetting": "Add obligation setting",
+      "editRegulatedObligationSetting": "Edit obligation setting",
+      "viewRegulatedObligationSetting": "Obligation setting"
     },
     "messages": {
       "created": "Record created successfully",
@@ -565,6 +598,22 @@
       "userUpdated": "User updated successfully",
       "roleCreated": "Role created successfully",
       "roleUpdated": "Role updated successfully"
+    },
+    "regulatedObligations": {
+      "detail": "Obligation setting details",
+      "notFound": "Obligation setting not found",
+      "notConfigured": "Not configured",
+      "categories": { "tax": "Tax", "contribution": "Contribution" },
+      "filters": {
+        "category": "Category",
+        "choosedDate": "Effective date",
+        "configuration": "Configuration status",
+        "configured": "Configured",
+        "notConfigured": "Not configured"
+      }
+    },
+    "validation": {
+      "effectiveToBeforeFrom": "The end date cannot be earlier than the start date"
     },
     "role": {
       "selectAll": "Select all",
@@ -2365,7 +2414,7 @@
   "rental": {
       "title": "Rental",
       "contracts": { "title": "Rental contracts", "create": "Create rental contract", "edit": "Edit rental contract", "detail": "Rental contract", "general": "General information", "objects": "Rental objects", "objectNumber": "Rental object {{number}}", "newObject": "New object", "objectsDescription": "Enter each rental object in its own expandable section.", "noObjects": "No rental objects" },
-      "accruals": { "title": "Rental accruals", "detail": "Rental accrual", "items": "Accrual items", "itemNumber": "Accrual item {{number}}", "editDetails": "Edit accrual details", "generateTitle": "Generate accruals" },
+      "accruals": { "title": "Rental accruals", "edit": "Edit rental accrual", "detail": "Rental accrual", "items": "Accrual items", "itemNumber": "Accrual item {{number}}", "editDetails": "Edit accrual details", "generateTitle": "Generate accruals" },
       "fields": { "lessorFullName": "Lessor full name", "lessorInn": "TIN", "lessorPinfl": "PINFL", "contractNumber": "Contract number", "contractDate": "Contract date", "startDate": "Start date", "endDate": "End date", "currency": "Currency", "lessorPayableAccount": "Lessor payable account", "taxPayableAccount": "Tax payable account", "comment": "Comment", "objectType": "Object type", "objectName": "Object name", "identifier": "Identifier", "address": "Address", "period": "Period", "periodValue": "Period value", "periodUnit": "Period unit", "dates": "Rental period", "contractAmount": "Contract amount", "taxBaseAmount": "Tax base amount", "taxRate": "Tax rate", "expenseAccount": "Expense account", "objectCount": "Object count", "docNumber": "Document number", "docDate": "Document date", "taxAmount": "Tax amount", "payableAmount": "Amount payable", "amount": "Total amount", "exchangeRate": "Exchange rate", "dateFrom": "From date", "dateTo": "To date", "asOfDate": "Calculation date" },
       "period": { "month": "Month", "day": "Day" },
       "actions": { "activate": "Activate", "post": "Post", "cancel": "Cancel", "generate": "Generate accruals", "activateConfirm": "Activate this contract?", "postConfirm": "Post this accrual?", "cancelConfirm": "Cancel this document?", "deleteConfirm": "Delete this draft?" },

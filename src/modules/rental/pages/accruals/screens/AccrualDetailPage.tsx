@@ -1,23 +1,27 @@
-import { Button, Card, Result, Spin } from "antd";
-import { ArrowLeft } from "lucide-react";
+import { Result, Spin } from "antd";
 import { useFormik } from "formik";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import DraftActionsBar from "@/components/ui/card/DraftActionsBar";
+import { mapRentalAccrualToForm } from "../utils/form";
 import { buildAccrualUpdatePayload } from "../utils/payload";
 import type { RentalAccrualForm } from "../types/form";
 import {
   useCancelRentalAccrual,
-  useDeleteRentalAccrual,
   usePostRentalAccrual,
   useRentalAccrual,
   useUpdateRentalAccrual,
 } from "../hooks";
-import AccrualActions from "../components/AccrualActions";
 import AccrualDetailContent from "../components/AccrualDetailContent";
+import { rentalAccrualPermissions } from "../constants/permissions";
+import {
+  isRentalDraft,
+  isRentalPosted,
+} from "@/modules/rental/shared/constants/statuses";
 
 export default function AccrualDetailPage() {
   const { t } = useTranslation();
@@ -27,42 +31,65 @@ export default function AccrualDetailPage() {
     (state) => state.auth.user?.user.permissions ?? [],
   );
   const { data, isLoading, isError, refetch } = useRentalAccrual(id);
-  const [editing, setEditing] = useState(false);
   const updateMutation = useUpdateRentalAccrual();
   const postMutation = usePostRentalAccrual();
   const cancelMutation = useCancelRentalAccrual();
-  const deleteMutation = useDeleteRentalAccrual();
+  const isDraft = isRentalDraft(data?.statusId);
+  const canSave = Boolean(
+    isDraft && permissions.includes(rentalAccrualPermissions.update),
+  );
+  const canPost = Boolean(
+    isDraft && permissions.includes(rentalAccrualPermissions.post),
+  );
+  const canCancel = Boolean(
+    data &&
+      (isDraft || isRentalPosted(data.statusId)) &&
+      permissions.includes(rentalAccrualPermissions.cancel),
+  );
+
+  const initialValues = useMemo<RentalAccrualForm>(
+    () =>
+      data
+        ? mapRentalAccrualToForm(data)
+        : {
+            exchangeRate: 1,
+            lessorPayableAccountId: null,
+            taxPayableAccountId: null,
+            comment: "",
+            items: [],
+          },
+    [data],
+  );
+
+  const persistDraft = async (values: RentalAccrualForm) => {
+    if (!data) return;
+
+    const itemAccounts = new Map(
+      values.items.map((item) => [item.itemId, item.expenseAccountId]),
+    );
+    await updateMutation.mutateAsync({
+      id: data.id,
+      payload: buildAccrualUpdatePayload({
+        ...data,
+        exchangeRate: values.exchangeRate,
+        lessorPayableAccountId: values.lessorPayableAccountId,
+        taxPayableAccountId: values.taxPayableAccountId,
+        comment: values.comment,
+        items: data.items.map((item) => ({
+          ...item,
+          expenseAccountId: itemAccounts.get(item.id) ?? null,
+        })),
+      }),
+    });
+  };
+
   const formik = useFormik<RentalAccrualForm>({
-    initialValues: {
-      exchangeRate: 1,
-      lessorPayableAccountId: null,
-      taxPayableAccountId: null,
-      comment: "",
-      items: [],
-    },
-    enableReinitialize: false,
+    initialValues,
+    enableReinitialize: true,
     onSubmit: async (values) => {
-      if (!data) return;
       try {
-        const itemAccounts = new Map(
-          values.items.map((item) => [item.itemId, item.expenseAccountId]),
-        );
-        await updateMutation.mutateAsync({
-          id: data.id,
-          payload: buildAccrualUpdatePayload({
-            ...data,
-            exchangeRate: values.exchangeRate,
-            lessorPayableAccountId: values.lessorPayableAccountId,
-            taxPayableAccountId: values.taxPayableAccountId,
-            comment: values.comment,
-            items: data.items.map((item) => ({
-              ...item,
-              expenseAccountId: itemAccounts.get(item.id) ?? null,
-            })),
-          }),
-        });
+        await persistDraft(values);
         toast.success(t("settings.messages.updated"));
-        setEditing(false);
         await refetch();
       } catch (error) {
         errorHandlers(error);
@@ -70,20 +97,18 @@ export default function AccrualDetailPage() {
     },
   });
 
-  const { setValues } = formik;
-  useEffect(() => {
+  const handleConfirm = async () => {
     if (!data) return;
-    setValues({
-      exchangeRate: data.exchangeRate ?? 1,
-      lessorPayableAccountId: data.lessorPayableAccountId ?? null,
-      taxPayableAccountId: data.taxPayableAccountId ?? null,
-      comment: data.comment ?? "",
-      items: data.items.map((item) => ({
-        itemId: item.id,
-        expenseAccountId: item.expenseAccountId ?? null,
-      })),
-    });
-  }, [data, setValues]);
+
+    try {
+      await persistDraft(formik.values);
+      await postMutation.mutateAsync(data.id);
+      toast.success(t("actions.confirmSuccess", { id: data.id }));
+      await refetch();
+    } catch (error) {
+      errorHandlers(error);
+    }
+  };
 
   const runAction = async (action: () => Promise<unknown>) => {
     try {
@@ -93,53 +118,34 @@ export default function AccrualDetailPage() {
       errorHandlers(error);
     }
   };
-  const isMutating =
-    updateMutation.isPending ||
-    postMutation.isPending ||
-    cancelMutation.isPending ||
-    deleteMutation.isPending;
-
   if (isLoading) return <Spin className="block py-20" />;
   if (isError || !data)
     return <Result status="404" title={t("common.notFound")} />;
 
   return (
     <div className="w-full min-w-0 space-y-3 px-2 pb-4 sm:px-3">
-      <Card className="border-border!" bodyStyle={{ padding: 12 }}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Button
-            icon={<ArrowLeft className="size-4" />}
-            onClick={() => navigate("/main/rentals/accruals")}
-          >
-            {t("common.back")}
-          </Button>
-          <AccrualActions
-            statusId={data.statusId}
-            permissions={permissions}
-            editing={editing}
-            loading={isMutating}
-            onEdit={() => setEditing(true)}
-            onSave={() => void formik.submitForm()}
-            onDiscard={() => {
-              formik.resetForm();
-              setEditing(false);
-            }}
-            onPost={() =>
-              void runAction(() => postMutation.mutateAsync(data.id))
+      <AccrualDetailContent
+        data={data}
+        formik={isDraft ? formik : undefined}
+        disabled={!canSave}
+        actions={
+          <DraftActionsBar
+            isCreate={false}
+            canSave={canSave}
+            canConfirm={canPost}
+            canCancel={canCancel}
+            saving={updateMutation.isPending}
+            confirming={postMutation.isPending}
+            cancelling={cancelMutation.isPending}
+            onExit={() => navigate("/main/rentals/accruals")}
+            onConfirm={handleConfirm}
+            onCancelDocument={() =>
+              runAction(() => cancelMutation.mutateAsync(data.id))
             }
-            onCancel={() =>
-              void runAction(() => cancelMutation.mutateAsync(data.id))
-            }
-            onDelete={() =>
-              void runAction(async () => {
-                await deleteMutation.mutateAsync(data.id);
-                navigate("/main/rentals/accruals");
-              })
-            }
+            cancelLabel="rental.actions.cancel"
           />
-        </div>
-      </Card>
-      <AccrualDetailContent data={data} formik={editing ? formik : undefined} />
+        }
+      />
     </div>
   );
 }

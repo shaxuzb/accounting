@@ -10,9 +10,14 @@ export const rentalStatusOptions = [
   { value: rentalStatusIds.cancelled, label: "processStatuses.cancelled" },
 ] as const;
 
-export const isRentalDraft = (statusId?: number | null) =>
-  statusId === rentalStatusIds.draft;
-export const isRentalPosted = (statusId?: number | null) =>
-  statusId === rentalStatusIds.posted;
-export const isRentalCancelled = (statusId?: number | null) =>
-  statusId === rentalStatusIds.cancelled;
+type RentalStatusValue = number | string | null | undefined;
+
+const normalizeRentalStatusId = (statusId: RentalStatusValue) =>
+  Number(statusId);
+
+export const isRentalDraft = (statusId?: RentalStatusValue) =>
+  normalizeRentalStatusId(statusId) === rentalStatusIds.draft;
+export const isRentalPosted = (statusId?: RentalStatusValue) =>
+  normalizeRentalStatusId(statusId) === rentalStatusIds.posted;
+export const isRentalCancelled = (statusId?: RentalStatusValue) =>
+  normalizeRentalStatusId(statusId) === rentalStatusIds.cancelled;

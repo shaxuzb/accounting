@@ -1,3 +1,5 @@
+import type { RentalContractForm } from "../types/form";
+
 export const emptyObject = (startDate = "", endDate = "") => ({
   id: null,
   rentalObjectTypeId: null,
@@ -7,9 +9,27 @@ export const emptyObject = (startDate = "", endDate = "") => ({
   startDate,
   endDate,
   periodUnit: "MONTH" as const,
-  periodValue: 1,
+  periodValue: null,
   contractAmount: null,
   taxBaseAmount: null,
-  taxRate: 0,
+  taxRate: null,
   expenseAccountId: null,
+});
+
+export const createRentalContractDefaults = (
+  startDate = "",
+  endDate = "",
+): RentalContractForm => ({
+  lessorFullName: "",
+  lessorInn: null,
+  lessorPinfl: null,
+  contractNumber: "",
+  contractDate: startDate,
+  startDate,
+  endDate,
+  currencyId: null,
+  lessorPayableAccountId: null,
+  taxPayableAccountId: null,
+  comment: "",
+  objects: [emptyObject(startDate, endDate)],
 });

@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import {
   Building2,
   CalendarDays,
@@ -7,11 +6,14 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/store/hooks";
-import Card from "@/components/ui/card/Card";
+import SectionCard from "@/components/ui/card/SectionCard";
 import {
   DocumentSummary,
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
+import ReadonlyFieldGrid, {
+  type ReadonlyFieldItem,
+} from "@/components/ui/card/ReadonlyFieldGrid";
 import { customDate, numberSpacing } from "@/utils/utils";
 
 export interface CashReadonlyRecord {
@@ -23,44 +25,11 @@ export interface CashReadonlyRecord {
   comment?: string | null;
 }
 
-export interface CashReadonlyDetailItem {
-  label: string;
-  value: ReactNode;
-  className?: string;
-}
+export type CashReadonlyDetailItem = ReadonlyFieldItem;
 
 interface CashReadonlyLayoutProps {
   record: CashReadonlyRecord;
   items: CashReadonlyDetailItem[];
-}
-
-function DetailSection({
-  title,
-  items,
-  columns = "md:grid-cols-2 xl:grid-cols-4",
-}: {
-  title: string;
-  items: CashReadonlyDetailItem[];
-  columns?: string;
-}) {
-  return (
-    <Card className="border border-border p-4 sm:p-5">
-      <div className="mb-3 text-base font-semibold text-heading">{title}</div>
-      <div className={`grid gap-3 ${columns}`}>
-        {items.map((item) => (
-          <div
-            key={item.label}
-            className={`min-w-0 rounded-lg border border-border bg-surface-muted px-3 py-2.5 ${item.className ?? ""}`}
-          >
-            <div className="text-xs text-secondary-text">{item.label}</div>
-            <div className="mt-1 text-sm font-semibold text-text">
-              {item.value ?? "-"}
-            </div>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
 }
 
 export default function CashReadonlyLayout({
@@ -103,22 +72,27 @@ export default function CashReadonlyLayout({
         />
       </DocumentSummary>
 
-      <DetailSection
+      <SectionCard
         title={t("bank.readonlySections.general")}
-        columns="md:grid-cols-2 xl:grid-cols-6"
-        items={items}
-      />
+        bodyClassName="p-4 sm:p-5"
+      >
+        <ReadonlyFieldGrid items={items} columns="md:grid-cols-2 xl:grid-cols-6" />
+      </SectionCard>
 
-      <DetailSection
+      <SectionCard
         title={t("bank.readonlySections.comment")}
-        items={[
-          {
-            label: t("cash.fields.comment"),
-            value: record.comment,
-            className: "md:col-span-2 xl:col-span-4",
-          },
-        ]}
-      />
+        bodyClassName="p-4 sm:p-5"
+      >
+        <ReadonlyFieldGrid
+          items={[
+            {
+              label: t("cash.fields.comment"),
+              value: record.comment,
+              className: "md:col-span-2 xl:col-span-4",
+            },
+          ]}
+        />
+      </SectionCard>
     </div>
   );
 }

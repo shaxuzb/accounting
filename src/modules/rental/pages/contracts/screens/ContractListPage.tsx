@@ -13,8 +13,11 @@ import PermissionCard from "@/components/ui/card/PermissionCard";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import { useAppSelector } from "@/store/hooks";
 import { customDate2 } from "@/utils/utils";
-import RentalStatusBadge from "@/modules/rental/shared/components/RentalStatusBadge";
-import { rentalStatusOptions } from "@/modules/rental/shared/constants/statuses";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import {
+  isRentalDraft,
+  rentalStatusOptions,
+} from "@/modules/rental/shared/constants/statuses";
 import { rentalContractPermissions } from "../constants/permissions";
 import { useRentalContracts } from "../hooks";
 import type { RentalContractListItem } from "../types/type";
@@ -96,7 +99,7 @@ export default function ContractListPage() {
     {
       title: t("common.status"),
       render: (_, record) => (
-        <RentalStatusBadge
+        <ProcessStatusBadge
           statusId={record.statusId}
           statusName={record.statusName}
         />
@@ -109,7 +112,7 @@ export default function ContractListPage() {
       width: 70,
       render: (_, record) => {
         const rowPermissions =
-          record.statusId === 1
+          isRentalDraft(record.statusId)
             ? permissions
             : permissions.filter(
                 (permission) =>

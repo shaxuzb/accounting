@@ -104,8 +104,28 @@
     "services": "Услуги",
     "documents": "Документы"
   },
+  "dashboard": {
+    "eyebrow": "Центр финансового контроля",
+    "title": "Инфографика бухгалтерских данных",
+    "subtitle": "Основные финансовые показатели организации на одном экране.",
+    "filter": "Фильтр",
+    "dateRange": "Период",
+    "currency": "Валюта",
+    "allCurrencies": "Все валюты",
+    "allPeriod": "Весь период",
+    "notAvailable": "Данные недоступны",
+    "status": { "available": "Данные готовы", "partial": "Неполные данные", "unavailable": "Источник недоступен" },
+    "loadError": "Не удалось загрузить данные дашборда",
+    "loadErrorDescription": "Проверьте соединение и повторите попытку.",
+    "cash": { "title": "Остатки денежных средств", "description": "Движение по банковским счетам и кассам за период.", "account": "Счёт", "unnamedAccount": "Счёт без названия", "bankAccount": "Банковский счёт", "cashBox": "Касса", "opening": "Остаток на начало", "inflow": "Приход", "outflow": "Расход", "closing": "Остаток на конец", "empty": "Нет данных по счетам" },
+    "relationships": { "title": "Взаимоотношения", "description": "Количество входящих и исходящих документов.", "incoming": "Входящие", "outgoing": "Исходящие" },
+    "debts": { "title": "Дебиторка и кредиторка", "description": "Текущая задолженность в разрезе контрагентов.", "receivable": "Дебиторская задолженность", "payable": "Кредиторская задолженность", "overdueUnavailable": "Просроченная сумма недоступна", "overdue": "Просрочено: {{amount}}", "unknownCounterparty": "Неизвестный контрагент", "empty": "Нет данных о задолженности" },
+    "tax": { "title": "Налоговые показатели", "description": "НДС по документам продажи и покупки.", "total": "Всего НДС", "vatPayer": "Плательщик НДС", "yes": "Да", "no": "Нет", "empty": "Нет налоговых данных" },
+    "documents": { "title": "Электронные документы", "description": "Показатели по типу, статусу и направлению документов.", "count": "шт.", "total": "Всего документов", "empty": "Нет электронных документов", "byStatus": "По статусу", "countByStatus": "Количество", "byType": "По типу", "byDirection": "По направлению", "directionSummary": "Направление", "incoming": "Входящие", "outgoing": "Исходящие", "filters": { "all": "Все", "incoming": "Входящие", "outgoing": "Исходящие" }, "amountPeriod": "Сумма", "amountMissing": "Сумма недоступна", "amountReady": "Данные по суммам готовы.", "realDataNote": "Показатели на основе данных API", "typeLabels": { "CONTRACT": "Договоры", "POWER_OF_ATTORNEY": "Доверенности", "FACTURA": "Счета-фактуры", "WAYBILL": "ТТН", "WAYBILL_LOCAL": "ТТН", "TTYU": "ТТН" }, "statusLabels": { "SIGNED": "Подписано", "SENT": "В процессе", "REJECTED": "Отклонено", "CANCELLED": "Отменено", "CANCELED": "Отменено" } },
+    "tasks": { "title": "Календарь задач", "description": "Общая таблица задач пока недоступна в backend." }
+  },
   "menu": {
-    "dashboard": "Управление",
+    "dashboard": "Dashboard",
     "warehouse": "Склад",
     "warehouseMain": "Склад",
     "sale": "Продажи",
@@ -672,6 +692,7 @@
       "pricingConditions": "Условия ценообразования",
       "saleConditions": "Условия продаж",
       "documentAccountSettings": "Настройки счетов документов",
+      "regulatedObligationSettings": "Регулируемые обязательства",
       "openingBalance": "Начальный баланс",
       "openingInventory": "Ввод начальных остатков",
       "integrations": "Интеграции"
@@ -699,6 +720,7 @@
       "pricingConditions": "Управление методами ценообразования и округления.",
       "saleConditions": "Управление методами себестоимости и НДС для продаж.",
       "documentAccountSettings": "Настройка счетов для документов.",
+      "regulatedObligationSettings": "Настройка налогов, взносов и других обязательств.",
       "openingBalance": "Ввод начальных остатков организации по счетам.",
       "openingInventory": "Управление начальными остатками ТМЗ."
     },
@@ -776,7 +798,15 @@
       "conditionId": "ID условия",
       "organizationId": "ID организации",
       "defaultOrganization": "Основная",
-      "owner": "Владелец"
+      "owner": "Владелец",
+      "regulatedObligation": "Обязательство",
+      "category": "Категория",
+      "periodicity": "Периодичность",
+      "classifierCode": "Код классификатора",
+      "rate": "Ставка (%)",
+      "chartAccount": "Счёт",
+      "effectiveFrom": "Дата начала действия",
+      "effectiveTo": "Дата окончания действия"
     },
     "form": {
       "createTitle": "Добавить новую запись",
@@ -793,7 +823,10 @@
       "editRole": "Редактировать роль",
       "createPricingCondition": "Добавить условие ценообразования",
       "viewPricingCondition": "Условие ценообразования",
-      "createSaleCondition": "Создать условие продаж"
+      "createSaleCondition": "Создать условие продаж",
+      "createRegulatedObligationSetting": "Добавить настройку обязательства",
+      "editRegulatedObligationSetting": "Редактировать настройку обязательства",
+      "viewRegulatedObligationSetting": "Настройка обязательства"
     },
     "messages": {
       "created": "Запись успешно создана",
@@ -802,6 +835,22 @@
       "userUpdated": "Пользователь успешно обновлён",
       "roleCreated": "Роль успешно создана",
       "roleUpdated": "Роль успешно обновлена"
+    },
+    "regulatedObligations": {
+      "detail": "Детали настройки обязательства",
+      "notFound": "Настройка обязательства не найдена",
+      "notConfigured": "Не настроено",
+      "categories": { "tax": "Налог", "contribution": "Взнос или отчисление" },
+      "filters": {
+        "category": "Категория",
+        "choosedDate": "Дата действия",
+        "configuration": "Состояние настройки",
+        "configured": "Настроено",
+        "notConfigured": "Не настроено"
+      }
+    },
+    "validation": {
+      "effectiveToBeforeFrom": "Дата окончания не может быть раньше даты начала"
     },
     "role": {
       "selectAll": "Выбрать все",
@@ -2475,7 +2524,7 @@
   "rental": {
       "title": "Аренда",
       "contracts": { "title": "Договоры аренды", "create": "Создание договора аренды", "edit": "Редактирование договора аренды", "detail": "Договор аренды", "general": "Общая информация", "objects": "Объекты аренды", "objectNumber": "Объект аренды {{number}}", "newObject": "Новый объект", "objectsDescription": "Заполняйте данные каждого объекта аренды в отдельном раскрываемом блоке.", "noObjects": "Объекты аренды отсутствуют" },
-      "accruals": { "title": "Начисления по аренде", "detail": "Начисление по аренде", "items": "Строки начисления", "itemNumber": "Строка начисления {{number}}", "editDetails": "Редактирование начисления", "generateTitle": "Создание начислений" },
+      "accruals": { "title": "Начисления по аренде", "edit": "Редактирование начисления по аренде", "detail": "Начисление по аренде", "items": "Строки начисления", "itemNumber": "Строка начисления {{number}}", "editDetails": "Редактирование начисления", "generateTitle": "Создание начислений" },
       "fields": { "lessorFullName": "Ф.И.О. арендодателя", "lessorInn": "ИНН", "lessorPinfl": "ПИНФЛ", "contractNumber": "Номер договора", "contractDate": "Дата договора", "startDate": "Дата начала", "endDate": "Дата окончания", "currency": "Валюта", "lessorPayableAccount": "Счет задолженности арендодателю", "taxPayableAccount": "Счет налогов", "comment": "Комментарий", "objectType": "Тип объекта", "objectName": "Название объекта", "identifier": "Идентификатор", "address": "Адрес", "period": "Периодичность", "periodValue": "Значение периода", "periodUnit": "Единица периода", "dates": "Период аренды", "contractAmount": "Сумма договора", "taxBaseAmount": "Налоговая база", "taxRate": "Налоговая ставка", "expenseAccount": "Счет расходов", "objectCount": "Количество объектов", "docNumber": "Номер документа", "docDate": "Дата документа", "taxAmount": "Сумма налога", "payableAmount": "Сумма к выплате", "amount": "Итоговая сумма", "exchangeRate": "Курс валюты", "dateFrom": "С даты", "dateTo": "По дату", "asOfDate": "Дата расчета" },
       "period": { "month": "Месяц", "day": "День" },
       "actions": { "activate": "Активировать", "post": "Провести", "cancel": "Отменить", "generate": "Создать начисления", "activateConfirm": "Активировать договор?", "postConfirm": "Провести начисление?", "cancelConfirm": "Отменить документ?", "deleteConfirm": "Удалить черновик?" },

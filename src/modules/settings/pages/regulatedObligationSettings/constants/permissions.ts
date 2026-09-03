@@ -1,0 +1,6 @@
+export const regulatedObligationSettingPermissions = {
+  view: "REGULATED_OBLIGATION_SETTING_VIEW",
+  detail: "REGULATED_OBLIGATION_SETTING_VIEW_DETAIL",
+  create: "REGULATED_OBLIGATION_SETTING_CREATE",
+  update: "REGULATED_OBLIGATION_SETTING_UPDATE",
+} as const;

@@ -68,7 +68,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`${sidebarInline.sidebar ? "w-16" : "w-70"} h-screen sticky overflow-hidden top-0 border-r border-border bg-primary-bg flex flex-col`}
+      className={`${sidebarInline.sidebar ? "w-16" : "w-[280px]"} sticky top-0 h-screen shrink-0 overflow-hidden border-r border-border bg-primary-bg transition-[width] duration-200 ease-out`}
     >
       <LogoSide />
       <div className="flex-1 min-h-0 overflow-hidden">

@@ -60,6 +60,9 @@ import EdoImportPage from "./pages/integrations/edo/import/screens/EdoImportPage
 import EdoImportCandidateMappingPage from "./pages/integrations/edo/import/screens/EdoImportCandidateMappingPage";
 import FiscalCashRegisterListPage from "./pages/fiscalCashRegister/screens/FiscalCashRegisterListPage";
 import { fiscalCashRegisterPermissions } from "./pages/fiscalCashRegister/constants/permissions";
+import RegulatedObligationSettingsListPage from "./pages/regulatedObligationSettings/screens/RegulatedObligationSettingsListPage";
+import RegulatedObligationSettingDetailPage from "./pages/regulatedObligationSettings/screens/RegulatedObligationSettingDetailPage";
+import { regulatedObligationSettingPermissions } from "./pages/regulatedObligationSettings/constants/permissions";
 
 const settingsPermissions = [
   rolePermissions.view,
@@ -86,6 +89,7 @@ const settingsPermissions = [
   openingInventoryPermissions.view,
   integrationPermissions.view,
   payrollComponentPermissions.view,
+  regulatedObligationSettingPermissions.view,
 ];
 
 const withPermission = (
@@ -304,6 +308,35 @@ export const settingsRoutes: RouteObject = {
         <ChartAccountListPage />,
         chartAccountsPermissions.view,
       ),
+    },
+    {
+      path: "regulated-obligation-settings",
+      handle: {
+        title: "settings.entities.regulatedObligationSettings",
+        showBack: true,
+        backTo: "..",
+      },
+      children: [
+        {
+          index: true,
+          element: withPermission(
+            <RegulatedObligationSettingsListPage />,
+            regulatedObligationSettingPermissions.view,
+          ),
+        },
+        {
+          path: ":id",
+          handle: {
+            title: "settings.entities.regulatedObligationSettings",
+            showBack: true,
+            backTo: "..",
+          },
+          element: withPermission(
+            <RegulatedObligationSettingDetailPage />,
+            regulatedObligationSettingPermissions.view,
+          ),
+        },
+      ],
     },
     {
       path: "document-account-settings",

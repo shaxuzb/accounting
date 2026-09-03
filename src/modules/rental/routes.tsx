@@ -20,20 +20,91 @@ export const rentalRoutes: RouteObject = {
   children: [
     {
       path: "contracts",
-      handle: { title: "rental.contracts.title", showBack: true, backTo: ".." },
+      handle: { title: "rental.contracts.title" },
       children: [
-        { index: true, element: withPermission(<ContractListPage />, rentalContractPermissions.view) },
-        { path: "add", element: withPermission(<ContractAddEditPage />, rentalContractPermissions.create), handle: { title: "rental.contracts.create", showBack: true, backTo: ".." } },
-        { path: "edit/:id", element: withPermission(<ContractAddEditPage />, rentalContractPermissions.update), handle: { title: "rental.contracts.edit", showBack: true, backTo: ".." } },
-        { path: ":id", element: withPermission(<ContractDetailPage />, rentalContractPermissions.detail), handle: { title: "rental.contracts.detail", showBack: true, backTo: "..", tabSuffix: "id" } },
+        {
+          index: true,
+          element: withPermission(
+            <ContractListPage />,
+            rentalContractPermissions.view,
+          ),
+        },
+        {
+          path: "add",
+          element: withPermission(
+            <ContractAddEditPage />,
+            rentalContractPermissions.create,
+          ),
+          handle: {
+            title: "rental.contracts.create",
+            showBack: true,
+            backTo: "..",
+          },
+        },
+        {
+          path: "edit/:id",
+          element: withPermission(
+            <ContractDetailPage />,
+            rentalContractPermissions.update,
+          ),
+          handle: {
+            title: "rental.contracts.edit",
+            showBack: true,
+            backTo: "..",
+          },
+        },
+        {
+          path: ":id",
+          element: withPermission(
+            <ContractDetailPage />,
+            rentalContractPermissions.detail,
+          ),
+          handle: {
+            title: "rental.contracts.detail",
+            showBack: true,
+            backTo: "..",
+            tabSuffix: "id",
+          },
+        },
       ],
     },
     {
       path: "accruals",
-      handle: { title: "rental.accruals.title", showBack: true, backTo: ".." },
+      handle: { title: "rental.accruals.title" },
       children: [
-        { index: true, element: withPermission(<AccrualListPage />, rentalAccrualPermissions.view) },
-        { path: ":id", element: withPermission(<AccrualDetailPage />, rentalAccrualPermissions.detail), handle: { title: "rental.accruals.detail", showBack: true, backTo: "..", tabSuffix: "id" } },
+        {
+          index: true,
+          element: withPermission(
+            <AccrualListPage />,
+            rentalAccrualPermissions.view,
+          ),
+        },
+        {
+          path: "edit/:id",
+          element: withPermission(
+            <AccrualDetailPage />,
+            rentalAccrualPermissions.update,
+          ),
+          handle: {
+            title: "rental.accruals.edit",
+            showBack: true,
+            backTo: "..",
+            tabSuffix: "id",
+          },
+        },
+        {
+          path: ":id",
+          element: withPermission(
+            <AccrualDetailPage />,
+            rentalAccrualPermissions.detail,
+          ),
+          handle: {
+            title: "rental.accruals.detail",
+            showBack: true,
+            backTo: "..",
+            tabSuffix: "id",
+          },
+        },
       ],
     },
   ],

@@ -26,9 +26,9 @@ const MainLayout = () => {
       ref={containerRef}
       className="relative h-screen overflow-hidden"
     >
-      <div className="relative z-10! flex h-full box-border! ">
+      <div className="relative z-10! flex h-full box-border! bg-mauve-50">
         <Sidebar />
-        <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="relative flex w-full min-w-0 flex-1 flex-col overflow-hidden">
           <Navbar />
           <WorkspaceNavigationManager />
           <WorkspaceTabs key={`${userId}:${organizationId}`} />
@@ -37,7 +37,7 @@ const MainLayout = () => {
             ref={scrollContainerRef}
             className="relative min-h-0 flex-1 overflow-auto"
           >
-            <div className="relative w-full px-4 py-2">
+            <div className="relative w-full min-w-0 px-4 py-2">
               <Outlet />
             </div>
           </div>

@@ -22,7 +22,7 @@ function SettingsCard({
     <Card
       onClick={() => onClick(item.path)}
       hoverable
-      className="items-center justify-between p-4 border border-border cursor-pointer hover:border-blue-200"
+      className="items-center justify-between p-4 border border-border cursor-pointer hover:border-blue-400"
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
@@ -51,9 +51,10 @@ export default function SettingsListPage() {
   const user = useAppSelector((state) => state.auth.user);
   const settingsRoute = useMemo(() => {
     const permissions = user?.user.permissions ?? [];
-    return menuPermissions.SETTINGS.filter((item) =>
-      permissions.includes(item.code) ||
-      (item.filterCode ? permissions.includes(item.filterCode) : false),
+    return menuPermissions.SETTINGS.filter(
+      (item) =>
+        permissions.includes(item.code) ||
+        (item.filterCode ? permissions.includes(item.filterCode) : false),
     );
   }, [user]);
 

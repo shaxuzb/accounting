@@ -6,7 +6,9 @@ const meaningful = (value: unknown): value is string =>
 
 export const mapTaxpayerToRentalLessor = (
   taxpayer: TaxpayerLookupDto,
-): Partial<Pick<RentalContractForm, "lessorFullName" | "lessorInn" | "lessorPinfl">> => ({
+): Partial<
+  Pick<RentalContractForm, "lessorFullName" | "lessorInn" | "lessorPinfl">
+> => ({
   lessorFullName: meaningful(taxpayer.CompanyName)
     ? taxpayer.CompanyName.trim()
     : "",

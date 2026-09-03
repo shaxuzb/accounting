@@ -3,6 +3,7 @@ import type { QueryParams } from "@/shared/types/api";
 import { rentalContractApi } from "../api";
 import { rentalContractKeys } from "../constants/queryKeys";
 export { useLookupRentalLessor } from "./useLookupRentalLessor";
+export { default as useRentalLessorLookup } from "./useRentalLessorLookup";
 
 export const useRentalContracts = (params?: QueryParams) =>
   useQuery({

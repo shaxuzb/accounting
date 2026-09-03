@@ -13,7 +13,7 @@ import {
   GitBranch,
   Handshake,
   Landmark,
-  // LayoutDashboard,
+  LayoutDashboard,
   ReceiptText,
   Scale,
   Settings,
@@ -80,6 +80,8 @@ import { trialBalancePermissions } from "@/modules/accountings/pages/trial-balan
 import { paymentAcceptancePointPermissions } from "@/modules/cashoperation/pages/paymentAcceptancePoint/constants/permissions";
 import { rentalContractPermissions } from "@/modules/rental/pages/contracts/constants/permissions";
 import { rentalAccrualPermissions } from "@/modules/rental/pages/accruals/constants/permissions";
+import { dashboardPermissions } from "@/modules/dashboard/constants/permissions";
+import { regulatedObligationSettingPermissions } from "@/modules/settings/pages/regulatedObligationSettings/constants/permissions";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -112,38 +114,18 @@ export const settingsViewPermissions = [
   openingInventoryPermissions.view,
   integrationPermissions.view,
   payrollComponentPermissions.view,
+  regulatedObligationSettingPermissions.view,
 ] as const;
 
 export const menuPermissions: MainMenu = {
   TOP: [
-    // {
-    //   code: dashboardPermissions.view,
-    //   linkData: {
-    //     path: "dashboard",
-    //     title: "Boshqaruv",
-    //   },
-    //   iconName: <LayoutDashboard className="size-5" />,
-    // },
-
     {
-      code: "DROPDOWN",
-      dropdown: true,
-      dropdownName: "rental.title",
-      iconName: <KeyRound className="size-5" />,
+      code: dashboardPermissions.view,
       linkData: {
-        path: "rentals",
-        title: "rental.title",
+        path: "dashboard",
+        title: "menu.dashboard",
       },
-      items: [
-        {
-          code: rentalContractPermissions.view,
-          linkData: { path: "contracts", title: "rental.contracts.title" },
-        },
-        {
-          code: rentalAccrualPermissions.view,
-          linkData: { path: "accruals", title: "rental.accruals.title" },
-        },
-      ],
+      iconName: <LayoutDashboard className="size-5" />,
     },
     {
       code: "DROPDOWN",
@@ -518,6 +500,26 @@ export const menuPermissions: MainMenu = {
         },
       ],
     },
+    {
+      code: "DROPDOWN",
+      dropdown: true,
+      dropdownName: "rental.title",
+      iconName: <KeyRound className="size-5" />,
+      linkData: {
+        path: "rentals",
+        title: "rental.title",
+      },
+      items: [
+        {
+          code: rentalContractPermissions.view,
+          linkData: { path: "contracts", title: "rental.contracts.title" },
+        },
+        {
+          code: rentalAccrualPermissions.view,
+          linkData: { path: "accruals", title: "rental.accruals.title" },
+        },
+      ],
+    },
     // {
     //   code: "Ss",
     //   linkData: {
@@ -614,6 +616,15 @@ export const menuPermissions: MainMenu = {
         title: "settings.entities.chartAccounts",
         // img: role,
         description: "settings.descriptions.chartAccounts",
+      },
+    },
+    {
+      code: regulatedObligationSettingPermissions.view,
+      iconName: <BadgeDollarSign className="size-5" />,
+      linkData: {
+        path: "regulated-obligation-settings",
+        title: "settings.entities.regulatedObligationSettings",
+        description: "settings.descriptions.regulatedObligationSettings",
       },
     },
     {

@@ -17,8 +17,11 @@ import { useAppSelector } from "@/store/hooks";
 import { customDate2 } from "@/utils/utils";
 import { numberSpacing } from "@/utils/utils";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import RentalStatusBadge from "@/modules/rental/shared/components/RentalStatusBadge";
-import { rentalStatusOptions } from "@/modules/rental/shared/constants/statuses";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import {
+  isRentalDraft,
+  rentalStatusOptions,
+} from "@/modules/rental/shared/constants/statuses";
 import { rentalAccrualPermissions } from "../constants/permissions";
 import { useGenerateRentalAccruals, useRentalAccruals } from "../hooks";
 import type { RentalAccrualListItem } from "../types/type";
@@ -117,7 +120,7 @@ export default function AccrualListPage() {
       {
         title: t("common.status"),
         render: (_, record) => (
-          <RentalStatusBadge
+          <ProcessStatusBadge
             statusId={record.statusId}
             statusName={record.statusName}
           />
@@ -128,22 +131,29 @@ export default function AccrualListPage() {
         title: t("common.actions"),
         fixed: "right",
         width: 70,
-        render: (_, record) => (
-          <ActionColumn
-            record={record}
-            permissions={
-              record.statusId === 1
-                ? permissions
-                : permissions.filter(
-                    (permission) =>
-                      permission !== rentalAccrualPermissions.delete,
-                  )
-            }
-            refetch={refetch}
-            deletePath="rental-accrual-docs"
-            permissionsCode={{ deleteCode: rentalAccrualPermissions.delete }}
-          />
-        ),
+        render: (_, record) => {
+          const rowPermissions =
+          isRentalDraft(record.statusId)
+              ? permissions
+              : permissions.filter(
+                  (permission) =>
+                    permission !== rentalAccrualPermissions.update &&
+                    permission !== rentalAccrualPermissions.delete,
+                );
+          return (
+            <ActionColumn
+              record={record}
+              permissions={rowPermissions}
+              refetch={refetch}
+              deletePath="rental-accrual-docs"
+              customPath={`/main/rentals/accruals/edit/${record.id}`}
+              permissionsCode={{
+                editCode: rentalAccrualPermissions.update,
+                deleteCode: rentalAccrualPermissions.delete,
+              }}
+            />
+          );
+        },
       },
     ];
   return (

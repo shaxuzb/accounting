@@ -1,4 +1,5 @@
 export interface RentalContractObjectForm {
+  id?: number | null;
   rentalObjectTypeId: number | null;
   objectName: string;
   objectIdentifier: string;

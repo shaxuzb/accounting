@@ -3,7 +3,10 @@ import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { normalizePaginated } from "../../shared/utils/normalize";
 import { rentalContractEndpoints } from "./constants/endpoints";
-import type { RentalContractDetail, RentalContractListItem } from "./types/type";
+import type {
+  RentalContractDetail,
+  RentalContractListItem,
+} from "./types/type";
 
 const getId = (value: unknown): number => {
   if (typeof value === "number") return value;
@@ -19,8 +22,9 @@ export const rentalContractApi = {
   list: (params?: QueryParams) =>
     $axiosPrivate
       .get<unknown>(rentalContractEndpoints.list, { params })
-      .then((res): Paginated<RentalContractListItem> =>
-        normalizePaginated<RentalContractListItem>(res.data),
+      .then(
+        (res): Paginated<RentalContractListItem> =>
+          normalizePaginated<RentalContractListItem>(res.data),
       ),
   detail: (id: string | number) =>
     $axiosPrivate

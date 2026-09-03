@@ -1,72 +1,70 @@
 import { Card, Col, Row, Table } from "antd";
 import type { FormikProps } from "formik";
 import { useTranslation } from "react-i18next";
-import RentalAccountSelect from "@/modules/rental/shared/components/RentalAccountSelect";
+import SelectCustom from "@/components/fields/SelectCustom";
 import {
-  formatRentalAmount,
-  formatRentalDate,
-} from "@/modules/rental/shared/utils/formatters";
+  chartAccountSelectDisplayConfig,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import type { RentalAccrualDetail, RentalAccrualItem } from "../types/type";
 import type { RentalAccrualForm } from "../types/form";
 import SectionCard from "@/components/ui/card/SectionCard";
+import { formatDate, numberSpacing } from "@/utils/utils";
 
 interface AccrualItemsTableProps {
   data: RentalAccrualDetail;
   formik?: FormikProps<RentalAccrualForm>;
+  disabled?: boolean;
 }
 
 export default function AccrualItemsTable({
   data,
   formik,
+  disabled = false,
 }: AccrualItemsTableProps) {
   const { t } = useTranslation();
   const editing = Boolean(formik);
 
   return (
-    <SectionCard
-      title={t("rental.accruals.items")}
-      bodyClassName="p-4 sm:p-5"
-    >
+    <SectionCard title={t("rental.accruals.items")} bodyClassName="sm:p-3">
       <Table<RentalAccrualItem>
         rowKey="id"
         pagination={false}
         scroll={{ x: "max-content" }}
         dataSource={data.items}
-        expandable={{
-          expandedRowRender: (item, index) => (
-            <Card
-              size="small"
-              title={t("rental.accruals.itemNumber", { number: index + 1 })}
-              className="border-border!"
-            >
-              {editing && formik ? (
-                <Row gutter={[16, 0]}>
-                  <Col xs={24} md={12}>
-                    <RentalAccountSelect
-                      formik={formik}
-                      fieldName={`items[${index}].expenseAccountId`}
-                      label="rental.fields.expenseAccount"
-                    />
-                  </Col>
-                </Row>
-              ) : (
-                <div className="text-sm">
-                  <span className="text-secondary-text">
-                    {t("rental.fields.expenseAccount")}:{" "}
-                  </span>
-                  {[item.expenseAccountNumber, item.expenseAccountName]
-                    .filter(Boolean)
-                    .join(" - ") || "-"}
-                </div>
-              )}
-            </Card>
-          ),
-          rowExpandable: () => true,
-        }}
+        expandable={
+          editing && formik
+            ? {
+                expandedRowRender: (_item, index) => (
+                  <Card
+                    size="small"
+                    title={t("rental.accruals.itemNumber", {
+                      number: index + 1,
+                    })}
+                    className="border-border!"
+                  >
+                    <Row gutter={[16, 0]}>
+                      <Col span={4}>
+                        <SelectCustom
+                          formik={formik as FormikProps<object>}
+                          fieldName={`items[${index}].expenseAccountId`}
+                          label="rental.fields.expenseAccount"
+                          path={selectListEndpoints.chartAccountSelect}
+                          search
+                          disabled={disabled}
+                          displayConfig={chartAccountSelectDisplayConfig}
+                        />
+                      </Col>
+                    </Row>
+                  </Card>
+                ),
+                rowExpandable: () => true,
+              }
+            : undefined
+        }
         columns={[
           {
             title: t("common.rowNumber"),
-            width: 60,
             render: (_: unknown, __: unknown, index: number) => index + 1,
           },
           {
@@ -76,29 +74,27 @@ export default function AccrualItemsTable({
           {
             title: t("rental.fields.period"),
             render: (_: unknown, item) =>
-              `${formatRentalDate(item.periodFrom)} — ${formatRentalDate(item.periodTo)}`,
+              `${formatDate(item.periodFrom)} — ${formatDate(item.periodTo)}`,
           },
           {
             title: t("rental.fields.contractAmount"),
             align: "right",
-            render: (_: unknown, item) =>
-              formatRentalAmount(item.contractAmount),
+            render: (_: unknown, item) => numberSpacing(item.contractAmount),
           },
           {
             title: t("rental.fields.taxAmount"),
             align: "right",
-            render: (_: unknown, item) => formatRentalAmount(item.taxAmount),
+            render: (_: unknown, item) => numberSpacing(item.taxAmount),
           },
           {
             title: t("rental.fields.payableAmount"),
             align: "right",
-            render: (_: unknown, item) =>
-              formatRentalAmount(item.payableAmount),
+            render: (_: unknown, item) => numberSpacing(item.payableAmount),
           },
           {
             title: t("rental.fields.amount"),
             align: "right",
-            render: (_: unknown, item) => formatRentalAmount(item.amount),
+            render: (_: unknown, item) => numberSpacing(item.amount),
           },
           {
             title: t("rental.fields.expenseAccount"),

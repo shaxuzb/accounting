@@ -10,7 +10,7 @@ import InputTextArea from "@/components/fields/InputTextArea";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectStatic from "@/components/fields/SelectStatic";
 import SelectDate from "@/components/fields/SelectDate";
-import RentalAccountSelect from "@/modules/rental/shared/components/RentalAccountSelect";
+import { chartAccountSelectDisplayConfig } from "@/shared/constants/selectLists";
 import SectionCard from "@/components/ui/card/SectionCard";
 import type {
   RentalContractObjectForm,
@@ -60,9 +60,9 @@ export default function ContractObjectTable({
   };
 
   const renderObjectFields = (objectIndex: number) => (
-    <div className="rounded-lg border border-border/60 bg-background/40 p-4 sm:p-5">
-      <Row gutter={[20, 8]}>
-        <Col xs={24} md={12} lg={8}>
+    <div className="rounded-xl border border-border/60 bg-background/40 p-2 sm:p-3">
+      <Row gutter={[20, 0]}>
+        <Col span={4}>
           <SelectCustom
             formik={formik as FormikProps<object>}
             fieldName={`objects[${objectIndex}].rentalObjectTypeId`}
@@ -72,7 +72,7 @@ export default function ContractObjectTable({
             required
           />
         </Col>
-        <Col xs={24} md={12} lg={8}>
+        <Col span={4}>
           <InputText
             formik={formik}
             fieldName={`objects[${objectIndex}].objectName`}
@@ -80,23 +80,15 @@ export default function ContractObjectTable({
             required
           />
         </Col>
-        <Col xs={24} md={12} lg={8}>
+        <Col span={4}>
           <InputText
             formik={formik}
             fieldName={`objects[${objectIndex}].objectIdentifier`}
             label="rental.fields.identifier"
           />
         </Col>
-        <Col span={24}>
-          <InputTextArea
-            formik={formik}
-            fieldName={`objects[${objectIndex}].objectAddress`}
-            label="rental.fields.address"
-            rows={2}
-            maxLength={500}
-          />
-        </Col>
-        <Col xs={24} md={8}>
+
+        <Col span={4}>
           <InputNumber
             formik={formik}
             fieldName={`objects[${objectIndex}].periodValue`}
@@ -106,7 +98,7 @@ export default function ContractObjectTable({
             required
           />
         </Col>
-        <Col xs={24} md={8}>
+        <Col span={4}>
           <SelectStatic
             formik={formik as FormikProps<object>}
             fieldName={`objects[${objectIndex}].periodUnit`}
@@ -115,14 +107,17 @@ export default function ContractObjectTable({
             required
           />
         </Col>
-        <Col xs={24} md={8}>
-          <RentalAccountSelect
-            formik={formik}
+        <Col span={4}>
+          <SelectCustom
+            formik={formik as FormikProps<object>}
             fieldName={`objects[${objectIndex}].expenseAccountId`}
             label="rental.fields.expenseAccount"
+            path="manuals/chart-accounts"
+            search
+            displayConfig={chartAccountSelectDisplayConfig}
           />
         </Col>
-        <Col xs={24} md={12}>
+        <Col span={4}>
           <InputNumber
             formik={formik}
             fieldName={`objects[${objectIndex}].contractAmount`}
@@ -131,7 +126,7 @@ export default function ContractObjectTable({
             required
           />
         </Col>
-        <Col xs={24} md={12}>
+        <Col span={4}>
           <InputNumber
             formik={formik}
             fieldName={`objects[${objectIndex}].taxBaseAmount`}
@@ -139,7 +134,7 @@ export default function ContractObjectTable({
             min={0}
           />
         </Col>
-        <Col xs={24} md={8}>
+        <Col span={4}>
           <InputNumber
             formik={formik}
             fieldName={`objects[${objectIndex}].taxRate`}
@@ -148,7 +143,7 @@ export default function ContractObjectTable({
             max={100}
           />
         </Col>
-        <Col xs={24} md={8}>
+        <Col span={4}>
           <SelectDate
             formik={formik as FormikProps<object>}
             fieldName={`objects[${objectIndex}].startDate`}
@@ -157,13 +152,22 @@ export default function ContractObjectTable({
             required
           />
         </Col>
-        <Col xs={24} md={8}>
+        <Col span={4}>
           <SelectDate
             formik={formik as FormikProps<object>}
             fieldName={`objects[${objectIndex}].endDate`}
             label="rental.fields.endDate"
             valueFormat="YYYY-MM-DDT00:00:00"
             required
+          />
+        </Col>
+        <Col span={24}>
+          <InputTextArea
+            formik={formik}
+            fieldName={`objects[${objectIndex}].objectAddress`}
+            label="rental.fields.address"
+            // rows={2}
+            // maxLength={500}
           />
         </Col>
       </Row>
@@ -174,7 +178,7 @@ export default function ContractObjectTable({
     (object: RentalContractObjectForm, objectIndex) => ({
       key: `object-${objectIndex}`,
       label: (
-        <div className="flex min-w-0 items-center gap-3 pr-2">
+        <div className="flex min-w-0 items-center gap-3">
           <span className="shrink-0 font-semibold">
             {t("rental.contracts.objectNumber", { number: objectIndex + 1 })}
           </span>
@@ -223,9 +227,7 @@ export default function ContractObjectTable({
       </div>
       <Collapse
         activeKey={activeKeys}
-        onChange={(keys) =>
-          setActiveKeys(Array.isArray(keys) ? keys : [keys])
-        }
+        onChange={(keys) => setActiveKeys(Array.isArray(keys) ? keys : [keys])}
         items={objectItems}
         className="bg-transparent"
       />

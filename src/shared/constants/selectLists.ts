@@ -18,6 +18,9 @@ export const selectListEndpoints = {
   operationTypesSelectList: "manuals/operation-types",
   bankOperationTypesSelectList: "manuals/operation-types",
   taxTypesSelectList: "manuals/tax-types",
+  regulatedObligationsSelectList: "manuals/regulated-obligations",
+  regulatedObligationPeriodicitiesSelectList:
+    "manuals/regulated-obligation-periodicities",
   vatRatesSelectList: "manuals/vat-rates",
   rolesSelectList: "manuals/roles",
   usersSelectList: "manuals/users",
@@ -62,6 +65,7 @@ export const selectListEndpoints = {
   moduleSubGroups: "manuals/module-sub-groups",
   accountingPolicies: "manuals/accounting-policies",
   faAssetsSelectList: "manuals/fa-assets",
+  chartAccountSelect: "manuals/chart-accounts",
 };
 
 export const chartAccountOptionLabel = (item: {
