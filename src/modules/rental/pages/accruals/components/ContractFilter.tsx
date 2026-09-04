@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { useRentalContracts } from "../../contracts/hooks";
+import { formatRentalLessors } from "../../contracts/utils/lessor";
 
 export default function ContractFilter() {
   const { t } = useTranslation();
@@ -12,7 +13,7 @@ export default function ContractFilter() {
     () =>
       (data?.items ?? []).map((item) => ({
         value: String(item.id),
-        label: `${item.contractNumber} — ${item.lessorFullName}`,
+        label: `${item.contractNumber} — ${formatRentalLessors(item.lessors)}`,
       })),
     [data?.items],
   );

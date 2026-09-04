@@ -18,6 +18,7 @@ import type {
 } from "../../types/type";
 import SectionCard from "@/components/ui/card/SectionCard";
 import { formatDate, numberSpacing } from "@/utils/utils";
+import { formatRentalLessors } from "../../utils/lessor";
 
 interface ContractReadonlyViewProps {
   data: RentalContractDetail;
@@ -74,17 +75,15 @@ export default function ContractReadonlyView({
             //   value: data.contractNumber,
             // },
             {
-              label: t("rental.fields.lessorFullName"),
-              value: data.lessorFullName,
+              label: t("rental.fields.lessors"),
+              value: formatRentalLessors(data.lessors),
               className: "xl:col-span-2",
             },
             {
-              label: t("rental.fields.lessorInn"),
-              value: data.lessorInn,
-            },
-            {
-              label: t("rental.fields.lessorPinfl"),
-              value: data.lessorPinfl,
+              label: t("rental.fields.rentalType"),
+              value: data.isFreeOfCharge
+                ? t("rental.modes.free")
+                : t("rental.modes.paid"),
             },
             {
               label: t("rental.fields.contractDate"),
@@ -190,6 +189,16 @@ export default function ContractReadonlyView({
                 numberSpacing(record.contractAmount),
             },
             {
+              title: t("rental.fields.totalArea"),
+              align: "right",
+              render: (_: unknown, record) => record.totalArea ?? "-",
+            },
+            {
+              title: t("rental.fields.rentedArea"),
+              align: "right",
+              render: (_: unknown, record) => record.rentedArea ?? "-",
+            },
+            {
               title: t("rental.fields.taxRate"),
               align: "right",
               render: (_: unknown, record) => `${record.taxRate}%`,
@@ -200,6 +209,18 @@ export default function ContractReadonlyView({
                 [record.expenseAccountNumber, record.expenseAccountName]
                   .filter(Boolean)
                   .join(" - ") || "-",
+            },
+            {
+              title: t("rental.fields.utilities"),
+              render: (_: unknown, record) =>
+                record.utilities?.length
+                  ? record.utilities
+                      .map(
+                        (utility) =>
+                          `${utility.utilityServiceName || utility.utilityServiceCode || utility.utilityServiceId} (${utility.payerCode})`,
+                      )
+                      .join(", ")
+                  : "-",
             },
           ]}
         />

@@ -1,7 +1,14 @@
 import { Button, Form, Input, Space } from "antd";
 import { useTranslation } from "react-i18next";
 
-export type SearchInnMode = "inn" | "pinfl" | "auto";
+import {
+  getSearchInnMaxLength,
+  isValidSearchIdentifier,
+  normalizeSearchIdentifier,
+  type SearchInnMode,
+} from "./searchInn";
+
+export type { SearchInnMode } from "./searchInn";
 
 interface SearchInnFieldProps {
   mode?: SearchInnMode;
@@ -13,12 +20,6 @@ interface SearchInnFieldProps {
   label?: string;
 }
 
-const isValidIdentifier = (value: string, mode: SearchInnMode) => {
-  if (mode === "inn") return value.length === 9;
-  if (mode === "pinfl") return value.length === 14;
-  return value.length === 9 || value.length === 14;
-};
-
 export default function SearchInnField({
   mode = "auto",
   value,
@@ -29,13 +30,15 @@ export default function SearchInnField({
   label = "settings.fields.inn",
 }: SearchInnFieldProps) {
   const { t } = useTranslation();
-  const maxLength = mode === "inn" ? 9 : 14;
-  const valid = isValidIdentifier(value, mode);
+  const maxLength = getSearchInnMaxLength(mode);
+  const valid = isValidSearchIdentifier(value, mode);
   const expectedLength =
     mode === "inn" ? "9" : mode === "pinfl" ? "14" : "9 yoki 14";
 
   const handleSearch = () => {
-    if (valid && !loading && !disabled) onSearch(value);
+    if (valid && !loading && !disabled) {
+      onSearch(normalizeSearchIdentifier(value, mode));
+    }
   };
 
   return (
@@ -58,7 +61,7 @@ export default function SearchInnField({
           inputMode="numeric"
           placeholder={t(label)}
           onChange={(event) =>
-            onChange(event.target.value.replace(/\D/g, "").slice(0, maxLength))
+            onChange(normalizeSearchIdentifier(event.target.value, mode))
           }
           onPressEnter={handleSearch}
           disabled={disabled || loading}
@@ -69,7 +72,7 @@ export default function SearchInnField({
           type="primary"
           onClick={handleSearch}
           loading={loading}
-          disabled={!valid || disabled}
+          disabled={!valid || disabled || loading}
           style={{ height: "38px" }}
         >
           {t("common.search")}

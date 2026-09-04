@@ -595,7 +595,8 @@ export default function MissingCounterpartyModal({
         pagination={false}
         dataSource={rows}
         columns={columns}
-        scroll={{ y: 460, x: 2180 }}
+        className="[&_.ant-table-cell]:whitespace-nowrap"
+        scroll={{ y: 460, x: "max-content" }}
         virtual={rows.length > 30}
       />
       <Button

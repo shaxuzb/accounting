@@ -141,6 +141,20 @@ const getTransactionArray = (record: Record<string, unknown>) => {
   return [];
 };
 
+const normalizeBoolean = (value: unknown): boolean | undefined => {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") {
+    if (value === 1) return true;
+    if (value === 0) return false;
+  }
+
+  const normalizedValue = String(value ?? "").trim().toLowerCase();
+  if (normalizedValue === "true" || normalizedValue === "1") return true;
+  if (normalizedValue === "false" || normalizedValue === "0") return false;
+
+  return undefined;
+};
+
 const normalizeTransaction = (
   value: unknown,
   _index: number,
@@ -163,14 +177,7 @@ const normalizeTransaction = (
   const amount =
     dtoAmount ?? Math.abs((sourceCredit ?? 0) - (sourceDebit ?? 0));
   const rawIsNewOperation = getByKeys(fields, ["isNewOperation"]);
-  const isNewOperation =
-    typeof rawIsNewOperation === "boolean"
-      ? rawIsNewOperation
-      : String(rawIsNewOperation ?? "").toLowerCase() === "true"
-        ? true
-        : String(rawIsNewOperation ?? "").toLowerCase() === "false"
-          ? false
-          : undefined;
+  const isNewOperation = normalizeBoolean(rawIsNewOperation);
 
   return {
     date: getStringByKeys(fields, dateKeys) ?? "",
@@ -196,7 +203,10 @@ const normalizeTransaction = (
     directionId,
     amount,
     currencyId: getNumberByKeys(fields, currencyIdKeys) ?? undefined,
-    currencyName: getStringByKeys(fields, ["currencyName", "currency"]) ?? undefined,
+    currencyName:
+      getStringByKeys(fields, ["currencyName", "currency"]) ??
+      cardDefaults?.currencyName ??
+      undefined,
     contractId: getNumberByKeys(fields, contractIdKeys) ?? null,
     counterpartyBankAccountId: getNumberByKeys(
       fields,
@@ -254,6 +264,7 @@ const normalizeCard = (
     companyInn: getStringByKeys(record, ["companyInn"]),
     accountNumber: getStringByKeys(record, accountKeys),
     currencyId: getNumberByKeys(record, currencyIdKeys),
+    currencyName: getStringByKeys(record, ["currencyName", "currency"]),
     operationTypeId: getNumberByKeys(record, operationTypeIdKeys),
     totalDebit: getNumberByKeys(record, ["totalDebit"]),
     totalCredit: getNumberByKeys(record, ["totalCredit"]),

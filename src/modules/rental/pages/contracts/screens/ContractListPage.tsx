@@ -21,6 +21,7 @@ import {
 import { rentalContractPermissions } from "../constants/permissions";
 import { useRentalContracts } from "../hooks";
 import type { RentalContractListItem } from "../types/type";
+import { formatRentalLessors } from "../utils/lessor";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const parsed = Number(value);
@@ -75,7 +76,17 @@ export default function ContractListPage() {
           value || record.id
         ),
     },
-    { title: t("rental.fields.lessorFullName"), dataIndex: "lessorFullName" },
+    {
+      title: t("rental.fields.lessors"),
+      render: (_, record) => formatRentalLessors(record.lessors),
+    },
+    {
+      title: t("rental.fields.rentalType"),
+      render: (_, record) =>
+        record.isFreeOfCharge
+          ? t("rental.modes.free")
+          : t("rental.modes.paid"),
+    },
     {
       title: t("rental.fields.contractDate"),
       dataIndex: "contractDate",

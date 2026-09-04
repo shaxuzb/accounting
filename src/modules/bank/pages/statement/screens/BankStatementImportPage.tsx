@@ -317,7 +317,12 @@ export default function BankStatementImportPage() {
         !directionId ||
         !currencyId ||
         !amount ||
-        !docDate
+        !docDate ||
+        !toValidNumber(card.bankChartAccountId) ||
+        !toValidNumber(transaction.offsetAccountId) ||
+        !toValidNumber(transaction.classificationCategoryId) ||
+        (canMapCounterparty &&
+          (!counterpartyId || !counterpartyBankAccountId || !contractId))
       ) {
         return null;
       }
@@ -840,8 +845,7 @@ export default function BankStatementImportPage() {
       return;
     }
 
-    const invalidNewOperationCount =
-      newOperationCount - validOperations.length;
+    const invalidNewOperationCount = newOperationCount - validOperations.length;
     const persistOperations = async () => {
       await createOperations.mutateAsync(
         { operations: validOperations },
@@ -872,28 +876,24 @@ export default function BankStatementImportPage() {
       );
     };
 
-    if (invalidNewOperationCount > 0) {
-      Modal.confirm({
-        title: t("bank.messages.partialSaveConfirmTitle"),
-        content: t("bank.messages.partialSaveConfirmDescription", {
-          saved: validOperations.length,
-          skipped: invalidNewOperationCount,
-        }),
-        okText: t("common.confirm"),
-        cancelText: t("common.cancel"),
-        onOk: persistOperations,
-      });
-      return;
-    }
-
-    await persistOperations();
+    Modal.confirm({
+      title: t("bank.messages.saveConfirmTitle"),
+      content: t("bank.messages.saveConfirmDescription", {
+        saved: validOperations.length,
+        skipped: invalidNewOperationCount,
+        existing: existingOperationCount,
+      }),
+      okText: t("common.confirm"),
+      cancelText: t("common.cancel"),
+      onOk: persistOperations,
+    });
   };
 
   return (
     <div className="flex flex-col gap-4">
       <Card className="p-4">
-        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-          <div>
+        <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0 flex-1">
             <h1 className="text-xl font-semibold text-gray-900">
               {t("bank.import.title")}
             </h1>
@@ -901,8 +901,69 @@ export default function BankStatementImportPage() {
               {t("bank.import.description")}
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex w-full flex-wrap  justify-end gap-2 lg:w-auto lg:flex-nowrap">
+            {cards.length > 0 ? (
+              <>
+                <Segmented<OperationFilter>
+                  value={operationFilter}
+                  onChange={(value) => setOperationFilter(value)}
+                  options={[
+                    {
+                      value: "new",
+                      label: t("bank.import.newOperations", {
+                        count: newOperationCount,
+                      }),
+                    },
+                    {
+                      value: "existing",
+                      label: t("bank.import.existingOperations", {
+                        count: existingOperationCount,
+                      }),
+                    },
+                    {
+                      value: "all",
+                      label: t("bank.import.allOperations", {
+                        count: totalTransactions,
+                      }),
+                    },
+                  ]}
+                />
+                <DateRangeFilter
+                  paramKeys={["dateFrom", "dateTo"]}
+                  placeholderKeys={[
+                    "bank.fields.dateFrom",
+                    "bank.fields.dateTo",
+                  ]}
+                  width={220}
+                />
+                <SelectFilter
+                  paramKey="classificationCategoryId"
+                  placeholder="bank.fields.classification"
+                  options={classificationOptions.map((option) => ({
+                    value: option.id,
+                    label: option.name ?? option.code ?? String(option.id),
+                  }))}
+                  search
+                  width={200}
+                />
+              </>
+            ) : (
+              <div className="w-full sm:w-70 [&_.ant-select]:w-full">
+                <SelectCustom
+                  // label="bank.import.bankTypeLabel"
+                  placeholder="bank.import.bankTypePlaceholder"
+                  path={selectListEndpoints.banksSelectList}
+                  value={selectedBankId}
+                  onChange={(value) => setSelectedBankId(toValidNumber(value))}
+                  search
+                  clearable
+                  disabled={parseMutation.isPending}
+                  marginBottom="mb-0"
+                />
+              </div>
+            )}
             <Button
+              className="shrink-0"
               icon={<Trash2 className="size-4" />}
               disabled={!cards.length}
               onClick={handleClearImport}
@@ -910,32 +971,20 @@ export default function BankStatementImportPage() {
               {t("common.clear")}
             </Button>
             <Button
+              className="shrink-0"
               type="primary"
               icon={<Save className="size-4" />}
               disabled={!validOperations.length}
               loading={createOperations.isPending}
               onClick={() => handleSave()}
             >
-              {t("bank.import.saveNewOperations", {
-                count: validOperations.length,
-              })}
+              {t("common.save")}
             </Button>
           </div>
         </div>
 
         {!cards.length && (
           <div className="space-y-2">
-            <SelectCustom
-              label="bank.import.bankTypeLabel"
-              placeholder="bank.import.bankTypePlaceholder"
-              path={selectListEndpoints.banksSelectList}
-              value={selectedBankId}
-              onChange={(value) => setSelectedBankId(toValidNumber(value))}
-              search
-              clearable
-              disabled={parseMutation.isPending}
-              marginBottom="mb-0"
-            />
             <Dragger
               {...uploadProps}
               disabled={!selectedBankId || parseMutation.isPending}
@@ -955,207 +1004,147 @@ export default function BankStatementImportPage() {
       </Card>
 
       {cards.length > 0 && (
-        <Card className="border border-border p-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <DateRangeFilter
-              paramKeys={["dateFrom", "dateTo"]}
-              placeholderKeys={["bank.fields.dateFrom", "bank.fields.dateTo"]}
-              width={260}
-            />
-            <SelectFilter
-              paramKey="classificationCategoryId"
-              placeholder="bank.fields.classification"
-              options={classificationOptions.map((option) => ({
-                value: option.id,
-                label: option.name ?? option.code ?? String(option.id),
-              }))}
-              search
-              width={240}
-            />
-            <Segmented<OperationFilter>
-              value={operationFilter}
-              onChange={(value) => setOperationFilter(value)}
-              options={[
-                {
-                  value: "new",
-                  label: t("bank.import.newOperations", {
-                    count: newOperationCount,
-                  }),
-                },
-                {
-                  value: "existing",
-                  label: t("bank.import.existingOperations", {
-                    count: existingOperationCount,
-                  }),
-                },
-                {
-                  value: "all",
-                  label: t("bank.import.allOperations", {
-                    count: totalTransactions,
-                  }),
-                },
-              ]}
-            />
+        <>
+          <div className="space-y-3">
+            <Card className="border border-border p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm text-gray-500">
+                    {t("bank.import.readyToSave")}
+                  </div>
+                  <div className="mt-1 text-2xl font-semibold">
+                    {validOperations.length}
+                  </div>
+                </div>
+                <div className="text-sm text-gray-500">
+                  {t("bank.messages.missingRequired", {
+                    count: newOperationCount - validOperations.length,
+                  })}
+                </div>
+                {existingOperationCount > 0 && (
+                  <div className="text-xs text-gray-500">
+                    {t("bank.import.existingOperations", {
+                      count: existingOperationCount,
+                    })}
+                  </div>
+                )}
+                {(missingBankChartAccountCount > 0 ||
+                  missingOffsetAccountCount > 0 ||
+                  missingContractCount > 0 ||
+                  missingCounterpartyBankAccountCount > 0) && (
+                  <div className="text-xs text-danger">
+                    {t("bank.import.missingSummary", {
+                      bankAccounts: missingBankChartAccountCount,
+                      offsetAccounts: missingOffsetAccountCount,
+                      contracts: missingContractCount,
+                      counterpartyAccounts: missingCounterpartyBankAccountCount,
+                    })}
+                  </div>
+                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    icon={<Building2 className="size-4" />}
+                    disabled={!missingBankInfoCount}
+                    onClick={() => setBankAssignOpen(true)}
+                  >
+                    {t("bank.import.assignMissingBankInfo")} (
+                    {missingBankInfoCount})
+                  </Button>
+                  <Button
+                    icon={<Users className="size-4" />}
+                    disabled={!missingCounterpartyRows.length}
+                    onClick={() => setCounterpartyCreateOpen(true)}
+                  >
+                    {t("bank.import.assignMissingCounterparties")} (
+                    {missingCounterpartyRows.length})
+                  </Button>
+                </div>
+              </div>
+            </Card>
           </div>
-        </Card>
-      )}
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <Card className="border border-border p-4">
-          <div className="text-sm text-gray-500">
-            {t("bank.import.statements")}
-          </div>
-          <div className="mt-1 text-2xl font-semibold">
-            {filteredCardViews.length}
-          </div>
-        </Card>
-        <Card className="border border-border p-4">
-          <div className="text-sm text-gray-500">
-            {t("bank.import.transactions")}
-          </div>
-          <div className="mt-1 text-2xl font-semibold">{totalTransactions}</div>
-          <div className="mt-1 text-xs text-gray-500">
-            {t("bank.import.newOperations", { count: newOperationCount })} · {" "}
-            {t("bank.import.existingOperations", {
-              count: existingOperationCount,
-            })}
-          </div>
-        </Card>
-        <Card className="border border-border p-4">
-          <div className="text-sm text-gray-500">{t("bank.import.status")}</div>
-          <div className="mt-1 text-2xl font-semibold">
-            {parseMutation.isPending ? t("common.loading") : t("common.ready")}
-          </div>
-        </Card>
-        <Card className="border border-border p-4 md:col-span-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div className="text-sm text-gray-500">
-                {t("bank.import.readyToSave")}
-              </div>
-              <div className="mt-1 text-2xl font-semibold">
-                {validOperations.length}
-              </div>
+          {filteredCardViews.length > 0 ? (
+            <div className="flex flex-col gap-3">
+              {filteredCardViews.map(({ item, transactionIndices }) => (
+                <BankStatementCard
+                  key={item.id}
+                  item={item}
+                  transactionIndices={transactionIndices}
+                  expanded={expandedIds.has(item.id)}
+                  onToggle={() => handleToggle(item.id)}
+                  onDelete={() => handleDeleteCard(item.id)}
+                  onDeleteTransaction={(transactionId) =>
+                    handleDeleteTransaction(item.id, transactionId)
+                  }
+                  chartAccountLoading={chartAccountLoading}
+                  bankAccountOptionsByDocumentType={
+                    bankAccountOptionsByDocumentType
+                  }
+                  offsetAccountOptionsByDocumentType={
+                    offsetAccountOptionsByDocumentType
+                  }
+                  onBankChartAccountChange={(bankChartAccountId) =>
+                    handleBankChartAccountChange(item.id, bankChartAccountId)
+                  }
+                  onOffsetAccountChange={(transactionId, offsetAccountId) =>
+                    handleOffsetAccountChange(
+                      item.id,
+                      transactionId,
+                      offsetAccountId,
+                    )
+                  }
+                  onContractChange={(transactionId, contractId) =>
+                    handleContractChange(item.id, transactionId, contractId)
+                  }
+                  onAddContract={(transactionId, transaction) =>
+                    handleAddContract(item, transactionId, transaction)
+                  }
+                  onCounterpartyBankAccountChange={(transactionId, accountId) =>
+                    handleCounterpartyBankAccountChange(
+                      item.id,
+                      transactionId,
+                      accountId,
+                    )
+                  }
+                  onAddCounterpartyBankAccount={(transactionId, transaction) =>
+                    handleAddCounterpartyBankAccount(
+                      item,
+                      transactionId,
+                      transaction,
+                    )
+                  }
+                  onClassificationChange={(transactionId, categoryId) =>
+                    handleClassificationChange(
+                      item.id,
+                      transactionId,
+                      categoryId,
+                    )
+                  }
+                  onRelatedDocumentChange={(transactionId, documentId) =>
+                    handleRelatedDocumentChange(
+                      item.id,
+                      transactionId,
+                      documentId,
+                    )
+                  }
+                  classificationOptions={classificationOptions}
+                />
+              ))}
             </div>
-            <div className="text-sm text-gray-500">
-              {t("bank.messages.missingRequired", {
-                count: newOperationCount - validOperations.length,
-              })}
-            </div>
-            {existingOperationCount > 0 && (
-              <div className="text-xs text-gray-500">
-                {t("bank.import.existingOperations", {
-                  count: existingOperationCount,
-                })}
-              </div>
-            )}
-            {(missingBankChartAccountCount > 0 ||
-              missingOffsetAccountCount > 0 ||
-              missingContractCount > 0 ||
-              missingCounterpartyBankAccountCount > 0) && (
-              <div className="text-xs text-danger">
-                {t("bank.import.missingSummary", {
-                  bankAccounts: missingBankChartAccountCount,
-                  offsetAccounts: missingOffsetAccountCount,
-                  contracts: missingContractCount,
-                  counterpartyAccounts: missingCounterpartyBankAccountCount,
-                })}
-              </div>
-            )}
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                icon={<Building2 className="size-4" />}
-                disabled={!missingBankInfoCount}
-                onClick={() => setBankAssignOpen(true)}
-              >
-                {t("bank.import.assignMissingBankInfo")} ({missingBankInfoCount}
-                )
-              </Button>
-              <Button
-                icon={<Users className="size-4" />}
-                disabled={!missingCounterpartyRows.length}
-                onClick={() => setCounterpartyCreateOpen(true)}
-              >
-                {t("bank.import.assignMissingCounterparties")} (
-                {missingCounterpartyRows.length})
-              </Button>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {filteredCardViews.length > 0 ? (
-        <div className="flex flex-col gap-3">
-          {filteredCardViews.map(({ item, transactionIndices }) => (
-            <BankStatementCard
-              key={item.id}
-              item={item}
-              transactionIndices={transactionIndices}
-              expanded={expandedIds.has(item.id)}
-              onToggle={() => handleToggle(item.id)}
-              onDelete={() => handleDeleteCard(item.id)}
-              onDeleteTransaction={(transactionId) =>
-                handleDeleteTransaction(item.id, transactionId)
-              }
-              chartAccountLoading={chartAccountLoading}
-              bankAccountOptionsByDocumentType={
-                bankAccountOptionsByDocumentType
-              }
-              offsetAccountOptionsByDocumentType={
-                offsetAccountOptionsByDocumentType
-              }
-              onBankChartAccountChange={(bankChartAccountId) =>
-                handleBankChartAccountChange(item.id, bankChartAccountId)
-              }
-              onOffsetAccountChange={(transactionId, offsetAccountId) =>
-                handleOffsetAccountChange(
-                  item.id,
-                  transactionId,
-                  offsetAccountId,
-                )
-              }
-              onContractChange={(transactionId, contractId) =>
-                handleContractChange(item.id, transactionId, contractId)
-              }
-              onAddContract={(transactionId, transaction) =>
-                handleAddContract(item, transactionId, transaction)
-              }
-              onCounterpartyBankAccountChange={(transactionId, accountId) =>
-                handleCounterpartyBankAccountChange(
-                  item.id,
-                  transactionId,
-                  accountId,
-                )
-              }
-              onAddCounterpartyBankAccount={(transactionId, transaction) =>
-                handleAddCounterpartyBankAccount(
-                  item,
-                  transactionId,
-                  transaction,
-                )
-              }
-              onClassificationChange={(transactionId, categoryId) =>
-                handleClassificationChange(item.id, transactionId, categoryId)
-              }
-              onRelatedDocumentChange={(transactionId, documentId) =>
-                handleRelatedDocumentChange(item.id, transactionId, documentId)
-              }
-              classificationOptions={classificationOptions}
-            />
-          ))}
-        </div>
-      ) : (
-        <Card className="border border-border p-10">
-          <Empty
-            description={
-              operationFilter === "new"
-                ? t("bank.messages.noNewOperations")
-                : operationFilter === "existing"
-                  ? t("bank.messages.noExistingOperations")
-                  : t("bank.messages.noTransactions")
-            }
-          />
-        </Card>
+          ) : (
+            <Card className="border border-border p-10">
+              <Empty
+                description={
+                  operationFilter === "new"
+                    ? t("bank.messages.noNewOperations")
+                    : operationFilter === "existing"
+                      ? t("bank.messages.noExistingOperations")
+                      : t("bank.messages.noTransactions")
+                }
+              />
+            </Card>
+          )}
+        </>
       )}
       <MissingBankAccountModal
         open={bankAssignOpen}

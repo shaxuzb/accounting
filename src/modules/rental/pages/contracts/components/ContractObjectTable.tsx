@@ -59,8 +59,30 @@ export default function ContractObjectTable({
     setActiveKeys(["object-0"]);
   };
 
-  const renderObjectFields = (objectIndex: number) => (
-    <div className="rounded-xl border border-border/60 bg-background/40 p-2 sm:p-3">
+  const addUtility = (objectIndex: number) => {
+    const current = objects[objectIndex];
+    if (!current) return;
+    void formik.setFieldValue(`objects[${objectIndex}].utilities`, [
+      ...current.utilities,
+      { utilityServiceId: null, payerCode: "LESSOR" },
+    ]);
+  };
+
+  const removeUtility = (objectIndex: number, utilityIndex: number) => {
+    const current = objects[objectIndex];
+    if (!current) return;
+    void formik.setFieldValue(
+      `objects[${objectIndex}].utilities`,
+      current.utilities.filter((_, index) => index !== utilityIndex),
+    );
+  };
+
+  const renderObjectFields = (objectIndex: number) => {
+    const object = objects[objectIndex];
+    if (!object) return null;
+
+    return (
+      <div className="rounded-xl border border-border/60 bg-background/40 p-2 sm:p-3">
       <Row gutter={[20, 0]}>
         <Col span={4}>
           <SelectCustom
@@ -78,6 +100,24 @@ export default function ContractObjectTable({
             fieldName={`objects[${objectIndex}].objectName`}
             label="rental.fields.objectName"
             required
+          />
+        </Col>
+        <Col span={4}>
+          <InputNumber
+            formik={formik}
+            fieldName={`objects[${objectIndex}].totalArea`}
+            label="rental.fields.totalArea"
+            min={0}
+            precision={4}
+          />
+        </Col>
+        <Col span={4}>
+          <InputNumber
+            formik={formik}
+            fieldName={`objects[${objectIndex}].rentedArea`}
+            label="rental.fields.rentedArea"
+            min={0}
+            precision={4}
           />
         </Col>
         <Col span={4}>
@@ -115,6 +155,8 @@ export default function ContractObjectTable({
             path="manuals/chart-accounts"
             search
             displayConfig={chartAccountSelectDisplayConfig}
+            required={!formik.values.isFreeOfCharge}
+            disabled={disabled || formik.values.isFreeOfCharge}
           />
         </Col>
         <Col span={4}>
@@ -124,6 +166,7 @@ export default function ContractObjectTable({
             label="rental.fields.contractAmount"
             min={0}
             required
+            disabled={disabled || formik.values.isFreeOfCharge}
           />
         </Col>
         <Col span={4}>
@@ -132,6 +175,7 @@ export default function ContractObjectTable({
             fieldName={`objects[${objectIndex}].taxBaseAmount`}
             label="rental.fields.taxBaseAmount"
             min={0}
+            disabled={disabled || formik.values.isFreeOfCharge}
           />
         </Col>
         <Col span={4}>
@@ -141,6 +185,7 @@ export default function ContractObjectTable({
             label="rental.fields.taxRate"
             min={0}
             max={100}
+            disabled={disabled || formik.values.isFreeOfCharge}
           />
         </Col>
         <Col span={4}>
@@ -148,7 +193,7 @@ export default function ContractObjectTable({
             formik={formik as FormikProps<object>}
             fieldName={`objects[${objectIndex}].startDate`}
             label="rental.fields.startDate"
-            valueFormat="YYYY-MM-DDT00:00:00"
+            valueFormat="YYYY-MM-DD"
             required
           />
         </Col>
@@ -157,7 +202,7 @@ export default function ContractObjectTable({
             formik={formik as FormikProps<object>}
             fieldName={`objects[${objectIndex}].endDate`}
             label="rental.fields.endDate"
-            valueFormat="YYYY-MM-DDT00:00:00"
+            valueFormat="YYYY-MM-DD"
             required
           />
         </Col>
@@ -170,9 +215,70 @@ export default function ContractObjectTable({
             // maxLength={500}
           />
         </Col>
+        <Col span={24}>
+          <div className="mt-1 rounded-lg border border-border/50 p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-sm font-semibold">
+                {t("rental.fields.utilities")}
+              </span>
+              {!disabled && (
+                <Button
+                  type="dashed"
+                  size="small"
+                  icon={<Plus className="size-4" />}
+                  onClick={() => addUtility(objectIndex)}
+                >
+                  {t("common.add")}
+                </Button>
+              )}
+            </div>
+            <div className="space-y-2">
+              {object.utilities.map((_utility, utilityIndex) => (
+                <Row gutter={[12, 0]} key={`utility-${utilityIndex}`}>
+                  <Col span={10}>
+                    <SelectCustom
+                      formik={formik as FormikProps<object>}
+                      fieldName={`objects[${objectIndex}].utilities[${utilityIndex}].utilityServiceId`}
+                      path="manuals/utility-services"
+                      label="rental.fields.utilityService"
+                      search
+                      required
+                      disabled={disabled}
+                    />
+                  </Col>
+                  <Col span={10}>
+                    <SelectStatic
+                      formik={formik as FormikProps<object>}
+                      fieldName={`objects[${objectIndex}].utilities[${utilityIndex}].payerCode`}
+                      label="rental.fields.utilityPayer"
+                      options={[
+                        { value: "LESSOR", label: "rental.utility.lessor" },
+                        { value: "LESSEE", label: "rental.utility.lessee" },
+                      ]}
+                      required
+                      disabled={disabled}
+                    />
+                  </Col>
+                  <Col span={4} className="flex items-center justify-end">
+                    {!disabled && (
+                      <Button
+                        type="text"
+                        danger
+                        icon={<Trash2 className="size-4" />}
+                        onClick={() => removeUtility(objectIndex, utilityIndex)}
+                        aria-label={t("common.delete")}
+                      />
+                    )}
+                  </Col>
+                </Row>
+              ))}
+            </div>
+          </div>
+        </Col>
       </Row>
-    </div>
-  );
+      </div>
+    );
+  };
 
   const objectItems: CollapseProps["items"] = objects.map(
     (object: RentalContractObjectForm, objectIndex) => ({

@@ -10,6 +10,7 @@ import DraftActionsBar from "@/components/ui/card/DraftActionsBar";
 import { mapRentalAccrualToForm } from "../utils/form";
 import { buildAccrualUpdatePayload } from "../utils/payload";
 import type { RentalAccrualForm } from "../types/form";
+import { rentalAccrualSchema } from "../types/schema";
 import {
   useCancelRentalAccrual,
   usePostRentalAccrual,
@@ -86,6 +87,7 @@ export default function AccrualDetailPage() {
   const formik = useFormik<RentalAccrualForm>({
     initialValues,
     enableReinitialize: true,
+    validationSchema: rentalAccrualSchema,
     onSubmit: async (values) => {
       try {
         await persistDraft(values);
@@ -99,6 +101,20 @@ export default function AccrualDetailPage() {
 
   const handleConfirm = async () => {
     if (!data) return;
+
+    const validationErrors = await formik.validateForm();
+    if (Object.keys(validationErrors).length) {
+      toast.error(t("common.requiredFields"));
+      return;
+    }
+    if (
+      !formik.values.lessorPayableAccountId ||
+      !formik.values.taxPayableAccountId ||
+      formik.values.items.some((item) => !item.expenseAccountId)
+    ) {
+      toast.error(t("rental.messages.accountsRequired"));
+      return;
+    }
 
     try {
       await persistDraft(formik.values);

@@ -1,8 +1,10 @@
+import type { RentalLessor } from "../../contracts/types/type";
+
 export interface RentalAccrualListItem {
   id: number;
   contractId: number;
   contractNumber: string;
-  lessorFullName: string;
+  lessors: RentalLessor[];
   docNumber: string;
   docDate: string;
   currencyCode?: string;
@@ -32,8 +34,6 @@ export interface RentalAccrualItem {
 
 export interface RentalAccrualDetail extends RentalAccrualListItem {
   organizationId?: number;
-  lessorInn?: string | null;
-  lessorPinfl?: string | null;
   currencyId: number;
   exchangeRate: number;
   contractAmount: number;
@@ -60,7 +60,8 @@ export interface RentalAccrualUpdatePayload {
 }
 
 export interface RentalGenerateDuePayload {
-  asOfDate?: string | null;
+  year: number;
+  month: number;
 }
 
 export interface RentalGenerateDueResult {

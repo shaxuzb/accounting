@@ -1,11 +1,23 @@
 import type { RentalContractForm } from "../types/form";
 
+export const emptyLessor = () => ({
+  lessorKindCode: "INDIVIDUAL" as const,
+  fullName: "",
+  inn: null,
+  pinfl: null,
+  phoneNumber: null,
+  registeredAddress: null,
+  residentialAddress: null,
+});
+
 export const emptyObject = (startDate = "", endDate = "") => ({
   id: null,
   rentalObjectTypeId: null,
   objectName: "",
   objectIdentifier: "",
   objectAddress: "",
+  totalArea: null,
+  rentedArea: null,
   startDate,
   endDate,
   periodUnit: "MONTH" as const,
@@ -14,15 +26,15 @@ export const emptyObject = (startDate = "", endDate = "") => ({
   taxBaseAmount: null,
   taxRate: null,
   expenseAccountId: null,
+  utilities: [],
 });
 
 export const createRentalContractDefaults = (
   startDate = "",
   endDate = "",
 ): RentalContractForm => ({
-  lessorFullName: "",
-  lessorInn: null,
-  lessorPinfl: null,
+  isFreeOfCharge: false,
+  lessors: [emptyLessor()],
   contractNumber: "",
   contractDate: startDate,
   startDate,

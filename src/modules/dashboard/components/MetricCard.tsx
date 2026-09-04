@@ -34,9 +34,7 @@ export default function MetricCard({
   return (
     <div className={"rounded-xl border p-4 " + toneClasses[tone]}>
       <div className="flex items-start justify-between gap-3">
-        <span className="text-sm text-(--theme-text-secondary)">
-          {label}
-        </span>
+        <span className="text-sm text-(--theme-text-secondary)">{label}</span>
         <span className="text-(--theme-brand)">{icon}</span>
       </div>
       <div
@@ -47,9 +45,7 @@ export default function MetricCard({
         {value}
       </div>
       {hint ? (
-        <p className="mt-1 text-xs text-(--theme-text-secondary)">
-          {hint}
-        </p>
+        <p className="mt-1 text-xs text-(--theme-text-secondary)">{hint}</p>
       ) : null}
     </div>
   );

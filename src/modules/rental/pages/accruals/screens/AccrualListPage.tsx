@@ -27,6 +27,8 @@ import { useGenerateRentalAccruals, useRentalAccruals } from "../hooks";
 import type { RentalAccrualListItem } from "../types/type";
 import GenerateDueModal from "../components/GenerateDueModal";
 import ContractFilter from "../components/ContractFilter";
+import { formatRentalLessors } from "../../contracts/utils/lessor";
+import type { RentalGenerateDuePayload } from "../types/type";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const parsed = Number(value);
@@ -58,9 +60,9 @@ export default function AccrualListPage() {
     next.set("pageSize", String(nextPageSize));
     setSearchParams(next, { replace: true });
   };
-  const generateDue = async (asOfDate: string | null) => {
+  const generateDue = async (payload: RentalGenerateDuePayload) => {
     try {
-      const result = await generateMutation.mutateAsync({ asOfDate });
+      const result = await generateMutation.mutateAsync(payload);
       toast.success(
         t("rental.messages.generated", { count: result.createdDocumentCount }),
       );
@@ -93,7 +95,10 @@ export default function AccrualListPage() {
           ),
       },
       { title: t("rental.fields.contractNumber"), dataIndex: "contractNumber" },
-      { title: t("rental.fields.lessorFullName"), dataIndex: "lessorFullName" },
+      {
+        title: t("rental.fields.lessors"),
+        render: (_, record) => formatRentalLessors(record.lessors),
+      },
       {
         title: t("rental.fields.docDate"),
         dataIndex: "docDate",

@@ -57,8 +57,11 @@ export default function OrganizationAddEditPage({
   const { t } = useTranslation();
   const editId = id ?? null;
   const isEdit = Boolean(editId);
-  const { data: organizations, isLoading: isOrgonizationsLoading,isSuccess } =
-    useGetDetailOrganizations(editId ?? "");
+  const {
+    data: organizations,
+    isLoading: isOrgonizationsLoading,
+    isSuccess,
+  } = useGetDetailOrganizations(editId ?? "");
   const createMutation = useCreateOrganization();
   const updateMutation = useUpdateOrganizations();
   const lookupMutation = useLookupOrganization();
@@ -69,16 +72,15 @@ export default function OrganizationAddEditPage({
     enableReinitialize: true,
     validationSchema: organizationsSchema(isEdit),
     onSubmit: async (values, helpers) => {
-        if (isEdit && editId) {
-          await updateMutation.mutateAsync({ id: editId, payload: values });
-        } else {
-          await createMutation.mutateAsync(values);
-        }
-        helpers.resetForm();
-        previousLookupValues.current = {};
-        lookupMutation.reset();
-        onClose();
-     
+      if (isEdit && editId) {
+        await updateMutation.mutateAsync({ id: editId, payload: values });
+      } else {
+        await createMutation.mutateAsync(values);
+      }
+      helpers.resetForm();
+      previousLookupValues.current = {};
+      lookupMutation.reset();
+      onClose();
     },
   });
 
@@ -154,7 +156,8 @@ export default function OrganizationAddEditPage({
   if (!open) return null;
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       title={
         isEdit ? t("settings.form.editTitle") : t("settings.form.createTitle")
       }

@@ -84,8 +84,8 @@ export default function ContractDetailPage() {
     },
   });
   const {
-    handleLessorInnChange,
-    handleLessorInnSearch,
+    handleLessorIdentifierChange,
+    handleLessorIdentifierSearch,
     lessorInnLookupLoading,
     resetLookup,
   } = useRentalLessorLookup(formik);
@@ -105,6 +105,16 @@ export default function ContractDetailPage() {
 
   const handleConfirm = async () => {
     if (!(await validateContract()) || !id) return;
+
+    if (
+      !formik.values.isFreeOfCharge &&
+      (!formik.values.lessorPayableAccountId ||
+        !formik.values.taxPayableAccountId ||
+        formik.values.objects.some((object) => !object.expenseAccountId))
+    ) {
+      toast.error(t("rental.messages.accountsRequired"));
+      return;
+    }
 
     try {
       await persistDraft(formik.values);
@@ -148,8 +158,8 @@ export default function ContractDetailPage() {
         disabled={!canSave}
         isSubmitting={updateMutation.isPending}
         onCancel={() => navigate(listPath)}
-        onLessorInnChange={handleLessorInnChange}
-        onLessorInnSearch={handleLessorInnSearch}
+        onLessorIdentifierChange={handleLessorIdentifierChange}
+        onLessorIdentifierSearch={handleLessorIdentifierSearch}
         lessorInnLookupLoading={lessorInnLookupLoading}
         actions={
           <DraftActionsBar

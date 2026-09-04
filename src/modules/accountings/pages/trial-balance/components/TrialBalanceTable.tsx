@@ -47,17 +47,20 @@ const exportDate = (value?: string | null) => value?.split("T")[0] ?? "all";
 export default function TrialBalanceTable({ result, filters, loading }: Props) {
   const { t } = useTranslation();
   const searchKey = useScopedStorageKey("report-table", "trial-balance:search");
-  const columnsKey = useScopedStorageKey("report-table", "trial-balance:columns");
-  const [search, setSearch] = usePersistedState(
-    searchKey,
-    "",
-    { storage: "session", debounceMs: 150 },
+  const columnsKey = useScopedStorageKey(
+    "report-table",
+    "trial-balance:columns",
   );
-  const [visibleColumns, setVisibleColumns] = usePersistedState<VisibleColumnKey[]>(
-    columnsKey,
-    ["accountName", ...financialColumnKeys],
-    { storage: "session", debounceMs: 0 },
-  );
+  const [search, setSearch] = usePersistedState(searchKey, "", {
+    storage: "session",
+    debounceMs: 150,
+  });
+  const [visibleColumns, setVisibleColumns] = usePersistedState<
+    VisibleColumnKey[]
+  >(columnsKey, ["accountName", ...financialColumnKeys], {
+    storage: "session",
+    debounceMs: 0,
+  });
   const visibleFinancialColumns = financialColumnKeys.filter((key) =>
     visibleColumns.includes(key),
   );
@@ -151,12 +154,12 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
       },
       {
         title: t("app.trial.accountCode"),
-        dataIndex: "accountCode",
+        dataIndex: "accountNumber",
         fixed: "left",
         width: 145,
         render: (value, record) => (
           <span className="font-medium text-text">
-            {record.accountCode || value || "-"}
+            {record.accountNumber || value || "-"}
           </span>
         ),
       },
@@ -184,7 +187,7 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
     if (!normalizedSearch) return items;
 
     return items.filter((item) =>
-      [item.accountCode, item.accountName].some((value) =>
+      [item.accountNumber, item.accountName].some((value) =>
         String(value ?? "")
           .toLocaleLowerCase()
           .includes(normalizedSearch),
@@ -209,7 +212,7 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
     if (!rows.length) return;
 
     const exportRows = rows.map((item) => ({
-      [t("app.trial.accountCode")]: item.accountCode || item.accountName,
+      [t("app.trial.accountNumber")]: item.accountNumber || item.accountName,
       [t("app.trial.accountName")]: item.accountName,
       [t("app.trial.openingDebit")]: item.openingDebit,
       [t("app.trial.openingCredit")]: item.openingCredit,
@@ -257,8 +260,7 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
                   value={visibleColumns}
                   onChange={(values) => {
                     const nextValues = values as VisibleColumnKey[];
-                    if (nextValues.length)
-                      setVisibleColumns(nextValues);
+                    if (nextValues.length) setVisibleColumns(nextValues);
                   }}
                 >
                   <div className="grid gap-2">

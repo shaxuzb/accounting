@@ -6,6 +6,7 @@ import { formatDate, numberSpacing } from "@/utils/utils";
 import type { RentalAccrualDetail } from "../../types/type";
 import AccrualItemsTable from "../AccrualItemsTable";
 import AccrualSummaryCard from "../AccrualSummaryCard";
+import { formatRentalLessors } from "../../../contracts/utils/lessor";
 
 interface AccrualReadonlyViewProps {
   data: RentalAccrualDetail;
@@ -31,17 +32,9 @@ export default function AccrualReadonlyView({
               value: data.contractNumber,
             },
             {
-              label: t("rental.fields.lessorFullName"),
-              value: data.lessorFullName,
+              label: t("rental.fields.lessors"),
+              value: formatRentalLessors(data.lessors),
               className: "xl:col-span-2",
-            },
-            {
-              label: t("rental.fields.lessorInn"),
-              value: data.lessorInn,
-            },
-            {
-              label: t("rental.fields.lessorPinfl"),
-              value: data.lessorPinfl,
             },
             {
               label: t("rental.fields.docDate"),

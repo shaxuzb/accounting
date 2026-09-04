@@ -38,7 +38,7 @@ export default function DashboardHeader({
   return (
     <header className="mb-3 rounded-2xl border border-border bg-(--theme-bg-card) p-5 shadow-(--theme-shadow)">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
+        {/* <div>
           <p className="mb-1 text-xs font-medium uppercase tracking-[0.16em] text-(--theme-brand)">
             {t("dashboard.eyebrow")}
           </p>
@@ -48,6 +48,32 @@ export default function DashboardHeader({
           <p className="mt-1 text-sm text-(--theme-text-secondary)">
             {t("dashboard.subtitle")}
           </p>
+        </div> */}
+        <div className=" flex flex-wrap items-center gap-3  border-border">
+          <DatePicker.RangePicker
+            value={rangeValue}
+            onChange={handleDateChange}
+            format="DD.MM.YYYY"
+            allowClear
+            aria-label={t("dashboard.dateRange")}
+          />
+          <Select<number[]>
+            mode="multiple"
+            allowClear
+            value={filters.currencyIds}
+            loading={isCurrenciesLoading}
+            onChange={(currencyIds) =>
+              onFiltersChange({ ...filters, currencyIds })
+            }
+            options={currencies.map((currency) => ({
+              value: currency.id,
+              label: currency.code || currency.name,
+            }))}
+            placeholder={t("dashboard.allCurrencies")}
+            className="min-w-52"
+            maxTagCount="responsive"
+            aria-label={t("dashboard.currency")}
+          />
         </div>
         <Space wrap>
           <Button
@@ -62,37 +88,13 @@ export default function DashboardHeader({
         </Space>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-4">
-        <DatePicker.RangePicker
-          value={rangeValue}
-          onChange={handleDateChange}
-          format="DD.MM.YYYY"
-          allowClear
-          aria-label={t("dashboard.dateRange")}
-        />
-        <Select<number[]>
-          mode="multiple"
-          allowClear
-          value={filters.currencyIds}
-          loading={isCurrenciesLoading}
-          onChange={(currencyIds) =>
-            onFiltersChange({ ...filters, currencyIds })
-          }
-          options={currencies.map((currency) => ({
-            value: currency.id,
-            label: currency.code || currency.name,
-          }))}
-          placeholder={t("dashboard.allCurrencies")}
-          className="min-w-52"
-          maxTagCount="responsive"
-          aria-label={t("dashboard.currency")}
-        />
+      {/* <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-4">
         <span className="text-xs text-(--theme-text-secondary)">
           {filters.dateFrom && filters.dateTo
             ? `${filters.dateFrom} — ${filters.dateTo}`
             : t("dashboard.allPeriod")}
         </span>
-      </div>
+      </div> */}
     </header>
   );
 }

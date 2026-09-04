@@ -20,8 +20,8 @@ import ContractFormFields from "../components/ContractFormFields";
 import { createRentalContractDefaults } from "../utils/defaults";
 import { mapRentalContractToForm } from "../utils/form";
 
-const today = dayjs().format("YYYY-MM-DDT00:00:00");
-const nextYear = dayjs().add(1, "year").format("YYYY-MM-DDT00:00:00");
+const today = dayjs().format("YYYY-MM-DD");
+const nextYear = dayjs().add(1, "year").format("YYYY-MM-DD");
 
 const defaultValues = createRentalContractDefaults(today, nextYear);
 
@@ -60,8 +60,8 @@ export default function ContractAddEditPage() {
   });
 
   const {
-    handleLessorInnChange,
-    handleLessorInnSearch,
+    handleLessorIdentifierChange,
+    handleLessorIdentifierSearch,
     lessorInnLookupLoading,
     resetLookup,
   } = useRentalLessorLookup(formik);
@@ -80,8 +80,8 @@ export default function ContractAddEditPage() {
         isEdit={isEdit}
         isSubmitting={createMutation.isPending || updateMutation.isPending}
         onCancel={() => navigate("/main/rentals/contracts")}
-        onLessorInnChange={handleLessorInnChange}
-        onLessorInnSearch={handleLessorInnSearch}
+        onLessorIdentifierChange={handleLessorIdentifierChange}
+        onLessorIdentifierSearch={handleLessorIdentifierSearch}
         lessorInnLookupLoading={lessorInnLookupLoading}
         actions={
           <DraftActionsBar

@@ -110,18 +110,13 @@ function BankStatementCard({
       0,
     );
   const hasBankAccount = Boolean(item.bankAccountId);
+  const currencyName =
+    item.currencyName ??
+    item.transactions.find((transaction) => transaction.currencyName)
+      ?.currencyName;
   const newOperationCount = item.transactions.filter(
     (transaction) => !isExistingBankOperation(transaction),
   ).length;
-  const existingOperationCount = item.transactions.filter(
-    isExistingBankOperation,
-  ).length;
-  const hasMissingCounterparty = item.transactions.some(
-    (transaction) =>
-      !isExistingBankOperation(transaction) &&
-      canMapBankCounterparty(transaction.classificationCode) &&
-      !transaction.counterpartyId,
-  );
   const hasBankChartAccount = Boolean(item.bankChartAccountId);
   const hasReviewRows = item.transactions.some(
     (transaction) =>
@@ -167,21 +162,6 @@ function BankStatementCard({
       .find(Boolean);
 
   const columns: ColumnsType<BankStatementTransaction> = [
-    {
-      title: t("bank.import.operationStatus"),
-      dataIndex: "isNewOperation",
-      width: 150,
-      align: "center",
-      fixed: "left",
-      render: (_, record) =>
-        isExistingBankOperation(record) ? (
-          <Tooltip title={t("bank.messages.existingOperationHint")}>
-            <Tag>{t("bank.import.existingOperation")}</Tag>
-          </Tooltip>
-        ) : (
-          <Tag color="green">{t("bank.import.newOperation")}</Tag>
-        ),
-    },
     // {
     //   title: t("bank.fields.operationType"),
     //   dataIndex: "directionId",
@@ -440,40 +420,10 @@ function BankStatementCard({
             </span>
             <span className="mt-1 flex flex-wrap gap-2 text-sm text-secondary-text">
               {item.fileName && <span>{item.fileName}</span>}
-              <Tag color="blue">
-                {item.transactions.length} {t("bank.import.transactions")}
-              </Tag>
-              {newOperationCount > 0 && (
-                <Tag color="green">
-                  {t("bank.import.newOperations", {
-                    count: newOperationCount,
-                  })}
-                </Tag>
-              )}
-              {existingOperationCount > 0 && (
-                <Tag>
-                  {t("bank.import.existingOperations", {
-                    count: existingOperationCount,
-                  })}
-                </Tag>
-              )}
-              <Tag color={hasBankAccount ? "green" : "red"}>
-                {hasBankAccount
-                  ? `${t("bank.fields.bankAccount")}: ${item.bankAccountId}`
-                  : t("bank.messages.bankAccountMissing")}
-              </Tag>
-              {hasMissingCounterparty && (
-                <Tag color="red">{t("bank.messages.counterpartyMissing")}</Tag>
-              )}
-              {!hasBankChartAccount && (
-                <Tag color="red">
-                  {t("bank.messages.bankChartAccountMissing")}
-                </Tag>
-              )}
-              {hasReviewRows && (
-                <Tag color="orange">{t("bank.messages.requiresReview")}</Tag>
-              )}
-              {item.accountNumber && <Tag>{item.accountNumber}</Tag>}
+                  <Tag color="blue">
+                    {item.transactions.length} {t("bank.import.transactions")}
+                  </Tag>
+                  {item.accountNumber && <Tag>{item.accountNumber}</Tag>}
             </span>
           </span>
         </button>
@@ -488,11 +438,13 @@ function BankStatementCard({
               {dateTo && dateTo !== dateFrom ? ` - ${customDate(dateTo)}` : ""}
             </div>
           </div>
-          <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
-            <div className="text-xs text-secondary-text">
-              {t("bank.fields.currencyId")}
-            </div>
-            <div className="font-semibold">{item.currencyId ?? "-"}</div>
+            <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
+              <div className="text-xs text-secondary-text">
+                {t("settings.fields.currency")}
+              </div>
+              <div className="font-semibold">
+                {currencyName ?? item.currencyId ?? "-"}
+              </div>
           </div>
           <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
             <div className="text-xs text-secondary-text">

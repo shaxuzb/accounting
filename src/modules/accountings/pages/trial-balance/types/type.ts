@@ -8,7 +8,7 @@ export interface TrialBalanceQuery {
 
 export interface TrialBalanceItem {
   accountId: number;
-  accountCode: string | null;
+  accountNumber: string | null;
   accountName: string;
   openingDebit: number;
   openingCredit: number;

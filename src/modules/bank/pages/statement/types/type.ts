@@ -51,6 +51,7 @@ export interface BankStatementCardData {
   bankChartAccountId?: number | null;
   accountNumber?: string;
   currencyId?: number | null;
+  currencyName?: string;
   operationTypeId?: number | null;
   totalDebit?: number | null;
   totalCredit?: number | null;

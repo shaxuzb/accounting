@@ -1,3 +1,25 @@
+export type RentalLessorKindCode = "INDIVIDUAL" | "LEGAL_ENTITY";
+export type RentalUtilityPayerCode = "LESSOR" | "LESSEE";
+
+export interface RentalLessor {
+  id?: number;
+  lessorKindCode: RentalLessorKindCode | string;
+  counterpartyId?: number | null;
+  fullName: string;
+  inn?: string | null;
+  pinfl?: string | null;
+  phoneNumber?: string | null;
+  registeredAddress?: string | null;
+  residentialAddress?: string | null;
+}
+
+export interface RentalUtility {
+  utilityServiceId: number;
+  payerCode: RentalUtilityPayerCode | string;
+  utilityServiceCode?: string;
+  utilityServiceName?: string;
+}
+
 export interface RentalContractObject {
   id: number | null;
   rentalObjectTypeId: number;
@@ -6,6 +28,8 @@ export interface RentalContractObject {
   objectName: string;
   objectIdentifier?: string | null;
   objectAddress?: string | null;
+  totalArea?: number | null;
+  rentedArea?: number | null;
   startDate: string;
   endDate: string;
   periodUnit: "DAY" | "MONTH" | string;
@@ -17,15 +41,15 @@ export interface RentalContractObject {
   expenseAccountId?: number | null;
   expenseAccountNumber?: string | number | null;
   expenseAccountName?: string | null;
+  utilities: RentalUtility[];
 }
 
 export interface RentalContractListItem {
   id: number;
   contractNumber: string;
   contractDate: string;
-  lessorFullName: string;
-  lessorInn?: string | null;
-  lessorPinfl?: string | null;
+  isFreeOfCharge: boolean;
+  lessors: RentalLessor[];
   startDate: string;
   endDate: string;
   currencyId: number;
