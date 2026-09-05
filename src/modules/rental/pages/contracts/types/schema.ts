@@ -8,7 +8,7 @@ export const rentalContractSchema = Yup.object({
   contractNumber: requiredText("Shartnoma raqami"),
   contractDate: requiredText("Shartnoma sanasi"),
   startDate: requiredText("Boshlanish sanasi"),
-  endDate: requiredText("Tugash sanasi"),
+  endDate: Yup.string().nullable(),
   currencyId: Yup.number().nullable().required("Valyuta majburiy"),
   objects: Yup.array()
     .of(
@@ -16,12 +16,11 @@ export const rentalContractSchema = Yup.object({
         rentalObjectTypeId: Yup.number().required("Obyekt turi majburiy"),
         objectName: requiredText("Obyekt nomi"),
         startDate: requiredText("Boshlanish sanasi"),
-        endDate: requiredText("Tugash sanasi"),
+        endDate: Yup.string().nullable(),
         periodUnit: Yup.string().oneOf(["DAY", "MONTH"]).required(),
-        periodValue: Yup.number().moreThan(0).required(),
+        periodAmount: Yup.number().nullable().required(),
         totalArea: Yup.number().nullable().min(0),
         rentedArea: Yup.number().nullable().min(0),
-        contractAmount: Yup.number().min(0).required(),
         taxBaseAmount: Yup.number().min(0).required(),
         taxRate: Yup.number().min(0).max(100).required(),
         expenseAccountId: Yup.number().nullable(),
@@ -87,7 +86,9 @@ export const rentalContractSchema = Yup.object({
   (value) => {
     if (!value) return false;
     const contractStart = String(value.startDate).slice(0, 10);
-    const contractEnd = String(value.endDate).slice(0, 10);
+    const contractEnd = value.endDate
+      ? String(value.endDate).slice(0, 10)
+      : null;
     const objects = value.objects ?? [];
     const utilitiesAreUnique = objects.every((object) => {
       const ids = object.utilities.map((utility) => utility.utilityServiceId);
@@ -95,20 +96,24 @@ export const rentalContractSchema = Yup.object({
     });
     const objectsAreValid = objects.every((object) => {
       const objectStart = String(object.startDate).slice(0, 10);
-      const objectEnd = String(object.endDate).slice(0, 10);
+      const objectEnd = object.endDate
+        ? String(object.endDate).slice(0, 10)
+        : null;
       const datesAreInside =
-        objectStart >= contractStart && objectEnd <= contractEnd;
+        objectStart >= contractStart &&
+        (!contractEnd || (objectEnd !== null && objectEnd <= contractEnd));
       const areaIsValid =
         object.totalArea == null ||
         object.rentedArea == null ||
         object.rentedArea <= object.totalArea;
       const freeValuesAreValid = value.isFreeOfCharge
-        ? object.contractAmount === 0 &&
+        ? object.periodAmount === 0 &&
           object.taxBaseAmount === 0 &&
           object.taxRate === 0 &&
           object.expenseAccountId == null
-        : object.contractAmount > 0 &&
-          object.taxBaseAmount >= object.contractAmount;
+        : object.periodAmount != null &&
+          object.periodAmount > 0 &&
+          object.taxBaseAmount >= object.periodAmount;
       return datesAreInside && areaIsValid && freeValuesAreValid;
     });
     return utilitiesAreUnique && objectsAreValid;

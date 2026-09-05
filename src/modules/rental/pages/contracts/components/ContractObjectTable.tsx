@@ -1,4 +1,5 @@
 import { useState } from "react";
+import dayjs from "dayjs";
 import { Button, Col, Collapse, Row } from "antd";
 import type { CollapseProps } from "antd";
 import type { FormikProps } from "formik";
@@ -131,11 +132,12 @@ export default function ContractObjectTable({
         <Col span={4}>
           <InputNumber
             formik={formik}
-            fieldName={`objects[${objectIndex}].periodValue`}
-            label="rental.fields.periodValue"
+            fieldName={`objects[${objectIndex}].periodAmount`}
+            label="rental.fields.periodAmount"
             min={1}
-            precision={0}
+            precision={2}
             required
+            disabled={disabled || formik.values.isFreeOfCharge}
           />
         </Col>
         <Col span={4}>
@@ -162,19 +164,10 @@ export default function ContractObjectTable({
         <Col span={4}>
           <InputNumber
             formik={formik}
-            fieldName={`objects[${objectIndex}].contractAmount`}
-            label="rental.fields.contractAmount"
-            min={0}
-            required
-            disabled={disabled || formik.values.isFreeOfCharge}
-          />
-        </Col>
-        <Col span={4}>
-          <InputNumber
-            formik={formik}
             fieldName={`objects[${objectIndex}].taxBaseAmount`}
             label="rental.fields.taxBaseAmount"
             min={0}
+            required
             disabled={disabled || formik.values.isFreeOfCharge}
           />
         </Col>
@@ -185,6 +178,7 @@ export default function ContractObjectTable({
             label="rental.fields.taxRate"
             min={0}
             max={100}
+            required
             disabled={disabled || formik.values.isFreeOfCharge}
           />
         </Col>
@@ -194,6 +188,14 @@ export default function ContractObjectTable({
             fieldName={`objects[${objectIndex}].startDate`}
             label="rental.fields.startDate"
             valueFormat="YYYY-MM-DD"
+            minDate={
+              formik.values.startDate
+                ? dayjs(formik.values.startDate)
+                : undefined
+            }
+            maxDate={
+              formik.values.endDate ? dayjs(formik.values.endDate) : undefined
+            }
             required
           />
         </Col>
@@ -203,7 +205,11 @@ export default function ContractObjectTable({
             fieldName={`objects[${objectIndex}].endDate`}
             label="rental.fields.endDate"
             valueFormat="YYYY-MM-DD"
-            required
+            minDate={object.startDate ? dayjs(object.startDate) : undefined}
+            maxDate={
+              formik.values.endDate ? dayjs(formik.values.endDate) : undefined
+            }
+            clearable
           />
         </Col>
         <Col span={24}>

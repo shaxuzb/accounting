@@ -1,6 +1,7 @@
 import { Result, Spin } from "antd";
+import dayjs from "dayjs";
 import { setNestedObjectValues, useFormik } from "formik";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
@@ -9,6 +10,7 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import DraftActionsBar from "@/components/ui/card/DraftActionsBar";
 import ContractFormFields from "../components/ContractFormFields";
 import ContractReadonlyView from "../components/readonly/ContractReadonlyView";
+import ContractActionDateModal from "../components/ContractActionDateModal";
 import {
   useActivateRentalContract,
   useCancelRentalContract,
@@ -49,6 +51,9 @@ export default function ContractDetailPage() {
       permissions.includes(rentalContractPermissions.cancel),
   );
   const listPath = "/main/rentals/contracts";
+  const [actionDate, setActionDate] = useState<"activate" | "cancel" | null>(
+    null,
+  );
 
   const initialValues = useMemo<RentalContractForm>(
     () =>
@@ -103,7 +108,7 @@ export default function ContractDetailPage() {
     return false;
   };
 
-  const handleConfirm = async () => {
+  const handleActivateRequest = async () => {
     if (!(await validateContract()) || !id) return;
 
     if (
@@ -116,67 +121,81 @@ export default function ContractDetailPage() {
       return;
     }
 
-    try {
-      await persistDraft(formik.values);
-      await activateMutation.mutateAsync(id);
-      toast.success(t("actions.confirmSuccess", { id }));
-      await refetch();
-    } catch (error) {
-      errorHandlers(error);
-    }
+    setActionDate("activate");
   };
 
   const handleCancelDraft = async () => {
     if (!id) return;
 
     try {
-      await cancelMutation.mutateAsync(id);
+      await cancelMutation.mutateAsync({ id });
       toast.success(t("actions.cancelSuccess", { id }));
       await refetch();
     } catch (error) {
       errorHandlers(error);
     }
   };
-  const mutate = async (action: () => Promise<unknown>) => {
+  const handleActionDateSubmit = async (date: string | null) => {
+    if (!id || !actionDate) return;
+
     try {
-      await action();
+      if (actionDate === "activate") {
+        await persistDraft(formik.values);
+        await activateMutation.mutateAsync({ id, confirmationDate: date });
+        toast.success(t("actions.confirmSuccess", { id }));
+      } else {
+        await cancelMutation.mutateAsync({ id, terminationDate: date });
+        toast.success(t("actions.cancelSuccess", { id }));
+      }
+      setActionDate(null);
       await refetch();
     } catch (error) {
       errorHandlers(error);
     }
   };
-
   if (isLoading) return <Spin className="block py-20" />;
   if (isError || !data)
     return <Result status="404" title={t("common.notFound")} />;
 
   if (isDraft) {
     return (
-      <ContractFormFields
-        formik={formik}
-        isEdit
-        disabled={!canSave}
-        isSubmitting={updateMutation.isPending}
-        onCancel={() => navigate(listPath)}
-        onLessorIdentifierChange={handleLessorIdentifierChange}
-        onLessorIdentifierSearch={handleLessorIdentifierSearch}
-        lessorInnLookupLoading={lessorInnLookupLoading}
-        actions={
-          <DraftActionsBar
-            isCreate={false}
-            canSave={canSave}
-            canConfirm={canConfirm}
-            canCancel={canCancel}
-            saving={updateMutation.isPending}
-            confirming={activateMutation.isPending}
-            cancelling={cancelMutation.isPending}
-            onExit={() => navigate(listPath)}
-            onConfirm={handleConfirm}
-            onCancelDocument={handleCancelDraft}
-            cancelLabel="rental.actions.cancel"
-          />
-        }
-      />
+      <>
+        <ContractFormFields
+          formik={formik}
+          isEdit
+          disabled={!canSave}
+          isSubmitting={updateMutation.isPending}
+          onCancel={() => navigate(listPath)}
+          onLessorIdentifierChange={handleLessorIdentifierChange}
+          onLessorIdentifierSearch={handleLessorIdentifierSearch}
+          lessorInnLookupLoading={lessorInnLookupLoading}
+          actions={
+            <DraftActionsBar
+              isCreate={false}
+              canSave={canSave}
+              canConfirm={canConfirm}
+              canCancel={canCancel}
+              saving={updateMutation.isPending}
+              confirming={activateMutation.isPending}
+              cancelling={cancelMutation.isPending}
+              onExit={() => navigate(listPath)}
+              onConfirm={handleActivateRequest}
+              onCancelDocument={handleCancelDraft}
+              cancelLabel="rental.actions.cancel"
+            />
+          }
+        />
+        <ContractActionDateModal
+          key={actionDate ?? "closed"}
+          open={actionDate === "activate"}
+          action="activate"
+          loading={activateMutation.isPending}
+          minDate={dayjs(data.contractDate)}
+          maxDate={dayjs()}
+          onClose={() => setActionDate(null)}
+          onSubmit={handleActionDateSubmit}
+        />
+      </>
     );
   }
 
@@ -194,10 +213,18 @@ export default function ContractDetailPage() {
           cancelling={cancelMutation.isPending}
           onExit={() => navigate(listPath)}
           onConfirm={() => undefined}
-          onCancelDocument={() => mutate(() => cancelMutation.mutateAsync(data.id))}
+          onCancelDocument={() => setActionDate("cancel")}
           cancelLabel="rental.actions.cancel"
         />
       )}
+      <ContractActionDateModal
+        key={actionDate ?? "closed"}
+        open={actionDate === "cancel"}
+        action="cancel"
+        loading={cancelMutation.isPending}
+        onClose={() => setActionDate(null)}
+        onSubmit={handleActionDateSubmit}
+      />
     </div>
   );
 }

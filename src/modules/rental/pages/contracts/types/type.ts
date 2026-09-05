@@ -31,11 +31,13 @@ export interface RentalContractObject {
   totalArea?: number | null;
   rentedArea?: number | null;
   startDate: string;
-  endDate: string;
+  endDate: string | null;
   periodUnit: "DAY" | "MONTH" | string;
-  periodValue: number;
+  periodAmount: number;
   nextAccrualDate?: string | null;
-  contractAmount: number;
+  contractAmount?: number | null;
+  contractTaxBaseAmount?: number | null;
+  contractTaxAmount?: number | null;
   taxBaseAmount: number;
   taxRate: number;
   expenseAccountId?: number | null;
@@ -51,7 +53,7 @@ export interface RentalContractListItem {
   isFreeOfCharge: boolean;
   lessors: RentalLessor[];
   startDate: string;
-  endDate: string;
+  endDate: string | null;
   currencyId: number;
   currencyCode?: string;
   statusId: number;
@@ -71,6 +73,11 @@ export interface RentalContractDetail extends RentalContractListItem {
   createdDate?: string;
   postedAt?: string | null;
   cancelledAt?: string | null;
+  confirmationDate?: string | null;
+  terminationDate?: string | null;
+  contractAmount?: number | null;
+  contractTaxBaseAmount?: number | null;
+  contractTaxAmount?: number | null;
   objects: RentalContractObject[];
 }
 

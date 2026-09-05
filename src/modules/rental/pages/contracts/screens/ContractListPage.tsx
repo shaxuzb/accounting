@@ -95,7 +95,7 @@ export default function ContractListPage() {
     {
       title: t("rental.fields.period"),
       render: (_, record) =>
-        `${customDate2(record.startDate)} — ${customDate2(record.endDate)}`,
+        `${customDate2(record.startDate)} — ${record.endDate ? customDate2(record.endDate) : "-"}`,
     },
     {
       title: t("rental.fields.currency"),

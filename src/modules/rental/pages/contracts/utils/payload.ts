@@ -2,9 +2,14 @@ import type { RentalLessorForm } from "../types/form.ts";
 
 type UnknownRecord = Record<string, unknown>;
 
-const normalizeRentalDate = (value: unknown): string =>
-  String(value ?? "").trim().match(/^\d{4}-\d{2}-\d{2}/)?.[0] ??
-  String(value ?? "").trim();
+export const normalizeRentalDate = (value: unknown): string | null => {
+  if (value === null || value === undefined) return null;
+
+  const normalized = String(value).trim();
+  if (!normalized) return null;
+
+  return normalized.match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? normalized;
+};
 
 const buildLessorPayload = (lessor: RentalLessorForm) => ({
   lessorKindCode: lessor.lessorKindCode,
@@ -56,6 +61,10 @@ export const buildContractPayload = (
       ? objects.map((item) => {
           const {
             id,
+            periodValue: _periodValue,
+            contractAmount: _contractAmount,
+            contractTaxBaseAmount: _contractTaxBaseAmount,
+            contractTaxAmount: _contractTaxAmount,
             nextAccrualDate: _nextAccrualDate,
             rentalObjectTypeCode: _rentalObjectTypeCode,
             rentalObjectTypeName: _rentalObjectTypeName,

@@ -8,6 +8,7 @@ import { normalizeRentalContractForMode } from "../src/modules/rental/pages/cont
 import { formatRentalLessors } from "../src/modules/rental/pages/contracts/utils/lessor.ts";
 import { rentalAccrualSchema } from "../src/modules/rental/pages/accruals/types/schema.ts";
 import { buildGenerateDuePayload } from "../src/modules/rental/pages/accruals/utils/payload.ts";
+import { rentalContractEndpoints } from "../src/modules/rental/pages/contracts/constants/endpoints.ts";
 
 test("contract payload sends sanitized lessors and date-only values", () => {
   const payload = buildContractPayload(
@@ -42,6 +43,7 @@ test("contract payload sends sanitized lessors and date-only values", () => {
           totalArea: 48.22,
           rentedArea: 20,
           periodUnit: "MONTH",
+          periodAmount: 5000000,
           periodValue: 1,
           contractAmount: 5000000,
           taxBaseAmount: 6000000,
@@ -76,6 +78,18 @@ test("contract payload sends sanitized lessors and date-only values", () => {
     (payload.objects as Array<Record<string, unknown>>)[0].startDate,
     "2026-09-04",
   );
+  assert.equal(
+    (payload.objects as Array<Record<string, unknown>>)[0].periodAmount,
+    5000000,
+  );
+  assert.equal(
+    "periodValue" in (payload.objects as Array<Record<string, unknown>>)[0],
+    false,
+  );
+  assert.equal(
+    "contractAmount" in (payload.objects as Array<Record<string, unknown>>)[0],
+    false,
+  );
 });
 
 test("new contract defaults start with one lessor and paid rental mode", () => {
@@ -87,6 +101,9 @@ test("new contract defaults start with one lessor and paid rental mode", () => {
   assert.deepEqual(defaults.objects[0].utilities, []);
   assert.equal(defaults.objects[0].totalArea, null);
   assert.equal(defaults.objects[0].rentedArea, null);
+  assert.equal(defaults.objects[0].periodAmount, null);
+  assert.equal("periodValue" in defaults.objects[0], false);
+  assert.equal("contractAmount" in defaults.objects[0], false);
 });
 
 test("detail mapper keeps all lessors, areas, and utilities", () => {
@@ -127,7 +144,7 @@ test("detail mapper keeps all lessors, areas, and utilities", () => {
         startDate: "2026-09-04T00:00:00",
         endDate: "2027-09-03T00:00:00",
         periodUnit: "MONTH",
-        periodValue: 1,
+        periodAmount: 470000,
         contractAmount: 5000000,
         taxBaseAmount: 6000000,
         taxRate: 12,
@@ -156,6 +173,8 @@ test("detail mapper keeps all lessors, areas, and utilities", () => {
   });
   assert.equal(form.objects[0].totalArea, 48.22);
   assert.equal(form.objects[0].rentedArea, 20);
+  assert.equal(form.objects[0].periodAmount, 470000);
+  assert.equal("contractAmount" in form.objects[0], false);
   assert.deepEqual(form.objects[0].utilities, [
     { utilityServiceId: 1, payerCode: "LESSOR" },
   ]);
@@ -168,7 +187,7 @@ test("free rental values are accepted by the contract schema", async () => {
       contractNumber: "IJ-FREE-001",
       contractDate: "2026-09-04",
       startDate: "2026-09-04",
-      endDate: "2027-09-03",
+      endDate: null,
       currencyId: 1,
       lessorPayableAccountId: null,
       taxPayableAccountId: null,
@@ -194,10 +213,9 @@ test("free rental values are accepted by the contract schema", async () => {
           totalArea: null,
           rentedArea: null,
           startDate: "2026-09-04",
-          endDate: "2027-09-03",
+          endDate: null,
           periodUnit: "MONTH",
-          periodValue: 1,
-          contractAmount: 0,
+          periodAmount: 0,
           taxBaseAmount: 0,
           taxRate: 0,
           expenseAccountId: null,
@@ -215,7 +233,7 @@ test("free rental mode clears monetary and account fields", () => {
     taxPayableAccountId: 220,
     objects: [
       {
-        contractAmount: 5000000,
+        periodAmount: 5000000,
         taxBaseAmount: 6000000,
         taxRate: 12,
         expenseAccountId: 200,
@@ -227,7 +245,7 @@ test("free rental mode clears monetary and account fields", () => {
   assert.equal(result.lessorPayableAccountId, null);
   assert.equal(result.taxPayableAccountId, null);
   assert.deepEqual(result.objects[0], {
-    contractAmount: 0,
+    periodAmount: 0,
     taxBaseAmount: 0,
     taxRate: 0,
     expenseAccountId: null,
@@ -263,4 +281,19 @@ test("generate-due payload sends year and month", () => {
     year: 2026,
     month: 9,
   });
+});
+
+test("contract actions include optional backend dates", () => {
+  assert.equal(
+    rentalContractEndpoints.activate(25, "2026-09-04"),
+    "rental-contracts/25/activate?confirmationDate=2026-09-04",
+  );
+  assert.equal(
+    rentalContractEndpoints.cancel(25, "2026-12-15"),
+    "rental-contracts/25/cancel?terminationDate=2026-12-15",
+  );
+  assert.equal(
+    rentalContractEndpoints.activate(25),
+    "rental-contracts/25/activate",
+  );
 });

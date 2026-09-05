@@ -30,10 +30,6 @@ export default function ContractReadonlyView({
   const { t } = useTranslation();
   const organizationName = useAppSelector((state) => state.organization.name);
   const currency = data.currencyCode || data.currencyId || "-";
-  const totalAmount = data.objects.reduce(
-    (total, object) => total + (object.contractAmount || 0),
-    0,
-  );
 
   return (
     <div className="space-y-2">
@@ -61,7 +57,11 @@ export default function ContractReadonlyView({
         <DocumentSummaryItem
           icon={<CircleDollarSign size={24} strokeWidth={1.8} />}
           label={t("rental.fields.amount")}
-          value={`${numberSpacing(totalAmount)} ${currency}`}
+          value={
+            data.contractAmount == null
+              ? "-"
+              : `${numberSpacing(data.contractAmount)} ${currency}`
+          }
           emphasized
         />
       </DocumentSummary>
@@ -95,7 +95,15 @@ export default function ContractReadonlyView({
             },
             {
               label: t("rental.fields.endDate"),
-              value: formatDate(data.endDate),
+              value: formatDate(data.endDate ?? undefined),
+            },
+            {
+              label: t("rental.fields.confirmationDate"),
+              value: formatDate(data.confirmationDate ?? undefined),
+            },
+            {
+              label: t("rental.fields.terminationDate"),
+              value: formatDate(data.terminationDate ?? undefined),
             },
             {
               label: t("rental.fields.currency"),
@@ -173,12 +181,12 @@ export default function ContractReadonlyView({
             {
               title: t("rental.fields.dates"),
               render: (_: unknown, record) =>
-                `${formatDate(record.startDate)} — ${formatDate(record.endDate)}`,
+                `${formatDate(record.startDate)} — ${formatDate(record.endDate ?? undefined)}`,
             },
             {
               title: t("rental.fields.period"),
               render: (_: unknown, record) =>
-                `${record.periodValue} ${t(
+                `${numberSpacing(record.periodAmount)} ${t(
                   `rental.period.${record.periodUnit === "DAY" ? "day" : "month"}`,
                 )}`,
             },
@@ -186,7 +194,9 @@ export default function ContractReadonlyView({
               title: t("rental.fields.contractAmount"),
               align: "right",
               render: (_: unknown, record) =>
-                numberSpacing(record.contractAmount),
+                record.contractAmount == null
+                  ? "-"
+                  : numberSpacing(record.contractAmount),
             },
             {
               title: t("rental.fields.totalArea"),

@@ -66,6 +66,9 @@ export default function AccrualListPage() {
       toast.success(
         t("rental.messages.generated", { count: result.createdDocumentCount }),
       );
+      if (result.documentIds.length) {
+        toast(t("rental.messages.documentIds", { ids: result.documentIds.join(", ") }));
+      }
       setGenerateOpen(false);
       await refetch();
     } catch (error) {

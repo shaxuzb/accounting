@@ -27,10 +27,9 @@ export interface RentalContractObjectForm {
   totalArea: number | null;
   rentedArea: number | null;
   startDate: string;
-  endDate: string;
+  endDate: string | null;
   periodUnit: "DAY" | "MONTH";
-  periodValue: number | null;
-  contractAmount: number | null;
+  periodAmount: number | null;
   taxBaseAmount: number | null;
   taxRate: number | null;
   expenseAccountId: number | null;
@@ -43,7 +42,7 @@ export interface RentalContractForm {
   contractNumber: string;
   contractDate: string;
   startDate: string;
-  endDate: string;
+  endDate: string | null;
   currencyId: number | null;
   lessorPayableAccountId: number | null;
   taxPayableAccountId: number | null;

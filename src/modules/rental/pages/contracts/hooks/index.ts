@@ -52,6 +52,12 @@ export const useUpdateRentalContract = () =>
 export const useDeleteRentalContract = () =>
   useContractMutation((id: string | number) => rentalContractApi.delete(id));
 export const useActivateRentalContract = () =>
-  useContractMutation((id: string | number) => rentalContractApi.activate(id));
+  useContractMutation(
+    (args: { id: string | number; confirmationDate?: string | null }) =>
+      rentalContractApi.activate(args.id, args.confirmationDate),
+  );
 export const useCancelRentalContract = () =>
-  useContractMutation((id: string | number) => rentalContractApi.cancel(id));
+  useContractMutation(
+    (args: { id: string | number; terminationDate?: string | null }) =>
+      rentalContractApi.cancel(args.id, args.terminationDate),
+  );

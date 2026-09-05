@@ -19,7 +19,7 @@ export const normalizeRentalContractForMode = <T extends RentalModeValues>(
     taxPayableAccountId: null,
     objects: values.objects.map((object) => ({
       ...object,
-      contractAmount: 0,
+      periodAmount: 0,
       taxBaseAmount: 0,
       taxRate: 0,
       expenseAccountId: null,

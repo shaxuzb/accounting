@@ -142,6 +142,7 @@ export default function ContractFormFields({
                     ? dayjs(formik.values.startDate)
                     : undefined
                 }
+                clearable
                 required
               />
             </Col>

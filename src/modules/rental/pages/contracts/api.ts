@@ -42,12 +42,12 @@ export const rentalContractApi = {
     $axiosPrivate
       .delete<void>(rentalContractEndpoints.delete(id))
       .then(() => undefined),
-  activate: (id: string | number) =>
+  activate: (id: string | number, confirmationDate?: string | null) =>
     $axiosPrivate
-      .put<void>(rentalContractEndpoints.activate(id))
+      .put<void>(rentalContractEndpoints.activate(id, confirmationDate))
       .then(() => undefined),
-  cancel: (id: string | number) =>
+  cancel: (id: string | number, terminationDate?: string | null) =>
     $axiosPrivate
-      .put<void>(rentalContractEndpoints.cancel(id))
+      .put<void>(rentalContractEndpoints.cancel(id, terminationDate))
       .then(() => undefined),
 };
