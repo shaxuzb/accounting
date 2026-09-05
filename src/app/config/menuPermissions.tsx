@@ -82,6 +82,7 @@ import { rentalContractPermissions } from "@/modules/rental/pages/contracts/cons
 import { rentalAccrualPermissions } from "@/modules/rental/pages/accruals/constants/permissions";
 import { dashboardPermissions } from "@/modules/dashboard/constants/permissions";
 import { regulatedObligationSettingPermissions } from "@/modules/settings/pages/regulatedObligationSettings/constants/permissions";
+import { accountingPolicyPermissions } from "@/modules/settings/pages/accountingPolicy/constants/permissions";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -115,6 +116,7 @@ export const settingsViewPermissions = [
   integrationPermissions.view,
   payrollComponentPermissions.view,
   regulatedObligationSettingPermissions.view,
+  accountingPolicyPermissions.view,
 ] as const;
 
 export const menuPermissions: MainMenu = {
@@ -625,6 +627,15 @@ export const menuPermissions: MainMenu = {
         path: "regulated-obligation-settings",
         title: "settings.entities.regulatedObligationSettings",
         description: "settings.descriptions.regulatedObligationSettings",
+      },
+    },
+    {
+      code: accountingPolicyPermissions.view,
+      iconName: <SlidersHorizontal className="size-5" />,
+      linkData: {
+        path: "accounting-policy",
+        title: "settings.entities.accountingPolicy",
+        description: "settings.descriptions.accountingPolicy",
       },
     },
     {

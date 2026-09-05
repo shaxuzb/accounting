@@ -83,9 +83,7 @@ export default function ContractListPage() {
     {
       title: t("rental.fields.rentalType"),
       render: (_, record) =>
-        record.isFreeOfCharge
-          ? t("rental.modes.free")
-          : t("rental.modes.paid"),
+        record.isFreeOfCharge ? t("rental.modes.free") : t("rental.modes.paid"),
     },
     {
       title: t("rental.fields.contractDate"),
@@ -122,14 +120,13 @@ export default function ContractListPage() {
       fixed: "right",
       width: 70,
       render: (_, record) => {
-        const rowPermissions =
-          isRentalDraft(record.statusId)
-            ? permissions
-            : permissions.filter(
-                (permission) =>
-                  permission !== rentalContractPermissions.update &&
-                  permission !== rentalContractPermissions.delete,
-              );
+        const rowPermissions = isRentalDraft(record.statusId)
+          ? permissions
+          : permissions.filter(
+              (permission) =>
+                permission !== rentalContractPermissions.update &&
+                permission !== rentalContractPermissions.delete,
+            );
         return (
           <ActionColumn
             record={record}
@@ -171,6 +168,8 @@ export default function ContractListPage() {
           <PermissionCard permission={rentalContractPermissions.create}>
             <Button
               type="primary"
+              ghost
+              size="medium"
               icon={<Plus className="size-4" />}
               onClick={() => navigate("/main/rentals/contracts/add")}
             >

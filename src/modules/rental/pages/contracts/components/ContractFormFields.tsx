@@ -1,15 +1,15 @@
-import { Button, Card, Checkbox, Col, Form, Row } from "antd";
+import { Button, Col, Form, Row, Segmented } from "antd";
 import dayjs from "dayjs";
 import type { FormikProps } from "formik";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, UsersRound } from "lucide-react";
 import InputText from "@/components/fields/InputText";
-import InputTextArea from "@/components/fields/InputTextArea";
 import SearchInnField from "@/components/fields/SearchInnField";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectStatic from "@/components/fields/SelectStatic";
+import SectionCard from "@/components/ui/card/SectionCard";
 import {
   chartAccountSelectDisplayConfig,
   selectListEndpoints,
@@ -17,7 +17,13 @@ import {
 import type { RentalContractForm } from "../types/form";
 import ContractObjectTable from "./ContractObjectTable";
 import { emptyLessor } from "../utils/defaults";
-import { normalizeRentalContractForMode } from "../utils/mode";
+import {
+  getRentalPaidValues,
+  normalizeRentalContractForMode,
+  restoreRentalPaidValues,
+  type RentalPaidValues,
+} from "../utils/mode";
+import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 
 interface ContractFormFieldsProps {
   formik: FormikProps<RentalContractForm>;
@@ -44,6 +50,7 @@ export default function ContractFormFields({
 }: ContractFormFieldsProps) {
   const { t } = useTranslation();
   const isFreeOfCharge = formik.values.isFreeOfCharge;
+  const paidValuesRef = useRef<RentalPaidValues | null>(null);
 
   const addLessor = () => {
     void formik.setFieldValue("lessors", [
@@ -65,6 +72,18 @@ export default function ContractFormFields({
       ...formik.values,
       isFreeOfCharge: checked,
     };
+    if (!checked && paidValuesRef.current) {
+      const restoredValues = restoreRentalPaidValues(
+        values,
+        paidValuesRef.current,
+      );
+      paidValuesRef.current = null;
+      void formik.setValues(restoredValues, true);
+      return;
+    }
+    if (checked) {
+      paidValuesRef.current = getRentalPaidValues(formik.values);
+    }
     formik.setValues(
       checked ? normalizeRentalContractForMode(values) : values,
       true,
@@ -74,9 +93,9 @@ export default function ContractFormFields({
   return (
     <Form layout="vertical" onFinish={formik.handleSubmit}>
       <fieldset disabled={disabled} className="min-w-0">
-        <Card
-          className="sm:p-5! mb-2!"
-          // title={t("rental.contracts.general")}
+        <SectionCard
+          title="rental.contracts.general"
+          bodyClassName="p-4! sm:p-3!"
         >
           <Row gutter={[20, 0]}>
             <Col span={4}>
@@ -107,17 +126,6 @@ export default function ContractFormFields({
               />
             </Col>
             <Col span={4}>
-              <Form.Item className="flex! flex-col! mb-6!">
-                <Checkbox
-                  checked={isFreeOfCharge}
-                  onChange={(event) => handleFreeRentalChange(event.target.checked)}
-                  disabled={disabled}
-                >
-                  {t("rental.fields.isFreeOfCharge")}
-                </Checkbox>
-              </Form.Item>
-            </Col>
-            <Col span={4}>
               <SelectDate
                 formik={formik}
                 fieldName="startDate"
@@ -141,10 +149,9 @@ export default function ContractFormFields({
                   formik.values.startDate
                     ? dayjs(formik.values.startDate)
                     : undefined
-                }
-                clearable
-                required
-              />
+                 }
+                 clearable
+               />
             </Col>
             <Col span={4}>
               <SelectCustom
@@ -170,8 +177,25 @@ export default function ContractFormFields({
                 disabled={isFreeOfCharge}
               />
             </Col>
-            <Col span={24}>
-              <InputTextArea
+            <div className=" w-70">
+              <Form.Item
+                label={t("rental.fields.rentalType")}
+                className="mb-0!"
+              >
+                <Segmented
+                  block
+                  value={isFreeOfCharge ? "free" : "paid"}
+                  disabled={disabled}
+                  onChange={(value) => handleFreeRentalChange(value === "free")}
+                  options={[
+                    { value: "paid", label: t("rental.modes.paid") },
+                    { value: "free", label: t("rental.modes.free") },
+                  ]}
+                />
+              </Form.Item>
+            </div>
+            <Col span={16}>
+              <InputText
                 formik={formik}
                 fieldName="comment"
                 label="rental.fields.comment"
@@ -180,35 +204,70 @@ export default function ContractFormFields({
               />
             </Col>
           </Row>
-          <div className="mt-2 border-t border-border/60 pt-4">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="font-semibold">{t("rental.fields.lessors")}</span>
-              {!disabled && (
-                <Button
-                  type="dashed"
-                  size="small"
-                  icon={<Plus className="size-4" />}
-                  onClick={addLessor}
-                >
-                  {t("common.add")}
-                </Button>
-              )}
-            </div>
-            <div className="space-y-3">
-              {formik.values.lessors.map((lessor, lessorIndex) => (
-                <div
-                  key={`lessor-${lessorIndex}`}
-                  className="rounded-xl border border-border/60 bg-background/40 p-3"
-                >
-                  <Row gutter={[20, 0]}>
+        </SectionCard>
+
+        <SectionCard
+          title="rental.fields.lessors"
+          icon={<UsersRound className="size-4" />}
+          className="mt-2! mb-2!"
+          bodyClassName="p-4! sm:p-3!"
+          extra={
+            !disabled && (
+              <Button
+                type="primary"
+                ghost
+                size="small"
+                icon={<Plus className="size-4" />}
+                onClick={addLessor}
+              >
+                {t("common.add")}
+              </Button>
+            )
+          }
+        >
+          <div className="space-y-2 ">
+            {formik.values.lessors.map((lessor, lessorIndex) => (
+              <div
+                key={`lessor-${lessorIndex}`}
+                className="overflow-hidden rounded-lg border border-border/70 bg-background/40"
+              >
+                <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3 py-2">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-bg text-xs font-semibold text-primary">
+                      {lessorIndex + 1}
+                    </span>
+                    <span className="truncate text-sm font-semibold text-text">
+                      {lessorIndex + 1}. {t("rental.fields.lessorFullName")}
+                    </span>
+                  </div>
+                  {!disabled && formik.values.lessors.length > 1 && (
+                    <Button
+                      type="text"
+                      danger
+                      size="small"
+                      icon={<Trash2 className="size-4" />}
+                      onClick={() => removeLessor(lessorIndex)}
+                    >
+                      {t("common.delete")}
+                    </Button>
+                  )}
+                </div>
+                <div className="p-3">
+                  <Row gutter={[16, 0]}>
                     <Col span={4}>
                       <SelectStatic
                         formik={formik as FormikProps<object>}
                         fieldName={`lessors[${lessorIndex}].lessorKindCode`}
                         label="rental.fields.lessorKind"
                         options={[
-                          { value: "INDIVIDUAL", label: "rental.lessor.individual" },
-                          { value: "LEGAL_ENTITY", label: "rental.lessor.legalEntity" },
+                          {
+                            value: "INDIVIDUAL",
+                            label: "rental.lessor.individual",
+                          },
+                          {
+                            value: "LEGAL_ENTITY",
+                            label: "rental.lessor.legalEntity",
+                          },
                         ]}
                         required
                         disabled={disabled}
@@ -227,15 +286,19 @@ export default function ContractFormFields({
                       <SearchInnField
                         mode="auto"
                         value={lessor.inn || lessor.pinfl || ""}
-                        onChange={(value) => onLessorIdentifierChange(lessorIndex, value)}
-                        onSearch={(value) => onLessorIdentifierSearch(lessorIndex, value)}
+                        onChange={(value) =>
+                          onLessorIdentifierChange(lessorIndex, value)
+                        }
+                        onSearch={(value) =>
+                          onLessorIdentifierSearch(lessorIndex, value)
+                        }
                         loading={lessorInnLookupLoading}
                         disabled={disabled}
-                        label="rental.fields.innOrPinfl"
+                        label="rental.fields.lessorInn"
                       />
                     </Col>
                     <Col span={5}>
-                      <InputText
+                      <InputPhoneNumber
                         formik={formik}
                         fieldName={`lessors[${lessorIndex}].phoneNumber`}
                         label="rental.fields.phoneNumber"
@@ -258,23 +321,12 @@ export default function ContractFormFields({
                         disabled={disabled}
                       />
                     </Col>
-                    <Col span={1} className="flex items-center justify-end">
-                      {!disabled && formik.values.lessors.length > 1 && (
-                        <Button
-                          type="text"
-                          danger
-                          icon={<Trash2 className="size-4" />}
-                          onClick={() => removeLessor(lessorIndex)}
-                          aria-label={t("common.delete")}
-                        />
-                      )}
-                    </Col>
                   </Row>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-        </Card>
+        </SectionCard>
 
         <ContractObjectTable formik={formik} disabled={disabled} />
       </fieldset>

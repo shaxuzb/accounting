@@ -460,7 +460,8 @@
       "purchaseServices": "Xarid xizmatlari",
       "pricingConditions": "Narxlash shartlari",
       "saleConditions": "Sotuv shartlari",
-      "integrations": "Integratsiyalar"
+      "integrations": "Integratsiyalar",
+      "accountingPolicy": "Buxgalteriya siyosati"
     },
     "descriptions": {
       "roles": "Tizimdagi rollar va ularning huquqlarini boshqarish.",
@@ -487,7 +488,8 @@
       "purchaseServices": "Xaridda ishlatiladigan xizmatlar ro'yxatini boshqarish.",
       "pricingConditions": "Narxlash usuli va yaxlitlash shartlarini boshqarish.",
       "saleConditions": "Sotuv tannarx va QQS shartlarini boshqarish.",
-      "integrations": "Didox, Edocs va Asl Belgi integratsiyalarini boshqarish."
+      "integrations": "Didox, Edocs va Asl Belgi integratsiyalarini boshqarish.",
+      "accountingPolicy": "Tashkilotning buxgalteriya hisoblash qoidalarini boshqarish."
     },
     "fields": {
       "accountNumber": "Hisob raqami",

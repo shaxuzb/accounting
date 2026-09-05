@@ -78,6 +78,7 @@ export interface RentalContractDetail extends RentalContractListItem {
   contractAmount?: number | null;
   contractTaxBaseAmount?: number | null;
   contractTaxAmount?: number | null;
+  totalContractAmount?: number | null;
   objects: RentalContractObject[];
 }
 

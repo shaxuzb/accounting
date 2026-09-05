@@ -695,10 +695,12 @@
       "regulatedObligationSettings": "Регулируемые обязательства",
       "openingBalance": "Начальный баланс",
       "openingInventory": "Ввод начальных остатков",
-      "integrations": "Интеграции"
+      "integrations": "Интеграции",
+      "accountingPolicy": "Учётная политика"
     },
     "descriptions": {
       "integrations": "Управление интеграциями dDocs и Asl Belgisi.",
+      "accountingPolicy": "Управление правилами бухгалтерского учёта организации.",
       "roles": "Управление ролями и правами доступа.",
       "users": "Управление пользователями и их ролями.",
       "organizations": "Управление данными организаций.",

@@ -89,6 +89,8 @@ export const rentalContractSchema = Yup.object({
     const contractEnd = value.endDate
       ? String(value.endDate).slice(0, 10)
       : null;
+    const contractDatesAreValid =
+      !contractEnd || contractEnd >= contractStart;
     const objects = value.objects ?? [];
     const utilitiesAreUnique = objects.every((object) => {
       const ids = object.utilities.map((utility) => utility.utilityServiceId);
@@ -102,6 +104,7 @@ export const rentalContractSchema = Yup.object({
       const datesAreInside =
         objectStart >= contractStart &&
         (!contractEnd || (objectEnd !== null && objectEnd <= contractEnd));
+      const objectDatesAreValid = !objectEnd || objectEnd >= objectStart;
       const areaIsValid =
         object.totalArea == null ||
         object.rentedArea == null ||
@@ -114,8 +117,13 @@ export const rentalContractSchema = Yup.object({
         : object.periodAmount != null &&
           object.periodAmount > 0 &&
           object.taxBaseAmount >= object.periodAmount;
-      return datesAreInside && areaIsValid && freeValuesAreValid;
+      return (
+        datesAreInside &&
+        objectDatesAreValid &&
+        areaIsValid &&
+        freeValuesAreValid
+      );
     });
-    return utilitiesAreUnique && objectsAreValid;
+    return contractDatesAreValid && utilitiesAreUnique && objectsAreValid;
   },
 );

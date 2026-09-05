@@ -63,6 +63,8 @@ import { fiscalCashRegisterPermissions } from "./pages/fiscalCashRegister/consta
 import RegulatedObligationSettingsListPage from "./pages/regulatedObligationSettings/screens/RegulatedObligationSettingsListPage";
 import RegulatedObligationSettingDetailPage from "./pages/regulatedObligationSettings/screens/RegulatedObligationSettingDetailPage";
 import { regulatedObligationSettingPermissions } from "./pages/regulatedObligationSettings/constants/permissions";
+import AccountingPolicyPage from "./pages/accountingPolicy/screens/AccountingPolicyListPage";
+import { accountingPolicyPermissions } from "./pages/accountingPolicy/constants/permissions";
 
 const settingsPermissions = [
   rolePermissions.view,
@@ -90,6 +92,7 @@ const settingsPermissions = [
   integrationPermissions.view,
   payrollComponentPermissions.view,
   regulatedObligationSettingPermissions.view,
+  accountingPolicyPermissions.view,
 ];
 
 const withPermission = (
@@ -337,6 +340,18 @@ export const settingsRoutes: RouteObject = {
           ),
         },
       ],
+    },
+    {
+      path: "accounting-policy",
+      handle: {
+        title: "settings.entities.accountingPolicy",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <AccountingPolicyPage />,
+        accountingPolicyPermissions.view,
+      ),
     },
     {
       path: "document-account-settings",

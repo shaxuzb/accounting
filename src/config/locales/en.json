@@ -455,6 +455,7 @@
       "pricingConditions": "Pricing conditions",
       "saleConditions": "Sale conditions",
       "integrations": "Integrations",
+      "accountingPolicy": "Accounting policy",
       "documentAccountSettings": "Document account settings",
       "regulatedObligationSettings": "Regulated obligations",
       "openingBalance": "Opening balance",
@@ -485,7 +486,8 @@
       "regulatedObligationSettings": "Manage tax, contribution and other obligation settings.",
       "openingBalance": "Enter the organization's opening balances by account.",
       "openingInventory": "Manage opening inventory.",
-      "integrations": "Manage dDocs and Asl Belgisi integrations."
+      "integrations": "Manage dDocs and Asl Belgisi integrations.",
+      "accountingPolicy": "Manage the organization’s accounting rules."
     },
     "fields": {
       "accountNumber": "Account number",

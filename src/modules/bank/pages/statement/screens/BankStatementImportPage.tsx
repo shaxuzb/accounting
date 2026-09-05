@@ -26,6 +26,10 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { useAppSelector } from "@/store/hooks";
+import {
+  usePersistedState,
+  useScopedStorageKey,
+} from "@/shared/persistence/usePersistedState";
 import BankStatementCard from "../components/BankStatementCard";
 import MissingBankAccountModal, {
   type BankInfoAssignment,
@@ -43,6 +47,11 @@ import type {
 } from "../types/type";
 import { getMissingCounterpartyKey } from "../utils/missingCounterpartyKey";
 import { normalizeBankStatements } from "../utils/normalizeBankStatement";
+import {
+  createBankStatementImportDraft,
+  createEmptyBankStatementImportDraft,
+  type BankStatementImportDraft,
+} from "../utils/bankImportDraft";
 import {
   canMapBankCounterparty,
   findMatchingOrgBankAccount,
@@ -107,8 +116,43 @@ export default function BankStatementImportPage() {
   const parseMutation = useParseBankStatement();
   const createOperations = useCreateBankOperations();
   const { data: classificationOptions = [] } = useGetBankOperationCategories();
-  const [cards, setCards] = useState<BankStatementCardData[]>([]);
-  const [selectedBankId, setSelectedBankId] = useState<number | null>(null);
+  const bankImportDraftKey = useScopedStorageKey(
+    "form-draft",
+    "bank-statement-import",
+  );
+  const [bankImportDraft, setBankImportDraft, clearBankImportDraft] =
+    usePersistedState<BankStatementImportDraft>(
+      bankImportDraftKey,
+      createEmptyBankStatementImportDraft(),
+      { storage: "local", debounceMs: 300 },
+    );
+  const cards = bankImportDraft.cards;
+  const selectedBankId = bankImportDraft.selectedBankId;
+  const setCards = useCallback(
+    (
+      nextCards:
+        | BankStatementCardData[]
+        | ((previous: BankStatementCardData[]) => BankStatementCardData[]),
+    ) => {
+      setBankImportDraft((previous) => {
+        const cards =
+          typeof nextCards === "function"
+            ? nextCards(previous.cards)
+            : nextCards;
+        return createBankStatementImportDraft(previous.selectedBankId, cards);
+      });
+    },
+    [setBankImportDraft],
+  );
+  const setSelectedBankId = useCallback(
+    (nextBankId: number | null) => {
+      setBankImportDraft((previous) => ({
+        ...previous,
+        selectedBankId: nextBankId,
+      }));
+    },
+    [setBankImportDraft],
+  );
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [operationFilter, setOperationFilter] =
     useState<OperationFilter>("new");
@@ -510,9 +554,8 @@ export default function BankStatementImportPage() {
   };
 
   const handleClearImport = () => {
-    setCards([]);
+    clearBankImportDraft();
     setExpandedIds(new Set());
-    setSelectedBankId(null);
     setOperationFilter("new");
     const nextParams = new URLSearchParams(searchParams);
     nextParams.delete("dateFrom");

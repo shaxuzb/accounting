@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import type { RentalContractForm } from "../types/form";
 import type { RentalLessorForm } from "../types/form";
+import { updateRentalLessorIdentifier } from "../utils/lessorIdentifier";
 import { useLookupRentalLessor } from "./useLookupRentalLessor";
 
 export default function useRentalLessorLookup(
@@ -22,6 +23,7 @@ export default function useRentalLessorLookup(
     (index: number, value: string) => {
       const current = formik.values.lessors[index];
       if (!current) return;
+      let next = current;
       const previous = previousLookupValues.current[index];
       if (previous) {
         const cleared = { ...current };
@@ -31,17 +33,14 @@ export default function useRentalLessorLookup(
           }
         });
         delete previousLookupValues.current[index];
-        formik.setFieldValue(`lessors[${index}]`, {
-          ...cleared,
-          inn: null,
-          pinfl: null,
-          [value.length === 14 ? "pinfl" : "inn"]: value || null,
-        }, false);
-        return;
+        next = cleared;
       }
 
-      formik.setFieldValue(`lessors[${index}].inn`, value.length === 14 ? null : value || null, false);
-      formik.setFieldValue(`lessors[${index}].pinfl`, value.length === 14 ? value || null : null, false);
+      formik.setFieldValue(
+        `lessors[${index}]`,
+        updateRentalLessorIdentifier(next, value),
+        false,
+      );
     },
     [formik],
   );

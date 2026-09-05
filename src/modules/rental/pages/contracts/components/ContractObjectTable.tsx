@@ -4,7 +4,7 @@ import { Button, Col, Collapse, Row } from "antd";
 import type { CollapseProps } from "antd";
 import type { FormikProps } from "formik";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2 } from "lucide-react";
+import { Building2, Plus, Trash2 } from "lucide-react";
 import InputNumber from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import InputTextArea from "@/components/fields/InputTextArea";
@@ -22,6 +22,7 @@ import {
   appendRentalContractObject,
   removeRentalContractObject,
 } from "../utils/objectEditor";
+import RentalUtilityServiceCards from "./RentalUtilityServiceCards";
 
 const periodOptions = [
   { value: "MONTH", label: "rental.period.month" },
@@ -60,30 +61,12 @@ export default function ContractObjectTable({
     setActiveKeys(["object-0"]);
   };
 
-  const addUtility = (objectIndex: number) => {
-    const current = objects[objectIndex];
-    if (!current) return;
-    void formik.setFieldValue(`objects[${objectIndex}].utilities`, [
-      ...current.utilities,
-      { utilityServiceId: null, payerCode: "LESSOR" },
-    ]);
-  };
-
-  const removeUtility = (objectIndex: number, utilityIndex: number) => {
-    const current = objects[objectIndex];
-    if (!current) return;
-    void formik.setFieldValue(
-      `objects[${objectIndex}].utilities`,
-      current.utilities.filter((_, index) => index !== utilityIndex),
-    );
-  };
-
   const renderObjectFields = (objectIndex: number) => {
     const object = objects[objectIndex];
     if (!object) return null;
 
     return (
-      <div className="rounded-xl border border-border/60 bg-background/40 p-2 sm:p-3">
+      <div className="rounded-xl border border-border/60 bg-background/40 p-2 sm:p-3 ">
       <Row gutter={[20, 0]}>
         <Col span={4}>
           <SelectCustom
@@ -222,64 +205,11 @@ export default function ContractObjectTable({
           />
         </Col>
         <Col span={24}>
-          <div className="mt-1 rounded-lg border border-border/50 p-3">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-semibold">
-                {t("rental.fields.utilities")}
-              </span>
-              {!disabled && (
-                <Button
-                  type="dashed"
-                  size="small"
-                  icon={<Plus className="size-4" />}
-                  onClick={() => addUtility(objectIndex)}
-                >
-                  {t("common.add")}
-                </Button>
-              )}
-            </div>
-            <div className="space-y-2">
-              {object.utilities.map((_utility, utilityIndex) => (
-                <Row gutter={[12, 0]} key={`utility-${utilityIndex}`}>
-                  <Col span={10}>
-                    <SelectCustom
-                      formik={formik as FormikProps<object>}
-                      fieldName={`objects[${objectIndex}].utilities[${utilityIndex}].utilityServiceId`}
-                      path="manuals/utility-services"
-                      label="rental.fields.utilityService"
-                      search
-                      required
-                      disabled={disabled}
-                    />
-                  </Col>
-                  <Col span={10}>
-                    <SelectStatic
-                      formik={formik as FormikProps<object>}
-                      fieldName={`objects[${objectIndex}].utilities[${utilityIndex}].payerCode`}
-                      label="rental.fields.utilityPayer"
-                      options={[
-                        { value: "LESSOR", label: "rental.utility.lessor" },
-                        { value: "LESSEE", label: "rental.utility.lessee" },
-                      ]}
-                      required
-                      disabled={disabled}
-                    />
-                  </Col>
-                  <Col span={4} className="flex items-center justify-end">
-                    {!disabled && (
-                      <Button
-                        type="text"
-                        danger
-                        icon={<Trash2 className="size-4" />}
-                        onClick={() => removeUtility(objectIndex, utilityIndex)}
-                        aria-label={t("common.delete")}
-                      />
-                    )}
-                  </Col>
-                </Row>
-              ))}
-            </div>
-          </div>
+          <RentalUtilityServiceCards
+            formik={formik}
+            objectIndex={objectIndex}
+            disabled={disabled}
+          />
         </Col>
       </Row>
       </div>
@@ -311,7 +241,9 @@ export default function ContractObjectTable({
               removeObject(objectIndex);
             }}
             aria-label={t("common.delete")}
-          />
+          >
+            {t("common.delete")}
+          </Button>
         ) : null,
       children: renderObjectFields(objectIndex),
     }),
@@ -320,12 +252,14 @@ export default function ContractObjectTable({
   return (
     <SectionCard
       title={t("rental.contracts.objects")}
+      icon={<Building2 className="size-4" />}
       bodyClassName="p-5! sm:p-6!"
       extra={
         !disabled && (
           <Button
             type="primary"
             ghost
+            size="small"
             icon={<Plus className="size-4" />}
             onClick={addObject}
           >

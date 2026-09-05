@@ -25,7 +25,7 @@ export const emptyObject = (startDate = "", endDate = "") => ({
   taxBaseAmount: null,
   taxRate: null,
   expenseAccountId: null,
-  utilities: [],
+    utilities: [],
 });
 
 export const createRentalContractDefaults = (

@@ -19,6 +19,7 @@ import type {
 import SectionCard from "@/components/ui/card/SectionCard";
 import { formatDate, numberSpacing } from "@/utils/utils";
 import { formatRentalLessors } from "../../utils/lessor";
+import RentalUtilityServiceCards from "../RentalUtilityServiceCards";
 
 interface ContractReadonlyViewProps {
   data: RentalContractDetail;
@@ -58,9 +59,9 @@ export default function ContractReadonlyView({
           icon={<CircleDollarSign size={24} strokeWidth={1.8} />}
           label={t("rental.fields.amount")}
           value={
-            data.contractAmount == null
+            data.totalContractAmount == null
               ? "-"
-              : `${numberSpacing(data.contractAmount)} ${currency}`
+              : `${numberSpacing(data.totalContractAmount)} ${currency}`
           }
           emphasized
         />
@@ -220,20 +221,24 @@ export default function ContractReadonlyView({
                   .filter(Boolean)
                   .join(" - ") || "-",
             },
-            {
-              title: t("rental.fields.utilities"),
-              render: (_: unknown, record) =>
-                record.utilities?.length
-                  ? record.utilities
-                      .map(
-                        (utility) =>
-                          `${utility.utilityServiceName || utility.utilityServiceCode || utility.utilityServiceId} (${utility.payerCode})`,
-                      )
-                      .join(", ")
-                  : "-",
-            },
           ]}
         />
+        <div className="mt-4 space-y-3">
+          {data.objects.map((object, index) => (
+            <SectionCard
+              key={object.id ?? `rental-object-${index}`}
+              title={`${t("rental.contracts.objectNumber", {
+                number: index + 1,
+              })}${object.objectName ? ` — ${object.objectName}` : ""}`}
+              bodyClassName="p-3! sm:p-4!"
+            >
+              <RentalUtilityServiceCards
+                utilities={object.utilities ?? []}
+                readOnly
+              />
+            </SectionCard>
+          ))}
+        </div>
       </SectionCard>
     </div>
   );

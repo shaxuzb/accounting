@@ -32,7 +32,7 @@ interface PersistedStore<T> {
   clear: (value: T) => void;
 }
 
-const createStore = <T,>(
+const createStore = <T>(
   key: string,
   initialValue: T,
   storage: PersistStorage,
@@ -80,7 +80,7 @@ const createStore = <T,>(
   };
 };
 
-export const usePersistedState = <T,>(
+export const usePersistedState = <T>(
   key: string,
   initialValue: T,
   options: PersistedStateOptions = {},
@@ -88,9 +88,9 @@ export const usePersistedState = <T,>(
   const { storage = "session", debounceMs = 250 } = options;
   const store = useMemo(() => {
     return createStore(key, initialValue, storage, debounceMs);
-  // The first value is only used when this scoped store is created. Keeping the
-  // store stable prevents a new object default from resetting state each render.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // The first value is only used when this scoped store is created. Keeping the
+    // store stable prevents a new object default from resetting state each render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounceMs, key, storage]);
   const value = useSyncExternalStore(
     store.subscribe,

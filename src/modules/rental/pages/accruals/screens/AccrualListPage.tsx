@@ -1,6 +1,6 @@
 import { Button, Table } from "antd";
 import type { TableColumnsType } from "antd";
-import { Plus } from "lucide-react";
+import { Plus, ReceiptText } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -29,6 +29,7 @@ import GenerateDueModal from "../components/GenerateDueModal";
 import ContractFilter from "../components/ContractFilter";
 import { formatRentalLessors } from "../../contracts/utils/lessor";
 import type { RentalGenerateDuePayload } from "../types/type";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const parsed = Number(value);
@@ -67,7 +68,11 @@ export default function AccrualListPage() {
         t("rental.messages.generated", { count: result.createdDocumentCount }),
       );
       if (result.documentIds.length) {
-        toast(t("rental.messages.documentIds", { ids: result.documentIds.join(", ") }));
+        toast(
+          t("rental.messages.documentIds", {
+            ids: result.documentIds.join(", "),
+          }),
+        );
       }
       setGenerateOpen(false);
       await refetch();
@@ -98,6 +103,19 @@ export default function AccrualListPage() {
           ),
       },
       { title: t("rental.fields.contractNumber"), dataIndex: "contractNumber" },
+      {
+        dataIndex: "accountingEntriesReport",
+        title: t("bank.fields.accountingEntries"),
+        align: "center",
+        render: (_, record) => (
+          <AccountingEntriesButton
+            documentTypeId={26}
+            documentId={record.id}
+            statusId={record.statusId}
+            icon={<ReceiptText className="size-4" />}
+          />
+        ),
+      },
       {
         title: t("rental.fields.lessors"),
         render: (_, record) => formatRentalLessors(record.lessors),
@@ -140,14 +158,13 @@ export default function AccrualListPage() {
         fixed: "right",
         width: 70,
         render: (_, record) => {
-          const rowPermissions =
-          isRentalDraft(record.statusId)
-              ? permissions
-              : permissions.filter(
-                  (permission) =>
-                    permission !== rentalAccrualPermissions.update &&
-                    permission !== rentalAccrualPermissions.delete,
-                );
+          const rowPermissions = isRentalDraft(record.statusId)
+            ? permissions
+            : permissions.filter(
+                (permission) =>
+                  permission !== rentalAccrualPermissions.update &&
+                  permission !== rentalAccrualPermissions.delete,
+              );
           return (
             <ActionColumn
               record={record}

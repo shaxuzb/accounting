@@ -26,7 +26,7 @@ const MainLayout = () => {
       ref={containerRef}
       className="relative h-screen overflow-hidden"
     >
-      <div className="relative z-10! flex h-full box-border! bg-mauve-50">
+      <div className="relative z-10! flex h-full box-border!">
         <Sidebar />
         <div className="relative flex w-full min-w-0 flex-1 flex-col overflow-hidden">
           <Navbar />
