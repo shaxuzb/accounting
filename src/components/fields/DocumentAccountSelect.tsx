@@ -19,11 +19,17 @@ type DocumentAccountSelectProps = Omit<
 > & {
   documentTypeId: string | number;
   documentRoleCode: string;
+  /** Payroll can expose recommended accounts without forcing the first option. */
+  allowUserSelection?: boolean;
+  /** Use the full chart of accounts when the role has no configured options. */
+  fallbackToAllAccounts?: boolean;
 };
 
 export default function DocumentAccountSelect({
   documentTypeId,
   documentRoleCode,
+  allowUserSelection = false,
+  fallbackToAllAccounts = false,
   ...props
 }: DocumentAccountSelectProps) {
   const settingsQuery = useGetDetailDocumentAccountSettings(
@@ -40,21 +46,32 @@ export default function DocumentAccountSelect({
   );
   const selectedDefaultAccount =
     defaultAccount ?? configuredRole?.accounts?.[0];
-  const isAccountLocked = selectedDefaultAccount?.canChange === false;
+  const hasConfiguredAccounts = Boolean(configuredRole?.accounts?.length);
+  const useFallbackAccounts =
+    fallbackToAllAccounts && !settingsQuery.isLoading && !hasConfiguredAccounts;
+  const isAccountLocked =
+    !allowUserSelection && selectedDefaultAccount?.canChange === false;
   const isEnabled = props.enabled !== false && !settingsQuery.isLoading;
 
   return (
     <SelectCustom
       {...props}
       enabled={isEnabled}
+      autoSelectSingle={props.autoSelectSingle ?? !allowUserSelection}
       autoSelectValue={
-        props.autoSelectValue ?? selectedDefaultAccount?.chartAccountId
+        allowUserSelection
+          ? props.autoSelectValue
+          : (props.autoSelectValue ?? selectedDefaultAccount?.chartAccountId)
       }
       autoSelectKeys={
         props.autoSelectKeys?.length ? props.autoSelectKeys : ["id"]
       }
-      path={documentAccountChartAccountsPath(documentTypeId)}
-      queryParams={{ documentRoleCode }}
+      path={
+        useFallbackAccounts
+          ? "manuals/chart-accounts"
+          : documentAccountChartAccountsPath(documentTypeId)
+      }
+      queryParams={useFallbackAccounts ? undefined : { documentRoleCode }}
       displayConfig={{
         ...chartAccountSelectDisplayConfig,
         selectedLabel: chartAccountNumberSelectedLabel,

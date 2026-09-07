@@ -1,6 +1,7 @@
 import InputNumber from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectStatic from "@/components/fields/SelectStatic";
 import SwitchField from "@/components/fields/SwitchField";
@@ -27,6 +28,19 @@ import {
 } from "../hooks";
 import type { PayrollComponentForm } from "../types/form";
 import { payrollComponentSchema } from "../types/schema";
+
+const PAYROLL_ACCRUAL_DOCUMENT_TYPE_ID = 9;
+
+const expenseRoleByType = {
+  EARNING: "salary_expense",
+  EMPLOYER_TAX: "employer_tax_expense",
+} as const;
+
+const liabilityRoleByType = {
+  EARNING: "salary_payable",
+  DEDUCTION: "deduction_payable",
+  EMPLOYER_TAX: "employer_tax_payable",
+} as const;
 
 const defaultValues: PayrollComponentForm = {
   code: "",
@@ -119,6 +133,13 @@ export default function PayrollComponentAddEditPage({
 
   const method = formik.values.calculationMethod;
   const componentType = formik.values.componentType;
+  const expenseRole = componentType
+    ? expenseRoleByType[componentType as keyof typeof expenseRoleByType]
+    : undefined;
+  const liabilityRole = componentType
+    ? liabilityRoleByType[componentType as keyof typeof liabilityRoleByType]
+    : undefined;
+  const requiresComponentAccounts = componentType === "RECLASSIFICATION";
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   const handleClose = () => {
@@ -236,28 +257,62 @@ export default function PayrollComponentAddEditPage({
             </Col>
 
             <Col xs={24} md={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="expenseAccountId"
-                label="payroll.fields.expenseAccount"
-                path={selectListEndpoints.chartAccountsSelectList}
-                displayConfig={chartAccountSelectDisplayConfig}
-                search
-                clearable
-                marginBottom="mb-4"
-              />
+              {expenseRole ? (
+                <DocumentAccountSelect
+                  formik={formik}
+                  fieldName="expenseAccountId"
+                  label="payroll.fields.expenseAccount"
+                  documentTypeId={PAYROLL_ACCRUAL_DOCUMENT_TYPE_ID}
+                  documentRoleCode={expenseRole}
+                  allowUserSelection
+                  fallbackToAllAccounts
+                  search
+                  clearable
+                  required={requiresComponentAccounts}
+                  marginBottom="mb-4"
+                />
+              ) : (
+                <SelectCustom
+                  formik={formik}
+                  fieldName="expenseAccountId"
+                  label="payroll.fields.expenseAccount"
+                  path={selectListEndpoints.chartAccountsSelectList}
+                  displayConfig={chartAccountSelectDisplayConfig}
+                  search
+                  clearable
+                  required={requiresComponentAccounts}
+                  marginBottom="mb-4"
+                />
+              )}
             </Col>
             <Col xs={24} md={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="liabilityAccountId"
-                label="payroll.fields.liabilityAccount"
-                path={selectListEndpoints.chartAccountsSelectList}
-                displayConfig={chartAccountSelectDisplayConfig}
-                search
-                clearable
-                marginBottom="mb-4"
-              />
+              {liabilityRole ? (
+                <DocumentAccountSelect
+                  formik={formik}
+                  fieldName="liabilityAccountId"
+                  label="payroll.fields.liabilityAccount"
+                  documentTypeId={PAYROLL_ACCRUAL_DOCUMENT_TYPE_ID}
+                  documentRoleCode={liabilityRole}
+                  allowUserSelection
+                  fallbackToAllAccounts
+                  search
+                  clearable
+                  required={requiresComponentAccounts}
+                  marginBottom="mb-4"
+                />
+              ) : (
+                <SelectCustom
+                  formik={formik}
+                  fieldName="liabilityAccountId"
+                  label="payroll.fields.liabilityAccount"
+                  path={selectListEndpoints.chartAccountsSelectList}
+                  displayConfig={chartAccountSelectDisplayConfig}
+                  search
+                  clearable
+                  required={requiresComponentAccounts}
+                  marginBottom="mb-4"
+                />
+              )}
             </Col>
 
             <Col xs={24} md={12}>

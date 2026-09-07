@@ -12,6 +12,12 @@ export interface PayrollCalculateForm {
   docDate: string;
   documentKind: PayrollDocumentKind;
   correctionOfDocId: number | null;
+  salaryExpenseAccountId: number | null;
+  salaryPayableAccountId: number | null;
+  deductionPayableAccountId: number | null;
+  employerTaxExpenseAccountId: number | null;
+  employerTaxPayableAccountId: number | null;
+  advanceReceivableAccountId: number | null;
   note: string | null;
   adjustments: PayrollDocumentAdjustmentForm[];
 }

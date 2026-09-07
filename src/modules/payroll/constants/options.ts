@@ -51,6 +51,7 @@ export const COMPONENT_TYPES = [
   "EARNING",
   "DEDUCTION",
   "EMPLOYER_TAX",
+  "RECLASSIFICATION",
 ] as const;
 export type PayrollComponentType = (typeof COMPONENT_TYPES)[number];
 
@@ -70,12 +71,18 @@ export const componentTypeOptions: readonly StaticOption[] = [
     label: "payroll.enums.componentType.EMPLOYER_TAX",
     description: "payroll.enums.componentType.EMPLOYER_TAX_HINT",
   },
+  {
+    value: "RECLASSIFICATION",
+    label: "payroll.enums.componentType.RECLASSIFICATION",
+    description: "payroll.enums.componentType.RECLASSIFICATION_HINT",
+  },
 ] as const;
 
 export const componentTypeColor: Record<PayrollComponentType, string> = {
   EARNING: "green",
   DEDUCTION: "red",
   EMPLOYER_TAX: "gold",
+  RECLASSIFICATION: "purple",
 };
 
 export const CALCULATION_METHODS = [

@@ -34,6 +34,8 @@ export interface PayrollPayment {
   cashBoxName?: string | null;
   sourceChartAccountId?: number | null;
   sourceChartAccountName?: string | null;
+  offsetAccountId?: number | null;
+  offsetAccountName?: string | null;
   currencyId?: number | null;
   currencyName?: string | null;
   totalAmount?: number | null;

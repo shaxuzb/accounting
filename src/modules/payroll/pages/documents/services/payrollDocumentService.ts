@@ -16,7 +16,7 @@ export const payrollDocumentService = {
       .then((res) => res.data),
   calculate: (payload: PayrollCalculateForm) =>
     $axiosPrivate
-      .post<PayrollDocument>(endpoints.calculate, payload)
+      .post<PayrollDocument | number>(endpoints.calculate, payload)
       .then((res) => res.data),
   confirm: (id: string | number) =>
     $axiosPrivate.put(endpoints.confirm(id)).then((res) => res.data),

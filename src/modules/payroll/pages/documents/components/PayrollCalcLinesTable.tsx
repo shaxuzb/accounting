@@ -3,6 +3,7 @@ import {
   type PayrollComponentType,
 } from "@/modules/payroll/constants/options";
 import { money } from "@/modules/payroll/utils/format";
+import type { DocumentAccountOption } from "@/shared/documentAccounts";
 import { Empty, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import { useTranslation } from "react-i18next";
@@ -10,11 +11,26 @@ import type { PayrollCalcLine } from "../types/type";
 
 interface Props {
   lines?: PayrollCalcLine[];
+  accountById?: ReadonlyMap<number, DocumentAccountOption>;
 }
 
 /** Xodim bo'yicha hisoblash tafsiloti (komponentlar kesimi). */
-export default function PayrollCalcLinesTable({ lines }: Props) {
+export default function PayrollCalcLinesTable({ lines, accountById }: Props) {
   const { t } = useTranslation();
+
+  const renderAccount = (accountId: number | null | undefined) => {
+    if (accountId == null) return "—";
+    const account = accountById?.get(accountId);
+    const number = account?.number ?? account?.code;
+    const name = account?.name;
+
+    return (
+      <div className="flex min-w-28 flex-col text-left">
+        <span className="font-medium">{number ?? `#${accountId}`}</span>
+        {name && <span className="text-xs text-secondary-text">{name}</span>}
+      </div>
+    );
+  };
 
   const columns: TableColumnsType<PayrollCalcLine> = [
     {
@@ -92,6 +108,18 @@ export default function PayrollCalcLinesTable({ lines }: Props) {
           {money(value)}
         </span>
       ),
+    },
+    {
+      dataIndex: "debitAccountId",
+      title: t("payroll.fields.debitAccount"),
+      width: 150,
+      render: (value: number | null) => renderAccount(value),
+    },
+    {
+      dataIndex: "creditAccountId",
+      title: t("payroll.fields.creditAccount"),
+      width: 150,
+      render: (value: number | null) => renderAccount(value),
     },
     {
       dataIndex: "note",

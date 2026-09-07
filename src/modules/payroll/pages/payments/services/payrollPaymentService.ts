@@ -16,7 +16,7 @@ export const payrollPaymentService = {
       .then((res) => res.data),
   create: (payload: PayrollPaymentForm) =>
     $axiosPrivate
-      .post<PayrollPayment>(endpoints.create, payload)
+      .post<PayrollPayment | number>(endpoints.create, payload)
       .then((res) => res.data),
   confirm: (id: string | number) =>
     $axiosPrivate.put(endpoints.confirm(id)).then((res) => res.data),

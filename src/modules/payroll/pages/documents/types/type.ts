@@ -17,6 +17,8 @@ export interface PayrollCalcLine {
   amount: number;
   isManual?: boolean;
   note?: string | null;
+  debitAccountId?: number | null;
+  creditAccountId?: number | null;
 }
 
 export interface PayrollDocumentLine {
@@ -51,6 +53,12 @@ export interface PayrollDocument {
   documentKind: PayrollDocumentKind;
   correctionOfDocId?: number | null;
   correctionOfDocNumber?: string | null;
+  salaryExpenseAccountId?: number | null;
+  salaryPayableAccountId?: number | null;
+  deductionPayableAccountId?: number | null;
+  employerTaxExpenseAccountId?: number | null;
+  employerTaxPayableAccountId?: number | null;
+  advanceReceivableAccountId?: number | null;
   currencyId?: number | null;
   note?: string | null;
   employeeCount?: number | null;

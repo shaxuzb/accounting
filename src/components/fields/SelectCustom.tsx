@@ -59,6 +59,7 @@ interface SelectCustomProps {
   disabledValue?: string | number | null;
   getFirst?: boolean;
   getFirstOnlyWhenSingle?: boolean;
+  autoSelectSingle?: boolean;
   marginBottom?: string;
   addOption?: {
     bool: boolean;
@@ -130,6 +131,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     refetchSync,
     getFirst = false,
     getFirstOnlyWhenSingle = false,
+    autoSelectSingle = true,
     path,
     enabled = true,
     isOrganizationId = false,
@@ -259,7 +261,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     const shouldAutoSelect = autoSelectedOption
         ? true
       : formik
-        ? selectOptions.length < 2 || getFirst
+        ? autoSelectSingle && (selectOptions.length < 2 || getFirst)
         : getFirstOnlyWhenSingle
           ? selectOptions.length === 1
           : getFirst;
@@ -317,6 +319,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     getOptionLabel,
     getFirst,
     getFirstOnlyWhenSingle,
+    autoSelectSingle,
     currentValue,
     onChange,
     autoSelectValue,

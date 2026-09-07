@@ -32,6 +32,7 @@ export const payrollPaymentSchema = Yup.object({
         schema.required(() => tMessage("payroll.messages.cashBoxRequired")),
     }),
   sourceChartAccountId: requiredNumber("payroll.fields.sourceChartAccount"),
+  offsetAccountId: requiredNumber("payroll.fields.offsetAccount"),
   currencyId: requiredNumber("payroll.fields.currency"),
   note: Yup.string().nullable(),
   lines: Yup.array()

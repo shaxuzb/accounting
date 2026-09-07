@@ -7,6 +7,7 @@ import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeS
 import PayrollPeriodSelect from "@/modules/payroll/components/PayrollPeriodSelect";
 import { documentKindOptions } from "@/modules/payroll/constants/options";
 import { DATE_TIME_FORMAT } from "@/modules/payroll/utils/format";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { Button, Col, Empty, Form, Modal, Row, Select } from "antd";
 import dayjs from "dayjs";
@@ -21,12 +22,22 @@ import {
 } from "../hooks";
 import type { PayrollCalculateForm } from "../types/form";
 import { payrollCalculateSchema } from "../types/schema";
+import {
+  PAYROLL_ACCRUAL_DOCUMENT_TYPE_ID,
+  payrollDocumentAccountFields,
+} from "../constants/accounts";
 
 const defaultValues: PayrollCalculateForm = {
   periodId: null,
   docDate: dayjs().format(DATE_TIME_FORMAT),
   documentKind: "REGULAR",
   correctionOfDocId: null,
+  salaryExpenseAccountId: null,
+  salaryPayableAccountId: null,
+  deductionPayableAccountId: null,
+  employerTaxExpenseAccountId: null,
+  employerTaxPayableAccountId: null,
+  advanceReceivableAccountId: null,
   note: null,
   adjustments: [],
 };
@@ -66,7 +77,9 @@ export default function PayrollCalculateModal({
         toast.success(t("payroll.messages.documentCalculated"));
         helpers.resetForm({ values: defaultValues });
         onClose();
-        onCreated?.(created.id);
+        const createdId =
+          typeof created === "number" ? created : Number(created.id);
+        if (Number.isFinite(createdId) && createdId > 0) onCreated?.(createdId);
       } catch (error) {
         errorHandlers(error);
       }
@@ -201,6 +214,36 @@ export default function PayrollCalculateModal({
             />
           </Col>
         </Row>
+
+        <div className="mb-4 rounded-xl border border-border p-3">
+          <div className="mb-3">
+            <div className="text-sm font-semibold">
+              {t("payroll.documents.accountsTitle")}
+            </div>
+            <div className="text-xs text-secondary-text">
+              {t("payroll.documents.accountsHint")}
+            </div>
+          </div>
+          <Row gutter={[16, 0]}>
+            {payrollDocumentAccountFields.map((account) => (
+              <Col xs={24} md={12} key={account.fieldName}>
+                <DocumentAccountSelect
+                  formik={formik}
+                  fieldName={account.fieldName}
+                  label={account.label}
+                  documentTypeId={PAYROLL_ACCRUAL_DOCUMENT_TYPE_ID}
+                  documentRoleCode={account.roleCode}
+                  allowUserSelection
+                  fallbackToAllAccounts
+                  search
+                  required
+                  clearable
+                  marginBottom="mb-4"
+                />
+              </Col>
+            ))}
+          </Row>
+        </div>
 
         {isCorrection && (
           <div className="mb-4 rounded-xl border border-border p-3">

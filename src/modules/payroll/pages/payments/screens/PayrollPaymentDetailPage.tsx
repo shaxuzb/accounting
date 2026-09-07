@@ -1,4 +1,5 @@
 import InputTextArea from "@/components/fields/InputTextArea";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectStatic from "@/components/fields/SelectStatic";
@@ -114,7 +115,11 @@ export default function PayrollPaymentDetailPage() {
       try {
         const created = await createMutation.mutateAsync(payload);
         toast.success(t("payroll.messages.paymentCreated"));
-        navigate(`${LIST_PATH}/${created.id}`, { replace: true });
+        const createdId =
+          typeof created === "number" ? created : Number(created.id);
+        if (Number.isFinite(createdId) && createdId > 0) {
+          navigate(`${LIST_PATH}/${createdId}`, { replace: true });
+        }
       } catch (error) {
         errorHandlers(error);
       }
@@ -148,6 +153,7 @@ export default function PayrollPaymentDetailPage() {
           bankAccountId: true,
           cashBoxId: true,
           sourceChartAccountId: true,
+          offsetAccountId: true,
           currencyId: true,
           lines: values.lines.map(() => ({ employeeId: true, amount: true })),
         },
@@ -219,7 +225,7 @@ export default function PayrollPaymentDetailPage() {
                     required
                     disabled={!isCreate}
                     marginBottom="mb-4"
-                    resetFields={["payrollDocId"]}
+                    resetFields={["payrollDocId", "offsetAccountId"]}
                   />
                 </Col>
                 <Col xs={24} md={8}>
@@ -332,6 +338,26 @@ export default function PayrollPaymentDetailPage() {
                     displayConfig={chartAccountSelectDisplayConfig}
                     search
                     required
+                    disabled={!isCreate}
+                    marginBottom="mb-4"
+                  />
+                </Col>
+                <Col xs={24} md={8}>
+                  <DocumentAccountSelect
+                    formik={formik}
+                    fieldName="offsetAccountId"
+                    label="payroll.fields.offsetAccount"
+                    documentTypeId={9}
+                    documentRoleCode={
+                      values.paymentKind === "ADVANCE"
+                        ? "advance_receivable"
+                        : "salary_payable"
+                    }
+                    allowUserSelection
+                    fallbackToAllAccounts
+                    search
+                    required
+                    clearable
                     disabled={!isCreate}
                     marginBottom="mb-4"
                   />

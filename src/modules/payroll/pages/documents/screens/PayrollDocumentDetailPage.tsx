@@ -33,8 +33,10 @@ import {
   useConfirmPayrollDocument,
   useDeletePayrollDocument,
   useGetDetailPayrollDocument,
+  usePayrollChartAccounts,
 } from "../hooks";
-import type { PayrollDocumentLine } from "../types/type";
+import { payrollDocumentAccountFields } from "../constants/accounts";
+import type { PayrollDocument, PayrollDocumentLine } from "../types/type";
 
 const LIST_PATH = "/main/payroll/documents";
 
@@ -53,6 +55,17 @@ export default function PayrollDocumentDetailPage() {
   const deleteMutation = useDeletePayrollDocument();
 
   const record = detailQuery.data;
+  const chartAccountsQuery = usePayrollChartAccounts(Boolean(record));
+  const accountById = useMemo(
+    () =>
+      new Map(
+        (chartAccountsQuery.data ?? []).map((account) => [
+          account.id,
+          account,
+        ]),
+      ),
+    [chartAccountsQuery.data],
+  );
   const statusId = record?.statusId ?? 1;
   const isDraft = isDraftStatus(statusId);
   const currency = record?.currencyName ?? "";
@@ -75,6 +88,21 @@ export default function PayrollDocumentDetailPage() {
         .includes(query),
     );
   }, [record?.lines, search]);
+
+  const renderAccount = (accountId: number | null | undefined) => {
+    if (accountId == null) return "—";
+    const account = accountById.get(accountId);
+    const number = account?.number ?? account?.code;
+
+    return (
+      <div className="flex flex-col">
+        <span className="font-medium">{number ?? `#${accountId}`}</span>
+        {account?.name && (
+          <span className="text-xs text-secondary-text">{account.name}</span>
+        )}
+      </div>
+    );
+  };
 
   const runMutation = async (
     action: () => Promise<unknown>,
@@ -334,6 +362,33 @@ export default function PayrollDocumentDetailPage() {
       </DocumentSummary>
 
       <SectionCard
+        title="payroll.documents.accountsTitle"
+        description="payroll.documents.accountsSavedHint"
+        icon={<Landmark className="size-4" />}
+      >
+        <dl className="grid gap-x-6 gap-y-4 text-sm sm:grid-cols-2 lg:grid-cols-3">
+          {payrollDocumentAccountFields.map((account) => (
+            <div key={account.fieldName}>
+              <dt className="text-secondary-text">{t(account.label)}</dt>
+              <dd className="mt-1">
+                {renderAccount(
+                  record[account.fieldName as keyof PayrollDocument] as
+                    | number
+                    | null
+                    | undefined,
+                )}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        {chartAccountsQuery.isFetching && (
+          <div className="mt-3 text-xs text-secondary-text">
+            {t("payroll.documents.accountsLoading")}
+          </div>
+        )}
+      </SectionCard>
+
+      <SectionCard
         className="min-w-0 overflow-hidden"
         title="payroll.documents.employeesTitle"
         description="payroll.documents.employeesHint"
@@ -360,7 +415,10 @@ export default function PayrollDocumentDetailPage() {
           expandable={{
             expandedRowRender: (employee) => (
               <div className="min-w-0 overflow-hidden rounded-lg border border-border p-2">
-                <PayrollCalcLinesTable lines={employee.calcLines} />
+                <PayrollCalcLinesTable
+                  lines={employee.calcLines}
+                  accountById={accountById}
+                />
               </div>
             ),
             rowExpandable: (employee) => Boolean(employee.calcLines?.length),

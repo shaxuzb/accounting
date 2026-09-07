@@ -22,6 +22,7 @@ export interface PayrollPaymentForm {
   bankAccountId: number | null;
   cashBoxId: number | null;
   sourceChartAccountId: number | null;
+  offsetAccountId: number | null;
   currencyId: number | null;
   note: string | null;
   lines: PayrollPaymentLineForm[];

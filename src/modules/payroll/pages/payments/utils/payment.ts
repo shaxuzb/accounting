@@ -28,6 +28,7 @@ export const createDefaultPaymentForm = (): PayrollPaymentForm => ({
   bankAccountId: null,
   cashBoxId: null,
   sourceChartAccountId: null,
+  offsetAccountId: null,
   currencyId: null,
   note: null,
   lines: [],
@@ -46,6 +47,7 @@ export const mapPaymentToForm = (
     bankAccountId: record.bankAccountId ?? null,
     cashBoxId: record.cashBoxId ?? null,
     sourceChartAccountId: record.sourceChartAccountId ?? null,
+    offsetAccountId: record.offsetAccountId ?? null,
     currencyId: record.currencyId ?? null,
     note: record.note ?? null,
     lines: (record.lines ?? []).map((line) =>
