@@ -29,7 +29,10 @@ type SummaryKey =
   | "leaveDays"
   | "sickDays"
   | "absentDays"
-  | "overtimeHours";
+  | "overtimeHours"
+  | "nightHours"
+  | "holidayHours"
+  | "weekendHours";
 
 interface CalendarRow {
   key: number;
@@ -127,6 +130,9 @@ const SUMMARY_COLUMNS: Array<{
   { key: "sickDays", title: "payroll.fields.sickDays", width: 78 },
   { key: "absentDays", title: "payroll.fields.absentDays", width: 84 },
   { key: "overtimeHours", title: "payroll.fields.overtimeHours", width: 86 },
+  { key: "nightHours", title: "payroll.fields.nightHours", width: 78 },
+  { key: "holidayHours", title: "payroll.fields.holidayHours", width: 82 },
+  { key: "weekendHours", title: "payroll.fields.weekendHours", width: 82 },
 ];
 
 const EMPTY_ATTENDANCE: PayrollTimesheetDailyAttendance[] = [];
@@ -193,7 +199,7 @@ const AttendanceCell = ({
     //   </Tooltip>
     <div
       aria-label={statusLabel}
-      className={`mx-auto flex min-h-7 w-12 flex-col items-center justify-center rounded-md border px-0.5 py-0.5 text-[10px] leading-tight ${style.cell}`}
+      className={`relative mx-auto flex min-h-7 w-12 flex-col items-center justify-center rounded-md border px-0.5 py-0.5 text-[10px] leading-tight ${style.cell}`}
     >
       {attendance.statusCode !== "WORKED" && (
         <span className="font-medium">
@@ -202,6 +208,12 @@ const AttendanceCell = ({
       )}
       {hours != null && attendance.statusCode === "WORKED" && (
         <span className="mt-0.5 font-semibold">{formatHours(hours)} s</span>
+      )}
+      {attendance.isOverridden && (
+        <span
+          className="absolute right-0.5 top-0.5 size-1.5 rounded-full bg-violet-500"
+          title="HR shablonidan o'zgartirilgan"
+        />
       )}
     </div>
   );
@@ -302,6 +314,9 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
           sickDays: 0,
           absentDays: 0,
           overtimeHours: 0,
+          nightHours: 0,
+          holidayHours: 0,
+          weekendHours: 0,
         },
       ),
     [summaries],
@@ -394,10 +409,10 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
     >
       <div className="border-b border-border px-4 py-2">
         <div className="flex flex-wrap gap-1">
-          {STATUS_ORDER.filter((code) => statusCodes.includes(code)).map((code) => (
+          {Array.from(new Set([...STATUS_ORDER, ...statusCodes])).map((code) => (
             <Tag key={code} className="m-0! px-1.5! py-0! text-[10px]! leading-5!">
               <span
-                className={`mr-1 inline-block size-1.5 rounded-full ${STATUS_STYLES[code].dot}`}
+                className={`mr-1 inline-block size-1.5 rounded-full ${(STATUS_STYLES[code] ?? STATUS_STYLES.OTHER_ABSENCE).dot}`}
               />
               {getStatusLabel(code)}
             </Tag>

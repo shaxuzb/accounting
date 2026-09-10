@@ -12,12 +12,9 @@ export interface PayrollCalculateForm {
   docDate: string;
   documentKind: PayrollDocumentKind;
   correctionOfDocId: number | null;
+  correctionPayoutMode: "WITH_SALARY" | "WITH_ADVANCE" | "SEPARATE";
   salaryExpenseAccountId: number | null;
   salaryPayableAccountId: number | null;
-  deductionPayableAccountId: number | null;
-  employerTaxExpenseAccountId: number | null;
-  employerTaxPayableAccountId: number | null;
-  advanceReceivableAccountId: number | null;
   note: string | null;
   adjustments: PayrollDocumentAdjustmentForm[];
 }

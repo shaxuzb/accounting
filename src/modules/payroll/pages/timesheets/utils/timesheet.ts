@@ -1,259 +1,63 @@
 import dayjs from "dayjs";
 import { DATE_TIME_FORMAT } from "../../../utils/format";
-import type {
-  PayrollTimesheetForm,
-  PayrollTimesheetLineForm,
-} from "../types/form";
-import type {
-  PayrollTimesheet,
-  PayrollTimesheetCalendar,
-  PayrollTimesheetMonthlySummary,
-} from "../types/type";
+import type { PayrollTimesheetForm, PayrollTimesheetLineForm, PayrollTimesheetDayForm } from "../types/form";
+import type { PayrollTimesheet, PayrollTimesheetCalendar, PayrollTimesheetDay, PayrollTimesheetMonthlySummary } from "../types/type";
+import { calculateLineFromDays } from "./timesheetDayCalculator";
+export { calculateLineFromDays, replaceLineDayStatus, replaceLineWorkedHours } from "./timesheetDayCalculator";
 
-export const createTimesheetLine = (
-  overrides: Partial<PayrollTimesheetLineForm> = {},
-): PayrollTimesheetLineForm => ({
-  employeeId: null,
-  employeeName: null,
-  employeeNumber: null,
-  departmentName: null,
-  normWorkDays: 0,
-  normWorkHours: 0,
-  workedDays: 0,
-  workedHours: 0,
-  leaveDays: 0,
-  sickDays: 0,
-  absentDays: 0,
-  overtimeHours: 0,
-  note: null,
-  ...overrides,
+const toDayForm = (day: PayrollTimesheetDay | { date: string; statusCode: string; statusName?: string | null; plannedHours?: number | null; workedHours?: number | null; overtimeHours?: number | null; nightHours?: number | null; holidayHours?: number | null; weekendHours?: number | null; absenceTypeId?: number | null; timesheetCategory?: "LEAVE" | "SICK" | "ABSENT" | null; sourceStatusCode?: string | null; sourceAbsenceId?: number | null; sourceScheduleId?: number | null; sourceAbsenceTypeId?: number | null; absenceTypeCode?: string | null; absenceTypeName?: string | null; isOverridden?: boolean }): PayrollTimesheetDayForm => ({
+  date: day.date, statusCode: day.statusCode, statusName: day.statusName ?? null,
+  sourceStatusCode: day.sourceStatusCode ?? day.statusCode, sourceAbsenceId: day.sourceAbsenceId ?? null,
+  sourceScheduleId: day.sourceScheduleId ?? null, sourceAbsenceTypeId: day.sourceAbsenceTypeId ?? null,
+  absenceTypeId: day.absenceTypeId ?? null, timesheetCategory: day.timesheetCategory ?? null,
+  absenceTypeCode: day.absenceTypeCode ?? null, absenceTypeName: day.absenceTypeName ?? null,
+  workedHours: day.workedHours ?? 0, plannedHours: day.plannedHours ?? 0,
+  overtimeHours: day.overtimeHours ?? 0, nightHours: day.nightHours ?? 0,
+  holidayHours: day.holidayHours ?? 0, weekendHours: day.weekendHours ?? 0,
+  isOverridden: day.isOverridden ?? false,
 });
 
-export const createDefaultTimesheetForm = (
-  periodId: number | null = null,
-): PayrollTimesheetForm => ({
-  periodId,
-  docDate: dayjs().format(DATE_TIME_FORMAT),
-  note: null,
-  lines: [],
-});
+export const createTimesheetLine = (overrides: Partial<PayrollTimesheetLineForm> = {}): PayrollTimesheetLineForm => ({ employeeId: null, employeeName: null, employeeNumber: null, normWorkDays: 0, normWorkHours: 0, workedDays: 0, workedHours: 0, leaveDays: 0, sickDays: 0, absentDays: 0, overtimeHours: 0, nightHours: 0, holidayHours: 0, weekendHours: 0, note: null, days: [], ...overrides });
 
-export const mapTimesheetToForm = (
-  record?: PayrollTimesheet | null,
-): PayrollTimesheetForm => {
-  if (!record) return createDefaultTimesheetForm();
-  return {
-    periodId: record.periodId ?? null,
-    docDate: record.docDate ?? dayjs().format(DATE_TIME_FORMAT),
-    note: record.note ?? null,
-    lines: (record.lines ?? []).map((line) =>
-      createTimesheetLine({
-        employeeId: line.employeeId,
-        employeeName: line.employeeName,
-        employeeNumber: line.employeeNumber,
-        departmentName: line.departmentName,
-        normWorkDays: line.normWorkDays ?? record.normWorkDays ?? 0,
-        normWorkHours: line.normWorkHours ?? record.normWorkHours ?? 0,
-        workedDays: line.workedDays ?? 0,
-        workedHours: line.workedHours ?? 0,
-        leaveDays: line.leaveDays ?? 0,
-        sickDays: line.sickDays ?? 0,
-        absentDays: line.absentDays ?? 0,
-        overtimeHours: line.overtimeHours ?? 0,
-        note: line.note ?? null,
-      }),
-    ),
-  };
+export const createDefaultTimesheetForm = (periodId: number | null = null): PayrollTimesheetForm => ({ periodId, docDate: dayjs().format(DATE_TIME_FORMAT), note: null, lines: [] });
+
+export const mapTimesheetToForm = (record?: PayrollTimesheet | null): PayrollTimesheetForm => !record ? createDefaultTimesheetForm() : ({ periodId: record.periodId ?? null, docDate: record.docDate ?? dayjs().format(DATE_TIME_FORMAT), note: record.note ?? null, lines: (record.lines ?? []).map((line) => createTimesheetLine({ employeeId: line.employeeId, employeeName: line.employeeName, employeeNumber: line.employeeNumber, normWorkDays: line.normWorkDays ?? record.normWorkDays ?? 0, normWorkHours: line.normWorkHours ?? record.normWorkHours ?? 0, workedDays: line.workedDays ?? 0, workedHours: line.workedHours ?? 0, leaveDays: line.leaveDays ?? 0, sickDays: line.sickDays ?? 0, absentDays: line.absentDays ?? 0, overtimeHours: line.overtimeHours ?? 0, nightHours: line.nightHours ?? 0, holidayHours: line.holidayHours ?? 0, weekendHours: line.weekendHours ?? 0, note: line.note ?? null, isLegacy: line.isLegacy, days: (line.days ?? []).map(toDayForm) })) });
+
+export const summarizeTimesheet = (lines: PayrollTimesheetLineForm[], dailyWorkHours = 0) => lines.reduce((total, line) => {
+  const derived = line.days.length ? calculateLineFromDays(line.days, dailyWorkHours) : line;
+  return { employees: total.employees + 1, normWorkDays: total.normWorkDays + (line.normWorkDays ?? 0), normWorkHours: total.normWorkHours + (line.normWorkHours ?? 0), workedDays: total.workedDays + (derived.workedDays ?? 0), workedHours: total.workedHours + (derived.workedHours ?? 0), leaveDays: total.leaveDays + (derived.leaveDays ?? 0), sickDays: total.sickDays + (derived.sickDays ?? 0), absentDays: total.absentDays + (derived.absentDays ?? 0), overtimeHours: total.overtimeHours + (derived.overtimeHours ?? 0), nightHours: total.nightHours + (derived.nightHours ?? 0), holidayHours: total.holidayHours + (derived.holidayHours ?? 0), weekendHours: total.weekendHours + (derived.weekendHours ?? 0) };
+}, { employees: 0, normWorkDays: 0, normWorkHours: 0, workedDays: 0, workedHours: 0, leaveDays: 0, sickDays: 0, absentDays: 0, overtimeHours: 0, nightHours: 0, holidayHours: 0, weekendHours: 0 });
+
+export const mapCalendarToTimesheetLine = (calendar: PayrollTimesheetCalendar, dailyWorkHours = 0): Partial<PayrollTimesheetLineForm> => {
+  const days = (calendar.days ?? []).map(toDayForm);
+  const derived = calculateLineFromDays(days, dailyWorkHours);
+  return { days, normWorkDays: calendar.summary?.normWorkDays ?? calendar.normWorkDays ?? 0, normWorkHours: calendar.summary?.normWorkHours ?? calendar.normWorkHours ?? 0, workedDays: derived.workedDays, workedHours: derived.workedHours, leaveDays: derived.leaveDays, sickDays: derived.sickDays, absentDays: derived.absentDays, overtimeHours: derived.overtimeHours, nightHours: derived.nightHours, holidayHours: derived.holidayHours, weekendHours: derived.weekendHours };
 };
 
-/** Qatorlar bo'yicha jamlanma — sarlavhada ko'rsatiladi. */
-export const summarizeTimesheet = (lines: PayrollTimesheetLineForm[]) =>
-  lines.reduce(
-    (total, line) => ({
-      employees: total.employees + 1,
-      normWorkDays: total.normWorkDays + (line.normWorkDays ?? 0),
-      normWorkHours: total.normWorkHours + (line.normWorkHours ?? 0),
-      workedDays: total.workedDays + (line.workedDays ?? 0),
-      workedHours: total.workedHours + (line.workedHours ?? 0),
-      leaveDays: total.leaveDays + (line.leaveDays ?? 0),
-      sickDays: total.sickDays + (line.sickDays ?? 0),
-      absentDays: total.absentDays + (line.absentDays ?? 0),
-      overtimeHours: total.overtimeHours + (line.overtimeHours ?? 0),
-    }),
-    {
-      employees: 0,
-      normWorkDays: 0,
-      normWorkHours: 0,
-      workedDays: 0,
-      workedHours: 0,
-      leaveDays: 0,
-      sickDays: 0,
-      absentDays: 0,
-      overtimeHours: 0,
-    },
-  );
+export const mapEmployeeCalendarToTimesheetCalendar = (calendar: PayrollTimesheetCalendar, periodId: number, periodName?: string | null): PayrollTimesheetCalendar => ({ ...calendar, periodId, periodName: calendar.periodName ?? periodName });
 
-export const mapCalendarToTimesheetLine = (
-  calendar: PayrollTimesheetCalendar,
-): Partial<PayrollTimesheetLineForm> => {
-  const days = calendar.days ?? [];
-  const summary = calendar.summary;
-  const count = (statuses: string[]) =>
-    days.filter((day) => statuses.includes(day.statusCode)).length;
-  const sumHours = (
-    statuses: string[],
-    field: "workHours" | "plannedHours" | "workedHours",
-  ) =>
-    days
-      .filter((day) => statuses.includes(day.statusCode))
-      .reduce((total, day) => total + (day[field] ?? 0), 0);
+export const mapMonthlySummaryToTimesheetLine = (summary: PayrollTimesheetMonthlySummary): Partial<PayrollTimesheetLineForm> => ({ employeeId: summary.employeeId, employeeName: summary.employeeName ?? null, employeeNumber: summary.employeeNumber ?? null, normWorkDays: summary.normWorkDays ?? 0, normWorkHours: summary.normWorkHours ?? 0, workedDays: summary.workedDays ?? 0, workedHours: summary.workedHours ?? 0, leaveDays: summary.leaveDays ?? 0, sickDays: summary.sickDays ?? 0, absentDays: summary.absentDays ?? 0, overtimeHours: summary.overtimeHours ?? 0, nightHours: summary.nightHours ?? 0, holidayHours: summary.holidayHours ?? 0, weekendHours: summary.weekendHours ?? 0, note: summary.note ?? null, isLegacy: summary.isLegacy, days: (summary.days ?? []).map(toDayForm) });
 
-  const normStatuses = [
-    "WORKED",
-    "PLANNED_WORK",
-    "ANNUAL_LEAVE",
-    "SICK_LEAVE",
-    "UNPAID_LEAVE",
-    "UNEXCUSED_ABSENCE",
-  ];
-  const derivedWorkedDays = count(["WORKED"]);
-  const derivedWorkedHours = sumHours(["WORKED"], "workedHours");
+export const mapCalendarSummaryToTimesheetLine = (_calendar: PayrollTimesheetCalendar, summary: PayrollTimesheetMonthlySummary) => mapMonthlySummaryToTimesheetLine(summary);
 
-  return {
-    normWorkDays:
-      summary?.normWorkDays ?? calendar.normWorkDays ?? count(normStatuses),
-    normWorkHours:
-      summary?.normWorkHours ??
-      calendar.normWorkHours ??
-      (days.some((day) => day.plannedHours != null)
-        ? sumHours(normStatuses, "plannedHours")
-        : sumHours(normStatuses, "workHours")),
-    workedDays:
-      summary?.workedDays && summary.workedDays > 0
-        ? summary.workedDays
-        : calendar.workedDays && calendar.workedDays > 0
-          ? calendar.workedDays
-          : derivedWorkedDays,
-    workedHours:
-      summary?.workedHours && summary.workedHours > 0
-        ? summary.workedHours
-        : calendar.workedHours && calendar.workedHours > 0
-          ? calendar.workedHours
-          : derivedWorkedHours,
-    leaveDays:
-      summary?.leaveDays ??
-      calendar.leaveDays ??
-      count(["ANNUAL_LEAVE", "UNPAID_LEAVE"]),
-    sickDays:
-      summary?.sickDays ?? calendar.sickDays ?? count(["SICK_LEAVE"]),
-    absentDays:
-      summary?.absentDays ??
-      calendar.absentDays ??
-      count(["UNEXCUSED_ABSENCE"]),
-    overtimeHours: summary?.overtimeHours ?? calendar.overtimeHours ?? 0,
-  };
-};
-
-/** Xodim kalendarini umumiy sana-by-sana tabel ko'rinishiga o'tkazadi. */
-export const mapEmployeeCalendarToTimesheetCalendar = (
-  calendar: PayrollTimesheetCalendar,
-  periodId: number,
-  periodName?: string | null,
-): PayrollTimesheetCalendar => {
-  const employeeId = calendar.employeeId;
-  if (employeeId == null) {
-    return { ...calendar, periodId, periodName: calendar.periodName ?? periodName };
-  }
-
-  const line = mapCalendarToTimesheetLine(calendar);
-  const employee = {
-    employeeId,
-    employeeNumber: calendar.employeeNumber ?? null,
-    employeeName: calendar.employeeName ?? null,
-  };
-
-  return {
-    ...calendar,
-    periodId,
-    periodName: calendar.periodName ?? periodName,
-    dailyAttendance: (calendar.days ?? []).map((day) => ({
+export const toTimesheetSavePayload = (form: PayrollTimesheetForm) => ({
+  periodId: form.periodId,
+  docDate: form.docDate,
+  note: form.note,
+    lines: form.lines.map((line) => ({
+    employeeId: line.employeeId,
+    overtimeHours: line.overtimeHours ?? 0,
+    note: line.note,
+    days: line.days.map((day) => ({
       date: day.date,
-      dayOfWeek: day.dayOfWeek ?? null,
-      dayName: day.dayName ?? null,
-      employees: [
-        {
-          ...employee,
-          statusCode: day.statusCode,
-          statusName: day.statusName ?? null,
-          plannedHours: day.plannedHours ?? null,
-          workedHours: day.workedHours ?? day.workHours ?? null,
-          scheduleId: day.scheduleId ?? null,
-          absenceId: day.absenceId ?? null,
-          absenceTypeId: day.absenceTypeId ?? null,
-          absenceTypeCode: day.absenceTypeCode ?? null,
-          absenceTypeName: day.absenceTypeName ?? null,
-          timesheetCategory: day.timesheetCategory ?? null,
-        },
-      ],
+      statusCode: day.statusCode,
+      absenceTypeId: day.absenceTypeId,
+      workedHours: day.statusCode === "WORKED" ? day.workedHours ?? null : null,
+      plannedHours: day.statusCode === "PLANNED_WORK" ? day.plannedHours ?? null : null,
+      overtimeHours: day.overtimeHours ?? 0,
+      nightHours: day.nightHours ?? 0,
+      holidayHours: day.holidayHours ?? 0,
+      weekendHours: day.weekendHours ?? 0,
     })),
-    monthlySummary: [
-      {
-        ...employee,
-        normWorkDays: line.normWorkDays ?? 0,
-        normWorkHours: line.normWorkHours ?? 0,
-        workedDays: line.workedDays ?? 0,
-        workedHours: line.workedHours ?? 0,
-        leaveDays: line.leaveDays ?? 0,
-        sickDays: line.sickDays ?? 0,
-        absentDays: line.absentDays ?? 0,
-        overtimeHours: line.overtimeHours ?? 0,
-      },
-    ],
-  };
-};
-
-export const mapMonthlySummaryToTimesheetLine = (
-  summary: PayrollTimesheetMonthlySummary,
-): Partial<PayrollTimesheetLineForm> => ({
-  employeeId: summary.employeeId,
-  employeeName: summary.employeeName ?? null,
-  employeeNumber: summary.employeeNumber ?? null,
-  normWorkDays: summary.normWorkDays ?? 0,
-  normWorkHours: summary.normWorkHours ?? 0,
-  workedDays: summary.workedDays ?? 0,
-  workedHours: summary.workedHours ?? 0,
-  leaveDays: summary.leaveDays ?? 0,
-  sickDays: summary.sickDays ?? 0,
-  absentDays: summary.absentDays ?? 0,
-  overtimeHours: summary.overtimeHours ?? 0,
-  note: summary.note ?? null,
+  })),
 });
-
-export const mapCalendarSummaryToTimesheetLine = (
-  calendar: PayrollTimesheetCalendar,
-  summary: PayrollTimesheetMonthlySummary,
-): Partial<PayrollTimesheetLineForm> => {
-  const dailyRows = (calendar.dailyAttendance ?? []).flatMap((day) =>
-    day.employees.filter((employee) => employee.employeeId === summary.employeeId),
-  );
-  const workedDays = dailyRows.filter(
-    (row) => row.statusCode === "WORKED",
-  ).length;
-  const workedHours = dailyRows.reduce(
-    (total, row) =>
-      total + (row.statusCode === "WORKED" ? row.workedHours ?? 0 : 0),
-    0,
-  );
-
-  return {
-    ...mapMonthlySummaryToTimesheetLine(summary),
-    workedDays:
-      summary.workedDays && summary.workedDays > 0
-        ? summary.workedDays
-        : workedDays,
-    workedHours:
-      summary.workedHours && summary.workedHours > 0
-        ? summary.workedHours
-        : workedHours,
-  };
-};

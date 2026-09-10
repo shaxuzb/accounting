@@ -1,6 +1,7 @@
 import type {
   PayrollCalculationMethod,
   PayrollComponentType,
+  PayrollProrationBasis,
 } from "@/modules/payroll/constants/options";
 
 export interface PayrollComponent {
@@ -12,9 +13,14 @@ export interface PayrollComponent {
   componentType: PayrollComponentType;
   componentTypeName?: string | null;
   calculationMethod: PayrollCalculationMethod;
+  prorationBasis: PayrollProrationBasis;
   calculationMethodName?: string | null;
   defaultAmount?: number | null;
   defaultRate?: number | null;
+  dependsOnComponentId?: number | null;
+  minimumAmount?: number | null;
+  maximumAmount?: number | null;
+  isTaxable?: boolean;
   isMandatory: boolean;
   expenseAccountId?: number | null;
   expenseAccountName?: string | null;

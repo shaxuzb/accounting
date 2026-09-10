@@ -10,12 +10,28 @@ export const payrollComponentSchema = Yup.object({
   name: requiredString("payroll.fields.componentName"),
   componentType: requiredString("payroll.fields.componentType"),
   calculationMethod: requiredString("payroll.fields.calculationMethod"),
+  prorationBasis: requiredString("payroll.fields.prorationBasis"),
   defaultAmount: Yup.number()
     .nullable()
     .min(0, () => tMessage("payroll.messages.notNegative")),
   defaultRate: Yup.number()
     .nullable()
     .min(0, () => tMessage("payroll.messages.notNegative")),
+  dependsOnComponentId: Yup.number().nullable(),
+  minimumAmount: Yup.number()
+    .nullable()
+    .min(0, () => tMessage("payroll.messages.notNegative")),
+  maximumAmount: Yup.number()
+    .nullable()
+    .min(0, () => tMessage("payroll.messages.notNegative"))
+    .test(
+      "amount-range",
+      () => tMessage("payroll.messages.componentAmountRange", { defaultValue: "Minimum cannot exceed maximum" }),
+      (value, context) => {
+        const minimum = (context.parent as { minimumAmount?: number | null }).minimumAmount;
+        return value == null || minimum == null || minimum <= value;
+      },
+    ),
   isMandatory: Yup.boolean().required(),
   expenseAccountId: Yup.number()
     .nullable()

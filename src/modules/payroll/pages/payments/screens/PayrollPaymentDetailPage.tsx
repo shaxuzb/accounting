@@ -27,7 +27,7 @@ import {
 } from "@/shared/constants/selectLists";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { Button, Col, Form, Popconfirm, Row, Select, Spin } from "antd";
+import { Alert, Button, Col, Form, Popconfirm, Row, Select, Spin } from "antd";
 import { useFormik } from "formik";
 import {
   Banknote,
@@ -192,11 +192,15 @@ export default function PayrollPaymentDetailPage() {
 
   return (
     <div className="min-w-0 space-y-4">
-      {/* {!isCreate && !isDraft && (
+      {!isCreate && record && (
         <Alert
-          type="success"
+          type={isDraft ? "warning" : "success"}
           showIcon
-          message={t("payroll.payments.postedInfo")}
+          message={
+            isDraft
+              ? t("payroll.payments.draftInfo", { defaultValue: "Payment is a draft and has not been posted." })
+              : t("payroll.payments.postedInfo", { defaultValue: "Payment is posted." })
+          }
           description={
             record?.bankOperationId || record?.cashOperationId ? (
               <span>
@@ -207,7 +211,7 @@ export default function PayrollPaymentDetailPage() {
             ) : undefined
           }
         />
-      )} */}
+      )}
 
       <SectionCard
         title="payroll.payments.headerTitle"

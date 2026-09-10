@@ -12,7 +12,7 @@ import ListPagination from "@/components/ui/table/ListPagination";
 import { App, Button, Space, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import dayjs from "dayjs";
-import { CalendarPlus, Lock, LockOpen } from "lucide-react";
+import { CalendarPlus, Eye, Lock, LockOpen, Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -45,7 +45,11 @@ export default function PayrollPeriodListPage() {
   const closeMutation = useClosePayrollPeriod();
   const reopenMutation = useReopenPayrollPeriod();
 
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [periodModal, setPeriodModal] = useState<{
+    open: boolean;
+    mode: "create" | "edit" | "view";
+    periodId: number | null;
+  }>({ open: false, mode: "create", periodId: null });
 
   const runAction = (record: PayrollPeriod, action: "close" | "reopen") => {
     modal.confirm({
@@ -141,34 +145,58 @@ export default function PayrollPeriodListPage() {
     },
   ];
 
-  if (canManage) {
-    columns.push({
-      dataIndex: "actions",
-      title: t("common.actions"),
-      align: "center",
-      fixed: "right",
-      render: (_, record) =>
-        record.status === "OPEN" ? (
+  columns.push({
+    dataIndex: "actions",
+    title: t("common.actions"),
+    align: "center",
+    fixed: "right",
+    render: (_, record) => (
+      <Space size="small">
+        <Button
+          size="small"
+          icon={<Eye className="size-3.5" />}
+          onClick={() =>
+            setPeriodModal({ open: true, mode: "view", periodId: record.id })
+          }
+        >
+          {t("common.view")}
+        </Button>
+        {canManage && (
           <Button
             size="small"
-            icon={<Lock className="size-3.5" />}
-            loading={closeMutation.isPending}
-            onClick={() => runAction(record, "close")}
+            icon={<Pencil className="size-3.5" />}
+            disabled={!record.canEdit}
+            title={record.editBlockedReason ?? undefined}
+            onClick={() =>
+              setPeriodModal({ open: true, mode: "edit", periodId: record.id })
+            }
           >
-            {t("payroll.periods.close")}
+            {t("common.edit")}
           </Button>
-        ) : (
-          <Button
-            size="small"
-            icon={<LockOpen className="size-3.5" />}
-            loading={reopenMutation.isPending}
-            onClick={() => runAction(record, "reopen")}
-          >
-            {t("payroll.periods.reopen")}
-          </Button>
-        ),
-    });
-  }
+        )}
+        {canManage &&
+          (record.status === "OPEN" ? (
+            <Button
+              size="small"
+              icon={<Lock className="size-3.5" />}
+              loading={closeMutation.isPending}
+              onClick={() => runAction(record, "close")}
+            >
+              {t("payroll.periods.close")}
+            </Button>
+          ) : (
+            <Button
+              size="small"
+              icon={<LockOpen className="size-3.5" />}
+              loading={reopenMutation.isPending}
+              onClick={() => runAction(record, "reopen")}
+            >
+              {t("payroll.periods.reopen")}
+            </Button>
+          ))}
+      </Space>
+    ),
+  });
 
   return (
     <div className="w-full">
@@ -194,7 +222,9 @@ export default function PayrollPeriodListPage() {
             <Button
               type="primary"
               icon={<CalendarPlus className="size-4" />}
-              onClick={() => setIsCreateOpen(true)}
+              onClick={() =>
+                setPeriodModal({ open: true, mode: "create", periodId: null })
+              }
             >
               {t("payroll.periods.create")}
             </Button>
@@ -217,8 +247,12 @@ export default function PayrollPeriodListPage() {
       </Card>
 
       <PayrollPeriodModal
-        open={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
+        open={periodModal.open}
+        mode={periodModal.mode}
+        periodId={periodModal.periodId}
+        onClose={() =>
+          setPeriodModal((current) => ({ ...current, open: false }))
+        }
       />
     </div>
   );

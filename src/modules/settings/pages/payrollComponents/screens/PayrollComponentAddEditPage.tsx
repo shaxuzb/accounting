@@ -5,11 +5,13 @@ import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectStatic from "@/components/fields/SelectStatic";
 import SwitchField from "@/components/fields/SwitchField";
+import PayrollComponentSelect from "@/modules/payroll/components/PayrollComponentSelect";
 import {
   calculationMethodOptions,
   componentTypeOptions,
   methodUsesAmount,
   methodUsesRate,
+  prorationBasisOptions,
 } from "@/modules/payroll/constants/options";
 import {
   chartAccountSelectDisplayConfig,
@@ -47,8 +49,13 @@ const defaultValues: PayrollComponentForm = {
   name: "",
   componentType: null,
   calculationMethod: null,
+  prorationBasis: "DAYS",
   defaultAmount: null,
   defaultRate: null,
+  dependsOnComponentId: null,
+  minimumAmount: null,
+  maximumAmount: null,
+  isTaxable: true,
   isMandatory: false,
   expenseAccountId: null,
   liabilityAccountId: null,
@@ -90,6 +97,10 @@ export default function PayrollComponentAddEditPage({
           ? values.defaultRate
           : null,
         effectiveTo: values.effectiveTo || null,
+        prorationBasis:
+          values.calculationMethod === "SALARY_PRORATED"
+            ? values.prorationBasis
+            : "DAYS",
       };
       try {
         if (isEdit && editId) {
@@ -117,8 +128,13 @@ export default function PayrollComponentAddEditPage({
         name: component.name ?? "",
         componentType: component.componentType ?? null,
         calculationMethod: component.calculationMethod ?? null,
+        prorationBasis: component.prorationBasis ?? "DAYS",
         defaultAmount: component.defaultAmount ?? null,
         defaultRate: component.defaultRate ?? null,
+        dependsOnComponentId: component.dependsOnComponentId ?? null,
+        minimumAmount: component.minimumAmount ?? null,
+        maximumAmount: component.maximumAmount ?? null,
+        isTaxable: component.isTaxable ?? true,
         isMandatory: Boolean(component.isMandatory),
         expenseAccountId: component.expenseAccountId ?? null,
         liabilityAccountId: component.liabilityAccountId ?? null,
@@ -198,6 +214,19 @@ export default function PayrollComponentAddEditPage({
                 marginBottom="mb-4"
               />
             </Col>
+
+            {method === "SALARY_PRORATED" && (
+              <Col xs={24} md={12}>
+                <SelectStatic
+                  formik={formik}
+                  fieldName="prorationBasis"
+                  label="payroll.fields.prorationBasis"
+                  options={prorationBasisOptions}
+                  required
+                  marginBottom="mb-4"
+                />
+              </Col>
+            )}
             <Col xs={24} md={12}>
               <SelectStatic
                 formik={formik}
@@ -236,6 +265,34 @@ export default function PayrollComponentAddEditPage({
                 />
               </Col>
             )}
+
+            <Col xs={24} md={12}>
+              <PayrollComponentSelect
+                formik={formik}
+                fieldName="dependsOnComponentId"
+                label="payroll.fields.dependsOnComponent"
+                disabled={isEdit && !component}
+                marginBottom="mb-4"
+              />
+            </Col>
+            <Col xs={24} md={12}>
+              <InputNumber
+                formik={formik}
+                fieldName="minimumAmount"
+                label="payroll.fields.minimumAmount"
+                min={0}
+                precision={2}
+              />
+            </Col>
+            <Col xs={24} md={12}>
+              <InputNumber
+                formik={formik}
+                fieldName="maximumAmount"
+                label="payroll.fields.maximumAmount"
+                min={0}
+                precision={2}
+              />
+            </Col>
 
             <Col xs={24} md={12}>
               <SelectDate
@@ -330,6 +387,14 @@ export default function PayrollComponentAddEditPage({
                 fieldName="isMandatory"
                 label="payroll.fields.isMandatory"
                 description="payroll.fields.isMandatoryHint"
+                marginBottom="mb-4"
+              />
+            </Col>
+            <Col xs={24} md={12}>
+              <SwitchField
+                formik={formik}
+                fieldName="isTaxable"
+                label="payroll.fields.isTaxable"
                 marginBottom="mb-4"
               />
             </Col>

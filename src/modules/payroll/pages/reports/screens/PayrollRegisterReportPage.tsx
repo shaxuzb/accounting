@@ -11,6 +11,7 @@ import { Button, Empty, Input, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import {
   Banknote,
+  Clock,
   FileSpreadsheet,
   HandCoins,
   Landmark,
@@ -55,6 +56,12 @@ export default function PayrollRegisterReportPage() {
       [t("payroll.fields.department")]: employee.departmentName ?? "",
       [t("payroll.fields.workedDays")]: employee.workedDays ?? 0,
       [t("payroll.fields.workedHours")]: employee.workedHours ?? 0,
+      [t("payroll.fields.paidLeaveDays", { defaultValue: "Paid leave days" })]: employee.paidLeaveDays ?? 0,
+      [t("payroll.fields.paidSickDays", { defaultValue: "Paid sick days" })]: employee.paidSickDays ?? 0,
+      [t("payroll.fields.overtimeHours", { defaultValue: "Overtime hours" })]: employee.overtimeHours ?? 0,
+      [t("payroll.fields.nightHours", { defaultValue: "Night hours" })]: employee.nightHours ?? 0,
+      [t("payroll.fields.holidayHours", { defaultValue: "Holiday hours" })]: employee.holidayHours ?? 0,
+      [t("payroll.fields.weekendHours", { defaultValue: "Weekend hours" })]: employee.weekendHours ?? 0,
       [t("payroll.fields.grossAmount")]: employee.grossAmount,
       [t("payroll.fields.deductionAmount")]: employee.deductionAmount,
       [t("payroll.fields.employerTaxAmount")]: employee.employerTaxAmount,
@@ -108,11 +115,60 @@ export default function PayrollRegisterReportPage() {
       render: (value: number | null) => value ?? "—",
     },
     {
+      dataIndex: "paidLeaveDays",
+      title: t("payroll.fields.paidLeaveDays", { defaultValue: "Paid leave days" }),
+      align: "center",
+      width: 130,
+      render: (value: number | null) => value ?? 0,
+    },
+    {
+      dataIndex: "paidSickDays",
+      title: t("payroll.fields.paidSickDays", { defaultValue: "Paid sick days" }),
+      align: "center",
+      width: 130,
+      render: (value: number | null) => value ?? 0,
+    },
+    {
+      dataIndex: "overtimeHours",
+      title: t("payroll.fields.overtimeHours", { defaultValue: "Overtime hours" }),
+      align: "center",
+      width: 130,
+      render: (value: number | null) => value ?? 0,
+    },
+    {
+      dataIndex: "nightHours",
+      title: t("payroll.fields.nightHours", { defaultValue: "Night hours" }),
+      align: "center",
+      width: 120,
+      render: (value: number | null) => value ?? 0,
+    },
+    {
+      dataIndex: "holidayHours",
+      title: t("payroll.fields.holidayHours", { defaultValue: "Holiday hours" }),
+      align: "center",
+      width: 130,
+      render: (value: number | null) => value ?? 0,
+    },
+    {
+      dataIndex: "weekendHours",
+      title: t("payroll.fields.weekendHours", { defaultValue: "Weekend hours" }),
+      align: "center",
+      width: 130,
+      render: (value: number | null) => value ?? 0,
+    },
+    {
       dataIndex: "grossAmount",
       title: t("payroll.fields.grossAmount"),
       align: "right",
       width: 150,
       render: (value: number) => money(value),
+    },
+    {
+      dataIndex: "correctionGrossAmount",
+      title: t("payroll.fields.correctionGrossAmount"),
+      align: "right",
+      width: 160,
+      render: (value: number | null) => money(value ?? 0),
     },
     {
       dataIndex: "deductionAmount",
@@ -220,6 +276,11 @@ export default function PayrollRegisterReportPage() {
               icon={<HandCoins className="size-5" />}
               label={t("payroll.fields.outstandingAmount")}
               value={money(data?.outstandingAmount)}
+            />
+            <DocumentSummaryItem
+              icon={<Clock className="size-5" />}
+              label={t("payroll.fields.overtimeHours", { defaultValue: "Overtime" })}
+              value={`${data?.overtimeHours ?? 0} h`}
             />
           </DocumentSummary>
 

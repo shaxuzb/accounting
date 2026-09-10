@@ -5,4 +5,5 @@ export { useDeletePayrollDocument } from "./useDeletePayrollDocument";
 export { useGetDetailPayrollDocument } from "./useGetDetailPayrollDocument";
 export { useGetPayrollDocuments } from "./useGetPayrollDocuments";
 export { usePayrollDocumentLookup } from "./usePayrollDocumentLookup";
+export { useRecalculatePayrollDocument } from "./useRecalculatePayrollDocument";
 export { usePayrollChartAccounts } from "./usePayrollChartAccounts";

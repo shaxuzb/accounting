@@ -18,6 +18,8 @@ export const payrollDocumentService = {
     $axiosPrivate
       .post<PayrollDocument | number>(endpoints.calculate, payload)
       .then((res) => res.data),
+  recalculate: (id: string | number) =>
+    $axiosPrivate.post<number>(endpoints.recalculate(id)).then((res) => res.data),
   confirm: (id: string | number) =>
     $axiosPrivate.put(endpoints.confirm(id)).then((res) => res.data),
   cancel: (id: string | number) =>

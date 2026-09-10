@@ -21,6 +21,35 @@ export interface PayrollCalcLine {
   creditAccountId?: number | null;
 }
 
+export interface PayrollTaxLine {
+  id?: number;
+  taxDefinitionId: number;
+  taxCode?: string | null;
+  taxName?: string | null;
+  taxType?: "WITHHOLDING" | "EMPLOYER" | string | null;
+  baseType?: string | null;
+  baseAmount: number;
+  exemptionAmount: number;
+  taxableBase: number;
+  rate: number;
+  amount: number;
+  liabilityAccountId: number;
+}
+
+export interface PayrollLineSegment {
+  id?: number;
+  employmentId?: number;
+  segmentStartDate: string;
+  segmentEndDate: string;
+  monthlySalary: number;
+  employmentRate: number;
+  workedDays: number;
+  workedHours: number;
+  normWorkDays: number;
+  normWorkHours: number;
+  componentSnapshotJson?: string | null;
+}
+
 export interface PayrollDocumentLine {
   id?: number;
   employeeId: number;
@@ -30,6 +59,12 @@ export interface PayrollDocumentLine {
   positionName?: string | null;
   workedDays?: number | null;
   workedHours?: number | null;
+  paidLeaveDays?: number | null;
+  paidSickDays?: number | null;
+  overtimeHours?: number | null;
+  nightHours?: number | null;
+  holidayHours?: number | null;
+  weekendHours?: number | null;
   grossAmount: number;
   deductionAmount: number;
   employerTaxAmount: number;
@@ -39,6 +74,8 @@ export interface PayrollDocumentLine {
   paidAmount?: number | null;
   outstandingAmount?: number | null;
   calcLines?: PayrollCalcLine[];
+  taxLines?: PayrollTaxLine[];
+  segments?: PayrollLineSegment[];
 }
 
 export interface PayrollDocument {
@@ -53,12 +90,9 @@ export interface PayrollDocument {
   documentKind: PayrollDocumentKind;
   correctionOfDocId?: number | null;
   correctionOfDocNumber?: string | null;
+  correctionPayoutMode?: "WITH_SALARY" | "WITH_ADVANCE" | "SEPARATE" | null;
   salaryExpenseAccountId?: number | null;
   salaryPayableAccountId?: number | null;
-  deductionPayableAccountId?: number | null;
-  employerTaxExpenseAccountId?: number | null;
-  employerTaxPayableAccountId?: number | null;
-  advanceReceivableAccountId?: number | null;
   currencyId?: number | null;
   note?: string | null;
   employeeCount?: number | null;
@@ -77,5 +111,7 @@ export interface PayrollDocument {
   createdDate?: string | null;
   postedAt?: string | null;
   cancelledAt?: string | null;
+  hasPendingRecalculation?: boolean;
+  pendingRecalculationId?: number | null;
   lines?: PayrollDocumentLine[];
 }

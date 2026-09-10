@@ -13,21 +13,44 @@ export interface PayrollTimesheetLine {
   sickDays: number;
   absentDays: number;
   overtimeHours: number;
+  nightHours?: number | null;
+  holidayHours?: number | null;
+  weekendHours?: number | null;
   note?: string | null;
+  isLegacy?: boolean;
+  days?: PayrollTimesheetDay[];
 }
 
-export type PayrollTimesheetAttendanceStatus =
-  | "WORKED"
-  | "PLANNED_WORK"
-  | "DAY_OFF"
-  | "NOT_EMPLOYED"
-  | "ANNUAL_LEAVE"
-  | "SICK_LEAVE"
-  | "UNPAID_LEAVE"
-  | "UNEXCUSED_ABSENCE"
-  | "MATERNITY_LEAVE"
-  | "STUDY_LEAVE"
-  | "OTHER_ABSENCE";
+export type PayrollTimesheetAttendanceStatus = string;
+
+export interface PayrollAttendanceStatusOption {
+  code: string;
+  name: string;
+  kind: "FIXED" | "ABSENCE" | string;
+  absenceTypeId?: number | null;
+  timesheetCategory?: "LEAVE" | "SICK" | "ABSENT" | null;
+}
+
+export interface PayrollTimesheetDay {
+  date: string;
+  sourceStatusCode?: string | null;
+  sourceAbsenceId?: number | null;
+  sourceScheduleId?: number | null;
+  sourceAbsenceTypeId?: number | null;
+  statusCode: string;
+  statusName?: string | null;
+  absenceTypeId?: number | null;
+  absenceTypeCode?: string | null;
+  absenceTypeName?: string | null;
+  timesheetCategory?: "LEAVE" | "SICK" | "ABSENT" | null;
+  workedHours?: number | null;
+  plannedHours?: number | null;
+  overtimeHours?: number | null;
+  nightHours?: number | null;
+  holidayHours?: number | null;
+  weekendHours?: number | null;
+  isOverridden?: boolean;
+}
 
 export interface PayrollTimesheetCalendarDay {
   date: string;
@@ -41,9 +64,18 @@ export interface PayrollTimesheetCalendarDay {
   workHours?: number | null;
   plannedHours?: number | null;
   workedHours?: number | null;
+  overtimeHours?: number | null;
+  nightHours?: number | null;
+  holidayHours?: number | null;
+  weekendHours?: number | null;
   absenceTypeCode?: string | null;
   absenceTypeName?: string | null;
   timesheetCategory?: string | null;
+  sourceStatusCode?: string | null;
+  sourceAbsenceId?: number | null;
+  sourceScheduleId?: number | null;
+  sourceAbsenceTypeId?: number | null;
+  isOverridden?: boolean;
 }
 
 export interface PayrollTimesheetDailyEmployee {
@@ -54,12 +86,21 @@ export interface PayrollTimesheetDailyEmployee {
   statusName?: string | null;
   plannedHours?: number | null;
   workedHours?: number | null;
+  overtimeHours?: number | null;
+  nightHours?: number | null;
+  holidayHours?: number | null;
+  weekendHours?: number | null;
   scheduleId?: number | null;
   absenceId?: number | null;
   absenceTypeId?: number | null;
   absenceTypeCode?: string | null;
   absenceTypeName?: string | null;
   timesheetCategory?: string | null;
+  sourceStatusCode?: string | null;
+  sourceAbsenceId?: number | null;
+  sourceScheduleId?: number | null;
+  sourceAbsenceTypeId?: number | null;
+  isOverridden?: boolean;
 }
 
 export interface PayrollTimesheetDailyAttendance {
@@ -83,9 +124,16 @@ export interface PayrollTimesheetMonthlySummary {
   plannedWorkHours?: number | null;
   leaveDays?: number | null;
   sickDays?: number | null;
+  paidLeaveDays?: number | null;
+  paidSickDays?: number | null;
   absentDays?: number | null;
   overtimeHours?: number | null;
+  nightHours?: number | null;
+  holidayHours?: number | null;
+  weekendHours?: number | null;
   note?: string | null;
+  isLegacy?: boolean;
+  days?: PayrollTimesheetDay[];
 }
 
 export interface PayrollTimesheetCalendarSummary {
@@ -120,6 +168,7 @@ export interface PayrollTimesheetCalendar {
   absentDays?: number | null;
   overtimeHours?: number | null;
   days?: PayrollTimesheetCalendarDay[];
+  isLegacy?: boolean;
   dailyAttendance?: PayrollTimesheetDailyAttendance[];
   monthlySummary?: PayrollTimesheetMonthlySummary[];
 }

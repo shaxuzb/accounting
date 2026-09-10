@@ -3,6 +3,7 @@ import {
   requiredString,
   tMessage,
 } from "@/modules/settings/shared/validation";
+import dayjs from "dayjs";
 import * as Yup from "yup";
 
 const nonNegative = (fieldKey: string) =>
@@ -16,17 +17,24 @@ export const payrollTimesheetSchema = Yup.object({
     .of(
       Yup.object({
         employeeId: requiredNumber("payroll.fields.employee"),
-        normWorkDays: nonNegative("payroll.fields.normWorkDays").max(31),
-        normWorkHours: nonNegative("payroll.fields.normWorkHours"),
-        workedDays: nonNegative("payroll.fields.workedDays").max(31, () =>
-          tMessage("payroll.messages.daysRange"),
-        ),
-        workedHours: nonNegative("payroll.fields.workedHours"),
-        leaveDays: nonNegative("payroll.fields.leaveDays"),
-        sickDays: nonNegative("payroll.fields.sickDays"),
-        absentDays: nonNegative("payroll.fields.absentDays"),
         overtimeHours: nonNegative("payroll.fields.overtimeHours"),
         note: Yup.string().nullable(),
+        days: Yup.array()
+          .of(Yup.object({
+            date: requiredString("payroll.fields.date").test(
+              "valid-date",
+              () => tMessage("payroll.messages.invalidDate"),
+              (value) => Boolean(value && /^\d{4}-\d{2}-\d{2}$/.test(value) && dayjs(value, "YYYY-MM-DD", true).isValid()),
+            ),
+            statusCode: requiredString("payroll.fields.attendanceStatus"),
+            absenceTypeId: Yup.number().nullable(),
+          }))
+          .min(1, () => tMessage("payroll.messages.daysRequired"))
+          .test("unique-days", () => tMessage("payroll.messages.daysUnique"), (days) => {
+            if (!days) return false;
+            const dates = days.map((day) => day?.date);
+            return new Set(dates).size === dates.length;
+          }),
       }),
     )
     .min(1, () => tMessage("payroll.messages.atLeastOneLine")),

@@ -19,6 +19,7 @@ import {
   HandCoins,
   Landmark,
   Receipt,
+  RotateCcw,
   Trash2,
   TrendingDown,
   Users,
@@ -28,12 +29,14 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import PayrollCalcLinesTable from "../components/PayrollCalcLinesTable";
+import PayrollTaxLinesTable from "../components/PayrollTaxLinesTable";
 import {
   useCancelPayrollDocument,
   useConfirmPayrollDocument,
   useDeletePayrollDocument,
   useGetDetailPayrollDocument,
   usePayrollChartAccounts,
+  useRecalculatePayrollDocument,
 } from "../hooks";
 import { payrollDocumentAccountFields } from "../constants/accounts";
 import type { PayrollDocument, PayrollDocumentLine } from "../types/type";
@@ -53,6 +56,7 @@ export default function PayrollDocumentDetailPage() {
   const confirmMutation = useConfirmPayrollDocument(id);
   const cancelMutation = useCancelPayrollDocument(id);
   const deleteMutation = useDeletePayrollDocument();
+  const recalculateMutation = useRecalculatePayrollDocument(id);
 
   const record = detailQuery.data;
   const chartAccountsQuery = usePayrollChartAccounts(Boolean(record));
@@ -75,6 +79,10 @@ export default function PayrollDocumentDetailPage() {
     statusId !== 3 && permissions.includes(payrollDocumentPermissions.cancel);
   const canDelete =
     isDraft && permissions.includes(payrollDocumentPermissions.delete);
+  const canRecalculate =
+    statusId === 2 &&
+    !record?.hasPendingRecalculation &&
+    permissions.includes(payrollDocumentPermissions.calculate);
 
   const employees = useMemo(() => {
     const list = record?.lines ?? [];
@@ -251,6 +259,12 @@ export default function PayrollDocumentDetailPage() {
               {record.docNumber ?? t("payroll.common.noNumber")}
             </dd>
           </div>
+          {record.documentKind === "CORRECTION" && (
+            <div>
+              <dt className="text-secondary-text">{t("payroll.fields.correctionPayoutMode")}</dt>
+              <dd className="mt-1 font-medium">{record.correctionPayoutMode ?? "SEPARATE"}</dd>
+            </div>
+          )}
           <div>
             <dt className="text-secondary-text">
               {t("payroll.fields.docDate")}
@@ -414,14 +428,44 @@ export default function PayrollDocumentDetailPage() {
           scroll={{ x: 1500, y: 520 }}
           expandable={{
             expandedRowRender: (employee) => (
-              <div className="min-w-0 overflow-hidden rounded-lg border border-border p-2">
+              <div className="min-w-0 space-y-3 overflow-hidden rounded-lg border border-border p-2">
+                <div className="grid gap-2 text-xs sm:grid-cols-3 lg:grid-cols-6">
+                  <div><span className="text-secondary-text">{t("payroll.fields.paidLeaveDays", { defaultValue: "Paid leave days" })}</span><div className="font-medium">{employee.paidLeaveDays ?? 0}</div></div>
+                  <div><span className="text-secondary-text">{t("payroll.fields.paidSickDays", { defaultValue: "Paid sick days" })}</span><div className="font-medium">{employee.paidSickDays ?? 0}</div></div>
+                  <div><span className="text-secondary-text">{t("payroll.fields.overtimeHours", { defaultValue: "Overtime hours" })}</span><div className="font-medium">{employee.overtimeHours ?? 0}</div></div>
+                  <div><span className="text-secondary-text">{t("payroll.fields.nightHours", { defaultValue: "Night hours" })}</span><div className="font-medium">{employee.nightHours ?? 0}</div></div>
+                  <div><span className="text-secondary-text">{t("payroll.fields.holidayHours", { defaultValue: "Holiday hours" })}</span><div className="font-medium">{employee.holidayHours ?? 0}</div></div>
+                  <div><span className="text-secondary-text">{t("payroll.fields.weekendHours", { defaultValue: "Weekend hours" })}</span><div className="font-medium">{employee.weekendHours ?? 0}</div></div>
+                </div>
+                {employee.segments?.length ? (
+                  <Table
+                    size="small"
+                    pagination={false}
+                    rowKey={(segment) => segment.id ?? `${segment.segmentStartDate}-${segment.employmentId}`}
+                    dataSource={employee.segments}
+                    columns={[
+                      { title: t("payroll.fields.segment", { defaultValue: "Segment" }), key: "range", render: (_: unknown, segment) => `${segment.segmentStartDate} – ${segment.segmentEndDate}` },
+                      { title: t("payroll.fields.monthlySalary", { defaultValue: "Monthly salary" }), dataIndex: "monthlySalary", render: (value: number) => money(value) },
+                      { title: t("payroll.fields.employmentRate", { defaultValue: "Rate" }), dataIndex: "employmentRate" },
+                      { title: t("payroll.fields.workedDays", { defaultValue: "Worked days" }), dataIndex: "workedDays" },
+                      { title: t("payroll.fields.workedHours", { defaultValue: "Worked hours" }), dataIndex: "workedHours" },
+                      { title: t("payroll.fields.normWorkHours", { defaultValue: "Norm hours" }), dataIndex: "normWorkHours" },
+                    ]}
+                  />
+                ) : null}
                 <PayrollCalcLinesTable
                   lines={employee.calcLines}
                   accountById={accountById}
                 />
+                {employee.taxLines?.length ? (
+                  <div>
+                    <div className="mb-1 text-xs font-semibold text-secondary-text">{t("payroll.documents.taxLinesTitle", { defaultValue: "Soliq registri" })}</div>
+                    <PayrollTaxLinesTable lines={employee.taxLines} />
+                  </div>
+                ) : null}
               </div>
             ),
-            rowExpandable: (employee) => Boolean(employee.calcLines?.length),
+            rowExpandable: (employee) => Boolean(employee.calcLines?.length || employee.taxLines?.length || employee.segments?.length),
           }}
           locale={{
             emptyText: (
@@ -431,7 +475,19 @@ export default function PayrollDocumentDetailPage() {
         />
       </SectionCard>
 
-      {(canConfirm || canCancel || canDelete) && (
+      {record?.hasPendingRecalculation && (
+        <Alert
+          className="mb-4"
+          type="info"
+          showIcon
+          message={t("payroll.documents.recalculationPending")}
+          description={t("payroll.documents.recalculationPendingText", {
+            id: record.pendingRecalculationId ?? "—",
+          })}
+        />
+      )}
+
+      {(canConfirm || canCancel || canDelete || canRecalculate) && (
         <Card className="sticky bottom-0 z-20 border border-border bg-primary-bg/95 px-4 py-3 shadow-sm backdrop-blur sm:px-5">
           <div className="flex flex-wrap justify-end gap-3">
             {canCancel && (
@@ -455,6 +511,29 @@ export default function PayrollDocumentDetailPage() {
                   disabled={confirmMutation.isPending || deleteMutation.isPending}
                 >
                   {t("payroll.actions.cancel")}
+                </Button>
+              </Popconfirm>
+            )}
+
+            {canRecalculate && (
+              <Popconfirm
+                title={t("payroll.documents.recalculateTitle")}
+                description={t("payroll.documents.recalculateText")}
+                okText={t("payroll.documents.recalculate")}
+                cancelText={t("common.cancel")}
+                onConfirm={() =>
+                  runMutation(
+                    () => recalculateMutation.mutateAsync(),
+                    "payroll.messages.recalculationQueued",
+                  )
+                }
+              >
+                <Button
+                  icon={<RotateCcw className="size-4" />}
+                  loading={recalculateMutation.isPending}
+                  disabled={confirmMutation.isPending || cancelMutation.isPending || deleteMutation.isPending}
+                >
+                  {t("payroll.documents.recalculate")}
                 </Button>
               </Popconfirm>
             )}

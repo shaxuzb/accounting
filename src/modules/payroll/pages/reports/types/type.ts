@@ -8,12 +8,21 @@ export interface PayrollRegisterEmployee {
   positionName?: string | null;
   workedDays?: number | null;
   workedHours?: number | null;
+  paidLeaveDays?: number | null;
+  paidSickDays?: number | null;
+  overtimeHours?: number | null;
+  nightHours?: number | null;
+  holidayHours?: number | null;
+  weekendHours?: number | null;
+  reconciliationVariance?: number | null;
   grossAmount: number;
   deductionAmount: number;
   employerTaxAmount: number;
   netAmount: number;
   paidAmount: number;
   outstandingAmount: number;
+  regularGrossAmount?: number | null;
+  correctionGrossAmount?: number | null;
 }
 
 export interface PayrollRegisterReport {
@@ -28,6 +37,17 @@ export interface PayrollRegisterReport {
   netAmount: number;
   paidAmount: number;
   outstandingAmount: number;
+  regularGrossAmount?: number | null;
+  regularNetAmount?: number | null;
+  correctionGrossAmount?: number | null;
+  correctionNetAmount?: number | null;
+  paidLeaveDays?: number | null;
+  paidSickDays?: number | null;
+  overtimeHours?: number | null;
+  nightHours?: number | null;
+  holidayHours?: number | null;
+  weekendHours?: number | null;
+  reconciliationVariance?: number | null;
   employees: PayrollRegisterEmployee[];
 }
 
@@ -56,6 +76,13 @@ export interface PayrollPayslipReport {
   workedHours?: number | null;
   normWorkDays?: number | null;
   normWorkHours?: number | null;
+  paidLeaveDays?: number | null;
+  paidSickDays?: number | null;
+  overtimeHours?: number | null;
+  nightHours?: number | null;
+  holidayHours?: number | null;
+  weekendHours?: number | null;
+  reconciliationVariance?: number | null;
   grossAmount: number;
   deductionAmount: number;
   employerTaxAmount: number;
@@ -63,5 +90,9 @@ export interface PayrollPayslipReport {
   netAmount: number;
   paidAmount: number;
   outstandingAmount: number;
+  regularGrossAmount?: number | null;
+  regularNetAmount?: number | null;
+  correctionGrossAmount?: number | null;
+  correctionNetAmount?: number | null;
   components: PayrollPayslipComponent[];
 }

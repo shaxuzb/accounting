@@ -5,7 +5,10 @@ import SelectStatic from "@/components/fields/SelectStatic";
 import PayrollComponentSelect from "@/modules/payroll/components/PayrollComponentSelect";
 import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeSelect";
 import PayrollPeriodSelect from "@/modules/payroll/components/PayrollPeriodSelect";
-import { documentKindOptions } from "@/modules/payroll/constants/options";
+import {
+  correctionPayoutModeOptions,
+  documentKindOptions,
+} from "@/modules/payroll/constants/options";
 import { DATE_TIME_FORMAT } from "@/modules/payroll/utils/format";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
@@ -32,12 +35,9 @@ const defaultValues: PayrollCalculateForm = {
   docDate: dayjs().format(DATE_TIME_FORMAT),
   documentKind: "REGULAR",
   correctionOfDocId: null,
+  correctionPayoutMode: "SEPARATE",
   salaryExpenseAccountId: null,
   salaryPayableAccountId: null,
-  deductionPayableAccountId: null,
-  employerTaxExpenseAccountId: null,
-  employerTaxPayableAccountId: null,
-  advanceReceivableAccountId: null,
   note: null,
   adjustments: [],
 };
@@ -203,6 +203,19 @@ export default function PayrollCalculateModal({
                   style={{ height: 38, width: "100%" }}
                 />
               </Form.Item>
+            </Col>
+          )}
+
+          {isCorrection && (
+            <Col xs={24} md={12}>
+              <SelectStatic
+                formik={formik}
+                fieldName="correctionPayoutMode"
+                label="payroll.fields.correctionPayoutMode"
+                options={correctionPayoutModeOptions}
+                required
+                marginBottom="mb-4"
+              />
             </Col>
           )}
 

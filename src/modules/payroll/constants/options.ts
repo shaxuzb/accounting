@@ -93,6 +93,22 @@ export const CALCULATION_METHODS = [
 ] as const;
 export type PayrollCalculationMethod = (typeof CALCULATION_METHODS)[number];
 
+export const PRORATION_BASES = ["DAYS", "HOURS"] as const;
+export type PayrollProrationBasis = (typeof PRORATION_BASES)[number];
+
+export const prorationBasisOptions: readonly StaticOption[] = [
+  {
+    value: "DAYS",
+    label: "payroll.enums.prorationBasis.DAYS",
+    description: "payroll.enums.prorationBasis.DAYS_HINT",
+  },
+  {
+    value: "HOURS",
+    label: "payroll.enums.prorationBasis.HOURS",
+    description: "payroll.enums.prorationBasis.HOURS_HINT",
+  },
+] as const;
+
 export const calculationMethodOptions: readonly StaticOption[] = [
   {
     value: "SALARY_PRORATED",
@@ -160,6 +176,24 @@ export const documentKindOptions: readonly StaticOption[] = [
     value: "CORRECTION",
     label: "payroll.enums.documentKind.CORRECTION",
     description: "payroll.enums.documentKind.CORRECTION_HINT",
+  },
+] as const;
+
+export const correctionPayoutModeOptions: readonly StaticOption[] = [
+  {
+    value: "SEPARATE",
+    label: "payroll.enums.correctionPayoutMode.SEPARATE",
+    description: "payroll.enums.correctionPayoutMode.SEPARATE_HINT",
+  },
+  {
+    value: "WITH_SALARY",
+    label: "payroll.enums.correctionPayoutMode.WITH_SALARY",
+    description: "payroll.enums.correctionPayoutMode.WITH_SALARY_HINT",
+  },
+  {
+    value: "WITH_ADVANCE",
+    label: "payroll.enums.correctionPayoutMode.WITH_ADVANCE",
+    description: "payroll.enums.correctionPayoutMode.WITH_ADVANCE_HINT",
   },
 ] as const;
 

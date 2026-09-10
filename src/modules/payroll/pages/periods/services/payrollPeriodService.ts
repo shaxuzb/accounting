@@ -16,6 +16,8 @@ export const payrollPeriodService = {
     $axiosPrivate
       .post<PayrollPeriod>(endpoints.create, payload)
       .then((res) => res.data),
+  update: (id: string | number, payload: PayrollPeriodForm) =>
+    $axiosPrivate.put(endpoints.update(id), payload).then((res) => res.data),
   close: (id: string | number) =>
     $axiosPrivate.post(endpoints.close(id)).then((res) => res.data),
   reopen: (id: string | number) =>

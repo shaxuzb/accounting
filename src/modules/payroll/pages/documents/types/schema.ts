@@ -16,6 +16,9 @@ export const payrollCalculateSchema = Yup.object({
       then: (schema) =>
         schema.required(() => tMessage("payroll.messages.correctionDocRequired")),
     }),
+  correctionPayoutMode: Yup.string()
+    .oneOf(["WITH_SALARY", "WITH_ADVANCE", "SEPARATE"])
+    .required(),
   salaryExpenseAccountId: requiredNumber("payroll.fields.salaryExpenseAccount").moreThan(
     0,
     () => tMessage("payroll.messages.accountRequired"),
@@ -24,18 +27,6 @@ export const payrollCalculateSchema = Yup.object({
     0,
     () => tMessage("payroll.messages.accountRequired"),
   ),
-  deductionPayableAccountId: requiredNumber(
-    "payroll.fields.deductionPayableAccount",
-  ).moreThan(0, () => tMessage("payroll.messages.accountRequired")),
-  employerTaxExpenseAccountId: requiredNumber(
-    "payroll.fields.employerTaxExpenseAccount",
-  ).moreThan(0, () => tMessage("payroll.messages.accountRequired")),
-  employerTaxPayableAccountId: requiredNumber(
-    "payroll.fields.employerTaxPayableAccount",
-  ).moreThan(0, () => tMessage("payroll.messages.accountRequired")),
-  advanceReceivableAccountId: requiredNumber(
-    "payroll.fields.advanceReceivableAccount",
-  ).moreThan(0, () => tMessage("payroll.messages.accountRequired")),
   note: Yup.string().nullable(),
   adjustments: Yup.array().of(
     Yup.object({

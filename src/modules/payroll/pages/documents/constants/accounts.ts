@@ -11,26 +11,6 @@ export const payrollDocumentAccountFields = [
     roleCode: "salary_payable",
     label: "payroll.fields.salaryPayableAccount",
   },
-  {
-    fieldName: "deductionPayableAccountId",
-    roleCode: "deduction_payable",
-    label: "payroll.fields.deductionPayableAccount",
-  },
-  {
-    fieldName: "employerTaxExpenseAccountId",
-    roleCode: "employer_tax_expense",
-    label: "payroll.fields.employerTaxExpenseAccount",
-  },
-  {
-    fieldName: "employerTaxPayableAccountId",
-    roleCode: "employer_tax_payable",
-    label: "payroll.fields.employerTaxPayableAccount",
-  },
-  {
-    fieldName: "advanceReceivableAccountId",
-    roleCode: "advance_receivable",
-    label: "payroll.fields.advanceReceivableAccount",
-  },
 ] as const;
 
 export type PayrollDocumentAccountFieldName =

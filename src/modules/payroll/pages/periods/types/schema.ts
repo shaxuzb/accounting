@@ -8,10 +8,28 @@ export const payrollPeriodSchema = Yup.object({
   month: requiredNumber("payroll.fields.month")
     .min(1, () => tMessage("payroll.messages.monthRange"))
     .max(12, () => tMessage("payroll.messages.monthRange")),
-  normWorkDays: requiredNumber("payroll.fields.normWorkDays").moreThan(0, () =>
-    tMessage("payroll.messages.positiveNumber"),
-  ),
-  normWorkHours: requiredNumber("payroll.fields.normWorkHours").moreThan(0, () =>
-    tMessage("payroll.messages.positiveNumber"),
-  ),
+  dailyWorkHours: requiredNumber("payroll.fields.dailyWorkHours")
+    .moreThan(0, () => tMessage("payroll.messages.positiveNumber"))
+    .max(24, () => tMessage("payroll.messages.dailyWorkHoursRange")),
+  workDates: Yup.array()
+    .of(Yup.string().required())
+    .min(1, () => tMessage("payroll.messages.workDatesRequired"))
+    .test(
+      "unique-work-dates",
+      () => tMessage("payroll.messages.workDatesUnique"),
+      (dates) => new Set(dates ?? []).size === (dates?.length ?? 0),
+    )
+    .test(
+      "work-dates-in-period",
+      () => tMessage("payroll.messages.workDatesInPeriod"),
+      function validateWorkDates(dates) {
+        const { year, month } = this.parent as {
+          year?: number | null;
+          month?: number | null;
+        };
+        if (!year || !month) return true;
+        const prefix = `${year}-${String(month).padStart(2, "0")}-`;
+        return (dates ?? []).every((date) => date.startsWith(prefix));
+      },
+    ),
 });

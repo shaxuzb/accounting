@@ -11,7 +11,33 @@ export interface PayrollTimesheetLineForm {
   sickDays: number | null;
   absentDays: number | null;
   overtimeHours: number | null;
+  nightHours: number | null;
+  holidayHours: number | null;
+  weekendHours: number | null;
   note: string | null;
+  days: PayrollTimesheetDayForm[];
+  isLegacy?: boolean;
+}
+
+export interface PayrollTimesheetDayForm {
+  date: string;
+  statusCode: string;
+  sourceStatusCode?: string | null;
+  sourceAbsenceId?: number | null;
+  sourceScheduleId?: number | null;
+  sourceAbsenceTypeId?: number | null;
+  absenceTypeId: number | null;
+  timesheetCategory?: "LEAVE" | "SICK" | "ABSENT" | null;
+  statusName?: string | null;
+  absenceTypeCode?: string | null;
+  absenceTypeName?: string | null;
+  workedHours?: number | null;
+  plannedHours?: number | null;
+  overtimeHours?: number | null;
+  nightHours?: number | null;
+  holidayHours?: number | null;
+  weekendHours?: number | null;
+  isOverridden?: boolean;
 }
 
 export interface PayrollTimesheetForm {

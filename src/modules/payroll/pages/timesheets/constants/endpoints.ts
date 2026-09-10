@@ -7,4 +7,6 @@ export const payrollTimesheetEndpoints = {
   cancel: (id: string | number) => `payroll/timesheets/${id}/cancel`,
   detailCalendar: (id: string | number) => `payroll/timesheets/${id}/calendar`,
   employeeCalendar: "payroll/timesheets/calendar",
+  attendanceStatusOptions: "payroll/timesheets/attendance-status-options",
+  initializeDays: (id: string | number) => `payroll/timesheets/${id}/initialize-days`,
 } as const;

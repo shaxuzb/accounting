@@ -12,7 +12,7 @@ import { payrollTimesheetPermissions } from "@/modules/payroll/constants/permiss
 import { usePayrollPeriodLookup } from "@/modules/payroll/pages/periods/hooks";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { Button, Col, Form, Popconfirm, Row, Spin } from "antd";
+import { Alert, Button, Col, Form, Popconfirm, Row, Spin } from "antd";
 import { useFormik } from "formik";
 import {
   CalendarClock,
@@ -36,6 +36,8 @@ import {
   useCreatePayrollTimesheet,
   useGetDetailPayrollTimesheet,
   useUpdatePayrollTimesheet,
+  useAttendanceStatusOptions,
+  useInitializePayrollTimesheetDays,
 } from "../hooks";
 import type { PayrollTimesheetForm } from "../types/form";
 import { payrollTimesheetSchema } from "../types/schema";
@@ -62,6 +64,8 @@ export default function PayrollTimesheetDetailPage() {
   const confirmMutation = useConfirmPayrollTimesheet(id);
   const cancelMutation = useCancelPayrollTimesheet(id);
   const { data: periods } = usePayrollPeriodLookup();
+  const { data: statusOptions = [] } = useAttendanceStatusOptions();
+  const initializeDaysMutation = useInitializePayrollTimesheetDays(id);
 
   const record = detailQuery.data;
   const statusId = record?.statusId ?? 1;
@@ -92,13 +96,7 @@ export default function PayrollTimesheetDetailPage() {
         ...values,
         lines: values.lines.map((line) => ({
           ...line,
-          normWorkDays: line.normWorkDays ?? 0,
-          normWorkHours: line.normWorkHours ?? 0,
-          workedDays: line.workedDays ?? 0,
-          workedHours: line.workedHours ?? 0,
-          leaveDays: line.leaveDays ?? 0,
-          sickDays: line.sickDays ?? 0,
-          absentDays: line.absentDays ?? 0,
+          days: line.days ?? [],
           overtimeHours: line.overtimeHours ?? 0,
         })),
       };
@@ -125,9 +123,12 @@ export default function PayrollTimesheetDetailPage() {
   );
   const isPeriodClosed = selectedPeriod?.status === "CLOSED";
   const visibleCalendar = record?.calendar ?? null;
+  const hasLegacyLines = Boolean(
+    record?.lines?.some((line) => line.isLegacy) || visibleCalendar?.isLegacy,
+  );
   const totals = useMemo(
-    () => summarizeTimesheet(formik.values.lines),
-    [formik.values.lines],
+    () => summarizeTimesheet(formik.values.lines, selectedPeriod?.dailyWorkHours ?? 0),
+    [formik.values.lines, selectedPeriod?.dailyWorkHours],
   );
 
   const handleSave = async () => {
@@ -161,7 +162,7 @@ export default function PayrollTimesheetDetailPage() {
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
   const isBusy =
-    isSaving || confirmMutation.isPending || cancelMutation.isPending;
+    isSaving || confirmMutation.isPending || cancelMutation.isPending || initializeDaysMutation.isPending;
 
   if (detailQuery.isLoading && !isCreate) {
     return (
@@ -240,7 +241,32 @@ export default function PayrollTimesheetDetailPage() {
         />
       </DocumentSummary>
 
-      {visibleCalendar ? (
+      {hasLegacyLines && canSave && (
+        <Alert
+          type="warning"
+          showIcon
+          message={t("payroll.timesheets.legacyDaysTitle")}
+          description={t("payroll.timesheets.legacyDaysText")}
+          action={
+            <Button
+              size="small"
+              type="primary"
+              loading={initializeDaysMutation.isPending}
+              disabled={isBusy}
+              onClick={() =>
+                runMutation(
+                  () => initializeDaysMutation.mutateAsync(),
+                  "payroll.messages.timesheetDaysInitialized",
+                )
+              }
+            >
+              {t("payroll.timesheets.initializeDays")}
+            </Button>
+          }
+        />
+      )}
+
+      {visibleCalendar && !canSave ? (
         <TimesheetCalendarView calendar={visibleCalendar} />
       ) : (
         <TimesheetLinesEditor
@@ -248,7 +274,11 @@ export default function PayrollTimesheetDetailPage() {
           disabled={!isDraft}
           normWorkDays={selectedPeriod?.normWorkDays}
           normWorkHours={selectedPeriod?.normWorkHours}
+          dailyWorkHours={selectedPeriod?.dailyWorkHours}
+          periodStartDate={selectedPeriod?.startDate}
+          periodEndDate={selectedPeriod?.endDate}
           periodId={formik.values.periodId}
+          statusOptions={statusOptions}
         />
       )}
 

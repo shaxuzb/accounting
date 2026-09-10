@@ -12,7 +12,7 @@ import {
   type PayrollComponentType,
 } from "@/modules/payroll/constants/options";
 import { money } from "@/modules/payroll/utils/format";
-import { Button, Empty, Spin, Table, Tag } from "antd";
+import { Alert, Button, Empty, Spin, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import {
   Banknote,
@@ -206,7 +206,28 @@ export default function PayrollPayslipReportPage() {
               value={money(data.netAmount)}
               emphasized
             />
+            <DocumentSummaryItem
+              icon={<CalendarDays className="size-5" />}
+              label={t("payroll.fields.paidLeaveDays", { defaultValue: "Paid leave" })}
+              value={`${data.paidLeaveDays ?? 0} d`}
+            />
+            <DocumentSummaryItem
+              icon={<Clock className="size-5" />}
+              label={t("payroll.fields.overtimeHours", { defaultValue: "Overtime" })}
+              value={`${data.overtimeHours ?? 0} h`}
+            />
           </DocumentSummary>
+
+          {Math.abs(data.reconciliationVariance ?? 0) >= 0.01 && (
+            <Alert
+              type="warning"
+              showIcon
+              message={t("payroll.reports.reconciliationWarning", {
+                defaultValue: "Payment reconciliation requires review",
+              })}
+              description={`${data.reconciliationVariance}`}
+            />
+          )}
 
           <div className="grid gap-4 xl:grid-cols-[1fr_320px]">
             <SectionCard
@@ -240,6 +261,12 @@ export default function PayrollPayslipReportPage() {
                   ["payroll.fields.advanceAmount", data.advanceAmount ?? 0],
                   ["payroll.fields.netAmount", data.netAmount],
                   ["payroll.fields.paidAmount", data.paidAmount],
+                  ["payroll.fields.regularGrossAmount", data.regularGrossAmount ?? 0],
+                  ["payroll.fields.correctionGrossAmount", data.correctionGrossAmount ?? 0],
+                  ["payroll.fields.paidSickDays", data.paidSickDays ?? 0],
+                  ["payroll.fields.nightHours", data.nightHours ?? 0],
+                  ["payroll.fields.holidayHours", data.holidayHours ?? 0],
+                  ["payroll.fields.weekendHours", data.weekendHours ?? 0],
                 ].map(([labelKey, value]) => (
                   <div
                     key={labelKey as string}
