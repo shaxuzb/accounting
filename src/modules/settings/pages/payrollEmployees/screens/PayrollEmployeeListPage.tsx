@@ -141,6 +141,9 @@ export default function PayrollEmployeeListPage() {
                 deleteCode: payrollEmployeePermissions.delete,
                 editCode: payrollEmployeePermissions.update,
               }}
+              deleteLabel={t("payroll.employees.deactivate", { defaultValue: "Faolsizlantirish" })}
+              deleteConfirmTitle={t("payroll.employees.deactivateTitle", { defaultValue: "Xodimni faolsizlantirasizmi?" })}
+              deleteConfirmContent={t("payroll.employees.deactivateText", { defaultValue: "Xodim o'chirilmaydi, faqat passiv holatga o'tkaziladi." })}
               refetch={() => void refetch()}
               onDeleteSuccess={() =>
                 queryClient.invalidateQueries({

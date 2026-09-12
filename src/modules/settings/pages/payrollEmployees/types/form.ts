@@ -1,4 +1,4 @@
-import type { PayrollEmploymentType } from "@/modules/payroll/constants/options";
+import type { PayrollAdvanceMethod, PayrollEmploymentType } from "@/modules/payroll/constants/options";
 
 export interface PayrollEmploymentForm {
   departmentId: number | null;
@@ -11,6 +11,36 @@ export interface PayrollEmploymentForm {
   weeklyHours: number | null;
   currencyId: number | null;
   expenseAccountId: number | null;
+  advanceMethod: PayrollAdvanceMethod;
+  advanceValue: number | null;
+  note: string | null;
+}
+
+export interface PayrollEmploymentTransferForm {
+  effectiveDate: string;
+  departmentId?: number | null;
+  positionId?: number | null;
+  employmentType?: PayrollEmploymentType | null;
+  monthlySalary?: number | null;
+  employmentRate?: number | null;
+  weeklyHours?: number | null;
+  currencyId?: number | null;
+  expenseAccountId?: number | null;
+  advanceMethod?: PayrollAdvanceMethod | null;
+  advanceValue?: number | null;
+  note?: string | null;
+}
+
+export interface PayrollEmploymentPayChangeForm {
+  effectiveDate: string;
+  monthlySalary: number;
+  employmentRate?: number | null;
+  note?: string | null;
+}
+
+export interface PayrollEmploymentDismissForm {
+  effectiveDate: string;
+  note?: string | null;
 }
 
 export interface PayrollEmployeeMainForm {

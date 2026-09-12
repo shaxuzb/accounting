@@ -4,7 +4,11 @@ import type {
   PayrollPaymentForm,
   PayrollPaymentLineForm,
 } from "../types/form";
-import type { PayrollPayment } from "../types/type";
+import type {
+  PayrollPayment,
+} from "../types/type";
+import type { PayrollDocument } from "@/modules/payroll/pages/documents/types/type";
+export { mapAdvanceSuggestionToPaymentLines } from "./advanceSuggestion";
 
 export const createPaymentLine = (
   overrides: Partial<PayrollPaymentLineForm> = {},
@@ -67,3 +71,9 @@ export const mapPaymentToForm = (
 /** To'lov paketining umumiy summasi. */
 export const paymentTotal = (lines: PayrollPaymentLineForm[]) =>
   lines.reduce((total, line) => total + (line.amount ?? 0), 0);
+
+/** FINAL payment may select regular docs and separately payable corrections only. */
+export const filterDocumentsForFinalPayment = (documents: PayrollDocument[]) =>
+  documents.filter((document) =>
+    document.documentKind !== "CORRECTION" || document.correctionPayoutMode === "SEPARATE",
+  );

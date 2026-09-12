@@ -57,7 +57,9 @@
     "draft": "Draft",
     "posted": "Posted",
     "cancelled": "Cancelled",
-    "pending": "Pending"
+    "pending": "Pending",
+    "in_transit": "In transit",
+    "completed": "Completed"
   },
   "error": {
     "title": "An error occurred",
@@ -1614,6 +1616,7 @@
       "chooseFiles": "Choose documents",
       "filesHint": "You can attach multiple supporting documents."
     },
+    "orders": { "title": "HR orders", "create": "Create order", "detailTitle": "HR order" },
     "schedules": {
       "title": "Personal work schedules",
       "description": "Set the schedule period and hours for each working day.",
@@ -1723,6 +1726,7 @@
       "noNumber": "No number",
       "info": "Information"
     },
+    "hrOrders": { "title": "HR orders", "create": "Create HR order", "formTitle": "HR order", "formHint": "The order is applied to employment history after confirmation.", "print": "Print", "printTitle": "HR order", "from": "Previous", "to": "New", "notFound": "Order not found", "printUnavailable": "Print data is unavailable", "confirmTitle": "Confirm this order?", "cancelTitle": "Cancel this order?", "deleteTitle": "Delete this order?" },
     "units": {
       "hour": "hour",
       "day": "day"
@@ -1811,6 +1815,16 @@
       "docNumber": "Document number",
       "docDate": "Document date",
       "note": "Note",
+      "orderNumber": "Order number",
+      "orderDate": "Order date",
+      "effectiveDate": "Effective date",
+      "orderType": "Order type",
+      "basis": "Basis",
+      "advanceMethod": "Advance method",
+      "advancePercent": "Advance percent (%)",
+      "advanceAmount": "Advance amount",
+      "targetAmount": "Target amount",
+      "adjustmentMode": "Adjustment mode",
       "workedDays": "Worked days",
       "workedHours": "Worked hours",
       "leaveDays": "Leave days",
@@ -1884,7 +1898,11 @@
         "PERCENT_OF_GROSS": "Percent of gross",
         "PERCENT_OF_GROSS_HINT": "Percentage of the gross amount",
         "PER_HOUR": "Per hour",
-        "PER_HOUR_HINT": "Worked hours × rate"
+        "PER_HOUR_HINT": "Worked hours × rate",
+        "AVERAGE_LEAVE": "Average (leave)",
+        "AVERAGE_LEAVE_HINT": "Average earnings for leave",
+        "AVERAGE_SICK": "Average (sick leave)",
+        "AVERAGE_SICK_HINT": "Average earnings for sick leave"
       },
       "prorationBasis": {
         "DAYS": "By worked days",
@@ -1910,6 +1928,9 @@
         "WITH_ADVANCE": "With advance",
         "WITH_ADVANCE_HINT": "Pay correction with the advance"
       },
+      "advanceMethod": { "PERCENT": "Percent", "PERCENT_HINT": "Percentage of salary", "FIXED": "Fixed amount", "FIXED_HINT": "Fixed monthly amount" },
+      "hrOrderType": { "HIRE": "Hire", "TRANSFER": "Transfer", "PAY_CHANGE": "Pay change", "DISMISSAL": "Dismissal" },
+      "adjustmentMode": { "AMOUNT": "Delta amount", "TARGET": "Target amount" },
       "paymentKind": {
         "ADVANCE": "Advance",
         "ADVANCE_HINT": "Payment before the main payroll",
@@ -1942,7 +1963,10 @@
       "removeComponentTitle": "Remove the component?",
       "noEmployment": "No employment terms entered",
       "noComponents": "No components assigned",
-      "notFound": "Employee not found"
+      "notFound": "Employee not found",
+      "deactivate": "Deactivate",
+      "deactivateTitle": "Deactivate this employee?",
+      "deactivateText": "The employee is not deleted; only marked passive."
     },
     "components": {
       "title": "Payroll components",
@@ -2028,6 +2052,19 @@
       "noCalcLines": "No calculation lines",
       "correctionOf": "Correction of document {{docNumber}}",
       "draftWarning": "The document is a draft — nothing has been posted yet.",
+      "editDraftTitle": "Edit draft document",
+      "editDraftHint": "Changed amounts and accounts will be recalculated.",
+      "correctionBasisHint": "Current source amounts loaded",
+      "documentUpdated": "Document updated",
+      "adjustmentValueRequired": "Enter an adjustment value",
+      "orderDepartmentOrPositionRequired": "Select at least a department or position",
+      "orderHireFieldsRequired": "For hiring, fill department/position, salary, currency and employment type",
+      "monthlySalaryRequired": "Enter the monthly salary",
+      "hrOrderCreated": "HR order created",
+      "hrOrderUpdated": "HR order updated",
+      "hrOrderConfirmed": "HR order confirmed",
+      "hrOrderCancelled": "HR order cancelled",
+      "hrOrderDeleted": "HR order deleted",
       "confirmTitle": "Confirm the document?",
       "confirmText": "Once confirmed the calculation is posted and can only be changed with a correction document.",
       "confirmHint": "Postings are created automatically on the server",
@@ -2054,6 +2091,7 @@
       "linesHint": "Enter the amount payable to each employee",
       "addLine": "Add employee",
       "fillFromDocument": "Fill from document",
+      "fillFromAdvanceSuggestion": "Fill from advance suggestion",
       "fillFromDocumentTitle": "Fill from the payroll document?",
       "fillFromDocumentText": "Outstanding amounts for {{count}} employees will be copied into the rows.",
       "noLines": "No employees added yet",

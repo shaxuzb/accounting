@@ -2,6 +2,7 @@ import type {
   PayrollCalculationMethod,
   PayrollComponentType,
   PayrollEmploymentType,
+  PayrollAdvanceMethod,
 } from "@/modules/payroll/constants/options";
 
 export interface PayrollEmployment {
@@ -25,6 +26,10 @@ export interface PayrollEmployment {
   isActive?: boolean;
   stateId?: number | null;
   stateName?: string | null;
+  actionType?: string | null;
+  advanceMethod?: PayrollAdvanceMethod | null;
+  advanceValue?: number | null;
+  note?: string | null;
 }
 
 export interface PayrollEmployeeComponent {

@@ -1,8 +1,9 @@
 import InputNumber from "@/components/fields/InputNumber";
+import InputTextArea from "@/components/fields/InputTextArea";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectStatic from "@/components/fields/SelectStatic";
-import { employmentTypeOptions } from "@/modules/payroll/constants/options";
+import { advanceMethodOptions, employmentTypeOptions } from "@/modules/payroll/constants/options";
 import {
   chartAccountSelectDisplayConfig,
   selectListEndpoints,
@@ -42,6 +43,30 @@ export default function EmploymentFormFields({
           disabled={disabled}
           marginBottom="mb-4"
         />
+      </Col>
+      <Col xs={24} md={8}>
+        <SelectStatic
+          formik={formik}
+          fieldName={field("advanceMethod")}
+          label="payroll.fields.advanceMethod"
+          options={advanceMethodOptions}
+          disabled={disabled}
+          marginBottom="mb-4"
+        />
+      </Col>
+      <Col xs={24} md={8}>
+        <InputNumber
+          formik={formik}
+          fieldName={field("advanceValue")}
+          label={formik.values[field("advanceMethod")] === "PERCENT" ? "payroll.fields.advancePercent" : "payroll.fields.advanceAmount"}
+          min={0}
+          max={formik.values[field("advanceMethod")] === "PERCENT" ? 100 : undefined}
+          precision={2}
+          disabled={disabled}
+        />
+      </Col>
+      <Col xs={24} md={8}>
+        <InputTextArea formik={formik} fieldName={field("note")} label="payroll.fields.note" rows={1} disabled={disabled} />
       </Col>
       <Col xs={24} md={12}>
         <SelectCustom

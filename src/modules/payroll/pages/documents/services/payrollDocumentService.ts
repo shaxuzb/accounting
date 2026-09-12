@@ -2,8 +2,9 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { payrollDocumentEndpoints as endpoints } from "../constants/endpoints";
-import type { PayrollCalculateForm } from "../types/form";
+import type { PayrollCalculateForm, PayrollDraftUpdateForm } from "../types/form";
 import type { PayrollDocument } from "../types/type";
+import type { PayrollCorrectionBasis } from "../types/type";
 
 export const payrollDocumentService = {
   list: (params?: QueryParams) =>
@@ -18,6 +19,10 @@ export const payrollDocumentService = {
     $axiosPrivate
       .post<PayrollDocument | number>(endpoints.calculate, payload)
       .then((res) => res.data),
+  correctionBasis: (id: string | number) =>
+    $axiosPrivate.get<PayrollCorrectionBasis>(endpoints.correctionBasis(id)).then((res) => res.data),
+  updateDraft: (id: string | number, payload: PayrollDraftUpdateForm) =>
+    $axiosPrivate.put(endpoints.updateDraft(id), payload).then((res) => res.data),
   recalculate: (id: string | number) =>
     $axiosPrivate.post<number>(endpoints.recalculate(id)).then((res) => res.data),
   confirm: (id: string | number) =>

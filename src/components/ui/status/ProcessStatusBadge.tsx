@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/utils/utils";
 
-export type ProcessStatusCode = "draft" | "posted" | "cancelled" | "pending";
+export type ProcessStatusCode = "draft" | "posted" | "cancelled" | "pending" | "in_transit" | "completed";
 
 interface ProcessStatusBadgeProps {
   statusId?: number | null;
@@ -16,6 +16,8 @@ const STATUS_CODE_BY_ID: Record<number, ProcessStatusCode> = {
   2: "posted",
   3: "cancelled",
   4: "pending",
+  5: "in_transit",
+  6: "completed",
 };
 
 const STATUS_CLASSES: Record<ProcessStatusCode | "unknown", string> = {
@@ -27,6 +29,10 @@ const STATUS_CLASSES: Record<ProcessStatusCode | "unknown", string> = {
     "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/60 dark:text-red-300",
   pending:
     "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-300",
+  in_transit:
+    "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/60 dark:text-blue-300",
+  completed:
+    "border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300",
   unknown:
     "border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200",
 };
@@ -36,6 +42,8 @@ const DOT_CLASSES: Record<ProcessStatusCode | "unknown", string> = {
   posted: "bg-emerald-500 dark:bg-emerald-300",
   cancelled: "bg-red-500 dark:bg-red-300",
   pending: "bg-amber-500 dark:bg-amber-300",
+  in_transit: "bg-blue-500 dark:bg-blue-300",
+  completed: "bg-indigo-500 dark:bg-indigo-300",
   unknown: "bg-gray-500 dark:bg-gray-300",
 };
 
@@ -47,7 +55,7 @@ const normalizeCode = (
   const normalizedCode = String(statusCode ?? "")
     .trim()
     .toLowerCase();
-  if (["draft", "posted", "cancelled", "pending"].includes(normalizedCode)) {
+  if (["draft", "posted", "cancelled", "pending", "in_transit", "completed"].includes(normalizedCode)) {
     return normalizedCode as ProcessStatusCode;
   }
 
@@ -66,6 +74,8 @@ const normalizeCode = (
     return "cancelled";
   }
   if (["kutilmoqda", "pending"].includes(normalizedName)) return "pending";
+  if (["jarayonda", "in transit", "in_transit"].includes(normalizedName)) return "in_transit";
+  if (["yakunlangan", "completed"].includes(normalizedName)) return "completed";
 
   return "unknown";
 };

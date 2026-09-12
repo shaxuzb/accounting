@@ -36,6 +36,7 @@ import EmployeeEmploymentModal from "../components/EmployeeEmploymentModal";
 import { payrollEmployeePermissions } from "../constants/permissions";
 import {
   useGetDetailPayrollEmployee,
+  useGetPayrollEmployeeHistory,
   useRemovePayrollComponent,
 } from "../hooks";
 import PayrollEmployeeAddEditPage from "./PayrollEmployeeAddEditPage";
@@ -54,6 +55,7 @@ export default function PayrollEmployeeDetailPage() {
   const canUpdate = permissions.includes(payrollEmployeePermissions.update);
 
   const { data: employee, isLoading } = useGetDetailPayrollEmployee(id);
+  const { data: history } = useGetPayrollEmployeeHistory(id);
   const removeComponent = useRemovePayrollComponent(id);
 
   const [isMainOpen, setIsMainOpen] = useState(false);
@@ -63,6 +65,7 @@ export default function PayrollEmployeeDetailPage() {
     useState<PayrollEmployment | null>(null);
 
   const employments = employee?.employments ?? [];
+  const employmentHistory = history ?? employments;
   const components = employee?.components ?? [];
   const activeContract =
     employments.find((item) => item.isActive) ??
@@ -88,6 +91,12 @@ export default function PayrollEmployeeDetailPage() {
   };
 
   const employmentColumns: TableColumnsType<PayrollEmployment> = [
+    {
+      dataIndex: "actionType",
+      title: t("payroll.fields.actionType", { defaultValue: "Amal" }),
+      align: "center",
+      render: (value: string | null) => value ? <Tag className="m-0!" color="purple">{value}</Tag> : "—",
+    },
     {
       dataIndex: "startDate",
       title: t("payroll.fields.period"),
@@ -148,6 +157,12 @@ export default function PayrollEmployeeDetailPage() {
       dataIndex: "weeklyHours",
       title: t("payroll.fields.weeklyHours"),
       align: "center",
+    },
+    {
+      dataIndex: "advanceValue",
+      title: t("payroll.fields.advanceAmount", { defaultValue: "Avans" }),
+      align: "center",
+      render: (_: number | null, record) => record.advanceValue == null ? "—" : `${record.advanceValue} ${record.advanceMethod === "PERCENT" ? "%" : record.currencyName ?? ""}`,
     },
   ];
 
@@ -345,7 +360,7 @@ export default function PayrollEmployeeDetailPage() {
                 ]
               : employmentColumns
           }
-          dataSource={employments.map((item) => ({ ...item, key: item.id }))}
+          dataSource={employmentHistory.map((item) => ({ ...item, key: item.id }))}
           pagination={false}
           size="middle"
           scroll={{ x: "max-content" }}

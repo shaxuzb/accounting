@@ -5,4 +5,6 @@ export const payrollDocumentKeys = {
     ["payroll", "documents", "detail", id] as const,
   lookup: (periodId?: number | null) =>
     ["payroll", "documents", "lookup", periodId ?? "all"] as const,
+  correctionBasis: (id: string | number) =>
+    ["payroll", "documents", "correction-basis", id] as const,
 };

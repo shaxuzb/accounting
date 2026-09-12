@@ -40,7 +40,7 @@ import {
   Wallet,
   X,
 } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
@@ -50,6 +50,7 @@ import {
   useConfirmPayrollPayment,
   useCreatePayrollPayment,
   useGetDetailPayrollPayment,
+  useGetPayrollAdvanceSuggestion,
 } from "../hooks";
 import type { PayrollPaymentForm } from "../types/form";
 import { payrollPaymentSchema } from "../types/schema";
@@ -57,6 +58,8 @@ import {
   createDefaultPaymentForm,
   mapPaymentToForm,
   paymentTotal,
+  mapAdvanceSuggestionToPaymentLines,
+  filterDocumentsForFinalPayment,
 } from "../utils/payment";
 
 const LIST_PATH = "/main/payroll/payments";
@@ -128,6 +131,19 @@ export default function PayrollPaymentDetailPage() {
 
   const { values } = formik;
   const isFinal = values.paymentKind === "FINAL";
+  const { data: advanceSuggestion } = useGetPayrollAdvanceSuggestion(
+    isCreate && values.paymentKind === "ADVANCE" ? values.periodId : null,
+  );
+  const prefilledAdvancePeriod = useRef<number | null>(null);
+  useEffect(() => {
+    if (values.paymentKind !== "ADVANCE") {
+      prefilledAdvancePeriod.current = null;
+      return;
+    }
+    if (!isCreate || !values.periodId || !advanceSuggestion || prefilledAdvancePeriod.current === values.periodId) return;
+    formik.setFieldValue("lines", mapAdvanceSuggestionToPaymentLines(advanceSuggestion.lines ?? []), false);
+    prefilledAdvancePeriod.current = values.periodId;
+  }, [advanceSuggestion, formik, isCreate, values.paymentKind, values.periodId]);
 
   const { data: postedDocuments, isFetching: isDocumentsFetching } =
     usePayrollDocumentLookup(isFinal ? values.periodId : null);
@@ -280,7 +296,7 @@ export default function PayrollPaymentDetailPage() {
                         loading={isDocumentsFetching}
                         disabled={!isCreate || !values.periodId}
                         placeholder={t("payroll.placeholders.selectDocument")}
-                        options={(postedDocuments ?? []).map((document) => ({
+                        options={filterDocumentsForFinalPayment(postedDocuments ?? []).map((document) => ({
                           value: document.id,
                           label: `${document.docNumber ?? document.id} · ${money(
                             document.outstandingAmount ?? document.payableAmount,

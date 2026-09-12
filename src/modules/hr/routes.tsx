@@ -5,9 +5,11 @@ import { Outlet, type RouteObject } from "react-router";
 import {
   hrAbsencePermissions,
   hrEmployeePermissions,
+  hrOrderPermissions,
   hrViewPermissions,
 } from "./constants/permissions";
 import HrAbsenceListPage from "./pages/absences/screens/HrAbsenceListPage";
+import { HrOrderDetailPage, HrOrderListPage } from "./pages/orders";
 
 const withPermission = (
   element: React.ReactElement,
@@ -66,6 +68,15 @@ export const hrRoutes: RouteObject = {
         <HrAbsenceListPage />,
         hrAbsencePermissions.view,
       ),
+    },
+    {
+      path: "orders",
+      handle: { title: "hr.orders.title" },
+      children: [
+        { index: true, element: withPermission(<HrOrderListPage />, hrOrderPermissions.view) },
+        { path: "add", handle: { title: "hr.orders.create", showBack: true, backTo: ".." }, element: withPermission(<HrOrderDetailPage />, hrOrderPermissions.create) },
+        { path: ":id", handle: { title: "hr.orders.detailTitle", showBack: true, backTo: ".." }, element: withPermission(<HrOrderDetailPage />, hrOrderPermissions.view) },
+      ],
     },
   ],
 };

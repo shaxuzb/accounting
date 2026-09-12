@@ -48,3 +48,19 @@ export interface PayrollPayment {
   createdDate?: string | null;
   lines?: PayrollPaymentLine[];
 }
+
+export interface PayrollAdvanceSuggestionLine {
+  employeeId: number;
+  employeeNumber: string;
+  employeeName: string;
+  advanceMethod: "PERCENT" | "FIXED" | string;
+  advanceValue: number;
+  baseAdvance: number;
+  correctionAmount: number;
+  suggested: number;
+}
+
+export interface PayrollAdvanceSuggestion {
+  periodId: number;
+  lines: PayrollAdvanceSuggestionLine[];
+}

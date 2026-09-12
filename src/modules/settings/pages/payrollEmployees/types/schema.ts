@@ -36,6 +36,15 @@ export const employmentSchema = Yup.object({
     .max(168, () => tMessage("payroll.messages.weeklyHoursRange")),
   currencyId: requiredNumber("payroll.fields.currency"),
   expenseAccountId: Yup.number().nullable(),
+  advanceMethod: Yup.mixed<"PERCENT" | "FIXED">().oneOf(["PERCENT", "FIXED"]).required(),
+  advanceValue: Yup.number()
+    .nullable()
+    .min(0, () => tMessage("payroll.messages.notNegative"))
+    .when("advanceMethod", {
+      is: "PERCENT",
+      then: (schema) => schema.max(100, () => tMessage("payroll.messages.rateRange")),
+    }),
+  note: Yup.string().nullable(),
 });
 
 export const employeeMainSchema = Yup.object({

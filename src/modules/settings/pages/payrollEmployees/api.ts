@@ -7,8 +7,11 @@ import type {
   PayrollEmployeeForm,
   PayrollEmployeeMainForm,
   PayrollEmploymentForm,
+  PayrollEmploymentTransferForm,
+  PayrollEmploymentPayChangeForm,
+  PayrollEmploymentDismissForm,
 } from "./types/form";
-import type { PayrollEmployee } from "./types/type";
+import type { PayrollEmployee, PayrollEmployment } from "./types/type";
 
 export const payrollEmployeeService = {
   list: (params?: QueryParams) =>
@@ -19,10 +22,15 @@ export const payrollEmployeeService = {
     $axiosPrivate
       .get<PayrollEmployee>(endpoints.detail(id))
       .then((res) => res.data),
+  history: (id: string | number) =>
+    $axiosPrivate.get<PayrollEmployment[]>(endpoints.history(id)).then((res) => res.data),
   create: (payload: PayrollEmployeeForm) =>
     $axiosPrivate
       .post<PayrollEmployee>(endpoints.create, payload)
       .then((res) => res.data),
+  transfer: (id: string | number, payload: PayrollEmploymentTransferForm) => $axiosPrivate.post(endpoints.transfer(id), payload).then((res) => res.data),
+  changePay: (id: string | number, payload: PayrollEmploymentPayChangeForm) => $axiosPrivate.post(endpoints.changePay(id), payload).then((res) => res.data),
+  dismiss: (id: string | number, payload: PayrollEmploymentDismissForm) => $axiosPrivate.post(endpoints.dismiss(id), payload).then((res) => res.data),
   update: (id: string | number, payload: PayrollEmployeeMainForm) =>
     $axiosPrivate
       .put<PayrollEmployee>(endpoints.update(id), payload)

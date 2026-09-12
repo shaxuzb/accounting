@@ -3,7 +3,7 @@ import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { payrollPaymentEndpoints as endpoints } from "../constants/endpoints";
 import type { PayrollPaymentForm } from "../types/form";
-import type { PayrollPayment } from "../types/type";
+import type { PayrollAdvanceSuggestion, PayrollPayment } from "../types/type";
 
 export const payrollPaymentService = {
   list: (params?: QueryParams) =>
@@ -18,6 +18,8 @@ export const payrollPaymentService = {
     $axiosPrivate
       .post<PayrollPayment | number>(endpoints.create, payload)
       .then((res) => res.data),
+  advanceSuggestion: (periodId: string | number) =>
+    $axiosPrivate.get<PayrollAdvanceSuggestion>(endpoints.advanceSuggestion, { params: { periodId } }).then((res) => res.data),
   confirm: (id: string | number) =>
     $axiosPrivate.put(endpoints.confirm(id)).then((res) => res.data),
   cancel: (id: string | number) =>

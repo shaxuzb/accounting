@@ -45,6 +45,9 @@ const defaultValues: PayrollEmployeeForm = {
     weeklyHours: 40,
     currencyId: null,
     expenseAccountId: null,
+    advanceMethod: "PERCENT",
+    advanceValue: 0,
+    note: null,
   },
 };
 

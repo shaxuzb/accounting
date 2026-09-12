@@ -13,7 +13,17 @@ export const hrAbsencePermissions = {
   delete: "HR_ABSENCE_DELETE",
 } as const;
 
+export const hrOrderPermissions = {
+  view: "HR_ORDER_VIEW",
+  create: "HR_ORDER_CREATE",
+  update: "HR_ORDER_UPDATE",
+  confirm: "HR_ORDER_CONFIRM",
+  cancel: "HR_ORDER_CANCEL",
+  delete: "HR_ORDER_DELETE",
+} as const;
+
 export const hrViewPermissions = [
   hrEmployeePermissions.view,
   hrAbsencePermissions.view,
+  hrOrderPermissions.view,
 ] as const;

@@ -7,3 +7,5 @@ export { useGetPayrollDocuments } from "./useGetPayrollDocuments";
 export { usePayrollDocumentLookup } from "./usePayrollDocumentLookup";
 export { useRecalculatePayrollDocument } from "./useRecalculatePayrollDocument";
 export { usePayrollChartAccounts } from "./usePayrollChartAccounts";
+export { useGetPayrollCorrectionBasis } from "./useGetPayrollCorrectionBasis";
+export { useUpdatePayrollDocumentDraft } from "./useUpdatePayrollDocumentDraft";

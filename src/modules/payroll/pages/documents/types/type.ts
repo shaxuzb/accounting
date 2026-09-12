@@ -115,3 +115,19 @@ export interface PayrollDocument {
   pendingRecalculationId?: number | null;
   lines?: PayrollDocumentLine[];
 }
+
+export interface PayrollCorrectionBasisLine {
+  employeeId: number;
+  employeeNumber: string;
+  employeeName: string;
+  componentId: number;
+  componentCode: string;
+  componentName: string;
+  componentType: string;
+  currentAmount: number;
+}
+
+export interface PayrollCorrectionBasis {
+  sourceDocId: number;
+  lines: PayrollCorrectionBasisLine[];
+}

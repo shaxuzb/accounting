@@ -30,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import PayrollCalcLinesTable from "../components/PayrollCalcLinesTable";
 import PayrollTaxLinesTable from "../components/PayrollTaxLinesTable";
+import PayrollDraftEditor from "../components/PayrollDraftEditor";
 import {
   useCancelPayrollDocument,
   useConfirmPayrollDocument,
@@ -37,9 +38,11 @@ import {
   useGetDetailPayrollDocument,
   usePayrollChartAccounts,
   useRecalculatePayrollDocument,
+  useUpdatePayrollDocumentDraft,
 } from "../hooks";
 import { payrollDocumentAccountFields } from "../constants/accounts";
 import type { PayrollDocument, PayrollDocumentLine } from "../types/type";
+import type { PayrollDraftUpdateForm } from "../types/form";
 
 const LIST_PATH = "/main/payroll/documents";
 
@@ -57,6 +60,8 @@ export default function PayrollDocumentDetailPage() {
   const cancelMutation = useCancelPayrollDocument(id);
   const deleteMutation = useDeletePayrollDocument();
   const recalculateMutation = useRecalculatePayrollDocument(id);
+  const updateDraftMutation = useUpdatePayrollDocumentDraft(id);
+  const [editing, setEditing] = useState(false);
 
   const record = detailQuery.data;
   const chartAccountsQuery = usePayrollChartAccounts(Boolean(record));
@@ -72,9 +77,10 @@ export default function PayrollDocumentDetailPage() {
   );
   const statusId = record?.statusId ?? 1;
   const isDraft = isDraftStatus(statusId);
+  const isDraftLike = statusId === 1 || statusId === 4;
   const currency = record?.currencyName ?? "";
   const canConfirm =
-    isDraft && permissions.includes(payrollDocumentPermissions.confirm);
+    isDraftLike && permissions.includes(payrollDocumentPermissions.confirm);
   const canCancel =
     statusId !== 3 && permissions.includes(payrollDocumentPermissions.cancel);
   const canDelete =
@@ -83,6 +89,7 @@ export default function PayrollDocumentDetailPage() {
     statusId === 2 &&
     !record?.hasPendingRecalculation &&
     permissions.includes(payrollDocumentPermissions.calculate);
+  const canEditDraft = isDraftLike && permissions.includes(payrollDocumentPermissions.calculate);
 
   const employees = useMemo(() => {
     const list = record?.lines ?? [];
@@ -121,6 +128,16 @@ export default function PayrollDocumentDetailPage() {
       await action();
       toast.success(t(successKey));
       if (redirect) navigate(LIST_PATH, { replace: true });
+    } catch (error) {
+      errorHandlers(error);
+    }
+  };
+
+  const saveDraft = async (payload: PayrollDraftUpdateForm) => {
+    try {
+      await updateDraftMutation.mutateAsync(payload);
+      setEditing(false);
+      toast.success(t("payroll.messages.documentUpdated", { defaultValue: "Hujjat yangilandi" }));
     } catch (error) {
       errorHandlers(error);
     }
@@ -243,12 +260,7 @@ export default function PayrollDocumentDetailPage() {
         title="payroll.documents.detailTitle"
         description={record.docNumber ?? t("payroll.common.noNumber")}
         icon={<Receipt className="size-4" />}
-        extra={
-          <ProcessStatusBadge
-            statusId={record.statusId}
-            statusName={record.statusName}
-          />
-        }
+        extra={<div className="flex items-center gap-2"><ProcessStatusBadge statusId={record.statusId} statusName={record.statusName} />{canEditDraft && <Button size="small" onClick={() => setEditing((value) => !value)}>{editing ? t("common.cancel") : t("common.edit")}</Button>}</div>}
       >
         <dl className="grid gap-x-6 gap-y-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
           <div>
@@ -375,7 +387,7 @@ export default function PayrollDocumentDetailPage() {
         />
       </DocumentSummary>
 
-      <SectionCard
+      {editing ? <SectionCard title="payroll.documents.editDraftTitle" description="payroll.documents.editDraftHint" icon={<Receipt className="size-4" />}><PayrollDraftEditor record={record} onSubmit={saveDraft} loading={updateDraftMutation.isPending} /></SectionCard> : <SectionCard
         title="payroll.documents.accountsTitle"
         description="payroll.documents.accountsSavedHint"
         icon={<Landmark className="size-4" />}
@@ -400,7 +412,7 @@ export default function PayrollDocumentDetailPage() {
             {t("payroll.documents.accountsLoading")}
           </div>
         )}
-      </SectionCard>
+      </SectionCard>}
 
       <SectionCard
         className="min-w-0 overflow-hidden"

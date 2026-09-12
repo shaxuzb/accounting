@@ -25,6 +25,22 @@ export const isPostedStatus = (statusId?: number | null) =>
 export const EMPLOYMENT_TYPES = ["PRIMARY", "PART_TIME", "CONTRACT"] as const;
 export type PayrollEmploymentType = (typeof EMPLOYMENT_TYPES)[number];
 
+export const ADVANCE_METHODS = ["PERCENT", "FIXED"] as const;
+export type PayrollAdvanceMethod = (typeof ADVANCE_METHODS)[number];
+
+export const advanceMethodOptions: readonly StaticOption[] = [
+  {
+    value: "PERCENT",
+    label: "payroll.enums.advanceMethod.PERCENT",
+    description: "payroll.enums.advanceMethod.PERCENT_HINT",
+  },
+  {
+    value: "FIXED",
+    label: "payroll.enums.advanceMethod.FIXED",
+    description: "payroll.enums.advanceMethod.FIXED_HINT",
+  },
+] as const;
+
 export const employmentTypeOptions: readonly StaticOption[] = [
   {
     value: "PRIMARY",
@@ -90,6 +106,8 @@ export const CALCULATION_METHODS = [
   "FIXED",
   "PERCENT_OF_GROSS",
   "PER_HOUR",
+  "AVERAGE_LEAVE",
+  "AVERAGE_SICK",
 ] as const;
 export type PayrollCalculationMethod = (typeof CALCULATION_METHODS)[number];
 
@@ -138,6 +156,25 @@ export const methodUsesAmount = (method?: string | null) => method === "FIXED";
 /** Foiz yoki soatlik stavka kiritiladigan usullar. */
 export const methodUsesRate = (method?: string | null) =>
   method === "PERCENT_OF_GROSS" || method === "PER_HOUR";
+
+/* ------------------------------------------------------------------ */
+/* Kadr buyruqlari                                                     */
+/* ------------------------------------------------------------------ */
+
+export const HR_ORDER_TYPES = [
+  "HIRE",
+  "TRANSFER",
+  "PAY_CHANGE",
+  "DISMISSAL",
+] as const;
+export type PayrollHrOrderType = (typeof HR_ORDER_TYPES)[number];
+
+export const hrOrderTypeOptions: readonly StaticOption[] = [
+  { value: "HIRE", label: "payroll.enums.hrOrderType.HIRE" },
+  { value: "TRANSFER", label: "payroll.enums.hrOrderType.TRANSFER" },
+  { value: "PAY_CHANGE", label: "payroll.enums.hrOrderType.PAY_CHANGE" },
+  { value: "DISMISSAL", label: "payroll.enums.hrOrderType.DISMISSAL" },
+] as const;
 
 /* ------------------------------------------------------------------ */
 /* Hisoblash davri                                                      */
@@ -197,6 +234,11 @@ export const correctionPayoutModeOptions: readonly StaticOption[] = [
   },
 ] as const;
 
+export const correctionAdjustmentModeOptions: readonly StaticOption[] = [
+  { value: "AMOUNT", label: "payroll.enums.adjustmentMode.AMOUNT" },
+  { value: "TARGET", label: "payroll.enums.adjustmentMode.TARGET" },
+] as const;
+
 /* ------------------------------------------------------------------ */
 /* To'lovlar                                                            */
 /* ------------------------------------------------------------------ */
@@ -242,6 +284,8 @@ export const documentStatusFilterOptions = [
   { value: PAYROLL_STATUS.posted, label: "processStatuses.posted" },
   { value: PAYROLL_STATUS.cancelled, label: "processStatuses.cancelled" },
   { value: PAYROLL_STATUS.pending, label: "processStatuses.pending" },
+  { value: 5, label: "processStatuses.in_transit" },
+  { value: 6, label: "processStatuses.completed" },
 ] as const;
 
 export const stateFilterOptions = [

@@ -9,6 +9,7 @@ import {
   correctionPayoutModeOptions,
   documentKindOptions,
 } from "@/modules/payroll/constants/options";
+import { correctionAdjustmentModeOptions } from "@/modules/payroll/constants/options";
 import { DATE_TIME_FORMAT } from "@/modules/payroll/utils/format";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
@@ -21,14 +22,16 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import {
   useCalculatePayrollDocument,
+  useGetPayrollCorrectionBasis,
   usePayrollDocumentLookup,
 } from "../hooks";
-import type { PayrollCalculateForm } from "../types/form";
+import type { PayrollCalculateForm, PayrollDocumentAdjustmentForm } from "../types/form";
 import { payrollCalculateSchema } from "../types/schema";
 import {
   PAYROLL_ACCRUAL_DOCUMENT_TYPE_ID,
   payrollDocumentAccountFields,
 } from "../constants/accounts";
+import { normalizeManualAdjustment } from "../utils/correction";
 
 const defaultValues: PayrollCalculateForm = {
   periodId: null,
@@ -72,7 +75,15 @@ export default function PayrollCalculateModal({
               ? values.correctionOfDocId
               : null,
           adjustments:
-            values.documentKind === "CORRECTION" ? values.adjustments : [],
+            values.documentKind === "CORRECTION"
+              ? values.adjustments.map((item) => normalizeManualAdjustment({
+                  employeeId: item.employeeId,
+                  componentId: item.componentId,
+                  mode: item.mode ?? "AMOUNT",
+                  value: item.mode === "TARGET" ? item.targetAmount ?? null : item.amount ?? null,
+                  note: item.note,
+                }))
+              : [],
         });
         toast.success(t("payroll.messages.documentCalculated"));
         helpers.resetForm({ values: defaultValues });
@@ -91,6 +102,9 @@ export default function PayrollCalculateModal({
 
   const { data: postedDocuments, isFetching: isDocumentsFetching } =
     usePayrollDocumentLookup(isCorrection ? values.periodId : null);
+  const { data: correctionBasis } = useGetPayrollCorrectionBasis(
+    isCorrection ? values.correctionOfDocId : null,
+  );
 
   useEffect(() => {
     if (open) resetForm({ values: defaultValues });
@@ -101,10 +115,20 @@ export default function PayrollCalculateModal({
       "adjustments",
       [
         ...values.adjustments,
-        { employeeId: null, componentId: null, amount: null, note: null },
+        { employeeId: null, componentId: null, amount: null, targetAmount: null, mode: "AMOUNT", note: null },
       ],
       false,
     );
+
+  const prefillTarget = (index: number, next: Partial<PayrollDocumentAdjustmentForm>) => {
+    const current = values.adjustments[index];
+    const employeeId = next.employeeId ?? current?.employeeId;
+    const componentId = next.componentId ?? current?.componentId;
+    if (current?.mode === "TARGET" && employeeId && componentId && current.targetAmount == null) {
+      const basisLine = correctionBasis?.lines?.find((line) => line.employeeId === employeeId && line.componentId === componentId);
+      if (basisLine) setFieldValue(`adjustments[${index}].targetAmount`, basisLine.currentAmount, false);
+    }
+  };
 
   const removeAdjustment = (index: number) =>
     setFieldValue(
@@ -249,7 +273,6 @@ export default function PayrollCalculateModal({
                   allowUserSelection
                   fallbackToAllAccounts
                   search
-                  required
                   clearable
                   marginBottom="mb-4"
                 />
@@ -297,6 +320,7 @@ export default function PayrollCalculateModal({
                     fieldName={`adjustments[${index}].employeeId`}
                     label="payroll.fields.employee"
                     marginBottom="mb-3"
+                    onChange={(employeeId) => prefillTarget(index, { employeeId })}
                   />
                 </Col>
                 <Col xs={24} md={7}>
@@ -305,15 +329,30 @@ export default function PayrollCalculateModal({
                     fieldName={`adjustments[${index}].componentId`}
                     label="payroll.fields.component"
                     marginBottom="mb-3"
+                    onChange={(componentId) => prefillTarget(index, { componentId })}
+                  />
+                </Col>
+                <Col xs={24} md={5}>
+                  <SelectStatic
+                    formik={formik}
+                    fieldName={`adjustments[${index}].mode`}
+                    label="payroll.fields.adjustmentMode"
+                    options={correctionAdjustmentModeOptions}
+                    marginBottom="mb-3"
                   />
                 </Col>
                 <Col xs={24} md={5}>
                   <InputNumber
                     formik={formik}
-                    fieldName={`adjustments[${index}].amount`}
-                    label="payroll.fields.amount"
+                    fieldName={values.adjustments[index]?.mode === "TARGET" ? `adjustments[${index}].targetAmount` : `adjustments[${index}].amount`}
+                    label={values.adjustments[index]?.mode === "TARGET" ? "payroll.fields.targetAmount" : "payroll.fields.amount"}
                     precision={2}
                   />
+                  {(() => {
+                    const adjustment = values.adjustments[index];
+                    const basisLine = correctionBasis?.lines?.find((line) => line.employeeId === adjustment?.employeeId && line.componentId === adjustment?.componentId);
+                    return basisLine ? <div className="-mt-2 mb-2 text-xs text-secondary-text">{t("payroll.fields.baseAmount", { defaultValue: "Joriy" })}: {basisLine.currentAmount}</div> : null;
+                  })()}
                 </Col>
                 <Col xs={20} md={4}>
                   <InputTextArea
@@ -334,6 +373,7 @@ export default function PayrollCalculateModal({
                 </Col>
               </Row>
             ))}
+            {correctionBasis?.lines?.length ? <div className="mt-2 text-xs text-secondary-text">{t("payroll.documents.correctionBasisHint", { defaultValue: `${correctionBasis.lines.length} ta asosiy summa mavjud` })}</div> : null}
           </div>
         )}
 

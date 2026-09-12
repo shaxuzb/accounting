@@ -21,6 +21,9 @@ const defaultValues: PayrollEmploymentForm = {
   weeklyHours: 40,
   currencyId: null,
   expenseAccountId: null,
+  advanceMethod: "PERCENT",
+  advanceValue: 0,
+  note: null,
 };
 
 interface Props {
@@ -78,6 +81,9 @@ export default function EmployeeEmploymentModal({
         weeklyHours: employment.weeklyHours ?? 40,
         currencyId: employment.currencyId ?? null,
         expenseAccountId: employment.expenseAccountId ?? null,
+        advanceMethod: employment.advanceMethod ?? "PERCENT",
+        advanceValue: employment.advanceValue ?? 0,
+        note: employment.note ?? null,
       });
       return;
     }

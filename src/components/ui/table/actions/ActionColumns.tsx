@@ -32,6 +32,9 @@ interface Props {
     icon: React.ReactNode;
   }[];
   customPath?: string | null;
+  deleteLabel?: string;
+  deleteConfirmTitle?: string;
+  deleteConfirmContent?: string;
   editModal?: {
     isModal?: boolean;
     setOpenEditModal?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -51,6 +54,9 @@ const ActionColumn: React.FC<Props> = ({
     isModal: false,
   },
   customActions = [],
+  deleteLabel,
+  deleteConfirmTitle,
+  deleteConfirmContent,
 }) => {
   const { modal } = App.useApp();
   const { t } = useTranslation();
@@ -101,14 +107,14 @@ const ActionColumn: React.FC<Props> = ({
   if (permissions.includes(permissionsCode?.deleteCode || "")) {
     actions.push({
       key: "delete",
-      label: t("common.delete"),
+      label: deleteLabel ?? t("common.delete"),
       icon: <Trash className="size-4.5" />,
       danger: true,
       onClick: () => {
         modal.confirm({
-          title: t("actions.deleteConfirmTitle"),
-          content: t("actions.deleteConfirmContent"),
-          okText: t("common.delete"),
+          title: deleteConfirmTitle ?? t("actions.deleteConfirmTitle"),
+          content: deleteConfirmContent ?? t("actions.deleteConfirmContent"),
+          okText: deleteLabel ?? t("common.delete"),
           okButtonProps: {
             type: "primary",
             danger: true,

@@ -58,6 +58,7 @@ import {
 import {
   hrAbsencePermissions,
   hrEmployeePermissions,
+  hrOrderPermissions,
 } from "@/modules/hr/constants/permissions";
 import { payrollComponentPermissions } from "@/modules/settings/pages/payrollComponents/constants/permissions";
 import { fiscalCashRegisterPermissions } from "@/modules/settings/pages/fiscalCashRegister/constants/permissions";
@@ -444,6 +445,14 @@ export const menuPermissions: MainMenu = {
           linkData: {
             path: "absences",
             title: "hr.absences.title",
+          },
+        },
+        {
+          code: hrOrderPermissions.view,
+          iconName: <ReceiptText className="size-4" />,
+          linkData: {
+            path: "orders",
+            title: "hr.orders.title",
           },
         },
       ],

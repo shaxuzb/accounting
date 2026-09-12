@@ -19,21 +19,20 @@ export const payrollCalculateSchema = Yup.object({
   correctionPayoutMode: Yup.string()
     .oneOf(["WITH_SALARY", "WITH_ADVANCE", "SEPARATE"])
     .required(),
-  salaryExpenseAccountId: requiredNumber("payroll.fields.salaryExpenseAccount").moreThan(
-    0,
-    () => tMessage("payroll.messages.accountRequired"),
-  ),
-  salaryPayableAccountId: requiredNumber("payroll.fields.salaryPayableAccount").moreThan(
-    0,
-    () => tMessage("payroll.messages.accountRequired"),
-  ),
+  salaryExpenseAccountId: Yup.number().nullable(),
+  salaryPayableAccountId: Yup.number().nullable(),
   note: Yup.string().nullable(),
   adjustments: Yup.array().of(
     Yup.object({
       employeeId: requiredNumber("payroll.fields.employee"),
       componentId: requiredNumber("payroll.fields.component"),
-      amount: requiredNumber("payroll.fields.amount"),
+      amount: Yup.number().nullable(),
+      targetAmount: Yup.number().nullable(),
+      mode: Yup.string().oneOf(["AMOUNT", "TARGET"]).required(),
       note: Yup.string().nullable(),
+    }).test("adjustment-value", () => tMessage("payroll.messages.adjustmentValueRequired"), (value) => {
+      if (!value) return false;
+      return value.mode === "TARGET" ? value.targetAmount != null : value.amount != null;
     }),
   ),
 });
