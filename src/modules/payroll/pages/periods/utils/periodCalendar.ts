@@ -1,5 +1,26 @@
-import dayjs from "dayjs";
+import dayjs, { type Dayjs } from "dayjs";
 import type { PayrollPeriodCalendarDayForm, PayrollPeriodDayType } from "../types/form";
+
+/**
+ * The period form stores year/month separately because that is what the API
+ * accepts, while the UI exposes one month picker. Keeping the conversion here
+ * makes the picker and the calendar use the same source of truth.
+ */
+export const getPeriodMonthValue = (year?: number | null, month?: number | null) => {
+  if (!year || !month || month < 1 || month > 12) return null;
+  return dayjs(`${year}-${String(month).padStart(2, "0")}-01`);
+};
+
+export const getPeriodMonthValueFromPeriod = (period: {
+  year?: number | null;
+  month?: number | null;
+  startDate?: string | null;
+}) =>
+  getPeriodMonthValue(period.year, period.month) ??
+  (period.startDate ? dayjs(period.startDate).startOf("month") : null);
+
+export const periodMonthToYearMonth = (value: Dayjs | null) =>
+  value ? { year: value.year(), month: value.month() + 1 } : { year: null, month: null };
 
 export const calculatePeriodTotals = (dates: string[], hours: number | null) => {
   const normWorkDays = new Set(dates).size;

@@ -3,9 +3,29 @@ import test from "node:test";
 
 import {
   calculatePeriodTotals,
+  getPeriodMonthValue,
+  getPeriodMonthValueFromPeriod,
+  periodMonthToYearMonth,
   proposeWeekdayWorkDates,
   toggleWorkDate,
 } from "../src/modules/payroll/pages/periods/utils/periodCalendar.ts";
+
+test("single month selector maps to backend year and month", () => {
+  const value = getPeriodMonthValue(2026, 9);
+
+  assert.equal(value?.format("YYYY-MM"), "2026-09");
+  assert.deepEqual(periodMonthToYearMonth(value), { year: 2026, month: 9 });
+});
+
+test("missing period month clears both backend fields", () => {
+  assert.deepEqual(periodMonthToYearMonth(null), { year: null, month: null });
+});
+
+test("edit period month falls back to the backend start date", () => {
+  const value = getPeriodMonthValueFromPeriod({ startDate: "2026-09-17" });
+
+  assert.equal(value?.format("YYYY-MM"), "2026-09");
+});
 
 test("totals use unique selected dates", () => {
   assert.deepEqual(

@@ -41,6 +41,12 @@ export const payrollTimesheetService = {
         params: { periodId, employeeId },
       })
       .then((res) => res.data),
+  calendarTable: (periodId: number) =>
+    $axiosPrivate
+      .get<PayrollTimesheetCalendar>(endpoints.calendarTable, {
+        params: { periodId },
+      })
+      .then((res) => res.data),
   attendanceStatusOptions: () =>
     $axiosPrivate
       .get<PayrollAttendanceStatusOption[]>(endpoints.attendanceStatusOptions)

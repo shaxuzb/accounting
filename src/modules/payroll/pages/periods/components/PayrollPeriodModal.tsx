@@ -1,12 +1,11 @@
 import InputNumber from "@/components/fields/InputNumber";
-import SelectStatic from "@/components/fields/SelectStatic";
-import { monthOptions } from "@/modules/payroll/constants/options";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   Alert,
   Button,
   Calendar,
   Col,
+  DatePicker,
   Form,
   InputNumber as AntInputNumber,
   Modal,
@@ -31,6 +30,9 @@ import {
   calculateCalendarDayTotals,
   calendarDaysToWorkDates,
   createPeriodCalendarDays,
+  getPeriodMonthValue,
+  getPeriodMonthValueFromPeriod,
+  periodMonthToYearMonth,
   updateNormalCalendarDayHours,
   updatePeriodCalendarDay,
 } from "../utils/periodCalendar";
@@ -60,28 +62,39 @@ const getDefaultValues = (): PayrollPeriodForm => {
 };
 
 const toFormValues = (period: {
-  year: number;
-  month: number;
-  dailyWorkHours: number;
+  year?: number | null;
+  month?: number | null;
+  startDate?: string | null;
+  dailyWorkHours?: number | null;
   workDates?: string[];
   calendarDays?: PayrollPeriodForm["calendarDays"];
-}): PayrollPeriodForm => ({
-  year: period.year,
-  month: period.month,
-  dailyWorkHours: period.dailyWorkHours,
-  workDates: period.workDates ?? [],
-  calendarDays: period.calendarDays?.length
-    ? period.calendarDays.map((day) => ({
-        ...day,
-        isWorkDay: day.dayType !== "HOLIDAY" && day.workHours > 0,
-      }))
-    : createPeriodCalendarDays(period.year, period.month, period.dailyWorkHours).map((day) => ({
-        ...day,
-        isWorkDay: (period.workDates ?? []).includes(day.date),
-        dayType: (period.workDates ?? []).includes(day.date) ? "NORMAL" : "HOLIDAY",
-        workHours: (period.workDates ?? []).includes(day.date) ? period.dailyWorkHours : 0,
-      })),
-});
+}): PayrollPeriodForm => {
+  const periodMonth = getPeriodMonthValueFromPeriod(period);
+  const year = period.year ?? periodMonth?.year() ?? null;
+  const month = period.month ?? (periodMonth ? periodMonth.month() + 1 : null);
+  const dailyWorkHours = period.dailyWorkHours ?? 8;
+  const hasPeriod = year !== null && month !== null;
+
+  return {
+    year,
+    month,
+    dailyWorkHours,
+    workDates: period.workDates ?? [],
+    calendarDays: period.calendarDays?.length
+      ? period.calendarDays.map((day) => ({
+          ...day,
+          isWorkDay: day.dayType !== "HOLIDAY" && day.workHours > 0,
+        }))
+      : hasPeriod
+        ? createPeriodCalendarDays(year, month, dailyWorkHours).map((day) => ({
+            ...day,
+            isWorkDay: (period.workDates ?? []).includes(day.date),
+            dayType: (period.workDates ?? []).includes(day.date) ? "NORMAL" : "HOLIDAY",
+            workHours: (period.workDates ?? []).includes(day.date) ? dailyWorkHours : 0,
+          }))
+        : [],
+  };
+};
 
 export default function PayrollPeriodModal({
   open,
@@ -138,13 +151,15 @@ export default function PayrollPeriodModal({
     () => calculateCalendarDayTotals(formik.values.calendarDays),
     [formik.values.calendarDays],
   );
+  const periodMonthValue = useMemo(
+    () => getPeriodMonthValue(formik.values.year, formik.values.month),
+    [formik.values.month, formik.values.year],
+  );
   const calendarRange = useMemo<[Dayjs, Dayjs] | undefined>(() => {
-    if (!formik.values.year || !formik.values.month) return undefined;
-    const start = dayjs(
-      `${formik.values.year}-${String(formik.values.month).padStart(2, "0")}-01`,
-    );
+    const start = periodMonthValue;
+    if (!start) return undefined;
     return [start, start.endOf("month")];
-  }, [formik.values.month, formik.values.year]);
+  }, [periodMonthValue]);
 
   const handlePeriodChange = (year: number | null, month: number | null) => {
     if (!year || !month) return;
@@ -152,6 +167,13 @@ export default function PayrollPeriodModal({
     void setFieldValue("calendarDays", calendarDays, true);
     void setFieldValue("workDates", calendarDaysToWorkDates(calendarDays), true);
     setSelectedDate(null);
+  };
+
+  const handlePeriodMonthChange = (value: Dayjs | null) => {
+    const { year, month } = periodMonthToYearMonth(value);
+    void setFieldValue("year", year, true);
+    void setFieldValue("month", month, true);
+    handlePeriodChange(year, month);
   };
 
   const handleCalendarSelect = (date: Dayjs) => {
@@ -233,34 +255,26 @@ export default function PayrollPeriodModal({
             />
           )}
           <Row gutter={[16, 0]}>
-            <Col xs={24} md={8}>
-              <InputNumber
-                formik={formik}
-                fieldName="year"
-                label="payroll.fields.year"
-                max={2200}
-                min={2000}
-                disabled={isReadOnly}
-                onValueChange={(value) => {
-                  void setFieldValue("year", value, true);
-                  handlePeriodChange(value, formik.values.month);
-                }}
-                value={formik.values.year}
-              />
-            </Col>
-            <Col xs={24} md={8}>
-              <SelectStatic
-                formik={formik}
-                fieldName="month"
-                label="payroll.fields.month"
-                options={monthOptions}
+            <Col xs={24} md={16}>
+              <Form.Item
+                label={t("payroll.fields.period")}
                 required
-                disabled={isReadOnly}
-                marginBottom="mb-4"
-                onChange={(value) =>
-                  handlePeriodChange(formik.values.year, Number(value))
-                }
-              />
+                validateStatus={formik.touched.year && formik.errors.year ? "error" : undefined}
+                help={formik.touched.year && formik.errors.year ? String(formik.errors.year) : undefined}
+                className="mb-4"
+              >
+                <DatePicker
+                  picker="month"
+                  value={periodMonthValue}
+                  onChange={handlePeriodMonthChange}
+                  format="MMMM YYYY"
+                  placeholder={t("payroll.placeholders.selectPeriod")}
+                  allowClear={false}
+                  disabled={isReadOnly}
+                  disabledDate={(current) => current.year() < 2000 || current.year() > 2200}
+                  className="h-[38px] w-full"
+                />
+              </Form.Item>
             </Col>
             <Col xs={24} md={8}>
               <InputNumber
@@ -289,8 +303,9 @@ export default function PayrollPeriodModal({
           {calendarRange && (
             <Calendar
               fullscreen={false}
-              defaultValue={calendarRange[0]}
+              value={calendarRange[0]}
               validRange={calendarRange}
+              headerRender={() => null}
               onSelect={(date, { source }) => {
                 if (source === "date") handleCalendarSelect(date);
               }}

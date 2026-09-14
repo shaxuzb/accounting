@@ -5,6 +5,11 @@ import type { PayrollTimesheet, PayrollTimesheetCalendar, PayrollTimesheetDay, P
 import { calculateLineFromDays } from "./timesheetDayCalculator";
 export { calculateLineFromDays, replaceLineDayStatus, replaceLineWorkedHours } from "./timesheetDayCalculator";
 
+const normalizeTimesheetCategory = (
+  value?: string | null,
+): PayrollTimesheetDayForm["timesheetCategory"] =>
+  value === "LEAVE" || value === "SICK" || value === "ABSENT" ? value : null;
+
 const toDayForm = (day: PayrollTimesheetDay | { date: string; statusCode: string; statusName?: string | null; plannedHours?: number | null; workedHours?: number | null; overtimeHours?: number | null; nightHours?: number | null; holidayHours?: number | null; weekendHours?: number | null; absenceTypeId?: number | null; timesheetCategory?: "LEAVE" | "SICK" | "ABSENT" | null; sourceStatusCode?: string | null; sourceAbsenceId?: number | null; sourceScheduleId?: number | null; sourceAbsenceTypeId?: number | null; absenceTypeCode?: string | null; absenceTypeName?: string | null; isOverridden?: boolean }): PayrollTimesheetDayForm => ({
   date: day.date, statusCode: day.statusCode, statusName: day.statusName ?? null,
   sourceStatusCode: day.sourceStatusCode ?? day.statusCode, sourceAbsenceId: day.sourceAbsenceId ?? null,
@@ -38,7 +43,44 @@ export const mapEmployeeCalendarToTimesheetCalendar = (calendar: PayrollTimeshee
 
 export const mapMonthlySummaryToTimesheetLine = (summary: PayrollTimesheetMonthlySummary): Partial<PayrollTimesheetLineForm> => ({ employeeId: summary.employeeId, employeeName: summary.employeeName ?? null, employeeNumber: summary.employeeNumber ?? null, normWorkDays: summary.normWorkDays ?? 0, normWorkHours: summary.normWorkHours ?? 0, workedDays: summary.workedDays ?? 0, workedHours: summary.workedHours ?? 0, leaveDays: summary.leaveDays ?? 0, sickDays: summary.sickDays ?? 0, absentDays: summary.absentDays ?? 0, overtimeHours: summary.overtimeHours ?? 0, nightHours: summary.nightHours ?? 0, holidayHours: summary.holidayHours ?? 0, weekendHours: summary.weekendHours ?? 0, note: summary.note ?? null, isLegacy: summary.isLegacy, days: (summary.days ?? []).map(toDayForm) });
 
-export const mapCalendarSummaryToTimesheetLine = (_calendar: PayrollTimesheetCalendar, summary: PayrollTimesheetMonthlySummary) => mapMonthlySummaryToTimesheetLine(summary);
+export const mapCalendarSummaryToTimesheetLine = (
+  calendar: PayrollTimesheetCalendar,
+  summary: PayrollTimesheetMonthlySummary,
+): Partial<PayrollTimesheetLineForm> => {
+  const days = summary.days?.length
+    ? summary.days.map(toDayForm)
+    : (calendar.dailyAttendance ?? []).flatMap((attendance) => {
+        const employee = attendance.employees.find(
+          (item) => item.employeeId === summary.employeeId,
+        );
+        if (!employee) return [];
+        return [{
+          date: attendance.date,
+          statusCode: employee.statusCode,
+          statusName: employee.statusName ?? null,
+          sourceStatusCode: employee.sourceStatusCode ?? employee.statusCode,
+          sourceAbsenceId: employee.sourceAbsenceId ?? null,
+          sourceScheduleId: employee.sourceScheduleId ?? null,
+          sourceAbsenceTypeId: employee.sourceAbsenceTypeId ?? null,
+          absenceTypeId: employee.absenceTypeId ?? null,
+          absenceTypeCode: employee.absenceTypeCode ?? null,
+          absenceTypeName: employee.absenceTypeName ?? null,
+          timesheetCategory: normalizeTimesheetCategory(employee.timesheetCategory),
+          workedHours: employee.workedHours ?? 0,
+          plannedHours: employee.plannedHours ?? 0,
+          overtimeHours: employee.overtimeHours ?? 0,
+          nightHours: employee.nightHours ?? 0,
+          holidayHours: employee.holidayHours ?? 0,
+          weekendHours: employee.weekendHours ?? 0,
+          isOverridden: employee.isOverridden ?? false,
+        } satisfies PayrollTimesheetDayForm];
+      });
+
+  return {
+    ...mapMonthlySummaryToTimesheetLine(summary),
+    days,
+  };
+};
 
 export const toTimesheetSavePayload = (form: PayrollTimesheetForm) => ({
   periodId: form.periodId,
