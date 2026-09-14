@@ -548,6 +548,7 @@ export const PurchaseEditor = ({
                 ? (detailData.contractId as number | null)
                 : null,
             warehouseId: detailData.warehouseId ?? null,
+            priceIncludesVat: detailData.priceIncludesVat ?? false,
             supplierAccountId: detailData.supplierAccountId ?? null,
             comment: detailData.comment ?? "",
             lines: initialLines,

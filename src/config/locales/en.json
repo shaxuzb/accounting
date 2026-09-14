@@ -1553,7 +1553,9 @@
       "serial": "Serial",
       "cashOperation": "Cash operation",
       "cashOperationIncome": "Cash receipt",
-      "cashOperationExpense": "Cash expense"
+      "cashOperationExpense": "Cash expense",
+      "priceIncludesVat": "Price includes VAT",
+      "priceIncludesVatHint": "When on, VAT is extracted from the price instead of added on top"
     },
     "modals": {
       "accountSelectionTitle": "Accounts for line",

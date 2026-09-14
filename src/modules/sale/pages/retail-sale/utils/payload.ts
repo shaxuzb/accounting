@@ -57,6 +57,7 @@ const toBasePayload = (
   receivableAccountId: values.receivableAccountId
     ? Number(values.receivableAccountId)
     : null,
+  priceIncludesVat: values.priceIncludesVat,
   vatAccountId: values.vatAccountId ? Number(values.vatAccountId) : null,
   comment: values.comment.trim() || null,
   lines: toLines(products, withMarking),

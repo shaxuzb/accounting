@@ -1692,7 +1692,9 @@
       "serial": "Seriya",
       "cashOperation": "Kassa operatsiyasi",
       "cashOperationIncome": "Kassa kirimi",
-      "cashOperationExpense": "Kassa chiqimi"
+      "cashOperationExpense": "Kassa chiqimi",
+      "priceIncludesVat": "Narx NDS ni o‘z ichiga oladi",
+      "priceIncludesVatHint": "Yoqilsa, NDS narx ustiga qo‘shilmay, uning ichidan ajratiladi"
     },
     "modals": {
       "accountSelectionTitle": "Satr uchun hisobvaraqlar",

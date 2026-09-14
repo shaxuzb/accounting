@@ -7,6 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectCustom from "@/components/fields/SelectCustom";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
+import SwitchField from "@/components/fields/SwitchField";
 import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import Card from "@/components/ui/card/Card";
 import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
@@ -170,6 +171,15 @@ export default function PurchaseImportHeader({
                 search
                 required
               />
+          <Col span={24} sm={12} lg={8} xl={4}>
+            <SwitchField
+              label="app.fields.priceIncludesVat"
+              description="app.fields.priceIncludesVatHint"
+              fieldName="priceIncludesVat"
+              formik={formik}
+              marginBottom="mb-0"
+            />
+          </Col>
             </Col>
           ) : null}
         </Row>

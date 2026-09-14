@@ -9,6 +9,7 @@ import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
+import SwitchField from "@/components/fields/SwitchField";
 import Card from "@/components/ui/card/Card";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
@@ -407,6 +408,15 @@ export default function FaReceiptFormFields({
               search
               required
               enabled={Boolean(documentTypeId)}
+            />
+          </Col>
+          <Col span={6}>
+            <SwitchField
+              label="app.fields.priceIncludesVat"
+              description="app.fields.priceIncludesVatHint"
+              fieldName="priceIncludesVat"
+              formik={formik}
+              marginBottom="mb-0"
             />
           </Col>
         </Row>

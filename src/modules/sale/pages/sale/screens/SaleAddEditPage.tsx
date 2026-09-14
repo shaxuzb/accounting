@@ -47,6 +47,7 @@ const defaultValues: SaleDocForm = {
   currencyId: 1,
   customerAccountId: null,
   vatAccountId: null,
+  priceIncludesVat: false,
   comment: "",
   stateId: 1,
 };
@@ -147,6 +148,7 @@ export default function SaleAddEditPage() {
           currencyId: document.currencyId,
           customerAccountId: document.customerAccountId ?? null,
           vatAccountId: document.vatAccountId ?? null,
+          priceIncludesVat: document.priceIncludesVat ?? false,
           comment: document.comment,
           stateId: document.stateId,
         }
@@ -196,6 +198,7 @@ export default function SaleAddEditPage() {
             warehouseId: values.warehouseId ?? document.warehouseId,
             currencyId: values.currencyId ?? document.currencyId,
             contractId: values.contractId,
+            priceIncludesVat: values.priceIncludesVat,
             comment: values.comment || null,
             stateId: values.stateId ?? document.stateId,
             products: validProducts.map((product) => ({

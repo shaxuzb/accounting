@@ -3,6 +3,7 @@ import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import SwitchField from "@/components/fields/SwitchField";
 import {
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
@@ -86,6 +87,13 @@ export default function RetailSaleFormFields({
           enabled={Boolean(documentTypeId)}
           disabled={!documentTypeId}
           getFirst
+        />
+        <SwitchField
+          label="app.fields.priceIncludesVat"
+          description="app.fields.priceIncludesVatHint"
+          fieldName="priceIncludesVat"
+          formik={formik}
+          marginBottom="mb-0"
         />
         <div className="hidden">
           <SelectCustom

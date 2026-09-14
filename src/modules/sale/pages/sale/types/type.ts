@@ -13,6 +13,7 @@ export interface SaleDoc {
   customerAccountId?: number | null;
   vatAccountId?: number | null;
   currencyName?: string;
+  priceIncludesVat: boolean;
   comment: string;
   stateId: number;
   stateName: string;

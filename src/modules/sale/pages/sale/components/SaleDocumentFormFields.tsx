@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import SwitchField from "@/components/fields/SwitchField";
 import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
@@ -139,6 +140,15 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
             documentTypeId={saleDocumentTypeId}
             documentRoleCode={saleDocumentAccountRoleCodes.vat}
             getFirst
+          />
+        </Col>
+        <Col span={4}>
+          <SwitchField
+            label="app.fields.priceIncludesVat"
+            description="app.fields.priceIncludesVatHint"
+            fieldName="priceIncludesVat"
+            formik={formik}
+            marginBottom="mb-0"
           />
         </Col>
         <div className="hidden">

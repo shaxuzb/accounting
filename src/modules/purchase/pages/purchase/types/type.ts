@@ -185,6 +185,7 @@ export interface PurchaseDetailServiceLine {
 
 export interface PurchaseDetailData extends PurchaseData {
   comment: string;
+  priceIncludesVat: boolean;
   isService?: boolean;
   lines: PurchaseDetailLine[];
   purchaseMode?: PurchaseMode;
@@ -201,6 +202,7 @@ export interface PurchaseForm {
   counterpartyId: number | null;
   warehouseId: number | null;
   currencyId: number | null;
+  priceIncludesVat: boolean;
   comment: string;
   externalDocNumber?: string | null;
   externalId?: string | null;

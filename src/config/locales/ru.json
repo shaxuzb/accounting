@@ -1663,7 +1663,9 @@
       "serial": "Серия",
       "cashOperation": "Кассовая операция",
       "cashOperationIncome": "Приход кассы",
-      "cashOperationExpense": "Расход кассы"
+      "cashOperationExpense": "Расход кассы",
+      "priceIncludesVat": "Цена включает НДС",
+      "priceIncludesVatHint": "Если включено, НДС выделяется из цены, а не начисляется сверху"
     },
     "modals": {
       "accountSelectionTitle": "Счета для строки",

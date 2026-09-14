@@ -29,6 +29,7 @@ const defaultValues: FaReceiptFormValues = {
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   counterpartyId: null,
   currencyId: null,
+  priceIncludesVat: false,
   receiptTypeId: null,
   supplierAccountId: null,
   lines: [
@@ -78,6 +79,7 @@ const toPayload = (
   currencyId: Number(values.currencyId),
   receiptTypeId: Number(values.receiptTypeId),
   supplierAccountId: Number(values.supplierAccountId),
+  priceIncludesVat: values.priceIncludesVat,
   lines: values.lines.map((line) => ({
     name: line.name.trim(),
     quantity: Number(line.quantity),
@@ -134,6 +136,8 @@ export default function FaReceiptFormPage() {
       receiptTypeId: record?.receiptTypeId ?? defaultValues.receiptTypeId,
       supplierAccountId:
         record?.supplierAccountId ?? defaultValues.supplierAccountId,
+      priceIncludesVat:
+        record?.priceIncludesVat ?? defaultValues.priceIncludesVat,
       lines: record?.lines?.length ? record.lines : defaultValues.lines,
     }),
     [record],

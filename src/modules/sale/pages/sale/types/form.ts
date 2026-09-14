@@ -7,6 +7,7 @@ export interface SaleDocForm {
   currencyId: number | null;
   customerAccountId: number | null;
   vatAccountId: number | null;
+  priceIncludesVat: boolean;
   comment: string;
   stateId?: number | null;
 }
@@ -53,6 +54,7 @@ export interface SaleDocCreateForm {
   vatAccountId: number;
   docDate: string;
   exchangeRate: number;
+  priceIncludesVat: boolean;
   comment: string | null;
   processingMode: SaleProcessingMode;
   lines: SaleDocCreateLineForm[];
@@ -64,6 +66,7 @@ export interface SaleDocUpdateForm {
   warehouseId: number;
   currencyId: number;
   contractId: number | null;
+  priceIncludesVat: boolean;
   comment: string | null;
   stateId: number;
   products: SaleDocProductForm[];

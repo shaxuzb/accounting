@@ -19,6 +19,7 @@ export interface RetailSaleFormValues {
   cashRegisterId: number | null;
   currencyId: number | null;
   exchangeRate: number;
+  priceIncludesVat: boolean;
   receivableAccountId: number | null;
   vatAccountId: number | null;
   comment: string;
@@ -56,6 +57,7 @@ export interface RetailSaleCreatePayload {
   cashRegisterId: number;
   currencyId: number;
   exchangeRate: number;
+  priceIncludesVat: boolean;
   receivableAccountId: number | null;
   vatAccountId: number | null;
   comment: string | null;

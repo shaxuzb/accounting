@@ -48,6 +48,9 @@ const defaultValues: RetailSaleFormValues = {
   currencyId: 1,
   exchangeRate: 1,
   receivableAccountId: null,
+  // A retail shelf price is quoted with VAT already in it, so new receipts start that way.
+  // Existing receipts keep whatever they were saved with.
+  priceIncludesVat: true,
   vatAccountId: null,
   comment: "",
   stateId: 1,
@@ -159,6 +162,7 @@ export default function RetailSaleEditorPage() {
           currencyId: document.currencyId,
           exchangeRate: document.exchangeRate ?? 0,
           receivableAccountId: document.receivableAccountId ?? null,
+          priceIncludesVat: document.priceIncludesVat ?? false,
           vatAccountId: document.vatAccountId ?? null,
           comment: document.comment ?? "",
           stateId: document.stateId,

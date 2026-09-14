@@ -67,6 +67,7 @@ export const normalizeSaleDoc = (value: unknown): SaleDoc => {
     customerAccountId: toNumber(read(item, ["customerAccountId"], 0)) || null,
     vatAccountId: toNumber(read(item, ["vatAccountId"], 0)) || null,
     comment: String(read(item, ["comment"], "")) || undefined,
+    priceIncludesVat: Boolean(read(item, ["priceIncludesVat"], false)),
     stateId: toNumber(read(item, ["stateId"], 0)) || undefined,
     stateName: String(read(item, ["stateName"], "")) || undefined,
     statusId: toNumber(read(item, ["statusId"], 0)) || undefined,

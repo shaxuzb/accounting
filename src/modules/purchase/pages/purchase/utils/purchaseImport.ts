@@ -22,6 +22,7 @@ export const getDefaultPurchaseImportHeader =
     counterpartyId: null,
     contractId: null,
     currencyId: 1,
+    priceIncludesVat: false,
     warehouseId: null,
     supplierAccountId: null,
     comment: "",
@@ -344,6 +345,7 @@ const toPurchaseDocumentPayload = (
   currencyId: values.currencyId ?? 0,
   contractId: values.contractId,
   supplierAccountId: values.supplierAccountId ?? 0,
+  priceIncludesVat: values.priceIncludesVat,
   comment: values.comment || null,
   lines: completedRows.map((item) => {
     const markingNumbers = toMarkingNumbers(item);

@@ -25,6 +25,7 @@ export interface FaReceiptPayload {
   currencyId: number;
   receiptTypeId: number;
   supplierAccountId: number;
+  priceIncludesVat: boolean;
   lines: FaReceiptLineItem[];
 }
 

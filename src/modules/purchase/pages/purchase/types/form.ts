@@ -25,6 +25,7 @@ export interface PurchaseDocumentPayload {
   counterpartyId: number;
   warehouseId: number;
   currencyId: number;
+  priceIncludesVat: boolean;
   comment: string | null;
   contractId: number | null;
   supplierAccountId: number;
@@ -39,6 +40,7 @@ export interface PurchaseImportForm {
   currencyId: number | null;
   contractId: number | null;
   warehouseId: number | null;
+  priceIncludesVat: boolean;
   supplierAccountId: number | null;
   comment: string;
   lines: PurchaseImportRow[];
@@ -53,6 +55,7 @@ export type PurchaseImportHeaderDraft = Pick<
   | "warehouseId"
   | "supplierAccountId"
   | "comment"
+  | "priceIncludesVat"
 >;
 
 // Swagger DTO — PurchaseDocCreateDto
