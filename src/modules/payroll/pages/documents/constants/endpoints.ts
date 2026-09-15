@@ -9,3 +9,8 @@ export const payrollDocumentEndpoints = {
   cancel: (id: string | number) => `payroll/documents/${id}/cancel`,
   delete: (id: string | number) => `payroll/documents/${id}`,
 } as const;
+
+// DocumentTypeIdConst.SALARY — provodkalar bitta umumiy
+// /register/accounting-register-entries/postings endpointidan olinadi,
+// hujjat turi shu id bilan ajratiladi.
+export const payrollAccountingEntriesReportDocumentTypeId = 5;

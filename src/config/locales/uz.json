@@ -1,6 +1,7 @@
 {
   "common": {
     "add": "Qo'shish",
+    "exportExcel": "Excelga yuklash",
     "save": "Saqlash",
     "submit": "Yakunlash",
     "search": "Qidirish",
@@ -1217,6 +1218,18 @@
     }
   },
   "contract": {
+    "filters": {
+      "dateFrom": "Sanadan",
+      "dateTo": "Sanagacha",
+      "active": "Faol",
+      "inactive": "Faol emas"
+    },
+    "responsiblePersons": {
+      "title": "Mas'ul shaxslar",
+      "description": "Shartnomalar uchun mas'ul shaxslar ma'lumotnomasi",
+      "createTitle": "Yangi mas'ul shaxs",
+      "editTitle": "Mas'ul shaxsni tahrirlash"
+    },
     "title": "Shartnoma",
     "purchaseTitle": "Xarid shartnomalari",
     "saleTitle": "Sotuv shartnomalari",
@@ -1232,7 +1245,8 @@
       "comment": "Izoh",
       "startDate": "Boshlanish sanasi",
       "endDate": "Tugash sanasi",
-      "contractDate": "Shartnoma sanasi"
+      "contractDate": "Shartnoma sanasi",
+      "responsiblePerson": "Mas'ul shaxs"
     }
   },
   "products": {
@@ -1959,6 +1973,17 @@
       "effectiveTo": "Amal qilish tugashi",
       "effectivePeriod": "Amal qilish davri",
       "sortOrder": "Tartib raqami",
+      "taxCode": "Kodi",
+      "taxName": "Soliq nomi",
+      "taxType": "Soliq turi",
+      "taxBaseType": "Soliq bazasi",
+      "taxRate": "Stavka, %",
+      "taxExemptionAmount": "Imtiyoz summasi",
+      "taxLimitAmount": "Baza shifti",
+      "taxLiabilityAccount": "Soliq hisobvarag'i",
+      "reducesTaxCode": "Qaysi soliq hisobidan ushlanadi",
+      "taxOffsetAmount": "Boshqa soliq hisobidan",
+      "taxPayableAmount": "Ushlanadigan summa",
       "year": "Yil",
       "month": "Oy",
       "period": "Hisoblash davri",
@@ -2005,6 +2030,9 @@
       "amount": "Summa",
       "grossAmount": "Brutto",
       "correctionGrossAmount": "Tuzatish brutto",
+      "regularGrossAmount": "Asosiy brutto",
+      "paidLeaveDays": "To‘lanadigan ta’til kunlari",
+      "paidSickDays": "To‘lanadigan kasallik kunlari",
       "deductionAmount": "Ushlanmalar",
       "employerTaxAmount": "Ish beruvchi solig'i",
       "advanceAmount": "Avans",
@@ -2048,6 +2076,20 @@
         "EMPLOYER_TAX_HINT": "Xodim net summasidan ayrilmaydi",
         "RECLASSIFICATION": "Qayta tasniflash",
         "RECLASSIFICATION_HINT": "Summani ish haqi yakunini o'zgartirmasdan provodka qiladi"
+      },
+      "taxType": {
+        "WITHHOLDING": "Xodimdan ushlanadi",
+        "WITHHOLDING_HINT": "Qo'lga beriladigan summani kamaytiradi (NDFL, INPS)",
+        "EMPLOYER": "Ish beruvchi to'laydi",
+        "EMPLOYER_HINT": "Xodimdan ushlanmaydi, tashkilot xarajati (ЕСП)"
+      },
+      "taxBaseType": {
+        "TAXABLE_EARNINGS": "Soliqqa tortiladigan hisoblanmalar",
+        "TAXABLE_EARNINGS_HINT": "Faqat soliqqa tortiladigan deb belgilangan komponentlar",
+        "GROSS": "Jami hisoblangan",
+        "GROSS_HINT": "Barcha hisoblanmalar yig'indisi",
+        "NET": "Ushlanmalardan keyingi summa",
+        "NET_HINT": "Jami hisoblangan minus komponent ushlanmalari"
       },
       "calculationMethod": {
         "SALARY_PRORATED": "Ishlangan vaqtga mutanosib",
@@ -2135,6 +2177,15 @@
       "hintTitle": "Komponent — hisoblashning bir elementi",
       "hintText": "Turi summani qanday ta'sir qilishini, hisoblash usuli esa qanday hisoblanishini belgilaydi. Buxgalteriya hisobvaraqlari provodka uchun ishlatiladi.",
       "employerTaxNote": "Ish beruvchi solig'i xodimning qo'lga oladigan summasidan ayrilmaydi, faqat tashkilot xarajati sifatida hisobga olinadi."
+    },
+    "taxes": {
+      "title": "Soliq qoidalari",
+      "description": "NDFL, INPS va ijtimoiy to'lov stavkalari",
+      "createTitle": "Yangi soliq qoidasi",
+      "editTitle": "Soliq qoidasini tahrirlash",
+      "withholdingHint": "Ushlab qolinadigan soliq xodimning qo'lga oladigan summasidan ayriladi: Дт mehnat haqi hisobvarag'i — Кт soliq hisobvarag'i.",
+      "reducesHint": "Bu soliq xodimdan qo'shimcha ushlanmaydi: u {{code}} solig'i hisobidan qoplanadi. Masalan, 12% daromad solig'ining 0,1 foizi INPSga, qolgan 11,9 foizi byudjetga tushadi.",
+      "employerHint": "Ish beruvchi solig'i xodimdan ushlanmaydi, ish haqi tushgan xarajat hisobvarag'iga qo'shiladi: Дт xarajat — Кт soliq hisobvarag'i."
     },
     "periods": {
       "title": "Hisoblash davrlari",
@@ -2267,6 +2318,7 @@
     },
     "messages": {
       "notNegative": "Qiymat manfiy bo'lmasligi kerak",
+      "rateMax": "Stavka 100% dan oshmasligi kerak",
       "accountRequired": "Amaldagi hisobvaraqni tanlang",
       "positiveNumber": "Qiymat 0 dan katta bo'lishi kerak",
       "dailyWorkHoursRange": "Kunlik ish soatlari 0 dan katta va 24 dan oshmasligi kerak",

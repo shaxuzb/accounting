@@ -1,6 +1,7 @@
 {
   "common": {
     "add": "Add",
+    "exportExcel": "Export to Excel",
     "save": "Save",
     "submit": "Submit",
     "search": "Search",
@@ -1078,6 +1079,18 @@
     }
   },
   "contract": {
+    "filters": {
+      "dateFrom": "Date from",
+      "dateTo": "Date to",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "responsiblePersons": {
+      "title": "Responsible persons",
+      "description": "Directory of people responsible for contracts",
+      "createTitle": "New responsible person",
+      "editTitle": "Edit responsible person"
+    },
     "title": "Contract",
     "purchaseTitle": "Purchase contracts",
     "saleTitle": "Sales contracts",
@@ -1093,7 +1106,8 @@
       "comment": "Comment",
       "startDate": "Start date",
       "endDate": "End date",
-      "contractDate": "Contract date"
+      "contractDate": "Contract date",
+      "responsiblePerson": "Responsible person"
     }
   },
   "products": {
@@ -1802,6 +1816,17 @@
       "effectiveTo": "Effective to",
       "effectivePeriod": "Effective period",
       "sortOrder": "Sort order",
+      "taxCode": "Code",
+      "taxName": "Tax name",
+      "taxType": "Tax type",
+      "taxBaseType": "Tax base",
+      "taxRate": "Rate, %",
+      "taxExemptionAmount": "Exempt amount",
+      "taxLimitAmount": "Base limit",
+      "taxLiabilityAccount": "Tax account",
+      "reducesTaxCode": "Financed out of",
+      "taxOffsetAmount": "Covered by another tax",
+      "taxPayableAmount": "Actually withheld",
       "year": "Year",
       "month": "Month",
       "period": "Payroll period",
@@ -1846,6 +1871,9 @@
       "amount": "Amount",
       "grossAmount": "Gross",
       "correctionGrossAmount": "Correction gross",
+      "regularGrossAmount": "Regular gross",
+      "paidLeaveDays": "Paid leave days",
+      "paidSickDays": "Paid sick days",
       "deductionAmount": "Deductions",
       "employerTaxAmount": "Employer taxes",
       "advanceAmount": "Advance",
@@ -1889,6 +1917,20 @@
         "EMPLOYER_TAX_HINT": "Not deducted from the employee net amount",
         "RECLASSIFICATION": "Reclassification",
         "RECLASSIFICATION_HINT": "Creates a posting without changing the payroll total"
+      },
+      "taxType": {
+        "WITHHOLDING": "Withheld from the employee",
+        "WITHHOLDING_HINT": "Reduces take-home pay (income tax, INPS)",
+        "EMPLOYER": "Paid by the employer",
+        "EMPLOYER_HINT": "Not withheld; a cost of the organisation (social tax)"
+      },
+      "taxBaseType": {
+        "TAXABLE_EARNINGS": "Taxable earnings",
+        "TAXABLE_EARNINGS_HINT": "Only components marked as taxable",
+        "GROSS": "Total earnings",
+        "GROSS_HINT": "The sum of every earning",
+        "NET": "After component deductions",
+        "NET_HINT": "Total earnings minus component deductions"
       },
       "calculationMethod": {
         "SALARY_PRORATED": "Prorated by worked time",
@@ -1976,6 +2018,15 @@
       "hintTitle": "A component is one element of the calculation",
       "hintText": "The type defines how it affects the amount, the method defines how it is calculated. Accounts are used for postings.",
       "employerTaxNote": "Employer tax is not deducted from the employee net amount; it is recorded as a company expense."
+    },
+    "taxes": {
+      "title": "Tax rules",
+      "description": "Income tax, INPS and social tax rates",
+      "createTitle": "New tax rule",
+      "editTitle": "Edit tax rule",
+      "withholdingHint": "A withholding reduces what the employee takes home: Dr the payable account — Cr the tax account.",
+      "reducesHint": "This tax is not withheld on top of anything: it is paid out of {{code}}. Of the 12% income tax, 0.1 of a point goes to the pension fund and 11.9 to the budget.",
+      "employerHint": "An employer tax is not withheld from the employee; it is charged to the same cost account the salary went to: Dr expense — Cr the tax account."
     },
     "periods": {
       "title": "Payroll periods",
@@ -2118,6 +2169,7 @@
     },
     "messages": {
       "notNegative": "The value cannot be negative",
+      "rateMax": "The rate cannot exceed 100%",
       "accountRequired": "Select an active account",
       "positiveNumber": "The value must be greater than 0",
       "dailyWorkHoursRange": "Daily work hours must be greater than 0 and at most 24",

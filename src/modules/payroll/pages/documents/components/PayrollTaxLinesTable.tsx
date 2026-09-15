@@ -18,7 +18,10 @@ export default function PayrollTaxLinesTable({ lines }: Props) {
     { dataIndex: "exemptionAmount", title: t("payroll.fields.taxExemption", { defaultValue: "Imtiyoz" }), align: "right", width: 110, render: (value: number) => money(value) },
     { dataIndex: "taxableBase", title: t("payroll.fields.taxableBase", { defaultValue: "Soliq bazasi" }), align: "right", width: 140, render: (value: number) => money(value) },
     { dataIndex: "rate", title: t("payroll.fields.rate"), align: "right", width: 90, render: (value: number) => `${value}%` },
-    { dataIndex: "amount", title: t("payroll.fields.amount"), align: "right", width: 140, render: (value: number) => <span className="font-semibold">{money(value)}</span> },
+    { dataIndex: "amount", title: t("payroll.fields.amount"), align: "right", width: 140, render: (value: number) => money(value) },
+    // ИНПС is paid out of НДФЛ, so the assessed amount and what is really withheld differ.
+    { dataIndex: "offsetAmount", title: t("payroll.fields.taxOffsetAmount"), align: "right", width: 130, render: (value?: number | null) => (value ? <span className="text-secondary-text">−{money(value)}</span> : "—") },
+    { dataIndex: "payableAmount", title: t("payroll.fields.taxPayableAmount"), align: "right", width: 150, render: (value: number | null | undefined, record) => <span className="font-semibold">{money(value ?? record.amount)}</span> },
   ];
 
   return <Table<PayrollTaxLine> columns={columns} dataSource={(lines ?? []).map((line, index) => ({ ...line, key: line.id ?? index }))} pagination={false} size="small" scroll={{ x: 1000 }} locale={{ emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t("payroll.documents.noTaxLines", { defaultValue: "Soliq qatorlari mavjud emas" })} /> }} />;

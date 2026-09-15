@@ -1,3 +1,4 @@
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ListToolbar from "@/components/ui/filters/ListToolbar";
@@ -15,11 +16,12 @@ import ListPagination from "@/components/ui/table/ListPagination";
 import { usePaginationParams } from "@/shared/hooks/usePaginationParams";
 import { Button, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
-import { Calculator } from "lucide-react";
+import { Calculator, ReceiptText } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import PayrollCalculateModal from "../components/PayrollCalculateModal";
+import { payrollAccountingEntriesReportDocumentTypeId } from "../constants/endpoints";
 import { useGetPayrollDocuments } from "../hooks";
 import type { PayrollDocument } from "../types/type";
 
@@ -130,6 +132,20 @@ export default function PayrollDocumentListPage() {
             {money(value)}
           </Tag>
         ),
+    },
+    {
+      dataIndex: "accountingEntriesReport",
+      title: t("common.accountingEntries"),
+      align: "center",
+      width: 120,
+      render: (_, record) => (
+        <AccountingEntriesButton
+          documentTypeId={payrollAccountingEntriesReportDocumentTypeId}
+          documentId={record.id}
+          statusId={record.statusId}
+          icon={<ReceiptText className="size-4" />}
+        />
+      ),
     },
     {
       dataIndex: "statusId",

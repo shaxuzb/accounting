@@ -167,6 +167,7 @@ export default function InventoryAdjustmentLinesEditor({
                     loading={stockQuery.isLoading || stockQuery.isFetching}
                     disabled={disabled || !warehouseId}
                     showSearch
+                    optionFilterProp="label"
                     options={(stockQuery.data?.items ?? []).map((item) => ({
                       value: item.productId,
                       label: `${item.productName ?? item.name ?? item.productId} - ${t("warehouse.lines.pieces", { count: numberSpacing(item.quantity, undefined, true) })}`,

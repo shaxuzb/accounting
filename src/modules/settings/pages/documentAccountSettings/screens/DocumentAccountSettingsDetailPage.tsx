@@ -127,6 +127,10 @@ function AccountRoleCard({
           <Select
             autoFocus
             showSearch
+            // Without this antd filters on `value`, which here is the account id, so
+            // typing an account number or name matched nothing at all. The label is
+            // "9420 - Ma'muriy xarajatlar", so filtering on it covers both.
+            optionFilterProp="label"
             className="w-full"
             loading={chartAccountsLoading}
             placeholder={t("settings.documentAccounts.selectFromManual")}

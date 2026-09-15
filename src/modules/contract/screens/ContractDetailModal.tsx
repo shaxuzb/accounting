@@ -55,6 +55,11 @@ export default function ContractDetailModal({
               children: data?.contractTypeName || data?.contractType || "-",
             },
             {
+              key: "responsiblePerson",
+              label: t("contract.fields.responsiblePerson"),
+              children: data?.responsiblePersonName || "-",
+            },
+            {
               key: "contractDate",
               label: t("contract.fields.contractDate"),
               children: formatDate(data?.contractDate),

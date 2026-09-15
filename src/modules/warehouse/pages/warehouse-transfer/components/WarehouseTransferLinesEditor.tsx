@@ -219,6 +219,7 @@ export default function WarehouseTransferLinesEditor({
                       }
                       disabled={disabled || !sourceWarehouseId}
                       showSearch
+                      optionFilterProp="label"
                       options={manualProductOptions}
                       style={{ width: "100%" }}
                       onChange={(value) => {

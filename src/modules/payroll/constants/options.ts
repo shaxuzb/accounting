@@ -292,3 +292,49 @@ export const stateFilterOptions = [
   { value: 1, label: "payroll.filters.active" },
   { value: 2, label: "payroll.filters.inactive" },
 ] as const;
+
+/* ------------------------------------------------------------------ */
+/* Soliq qoidalari (pay_tax_definition)                                 */
+/* ------------------------------------------------------------------ */
+
+export const TAX_TYPES = ["WITHHOLDING", "EMPLOYER"] as const;
+export type PayrollTaxType = (typeof TAX_TYPES)[number];
+
+export const taxTypeOptions: readonly StaticOption[] = [
+  {
+    value: "WITHHOLDING",
+    label: "payroll.enums.taxType.WITHHOLDING",
+    description: "payroll.enums.taxType.WITHHOLDING_HINT",
+  },
+  {
+    value: "EMPLOYER",
+    label: "payroll.enums.taxType.EMPLOYER",
+    description: "payroll.enums.taxType.EMPLOYER_HINT",
+  },
+] as const;
+
+export const taxTypeColor: Record<PayrollTaxType, string> = {
+  WITHHOLDING: "red",
+  EMPLOYER: "gold",
+};
+
+export const TAX_BASE_TYPES = ["GROSS", "TAXABLE_EARNINGS", "NET"] as const;
+export type PayrollTaxBaseType = (typeof TAX_BASE_TYPES)[number];
+
+export const taxBaseTypeOptions: readonly StaticOption[] = [
+  {
+    value: "TAXABLE_EARNINGS",
+    label: "payroll.enums.taxBaseType.TAXABLE_EARNINGS",
+    description: "payroll.enums.taxBaseType.TAXABLE_EARNINGS_HINT",
+  },
+  {
+    value: "GROSS",
+    label: "payroll.enums.taxBaseType.GROSS",
+    description: "payroll.enums.taxBaseType.GROSS_HINT",
+  },
+  {
+    value: "NET",
+    label: "payroll.enums.taxBaseType.NET",
+    description: "payroll.enums.taxBaseType.NET_HINT",
+  },
+] as const;

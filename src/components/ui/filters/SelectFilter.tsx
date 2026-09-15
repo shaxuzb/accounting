@@ -64,11 +64,18 @@ const SelectFilter: React.FC<SelectFilterProps> = ({
   const { data, isFetching } = useQuery<Record<string, unknown>[]>({
     queryKey: ["selectlist", lang, path, requestParams],
     queryFn: async () => {
-      const response = await $axiosPrivate.get<Record<string, unknown>[]>(
-        path as string,
-        { params: requestParams },
-      );
-      return response.data;
+      const response = await $axiosPrivate.get<unknown>(path as string, {
+        params: requestParams,
+      });
+      // Selectlist endpointlari yalang'och massiv qaytaradi, ma'lumotnomalarning
+      // sahifalangan ro'yxatlari esa {items, totalCount, ...} ichida beradi.
+      if (Array.isArray(response.data)) {
+        return response.data as Record<string, unknown>[];
+      }
+      const payload = response.data as { items?: unknown } | null;
+      return Array.isArray(payload?.items)
+        ? (payload.items as Record<string, unknown>[])
+        : [];
     },
     enabled: Boolean(path),
     staleTime: 5 * 60 * 1000,

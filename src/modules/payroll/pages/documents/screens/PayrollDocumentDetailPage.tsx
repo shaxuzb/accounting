@@ -1,3 +1,4 @@
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import Card from "@/components/ui/card/Card";
 import {
   DocumentSummary,
@@ -19,6 +20,7 @@ import {
   HandCoins,
   Landmark,
   Receipt,
+  ReceiptText,
   RotateCcw,
   Trash2,
   TrendingDown,
@@ -41,6 +43,7 @@ import {
   useUpdatePayrollDocumentDraft,
 } from "../hooks";
 import { payrollDocumentAccountFields } from "../constants/accounts";
+import { payrollAccountingEntriesReportDocumentTypeId } from "../constants/endpoints";
 import type { PayrollDocument, PayrollDocumentLine } from "../types/type";
 import type { PayrollDraftUpdateForm } from "../types/form";
 
@@ -260,7 +263,7 @@ export default function PayrollDocumentDetailPage() {
         title="payroll.documents.detailTitle"
         description={record.docNumber ?? t("payroll.common.noNumber")}
         icon={<Receipt className="size-4" />}
-        extra={<div className="flex items-center gap-2"><ProcessStatusBadge statusId={record.statusId} statusName={record.statusName} />{canEditDraft && <Button size="small" onClick={() => setEditing((value) => !value)}>{editing ? t("common.cancel") : t("common.edit")}</Button>}</div>}
+        extra={<div className="flex items-center gap-2"><ProcessStatusBadge statusId={record.statusId} statusName={record.statusName} /><AccountingEntriesButton size="small" documentTypeId={payrollAccountingEntriesReportDocumentTypeId} documentId={record.id} statusId={record.statusId} icon={<ReceiptText className="size-4" />}>{t("common.accountingEntries")}</AccountingEntriesButton>{canEditDraft && <Button size="small" onClick={() => setEditing((value) => !value)}>{editing ? t("common.cancel") : t("common.edit")}</Button>}</div>}
       >
         <dl className="grid gap-x-6 gap-y-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
           <div>

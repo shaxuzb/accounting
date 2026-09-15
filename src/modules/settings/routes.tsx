@@ -50,7 +50,11 @@ import { EimzoProvider } from "@/features/eimzo";
 import IntegrationsPage from "./pages/integrations/screens/IntegrationsPage";
 import { integrationPermissions } from "./pages/integrations/constants/permissions";
 import PayrollComponentListPage from "./pages/payrollComponents/screens/PayrollComponentListPage";
+import PayrollTaxDefinitionListPage from "./pages/payrollTaxDefinitions/screens/PayrollTaxDefinitionListPage";
+import ContractResponsiblePersonListPage from "@/modules/contract/screens/ContractResponsiblePersonListPage";
+import { contractPermissions } from "@/modules/contract/constants/permissions";
 import { payrollComponentPermissions } from "./pages/payrollComponents/constants/permissions";
+import { payrollTaxDefinitionPermissions } from "./pages/payrollTaxDefinitions/constants/permissions";
 import EdoWorkspacePage from "./pages/integrations/edo/screens/EdoWorkspacePage";
 import EdoInboxPage from "./pages/integrations/edo/screens/EdoInboxPage";
 import EdoOutboxCreatePage from "./pages/integrations/edo/screens/EdoOutboxCreatePage";
@@ -90,7 +94,9 @@ const settingsPermissions = [
   openingBalancePermissions.view,
   openingInventoryPermissions.view,
   integrationPermissions.view,
+  payrollTaxDefinitionPermissions.view,
   payrollComponentPermissions.view,
+  contractPermissions.view,
   regulatedObligationSettingPermissions.view,
   accountingPolicyPermissions.view,
 ];
@@ -529,6 +535,30 @@ export const settingsRoutes: RouteObject = {
       element: withPermission(
         <PayrollComponentListPage />,
         payrollComponentPermissions.view,
+      ),
+    },
+    {
+      path: "payroll-taxes",
+      handle: {
+        title: "payroll.taxes.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <PayrollTaxDefinitionListPage />,
+        payrollTaxDefinitionPermissions.view,
+      ),
+    },
+    {
+      path: "contract-responsible-persons",
+      handle: {
+        title: "contract.responsiblePersons.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <ContractResponsiblePersonListPage />,
+        contractPermissions.view,
       ),
     },
     {

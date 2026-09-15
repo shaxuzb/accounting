@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { Button, Col, Form, Modal, Row, Spin } from "antd";
 import toast from "react-hot-toast";
@@ -16,11 +16,15 @@ import SelectDate from "@/components/fields/SelectDate";
 import dayjs from "dayjs";
 import { formatDate } from "@/utils/helpers";
 import type { Contract } from "../types/type";
+import { contractEndpoints } from "../constants/endpoints";
+import { contractPermissions } from "../constants/permissions";
+import ContractResponsiblePersonAddEditModal from "./ContractResponsiblePersonAddEditModal";
 
 const defaultValues: ContractForm = {
   organizationId: null,
   counterpartyId: null,
   contractTypeId: null,
+  responsiblePersonId: null,
   contractDate: dayjs().format(formatDate),
   startDate: dayjs().format(formatDate),
   endDate: "",
@@ -75,10 +79,13 @@ export default function ContractAddEditPage({
       const payload = {
         ...values,
         endDate: values.endDate?.trim() || null,
+        // Mas'ul shaxs ixtiyoriy: tozalanganda backendga aniq null ketishi kerak,
+        // aks holda tanlov olib tashlanmaydi.
+        responsiblePersonId: values.responsiblePersonId ?? null,
       };
       try {
         if (isEdit && editId) {
-          await updateMutation.mutateAsync({ id: editId, payload: values });
+          await updateMutation.mutateAsync({ id: editId, payload });
           toast.success(t("settings.messages.updated"));
         } else {
           const createdContract = await createMutation.mutateAsync(payload);
@@ -99,6 +106,7 @@ export default function ContractAddEditPage({
         organizationId: Contract.organizationId ?? null,
         counterpartyId: Contract.counterpartyId ?? null,
         contractTypeId: Contract.contractTypeId ?? null,
+        responsiblePersonId: Contract.responsiblePersonId ?? null,
         contractDate: Contract.contractDate ?? "",
         startDate: Contract.startDate ?? "",
         endDate: Contract.endDate ?? null,
@@ -107,6 +115,7 @@ export default function ContractAddEditPage({
       });
     }
   }, [Contract, isEdit]);
+  const [isResponsiblePersonOpen, setIsResponsiblePersonOpen] = useState(false);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -151,6 +160,31 @@ export default function ContractAddEditPage({
                 path={selectListEndpoints.contractTypeSelectList}
                 allowedIds={contractTypeId ? [contractTypeId] : undefined}
                 getFirst
+              />
+            </Col>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="responsiblePersonId"
+                label="contract.fields.responsiblePerson"
+                path={contractEndpoints.responsiblePerson.list}
+                // Ma'lumotnoma faqat ism saqlaydi, shuning uchun localized "name"
+                // emas, fullName bo'yicha ko'rsatiladi va qidiriladi.
+                dinamicLabel="fullName"
+                queryParams={{ stateId: 1, pageSize: 100 }}
+                displayConfig={{ searchFields: ["fullName"] }}
+                search
+                clearable
+                optional
+                // Maydon ixtiyoriy: ma'lumotnomada bitta shaxs bo'lsa ham uni
+                // o'zicha tanlab qo'ymasin, aks holda shartnomaga so'ralmagan
+                // mas'ul shaxs biriktirilib qoladi.
+                autoSelectSingle={false}
+                addOption={{
+                  bool: true,
+                  permissionCode: contractPermissions.create,
+                  onClick: () => setIsResponsiblePersonOpen(true),
+                }}
               />
             </Col>
             <Col span={12}>
@@ -215,6 +249,14 @@ export default function ContractAddEditPage({
           </Button>
         </Form>
       </Spin>
+
+      <ContractResponsiblePersonAddEditModal
+        open={isResponsiblePersonOpen}
+        onClose={() => setIsResponsiblePersonOpen(false)}
+        onCreated={(createdId) =>
+          void formik.setFieldValue("responsiblePersonId", createdId)
+        }
+      />
     </Modal>
   );
 }

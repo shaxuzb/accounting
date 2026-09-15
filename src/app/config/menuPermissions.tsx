@@ -30,7 +30,9 @@ import {
   Boxes,
   BadgeDollarSign,
   SlidersHorizontal,
+  Percent,
   KeyRound,
+  UserCheck,
 } from "lucide-react";
 import { salePermissions } from "@/modules/sale";
 import { retailSalePermissions } from "@/modules/sale/pages/retail-sale/constants/permissions";
@@ -61,6 +63,7 @@ import {
   hrOrderPermissions,
 } from "@/modules/hr/constants/permissions";
 import { payrollComponentPermissions } from "@/modules/settings/pages/payrollComponents/constants/permissions";
+import { payrollTaxDefinitionPermissions } from "@/modules/settings/pages/payrollTaxDefinitions/constants/permissions";
 import { fiscalCashRegisterPermissions } from "@/modules/settings/pages/fiscalCashRegister/constants/permissions";
 import { cashCollectionPermissions } from "@/modules/cashoperation/pages/cash-collection/constants/permissions";
 import { paymentAcceptancePointOperationPermissions } from "@/modules/cashoperation/pages/payment-acceptance-point-operation/constants/permissions";
@@ -115,9 +118,11 @@ export const settingsViewPermissions = [
   openingBalancePermissions.view,
   openingInventoryPermissions.view,
   integrationPermissions.view,
+  payrollTaxDefinitionPermissions.view,
   payrollComponentPermissions.view,
   regulatedObligationSettingPermissions.view,
   accountingPolicyPermissions.view,
+  contractPermissions.view,
 ] as const;
 
 export const menuPermissions: MainMenu = {
@@ -502,13 +507,9 @@ export const menuPermissions: MainMenu = {
             title: "payroll.reports.registerTitle",
           },
         },
-        {
-          code: payrollReportPermissions.view,
-          linkData: {
-            path: "reports/payslip",
-            title: "payroll.reports.payslipTitle",
-          },
-        },
+        // A payslip is always one employee's row of the general register, so it is opened
+        // from there (PayrollRegisterReportPage links every employee to it) rather than
+        // from the sidebar, where it would ask for a period and an employee again.
       ],
     },
     {
@@ -788,6 +789,24 @@ export const menuPermissions: MainMenu = {
         path: "payroll-components",
         title: "payroll.components.title",
         description: "payroll.components.description",
+      },
+    },
+    {
+      code: payrollTaxDefinitionPermissions.view,
+      iconName: <Percent className="size-5" />,
+      linkData: {
+        path: "payroll-taxes",
+        title: "payroll.taxes.title",
+        description: "payroll.taxes.description",
+      },
+    },
+    {
+      code: contractPermissions.view,
+      iconName: <UserCheck className="size-5" />,
+      linkData: {
+        path: "contract-responsible-persons",
+        title: "contract.responsiblePersons.title",
+        description: "contract.responsiblePersons.description",
       },
     },
     {

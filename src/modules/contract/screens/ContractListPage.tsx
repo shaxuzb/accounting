@@ -1,6 +1,6 @@
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { Plus, RefreshCw } from "lucide-react";
+import { FileSpreadsheet, Plus, RefreshCw } from "lucide-react";
 import { useLocation, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { formatDate, generateKeyTable } from "@/utils/utils";
@@ -10,11 +10,15 @@ import { stateStatus } from "@/utils/helpers/statusHelper";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
+import SelectFilter from "@/components/ui/filters/SelectFilter";
+import DateRangeFilter from "@/components/ui/filters/DateRangeFilter";
 import { useMemo, useState } from "react";
 import ContractAddEditPage from "./ContractAddEditPage";
 import { useGetListContract } from "../hooks/useGetListContract";
 import type { Contract } from "../types/type";
 import { contractPermissions } from "../constants/permissions";
+import { contractEndpoints } from "../constants/endpoints";
+import { useExportContracts } from "../hooks/useExportContracts";
 import ContractDetailModal from "./ContractDetailModal";
 import LineClampCell from "@/components/widget/text/LineClampCell";
 import ListPagination from "@/components/ui/table/ListPagination";
@@ -45,6 +49,14 @@ export default function ContractListPage() {
     newParams,
     contractTypeId,
   );
+  const exportMutation = useExportContracts();
+  // Eksport sahifalanmasligi kerak: faqat filterlar yuboriladi.
+  const exportParams = useMemo(() => {
+    const params = new URLSearchParams(newParams);
+    params.delete("page");
+    params.delete("pageSize");
+    return params;
+  }, [newParams]);
   const currentPage = toPositiveInteger(
     searchParams.get("page"),
     data?.page ?? 1,
@@ -101,6 +113,11 @@ export default function ContractListPage() {
       dataIndex: "counterpartyName",
     },
 
+    {
+      title: t("contract.fields.responsiblePerson"),
+      dataIndex: "responsiblePersonName",
+      render: (value: string | null) => value || "-",
+    },
     {
       title: t("contract.fields.contractDate"),
       dataIndex: "contractDate",
@@ -165,15 +182,39 @@ export default function ContractListPage() {
     : tableColumns;
   return (
     <div className="w-full">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <SearchFilter />
+          <SelectFilter
+            paramKey="responsiblePersonId"
+            placeholder="contract.fields.responsiblePerson"
+            path={contractEndpoints.responsiblePerson.list}
+            queryParams={{ stateId: 1, pageSize: 100 }}
+            labelKey="fullName"
+            search
+            width={220}
+          />
+          <DateRangeFilter
+            placeholderKeys={[
+              "contract.filters.dateFrom",
+              "contract.filters.dateTo",
+            ]}
+          />
         </div>
         <Space>
           <Button
             icon={<RefreshCw className="size-4" />}
             onClick={() => refetch()}
           />
+          <Button
+            icon={<FileSpreadsheet className="size-4" />}
+            loading={exportMutation.isPending}
+            // Eksport ro'yxatdagi ayni filterlarni oladi, shuning uchun
+            // ko'rinib turgan natija bilan bir xil fayl chiqadi.
+            onClick={() => exportMutation.mutate(exportParams)}
+          >
+            {t("common.exportExcel")}
+          </Button>
           <PermissionCard permission={contractPermissions.create}>
             <Button
               type="primary"

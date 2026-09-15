@@ -1091,6 +1091,7 @@ export default function SaleProductSelection({
       render: (_, record) => (
         <Select
           showSearch
+          optionFilterProp="label"
           size="middle"
           className="w-full"
           popupMatchSelectWidth={false}
@@ -1323,6 +1324,7 @@ export default function SaleProductSelection({
         <div className="flex h-8 items-center gap-2">
           <Select
             showSearch
+            optionFilterProp="label"
             size="middle"
             className="min-w-28"
             value={record.vatRateId ?? undefined}

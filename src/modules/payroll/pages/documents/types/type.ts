@@ -32,7 +32,13 @@ export interface PayrollTaxLine {
   exemptionAmount: number;
   taxableBase: number;
   rate: number;
+  /** Soliq hisoblangan summa — offsetdan oldingi to'liq stavka. */
   amount: number;
+  /** Boshqa soliq hisobidan qoplangan qismi (INPS -> NDFL). */
+  offsetAmount?: number | null;
+  /** Haqiqatda ushlab qolinadigan va provodka qilinadigan summa. */
+  payableAmount?: number | null;
+  reducesTaxCode?: string | null;
   liabilityAccountId: number;
 }
 

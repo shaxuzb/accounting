@@ -252,6 +252,7 @@ export default function EdoAuthenticationPanel({
               }))}
               placeholder={t("settings.integrations.eimzo.selectCertificate")}
               showSearch
+              optionFilterProp="label"
             />
           </div>
           <Button
