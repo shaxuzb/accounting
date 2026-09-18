@@ -53,9 +53,10 @@ export default function InventoryAdjustmentDetailPage() {
     onSubmit: async (values) => {
       try {
         if (isCreate) {
-          const created = await createMutation.mutateAsync(values);
+          // Create javobi — yalang'och id raqami, hujjat obyekti emas.
+          const createdId = await createMutation.mutateAsync(values);
           toast.success(t("warehouse.messages.created"));
-          navigate(`/main/warehouses/inventory-adjustments/${created.id}`, {
+          navigate(`/main/warehouses/inventory-adjustments/${createdId}`, {
             replace: true,
           });
           return;
@@ -69,14 +70,33 @@ export default function InventoryAdjustmentDetailPage() {
     },
   });
 
-  const saveDraft = async () => {
+  /**
+   * Saqlaydi va hujjat id'sini qaytaradi. Yangi hujjatda id hali yo'q, shuning
+   * uchun uni tasdiqlash uchun aynan shu yerdan olish kerak.
+   */
+  const saveDraft = async (): Promise<string | number | null> => {
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
       toast.error(t("warehouse.messages.fillRequired"));
-      return false;
+      return null;
     }
-    await formik.submitForm();
-    return true;
+
+    if (!isCreate) {
+      await formik.submitForm();
+      return id;
+    }
+
+    try {
+      const createdId = await createMutation.mutateAsync(formik.values);
+      toast.success(t("warehouse.messages.created"));
+      navigate(`/main/warehouses/inventory-adjustments/${createdId}`, {
+        replace: true,
+      });
+      return createdId;
+    } catch (error) {
+      errorHandlers(error);
+      return null;
+    }
   };
 
   if (detailQuery.isLoading && !isCreate) {
@@ -116,7 +136,13 @@ export default function InventoryAdjustmentDetailPage() {
             onSave={() => void saveDraft()}
             onConfirm={async () => {
               try {
-                await confirmMutation.mutateAsync();
+                // Saqlanmagan hujjatni tasdiqlab bo'lmaydi: ilgari bu yerda
+                // id'siz so'rov ketib, /inventory-adjustments//confirm 404
+                // qaytarardi. Avval saqlaymiz va qaytgan id bilan tasdiqlaymiz.
+                const confirmId = await saveDraft();
+                if (confirmId === null) return;
+
+                await confirmMutation.mutateAsync(confirmId);
                 toast.success(t("warehouse.messages.confirmed"));
               } catch (error) {
                 errorHandlers(error);

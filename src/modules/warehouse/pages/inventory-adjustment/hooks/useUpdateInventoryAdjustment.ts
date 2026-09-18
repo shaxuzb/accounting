@@ -8,9 +8,11 @@ export const useUpdateInventoryAdjustment = (id: string | number) => {
   return useMutation({
     mutationFn: (payload: InventoryAdjustmentForm) =>
       inventoryAdjustmentService.update(id, payload),
-    onSuccess: (data) => {
-      queryClient.setQueryData(inventoryAdjustmentKeys.detail(id), data);
-      queryClient.invalidateQueries({ queryKey: inventoryAdjustmentKeys.all });
+    onSuccess: () => {
+      // 204 javobda tana yo'q: setQueryData(undefined) keshdagi hujjatni
+      // o'chirib yuborardi. Qayta so'rash yetarli.
+      void queryClient.invalidateQueries({ queryKey: inventoryAdjustmentKeys.detail(id) });
+      void queryClient.invalidateQueries({ queryKey: inventoryAdjustmentKeys.all });
     },
   });
 };

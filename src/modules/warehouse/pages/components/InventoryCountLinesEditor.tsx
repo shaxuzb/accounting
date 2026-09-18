@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Button,
@@ -10,9 +10,12 @@ import {
   Table,
   type TableColumnsType,
 } from "antd";
-import { Plus, Trash2 } from "lucide-react";
+import { ListRestart, Plus, Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
 import { $axiosPrivate } from "@/services/AxiosService";
+import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
+import { takeBatchUnitCosts } from "../inventory-adjustment/utils/inventoryAdjustment";
 import { numberSpacing } from "@/utils/utils";
 import type {
   InventoryCountItemForm,
@@ -35,7 +38,29 @@ export interface InventoryCountLinesEditorProps {
   onChange: (lines: InventoryCountLineForm[]) => void;
   isCountCompleted: boolean;
   onCountCompletedChange: (value: boolean) => void;
+  /** Qoldiq bo'yicha to'ldirish shu ombor kesimida ishlaydi. */
+  warehouseId?: number | null;
   disabled?: boolean;
+}
+
+interface StockBatch {
+  receivedDate?: string;
+  availableQuantity: number;
+  unitCost: number;
+}
+
+interface StockProduct {
+  productId: number;
+  unitId: number;
+  availableProductTableIds?: number[];
+  batches?: StockBatch[];
+}
+
+interface StockTable {
+  id: number;
+  productId: number;
+  serialNumber?: string | null;
+  markingNumber?: string | null;
 }
 
 const createDefaultInventoryCountItem = (): InventoryCountItemForm => ({
@@ -93,9 +118,11 @@ export default function InventoryCountLinesEditor({
   onChange,
   isCountCompleted,
   onCountCompletedChange,
+  warehouseId = null,
   disabled = false,
 }: InventoryCountLinesEditorProps) {
   const { t } = useTranslation();
+  const [filling, setFilling] = useState(false);
   const productsQuery = useSelectOptions(
     selectListEndpoints.productsSelectList,
     "products",
@@ -153,6 +180,78 @@ export default function InventoryCountLinesEditor({
 
   const addLine = () =>
     commitLines([...lines, createDefaultInventoryCountLine()]);
+
+  /**
+   * Hujjatni ombor qoldig'i bilan to'ldiradi — 1C dagi "Qoldiq bo'yicha
+   * to'ldirish" kabi.
+   *
+   * Har bir dona o'z identifikatori bilan tushadi: backend faqat hujjatdagi
+   * qatorlarni solishtiradi va ro'yxatda yo'q donani kamomad deb oladi.
+   * Shuning uchun sanoqda topilmagan donalarni foydalanuvchi shu yerdan
+   * o'chiradi — o'chirilgani Dt 5910 / Kt 2910 bo'lib yoziladi.
+   */
+  const fillFromStock = async () => {
+    if (!warehouseId) {
+      toast.error(t("warehouse.lines.selectWarehouseFirst"));
+      return;
+    }
+
+    setFilling(true);
+    try {
+      const params = { warehouseId, page: 1, pageSize: 5000 };
+      const [productsResponse, tablesResponse] = await Promise.all([
+        $axiosPrivate.get("/product-stocks/products", { params }),
+        $axiosPrivate.get("/product-stocks/tables", { params }),
+      ]);
+
+      const stockProducts: StockProduct[] = productsResponse.data?.items ?? [];
+      const stockTables: StockTable[] = tablesResponse.data?.items ?? [];
+
+      const tableById = new Map(stockTables.map((table) => [table.id, table]));
+
+      const nextLines: InventoryCountLineForm[] = [];
+      stockProducts.forEach((product) => {
+        const tableIds = product.availableProductTableIds ?? [];
+        if (!tableIds.length) return;
+
+        // Tannarx mahsulotda emas, partiyalarda turadi va partiyalar har xil
+        // narxda bo'ladi — shuning uchun FIFO tartibida olinadi.
+        const costs = takeBatchUnitCosts({ batches: product.batches }, tableIds.length);
+
+        nextLines.push({
+          productId: product.productId,
+          unitId: product.unitId ?? null,
+          countedQuantity: tableIds.length,
+          defaultCostPrice: costs[0] ?? null,
+          comment: "",
+          items: tableIds.map((tableId, index) => {
+            const table = tableById.get(tableId);
+            return {
+              productTableId: tableId,
+              barcode: "",
+              serialNumber: table?.serialNumber ?? "",
+              markingNumber: table?.markingNumber ?? "",
+              costPrice: costs[index] ?? costs[0] ?? null,
+            };
+          }),
+        });
+      });
+
+      if (!nextLines.length) {
+        toast.error(t("warehouse.lines.noStockToFill"));
+        return;
+      }
+
+      commitLines(nextLines);
+      toast.success(
+        t("warehouse.lines.filledFromStock", { count: nextLines.length }),
+      );
+    } catch (error) {
+      errorHandlers(error);
+    } finally {
+      setFilling(false);
+    }
+  };
 
   const removeLine = (lineIndex: number) => {
     const nextLines = lines.filter((_, index) => index !== lineIndex);
@@ -345,6 +444,17 @@ export default function InventoryCountLinesEditor({
               onClick={addLine}
             >
               {t("warehouse.lines.addProduct")}
+            </Button>
+          )}
+
+          {!isReadOnly && (
+            <Button
+              icon={<ListRestart className="size-4" />}
+              loading={filling}
+              disabled={!warehouseId}
+              onClick={() => void fillFromStock()}
+            >
+              {t("warehouse.lines.fillFromStock")}
             </Button>
           )}
         </div>

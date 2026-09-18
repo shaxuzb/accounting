@@ -3,7 +3,6 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   Alert,
   Button,
-  Calendar,
   Col,
   DatePicker,
   Form,
@@ -37,6 +36,7 @@ import {
   updatePeriodCalendarDay,
 } from "../utils/periodCalendar";
 import type { PayrollPeriodDayType } from "../types/form";
+import PayrollPeriodCalendarGrid from "./PayrollPeriodCalendarGrid";
 
 type PayrollPeriodModalMode = "create" | "edit" | "view";
 
@@ -281,6 +281,9 @@ export default function PayrollPeriodModal({
                 formik={formik}
                 fieldName="dailyWorkHours"
                 label="payroll.fields.dailyWorkHours"
+                // onValueChange berilganda InputNumber qiymatni formikdan emas,
+                // shu propdan oladi — berilmasa maydon bo'sh ko'rinadi.
+                value={formik.values.dailyWorkHours}
                 min={0}
                 max={24}
                 precision={2}
@@ -300,39 +303,13 @@ export default function PayrollPeriodModal({
             </Col>
           </Row>
 
-          {calendarRange && (
-            <Calendar
-              fullscreen={false}
-              value={calendarRange[0]}
-              validRange={calendarRange}
-              headerRender={() => null}
-              onSelect={(date, { source }) => {
-                if (source === "date") handleCalendarSelect(date);
-              }}
-              fullCellRender={(date, info) => {
-                if (info.type !== "date") return info.originNode;
-                const calendarDay = formik.values.calendarDays.find((day) => day.date === date.format("YYYY-MM-DD"));
-                const selected = calendarDay?.isWorkDay ?? false;
-                const dayClass = calendarDay?.dayType === "HOLIDAY"
-                  ? "bg-red-50 text-red-700"
-                  : calendarDay?.dayType === "SHORTENED"
-                    ? "bg-amber-50 text-amber-700"
-                    : calendarDay?.dayType === "TRANSFERRED"
-                      ? "bg-violet-50 text-violet-700"
-                      : selected
-                        ? "bg-primary! text-primary-foreground!"
-                        : "bg-transparent! text-inherit!";
-                return (
-                  <div
-                    className={`${info.prefixCls}-cell-inner ${info.prefixCls}-calendar-date rounded! ${dayClass}`}
-                  >
-                    <div className={`${info.prefixCls}-calendar-date-value`}>
-                      {String(date.date()).padStart(2, "0")}
-                    </div>
-                    <div className={`${info.prefixCls}-calendar-date-content`} />
-                  </div>
-                );
-              }}
+          {periodMonthValue && (
+            <PayrollPeriodCalendarGrid
+              monthValue={periodMonthValue}
+              days={formik.values.calendarDays}
+              selectedDate={selectedDate}
+              readOnly={isReadOnly}
+              onSelect={(date) => handleCalendarSelect(dayjs(date))}
             />
           )}
 
@@ -375,24 +352,30 @@ export default function PayrollPeriodModal({
               {String(formik.errors.workDates)}
             </div>
           )}
-          <div className="my-4 grid grid-cols-3 gap-3 rounded bg-muted p-3 text-sm">
-            <div>
-              <div className="text-muted-foreground">
+          <div className="my-4 grid grid-cols-3 rounded-lg bg-surface-muted px-4 py-3 text-sm">
+            <div className="pr-4">
+              <div className="text-secondary-text">
                 {t("payroll.periods.selectedDays")}
               </div>
-              <div className="font-semibold">{totals.normWorkDays}</div>
+              <div className="mt-1 text-xl font-semibold tabular-nums">
+                {totals.normWorkDays}
+              </div>
             </div>
-            <div>
-              <div className="text-muted-foreground">
+            <div className="border-l border-border px-4">
+              <div className="text-secondary-text">
                 {t("payroll.fields.dailyWorkHours")}
               </div>
-              <div className="font-semibold">{formik.values.dailyWorkHours ?? "—"}</div>
+              <div className="mt-1 text-xl font-semibold tabular-nums">
+                {formik.values.dailyWorkHours ?? "—"}
+              </div>
             </div>
-            <div>
-              <div className="text-muted-foreground">
+            <div className="border-l border-border pl-4">
+              <div className="text-secondary-text">
                 {t("payroll.fields.normWorkHours")}
               </div>
-              <div className="font-semibold">{totals.normWorkHours}</div>
+              <div className="mt-1 text-xl font-semibold tabular-nums">
+                {totals.normWorkHours}
+              </div>
             </div>
           </div>
 

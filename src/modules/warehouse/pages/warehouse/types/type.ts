@@ -9,10 +9,28 @@ export interface ProductStockGroup {
   currencyName?: string;
 }
 
+/**
+ * /api/product-stocks/products har bir mahsulot uchun partiyalarini ham
+ * qaytaradi. Tannarx aynan shu yerda — mahsulotning o'zida `costPrice` degan
+ * maydon yo'q.
+ */
+export interface ProductStockBatch {
+  batchId: number;
+  batchNumber?: string;
+  receivedDate?: string;
+  documentId?: number;
+  quantity: number;
+  reservedQuantity?: number;
+  blockedQuantity?: number;
+  availableQuantity: number;
+  unitCost: number;
+}
+
 // Swagger: /api/product-stocks/products
 export interface ProductStock {
   id: number;
   productId: number;
+  batches?: ProductStockBatch[];
   name?: string;
   productName?: string;
   barcode?: string;

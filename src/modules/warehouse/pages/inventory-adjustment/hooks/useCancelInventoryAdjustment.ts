@@ -6,9 +6,11 @@ export const useCancelInventoryAdjustment = (id: string | number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => inventoryAdjustmentService.cancel(id),
-    onSuccess: (data) => {
-      queryClient.setQueryData(inventoryAdjustmentKeys.detail(id), data);
-      queryClient.invalidateQueries({ queryKey: inventoryAdjustmentKeys.all });
+    onSuccess: () => {
+      // 204 javobda tana yo'q: setQueryData(undefined) keshdagi hujjatni
+      // o'chirib yuborardi. Qayta so'rash yetarli.
+      void queryClient.invalidateQueries({ queryKey: inventoryAdjustmentKeys.detail(id) });
+      void queryClient.invalidateQueries({ queryKey: inventoryAdjustmentKeys.all });
     },
   });
 };

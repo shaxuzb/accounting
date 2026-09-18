@@ -26,7 +26,8 @@ export const createDefaultAdjustmentLine = (): InventoryAdjustmentLineForm => ({
 export const createDefaultAdjustmentForm = (): InventoryAdjustmentForm => ({
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   warehouseId: null,
-  adjustmentType: "Decrease",
+  // Ma'lumotnomadagi kodlardan biri tanlanadi; "Decrease" backendda yo'q edi.
+  adjustmentType: "",
   comment: "",
   lines: [createDefaultAdjustmentLine()],
 });
@@ -36,7 +37,7 @@ export const mapAdjustmentDetailToForm = (
 ): InventoryAdjustmentForm => ({
   docDate: record?.docDate ?? dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   warehouseId: record?.warehouseId ?? null,
-  adjustmentType: record?.adjustmentType ?? "Decrease",
+  adjustmentType: record?.adjustmentType ?? "",
   comment: record?.comment ?? "",
   lines:
     record?.lines?.map((line) => ({
@@ -56,6 +57,39 @@ export const mapAdjustmentDetailToForm = (
     })) ?? [createDefaultAdjustmentLine()],
 });
 
+/**
+ * Tanlangan birliklarning tannarxini partiyalardan oladi.
+ *
+ * Partiyalar kelib tushgan sana bo'yicha tartiblanadi va har biridan mavjud
+ * miqdorcha olinadi — ya'ni FIFO. Bitta mahsulotning partiyalari har xil
+ * tannarxda bo'lishi mumkin (1 403 248, 1 249 416, ...), shuning uchun
+ * o'rtachasini olish qoldiqni noto'g'ri baholaydi.
+ *
+ * Partiya topilmasa bo'sh qaytadi: chaqiruvchi 0 ga tushiradi va hujjat
+ * provodkasiz qolmasligi uchun foydalanuvchi buni ko'radi.
+ */
+export const takeBatchUnitCosts = (
+  stock: { batches?: { receivedDate?: string; availableQuantity: number; unitCost: number }[] } | undefined,
+  count: number,
+): number[] => {
+  const batches = [...(stock?.batches ?? [])].sort((a, b) =>
+    (a.receivedDate ?? "").localeCompare(b.receivedDate ?? ""),
+  );
+
+  const costs: number[] = [];
+  for (const batch of batches) {
+    const take = Math.min(Math.max(0, Math.floor(batch.availableQuantity)), count - costs.length);
+    for (let i = 0; i < take; i += 1) costs.push(batch.unitCost);
+    if (costs.length >= count) break;
+  }
+
+  // Partiyalar yetmasa, oxirgi ma'lum tannarx bilan to'ldiriladi.
+  const last = costs[costs.length - 1];
+  while (costs.length < count && last !== undefined) costs.push(last);
+
+  return costs;
+};
+
 export const toMarkingList = (items: InventoryAdjustmentItemForm[]) =>
   items
     .map((item) => item.markingNumber?.trim())
@@ -73,7 +107,9 @@ export const toInventoryAdjustmentPayload = (form: InventoryAdjustmentForm) => (
     comment: line.comment,
     items: line.items.map((item) => ({
       productTableId: item.productTableId,
-      costPrice: item.costPrice,
+      // Backendda CostPrice — decimal, null emas: null yuborilsa so'rov
+      // butunlay rad etilardi.
+      costPrice: item.costPrice ?? 0,
     })),
   })),
 });

@@ -543,6 +543,7 @@ export default function InventoryCountDetailPage() {
                         onCountCompletedChange={(value) =>
                           formik.setFieldValue("isCountCompleted", value, true)
                         }
+                        warehouseId={formik.values.warehouseId}
                         disabled={!canEdit}
                       />
                     </div>

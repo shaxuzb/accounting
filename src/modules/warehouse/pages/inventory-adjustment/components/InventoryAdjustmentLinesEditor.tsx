@@ -17,6 +17,7 @@ import InventoryAdjustmentMarkingModal from "./InventoryAdjustmentMarkingModal";
 import {
   createDefaultAdjustmentItem,
   createDefaultAdjustmentLine,
+  takeBatchUnitCosts,
   toMarkingList,
 } from "../utils/inventoryAdjustment";
 
@@ -77,13 +78,19 @@ export default function InventoryAdjustmentLinesEditor({
   };
 
   const setLineItems = (index: number, items: ProductStockSerial[]) => {
+    // Tannarx mahsulotda emas, uning partiyalarida turadi. Ilgari bu yerda
+    // mavjud bo'lmagan `costPrice` maydoni o'qilardi va har doim null chiqib,
+    // backend 400 qaytarardi (CostPrice — decimal, null emas).
+    const costs = takeBatchUnitCosts(
+      stockMap.get(formik.values.lines[index]?.productId ?? 0),
+      items.length,
+    );
+
     const nextItems =
       items.length > 0
-        ? items.map((item) => ({
+        ? items.map((item, itemIndex) => ({
             productTableId: item.id,
-            costPrice:
-              stockMap.get(formik.values.lines[index]?.productId ?? 0)
-                ?.costPrice ?? null,
+            costPrice: costs[itemIndex] ?? 0,
             markingNumber: item.markingNumber ?? null,
             serialNumber: item.serialNumber ?? null,
           }))

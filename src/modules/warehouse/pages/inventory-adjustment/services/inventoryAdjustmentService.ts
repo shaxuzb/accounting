@@ -16,26 +16,20 @@ export const inventoryAdjustmentService = {
     $axiosPrivate
       .get<InventoryAdjustmentDocument>(endpoints.detail(id))
       .then((res) => res.data),
+  // The controller returns the new id as a bare number, not the document —
+  // typing it as a document made `created.id` undefined and sent the page to
+  // /inventory-adjustments/undefined after saving.
   create: (payload: InventoryAdjustmentForm) =>
     $axiosPrivate
-      .post<InventoryAdjustmentDocument>(
-        endpoints.create,
-        toInventoryAdjustmentPayload(payload),
-      )
+      .post<number>(endpoints.create, toInventoryAdjustmentPayload(payload))
       .then((res) => res.data),
+  // Update, confirm and cancel all answer 204 with no body.
   update: (id: string | number, payload: InventoryAdjustmentForm) =>
     $axiosPrivate
-      .put<InventoryAdjustmentDocument>(
-        endpoints.update(id),
-        toInventoryAdjustmentPayload(payload),
-      )
-      .then((res) => res.data),
+      .put<void>(endpoints.update(id), toInventoryAdjustmentPayload(payload))
+      .then(() => undefined),
   confirm: (id: string | number) =>
-    $axiosPrivate
-      .post<InventoryAdjustmentDocument>(endpoints.confirm(id))
-      .then((res) => res.data),
+    $axiosPrivate.post<void>(endpoints.confirm(id)).then(() => undefined),
   cancel: (id: string | number) =>
-    $axiosPrivate
-      .post<InventoryAdjustmentDocument>(endpoints.cancel(id))
-      .then((res) => res.data),
+    $axiosPrivate.post<void>(endpoints.cancel(id)).then(() => undefined),
 };
