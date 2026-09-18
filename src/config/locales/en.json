@@ -1891,6 +1891,10 @@
       "offsetAccount": "Offset account",
       "salaryExpenseAccount": "Salary expense account",
       "salaryPayableAccount": "Salary payable account",
+      "minimumAmount": "Minimum amount",
+      "maximumAmount": "Maximum amount",
+      "dependsOnComponent": "Depends on component",
+      "isTaxable": "Taxable",
       "debitAccount": "Debit account",
       "creditAccount": "Credit account",
       "bankOperation": "Bank operation",
@@ -2583,5 +2587,81 @@
       "utility": { "lessor": "Lessor", "lessee": "Lessee" },
       "actions": { "activate": "Activate", "post": "Post", "cancel": "Cancel", "generate": "Generate accruals", "activateConfirm": "Activate this contract?", "postConfirm": "Post this accrual?", "cancelConfirm": "Cancel this document?", "deleteConfirm": "Delete this draft?" },
        "messages": { "generated": "{{count}} accrual document(s) created", "documentIds": "Created documents: {{ids}}", "lessorFound": "Lessor data found", "accountsRequired": "Select all accounts for paid rental" }
+  },
+  "reports": {
+    "title": "Operational reports",
+    "pages": {
+      "sales": "Sales report",
+      "purchase": "Purchase report",
+      "warehouseTransfers": "Warehouse transfers",
+      "inventoryCounts": "Inventory counts",
+      "bank": "Bank operations",
+      "cash": "Cash operations",
+      "receivable": "Accounts receivable",
+      "payable": "Accounts payable"
+    },
+    "actions": {
+      "export": "Export",
+      "exportExcel": "Excel (.xlsx)",
+      "exportPdf": "PDF",
+      "retry": "Retry"
+    },
+    "messages": {
+      "empty": "No data for the selected filter",
+      "loadError": "Failed to load the report",
+      "exportReady": "File downloaded",
+      "exportFailed": "Could not prepare the file",
+      "aggregationTruncated": "Loaded {{loaded}} of {{total}} movements. Narrow the date range for a complete balance.",
+      "receivableScope": "Sales documents together with the bank and cash receipts that settle them.",
+      "payableScope": "Purchase documents together with the bank and cash payments made against them."
+    },
+    "fields": {
+      "docNumber": "Document no.",
+      "docDate": "Date",
+      "dateFrom": "Date from",
+      "dateTo": "Date to",
+      "customer": "Customer",
+      "supplier": "Supplier",
+      "counterparty": "Counterparty",
+      "warehouse": "Warehouse",
+      "sourceWarehouse": "From",
+      "destinationWarehouse": "To",
+      "contract": "Contract",
+      "amount": "Amount",
+      "income": "Inflow",
+      "expense": "Outflow",
+      "bankAccount": "Bank account",
+      "bankDocNumber": "Bank document",
+      "offsetAccount": "Offset account",
+      "cashBox": "Cash box",
+      "operationType": "Operation type",
+      "direction": "Direction",
+      "comment": "Comment",
+      "countCompletedAt": "Count completed",
+      "postedAt": "Posted",
+      "debtIncrease": "Debt increase",
+      "debtDecrease": "Debt decrease",
+      "receivableBalance": "Owed to us (balance)",
+      "payableBalance": "We owe (balance)",
+      "movements": "Movements",
+      "lastOperation": "Last operation",
+      "documentId": "Document ID"
+    },
+    "filters": {
+      "directionIn": "Inflow",
+      "directionOut": "Outflow",
+      "transfer": "Transfer",
+      "debtIncrease": "Debt increase",
+      "debtDecrease": "Debt decrease"
+    },
+    "summary": {
+      "documentCount": "Documents",
+      "operationCount": "Operations",
+      "counterpartyCount": "Counterparties",
+      "pageAmount": "Page total",
+      "pageIncome": "Page inflow",
+      "pageExpense": "Page outflow",
+      "pageScopeNote": "The total covers the current page only. Use export for the full figure."
+    }
   }
 }

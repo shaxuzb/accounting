@@ -16,6 +16,7 @@ import { hrRoutes } from "@/modules/hr";
 import EimzoBridgePage from "@/features/eimzo/bridge/EimzoBridgePage";
 import { rentalRoutes } from "@/modules/rental";
 import { dashboardRoutes } from "@/modules/dashboard";
+import { reportsRoutes } from "@/modules/reports";
 
 export const router = createBrowserRouter([
   {
@@ -43,6 +44,7 @@ export const router = createBrowserRouter([
           hrRoutes,
           payrollRoutes,
           accountingsRoutes,
+          reportsRoutes,
           accountingRoutes,
           settingsRoutes,
           warehouseRoutes,

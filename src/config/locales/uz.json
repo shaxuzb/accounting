@@ -2050,6 +2050,10 @@
       "offsetAccount": "Qoplovchi hisobvaraq",
       "salaryExpenseAccount": "Ish haqi xarajati hisobvarag'i",
       "salaryPayableAccount": "Ish haqi bo'yicha qarzdorlik hisobvarag'i",
+      "minimumAmount": "Eng kam summa",
+      "maximumAmount": "Eng ko'p summa",
+      "dependsOnComponent": "Bog'liq komponent",
+      "isTaxable": "Soliqqa tortiladi",
       "debitAccount": "Debet hisobvarag'i",
       "creditAccount": "Kredit hisobvarag'i",
       "bankOperation": "Bank operatsiyasi",
@@ -2742,5 +2746,81 @@
       "utility": { "lessor": "Ijaraga beruvchi", "lessee": "Ijarachi" },
       "actions": { "activate": "Faollashtirish", "post": "O'tkazish", "cancel": "Bekor qilish", "generate": "Hisob-kitob yaratish", "activateConfirm": "Shartnomani faollashtirasizmi?", "postConfirm": "Hisob-kitobni o'tkazasizmi?", "cancelConfirm": "Hujjatni bekor qilasizmi?", "deleteConfirm": "Qoralama hujjatni o'chirasizmi?" },
        "messages": { "generated": "{{count}} ta hisob-kitob hujjati yaratildi", "documentIds": "Yaratilgan hujjatlar: {{ids}}", "lessorFound": "Ijaraga beruvchi ma'lumotlari topildi", "accountsRequired": "Pullik ijara uchun barcha hisobvaraqlarni tanlang" }
+  },
+  "reports": {
+    "title": "Operativ hisobotlar",
+    "pages": {
+      "sales": "Sotuv hisoboti",
+      "purchase": "Xarid hisoboti",
+      "warehouseTransfers": "Ombor ko'chirishlari",
+      "inventoryCounts": "Inventarizatsiyalar",
+      "bank": "Bank operatsiyalari",
+      "cash": "Kassa operatsiyalari",
+      "receivable": "Debitor qarzlar",
+      "payable": "Kreditor qarzlar"
+    },
+    "actions": {
+      "export": "Eksport",
+      "exportExcel": "Excel (.xlsx)",
+      "exportPdf": "PDF",
+      "retry": "Qayta urinish"
+    },
+    "messages": {
+      "empty": "Tanlangan filtr bo'yicha ma'lumot topilmadi",
+      "loadError": "Hisobotni yuklashda xatolik yuz berdi",
+      "exportReady": "Fayl yuklab olindi",
+      "exportFailed": "Faylni tayyorlab bo'lmadi",
+      "aggregationTruncated": "Jami {{total}} ta harakatdan {{loaded}} tasi yuklandi. Saldo to'liq bo'lishi uchun sana oralig'ini toraytiring.",
+      "receivableScope": "Sotuv hujjatlari va ularni yopgan bank/kassa tushumlari bo'yicha.",
+      "payableScope": "Xarid hujjatlari va ular bo'yicha qilingan bank/kassa to'lovlari bo'yicha."
+    },
+    "fields": {
+      "docNumber": "Hujjat raqami",
+      "docDate": "Sana",
+      "dateFrom": "Sanadan",
+      "dateTo": "Sanagacha",
+      "customer": "Xaridor",
+      "supplier": "Yetkazib beruvchi",
+      "counterparty": "Kontragent",
+      "warehouse": "Ombor",
+      "sourceWarehouse": "Qayerdan",
+      "destinationWarehouse": "Qayerga",
+      "contract": "Shartnoma",
+      "amount": "Summa",
+      "income": "Kirim",
+      "expense": "Chiqim",
+      "bankAccount": "Hisob raqam",
+      "bankDocNumber": "Bank hujjati",
+      "offsetAccount": "Korrespondent hisob",
+      "cashBox": "Kassa",
+      "operationType": "Operatsiya turi",
+      "direction": "Yo'nalish",
+      "comment": "Izoh",
+      "countCompletedAt": "Sanab bo'lingan",
+      "postedAt": "O'tkazilgan",
+      "debtIncrease": "Qarz ortishi",
+      "debtDecrease": "Qarz kamayishi",
+      "receivableBalance": "Bizga qarz (saldo)",
+      "payableBalance": "Biz qarzdormiz (saldo)",
+      "movements": "Harakatlar",
+      "lastOperation": "Oxirgi operatsiya",
+      "documentId": "Hujjat ID"
+    },
+    "filters": {
+      "directionIn": "Kirim",
+      "directionOut": "Chiqim",
+      "transfer": "Ko'chirish",
+      "debtIncrease": "Qarz ortishi",
+      "debtDecrease": "Qarz kamayishi"
+    },
+    "summary": {
+      "documentCount": "Hujjatlar soni",
+      "operationCount": "Operatsiyalar soni",
+      "counterpartyCount": "Kontragentlar soni",
+      "pageAmount": "Sahifa summasi",
+      "pageIncome": "Sahifa kirimi",
+      "pageExpense": "Sahifa chiqimi",
+      "pageScopeNote": "Yig'indi joriy sahifadagi satrlar bo'yicha. To'liq summa uchun eksportdan foydalaning."
+    }
   }
 }

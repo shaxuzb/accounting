@@ -2001,6 +2001,10 @@
       "offsetAccount": "Корреспондирующий счёт",
       "salaryExpenseAccount": "Счёт расходов по зарплате",
       "salaryPayableAccount": "Счёт задолженности по зарплате",
+      "minimumAmount": "Минимальная сумма",
+      "maximumAmount": "Максимальная сумма",
+      "dependsOnComponent": "Зависит от компонента",
+      "isTaxable": "Облагается налогом",
       "debitAccount": "Дебетовый счёт",
       "creditAccount": "Кредитовый счёт",
       "bankOperation": "Банковская операция",
@@ -2693,5 +2697,81 @@
       "utility": { "lessor": "Арендодатель", "lessee": "Арендатор" },
       "actions": { "activate": "Активировать", "post": "Провести", "cancel": "Отменить", "generate": "Создать начисления", "activateConfirm": "Активировать договор?", "postConfirm": "Провести начисление?", "cancelConfirm": "Отменить документ?", "deleteConfirm": "Удалить черновик?" },
        "messages": { "generated": "Создано документов начисления: {{count}}", "documentIds": "Созданные документы: {{ids}}", "lessorFound": "Данные арендодателя найдены", "accountsRequired": "Для платной аренды выберите все счета" }
+  },
+  "reports": {
+    "title": "Оперативные отчёты",
+    "pages": {
+      "sales": "Отчёт по продажам",
+      "purchase": "Отчёт по закупкам",
+      "warehouseTransfers": "Перемещения по складам",
+      "inventoryCounts": "Инвентаризации",
+      "bank": "Банковские операции",
+      "cash": "Кассовые операции",
+      "receivable": "Дебиторская задолженность",
+      "payable": "Кредиторская задолженность"
+    },
+    "actions": {
+      "export": "Экспорт",
+      "exportExcel": "Excel (.xlsx)",
+      "exportPdf": "PDF",
+      "retry": "Повторить"
+    },
+    "messages": {
+      "empty": "По выбранному фильтру данных нет",
+      "loadError": "Не удалось загрузить отчёт",
+      "exportReady": "Файл загружен",
+      "exportFailed": "Не удалось подготовить файл",
+      "aggregationTruncated": "Загружено {{loaded}} движений из {{total}}. Сузьте период, чтобы сальдо было полным.",
+      "receivableScope": "По документам продажи и закрывающим их банковским и кассовым поступлениям.",
+      "payableScope": "По документам закупки и произведённым по ним банковским и кассовым платежам."
+    },
+    "fields": {
+      "docNumber": "Номер документа",
+      "docDate": "Дата",
+      "dateFrom": "Дата с",
+      "dateTo": "Дата по",
+      "customer": "Покупатель",
+      "supplier": "Поставщик",
+      "counterparty": "Контрагент",
+      "warehouse": "Склад",
+      "sourceWarehouse": "Откуда",
+      "destinationWarehouse": "Куда",
+      "contract": "Договор",
+      "amount": "Сумма",
+      "income": "Приход",
+      "expense": "Расход",
+      "bankAccount": "Расчётный счёт",
+      "bankDocNumber": "Банковский документ",
+      "offsetAccount": "Корр. счёт",
+      "cashBox": "Касса",
+      "operationType": "Вид операции",
+      "direction": "Направление",
+      "comment": "Комментарий",
+      "countCompletedAt": "Пересчёт завершён",
+      "postedAt": "Проведён",
+      "debtIncrease": "Рост долга",
+      "debtDecrease": "Погашение",
+      "receivableBalance": "Нам должны (сальдо)",
+      "payableBalance": "Мы должны (сальдо)",
+      "movements": "Движений",
+      "lastOperation": "Последняя операция",
+      "documentId": "ID документа"
+    },
+    "filters": {
+      "directionIn": "Приход",
+      "directionOut": "Расход",
+      "transfer": "Перемещение",
+      "debtIncrease": "Рост долга",
+      "debtDecrease": "Погашение"
+    },
+    "summary": {
+      "documentCount": "Документов",
+      "operationCount": "Операций",
+      "counterpartyCount": "Контрагентов",
+      "pageAmount": "Сумма страницы",
+      "pageIncome": "Приход страницы",
+      "pageExpense": "Расход страницы",
+      "pageScopeNote": "Итог посчитан по строкам текущей страницы. Полную сумму даёт экспорт."
+    }
   }
 }

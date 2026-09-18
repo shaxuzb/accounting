@@ -33,6 +33,7 @@ import {
   Percent,
   KeyRound,
   UserCheck,
+  ChartColumnBig,
 } from "lucide-react";
 import { salePermissions } from "@/modules/sale";
 import { retailSalePermissions } from "@/modules/sale/pages/retail-sale/constants/permissions";
@@ -87,6 +88,7 @@ import { rentalAccrualPermissions } from "@/modules/rental/pages/accruals/consta
 import { dashboardPermissions } from "@/modules/dashboard/constants/permissions";
 import { regulatedObligationSettingPermissions } from "@/modules/settings/pages/regulatedObligationSettings/constants/permissions";
 import { accountingPolicyPermissions } from "@/modules/settings/pages/accountingPolicy/constants/permissions";
+import { operationalReportPermissions } from "@/modules/reports";
 
 interface MainMenu {
   TOP: MenuRole[];
@@ -328,6 +330,56 @@ export const menuPermissions: MainMenu = {
         //     title: "Repost",
         //   },
         // },
+      ],
+    },
+    {
+      code: "DROPDOWN",
+      dropdown: true,
+      dropdownName: "reports.title",
+      iconName: <ChartColumnBig className="size-5" />,
+      linkData: {
+        path: "reports",
+        title: "reports.title",
+      },
+      items: [
+        {
+          code: operationalReportPermissions.sales.view,
+          linkData: { path: "sales", title: "reports.pages.sales" },
+        },
+        {
+          code: operationalReportPermissions.purchase.view,
+          linkData: { path: "purchase", title: "reports.pages.purchase" },
+        },
+        {
+          code: operationalReportPermissions.receivable.view,
+          linkData: { path: "receivable", title: "reports.pages.receivable" },
+        },
+        {
+          code: operationalReportPermissions.payable.view,
+          linkData: { path: "payable", title: "reports.pages.payable" },
+        },
+        {
+          code: operationalReportPermissions.bank.view,
+          linkData: { path: "bank", title: "reports.pages.bank" },
+        },
+        {
+          code: operationalReportPermissions.cash.view,
+          linkData: { path: "cash", title: "reports.pages.cash" },
+        },
+        {
+          code: operationalReportPermissions.warehouseTransfers.view,
+          linkData: {
+            path: "warehouse-transfers",
+            title: "reports.pages.warehouseTransfers",
+          },
+        },
+        {
+          code: operationalReportPermissions.inventoryCounts.view,
+          linkData: {
+            path: "inventory-counts",
+            title: "reports.pages.inventoryCounts",
+          },
+        },
       ],
     },
     {
