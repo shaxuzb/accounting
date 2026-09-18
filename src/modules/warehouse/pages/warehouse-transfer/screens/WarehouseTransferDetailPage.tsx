@@ -131,6 +131,7 @@ export default function WarehouseTransferDetailPage() {
               <div className="mt-3 space-y-2">
                 <AccountingEntriesButton
                   block
+                  documentTypeId={18}
                   documentId={id}
                   statusId={record?.statusId}
                 >

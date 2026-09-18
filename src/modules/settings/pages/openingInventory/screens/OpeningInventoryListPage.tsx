@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router";
 import { Alert, App, Button, Empty, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { Plus, Trash2, Pencil, RefreshCw } from "lucide-react";
+import { Plus, Trash2, Pencil, RefreshCw, ScrollText } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useGetOpeningInventories } from "../hooks/useGetOpeningInventories";
 import { useDeleteOpeningInventory } from "../hooks/useDeleteOpeningInventory";
@@ -12,6 +12,7 @@ import Card from "@/components/ui/card/Card";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { openingInventoryPermissions } from "../constants/permissions";
 import ListPagination from "@/components/ui/table/ListPagination";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const numberValue = Number(value);
@@ -113,9 +114,17 @@ export default function OpeningInventoryListPage() {
       title: t("common.actions"),
       key: "actions",
       align: "right",
-      width: 120,
+      width: 160,
       render: (_, record) => (
         <Space size="middle">
+          {/* Boshlang'ich qoldiq endi Dt 2910 / Kt 0000 provodkasini beradi. */}
+          <AccountingEntriesButton
+            type="text"
+            icon={<ScrollText className="size-4 text-emerald-600" />}
+            documentTypeId={16}
+            documentId={record.id}
+            statusId={record.statusId}
+          />
           <PermissionCard permission={openingInventoryPermissions.update}>
             <Button
               type="text"

@@ -41,6 +41,7 @@ export default function WarehouseTransferListPage() {
       align: "center",
       render: (_, record) => (
         <AccountingEntriesButton
+          documentTypeId={18}
           documentId={record.id}
           statusId={record.statusId}
           icon={<ReceiptText className="size-4" />}

@@ -161,6 +161,9 @@ export default function InventoryAdjustmentDetailPage() {
           {!isCreate && (
             <AccountingEntriesButton
               block
+              // Hujjat turisiz hisobot 1 (xarid) ga tushib qolardi va o'sha
+              // id-li butunlay boshqa hujjatning provodkasini ko'rsatardi.
+              documentTypeId={8}
               documentId={id}
               statusId={record?.statusId}
             >
