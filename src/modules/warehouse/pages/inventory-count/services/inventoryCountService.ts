@@ -24,24 +24,24 @@ export const inventoryCountService = {
     $axiosPrivate
       .get<InventoryCountDocument>(endpoints.detail(id))
       .then((res) => res.data),
+  // Create yalang'och id raqamini qaytaradi, hujjat obyektini emas; update,
+  // confirm va cancel esa 204 bilan bo'sh javob beradi. Ilgari uchalasi ham
+  // hujjat deb tiplangan edi: created.id undefined chiqardi va bo'sh javob
+  // keshdagi hujjatni o'chirib yuborardi.
   create: (payload: InventoryCountCreatePayload) =>
     $axiosPrivate
-      .post<InventoryCountDocument>(endpoints.create, payload)
+      .post<number>(endpoints.create, payload)
       .then((res) => res.data),
   update: (id: string | number, payload: InventoryCountUpdatePayload) =>
     $axiosPrivate
-      .put<InventoryCountDocument>(endpoints.update(id), payload)
-      .then((res) => res.data),
+      .put<void>(endpoints.update(id), payload)
+      .then(() => undefined),
   delete: (id: string | number) =>
     $axiosPrivate.delete<unknown>(endpoints.delete(id)).then((res) => res.data),
   confirm: (id: string | number) =>
-    $axiosPrivate
-      .post<InventoryCountDocument>(endpoints.confirm(id))
-      .then((res) => res.data),
+    $axiosPrivate.post<void>(endpoints.confirm(id)).then(() => undefined),
   cancel: (id: string | number) =>
-    $axiosPrivate
-      .post<InventoryCountDocument>(endpoints.cancel(id))
-      .then((res) => res.data),
+    $axiosPrivate.post<void>(endpoints.cancel(id)).then(() => undefined),
   differences: (id: string | number) =>
     $axiosPrivate
       .get<InventoryCountDifference[]>(endpoints.differences(id))

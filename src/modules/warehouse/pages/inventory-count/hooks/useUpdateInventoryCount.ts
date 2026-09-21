@@ -8,8 +8,8 @@ export const useUpdateInventoryCount = (id: string | number) => {
   return useMutation({
     mutationFn: (payload: InventoryCountUpdatePayload) =>
       inventoryCountService.update(id, payload),
-    onSuccess: (data) => {
-      queryClient.setQueryData(inventoryCountKeys.detail(id), data);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: inventoryCountKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: inventoryCountKeys.all });
       queryClient.invalidateQueries({ queryKey: inventoryCountKeys.list() });
     },

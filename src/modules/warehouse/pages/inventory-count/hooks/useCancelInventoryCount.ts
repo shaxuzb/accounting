@@ -6,8 +6,8 @@ export const useCancelInventoryCount = (id: string | number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => inventoryCountService.cancel(id),
-    onSuccess: (data) => {
-      queryClient.setQueryData(inventoryCountKeys.detail(id), data);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: inventoryCountKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: inventoryCountKeys.all });
       queryClient.invalidateQueries({
         queryKey: inventoryCountKeys.list(),

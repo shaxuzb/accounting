@@ -258,9 +258,23 @@ export default function InventoryCountLinesEditor({
     commitLines(nextLines);
   };
 
+  /**
+   * Dona qo'shilsa yoki o'chirilsa sanalgan miqdor ham siljiydi.
+   *
+   * Backend ro'yxatdagi donalarni topilgan deb, ortib qolgan miqdorni esa
+   * markirovkasiz topilgan dona deb hisoblaydi. Miqdor qotib qolsa, bitta
+   * donani o'chirish "1 dona kamomad va ayni paytda 1 dona ortiqcha" bo'lib
+   * o'qilardi — bitta mahsulot uchun ikkala korrektirovka ham yaratilardi.
+   * Foydalanuvchi markirovkasiz dona kiritmoqchi bo'lsa, miqdorni keyin
+   * qo'lda oshirishi mumkin.
+   */
+  const shiftCountedQuantity = (line: InventoryCountLineForm, delta: number) =>
+    Math.max(0, (line.countedQuantity ?? line.items.length) + delta);
+
   const addItem = (lineIndex: number) => {
     updateLine(lineIndex, (line) => ({
       ...line,
+      countedQuantity: shiftCountedQuantity(line, 1),
       items: [...line.items, createDefaultInventoryCountItem()],
     }));
   };
@@ -270,6 +284,7 @@ export default function InventoryCountLinesEditor({
       const nextItems = line.items.filter((_, index) => index !== itemIndex);
       return {
         ...line,
+        countedQuantity: shiftCountedQuantity(line, -1),
         items:
           nextItems.length > 0
             ? nextItems

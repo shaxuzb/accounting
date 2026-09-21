@@ -6,8 +6,8 @@ export const useConfirmInventoryCount = (id: string | number) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => inventoryCountService.confirm(id),
-    onSuccess: (data) => {
-      queryClient.setQueryData(inventoryCountKeys.detail(id), data);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: inventoryCountKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: inventoryCountKeys.all });
       queryClient.invalidateQueries({
         queryKey: inventoryCountKeys.differences(id),

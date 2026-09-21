@@ -213,9 +213,12 @@ export default function InventoryCountDetailPage() {
     onSubmit: async (values) => {
       try {
         if (isCreate) {
-          const created = await createMutation.mutateAsync(toCreatePayload(values));
+          // Create javobi — yalang'och id raqami, hujjat obyekti emas.
+          const createdId = await createMutation.mutateAsync(
+            toCreatePayload(values),
+          );
           toast.success(t("warehouse.messages.saved"));
-          navigate(`/main/warehouses/inventory-counts/${created.id}`, {
+          navigate(`/main/warehouses/inventory-counts/${createdId}`, {
             replace: true,
           });
           return;
