@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import type { RouteObject } from "react-router";
 import { Outlet } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -8,20 +9,20 @@ import { faMovementPermissions } from "./pages/faMovement/constants/permissions"
 import { faReceiptPermissions } from "./pages/faReceipt/constants/permissions";
 import { faRevaluationPermissions } from "./pages/faRevaluation/constants/permissions";
 import { faCommissioningPermissions } from "./pages/faCommissioning/constants/permissions";
-import FaAssetListPage from "./pages/faAsset/screens/FaAssetListPage";
-import FaAssetFormPage from "./pages/faAsset/screens/FaAssetFormPage";
-import FaReceiptListPage from "./pages/faReceipt/screens/FaReceiptListPage";
-import FaReceiptFormPage from "./pages/faReceipt/screens/FaReceiptFormPage";
-import FaMovementListPage from "./pages/faMovement/screens/FaMovementListPage";
-import FaMovementFormPage from "./pages/faMovement/screens/FaMovementFormPage";
-import FaRevaluationListPage from "./pages/faRevaluation/screens/FaRevaluationListPage";
-import FaRevaluationFormPage from "./pages/faRevaluation/screens/FaRevaluationFormPage";
-import FaDisposalListPage from "./pages/faDisposal/screens/FaDisposalListPage";
-import FaDisposalFormPage from "./pages/faDisposal/screens/FaDisposalFormPage";
-import FaDepreciationListPage from "./pages/faDepreciation/screens/FaDepreciationListPage";
-import FaDepreciationFormPage from "./pages/faDepreciation/screens/FaDepreciationFormPage";
-import FaCommissioningListPage from "./pages/faCommissioning/screens/FaCommissioningListPage";
-import FaCommissioningFormPage from "./pages/faCommissioning/screens/FaCommissioningFormPage";
+const FaAssetListPage = lazy(() => import("./pages/faAsset/screens/FaAssetListPage"));
+const FaAssetFormPage = lazy(() => import("./pages/faAsset/screens/FaAssetFormPage"));
+const FaReceiptListPage = lazy(() => import("./pages/faReceipt/screens/FaReceiptListPage"));
+const FaReceiptFormPage = lazy(() => import("./pages/faReceipt/screens/FaReceiptFormPage"));
+const FaMovementListPage = lazy(() => import("./pages/faMovement/screens/FaMovementListPage"));
+const FaMovementFormPage = lazy(() => import("./pages/faMovement/screens/FaMovementFormPage"));
+const FaRevaluationListPage = lazy(() => import("./pages/faRevaluation/screens/FaRevaluationListPage"));
+const FaRevaluationFormPage = lazy(() => import("./pages/faRevaluation/screens/FaRevaluationFormPage"));
+const FaDisposalListPage = lazy(() => import("./pages/faDisposal/screens/FaDisposalListPage"));
+const FaDisposalFormPage = lazy(() => import("./pages/faDisposal/screens/FaDisposalFormPage"));
+const FaDepreciationListPage = lazy(() => import("./pages/faDepreciation/screens/FaDepreciationListPage"));
+const FaDepreciationFormPage = lazy(() => import("./pages/faDepreciation/screens/FaDepreciationFormPage"));
+const FaCommissioningListPage = lazy(() => import("./pages/faCommissioning/screens/FaCommissioningListPage"));
+const FaCommissioningFormPage = lazy(() => import("./pages/faCommissioning/screens/FaCommissioningFormPage"));
 
 const withPermission = (
   element: React.ReactElement,

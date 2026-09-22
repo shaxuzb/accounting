@@ -1,18 +1,17 @@
+import { lazy } from "react";
 import type { ReactElement } from "react";
 import type { RouteObject } from "react-router";
 import { Navigate, Outlet } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { operationalReportPermissions } from "./constants/permissions";
-import {
-  BankReportPage,
-  CashReportPage,
-  InventoryCountReportPage,
-  PayableReportPage,
-  PurchaseReportPage,
-  ReceivableReportPage,
-  SalesReportPage,
-  WarehouseTransferReportPage,
-} from "./screens";
+const BankReportPage = lazy(() => import("./screens").then((m) => ({ default: m.BankReportPage })));
+const CashReportPage = lazy(() => import("./screens").then((m) => ({ default: m.CashReportPage })));
+const InventoryCountReportPage = lazy(() => import("./screens").then((m) => ({ default: m.InventoryCountReportPage })));
+const PayableReportPage = lazy(() => import("./screens").then((m) => ({ default: m.PayableReportPage })));
+const PurchaseReportPage = lazy(() => import("./screens").then((m) => ({ default: m.PurchaseReportPage })));
+const ReceivableReportPage = lazy(() => import("./screens").then((m) => ({ default: m.ReceivableReportPage })));
+const SalesReportPage = lazy(() => import("./screens").then((m) => ({ default: m.SalesReportPage })));
+const WarehouseTransferReportPage = lazy(() => import("./screens").then((m) => ({ default: m.WarehouseTransferReportPage })));
 
 const withAccess = (element: ReactElement, permission: string) => (
   <PermissionCard permission={permission} mode="redirect">

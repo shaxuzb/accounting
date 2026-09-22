@@ -1,6 +1,7 @@
+import { lazy } from "react";
 import PermissionCard from "@/components/ui/card/PermissionCard";
-import PayrollEmployeeDetailPage from "@/modules/settings/pages/payrollEmployees/screens/PayrollEmployeeDetailPage";
-import PayrollEmployeeListPage from "@/modules/settings/pages/payrollEmployees/screens/PayrollEmployeeListPage";
+const PayrollEmployeeDetailPage = lazy(() => import("@/modules/settings/pages/payrollEmployees/screens/PayrollEmployeeDetailPage"));
+const PayrollEmployeeListPage = lazy(() => import("@/modules/settings/pages/payrollEmployees/screens/PayrollEmployeeListPage"));
 import { Outlet, type RouteObject } from "react-router";
 import {
   hrAbsencePermissions,
@@ -8,8 +9,9 @@ import {
   hrOrderPermissions,
   hrViewPermissions,
 } from "./constants/permissions";
-import HrAbsenceListPage from "./pages/absences/screens/HrAbsenceListPage";
-import { HrOrderDetailPage, HrOrderListPage } from "./pages/orders";
+const HrAbsenceListPage = lazy(() => import("./pages/absences/screens/HrAbsenceListPage"));
+const HrOrderDetailPage = lazy(() => import("./pages/orders").then((m) => ({ default: m.HrOrderDetailPage })));
+const HrOrderListPage = lazy(() => import("./pages/orders").then((m) => ({ default: m.HrOrderListPage })));
 
 const withPermission = (
   element: React.ReactElement,

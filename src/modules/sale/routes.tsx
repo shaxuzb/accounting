@@ -1,16 +1,15 @@
+import { lazy } from "react";
 import { Outlet, type RouteObject } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
-import SaleAddEditPage from "./pages/sale/screens/SaleAddEditPage";
-import SaleDetailPage from "./pages/sale/screens/SaleDetailPage";
-import SaleListPage from "./pages/sale/screens/SaleListPage";
+const SaleAddEditPage = lazy(() => import("./pages/sale/screens/SaleAddEditPage"));
+const SaleDetailPage = lazy(() => import("./pages/sale/screens/SaleDetailPage"));
+const SaleListPage = lazy(() => import("./pages/sale/screens/SaleListPage"));
 import { salePermissions } from "./pages/sale/constants/permissions";
-import ContractListPage from "../contract/screens/ContractListPage";
+const ContractListPage = lazy(() => import("../contract/screens/ContractListPage"));
 import { contractPermissions } from "../contract/constants/permissions";
-import {
-  RetailSaleDetailPage,
-  RetailSaleEditorPage,
-  RetailSaleListPage,
-} from "./pages/retail-sale";
+const RetailSaleDetailPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleDetailPage })));
+const RetailSaleEditorPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleEditorPage })));
+const RetailSaleListPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleListPage })));
 import { retailSalePermissions } from "./pages/retail-sale/constants/permissions";
 
 const withPermission = (element: React.ReactElement, permission: string) => (

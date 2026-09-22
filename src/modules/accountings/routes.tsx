@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import type { ReactElement } from "react";
 import type { RouteObject } from "react-router";
 import { Navigate, Outlet } from "react-router";
@@ -7,18 +8,16 @@ import { trialBalancePermissions } from "./pages/trial-balance/constants/permiss
 import { auditLogPermissions } from "./pages/audit-log/constants/permissions";
 import { repostPermissions } from "./pages/repost/constants/permissions";
 import { accountingReportPermissions } from "./pages/accounting-report/constants/permissions";
-import {
-  AccountCardPage,
-  AccountTurnoverPage,
-  BalanceSheetPage,
-  AuditLogPage,
-  CashFlowPage,
-  IncomeStatementPage,
-  JournalPage,
-  LedgerPage,
-  RepostPage,
-} from "./pages";
-import TrialBalancePage from "./pages/trial-balance/screens/TrialBalancePage";
+const AccountCardPage = lazy(() => import("./pages").then((m) => ({ default: m.AccountCardPage })));
+const AccountTurnoverPage = lazy(() => import("./pages").then((m) => ({ default: m.AccountTurnoverPage })));
+const BalanceSheetPage = lazy(() => import("./pages").then((m) => ({ default: m.BalanceSheetPage })));
+const AuditLogPage = lazy(() => import("./pages").then((m) => ({ default: m.AuditLogPage })));
+const CashFlowPage = lazy(() => import("./pages").then((m) => ({ default: m.CashFlowPage })));
+const IncomeStatementPage = lazy(() => import("./pages").then((m) => ({ default: m.IncomeStatementPage })));
+const JournalPage = lazy(() => import("./pages").then((m) => ({ default: m.JournalPage })));
+const LedgerPage = lazy(() => import("./pages").then((m) => ({ default: m.LedgerPage })));
+const RepostPage = lazy(() => import("./pages").then((m) => ({ default: m.RepostPage })));
+const TrialBalancePage = lazy(() => import("./pages/trial-balance/screens/TrialBalancePage"));
 
 const withAccess = (element: ReactElement, permission: string) => (
   <PermissionCard permission={permission} mode="redirect">

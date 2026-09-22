@@ -1,17 +1,18 @@
+import { lazy } from "react";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { Outlet, type RouteObject } from "react-router";
 import { inventoryAdjustmentPermissions } from "./pages/inventory-adjustment/constants/permissions";
-import InventoryAdjustmentDetailPage from "./pages/inventory-adjustment/screens/InventoryAdjustmentDetailPage";
-import InventoryAdjustmentListPage from "./pages/inventory-adjustment/screens/InventoryAdjustmentListPage";
+const InventoryAdjustmentDetailPage = lazy(() => import("./pages/inventory-adjustment/screens/InventoryAdjustmentDetailPage"));
+const InventoryAdjustmentListPage = lazy(() => import("./pages/inventory-adjustment/screens/InventoryAdjustmentListPage"));
 import { inventoryCountPermissions } from "./pages/inventory-count/constants/permissions";
-import InventoryCountDetailPage from "./pages/inventory-count/screens/InventoryCountDetailPage";
-import InventoryCountListPage from "./pages/inventory-count/screens/InventoryCountListPage";
+const InventoryCountDetailPage = lazy(() => import("./pages/inventory-count/screens/InventoryCountDetailPage"));
+const InventoryCountListPage = lazy(() => import("./pages/inventory-count/screens/InventoryCountListPage"));
 import { warehousePermissions } from "./pages/warehouse/constants/permissions";
-import ProductSummaryListPage from "./pages/warehouse/screens/ProductSummaryListPage";
-import ProductDetail from "./pages/warehouse/screens/ProductDetail";
+const ProductSummaryListPage = lazy(() => import("./pages/warehouse/screens/ProductSummaryListPage"));
+const ProductDetail = lazy(() => import("./pages/warehouse/screens/ProductDetail"));
 import { warehouseTransferPermissions } from "./pages/warehouse-transfer/constants/permissions";
-import WarehouseTransferDetailPage from "./pages/warehouse-transfer/screens/WarehouseTransferDetailPage";
-import WarehouseTransferListPage from "./pages/warehouse-transfer/screens/WarehouseTransferListPage";
+const WarehouseTransferDetailPage = lazy(() => import("./pages/warehouse-transfer/screens/WarehouseTransferDetailPage"));
+const WarehouseTransferListPage = lazy(() => import("./pages/warehouse-transfer/screens/WarehouseTransferListPage"));
 
 const withPermission = (element: React.ReactElement, permission: string) => (
   <PermissionCard permission={permission} mode="redirect">

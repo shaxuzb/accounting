@@ -1,6 +1,7 @@
+import { lazy } from "react";
 import type { RouteObject } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
-import DashboardPage from "./pages/dashboard";
+const DashboardPage = lazy(() => import("./pages/dashboard"));
 import { dashboardPermissions } from "./constants/permissions";
 
 export const dashboardRoutes: RouteObject = {

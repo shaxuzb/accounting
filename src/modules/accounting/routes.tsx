@@ -1,5 +1,6 @@
+import { lazy } from "react";
 import type { RouteObject } from "react-router";
-import AccountingEntriesReportPage from "./pages/accountingentriesreport/screens/AccountingEntriesReportPage";
+const AccountingEntriesReportPage = lazy(() => import("./pages/accountingentriesreport/screens/AccountingEntriesReportPage"));
 
 export const accountingRoutes: RouteObject = {
   path: "accountingentriesreport",

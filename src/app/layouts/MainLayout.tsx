@@ -4,10 +4,11 @@ import Navbar from "./Navbar";
 import WorkspaceTabs from "./WorkspaceTabs";
 import WorkspaceNavigationManager from "@/app/navigation/WorkspaceNavigationManager";
 // import SettingSystem from "@/components/navbar/settings";
-import { useRef } from "react";
+import { Suspense, useRef } from "react";
 import { motion } from "motion/react";
 import { usePageScrollRestore } from "@/components/ui/scroll/usePageScrollRestore";
 import { useAppSelector } from "@/store/hooks";
+import RouteFallback from "@/app/router/RouteFallback";
 
 const MainLayout = () => {
   const location = useLocation();
@@ -38,7 +39,9 @@ const MainLayout = () => {
             className="relative min-h-0 flex-1 overflow-auto"
           >
             <div className="relative w-full min-w-0 px-4 py-2">
-              <Outlet />
+              <Suspense fallback={<RouteFallback />}>
+                <Outlet />
+              </Suspense>
             </div>
           </div>
         </div>

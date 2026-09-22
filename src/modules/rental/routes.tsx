@@ -1,11 +1,12 @@
+import { lazy } from "react";
 import type { RouteObject } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
-import ContractListPage from "./pages/contracts/screens/ContractListPage";
-import ContractAddEditPage from "./pages/contracts/screens/ContractAddEditPage";
-import ContractDetailPage from "./pages/contracts/screens/ContractDetailPage";
+const ContractListPage = lazy(() => import("./pages/contracts/screens/ContractListPage"));
+const ContractAddEditPage = lazy(() => import("./pages/contracts/screens/ContractAddEditPage"));
+const ContractDetailPage = lazy(() => import("./pages/contracts/screens/ContractDetailPage"));
 import { rentalContractPermissions } from "./pages/contracts/constants/permissions";
-import AccrualListPage from "./pages/accruals/screens/AccrualListPage";
-import AccrualDetailPage from "./pages/accruals/screens/AccrualDetailPage";
+const AccrualListPage = lazy(() => import("./pages/accruals/screens/AccrualListPage"));
+const AccrualDetailPage = lazy(() => import("./pages/accruals/screens/AccrualDetailPage"));
 import { rentalAccrualPermissions } from "./pages/accruals/constants/permissions";
 
 const withPermission = (element: React.ReactElement, permission: string) => (

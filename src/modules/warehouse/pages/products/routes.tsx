@@ -1,8 +1,9 @@
+import { lazy } from "react";
 import type { RouteObject } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
-import ProductListPage from "./screens/ProductListPage";
+const ProductListPage = lazy(() => import("./screens/ProductListPage"));
 import { productPermissions } from "./constants/permissions";
-import ProductAddEditPage from "./screens/ProductAddEditPage";
+const ProductAddEditPage = lazy(() => import("./screens/ProductAddEditPage"));
 
 
 const withPermission = (element: React.ReactElement, permission: string) => (

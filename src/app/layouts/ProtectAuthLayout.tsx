@@ -1,9 +1,10 @@
-import { useCallback, useEffect } from "react";
+import { Suspense, useCallback, useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import LoadingScreen from "@/components/LoadingScreen";
+import RouteFallback from "@/app/router/RouteFallback";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   isLoading,
@@ -165,7 +166,9 @@ const ProtectAuthLayout = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <Outlet />
+          <Suspense fallback={<RouteFallback />}>
+            <Outlet />
+          </Suspense>
         </motion.div>
       )}
     </AnimatePresence>

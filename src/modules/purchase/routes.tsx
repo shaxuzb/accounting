@@ -1,11 +1,12 @@
+import { lazy } from "react";
 import { Outlet, type RouteObject } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { purchasePermissions } from "./pages/purchase/constants/permissions";
-import PurchaseListPage from "./pages/purchase/screens/PurchaseListPage";
-import PurchaseDetailPage from "./pages/purchase/screens/PurchaseDetailPage";
-import ContractListPage from "../contract/screens/ContractListPage";
+const PurchaseListPage = lazy(() => import("./pages/purchase/screens/PurchaseListPage"));
+const PurchaseDetailPage = lazy(() => import("./pages/purchase/screens/PurchaseDetailPage"));
+const ContractListPage = lazy(() => import("../contract/screens/ContractListPage"));
 import { contractPermissions } from "../contract/constants/permissions";
-import PurchaseEditor from "./pages/purchase/screens/PurchaseEditorPage";
+const PurchaseEditor = lazy(() => import("./pages/purchase/screens/PurchaseEditorPage"));
 
 
 const withPermission = (element: React.ReactElement, permission: string) => (

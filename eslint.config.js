@@ -27,4 +27,10 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // routes.tsx faqat route ta'rifini eksport qiladi, sahifalar esa shu yerda
+    // lazy() bilan e'lon qilinadi — fast-refresh qoidasi bu fayllarga tegishli emas.
+    files: ["**/routes.tsx"],
+    rules: { "react-refresh/only-export-components": "off" },
+  },
 );

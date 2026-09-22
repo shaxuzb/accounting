@@ -1,9 +1,10 @@
+import { lazy } from "react";
 import type { RouteObject } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
-import BankOperationListPage from "./pages/statement/screens/BankOperationListPage";
-import BankStatementImportPage from "./pages/statement/screens/BankStatementImportPage";
-import BankOperationAddEditPage from "./pages/statement/screens/BankOperationAddEditPage";
-import BankOperationDetailPage from "./pages/statement/screens/BankOperationDetailPage";
+const BankOperationListPage = lazy(() => import("./pages/statement/screens/BankOperationListPage"));
+const BankStatementImportPage = lazy(() => import("./pages/statement/screens/BankStatementImportPage"));
+const BankOperationAddEditPage = lazy(() => import("./pages/statement/screens/BankOperationAddEditPage"));
+const BankOperationDetailPage = lazy(() => import("./pages/statement/screens/BankOperationDetailPage"));
 import { bankPermissions } from "./pages/statement/constants/permissions";
 
 const withPermission = (

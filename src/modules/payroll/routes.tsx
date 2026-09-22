@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { Outlet, type RouteObject } from "react-router";
 import {
@@ -7,15 +8,15 @@ import {
   payrollReportPermissions,
   payrollTimesheetPermissions,
 } from "./constants/permissions";
-import PayrollDocumentDetailPage from "./pages/documents/screens/PayrollDocumentDetailPage";
-import PayrollDocumentListPage from "./pages/documents/screens/PayrollDocumentListPage";
-import PayrollPaymentDetailPage from "./pages/payments/screens/PayrollPaymentDetailPage";
-import PayrollPaymentListPage from "./pages/payments/screens/PayrollPaymentListPage";
-import PayrollPeriodListPage from "./pages/periods/screens/PayrollPeriodListPage";
-import PayrollPayslipReportPage from "./pages/reports/screens/PayrollPayslipReportPage";
-import PayrollRegisterReportPage from "./pages/reports/screens/PayrollRegisterReportPage";
-import PayrollTimesheetDetailPage from "./pages/timesheets/screens/PayrollTimesheetDetailPage";
-import PayrollTimesheetListPage from "./pages/timesheets/screens/PayrollTimesheetListPage";
+const PayrollDocumentDetailPage = lazy(() => import("./pages/documents/screens/PayrollDocumentDetailPage"));
+const PayrollDocumentListPage = lazy(() => import("./pages/documents/screens/PayrollDocumentListPage"));
+const PayrollPaymentDetailPage = lazy(() => import("./pages/payments/screens/PayrollPaymentDetailPage"));
+const PayrollPaymentListPage = lazy(() => import("./pages/payments/screens/PayrollPaymentListPage"));
+const PayrollPeriodListPage = lazy(() => import("./pages/periods/screens/PayrollPeriodListPage"));
+const PayrollPayslipReportPage = lazy(() => import("./pages/reports/screens/PayrollPayslipReportPage"));
+const PayrollRegisterReportPage = lazy(() => import("./pages/reports/screens/PayrollRegisterReportPage"));
+const PayrollTimesheetDetailPage = lazy(() => import("./pages/timesheets/screens/PayrollTimesheetDetailPage"));
+const PayrollTimesheetListPage = lazy(() => import("./pages/timesheets/screens/PayrollTimesheetListPage"));
 import "./styles.css";
 
 const withPermission = (

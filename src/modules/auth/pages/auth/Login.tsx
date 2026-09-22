@@ -3,7 +3,7 @@ import InputText from "@/components/fields/InputText";
 import { Button, Checkbox, Form } from "antd";
 import { useFormik } from "formik";
 import logo1 from "@/assets/images/logo/logo1.svg";
-import loginP from "@/assets/loginP.png";
+import loginP from "@/assets/loginP.webp";
 import { createAuthSchema } from "../../types/auth";
 import { authService, type LoginPayload } from "@/services/authService";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -148,9 +148,15 @@ function Login() {
           </div>
         </div>
         <div className="hidden lg:block flex-1 h-full relative overflow-hidden">
+          {/* Rasm faqat lg dan katta ekranlarda ko'rinadi; lazy bo'lsa kichik
+              ekranlarda umuman yuklanmaydi. */}
           <img
             src={loginP}
             alt="Accounting illustration"
+            loading="lazy"
+            decoding="async"
+            width={1323}
+            height={1189}
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
 
