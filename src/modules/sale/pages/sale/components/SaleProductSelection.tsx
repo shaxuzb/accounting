@@ -37,6 +37,18 @@ import {
 import { saleDocumentTypeId } from "../constants/documentAccount";
 // import { getLayerCostValidationError } from "../utils/saleCostingValidation";
 import { roundMoney } from "../utils/pricing";
+import {
+  getLayerSaleAmount,
+  getLayerTotal,
+  getLayerVatAmount,
+  getLineNetAmount,
+  getLineTotal,
+  getLineVatAmount,
+  getNetAmountFromGross,
+  getNetUnitPriceFromTotal,
+  getVatPercent,
+  type VatRateOption,
+} from "../utils/lineVat";
 import SaleWarehouseProductsModal from "./SaleWarehouseProductsModal";
 import SaleLineAccountsDrawer, {
   type SaleLineAccountValues,
@@ -62,11 +74,6 @@ interface Props {
   disabled?: boolean;
 }
 
-interface VatRateOption {
-  id: number;
-  name: string;
-}
-
 const newRowKey = "__new__";
 const tableControlHeight = 32;
 const EMPTY_STOCK_PRODUCTS: SaleProductStock[] = [];
@@ -79,95 +86,6 @@ const getStockProductId = (product: SaleProductStock) =>
 
 const getProductName = (product?: SaleProductStock | null) =>
   product?.productName || product?.name || "-";
-
-const getVatPercent = (
-  vatRateId: number | null | undefined,
-  options: VatRateOption[],
-) => {
-  const option = options.find((item) => item.id === Number(vatRateId));
-  const match = String(option?.name ?? "").match(/(\d+(?:[.,]\d+)?)/);
-  return match ? Number(match[1].replace(",", ".")) : 0;
-};
-
-const getVatAmount = (
-  amount: number,
-  vatRateId: number | null | undefined,
-  options: VatRateOption[],
-) => {
-  const percent = getVatPercent(vatRateId, options);
-  return percent ? roundMoney((amount * percent) / 100) : 0;
-};
-
-const getNetAmountFromGross = (
-  grossAmount: number,
-  vatRateId: number | null | undefined,
-  options: VatRateOption[],
-) => {
-  const percent = getVatPercent(vatRateId, options);
-  return percent
-    ? roundMoney(grossAmount / (1 + percent / 100))
-      : roundMoney(grossAmount);
-};
-
-const getLineAmount = (line: SaleSelectedProduct) =>
-  roundMoney(line.quantity * line.unitPrice);
-
-const getGrossUnitPrice = (
-  line: SaleSelectedProduct,
-  vatRates: VatRateOption[],
-) =>
-  roundMoney(
-    line.unitPrice + getVatAmount(line.unitPrice, line.vatRateId, vatRates),
-  );
-
-const getGrossUnitPriceFromTotal = (
-  grossTotal: number | null | undefined,
-  quantity: number | null | undefined,
-) => {
-  const lineQuantity = Number(quantity ?? 0);
-  return lineQuantity > 0
-    ? roundMoney(Number(grossTotal ?? 0) / lineQuantity)
-    : 0;
-};
-
-const getLayerSaleAmount = (layer: SaleProductPriceLayer) =>
-  layer.writeOffQuantity * layer.salePrice;
-
-const getLayerVatAmount = (
-  layer: SaleProductPriceLayer,
-  vatRateId: number | null | undefined,
-  vatRates: VatRateOption[],
-) =>
-  roundMoney(
-    getVatAmount(layer.salePrice, vatRateId, vatRates) *
-      layer.writeOffQuantity,
-  );
-
-// QQS dona narxidan hisoblanadi. Shu usulda 2 571 428,56 QQS saqlanadi,
-// satr jami esa 24 000 000 bo‘lib qoladi.
-const getLineTotal = (line: SaleSelectedProduct, vatRates: VatRateOption[]) =>
-  roundMoney(getLineAmount(line) + getLineVatAmount(line, vatRates));
-
-const getLineVatAmount = (
-  line: SaleSelectedProduct,
-  vatRates: VatRateOption[],
-) =>
-  roundMoney(
-    getVatAmount(line.unitPrice, line.vatRateId, vatRates) * line.quantity,
-  );
-
-const getLineNetAmount = (line: SaleSelectedProduct) =>
-  getLineAmount(line);
-
-const getLayerTotal = (
-  layer: SaleProductPriceLayer,
-  vatRateId: number | null | undefined,
-  vatRates: VatRateOption[],
-) => {
-  const amount = roundMoney(getLayerSaleAmount(layer));
-  const vatAmount = getLayerVatAmount(layer, vatRateId, vatRates);
-  return roundMoney(amount + vatAmount);
-};
 
 const getAvailableQuantity = (product: SaleProductStock, fallback = 0) =>
   Number(product.availableQuantity ?? product.quantity ?? fallback ?? 0);
@@ -1268,11 +1186,13 @@ export default function SaleProductSelection({
               hasManualSalePrice
                 ? manualSalePriceValues[priceInputKey]
                 : hasManualTotal
-                  ? getGrossUnitPriceFromTotal(
+                  ? getNetUnitPriceFromTotal(
                       manualTotalValues[priceInputKey],
                       record.quantity,
+                      record.vatRateId,
+                      vatRateOptions,
                     )
-                  : getGrossUnitPrice(record, vatRateOptions)
+                  : roundMoney(record.unitPrice)
             }
             disabled={isNewRow(record.rowKey) || disabled}
             onValueChange={(salePrice) => {
@@ -1287,16 +1207,23 @@ export default function SaleProductSelection({
               }));
             }}
             onBlur={() => {
-              const grossSalePrice =
+              // Foydalanuvchi hech narsa yozmasdan maydondan chiqsa, narx 0 ga
+              // tushib ketmasligi kerak.
+              if (
+                !Object.prototype.hasOwnProperty.call(
+                  manualSalePriceValuesRef.current,
+                  priceInputKey,
+                )
+              ) {
+                return;
+              }
+
+              const netSalePrice =
                 manualSalePriceValuesRef.current[priceInputKey];
               clearManualTotal(record.rowKey);
               clearManualSalePrice(record.rowKey);
               updateLine(record.rowKey, (line) => {
-                const nextSalePrice = getNetAmountFromGross(
-                  Number(grossSalePrice ?? 0),
-                  line.vatRateId,
-                  vatRateOptions,
-                );
+                const nextSalePrice = roundMoney(Number(netSalePrice ?? 0));
 
                 return recalculateLine({
                   line: {
@@ -1383,19 +1310,19 @@ export default function SaleProductSelection({
                 ...current,
                 [totalInputKey]: grossAmount,
               }));
+              const netUnitPrice = getNetUnitPriceFromTotal(
+                grossAmount,
+                record.quantity,
+                record.vatRateId,
+                vatRateOptions,
+              );
               manualSalePriceValuesRef.current = {
                 ...manualSalePriceValuesRef.current,
-                [totalInputKey]: getGrossUnitPriceFromTotal(
-                  grossAmount,
-                  record.quantity,
-                ),
+                [totalInputKey]: netUnitPrice,
               };
               setManualSalePriceValues((current) => ({
                 ...current,
-                [totalInputKey]: getGrossUnitPriceFromTotal(
-                  grossAmount,
-                  record.quantity,
-                ),
+                [totalInputKey]: netUnitPrice,
               }));
             }}
             onBlur={() =>
