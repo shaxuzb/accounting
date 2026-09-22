@@ -1145,6 +1145,7 @@
       "pieceTracked": "Piece-level tracking"
     },
     "actions": {
+      "noChanges": "No unsaved changes",
       "addProduct": "Create product",
       "addService": "Create service"
     },
@@ -1159,15 +1160,19 @@
       "active": "Active",
       "inactive": "Inactive"
     },
+    "validation": {
+      "soldOrPurchased": "A product must be marked as sold or purchased (at least one)",
+      "mxikLength": "MXIK must be exactly 17 digits"
+    },
     "messages": {
       "created": "Product created successfully",
       "updated": "Product updated successfully",
       "serviceCreated": "Service created successfully",
       "serviceUpdated": "Service updated successfully",
-      "itemCreated": "Product added",
-      "itemUpdated": "Product updated",
-      "serviceItemCreated": "Service added",
-      "serviceItemUpdated": "Service updated"
+      "itemCreated": "Product added to the list — press Save to store it",
+      "itemUpdated": "Product changed in the list — press Save to store it",
+      "serviceItemCreated": "Service added to the list — press Save to store it",
+      "serviceItemUpdated": "Service changed in the list — press Save to store it"
     }
   },
   "sale": {

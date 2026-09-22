@@ -1284,6 +1284,7 @@
       "pieceTracked": "Markirovka bilan hisobga olinadi"
     },
     "actions": {
+      "noChanges": "Saqlanmagan o'zgarish yo'q",
       "addProduct": "Mahsulot yaratish",
       "addService": "Servis yaratish"
     },
@@ -1298,15 +1299,19 @@
       "active": "Faol",
       "inactive": "Deaktiv"
     },
+    "validation": {
+      "soldOrPurchased": "Mahsulot «Sotiladi» yoki «Xarid qilinadi»dan kamida bittasi bilan belgilanishi kerak",
+      "mxikLength": "MXIK aynan 17 ta raqamdan iborat bo'lishi kerak"
+    },
     "messages": {
       "created": "Mahsulot muvaffaqiyatli yaratildi",
       "updated": "Mahsulot muvaffaqiyatli o'zgartirildi",
       "serviceCreated": "Servis muvaffaqiyatli yaratildi",
       "serviceUpdated": "Servis muvaffaqiyatli o'zgartirildi",
-      "itemCreated": "Mahsulot qo'shildi",
-      "itemUpdated": "Mahsulot o'zgartirildi",
-      "serviceItemCreated": "Servis qo'shildi",
-      "serviceItemUpdated": "Servis o'zgartirildi"
+      "itemCreated": "Mahsulot ro'yxatga qo'shildi — saqlash uchun «Saqlash» tugmasini bosing",
+      "itemUpdated": "Mahsulot ro'yxatda o'zgartirildi — saqlash uchun «Saqlash» tugmasini bosing",
+      "serviceItemCreated": "Servis ro'yxatga qo'shildi — saqlash uchun «Saqlash» tugmasini bosing",
+      "serviceItemUpdated": "Servis ro'yxatda o'zgartirildi — saqlash uchun «Saqlash» tugmasini bosing"
     }
   },
   "sale": {

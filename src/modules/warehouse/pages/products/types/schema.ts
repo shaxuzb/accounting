@@ -8,7 +8,18 @@ export const productItemSchema = (nameRequired = true) =>
     name: nameRequired
       ? Yup.string().trim().required("validation.required")
       : Yup.string().trim().notRequired(),
-    mxik: Yup.string().trim().notRequired(),
+    // Backend MXIK'ni aynan 17 belgi deb tekshiradi (ProductInGroupBaseDtoValidator).
+    // MXIK to'ldirilmagan mahsulot bazadan null bo'lib keladi, shuning uchun
+    // nullable bo'lishi shart — aks holda butun guruhni saqlab bo'lmaydi.
+    mxik: Yup.string()
+      .trim()
+      .nullable()
+      .notRequired()
+      .test(
+        "mxik-length",
+        "products.validation.mxikLength",
+        (value) => !value || value.length === 17,
+      ),
     isService: Yup.boolean().required("validation.required"),
     isPieceTracked: Yup.boolean().notRequired(),
     productTypeId: Yup.number().nullable().notRequired(),
@@ -18,7 +29,12 @@ export const productItemSchema = (nameRequired = true) =>
     description: Yup.string().trim().notRequired(),
     defaultVatRateId: Yup.number().nullable().notRequired(),
     minStock: Yup.number().nullable().notRequired(),
-  });
+  }).test(
+    // Backend kamida bittasini talab qiladi: "Product must be marked as sold or purchased."
+    "sold-or-purchased",
+    "products.validation.soldOrPurchased",
+    (value) => Boolean(value?.isSold || value?.isPurchased),
+  );
 
 export const productTypeSchema = (isEdit = false) =>
   Yup.object({

@@ -27,8 +27,9 @@ const emptyProductItem = (isService: boolean): ProductItem => ({
   description: "",
   isService,
   isPieceTracked: false,
-  isSold: false,
-  isPurchased: false,
+  // Backend "sotiladi yoki xarid qilinadi"dan kamida bittasini talab qiladi.
+  isSold: true,
+  isPurchased: true,
   productGroupId: null,
   defaultVatRateId: null,
   minStock: null,
@@ -52,6 +53,11 @@ export default function ProductItemModal({
     validationSchema: productItemSchema(),
     enableReinitialize: true,
     onSubmit: (values) => {
+      if (!values.isSold && !values.isPurchased) {
+        toast.error(t("products.validation.soldOrPurchased"));
+        return;
+      }
+
       const payload = { ...values, isService };
       if (editItem?.idIndex) {
         formik.setFieldValue(
@@ -215,44 +221,39 @@ export default function ProductItemModal({
             />
           </Col> */}
 
-          {isService ? (
-            <>
-              <Col span={12}>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  <Button
-                    type={productFormik.values.isSold ? "primary" : "default"}
-                    onClick={() =>
-                      productFormik.setFieldValue(
-                        "isSold",
-                        !productFormik.values.isSold,
-                        true,
-                      )
-                    }
-                  >
-                    {productFormik.values.isSold
-                      ? t("products.fields.sold")
-                      : t("products.fields.notSold")}
-                  </Button>
-                  <Button
-                    type={
-                      productFormik.values.isPurchased ? "primary" : "default"
-                    }
-                    onClick={() =>
-                      productFormik.setFieldValue(
-                        "isPurchased",
-                        !productFormik.values.isPurchased,
-                        true,
-                      )
-                    }
-                  >
-                    {productFormik.values.isPurchased
-                      ? t("products.fields.purchased")
-                      : t("products.fields.notPurchased")}
-                  </Button>
-                </div>
-              </Col>
-            </>
-          ) : (
+          <Col span={12}>
+            <div className="mb-2 flex flex-wrap gap-2">
+              <Button
+                type={productFormik.values.isSold ? "primary" : "default"}
+                onClick={() =>
+                  productFormik.setFieldValue(
+                    "isSold",
+                    !productFormik.values.isSold,
+                    true,
+                  )
+                }
+              >
+                {productFormik.values.isSold
+                  ? t("products.fields.sold")
+                  : t("products.fields.notSold")}
+              </Button>
+              <Button
+                type={productFormik.values.isPurchased ? "primary" : "default"}
+                onClick={() =>
+                  productFormik.setFieldValue(
+                    "isPurchased",
+                    !productFormik.values.isPurchased,
+                    true,
+                  )
+                }
+              >
+                {productFormik.values.isPurchased
+                  ? t("products.fields.purchased")
+                  : t("products.fields.notPurchased")}
+              </Button>
+            </div>
+          </Col>
+          {!isService && (
             <Col span={12}>
               <Form.Item label={t("products.fields.pieceTracked")}>
                 <Switch

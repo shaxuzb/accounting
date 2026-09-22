@@ -29,6 +29,12 @@ export interface ProductItem {
 
 export interface ProductType {
   id: number;
+  // Guruhning texnik maydonlari: UI'da ko'rsatilmaydi, lekin update payload'da
+  // qaytarilishi shart — aks holda backend ularni tozalab yuboradi.
+  code: string;
+  parentId?: number | null;
+  isAssignable?: boolean;
+  sortOrder?: number;
   state: string;
   stateId: number;
   stateName: string;
@@ -43,6 +49,10 @@ export interface ProductType {
 export interface ProductTypeForm {
   id?: number | null;
   stateId?: number | null;
+  code?: string;
+  parentId?: number | null;
+  isAssignable?: boolean;
+  sortOrder?: number;
   name: string;
   // ui-only — keeps the group locked to a single kind (true=services, false=products)
   isService: boolean;
