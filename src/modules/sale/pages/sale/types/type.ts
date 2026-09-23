@@ -234,9 +234,13 @@ export interface SaleSelectedProduct {
   markings?: SaleProductMarking[];
   priceLayers?: SaleProductPriceLayer[];
   layers?: SaleProductPriceLayer[];
+  /** Stock batches kept only to preview the cost when stock is taken as a whole. */
+  stockLayers?: SaleProductPriceLayer[];
 }
 
 export interface SaleProductPriceLayer {
+  /** Units of the batch in stock with no marking; absent when the source does not say. */
+  unmarkedQuantity?: number;
   id?: number | null;
   batchId?: number | null;
   batchNumber?: string;

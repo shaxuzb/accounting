@@ -124,14 +124,18 @@ export const toInventoryAdjustmentPayload = (form: InventoryAdjustmentForm) => (
     unitId: line.unitId,
     quantity: line.quantity,
     comment: line.comment,
-    items: line.items.map((item) => ({
-      productTableId: item.productTableId,
-      // Backendda CostPrice — decimal, null emas: null yuborilsa so'rov
-      // butunlay rad etilardi.
-      costPrice: item.costPrice ?? 0,
-      // Kirim tuzatishida har bir dona o'z markirovkasi bilan hisobga olinadi.
-      markingNumber: item.markingNumber?.trim() || null,
-      serialNumber: item.serialNumber?.trim() || null,
-    })),
+    // Only units actually named go out: the server adds the rest — blank units when
+    // stock is booked in, unmarked stock (FIFO) when it is written off.
+    items: line.items
+      .filter((item) => item.productTableId || item.markingNumber?.trim())
+      .map((item) => ({
+        productTableId: item.productTableId,
+        // Backendda CostPrice — decimal, null emas: null yuborilsa so'rov
+        // butunlay rad etilardi.
+        costPrice: item.costPrice ?? 0,
+        // Kirim tuzatishida har bir dona o'z markirovkasi bilan hisobga olinadi.
+        markingNumber: item.markingNumber?.trim() || null,
+        serialNumber: item.serialNumber?.trim() || null,
+      })),
   })),
 });

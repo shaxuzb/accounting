@@ -1161,7 +1161,8 @@
       "duplicateMarking": "Markirovka takrorlangan: {{marking}}",
       "markingRequired": "{{product}} uchun markirovka kiriting",
       "ambiguousMxik": "{{count}} ta MXIK bir nechta mahsulotga tegishli. Mahsulotni ro‘yxatdan tanlang.",
-      "supplierAccountRequired": "Yetkazib beruvchi hisobvarag'ini tanlang"
+      "supplierAccountRequired": "Yetkazib beruvchi hisobvarag'ini tanlang",
+      "unmarkedLine": "Markirovkasiz (miqdor qo'lda kiritiladi). Markirovka kiritish uchun bosing."
     },
     "import": {
       "nonSerial": "Seriyasiz",
@@ -1594,7 +1595,8 @@
       "created": "Chakana savdo hujjati yaratildi",
       "updated": "Chakana savdo hujjati yangilandi",
       "confirmed": "Chakana savdo hujjati tasdiqlandi",
-      "cancelled": "Chakana savdo hujjati bekor qilindi"
+      "cancelled": "Chakana savdo hujjati bekor qilindi",
+      "cancelPostedConfirm": "Tasdiqlangan chek bekor qilinsinmi? Provodkalar storno qilinadi, tovar omborga qaytadi."
     }
   },
   "warehouses": {

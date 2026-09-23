@@ -29,6 +29,7 @@ import type {
   SaleSelectedProduct,
 } from "../types/type";
 import {
+  estimateStockCostPrice,
   getCostingPrices,
   getMarkupPercent,
   getSalePriceByMarkup,
@@ -181,9 +182,19 @@ const recalculateLine = ({
         }))
         .filter((layer) => layer.writeOffQuantity > 0)
     : [];
+  // Stock taken as a whole (retail) has no batches chosen by hand, so the cost is
+  // previewed from the stock batches for the quantity now on the line.
+  const stockCostPrice = line.stockLayers?.length
+    ? estimateStockCostPrice({
+        costingMethodId,
+        quantity,
+        layers: line.stockLayers,
+        markedBatchIds: (line.markings ?? []).map((marking) => marking.batchId),
+      })
+    : 0;
   const prices = getCostingPrices({
     costingMethodId,
-    defaultCostPrice: line.costPrice,
+    defaultCostPrice: stockCostPrice || line.costPrice,
     defaultSalePrice: line.unitPrice,
     layers: allocatedLayers,
   });
@@ -489,9 +500,16 @@ export default function SaleProductSelection({
             (sum, layer) => sum + layer.writeOffQuantity,
             0,
           );
+      const stockCostPrice = aggregateStockMode
+        ? estimateStockCostPrice({
+            costingMethodId: saleCondition.costingMethodId,
+            quantity,
+            layers: detail.layers,
+          })
+        : 0;
       const prices = getCostingPrices({
         costingMethodId: saleCondition.costingMethodId,
-        defaultCostPrice: detail.costPrice,
+        defaultCostPrice: stockCostPrice || detail.costPrice,
         defaultSalePrice:
           salePriceBySelection ?? existingLine?.unitPrice ?? detail.salePrice,
         layers: allocatedLayers,
@@ -567,6 +585,7 @@ export default function SaleProductSelection({
         isPieceTracked: Boolean(product.isPieceTracked),
         priceLayers,
         layers: allocatedLayers,
+        stockLayers: aggregateStockMode ? detail.layers : undefined,
       };
 
       const currentExistingLine = products.find((item) =>
@@ -830,9 +849,10 @@ export default function SaleProductSelection({
     if (!activeMarkingLine) return;
 
     // Retail-sale uchun markirovka soni va tovar soni tengligi tekshiruvi vaqtincha o'chirilgan.
+    // Fewer codes than pieces is allowed: the rest is sold from unmarked stock.
     if (
       !disableMarkingQuantityValidation &&
-      (activeMarkingLine.markings?.length ?? 0) !==
+      (activeMarkingLine.markings?.length ?? 0) >
         Math.round(activeMarkingLine.quantity)
     ) {
       toast.error(t("sale.messages.markingPerPieceRequired"));

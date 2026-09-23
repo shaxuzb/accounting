@@ -223,6 +223,10 @@ const normalizeLayer = (
     costPrice,
     unitPrice: costPrice,
     salePrice,
+    unmarkedQuantity:
+      read(item, ["unmarkedQuantity"]) === undefined
+        ? undefined
+        : toNumber(read(item, ["unmarkedQuantity"]), 0),
   };
 };
 
@@ -406,4 +410,58 @@ export const getCostingPrices = ({
       averageUnitPrice ||
       defaultCostPrice,
   };
+};
+
+/**
+ * Cost of `quantity` units taken from stock the way the server will take them:
+ * FIFO/LIFO walk the batches in order, AVERAGE values every unit in stock alike.
+ * Only a preview — posting writes the cost the batches actually gave up.
+ */
+export const estimateStockCostPrice = ({
+  costingMethodId,
+  quantity,
+  layers,
+  markedBatchIds = [],
+}: {
+  costingMethodId: number;
+  quantity: number;
+  layers: SaleProductPriceLayer[];
+  /** Batches of the codes already scanned on the line, one entry per unit. */
+  markedBatchIds?: (number | null | undefined)[];
+}) => {
+  const usable = layers.filter(
+    (layer) => layer.availableQuantity > 0 && layer.costPrice > 0,
+  );
+  if (!usable.length) return 0;
+
+  if (costingMethodId === COSTING_METHOD.AVERAGE) {
+    return weightedAverage(
+      usable.map((layer) => ({ ...layer, writeOffQuantity: layer.availableQuantity })),
+      (layer) => layer.costPrice,
+    );
+  }
+
+  const pieces = quantity > 0 ? quantity : 1;
+  // Scanned units leave their own batch; the rest comes from the unmarked units, in
+  // costing order — the same way the server takes them.
+  const scanned = markedBatchIds
+    .map((batchId) => usable.find((layer) => layer.batchId === batchId))
+    .filter((layer): layer is SaleProductPriceLayer => Boolean(layer))
+    .slice(0, pieces);
+  const knowsUnmarked = usable.some((layer) => layer.unmarkedQuantity !== undefined);
+  const unmarkedLayers = knowsUnmarked
+    ? usable
+        .filter((layer) => (layer.unmarkedQuantity ?? 0) > 0)
+        .map((layer) => ({ ...layer, availableQuantity: layer.unmarkedQuantity ?? 0 }))
+    : usable;
+  const rest = allocateSaleLayers({
+    costingMethodId,
+    quantity: pieces - scanned.length,
+    layers: unmarkedLayers,
+  });
+
+  return weightedAverage(
+    [...scanned.map((layer) => ({ ...layer, writeOffQuantity: 1 })), ...rest],
+    (layer) => layer.costPrice,
+  );
 };

@@ -235,7 +235,9 @@ const toDocumentPayload = (
   const lines = completedRows.map((item) => {
     const markingNumbers = toMarkingNumbers(item);
     const hasMarking = mode === "goods" && markingNumbers.length > 0;
-    const quantity = hasMarking || item.isPieceTracked
+    // A marked line counts its codes; an unmarked one (stock bought before marking
+    // was mandatory) is entered by quantity.
+    const quantity = hasMarking
       ? markingNumbers.length
       : Number(item.qty ?? 1);
     const unitPrice = getRowUnitPrice(item);

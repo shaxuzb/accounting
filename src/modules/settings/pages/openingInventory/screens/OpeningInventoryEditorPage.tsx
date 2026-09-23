@@ -32,7 +32,6 @@ import {
   getProductPrice,
   getProductMxik,
   getOpeningInventoryModeFromDetail,
-  getUnmarkedPieceTrackedRow,
   isEmptyOpeningInventoryRow,
   mapDetailLinesToRows,
   parseMarkingInput,
@@ -138,16 +137,6 @@ export default function OpeningInventoryEditorPage() {
 
       if (completedRows.length < values.lines.length) {
         toast.error(t("openingInventory.messages.fillAccountsAndPrices"));
-        return;
-      }
-
-      const unmarkedRow = getUnmarkedPieceTrackedRow(completedRows, mode);
-      if (unmarkedRow) {
-        toast.error(
-          t("openingInventory.messages.markingRequired", {
-            product: unmarkedRow.productName || unmarkedRow.product,
-          }),
-        );
         return;
       }
 
@@ -310,7 +299,7 @@ export default function OpeningInventoryEditorPage() {
         pricePerUom: defaultPrice,
         isPieceTracked,
         isService: mode === "services",
-        qty: isPieceTracked ? 0 : 1,
+        qty: 1,
         markingNumber: "",
         markingNumbers: [],
       });
@@ -357,7 +346,7 @@ export default function OpeningInventoryEditorPage() {
             price: defaultPrice,
             pricePerUom: defaultPrice,
             isPieceTracked,
-            qty: isPieceTracked ? 0 : 1,
+            qty: 1,
             markingNumber: "",
             markingNumbers: [],
           } satisfies Partial<OpeningInventoryRow>);

@@ -224,7 +224,7 @@ export const usePurchaseImportColumns = ({
             title={
               markingCount
                 ? t("purchase.messages.markingCount", { count: markingCount })
-                : t("purchase.actions.enterMarking")
+                : t("purchase.messages.unmarkedLine")
             }
           >
             <Button
@@ -286,7 +286,13 @@ export const usePurchaseImportColumns = ({
             dataIndex="qty"
             rowIndex={rowIndex ?? 0}
             onCommit={handleCellCommit}
-            disabled={disabled || readOnlyValues || (purchaseMode === "goods" && Boolean(record.isPieceTracked))}
+            // A marked line counts its codes; an unmarked one (goods bought before
+            // marking was mandatory) is entered by quantity.
+            disabled={
+              disabled ||
+              readOnlyValues ||
+              (purchaseMode === "goods" && getRowMarkingCount(record) > 0)
+            }
           />
         ),
       } satisfies TableColumnType<PurchaseImportRow>,

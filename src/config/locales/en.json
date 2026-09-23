@@ -1159,7 +1159,8 @@
       "duplicateMarking": "Duplicate marking: {{marking}}",
       "markingRequired": "Enter a marking for {{product}}",
       "ambiguousMxik": "{{count}} MXIK code(s) match multiple products. Select a product from the list.",
-      "supplierAccountRequired": "Select the supplier account"
+      "supplierAccountRequired": "Select the supplier account",
+      "unmarkedLine": "Unmarked (quantity entered by hand). Click to enter markings."
     },
     "import": {
       "nonSerial": "Non-serial",
@@ -1594,7 +1595,8 @@
       "created": "Retail sale document created",
       "updated": "Retail sale document updated",
       "confirmed": "Retail sale document confirmed",
-      "cancelled": "Retail sale document cancelled"
+      "cancelled": "Retail sale document cancelled",
+      "cancelPostedConfirm": "Cancel this posted check? Its postings are reversed and the goods return to stock."
     }
   },
   "warehouses": {

@@ -14,8 +14,18 @@ export const hasRequiredSaleMarkings = (products: SaleSelectedProduct[]) =>
     if (!product.isPieceTracked) return true;
 
     const quantity = Math.max(0, Math.round(product.quantity));
-    if (getSaleMarkingCount(product) !== quantity) return false;
+    const markingCount = getSaleMarkingCount(product);
+    if (markingCount > quantity) return false;
     if (!quantity) return true;
+    // Fewer codes than pieces: the rest is sold from the unmarked stock (goods bought
+    // before marking was mandatory), and the server picks those units itself.
+    if (markingCount < quantity) {
+      return (product.markings ?? []).every((marking) =>
+        (product.layers ?? []).some(
+          (layer) => layer.batchId === marking.batchId && layer.writeOffQuantity > 0,
+        ),
+      );
+    }
 
     const selectedLayers = (product.layers ?? []).filter(
       (layer) => layer.batchId && layer.writeOffQuantity > 0,

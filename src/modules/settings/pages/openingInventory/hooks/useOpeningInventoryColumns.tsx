@@ -228,7 +228,9 @@ export const useOpeningInventoryColumns = ({
             dataIndex="qty"
             rowIndex={rowIndex}
             onCommit={handleCellCommit}
-            disabled={Boolean(record.isPieceTracked)}
+            // Quantity follows the codes when there are any; unmarked stock is
+            // entered by quantity.
+            disabled={toMarkingNumbers(record).length > 0}
           />
         ),
       },

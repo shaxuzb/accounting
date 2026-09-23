@@ -3,7 +3,7 @@ import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { Button, Spin } from "antd";
+import { Button, Popconfirm, Spin } from "antd";
 import { CheckCircle2, CircleX, Pencil } from "lucide-react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -128,6 +128,27 @@ export default function RetailSaleDetailPage() {
                 </Button>
               </PermissionCard>
             </div>
+          )}
+          {document.statusId === 2 && (
+            // A posted check is undone like in 1C («Отмена проведения»): the
+            // postings are reversed and the units return to stock.
+            <PermissionCard permission={retailSalePermissions.cancel}>
+              <Popconfirm
+                title={t("retailSale.messages.cancelPostedConfirm")}
+                okText={t("common.cancel")}
+                cancelText={t("common.close")}
+                okButtonProps={{ danger: true }}
+                onConfirm={() => void handleCancel()}
+              >
+                <Button
+                  danger
+                  icon={<CircleX className="size-4" />}
+                  loading={cancelMutation.isPending}
+                >
+                  {t("common.cancel")}
+                </Button>
+              </Popconfirm>
+            </PermissionCard>
           )}
         </div>
       </Card>

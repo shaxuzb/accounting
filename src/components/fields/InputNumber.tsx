@@ -52,7 +52,10 @@ const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
     emptyZero = false,
     required = false,
   } = props;
-  const rawInputValue = onValueChange ? value : getIn(formik?.values, fieldName);
+  // A read-only field shows the value it is given even without a change handler;
+  // only a formik-bound field reads its own value from the form.
+  const rawInputValue =
+    onValueChange || !formik ? value : getIn(formik.values, fieldName);
   const inputValue =
     emptyZero && Number(rawInputValue) === 0 ? "" : rawInputValue;
   const hasError = Boolean(
