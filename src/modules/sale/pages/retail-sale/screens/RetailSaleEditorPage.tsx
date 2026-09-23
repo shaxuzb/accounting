@@ -327,7 +327,7 @@ export default function RetailSaleEditorPage() {
           open={processingModeModalOpen}
           title={t("purchase.actions.saveDocument")}
           description={t("purchase.messages.chooseSaveMode")}
-          saveLabel={t("common.save")}
+          saveLabel={t("purchase.actions.saveAsDraft")}
           saveAndConfirmLabel={t("purchase.actions.saveAndConfirm")}
           loading={createMutation.isPending}
           canConfirm={canConfirm}

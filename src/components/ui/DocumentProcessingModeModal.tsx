@@ -37,12 +37,15 @@ export default function DocumentProcessingModeModal({
       centered
     >
       <p className="mb-4 text-sm text-muted-foreground">{description}</p>
+      {/* Saving as a draft is the safe default and the highlighted one: posting a
+          document writes stock and ledger entries, and taking them back is a separate
+          cancellation, so it must be the deliberate choice, not the first button. */}
       <Space wrap>
-        <Button disabled={loading} onClick={() => onSelect(1)}>
+        <Button type="primary" loading={loading} onClick={() => onSelect(1)}>
           {saveLabel}
         </Button>
         {canConfirm && (
-          <Button type="primary" loading={loading} onClick={() => onSelect(2)}>
+          <Button disabled={loading} onClick={() => onSelect(2)}>
             {saveAndConfirmLabel}
           </Button>
         )}

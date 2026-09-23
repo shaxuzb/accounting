@@ -23,7 +23,7 @@ export default function PurchaseProcessingModeModal({
       open={open}
       title={t("purchase.actions.saveDocument")}
       description={t("purchase.messages.chooseSaveMode")}
-      saveLabel={t("common.save")}
+      saveLabel={t("purchase.actions.saveAsDraft")}
       saveAndConfirmLabel={t("purchase.actions.saveAndConfirm")}
       loading={loading}
       canConfirm={canConfirm}

@@ -1143,7 +1143,7 @@
       "productsCreateError": "Mahsulotlarni yaratishda xatolik yuz berdi",
       "markingInputHint": "Markirovkalarni kiriting yoki Excel'dan joylang",
       "noMarkings": "Markirovka kiritilmagan",
-      "chooseSaveMode": "Hujjatni qanday saqlamoqchisiz?",
+      "chooseSaveMode": "Qoralama — faqat saqlanadi, omborga va provodkaga tushmaydi. «Saqlash va tasdiqlash» — hujjat darhol o'tkaziladi (ombor, provodka).",
       "fillRequired": "Majburiy maydonlarni to'ldiring",
       "lineRequired": "Kamida bitta mahsulot yoki xizmat kiriting",
       "saved": "Hujjat saqlandi",
@@ -1193,7 +1193,8 @@
       "addService": "Xizmat qo‘shish",
       "enterMarking": "Markirovka kiritish",
       "viewMarkings": "Markirovkalarni ko‘rish",
-      "noMarkingData": "Markirovka ma’lumoti yo‘q"
+      "noMarkingData": "Markirovka ma’lumoti yo‘q",
+      "saveAsDraft": "Qoralama sifatida saqlash"
     }
   },
   "bank": {

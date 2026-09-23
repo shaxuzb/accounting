@@ -1141,7 +1141,7 @@
       "productsCreateError": "Failed to create products",
       "markingInputHint": "Enter markings or paste them from Excel",
       "noMarkings": "No markings entered",
-      "chooseSaveMode": "How would you like to save the document?",
+      "chooseSaveMode": "A draft is only saved — no stock movements or postings. “Save and confirm” posts the document right away (stock, ledger).",
       "fillRequired": "Fill in the required fields",
       "lineRequired": "Add at least one product or service",
       "saved": "Document saved",
@@ -1191,7 +1191,8 @@
       "addService": "Add service",
       "enterMarking": "Enter marking",
       "viewMarkings": "View markings",
-      "noMarkingData": "No marking data"
+      "noMarkingData": "No marking data",
+      "saveAsDraft": "Save as draft"
     }
   },
   "bank": {
