@@ -211,7 +211,7 @@ export default function RetailSaleListPage() {
         <ListPagination
           current={currentPage}
           pageSize={pageSize}
-          total={data?.total ?? 0}
+          total={data?.totalCount ?? data?.total ?? 0}
           onChange={handlePaginationChange}
         />
       </Card>

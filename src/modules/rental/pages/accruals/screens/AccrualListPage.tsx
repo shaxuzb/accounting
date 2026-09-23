@@ -228,7 +228,7 @@ export default function AccrualListPage() {
         <ListPagination
           current={current}
           pageSize={pageSize}
-          total={data?.total ?? 0}
+          total={data?.totalCount ?? data?.total ?? 0}
           onChange={onPageChange}
         />
       </Card>

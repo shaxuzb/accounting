@@ -36,6 +36,8 @@ export interface ProductSelectOption {
   pricePerUom?: number | null;
   isPieceTracked?: boolean;
   isService?: boolean;
+  /** VAT rate from the item card; a new line starts with it, as in 1C. */
+  defaultVatRateId?: number | null;
 }
 
 export interface ProductListResponse {

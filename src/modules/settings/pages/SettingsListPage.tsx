@@ -72,7 +72,8 @@ export default function SettingsListPage() {
         <div className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-4">
           {settingsRoute.map((item) => (
             <SettingsCard
-              key={item.code}
+              // Several cards share a permission code, so the path is the unique key.
+              key={item.linkData.path}
               item={item.linkData}
               icon={item.iconName}
               onClick={handleClick}

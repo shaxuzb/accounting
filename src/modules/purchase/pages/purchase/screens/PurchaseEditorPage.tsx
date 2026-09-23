@@ -963,6 +963,10 @@ export const PurchaseEditor = ({
         pricePerUom: unitPrice || currentRows[rowIndex]?.pricePerUom || null,
         isPieceTracked,
         ...markingPatch,
+        vatRateId:
+          currentRows[rowIndex]?.vatRateId ??
+          selected?.defaultVatRateId ??
+          null,
         debitAccountId:
           currentRows[rowIndex]?.debitAccountId ??
           defaultAccounts.debitAccountId,
