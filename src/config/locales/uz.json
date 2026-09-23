@@ -1487,7 +1487,8 @@
       "formalize": "Rasmiylashtirish",
       "saveAsDraft": "Qoralama sifatida saqlash",
       "markUnmarked": "Markirovkasiz",
-      "markRestUnmarked": "Qolgan {{count}} tasi markirovkasiz"
+      "markRestUnmarked": "Qolgan {{count}} tasi markirovkasiz",
+      "cancelPosted": "Sotuvni bekor qilish"
     },
     "messages": {
       "scanOrEnter": "Kodni skanerlang yoki kiriting va Enter tugmasini bosing",
@@ -1551,7 +1552,10 @@
       "unmarkedHint": "Faqat kodi yo'q eski tovar uchun. Kodi bor donani skanerlang.",
       "markingsIncompleteTitle": "Markirovkalar to'liq kiritilmagan",
       "markingsIncompleteDraft": "Har bir dona uchun kod skanerlanishi yoki «Markirovkasiz» deb belgilanishi kerak. Hujjat qoralama sifatida saqlanadi: ombordan chiqim, band qilish va provodka bo'lmaydi. Kodlarni keyin yig'ish bosqichida kiritasiz.",
-      "savedAsDraft": "Hujjat qoralama sifatida saqlandi"
+      "savedAsDraft": "Hujjat qoralama sifatida saqlandi",
+      "cancelPostedConfirm": "Provodkalar storno qilinadi, tovar va markirovkali donalar omborga qaytadi, mijoz qarzi kamayadi. Hujjat «Bekor qilingan» bo'lib qoladi.",
+      "unmarkedUnitShort": "kodsiz qabul qilingan",
+      "unmarkedUnitReason": "Bu dona omborga markirovka kodisiz kirim qilingan (masalan, markirovka majburiy bo'lishidan oldin olingan eski tovar), shuning uchun kodsiz sotilgan."
     },
     "warehouse": {
       "goodsToDispatch": "Ombordan chiqariladigan tovarlar",

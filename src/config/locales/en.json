@@ -1487,7 +1487,8 @@
       "formalize": "Complete",
       "saveAsDraft": "Save as draft",
       "markUnmarked": "No code",
-      "markRestUnmarked": "Remaining {{count}} have no code"
+      "markRestUnmarked": "Remaining {{count}} have no code",
+      "cancelPosted": "Cancel sale"
     },
     "messages": {
       "scanOrEnter": "Scan or enter the code and press Enter",
@@ -1551,7 +1552,10 @@
       "unmarkedHint": "Only for old stock that never had a code. Scan any unit that has one.",
       "markingsIncompleteTitle": "Markings are incomplete",
       "markingsIncompleteDraft": "Each unit must be scanned or marked \"No code\". The document will be saved as a draft: nothing is reserved, shipped or posted. Enter the codes later at assembly.",
-      "savedAsDraft": "The document was saved as a draft"
+      "savedAsDraft": "The document was saved as a draft",
+      "cancelPostedConfirm": "The entries are reversed, the goods and marked units return to stock and the customer's debt is reduced. The document stays as cancelled.",
+      "unmarkedUnitShort": "received without a code",
+      "unmarkedUnitReason": "This unit was received without a marking code (for example old stock bought before marking was mandatory), so it was sold without one."
     },
     "warehouse": {
       "goodsToDispatch": "Goods to dispatch from warehouse",

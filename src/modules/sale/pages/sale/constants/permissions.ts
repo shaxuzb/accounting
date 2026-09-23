@@ -4,4 +4,5 @@ export const salePermissions = {
   create: "SALE_DOC_CREATE",
   update: "SALE_DOC_UPDATE",
   delete: "SALE_DOC_DELETE",
+  cancel: "CANCEL_SALE",
 } as const;

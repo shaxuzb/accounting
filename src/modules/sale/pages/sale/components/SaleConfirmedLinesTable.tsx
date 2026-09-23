@@ -10,6 +10,7 @@ import type {
   SaleDocumentLineGroup,
 } from "../types/type";
 import { groupSaleDocumentLines } from "../utils/saleDocumentGroups";
+import SaleUnitMarkingCell from "./SaleUnitMarkingCell";
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -48,7 +49,7 @@ export default function SaleConfirmedLinesTable({
       title: t("app.fields.marking"),
       dataIndex: "markingNumber",
       minWidth: 260,
-      render: (value) => <LineClampCell text={value ? String(value) : null} />,
+      render: (value) => <SaleUnitMarkingCell markingNumber={value} />,
     },
     {
       title: t("warehouse.fields.costPrice"),

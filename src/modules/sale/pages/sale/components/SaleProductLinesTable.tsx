@@ -1,10 +1,10 @@
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import InputNumberFormat from "@/components/fields/InputNumber";
-import LineClampCell from "@/components/widget/text/LineClampCell";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import type { SalePricingLine } from "../types/type";
 import { getVatAmount } from "../utils/pricing";
+import SaleUnitMarkingCell from "./SaleUnitMarkingCell";
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -41,13 +41,13 @@ export default function SaleProductLinesTable({
       dataIndex: "markingNumber",
       title: t("app.fields.marking"),
       width: 280,
-      render: (value) => {
-        return (
-          <div className="w-70 ">
-            <LineClampCell text={value} />
-          </div>
-        );
-      },
+      // A listed unit shows its code or says it has none; a line kept by quantity
+      // has no units to show.
+      render: (value, record) => (
+        <div className="w-70">
+          {record.ownerId ? <SaleUnitMarkingCell markingNumber={value} /> : "—"}
+        </div>
+      ),
     },
     {
       dataIndex: "costPrice",
