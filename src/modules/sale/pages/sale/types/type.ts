@@ -232,6 +232,8 @@ export interface SaleSelectedProduct {
   priceType?: "costPlusPercent" | "manual";
   isPieceTracked?: boolean;
   markings?: SaleProductMarking[];
+  /** Units the seller states have no code (stock bought before marking). */
+  unmarkedQuantity?: number;
   priceLayers?: SaleProductPriceLayer[];
   layers?: SaleProductPriceLayer[];
   /** Stock batches kept only to preview the cost when stock is taken as a whole. */

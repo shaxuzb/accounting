@@ -6,54 +6,12 @@ import type {
 import type { SaleSelectedProduct } from "../types/type";
 import { roundMoney } from "./pricing";
 
-export const getSaleMarkingCount = (product: SaleSelectedProduct) =>
-  product.markings?.length ?? 0;
-
-export const hasRequiredSaleMarkings = (products: SaleSelectedProduct[]) =>
-  products.every((product) => {
-    if (!product.isPieceTracked) return true;
-
-    const quantity = Math.max(0, Math.round(product.quantity));
-    const markingCount = getSaleMarkingCount(product);
-    if (markingCount > quantity) return false;
-    if (!quantity) return true;
-    // Fewer codes than pieces: the rest is sold from the unmarked stock (goods bought
-    // before marking was mandatory), and the server picks those units itself.
-    if (markingCount < quantity) {
-      return (product.markings ?? []).every((marking) =>
-        (product.layers ?? []).some(
-          (layer) => layer.batchId === marking.batchId && layer.writeOffQuantity > 0,
-        ),
-      );
-    }
-
-    const selectedLayers = (product.layers ?? []).filter(
-      (layer) => layer.batchId && layer.writeOffQuantity > 0,
-    );
-    if (!selectedLayers.length) return false;
-
-    const markingsByBatch = new Map<number, number>();
-    product.markings?.forEach((marking) => {
-      if (!marking.batchId) return;
-      markingsByBatch.set(
-        marking.batchId,
-        (markingsByBatch.get(marking.batchId) ?? 0) + 1,
-      );
-    });
-
-    return (
-      selectedLayers.every(
-        (layer) =>
-          markingsByBatch.get(layer.batchId as number) ===
-          Math.round(layer.writeOffQuantity),
-      ) &&
-      product.markings?.every((marking) =>
-        selectedLayers.some(
-          (layer) => layer.batchId === marking.batchId,
-        ),
-      )
-    );
-  });
+export {
+  getIncompleteSaleMarkingLines,
+  getSaleMarkingCount,
+  hasRequiredSaleMarkings,
+  isSaleMarkingComplete,
+} from "./saleMarkings";
 
 export const toSaleCreatePayload = (
   values: SaleDocForm,
@@ -104,6 +62,9 @@ export const toSaleCreatePayload = (
       items: (product.markings ?? []).map(({ productTableId }) => ({
         productTableId,
       })),
+      unmarkedQuantity: product.isPieceTracked
+        ? Math.max(0, product.unmarkedQuantity ?? 0)
+        : 0,
     };
   }),
 });

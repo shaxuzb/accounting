@@ -1,4 +1,4 @@
-import { Button, Modal, Table, Tag } from "antd";
+import { Button, InputNumber, Modal, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import { CheckCircle2, ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
@@ -17,6 +17,12 @@ interface Props {
   onScan: (value: string) => void;
   onConfirm: () => void;
   onClose: () => void;
+  /** Units the seller states have no code (stock bought before marking). */
+  unmarkedQuantity?: number;
+  /** Code-less units left in stock; the field cannot go above them. */
+  availableUnmarked?: number;
+  /** Given only where code-less units must be stated rather than filled in. */
+  onUnmarkedChange?: (value: number) => void;
 }
 
 export interface SaleMarkingBatchSummary {
@@ -45,13 +51,21 @@ export default function SaleMarkingModal({
   onScan,
   onConfirm,
   onClose,
+  unmarkedQuantity = 0,
+  availableUnmarked = 0,
+  onUnmarkedChange,
 }: Props) {
   const { t } = useTranslation();
   const [isProductExpanded, setIsProductExpanded] = useState(false);
   const [expandedBatches, setExpandedBatches] = useState<Record<number, boolean>>(
     {},
   );
-  const isComplete = quantity > 0 && markings.length === quantity;
+  const accountedQuantity = markings.length + unmarkedQuantity;
+  const isComplete = quantity > 0 && accountedQuantity === quantity;
+  const unmarkedMax = Math.max(
+    0,
+    Math.min(quantity - markings.length, availableUnmarked),
+  );
   const batchRows = (batch: SaleMarkingBatchSummary): MarkingRow[] => {
     const batchMarkings = markings.filter(
       (marking) => marking.batchId === batch.batchId,
@@ -126,11 +140,33 @@ export default function SaleMarkingModal({
             {t("sale.messages.scanOrEnterMarking")}
           </div>
           <BarcodeScannerInput
-            disabled={isComplete}
+            disabled={accountedQuantity >= quantity}
             loading={loading}
             onScan={onScan}
           />
         </div>
+        {onUnmarkedChange && (
+          <div className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-surface-muted p-3">
+            <span className="text-sm font-semibold text-text">
+              {t("sale.fields.unmarkedQuantity")}
+            </span>
+            <InputNumber
+              min={0}
+              max={unmarkedMax}
+              precision={0}
+              value={unmarkedQuantity}
+              disabled={loading || (unmarkedMax === 0 && unmarkedQuantity === 0)}
+              onChange={(value) =>
+                onUnmarkedChange(Math.min(Math.max(Number(value ?? 0), 0), unmarkedMax))
+              }
+            />
+            <span className="text-xs text-secondary-text">
+              {t("sale.messages.unmarkedAvailable", { count: availableUnmarked })}
+              {" · "}
+              {t("sale.messages.unmarkedHint")}
+            </span>
+          </div>
+        )}
         <div
           className={`overflow-hidden rounded-md border ${
             isComplete
@@ -174,7 +210,7 @@ export default function SaleMarkingModal({
                 {t("sale.fields.status")}
               </div>
               <div className={isComplete ? "font-semibold text-success" : undefined}>
-                {numberSpacing(markings.length, undefined, true)} / {numberSpacing(quantity, undefined, true)}
+                {numberSpacing(accountedQuantity, undefined, true)} / {numberSpacing(quantity, undefined, true)}
                 {isComplete && (
                   <CheckCircle2 className="ml-1 inline-block size-4 text-success" />
                 )}

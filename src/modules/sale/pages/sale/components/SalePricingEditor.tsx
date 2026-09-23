@@ -259,49 +259,23 @@ export default function SalePricingEditor({
       return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 0;
     };
 
-    const parentLineByKey = new Map<number, SaleDocTable>();
-    const sourceLineById = new Map<number, SaleDocTable>();
-    const originLines = document.lines?.length ? document.lines : sourceLines;
-
-    sourceLines.forEach((sourceLine) => {
-      const sourceLineId = toPositiveNumber(sourceLine.id);
-      if (sourceLineId > 0) sourceLineById.set(sourceLineId, sourceLine);
-    });
-
-    originLines.forEach((parentLine) => {
-      const parentId = toPositiveNumber(parentLine.id);
-      if (parentId > 0) parentLineByKey.set(parentId, parentLine);
-
-      const parentProductTableId = toPositiveNumber(parentLine.productTableId);
-      if (parentProductTableId > 0) {
-        parentLineByKey.set(parentProductTableId, parentLine);
-      }
-
-      parentLine.items?.forEach((item) => {
-        const itemId = toPositiveNumber(item.id);
-        if (itemId > 0) parentLineByKey.set(itemId, parentLine);
-
-        const itemProductTableId = toPositiveNumber(item.productTableId);
-        if (itemProductTableId > 0) {
-          parentLineByKey.set(itemProductTableId, parentLine);
-        }
-      });
+    // A pricing row is either a product line of the document or one listed unit of
+    // it (ownerId = the product line). Line ids, unit-row ids and product-table ids
+    // are separate sequences, so they are never looked up in one map: unit 1 of one
+    // line must not be taken for product line 1.
+    const productLineById = new Map<number, SaleDocTable>();
+    (document.lines ?? []).forEach((productLine) => {
+      const productLineId = toPositiveNumber(productLine.id);
+      if (productLineId > 0) productLineById.set(productLineId, productLine);
     });
 
     const groupedLines = lines.reduce((acc, line) => {
       const lineId = toPositiveNumber(line.id);
       const lineOwnerId = toPositiveNumber(line.ownerId);
       const lineProductTableId = toPositiveNumber(line.productTableId);
-      const parentLine =
-        parentLineByKey.get(lineOwnerId) ??
-        parentLineByKey.get(lineProductTableId) ??
-        (lineOwnerId > 0 ? sourceLineById.get(lineOwnerId) : undefined) ??
-        parentLineByKey.get(lineId) ??
-        sourceLineById.get(lineId) ??
-        line;
-      const resolvedLineId = toPositiveNumber(
-        parentLine?.id || lineOwnerId || lineId,
-      );
+      const isItemLine = lineOwnerId > 0;
+      const resolvedLineId = isItemLine ? lineOwnerId : lineId;
+      const parentLine = productLineById.get(resolvedLineId) ?? line;
 
       if (!resolvedLineId) {
         return acc;
@@ -360,11 +334,6 @@ export default function SalePricingEditor({
         existingLine.totalAmount + lineTotalAmount,
       );
 
-      const isItemLine =
-        lineOwnerId > 0 &&
-        lineOwnerId !== lineId &&
-        (parentLineByKey.has(lineOwnerId) ||
-          sourceLineById.has(lineOwnerId));
       if (isItemLine) {
         existingLine.items.push({
           id: lineId,

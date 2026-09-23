@@ -1387,7 +1387,7 @@
       "notSold": "Sotilmaydi",
       "purchased": "Xarid qilinadi",
       "notPurchased": "Xarid qilinmaydi",
-      "pieceTracked": "Markirovka bilan hisobga olinadi"
+      "pieceTracked": "Markirovkali"
     },
     "actions": {
       "noChanges": "Saqlanmagan o'zgarish yo'q",
@@ -1418,7 +1418,8 @@
       "itemUpdated": "Mahsulot ro'yxatda o'zgartirildi — saqlash uchun «Saqlash» tugmasini bosing",
       "serviceItemCreated": "Servis ro'yxatga qo'shildi — saqlash uchun «Saqlash» tugmasini bosing",
       "serviceItemUpdated": "Servis ro'yxatda o'zgartirildi — saqlash uchun «Saqlash» tugmasini bosing",
-      "alwaysPieceTracked": "Har bir dona o'z markirovkasi bilan hisobga olinadi"
+      "pieceTrackedOn": "Har bir dona o'z markirovkasi bilan hisobga olinadi",
+      "pieceTrackedOff": "Markirovkasiz — miqdor bo'yicha hisobga olinadi"
     }
   },
   "sale": {
@@ -1463,7 +1464,9 @@
       "available": "Mavjud",
       "batches": "Partiyalar",
       "selected": "Tanlangan",
-      "ungrouped": "Guruhsiz"
+      "ungrouped": "Guruhsiz",
+      "unmarkedQuantity": "Markirovkasiz dona",
+      "unmarkedUnit": "Markirovkasiz"
     },
     "new": "Yangi savdo",
     "edit": "Savdoni o'zgartirish",
@@ -1481,7 +1484,10 @@
       "apply": "Qo'llash",
       "cancelDocument": "Hujjatni bekor qilish",
       "addSelected": "Tanlanganlarni qo'shish",
-      "formalize": "Rasmiylashtirish"
+      "formalize": "Rasmiylashtirish",
+      "saveAsDraft": "Qoralama sifatida saqlash",
+      "markUnmarked": "Markirovkasiz",
+      "markRestUnmarked": "Qolgan {{count}} tasi markirovkasiz"
     },
     "messages": {
       "scanOrEnter": "Kodni skanerlang yoki kiriting va Enter tugmasini bosing",
@@ -1540,7 +1546,12 @@
       "expandTable": "Jadvalni ochish",
       "markingsChecking": "Markirovkalar tekshirilmoqda",
       "costPriceFromBatches": "Tannarx ombor partiyalaridan hisoblanadi",
-      "salePriceIsNet": "QQSsiz narx: QQS 12% shu narx ustiga qo'shiladi. Do'kondagi narx (QQS bilan) ma'lum bo'lsa, uni «Jami (QQS bilan)» ustuniga yozing — QQSsiz narx o'zi hisoblanadi."
+      "salePriceIsNet": "QQSsiz narx: QQS 12% shu narx ustiga qo'shiladi. Do'kondagi narx (QQS bilan) ma'lum bo'lsa, uni «Jami (QQS bilan)» ustuniga yozing — QQSsiz narx o'zi hisoblanadi.",
+      "unmarkedAvailable": "Omborda markirovkasiz: {{count}} dona",
+      "unmarkedHint": "Faqat kodi yo'q eski tovar uchun. Kodi bor donani skanerlang.",
+      "markingsIncompleteTitle": "Markirovkalar to'liq kiritilmagan",
+      "markingsIncompleteDraft": "Har bir dona uchun kod skanerlanishi yoki «Markirovkasiz» deb belgilanishi kerak. Hujjat qoralama sifatida saqlanadi: ombordan chiqim, band qilish va provodka bo'lmaydi. Kodlarni keyin yig'ish bosqichida kiritasiz.",
+      "savedAsDraft": "Hujjat qoralama sifatida saqlandi"
     },
     "warehouse": {
       "goodsToDispatch": "Ombordan chiqariladigan tovarlar",

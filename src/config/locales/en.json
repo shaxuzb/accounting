@@ -1387,7 +1387,7 @@
       "notSold": "Not sold",
       "purchased": "Purchased",
       "notPurchased": "Not purchased",
-      "pieceTracked": "Piece-level tracking"
+      "pieceTracked": "Marked goods"
     },
     "actions": {
       "noChanges": "No unsaved changes",
@@ -1418,7 +1418,8 @@
       "itemUpdated": "Product changed in the list — press Save to store it",
       "serviceItemCreated": "Service added to the list — press Save to store it",
       "serviceItemUpdated": "Service changed in the list — press Save to store it",
-      "alwaysPieceTracked": "Every unit is tracked by its own marking"
+      "pieceTrackedOn": "Every unit is tracked by its own marking",
+      "pieceTrackedOff": "Unmarked — tracked by quantity"
     }
   },
   "sale": {
@@ -1463,7 +1464,9 @@
       "available": "Available",
       "batches": "Batches",
       "selected": "Selected",
-      "ungrouped": "Ungrouped"
+      "ungrouped": "Ungrouped",
+      "unmarkedQuantity": "Units without code",
+      "unmarkedUnit": "No code"
     },
     "new": "New sale",
     "edit": "Edit sale",
@@ -1481,7 +1484,10 @@
       "apply": "Apply",
       "cancelDocument": "Cancel document",
       "addSelected": "Add selected",
-      "formalize": "Complete"
+      "formalize": "Complete",
+      "saveAsDraft": "Save as draft",
+      "markUnmarked": "No code",
+      "markRestUnmarked": "Remaining {{count}} have no code"
     },
     "messages": {
       "scanOrEnter": "Scan or enter the code and press Enter",
@@ -1540,7 +1546,12 @@
       "expandTable": "Expand table",
       "markingsChecking": "Marking codes are being checked",
       "costPriceFromBatches": "Cost is calculated from the warehouse batches",
-      "salePriceIsNet": "Net price: 12% VAT is added on top. If you know the shelf price with VAT, type it into “Total (incl. VAT)” and the net price is worked out."
+      "salePriceIsNet": "Net price: 12% VAT is added on top. If you know the shelf price with VAT, type it into “Total (incl. VAT)” and the net price is worked out.",
+      "unmarkedAvailable": "In stock without a code: {{count}}",
+      "unmarkedHint": "Only for old stock that never had a code. Scan any unit that has one.",
+      "markingsIncompleteTitle": "Markings are incomplete",
+      "markingsIncompleteDraft": "Each unit must be scanned or marked \"No code\". The document will be saved as a draft: nothing is reserved, shipped or posted. Enter the codes later at assembly.",
+      "savedAsDraft": "The document was saved as a draft"
     },
     "warehouse": {
       "goodsToDispatch": "Goods to dispatch from warehouse",

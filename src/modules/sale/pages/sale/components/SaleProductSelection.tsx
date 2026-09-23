@@ -70,10 +70,22 @@ interface Props {
   markingMode?: boolean;
   onMarkingModeChange?: (enabled: boolean) => void;
   disableMarkingQuantityValidation?: boolean;
+  /**
+   * Code-less units must be stated by the seller ("markirovkasiz") instead of being
+   * filled in by the server, so a forgotten scan cannot write off the wrong unit.
+   */
+  explicitUnmarked?: boolean;
   aggregateStockMode?: boolean;
   submitting?: boolean;
   disabled?: boolean;
 }
+
+/** Code-less units of the product left in stock, from the batches kept on the line. */
+const getAvailableUnmarked = (line: SaleSelectedProduct) =>
+  (line.stockLayers ?? line.priceLayers ?? []).reduce(
+    (total, layer) => total + Math.max(0, Number(layer.unmarkedQuantity ?? 0)),
+    0,
+  );
 
 const newRowKey = "__new__";
 const tableControlHeight = 32;
@@ -209,10 +221,16 @@ const recalculateLine = ({
       ? line.unitPrice
       : prices.unitPrice || getSalePriceByMarkup(nextCostPrice, markupPercent));
 
+  const nextMarkings = trimMarkingsForLayers(line.markings, allocatedLayers, quantity);
   return {
     ...line,
     quantity,
-    markings: trimMarkingsForLayers(line.markings, allocatedLayers, quantity),
+    markings: nextMarkings,
+    // Never more code-less units than the pieces the codes leave open.
+    unmarkedQuantity: Math.min(
+      line.unmarkedQuantity ?? 0,
+      Math.max(0, Math.round(quantity) - (nextMarkings?.length ?? 0)),
+    ),
     costPrice: nextCostPrice,
     unitPrice: nextUnitPrice,
     markupPercent,
@@ -236,6 +254,7 @@ export default function SaleProductSelection({
   markingMode = false,
   onMarkingModeChange,
   disableMarkingQuantityValidation = false,
+  explicitUnmarked = false,
   aggregateStockMode = false,
   submitting = false,
   disabled = false,
@@ -852,7 +871,8 @@ export default function SaleProductSelection({
     // Fewer codes than pieces is allowed: the rest is sold from unmarked stock.
     if (
       !disableMarkingQuantityValidation &&
-      (activeMarkingLine.markings?.length ?? 0) >
+      (activeMarkingLine.markings?.length ?? 0) +
+        (explicitUnmarked ? (activeMarkingLine.unmarkedQuantity ?? 0) : 0) >
         Math.round(activeMarkingLine.quantity)
     ) {
       toast.error(t("sale.messages.markingPerPieceRequired"));
@@ -954,9 +974,16 @@ export default function SaleProductSelection({
             continue;
           }
 
+          // The unit's own batch, so the cost preview can take it from there.
+          const unitBatchId = availableBatches.find((batch) =>
+            batch.productTables.some(
+              (table) => Number(table.productTableId) === productTableId,
+            ),
+          )?.batchId;
           nextMarkings.push({
             markingNumber: markingProduct.markingNumber || markingNumber,
             productTableId,
+            ...(unitBatchId ? { batchId: Number(unitBatchId) } : {}),
           });
           hasNewMarkings = true;
           continue;
@@ -1005,12 +1032,12 @@ export default function SaleProductSelection({
     }
 
     if (hasNewMarkings) {
-      onChange(
-        products.map((product) =>
-          product.rowKey === activeMarkingLine.rowKey
-            ? { ...product, markings: nextMarkings }
-            : product,
-        ),
+      // A scanned unit leaves its own batch, so the cost preview follows the codes.
+      updateLine(activeMarkingLine.rowKey, (line) =>
+        recalculateLine({
+          line: { ...line, markings: nextMarkings },
+          costingMethodId: saleCondition.costingMethodId,
+        }),
       );
     }
   };
@@ -1072,9 +1099,11 @@ export default function SaleProductSelection({
               if (isNewRow(record.rowKey)) return "-";
 
               const quantity = Math.round(record.quantity);
-              const markingCount = record.markings?.length ?? 0;
+              const markingCount =
+                (record.markings?.length ?? 0) +
+                (explicitUnmarked ? (record.unmarkedQuantity ?? 0) : 0);
               const isPieceTracked = getLineIsPieceTracked(record);
-              if (isPieceTracked && markingCount === quantity) {
+              if (isPieceTracked && quantity > 0 && markingCount === quantity) {
                 return <Tag color="success">{t("sale.fields.marked")}</Tag>;
               }
 
@@ -1710,6 +1739,23 @@ export default function SaleProductSelection({
         onScan={handleAddMarking}
         onConfirm={confirmMarkingModal}
         onClose={closeMarkingModal}
+        unmarkedQuantity={
+          explicitUnmarked ? (activeMarkingLine?.unmarkedQuantity ?? 0) : 0
+        }
+        availableUnmarked={
+          activeMarkingLine ? getAvailableUnmarked(activeMarkingLine) : 0
+        }
+        onUnmarkedChange={
+          explicitUnmarked && activeMarkingLine
+            ? (value) =>
+                updateLine(activeMarkingLine.rowKey, (line) =>
+                  recalculateLine({
+                    line: { ...line, unmarkedQuantity: value },
+                    costingMethodId: saleCondition.costingMethodId,
+                  }),
+                )
+            : undefined
+        }
       />
     </Card>
   );

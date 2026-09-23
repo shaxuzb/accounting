@@ -1,4 +1,4 @@
-import { Form, Spin } from "antd";
+import { App, Form, Spin } from "antd";
 import dayjs from "dayjs";
 import { useFormik } from "formik";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -27,7 +27,8 @@ import {
   saveSaleDraft,
 } from "../utils/saleDraft";
 import {
-  hasRequiredSaleMarkings,
+  getIncompleteSaleMarkingLines,
+  getSaleMarkingCount,
   toSaleCreatePayload,
 } from "../utils/saleCreatePayload";
 // import { getSaleCostingValidationError } from "../utils/saleCostingValidation";
@@ -64,9 +65,12 @@ export default function SaleAddEditPage() {
     SaleSelectedProduct[] | null
   >(() => initialDraft?.products ?? null);
   const [isDraftSynced, setIsDraftSynced] = useState(isEdit);
+  // Codes are scanned while selling unless the seller turns it off; the storekeeper
+  // then scans them at assembly instead.
   const [processingMode, setProcessingMode] = useState<SaleProcessingMode>(
-    () => initialDraft?.processingMode ?? 1,
+    () => initialDraft?.processingMode ?? 2,
   );
+  const { modal } = App.useApp();
 
   const { data: document, isLoading: isDocumentLoading } =
     useGetDetailSale(id);
@@ -179,13 +183,35 @@ export default function SaleAddEditPage() {
 
       const validProducts = products;
 
-      if (
-        !isEdit &&
-        processingMode === 2 &&
-        !hasRequiredSaleMarkings(validProducts)
-      ) {
-        toast.error(t("sale.messages.markingQuantityRequired"));
-        return;
+      // A marked line whose units are not all scanned or stated code-less cannot
+      // leave the warehouse, so the document may only be kept as a draft: no stock
+      // is reserved or moved and nothing is posted until the codes are entered.
+      let mode = processingMode;
+      if (!isEdit && processingMode === 2) {
+        const incomplete = getIncompleteSaleMarkingLines(validProducts);
+        if (incomplete.length) {
+          const keepAsDraft = await modal.confirm({
+            title: t("sale.messages.markingsIncompleteTitle"),
+            content: (
+              <div className="space-y-2">
+                <ul className="list-disc pl-5">
+                  {incomplete.map((line) => (
+                    <li key={line.rowKey ?? line.productId}>
+                      {line.productName}:{" "}
+                      {getSaleMarkingCount(line) + (line.unmarkedQuantity ?? 0)} /{" "}
+                      {Math.round(line.quantity)}
+                    </li>
+                  ))}
+                </ul>
+                <div>{t("sale.messages.markingsIncompleteDraft")}</div>
+              </div>
+            ),
+            okText: t("sale.actions.saveAsDraft"),
+            cancelText: t("common.cancel"),
+          });
+          if (!keepAsDraft) return;
+          mode = 1;
+        }
       }
 
       try {
@@ -213,10 +239,11 @@ export default function SaleAddEditPage() {
           const payload: SaleDocCreateForm = toSaleCreatePayload(
             values,
             validProducts,
-            processingMode,
+            mode,
           );
           await createSale.mutateAsync(payload);
           clearSaleDraft(organizationId);
+          if (mode !== processingMode) toast.success(t("sale.messages.savedAsDraft"));
         }
         navigate("/main/sales/sale");
       } catch (error) {
@@ -356,6 +383,7 @@ export default function SaleAddEditPage() {
           }
           onChange={setSelectedProducts}
           markingMode={!isEdit && processingMode === 2}
+          explicitUnmarked
           aggregateStockMode
           onMarkingModeChange={
             isEdit

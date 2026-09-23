@@ -1,4 +1,4 @@
-import { Button, Col, Form, Modal, Row, Tag } from "antd";
+import { Button, Col, Form, Modal, Row, Switch } from "antd";
 import { useFormik } from "formik";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -26,7 +26,8 @@ const emptyProductItem = (isService: boolean): ProductItem => ({
   mxik: "",
   description: "",
   isService,
-  isPieceTracked: false,
+  // Most goods sold here carry a marking; an unmarked item is switched off by hand.
+  isPieceTracked: !isService,
   // Backend "sotiladi yoki xarid qilinadi"dan kamida bittasini talab qiladi.
   isSold: true,
   isPurchased: true,
@@ -253,12 +254,26 @@ export default function ProductItemModal({
               </Button>
             </div>
           </Col>
-          {/* Goods are always tracked one unit at a time — each unit carries its own
-              marking — so this is stated, not chosen. Only a service has no units. */}
+          {/* Marked goods keep one row per unit, each with its own code; unmarked goods
+              are kept by quantity. A service has no units, so it is not asked. */}
           {!isService && (
             <Col span={12}>
               <Form.Item label={t("products.fields.pieceTracked")}>
-                <Tag color="blue">{t("products.messages.alwaysPieceTracked")}</Tag>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={Boolean(productFormik.values.isPieceTracked)}
+                    onChange={(checked) =>
+                      productFormik.setFieldValue("isPieceTracked", checked, true)
+                    }
+                  />
+                  <span className="text-xs text-secondary-text">
+                    {t(
+                      productFormik.values.isPieceTracked
+                        ? "products.messages.pieceTrackedOn"
+                        : "products.messages.pieceTrackedOff",
+                    )}
+                  </span>
+                </div>
               </Form.Item>
             </Col>
           )}

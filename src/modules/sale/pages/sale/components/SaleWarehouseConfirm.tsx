@@ -16,6 +16,7 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
 import {
   useGetAvailableSaleProducts,
+  useGetProductByMarking,
   useWarehouseConfirmSale,
 } from "../hooks";
 import type {
@@ -47,6 +48,8 @@ interface WarehouseConfirmRow {
   productTableId: number | null;
   markingNumber?: string | null;
   confirmed: boolean;
+  /** Stated by the storekeeper: this unit is an old one that never had a code. */
+  unmarked: boolean;
 }
 
 interface WarehouseConfirmGroup {
@@ -69,6 +72,7 @@ interface WarehouseConfirmDraftItem {
   productTableId?: number | null;
   markingNumber?: string | null;
   confirmed?: boolean;
+  unmarked?: boolean;
 }
 
 const toNumber = (value: unknown, fallback = 0) => {
@@ -110,6 +114,7 @@ const buildRowsFromLine = (
       productTableId: null,
       markingNumber: null,
       confirmed: false,
+      unmarked: false,
     }));
   }
 
@@ -132,6 +137,7 @@ const buildRowsFromLine = (
         productTableId: null,
         markingNumber: null,
         confirmed: false,
+        unmarked: false,
       }),
     ),
   );
@@ -162,6 +168,7 @@ const buildRowsFromProduct = (
       productTableId: null,
       markingNumber: null,
       confirmed: false,
+      unmarked: false,
     }));
   }
 
@@ -184,6 +191,7 @@ const buildRowsFromProduct = (
         productTableId: null,
         markingNumber: null,
         confirmed: false,
+        unmarked: false,
       }),
     ),
   );
@@ -266,6 +274,7 @@ const mergeDraftRows = (
           productTableId: savedRow.productTableId ?? null,
           markingNumber: savedRow.markingNumber,
           confirmed: Boolean(savedRow.confirmed),
+          unmarked: Boolean(savedRow.unmarked) && !savedRow.productTableId,
         }
       : row;
   });
@@ -273,16 +282,19 @@ const mergeDraftRows = (
 
 const toDraftItems = (rows: WarehouseConfirmRow[]): WarehouseConfirmDraftItem[] =>
   rows
-    .filter((row) => row.productTableId || row.confirmed)
+    .filter((row) => row.productTableId || row.confirmed || row.unmarked)
     .map((row) => ({
       rowId: row.rowId,
       productTableId: row.productTableId,
       markingNumber: row.markingNumber,
       confirmed: row.confirmed,
+      unmarked: row.unmarked,
     }));
 
 const isRowConfirmed = (row: WarehouseConfirmRow) =>
-  row.isPieceTracked ? Boolean(row.productTableId) : row.confirmed;
+  row.isPieceTracked
+    ? Boolean(row.productTableId) || row.unmarked
+    : row.confirmed;
 
 const getConfirmedQuantity = (rows: WarehouseConfirmRow[]) =>
   rows.reduce(
@@ -300,6 +312,7 @@ const toAssemblyPayload = (rows: WarehouseConfirmRow[]) => {
       id: number;
       assembled: true;
       items: { productTableId: number }[];
+      unmarkedQuantity: number;
     }
   >();
 
@@ -311,10 +324,13 @@ const toAssemblyPayload = (rows: WarehouseConfirmRow[]) => {
         id: row.saleDocProductId,
         assembled: true as const,
         items: [],
+        unmarkedQuantity: 0,
       };
 
     if (row.productTableId) {
       line.items.push({ productTableId: row.productTableId });
+    } else if (row.isPieceTracked && row.unmarked) {
+      line.unmarkedQuantity += 1;
     }
     lines.set(row.saleDocProductId, line);
   });
@@ -331,24 +347,20 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     () => availableProductsQuery.data ?? [],
     [availableProductsQuery.data],
   );
-  const availableMarkingByNumber = useMemo(() => {
-    const index = new Map<
-      string,
-      { productId: number; batchId: number; productTableId: number; markingNumber: string }
-    >();
+  // The listing names the units that may leave for this sale but not their codes,
+  // so a scanned code is resolved to its unit first and then looked up here.
+  const availableUnitById = useMemo(() => {
+    const index = new Map<number, { productId: number; batchId: number }>();
 
     availableProducts.forEach((product) => {
       product.batches.forEach((batch) => {
         batch.productTables.forEach((productTable) => {
-          const markingKey = String(productTable.markingNumber ?? "").trim();
-          if (!markingKey) return;
-          if (index.has(markingKey)) return;
+          const productTableId = Number(productTable.productTableId);
+          if (!productTableId || index.has(productTableId)) return;
 
-          index.set(markingKey, {
+          index.set(productTableId, {
             productId: product.productId,
             batchId: batch.batchId,
-            productTableId: productTable.productTableId,
-            markingNumber: markingKey,
           });
         });
       });
@@ -356,6 +368,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
 
     return index;
   }, [availableProducts]);
+  const getProductByMarking = useGetProductByMarking();
   const baseRows = useMemo(
     () => buildRows(document),
     [document],
@@ -400,6 +413,20 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     });
   }, [baseRows, setDraftRows]);
 
+  const setRowsUnmarked = useCallback((rowIds: string[], unmarked: boolean) => {
+    const ids = new Set(rowIds);
+    setDraftRows((currentDraft) => {
+      const current = mergeDraftRows(baseRows, currentDraft);
+      const nextRows = current.map((row) =>
+        ids.has(row.rowId) && row.isPieceTracked && !row.productTableId
+          ? { ...row, unmarked }
+          : row,
+      );
+
+      return toDraftItems(nextRows);
+    });
+  }, [baseRows, setDraftRows]);
+
   const handleScan = useCallback(async (markingNumber: string) => {
     try {
       if (!availableProductsQuery.isSuccess) {
@@ -408,16 +435,31 @@ export default function SaleWarehouseConfirm({ document }: Props) {
       }
 
       const normalizedMarkingNumber = String(markingNumber ?? "").trim();
-      const matchedProduct = availableMarkingByNumber.get(
+      if (!normalizedMarkingNumber) return;
+
+      const markedUnit = await getProductByMarking.mutateAsync(
         normalizedMarkingNumber,
       );
+      const productTableId = Number(
+        markedUnit.productTableId ?? markedUnit.id ?? 0,
+      );
+      const availableUnit = availableUnitById.get(productTableId);
 
-      if (!matchedProduct) {
+      if (
+        !productTableId ||
+        !availableUnit ||
+        Number(markedUnit.productId) !== Number(availableUnit.productId)
+      ) {
         toast.error(t("sale.messages.markingNotForSale"));
         return;
       }
 
-      const productTableId = matchedProduct.productTableId;
+      const matchedProduct = {
+        productId: availableUnit.productId,
+        batchId: availableUnit.batchId,
+        productTableId,
+        markingNumber: markedUnit.markingNumber || normalizedMarkingNumber,
+      };
 
       setDraftRows((currentDraft) => {
         const current = mergeDraftRows(baseRows, currentDraft);
@@ -427,13 +469,27 @@ export default function SaleWarehouseConfirm({ document }: Props) {
           return currentDraft;
         }
 
-        const batchRowIndex = current.findIndex(
-          (item) =>
-            item.isPieceTracked &&
-            item.productId === matchedProduct.productId &&
-            item.batchId === matchedProduct.batchId &&
-            !item.productTableId,
-        );
+        // A free row first; a row stated code-less takes the code only when no
+        // free row is left, since the scan proves the unit had one after all.
+        // Rows of the unit's own batch first. A draft sold from stock as a whole
+        // has no batch on its rows yet, so any row of the product takes the code.
+        const findBatchRow = (allowUnmarked: boolean, anyBatch: boolean) =>
+          current.findIndex(
+            (item) =>
+              item.isPieceTracked &&
+              item.productId === matchedProduct.productId &&
+              (anyBatch
+                ? item.batchId == null
+                : item.batchId === matchedProduct.batchId) &&
+              !item.productTableId &&
+              (allowUnmarked || !item.unmarked),
+          );
+        const batchRowIndex = [
+          findBatchRow(false, false),
+          findBatchRow(false, true),
+          findBatchRow(true, false),
+          findBatchRow(true, true),
+        ].find((index) => index !== -1) ?? -1;
         const expectedRowIndex = current.findIndex(
           (item) =>
             item.isPieceTracked &&
@@ -454,6 +510,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                 ...item,
                 productTableId,
                 markingNumber: matchedProduct.markingNumber,
+                unmarked: false,
               }
             : item,
         );
@@ -463,7 +520,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
     } catch (error) {
       errorHandlers(error);
     }
-  }, [availableMarkingByNumber, availableProductsQuery.isSuccess, baseRows, setDraftRows, t]);
+  }, [availableProductsQuery.isSuccess, availableUnitById, baseRows, getProductByMarking, setDraftRows, t]);
 
   const handleConfirm = useCallback(async () => {
     if (hasPieceTrackedRows && !availableProductsQuery.isSuccess) {
@@ -537,8 +594,27 @@ export default function SaleWarehouseConfirm({ document }: Props) {
         row.isPieceTracked ? (
           row.productTableId ? (
             <Tag color="success">{t("sale.fields.marked")}</Tag>
+          ) : row.unmarked ? (
+            <span className="inline-flex items-center gap-1">
+              <Tag color="warning">{t("sale.fields.unmarkedUnit")}</Tag>
+              <Button
+                type="link"
+                size="small"
+                onClick={() => setRowsUnmarked([row.rowId], false)}
+              >
+                {t("common.cancel")}
+              </Button>
+            </span>
           ) : (
-            <Tag>{t("sale.fields.notMarked")}</Tag>
+            <span className="inline-flex items-center gap-1">
+              <Tag>{t("sale.fields.notMarked")}</Tag>
+              <Button
+                size="small"
+                onClick={() => setRowsUnmarked([row.rowId], true)}
+              >
+                {t("sale.actions.markUnmarked")}
+              </Button>
+            </span>
           )
         ) : (
           <Checkbox
@@ -552,7 +628,7 @@ export default function SaleWarehouseConfirm({ document }: Props) {
         ),
     },
     ],
-    [handleBatchConfirm, t],
+    [handleBatchConfirm, setRowsUnmarked, t],
   );
 
   const batchColumns = useMemo(
@@ -657,9 +733,14 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                   const isPieceTracked = batch.rows.some(
                     (row) => row.isPieceTracked,
                   );
-                  const visibleRows = isPieceTracked
-                    ? batch.rows.filter((row) => row.productTableId)
-                    : batch.rows;
+                  // Every unit is listed so the unscanned ones can be stated code-less.
+                  const visibleRows = batch.rows;
+                  const openRowIds = batch.rows
+                    .filter(
+                      (row) =>
+                        row.isPieceTracked && !row.productTableId && !row.unmarked,
+                    )
+                    .map((row) => row.rowId);
 
                   return (
                     <div
@@ -687,6 +768,17 @@ export default function SaleWarehouseConfirm({ document }: Props) {
                             {t("sale.messages.scanConfirmed")}: {numberSpacing(batchConfirmedQuantity, undefined, true)} /{" "}
                             {numberSpacing(batchTotalQuantity, undefined, true)}
                           </div>
+                          {isPieceTracked && openRowIds.length > 0 && (
+                            <Button
+                              size="small"
+                              className="mt-1"
+                              onClick={() => setRowsUnmarked(openRowIds, true)}
+                            >
+                              {t("sale.actions.markRestUnmarked", {
+                                count: openRowIds.length,
+                              })}
+                            </Button>
+                          )}
                         </div>
                       </div>
                       {isPieceTracked && !visibleRows.length ? (

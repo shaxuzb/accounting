@@ -41,6 +41,8 @@ export interface SaleDocCreateLineForm
   extends Omit<SaleDocProductForm, "id" | "vatAmount"> {
   assembled: true;
   items?: SaleDocCreateLineItemForm[];
+  /** Units sold without a code, stated by the seller. */
+  unmarkedQuantity?: number;
   productBatches?: SaleDocCreateProductBatchForm[];
 }
 
@@ -106,6 +108,8 @@ export interface SaleDocAssemblyLineForm {
   id: number;
   assembled: true;
   items: SaleDocWarehouseConfirmItemForm[];
+  /** Units the storekeeper marked as leaving without a code. */
+  unmarkedQuantity?: number;
 }
 
 export type SaleDocWarehouseConfirmForm = SaleDocAssemblyLineForm[];
