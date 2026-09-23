@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import InputNumber from "@/components/fields/InputNumber";
 import InputTextArea from "@/components/fields/InputTextArea";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -27,10 +28,10 @@ import { hrOrderSchema } from "../types/schema";
 
 const LIST_PATH = "/main/hr/orders";
 const defaultValues: PayrollHrOrderForm = {
-  orderDate: new Date().toISOString().slice(0, 10),
+  orderDate: dayjs().format("YYYY-MM-DD"),
   orderType: "HIRE",
   employeeId: null,
-  effectiveDate: new Date().toISOString().slice(0, 10),
+  effectiveDate: dayjs().format("YYYY-MM-DD"),
   basis: null,
   note: null,
   departmentId: null,

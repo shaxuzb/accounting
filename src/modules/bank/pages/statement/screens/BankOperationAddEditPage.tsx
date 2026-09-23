@@ -93,7 +93,8 @@ const defaultValues: BankOperationForm = {
   contractId: null,
   exchangeRate: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
-  currencyId: null,
+  // National currency, as on the other documents; a foreign account is changed by hand.
+  currencyId: 1,
   amount: null,
   comment: "",
   bankDocumentNumber: "",
@@ -168,7 +169,7 @@ export default function BankOperationAddEditPage() {
       contractId: record?.contractId ?? null,
       exchangeRate: record?.exchangeRate ?? defaultValues.exchangeRate,
       docDate: record?.docDate ?? defaultValues.docDate,
-      currencyId: record?.currencyId ?? null,
+      currencyId: record?.currencyId ?? defaultValues.currencyId,
       amount: record?.amount ?? null,
       comment: record?.comment ?? defaultValues.comment,
       bankDocumentNumber:
@@ -204,7 +205,7 @@ export default function BankOperationAddEditPage() {
           ),
           classificationRuleId: toPositiveNumber(values.classificationRuleId),
           relatedDocumentId: toPositiveNumber(values.relatedDocumentId),
-          docDate: dayjs(values.docDate).toISOString(),
+          docDate: dayjs(values.docDate).format("YYYY-MM-DDTHH:mm:ss"),
           currencyId: Number(values.currencyId),
           amount: Number(values.amount),
           exchangeRate: Number(values.exchangeRate) || 1,

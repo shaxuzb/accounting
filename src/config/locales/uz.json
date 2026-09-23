@@ -1265,7 +1265,8 @@
       "documentSaved": "Hujjat saqlandi",
       "bankAccountsCreated": "Bank hisoblari muvaffaqiyatli qo'shildi",
       "documentConfirmed": "Hujjat tasdiqlandi",
-      "documentCancelled": "Hujjat bekor qilindi"
+      "documentCancelled": "Hujjat bekor qilindi",
+      "fillRequired": "Majburiy maydonlarni to'ldiring"
     },
     "import": {
       "title": "Bank ko'chirmasini import qilish",

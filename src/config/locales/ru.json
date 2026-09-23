@@ -1265,7 +1265,8 @@
       "documentSaved": "Документ сохранён",
       "bankAccountsCreated": "Банковские счета успешно добавлены",
       "documentConfirmed": "Документ подтверждён",
-      "documentCancelled": "Документ отменён"
+      "documentCancelled": "Документ отменён",
+      "fillRequired": "Заполните обязательные поля"
     },
     "import": {
       "title": "Импорт банковской выписки",

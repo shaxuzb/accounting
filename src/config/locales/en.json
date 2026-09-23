@@ -1263,7 +1263,8 @@
       "documentSaved": "Document saved",
       "bankAccountsCreated": "Bank accounts added successfully",
       "documentConfirmed": "Document confirmed",
-      "documentCancelled": "Document cancelled"
+      "documentCancelled": "Document cancelled",
+      "fillRequired": "Fill in the required fields"
     },
     "import": {
       "title": "Bank statement import",
