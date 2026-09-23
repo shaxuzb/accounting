@@ -74,3 +74,13 @@ test("partiya jamisi ham QQSni narx ustiga qo'shadi", () => {
 
   assert.equal(getLayerTotal(layer, 3, vatRates), 3_360_000);
 });
+
+test("QQS satr summasidan hisoblanadi, dona QQSini ko'paytirib emas (server bilan bir xil)", () => {
+  // 3 × 1 234 567.89 = 3 703 703.67; 12% = 444 444.4404 → 444 444.44.
+  // Donadan hisoblansa 148 148.15 × 3 = 444 444.45 bo'lib, provodkadan 1 tiyin farq qilardi.
+  const sale = line({ unitPrice: 1_234_567.89, quantity: 3 });
+
+  assert.equal(getLineNetAmount(sale), 3_703_703.67);
+  assert.equal(getLineVatAmount(sale, vatRates), 444_444.44);
+  assert.equal(getLineTotal(sale, vatRates), 4_148_148.11);
+});

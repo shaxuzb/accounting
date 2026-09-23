@@ -1426,7 +1426,7 @@
       "incomeAccount": "Sales income account",
       "costAccount": "Sales cost account",
       "barcodeScanner": "Barcode scanner",
-      "salePrice": "Sale price",
+      "salePrice": "Sale price (excl. VAT)",
       "vatAmount": "VAT amount",
       "unitPrice": "Unit price",
       "customerAccount": "Customer account",
@@ -1535,7 +1535,8 @@
       "collapseTable": "Collapse table",
       "expandTable": "Expand table",
       "markingsChecking": "Marking codes are being checked",
-      "costPriceFromBatches": "Cost is calculated from the warehouse batches"
+      "costPriceFromBatches": "Cost is calculated from the warehouse batches",
+      "salePriceIsNet": "Net price: 12% VAT is added on top. If you know the shelf price with VAT, type it into “Total (incl. VAT)” and the net price is worked out."
     },
     "warehouse": {
       "goodsToDispatch": "Goods to dispatch from warehouse",
@@ -2578,8 +2579,8 @@
       "productName": "Product name",
       "productType": "Product type",
       "mxik": "MXIK code",
-      "salesPrice": "Sales price",
-      "totalSalesPrice": "Total sales price",
+      "salesPrice": "Sale price (excl. VAT)",
+      "totalSalesPrice": "Total sale price (excl. VAT)",
       "totalPrice": "Total price",
       "productTableId": "Product table ID",
       "serialNumber": "Serial number",

@@ -1177,7 +1177,13 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "unitPrice",
-      title: t("sale.fields.salePrice"),
+      // The sale price is net: VAT is added on top of it. A shelf price that already
+      // holds VAT goes into "Total (with VAT)", which works the net price back out.
+      title: (
+        <Tooltip title={t("sale.messages.salePriceIsNet")}>
+          <span>{t("sale.fields.salePrice")}</span>
+        </Tooltip>
+      ),
       width: 170,
       render: (_, record) => {
         const priceInputKey = record.rowKey ?? `product-${record.productId}`;

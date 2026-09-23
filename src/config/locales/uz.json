@@ -1426,7 +1426,7 @@
       "incomeAccount": "Sotuv daromadi hisobvarag'i",
       "costAccount": "Sotuv tannarxi hisobvarag'i",
       "barcodeScanner": "Shtrix-kod skaneri",
-      "salePrice": "Sotuv narxi",
+      "salePrice": "Sotuv narxi (QQSsiz)",
       "vatAmount": "QQS summasi",
       "unitPrice": "Dona narxi",
       "customerAccount": "Mijoz hisobvarag'i",
@@ -1535,7 +1535,8 @@
       "collapseTable": "Jadvalni yopish",
       "expandTable": "Jadvalni ochish",
       "markingsChecking": "Markirovkalar tekshirilmoqda",
-      "costPriceFromBatches": "Tannarx ombor partiyalaridan hisoblanadi"
+      "costPriceFromBatches": "Tannarx ombor partiyalaridan hisoblanadi",
+      "salePriceIsNet": "QQSsiz narx: QQS 12% shu narx ustiga qo'shiladi. Do'kondagi narx (QQS bilan) ma'lum bo'lsa, uni «Jami (QQS bilan)» ustuniga yozing — QQSsiz narx o'zi hisoblanadi."
     },
     "warehouse": {
       "goodsToDispatch": "Ombordan chiqariladigan tovarlar",
@@ -2578,8 +2579,8 @@
       "productName": "Mahsulot nomi",
       "productType": "Mahsulot turi",
       "mxik": "MXIK kodi",
-      "salesPrice": "Sotuv narxi",
-      "totalSalesPrice": "Jami sotuv narxi",
+      "salesPrice": "Sotuv narxi (QQSsiz)",
+      "totalSalesPrice": "Jami sotuv narxi (QQSsiz)",
       "totalPrice": "Umumiy narx",
       "productTableId": "Mahsulot jadvali IDsi",
       "serialNumber": "Seriya raqami",

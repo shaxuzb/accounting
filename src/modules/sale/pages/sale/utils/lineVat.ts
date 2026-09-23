@@ -53,14 +53,15 @@ export const getLineAmount = (line: SaleSelectedProduct) =>
 export const getLineNetAmount = (line: SaleSelectedProduct) =>
   getLineAmount(line);
 
-/** QQS dona narxidan hisoblanadi, so'ng miqdorga ko'paytiriladi. */
+/**
+ * QQS satrning QQSsiz summasidan hisoblanadi (1C va server kabi), dona narxidan
+ * emas: donadagi QQSni yaxlitlab miqdorga ko'paytirish bir necha donali satrda
+ * serverdagi provodkadan tiyinlarga farq qilardi.
+ */
 export const getLineVatAmount = (
   line: SaleSelectedProduct,
   vatRates: VatRateOption[],
-) =>
-  roundMoney(
-    getVatAmount(line.unitPrice, line.vatRateId, vatRates) * line.quantity,
-  );
+) => getVatAmount(getLineAmount(line), line.vatRateId, vatRates);
 
 /** Satr jami = QQSsiz summa + QQS. */
 export const getLineTotal = (
@@ -93,10 +94,7 @@ export const getLayerVatAmount = (
   layer: SaleProductPriceLayer,
   vatRateId: number | null | undefined,
   vatRates: VatRateOption[],
-) =>
-  roundMoney(
-    getVatAmount(layer.salePrice, vatRateId, vatRates) * layer.writeOffQuantity,
-  );
+) => getVatAmount(roundMoney(getLayerSaleAmount(layer)), vatRateId, vatRates);
 
 export const getLayerTotal = (
   layer: SaleProductPriceLayer,
