@@ -1348,7 +1348,11 @@
       "startDate": "Start date",
       "endDate": "End date",
       "contractDate": "Contract date",
-      "responsiblePerson": "Responsible person"
+      "responsiblePerson": "Responsible person",
+      "priceIncludesVat": "Prices include VAT"
+    },
+    "messages": {
+      "priceIncludesVatHint": "When on, purchases under this contract start with «Price includes VAT» switched on (it can be changed on the document)."
     }
   },
   "products": {

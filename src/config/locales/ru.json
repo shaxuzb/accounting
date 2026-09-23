@@ -1348,7 +1348,11 @@
       "startDate": "Дата начала",
       "endDate": "Дата окончания",
       "contractDate": "Дата договора",
-      "responsiblePerson": "Ответственное лицо"
+      "responsiblePerson": "Ответственное лицо",
+      "priceIncludesVat": "Цены включают НДС"
+    },
+    "messages": {
+      "priceIncludesVatHint": "Если включено, в закупке по этому договору «Цена с НДС» включается автоматически (в документе можно изменить)."
     }
   },
   "products": {

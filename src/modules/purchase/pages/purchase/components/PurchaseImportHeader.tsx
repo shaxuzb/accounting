@@ -21,6 +21,7 @@ import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage"
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 import type { Contract } from "@/modules/contract/types/type";
 import { purchaseDocumentTypeIds } from "../constants/endpoints";
+import { useContractPriceIncludesVatDefault } from "../hooks/useContractPriceIncludesVatDefault";
 
 interface PurchaseImportHeaderProps {
   formik: FormikProps<PurchaseImportForm>;
@@ -29,6 +30,8 @@ interface PurchaseImportHeaderProps {
   showCurrency?: boolean;
   showSupplierAccount?: boolean;
   allowCreateOptions?: boolean;
+  /** EDO import takes the invoice's own amounts, so the switch means nothing there. */
+  showPriceIncludesVat?: boolean;
   disabled?: boolean;
 }
 
@@ -39,6 +42,7 @@ export default function PurchaseImportHeader({
   showCurrency = false,
   showSupplierAccount = true,
   allowCreateOptions = true,
+  showPriceIncludesVat = true,
   disabled = false,
 }: PurchaseImportHeaderProps) {
   const { t } = useTranslation();
@@ -46,6 +50,7 @@ export default function PurchaseImportHeader({
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
   const queryClient = useQueryClient();
   const hasCounterparty = Boolean(formik.values.counterpartyId);
+  useContractPriceIncludesVatDefault(formik, showPriceIncludesVat && !disabled);
 
   const clearContract = () => {
     if (formik.values.contractId !== null) {
@@ -177,20 +182,22 @@ export default function PurchaseImportHeader({
           {/* Whether the typed prices already contain VAT. Invoices come both ways:
               with it, the VAT is taken out of the amount; without it, it is added on
               top. Stock is valued at the net either way. */}
-          <Col span={24} sm={12} lg={8} xl={4}>
-            <SwitchField
-              formik={formik}
-              fieldName="priceIncludesVat"
-              label="purchase.fields.priceIncludesVat"
-              description={
-                formik.values.priceIncludesVat
-                  ? "purchase.messages.priceIncludesVatOn"
-                  : "purchase.messages.priceIncludesVatOff"
-              }
-              disabled={disabled}
-              marginBottom="mb-4"
-            />
-          </Col>
+          {showPriceIncludesVat && (
+            <Col span={24} sm={12} lg={8} xl={4}>
+              <SwitchField
+                formik={formik}
+                fieldName="priceIncludesVat"
+                label="purchase.fields.priceIncludesVat"
+                description={
+                  formik.values.priceIncludesVat
+                    ? "purchase.messages.priceIncludesVatOn"
+                    : "purchase.messages.priceIncludesVatOff"
+                }
+                disabled={disabled}
+                marginBottom="mb-4"
+              />
+            </Col>
+          )}
         </Row>
       </div>
       <CounterpartyAddEditPage

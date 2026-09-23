@@ -348,6 +348,7 @@ export default function EdoImportCandidateMappingPage() {
               showCurrency
               showSupplierAccount={false}
               allowCreateOptions={false}
+              showPriceIncludesVat={false}
               disabled={!canEditMapping}
             />
             <PurchaseImportLinesSection

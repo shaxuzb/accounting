@@ -1348,7 +1348,11 @@
       "startDate": "Boshlanish sanasi",
       "endDate": "Tugash sanasi",
       "contractDate": "Shartnoma sanasi",
-      "responsiblePerson": "Mas'ul shaxs"
+      "responsiblePerson": "Mas'ul shaxs",
+      "priceIncludesVat": "Narxlar QQS bilan"
+    },
+    "messages": {
+      "priceIncludesVatHint": "Yoqilsa, shu shartnoma bo'yicha xaridda «Narx QQS bilan» o'zi yoqiladi (hujjatda o'zgartirish mumkin)."
     }
   },
   "products": {

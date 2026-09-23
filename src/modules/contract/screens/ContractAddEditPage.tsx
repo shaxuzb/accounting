@@ -7,6 +7,7 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import InputText from "@/components/fields/InputText";
+import SwitchField from "@/components/fields/SwitchField";
 import type { ContractForm } from "../types/form";
 import { useGetDetailContract } from "../hooks/useGetDetailContract";
 import { useCreateContract } from "../hooks/useCreateContract";
@@ -29,8 +30,12 @@ const defaultValues: ContractForm = {
   startDate: dayjs().format(formatDate),
   endDate: "",
   comment: "",
+  priceIncludesVat: false,
   stateId: null,
 };
+
+/** «Yetkazib beruvchi bilan shartnoma» (cmn_contract_type). */
+const supplierContractTypeId = 1;
 
 interface ContractAddEditPageProps {
   open: boolean;
@@ -82,6 +87,10 @@ export default function ContractAddEditPage({
         // Mas'ul shaxs ixtiyoriy: tozalanganda backendga aniq null ketishi kerak,
         // aks holda tanlov olib tashlanmaydi.
         responsiblePersonId: values.responsiblePersonId ?? null,
+        // Faqat xarid shartnomasida ma'noli: savdo narxi doim QQSsiz kiritiladi.
+        priceIncludesVat:
+          values.contractTypeId === supplierContractTypeId &&
+          values.priceIncludesVat,
       };
       try {
         if (isEdit && editId) {
@@ -111,6 +120,7 @@ export default function ContractAddEditPage({
         startDate: Contract.startDate ?? "",
         endDate: Contract.endDate ?? null,
         comment: Contract.comment ?? "",
+        priceIncludesVat: Boolean(Contract.priceIncludesVat),
         stateId: Contract.stateId ?? null,
       });
     }
@@ -225,6 +235,17 @@ export default function ContractAddEditPage({
                 label="contract.fields.comment"
               />
             </Col>
+            {formik.values.contractTypeId === supplierContractTypeId && (
+              <Col span={24}>
+                <SwitchField
+                  formik={formik}
+                  fieldName="priceIncludesVat"
+                  label="contract.fields.priceIncludesVat"
+                  description="contract.messages.priceIncludesVatHint"
+                  marginBottom="mb-2"
+                />
+              </Col>
+            )}
             <Col span={12}>
               {isEdit && (
                 <SelectCustom

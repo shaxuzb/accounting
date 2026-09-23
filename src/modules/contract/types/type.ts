@@ -17,6 +17,7 @@ export interface Contract {
   stateName: string;
   createdDate: string;
   comment: string;
+  priceIncludesVat?: boolean;
 }
 
 /** Shartnoma uchun mas'ul shaxs — xodimlar ma'lumotnomasidan mustaqil ro'yxat. */

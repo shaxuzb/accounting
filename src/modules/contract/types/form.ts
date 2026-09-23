@@ -8,6 +8,8 @@ export interface ContractForm {
   startDate: string;
   endDate: string | null;
   comment: string;
+  /** Yetkazib beruvchi narxlari QQS bilanmi — xaridda «Narx QQS bilan» shundan boshlanadi. */
+  priceIncludesVat: boolean;
   stateId?: number | null;
 }
 

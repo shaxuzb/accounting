@@ -79,6 +79,18 @@ export default function ContractDetailModal({
               label: t("contract.fields.stateName"),
               children: data ? stateStatus(data.stateId, data.stateName) : "-",
             },
+            ...(data && !isSaleContract
+              ? [
+                  {
+                    key: "priceIncludesVat",
+                    label: t("contract.fields.priceIncludesVat"),
+                    children: t(
+                      data.priceIncludesVat ? "app.common.yes" : "app.common.no",
+                    ),
+                    span: 2,
+                  },
+                ]
+              : []),
             {
               key: "comment",
               label: t("contract.fields.comment"),
