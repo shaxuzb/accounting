@@ -1128,7 +1128,8 @@
       "executor": "Ijrochi",
       "goods": "Tovar",
       "service": "Xizmat",
-      "accounts": "Hisobvaraqlar"
+      "accounts": "Hisobvaraqlar",
+      "priceIncludesVat": "Narx QQS bilan"
     },
     "messages": {
       "imported": "Sotib olish ma'lumotlari import qilindi",
@@ -1162,7 +1163,9 @@
       "markingRequired": "{{product}} uchun markirovka kiriting",
       "ambiguousMxik": "{{count}} ta MXIK bir nechta mahsulotga tegishli. Mahsulotni ro‘yxatdan tanlang.",
       "supplierAccountRequired": "Yetkazib beruvchi hisobvarag'ini tanlang",
-      "unmarkedLine": "Markirovkasiz (miqdor qo'lda kiritiladi). Markirovka kiritish uchun bosing."
+      "unmarkedLine": "Markirovkasiz (miqdor qo'lda kiritiladi). Markirovka kiritish uchun bosing.",
+      "priceIncludesVatOn": "QQS summadan ajratiladi",
+      "priceIncludesVatOff": "QQS narx ustiga qo'shiladi"
     },
     "import": {
       "nonSerial": "Seriyasiz",

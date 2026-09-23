@@ -80,6 +80,8 @@ const getInitialValues = (
   warehouseId: detail.warehouseId ?? null,
   supplierAccountId: null,
   comment: "",
+  // EDO lines carry the invoice's own net, VAT and total; nothing is derived from a price.
+  priceIncludesVat: false,
   lines: detail.lines.map((line) => toPurchaseRow(line, detail)),
 });
 
@@ -152,6 +154,7 @@ export default function EdoImportCandidateMappingPage() {
           warehouseId: null,
           supplierAccountId: null,
           comment: "",
+          priceIncludesVat: false,
           lines: [],
         },
     enableReinitialize: true,

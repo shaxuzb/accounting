@@ -6,6 +6,7 @@ import type { FormikProps } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectCustom from "@/components/fields/SelectCustom";
+import SwitchField from "@/components/fields/SwitchField";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import Card from "@/components/ui/card/Card";
@@ -172,6 +173,24 @@ export default function PurchaseImportHeader({
               />
             </Col>
           ) : null}
+
+          {/* Whether the typed prices already contain VAT. Invoices come both ways:
+              with it, the VAT is taken out of the amount; without it, it is added on
+              top. Stock is valued at the net either way. */}
+          <Col span={24} sm={12} lg={8} xl={4}>
+            <SwitchField
+              formik={formik}
+              fieldName="priceIncludesVat"
+              label="purchase.fields.priceIncludesVat"
+              description={
+                formik.values.priceIncludesVat
+                  ? "purchase.messages.priceIncludesVatOn"
+                  : "purchase.messages.priceIncludesVatOff"
+              }
+              disabled={disabled}
+              marginBottom="mb-4"
+            />
+          </Col>
         </Row>
       </div>
       <CounterpartyAddEditPage

@@ -28,6 +28,8 @@ export interface PurchaseDocumentPayload {
   comment: string | null;
   contractId: number | null;
   supplierAccountId: number;
+  /** The unit prices already contain VAT: it is extracted from them, not added on top. */
+  priceIncludesVat: boolean;
   lines: PurchaseDocLineDto[];
   externalDocNumber?: string | null;
   externalId?: string | null;
@@ -41,6 +43,7 @@ export interface PurchaseImportForm {
   warehouseId: number | null;
   supplierAccountId: number | null;
   comment: string;
+  priceIncludesVat: boolean;
   lines: PurchaseImportRow[];
 }
 
@@ -53,6 +56,7 @@ export type PurchaseImportHeaderDraft = Pick<
   | "warehouseId"
   | "supplierAccountId"
   | "comment"
+  | "priceIncludesVat"
 >;
 
 // Swagger DTO — PurchaseDocCreateDto

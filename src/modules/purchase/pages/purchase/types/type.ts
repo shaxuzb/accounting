@@ -194,6 +194,7 @@ export interface PurchaseDetailData extends PurchaseData {
   supplierAccountId?: number | null;
   externalDocNumber?: string | null;
   externalId?: string | null;
+  priceIncludesVat?: boolean;
 }
 
 export interface PurchaseForm {

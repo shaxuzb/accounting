@@ -19,12 +19,10 @@ import {
   purchaseDocumentTypeIds,
 } from "../constants/endpoints";
 import {
-  getNumber,
-  getRowAmount,
   getRowMarkingCount,
+  getRowMoney,
   getRowUnitLabel,
   getRowUnitPrice,
-  getRowVatAmount,
 } from "../utils/purchaseImport";
 
 interface UsePurchaseImportColumnsParams {
@@ -49,6 +47,8 @@ interface UsePurchaseImportColumnsParams {
   purchaseMode: PurchaseMode;
   unitOptions: SelectOption[];
   vatRateOptions: SelectOption[];
+  /** Entered prices already contain VAT (it is extracted, not added on top). */
+  priceIncludesVat?: boolean;
   readOnlyValues?: boolean;
   disabled?: boolean;
 }
@@ -68,6 +68,7 @@ export const usePurchaseImportColumns = ({
   purchaseMode,
   unitOptions,
   vatRateOptions,
+  priceIncludesVat = false,
   readOnlyValues = false,
   disabled = false,
 }: UsePurchaseImportColumnsParams): TableColumnType<PurchaseImportRow>[] => {
@@ -313,21 +314,22 @@ export const usePurchaseImportColumns = ({
       } satisfies TableColumnType<PurchaseImportRow>,
       {
         dataIndex: "amount",
-        title: t("purchase.fields.amount"),
+        title: t("purchase.fields.amountWithoutVat"),
         width: 140,
         align: "center",
-        render: (_: unknown, record: PurchaseImportRow) => {
-          const qty = getNumber(record.qty);
-          const price = getRowUnitPrice(record);
-          return numberSpacing(qty * price, undefined, true);
-        },
+        render: (_: unknown, record: PurchaseImportRow) =>
+          numberSpacing(
+            getRowMoney(record, vatRateOptions, priceIncludesVat).net,
+            undefined,
+            true,
+          ),
       },
       {
         dataIndex: "vatRateId",
         title: t("purchase.fields.vatRateAndAmount"),
         align: "center",
         render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => {
-          const vatAmount = getRowVatAmount(record, vatRateOptions);
+          const vatAmount = getRowMoney(record, vatRateOptions, priceIncludesVat).vat;
           return (
             <div className="flex items-center">
               <Select
@@ -360,11 +362,12 @@ export const usePurchaseImportColumns = ({
         title: t("common.total"),
         width: 140,
         align: "center",
-        render: (_: unknown, record: PurchaseImportRow) => {
-          const amount = getRowAmount(record);
-          const vatAmount = getRowVatAmount(record, vatRateOptions);
-          return numberSpacing(amount + vatAmount, undefined, true);
-        },
+        render: (_: unknown, record: PurchaseImportRow) =>
+          numberSpacing(
+            getRowMoney(record, vatRateOptions, priceIncludesVat).total,
+            undefined,
+            true,
+          ),
       },
       {
         dataIndex: "accounts",
@@ -418,6 +421,7 @@ export const usePurchaseImportColumns = ({
     purchaseMode,
     unitOptions,
     vatRateOptions,
+    priceIncludesVat,
     chartAccountById,
     readOnlyValues,
     disabled,

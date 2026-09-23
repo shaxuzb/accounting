@@ -550,10 +550,12 @@ export const PurchaseEditor = ({
             warehouseId: detailData.warehouseId ?? null,
             supplierAccountId: detailData.supplierAccountId ?? null,
             comment: detailData.comment ?? "",
+            priceIncludesVat: Boolean(detailData.priceIncludesVat),
             lines: initialLines,
           }
         : {
             ...headerDraft,
+            priceIncludesVat: Boolean(headerDraft.priceIncludesVat),
             lines: initialLines,
           },
     [detailData, headerDraft, initialLines, isEdit],
@@ -769,7 +771,8 @@ export const PurchaseEditor = ({
           field === "currencyId" ||
           field === "warehouseId" ||
           field === "supplierAccountId" ||
-          field === "comment")
+          field === "comment" ||
+          field === "priceIncludesVat")
       ) {
         if (isDraftStorageEnabledRef.current) {
           setHeaderDraft((prev) => ({
@@ -1262,6 +1265,7 @@ export const PurchaseEditor = ({
     purchaseMode,
     unitOptions,
     vatRateOptions,
+    priceIncludesVat: formik.values.priceIncludesVat,
   });
 
   useEffect(() => {
@@ -1411,8 +1415,13 @@ export const PurchaseEditor = ({
   );
 
   const totals = useMemo(
-    () => getPurchaseImportTotals(formik.values.lines ?? [], vatRateOptions),
-    [formik.values.lines, vatRateOptions],
+    () =>
+      getPurchaseImportTotals(
+        formik.values.lines ?? [],
+        vatRateOptions,
+        formik.values.priceIncludesVat,
+      ),
+    [formik.values.lines, formik.values.priceIncludesVat, vatRateOptions],
   );
 
   const activeMarkings = useMemo(

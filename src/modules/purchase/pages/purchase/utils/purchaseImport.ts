@@ -25,6 +25,7 @@ export const getDefaultPurchaseImportHeader =
     warehouseId: null,
     supplierAccountId: null,
     comment: "",
+    priceIncludesVat: false,
   });
 
 let purchaseRowKeySequence = 0;
@@ -226,32 +227,60 @@ export const getRowUnitPrice = (row: PurchaseImportRow) =>
 export const getRowAmount = (row: PurchaseImportRow) =>
   getNumber(row.qty) * getRowUnitPrice(row);
 
+/** Money rounded the way the server rounds it (2 places, halves away from zero). */
+const roundMoney = (value: number) => {
+  const safe = Number.isFinite(value) ? value : 0;
+  return Math.sign(safe) * Math.round(Math.abs(safe) * 100 + Number.EPSILON) / 100;
+};
+
+/**
+ * A line's net, VAT and total, read from the price as it was entered. A price quoted
+ * without VAT gets VAT on top; one that already contains VAT has it taken out, so the
+ * total stays what the invoice says. Mirrors the server's VatCalculator.
+ */
+export const getRowMoney = (
+  row: PurchaseImportRow,
+  options: SelectOption[],
+  priceIncludesVat = false,
+) => {
+  const entered = roundMoney(getRowAmount(row));
+  const vatOption = options.find((item) => item.id === Number(row.vatRateId));
+  const vatPercent = vatOption ? getVatPercent(row.vatRateId, options) : 0;
+
+  // A line brought in from EDO carries the invoice's own VAT and no known rate.
+  if (!vatOption || vatPercent <= 0) {
+    const vat = roundMoney(getNumber(row.vatAmount));
+    return { net: entered, vat, total: roundMoney(entered + vat) };
+  }
+
+  if (priceIncludesVat) {
+    const vat = roundMoney((entered * vatPercent) / (100 + vatPercent));
+    return { net: roundMoney(entered - vat), vat, total: entered };
+  }
+
+  const vat = roundMoney((entered * vatPercent) / 100);
+  return { net: entered, vat, total: roundMoney(entered + vat) };
+};
+
 export const getRowVatAmount = (
   row: PurchaseImportRow,
   options: SelectOption[],
-) => {
-  const vatOption = options.find((item) => item.id === Number(row.vatRateId));
-  if (!vatOption) return getNumber(row.vatAmount);
-
-  const vatPercent = getVatPercent(row.vatRateId, options);
-  return vatPercent > 0
-    ? (getRowAmount(row) * vatPercent) / 100
-    : getNumber(row.vatAmount);
-};
+  priceIncludesVat = false,
+) => getRowMoney(row, options, priceIncludesVat).vat;
 
 export const getPurchaseImportTotals = (
   rows: PurchaseImportRow[],
   vatRateOptions: SelectOption[],
+  priceIncludesVat = false,
 ) =>
   rows.reduce(
     (acc, row) => {
       if (!isCompletePurchaseLine(row)) return acc;
-      const amount = getRowAmount(row);
-      const vatAmount = getRowVatAmount(row, vatRateOptions);
+      const money = getRowMoney(row, vatRateOptions, priceIncludesVat);
       return {
-        amount: acc.amount + amount,
-        vatAmount: acc.vatAmount + vatAmount,
-        totalAmount: acc.totalAmount + amount + vatAmount,
+        amount: acc.amount + money.net,
+        vatAmount: acc.vatAmount + money.vat,
+        totalAmount: acc.totalAmount + money.total,
       };
     },
     {
@@ -346,6 +375,7 @@ const toPurchaseDocumentPayload = (
   contractId: values.contractId,
   supplierAccountId: values.supplierAccountId ?? 0,
   comment: values.comment || null,
+  priceIncludesVat: Boolean(values.priceIncludesVat),
   lines: completedRows.map((item) => {
     const markingNumbers = toMarkingNumbers(item);
     const hasMarking = purchaseMode === "goods" && markingNumbers.length > 0;

@@ -1126,7 +1126,8 @@
       "executor": "Contractor",
       "goods": "Product",
       "service": "Service",
-      "accounts": "Accounts"
+      "accounts": "Accounts",
+      "priceIncludesVat": "Price includes VAT"
     },
     "messages": {
       "imported": "Purchase data imported",
@@ -1160,7 +1161,9 @@
       "markingRequired": "Enter a marking for {{product}}",
       "ambiguousMxik": "{{count}} MXIK code(s) match multiple products. Select a product from the list.",
       "supplierAccountRequired": "Select the supplier account",
-      "unmarkedLine": "Unmarked (quantity entered by hand). Click to enter markings."
+      "unmarkedLine": "Unmarked (quantity entered by hand). Click to enter markings.",
+      "priceIncludesVatOn": "VAT is extracted from the amount",
+      "priceIncludesVatOff": "VAT is added on top of the price"
     },
     "import": {
       "nonSerial": "Non-serial",
