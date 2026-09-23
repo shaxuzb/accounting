@@ -1266,7 +1266,8 @@
       "bankAccountsCreated": "Bank hisoblari muvaffaqiyatli qo'shildi",
       "documentConfirmed": "Hujjat tasdiqlandi",
       "documentCancelled": "Hujjat bekor qilindi",
-      "fillRequired": "Majburiy maydonlarni to'ldiring"
+      "fillRequired": "Majburiy maydonlarni to'ldiring",
+      "documentCreated": "Bank hujjati yaratildi"
     },
     "import": {
       "title": "Bank ko'chirmasini import qilish",
@@ -1779,7 +1780,8 @@
       "closingDebit": "Yakuniy debet",
       "closingCredit": "Yakuniy kredit",
       "accountCode": "Hisob kodi",
-      "accountName": "Hisob nomi"
+      "accountName": "Hisob nomi",
+      "accountNumber": "Hisobvaraq raqami"
     },
     "menu": {
       "warehouseGroup": "Ombor",

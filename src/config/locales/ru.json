@@ -1266,7 +1266,8 @@
       "bankAccountsCreated": "Банковские счета успешно добавлены",
       "documentConfirmed": "Документ подтверждён",
       "documentCancelled": "Документ отменён",
-      "fillRequired": "Заполните обязательные поля"
+      "fillRequired": "Заполните обязательные поля",
+      "documentCreated": "Банковский документ создан"
     },
     "import": {
       "title": "Импорт банковской выписки",
@@ -1774,7 +1775,8 @@
       "closingDebit": "Конечный дебет",
       "closingCredit": "Конечный кредит",
       "accountCode": "Код счета",
-      "accountName": "Название счета"
+      "accountName": "Название счета",
+      "accountNumber": "Номер счёта"
     },
     "menu": {
       "warehouseGroup": "Склад",

@@ -1264,7 +1264,8 @@
       "bankAccountsCreated": "Bank accounts added successfully",
       "documentConfirmed": "Document confirmed",
       "documentCancelled": "Document cancelled",
-      "fillRequired": "Fill in the required fields"
+      "fillRequired": "Fill in the required fields",
+      "documentCreated": "Bank document created"
     },
     "import": {
       "title": "Bank statement import",
@@ -1779,7 +1780,8 @@
       "closingDebit": "Closing debit",
       "closingCredit": "Closing credit",
       "accountCode": "Account code",
-      "accountName": "Account name"
+      "accountName": "Account name",
+      "accountNumber": "Account number"
     },
     "menu": {
       "warehouseGroup": "Warehouse",
