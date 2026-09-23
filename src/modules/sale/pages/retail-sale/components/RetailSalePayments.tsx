@@ -40,6 +40,20 @@ interface PaymentMethodOption {
   code?: string | null;
 }
 
+interface NamedOption {
+  id: number;
+  number?: string | null;
+  name?: string | null;
+  code?: string | null;
+}
+
+const toOptionList = (data: unknown): NamedOption[] => {
+  if (Array.isArray(data)) return data as NamedOption[];
+  if (data && typeof data === "object" && "items" in data && Array.isArray(data.items))
+    return data.items as NamedOption[];
+  return [];
+};
+
 const paymentDocumentTypeIdByMethodCode: Record<string, number> = {
   CASH: retailSaleDocumentTypeIds.paymentCash,
   CARD: retailSaleDocumentTypeIds.paymentCard,
@@ -94,6 +108,33 @@ export default function RetailSalePayments({
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  // The payment cards name the account and the acceptance point, not their ids.
+  const { data: chartAccounts = [] } = useQuery<NamedOption[]>({
+    queryKey: ["retail-sale-payment-accounts"],
+    queryFn: async () =>
+      toOptionList(
+        (await $axiosPrivate.get<unknown>(selectListEndpoints.chartAccountsSelectList)).data,
+      ),
+    enabled: payments.length > 0,
+    staleTime: 5 * 60 * 1000,
+  });
+  const { data: acceptancePoints = [] } = useQuery<NamedOption[]>({
+    queryKey: ["retail-sale-payment-acceptance-points"],
+    queryFn: async () =>
+      toOptionList(
+        (await $axiosPrivate.get<unknown>(selectListEndpoints.paymentAcceptancePointsSelectList)).data,
+      ),
+    enabled: payments.some((payment) => Boolean(payment.paymentAcceptancePointId)),
+    staleTime: 5 * 60 * 1000,
+  });
+  const getAccountLabel = (accountId: number | null | undefined) => {
+    const account = chartAccounts.find((item) => item.id === accountId);
+    if (!account) return accountId ?? "—";
+    return [account.number, account.name].filter(Boolean).join(" ");
+  };
+  const getAcceptancePointLabel = (pointId: number | null | undefined) =>
+    acceptancePoints.find((item) => item.id === pointId)?.name ?? pointId;
 
   const getPaymentMethodCode = (paymentMethodId: number | null) =>
     paymentMethods
@@ -326,11 +367,11 @@ export default function RetailSalePayments({
                           {numberSpacing(Number(payment.amount ?? 0), undefined, true)} {t("retailSale.payments.currency", { defaultValue: "so'm" })}
                         </div>
                         <div className="mt-1 truncate text-xs text-secondary-text">
-                          {payment.debitAccountId ?? "—"} — {t("retailSale.fields.debitAccount")}
+                          {t("retailSale.fields.debitAccount")}: {getAccountLabel(payment.debitAccountId)}
                         </div>
                         {payment.paymentAcceptancePointId && (
                           <div className="mt-1 truncate text-xs text-secondary-text">
-                            {t("retailSale.fields.paymentAcceptancePoint")}: {payment.paymentAcceptancePointId}
+                            {t("retailSale.fields.paymentAcceptancePoint")}: {getAcceptancePointLabel(payment.paymentAcceptancePointId)}
                           </div>
                         )}
                       </div>
