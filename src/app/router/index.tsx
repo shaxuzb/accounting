@@ -16,6 +16,7 @@ import { hrRoutes } from "@/modules/hr";
 import EimzoBridgePage from "@/features/eimzo/bridge/EimzoBridgePage";
 import { rentalRoutes } from "@/modules/rental";
 import { dashboardRoutes } from "@/modules/dashboard";
+import RouteErrorPage, { NotFoundPage } from "./RouteErrorPage";
 import { reportsRoutes } from "@/modules/reports";
 
 export const router = createBrowserRouter([
@@ -26,6 +27,8 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <ProtectAuthLayout />,
+    // Aks holda noto'g'ri manzil React Router'ning xom xato ekranini ko'rsatadi.
+    errorElement: <RouteErrorPage />,
 
     children: [
       authRoutes,
@@ -49,8 +52,11 @@ export const router = createBrowserRouter([
           settingsRoutes,
           warehouseRoutes,
           rentalRoutes,
+          // Layout ichida qoladi: sidebar va header saqlanadi.
+          { path: "*", element: <NotFoundPage /> },
         ],
       },
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
 ]);

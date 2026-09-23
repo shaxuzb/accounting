@@ -88,10 +88,20 @@ const ProtectAuthLayout = () => {
           dispatch(setSessionChecked(true));
         }
       } catch (err: unknown) {
-        if (active) {
+        if (!active) return;
+
+        // Only the server saying the session is over ends it. A check that failed for
+        // any other reason — the API restarting, the database unreachable (500), the
+        // network dropping — says nothing about the token, and treating it as a
+        // rejection threw the user out of a session that was still valid.
+        const status = (err as { response?: { status?: number } })?.response?.status;
+        if (status === 401 || status === 403) {
           errorHandlers(err);
           redirectToLogin();
+          return;
         }
+
+        dispatch(setSessionChecked(true));
       } finally {
         if (active) {
           dispatch(isLoading(false));
@@ -149,10 +159,14 @@ const ProtectAuthLayout = () => {
   ]);
 
   return (
-    <AnimatePresence mode="wait">
+    // Not mode="wait": that held the page back until the splash's exit animation ended,
+    // and animations do not run in a background tab — a page opened there stayed on the
+    // splash. The splash is an overlay instead, so the page mounts at once beneath it.
+    <AnimatePresence>
       {isCheckingSession ? (
         <motion.div
           key="loading"
+          className="fixed inset-0 z-[1000]"
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.3 } }}

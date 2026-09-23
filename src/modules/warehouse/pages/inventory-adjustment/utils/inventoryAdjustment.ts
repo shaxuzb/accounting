@@ -6,6 +6,25 @@ import type {
   InventoryAdjustmentLineForm,
 } from "../types/form";
 
+/**
+ * Whether the document takes stock onto the books rather than off it.
+ *
+ * Booking stock in creates units that never existed before, so their markings are
+ * typed in; writing stock off names units the warehouse already holds, so they are
+ * picked from stock. The codes mirror the backend's direction resolver.
+ */
+export const isIncreaseAdjustment = (adjustmentType?: string | null) =>
+  ["POSITIVE_ADJUSTMENT", "FOUND_STOCK", "CORRECTION"].includes(
+    (adjustmentType ?? "").trim().toUpperCase(),
+  );
+
+/** Marking codes may contain any character, so only Excel-paste line breaks and tabs split them. */
+export const parseAdjustmentMarkingInput = (value: string) =>
+  value
+    .split(/[\r\n\t]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
 export const createDefaultAdjustmentItem = (): InventoryAdjustmentItemForm => ({
   productTableId: null,
   costPrice: null,
@@ -110,6 +129,9 @@ export const toInventoryAdjustmentPayload = (form: InventoryAdjustmentForm) => (
       // Backendda CostPrice — decimal, null emas: null yuborilsa so'rov
       // butunlay rad etilardi.
       costPrice: item.costPrice ?? 0,
+      // Kirim tuzatishida har bir dona o'z markirovkasi bilan hisobga olinadi.
+      markingNumber: item.markingNumber?.trim() || null,
+      serialNumber: item.serialNumber?.trim() || null,
     })),
   })),
 });

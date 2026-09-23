@@ -69,6 +69,7 @@
     "subtitle": "Kechirasiz, sahifani yuklashda muammo yuz berdi yoki so'rovlarda xatolik bor.",
     "reload": "Sahifani qayta yuklash",
     "pageNotFound": "Sahifa topilmadi",
+    "goHome": "Bosh sahifaga qaytish",
     "unknown": "Noma'lum xatolik yuz berdi",
     "noPermission": "Bu sahifaga kirish uchun ruxsatingiz yo'q"
   },
@@ -117,15 +118,93 @@
     "allCurrencies": "Barcha valyutalar",
     "allPeriod": "Barcha davr",
     "notAvailable": "Ma'lumot mavjud emas",
-    "status": { "available": "Ma'lumotlar tayyor", "partial": "Qisman ma'lumot", "unavailable": "Manba mavjud emas" },
+    "status": {
+      "available": "Ma'lumotlar tayyor",
+      "partial": "Qisman ma'lumot",
+      "unavailable": "Manba mavjud emas"
+    },
     "loadError": "Dashboard ma'lumotlari yuklanmadi",
     "loadErrorDescription": "Ulanishni tekshiring yoki qayta urinib ko'ring.",
-    "cash": { "title": "Pul mablag'lari qoldig'i", "description": "Bank hisobvaraqlari va kassalar bo'yicha davr harakati.", "account": "Hisob raqami", "unnamedAccount": "Nomsiz hisob", "bankAccount": "Bank hisobvarag'i", "cashBox": "Kassa", "opening": "Kun boshiga qoldiq", "inflow": "Kirim", "outflow": "Chiqim", "closing": "Kun oxiriga qoldiq", "empty": "Hisoblar bo'yicha ma'lumot mavjud emas" },
-    "relationships": { "title": "Munosabatlar", "description": "Kiruvchi va chiquvchi hujjatlar soni.", "incoming": "Kiruvchi", "outgoing": "Chiquvchi" },
-    "debts": { "title": "Debitor va kreditor", "description": "Joriy qarzdorlik va kontragentlar kesimi.", "receivable": "Debitorlik", "payable": "Kreditorlik", "overdueUnavailable": "Muddati o'tgan summa mavjud emas", "overdue": "Muddati o'tgan: {{amount}}", "unknownCounterparty": "Noma'lum kontragent", "empty": "Qarzdorlik ma'lumotlari mavjud emas" },
-    "tax": { "title": "Soliq ko'rsatkichlari", "description": "Sotuv va xarid hujjatlaridan hisoblangan VAT.", "total": "Jami VAT", "vatPayer": "VAT to'lovchisi", "yes": "Ha", "no": "Yo'q", "empty": "Soliq ma'lumotlari mavjud emas" },
-    "documents": { "title": "Elektron hujjatlar", "description": "Hujjatlar turi, holati va yo'nalishi bo'yicha ko'rsatkichlar.", "count": "ta", "total": "Jami hujjatlar", "empty": "Elektron hujjatlar mavjud emas", "byStatus": "Holati bo'yicha", "countByStatus": "Soni bo'yicha", "byType": "Turi bo'yicha", "byDirection": "Yo'nalishi bo'yicha", "directionSummary": "Yo'nalish", "incoming": "Kiruvchi", "outgoing": "Chiquvchi", "filters": { "all": "Hammasi", "incoming": "Kiruvchi", "outgoing": "Chiquvchi" }, "amountPeriod": "Summa", "amountMissing": "Summa mavjud emas", "amountReady": "Summa ma'lumotlari tayyor.", "realDataNote": "Ko'rsatkichlar API ma'lumotlari asosida", "typeLabels": { "CONTRACT": "Shartnomalar", "POWER_OF_ATTORNEY": "Ishonchnoma", "FACTURA": "Hisob-fakturalar", "WAYBILL": "TTYu", "WAYBILL_LOCAL": "TTYu", "TTYU": "TTYu" }, "statusLabels": { "SIGNED": "Tasdiqlandi", "SENT": "Jarayonda", "REJECTED": "Rad etilgan", "CANCELLED": "Bekor qilindi", "CANCELED": "Bekor qilindi" } },
-    "tasks": { "title": "Vazifalar kalendari", "description": "Umumiy vazifalar jadvali backend’da hali mavjud emas." }
+    "cash": {
+      "title": "Pul mablag'lari qoldig'i",
+      "description": "Bank hisobvaraqlari va kassalar bo'yicha davr harakati.",
+      "account": "Hisob raqami",
+      "unnamedAccount": "Nomsiz hisob",
+      "bankAccount": "Bank hisobvarag'i",
+      "cashBox": "Kassa",
+      "opening": "Kun boshiga qoldiq",
+      "inflow": "Kirim",
+      "outflow": "Chiqim",
+      "closing": "Kun oxiriga qoldiq",
+      "empty": "Hisoblar bo'yicha ma'lumot mavjud emas"
+    },
+    "relationships": {
+      "title": "Munosabatlar",
+      "description": "Kiruvchi va chiquvchi hujjatlar soni.",
+      "incoming": "Kiruvchi",
+      "outgoing": "Chiquvchi"
+    },
+    "debts": {
+      "title": "Debitor va kreditor",
+      "description": "Joriy qarzdorlik va kontragentlar kesimi.",
+      "receivable": "Debitorlik",
+      "payable": "Kreditorlik",
+      "overdueUnavailable": "Muddati o'tgan summa mavjud emas",
+      "overdue": "Muddati o'tgan: {{amount}}",
+      "unknownCounterparty": "Noma'lum kontragent",
+      "empty": "Qarzdorlik ma'lumotlari mavjud emas"
+    },
+    "tax": {
+      "title": "Soliq ko'rsatkichlari",
+      "description": "Sotuv va xarid hujjatlaridan hisoblangan VAT.",
+      "total": "Jami VAT",
+      "vatPayer": "VAT to'lovchisi",
+      "yes": "Ha",
+      "no": "Yo'q",
+      "empty": "Soliq ma'lumotlari mavjud emas"
+    },
+    "documents": {
+      "title": "Elektron hujjatlar",
+      "description": "Hujjatlar turi, holati va yo'nalishi bo'yicha ko'rsatkichlar.",
+      "count": "ta",
+      "total": "Jami hujjatlar",
+      "empty": "Elektron hujjatlar mavjud emas",
+      "byStatus": "Holati bo'yicha",
+      "countByStatus": "Soni bo'yicha",
+      "byType": "Turi bo'yicha",
+      "byDirection": "Yo'nalishi bo'yicha",
+      "directionSummary": "Yo'nalish",
+      "incoming": "Kiruvchi",
+      "outgoing": "Chiquvchi",
+      "filters": {
+        "all": "Hammasi",
+        "incoming": "Kiruvchi",
+        "outgoing": "Chiquvchi"
+      },
+      "amountPeriod": "Summa",
+      "amountMissing": "Summa mavjud emas",
+      "amountReady": "Summa ma'lumotlari tayyor.",
+      "realDataNote": "Ko'rsatkichlar API ma'lumotlari asosida",
+      "typeLabels": {
+        "CONTRACT": "Shartnomalar",
+        "POWER_OF_ATTORNEY": "Ishonchnoma",
+        "FACTURA": "Hisob-fakturalar",
+        "WAYBILL": "TTYu",
+        "WAYBILL_LOCAL": "TTYu",
+        "TTYU": "TTYu"
+      },
+      "statusLabels": {
+        "SIGNED": "Tasdiqlandi",
+        "SENT": "Jarayonda",
+        "REJECTED": "Rad etilgan",
+        "CANCELLED": "Bekor qilindi",
+        "CANCELED": "Bekor qilindi"
+      }
+    },
+    "tasks": {
+      "title": "Vazifalar kalendari",
+      "description": "Umumiy vazifalar jadvali backend’da hali mavjud emas."
+    }
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -322,10 +401,10 @@
       "disposalAccountRequired": "Hisobdan chiqarish hisobvarag'ini tanlang",
       "customerAccountRequired": "Mijoz hisobvarag'ini tanlang",
       "gainAccountRequired": "Foyda hisobvarag'ini tanlang",
-      "lossAccountRequired": "Zarar hisobvarag'ini tanlang"
-      ,"assetQuantityMismatch": "Vositalar soni miqdorga teng bo'lishi kerak"
-      ,"movementDestinationRequired": "Yangi bo'lim yoki mas'ul shaxsdan kamida bittasini tanlang"
-      ,"saleAmountForSaleRequired": "Sotish turida kamida bitta vosita summasi noldan katta bo'lishi kerak"
+      "lossAccountRequired": "Zarar hisobvarag'ini tanlang",
+      "assetQuantityMismatch": "Vositalar soni miqdorga teng bo'lishi kerak",
+      "movementDestinationRequired": "Yangi bo'lim yoki mas'ul shaxsdan kamida bittasini tanlang",
+      "saleAmountForSaleRequired": "Sotish turida kamida bitta vosita summasi noldan katta bo'lishi kerak"
     },
     "sections": {
       "disposalDetails": "Hisobdan chiqarish tafsilotlari",
@@ -420,10 +499,25 @@
       "noAssets": "Asosiy vosita topilmadi",
       "amortizationDetails": "Amortizatsiya parametrlari"
     },
-    "depreciation": { "period": "Hisoblash oyi" },
-    "filters": { "dateFrom": "Boshlanish sanasi", "dateTo": "Tugash sanasi" },
-    "statuses": { "draft": "Qoralama", "posted": "O'tkazilgan", "cancelled": "Bekor qilingan", "pending": "Kutilmoqda" },
-    "assetStatuses": { "notCommissioned": "Foydalanishga topshirilmagan", "active": "Faol", "conservation": "Konservatsiyada", "disposed": "Hisobdan chiqarilgan" }
+    "depreciation": {
+      "period": "Hisoblash oyi"
+    },
+    "filters": {
+      "dateFrom": "Boshlanish sanasi",
+      "dateTo": "Tugash sanasi"
+    },
+    "statuses": {
+      "draft": "Qoralama",
+      "posted": "O'tkazilgan",
+      "cancelled": "Bekor qilingan",
+      "pending": "Kutilmoqda"
+    },
+    "assetStatuses": {
+      "notCommissioned": "Foydalanishga topshirilmagan",
+      "active": "Faol",
+      "conservation": "Konservatsiyada",
+      "disposed": "Hisobdan chiqarilgan"
+    }
   },
   "settings": {
     "title": "Sozlamalar",
@@ -610,7 +704,10 @@
       "detail": "Majburiyat sozlamasi tafsilotlari",
       "notFound": "Majburiyat sozlamasi topilmadi",
       "notConfigured": "Sozlanmagan",
-      "categories": { "tax": "Soliq", "contribution": "Ajratma yoki badal" },
+      "categories": {
+        "tax": "Soliq",
+        "contribution": "Ajratma yoki badal"
+      },
       "filters": {
         "category": "Kategoriya",
         "choosedDate": "Amal qilish sanasi",
@@ -797,9 +894,9 @@
           "createFactura": "Hisob-faktura yaratish",
           "sign": "Imzolash",
           "reject": "Rad etish",
-           "download": "Yuklab olish",
-           "print": "Chop etish",
-           "basedOn": "Asosida yaratish"
+          "download": "Yuklab olish",
+          "print": "Chop etish",
+          "basedOn": "Asosida yaratish"
         },
         "fields": {
           "internalDocumentId": "Ichki hujjat ID",
@@ -1311,7 +1408,8 @@
       "itemCreated": "Mahsulot ro'yxatga qo'shildi — saqlash uchun «Saqlash» tugmasini bosing",
       "itemUpdated": "Mahsulot ro'yxatda o'zgartirildi — saqlash uchun «Saqlash» tugmasini bosing",
       "serviceItemCreated": "Servis ro'yxatga qo'shildi — saqlash uchun «Saqlash» tugmasini bosing",
-      "serviceItemUpdated": "Servis ro'yxatda o'zgartirildi — saqlash uchun «Saqlash» tugmasini bosing"
+      "serviceItemUpdated": "Servis ro'yxatda o'zgartirildi — saqlash uchun «Saqlash» tugmasini bosing",
+      "alwaysPieceTracked": "Har bir dona o'z markirovkasi bilan hisobga olinadi"
     }
   },
   "sale": {
@@ -1431,7 +1529,8 @@
       "productWithId": "Mahsulot #{{id}}",
       "collapseTable": "Jadvalni yopish",
       "expandTable": "Jadvalni ochish",
-      "markingsChecking": "Markirovkalar tekshirilmoqda"
+      "markingsChecking": "Markirovkalar tekshirilmoqda",
+      "costPriceFromBatches": "Tannarx ombor partiyalaridan hisoblanadi"
     },
     "warehouse": {
       "goodsToDispatch": "Ombordan chiqariladigan tovarlar",
@@ -2009,11 +2108,11 @@
       "basis": "Asos",
       "advanceMethod": "Avans usuli",
       "advancePercent": "Avans foizi (%)",
-      "advanceAmount": "Avans summasi",
+      "advanceAmount": "Avans",
       "targetAmount": "Yangi summa",
       "adjustmentMode": "Tuzatish usuli",
-      "debitAccount": "Debet hisobvaraq",
-      "creditAccount": "Kredit hisobvaraq",
+      "debitAccount": "Debet hisobvarag'i",
+      "creditAccount": "Kredit hisobvarag'i",
       "workedDays": "Ishlangan kun",
       "workedHours": "Ishlangan soat",
       "leaveDays": "Ta'til kuni",
@@ -2040,7 +2139,6 @@
       "paidSickDays": "To‘lanadigan kasallik kunlari",
       "deductionAmount": "Ushlanmalar",
       "employerTaxAmount": "Ish beruvchi solig'i",
-      "advanceAmount": "Avans",
       "netAmount": "Net (qo'lga)",
       "payableAmount": "To'lanishi kerak",
       "paidAmount": "To'langan",
@@ -2059,8 +2157,6 @@
       "maximumAmount": "Eng ko'p summa",
       "dependsOnComponent": "Bog'liq komponent",
       "isTaxable": "Soliqqa tortiladi",
-      "debitAccount": "Debet hisobvarag'i",
-      "creditAccount": "Kredit hisobvarag'i",
       "bankOperation": "Bank operatsiyasi",
       "cashOperation": "Kassa operatsiyasi",
       "cashOperationIncome": "Kassa kirimi",
@@ -2130,9 +2226,22 @@
         "CORRECTION": "Tuzatish",
         "CORRECTION_HINT": "Tasdiqlangan hujjatga tuzatish kiritish"
       },
-      "advanceMethod": { "PERCENT": "Foiz", "PERCENT_HINT": "Maoshdan foiz hisobida", "FIXED": "Qat'iy summa", "FIXED_HINT": "Har oy belgilangan summa" },
-      "hrOrderType": { "HIRE": "Ishga qabul qilish", "TRANSFER": "O'tkazish", "PAY_CHANGE": "Oylikni o'zgartirish", "DISMISSAL": "Ishdan bo'shatish" },
-      "adjustmentMode": { "AMOUNT": "Farq summasi", "TARGET": "Yakuniy summa" },
+      "advanceMethod": {
+        "PERCENT": "Foiz",
+        "PERCENT_HINT": "Maoshdan foiz hisobida",
+        "FIXED": "Qat'iy summa",
+        "FIXED_HINT": "Har oy belgilangan summa"
+      },
+      "hrOrderType": {
+        "HIRE": "Ishga qabul qilish",
+        "TRANSFER": "O'tkazish",
+        "PAY_CHANGE": "Oylikni o'zgartirish",
+        "DISMISSAL": "Ishdan bo'shatish"
+      },
+      "adjustmentMode": {
+        "AMOUNT": "Farq summasi",
+        "TARGET": "Yakuniy summa"
+      },
       "correctionPayoutMode": {
         "SEPARATE": "Alohida to‘lov",
         "SEPARATE_HINT": "Tuzatish alohida vedomost bilan to‘lanadi",
@@ -2744,16 +2853,110 @@
     }
   },
   "rental": {
-      "title": "Ijara",
-      "contracts": { "title": "Ijara shartnomalari", "create": "Ijara shartnomasini yaratish", "edit": "Ijara shartnomasini tahrirlash", "detail": "Ijara shartnomasi", "general": "Umumiy ma'lumotlar", "objects": "Ijara obyektlari", "objectNumber": "Ijara obyekti {{number}}", "newObject": "Yangi obyekt", "objectsDescription": "Har bir ijara obyektining ma'lumotlarini alohida ochiladigan blokda kiriting.", "noObjects": "Ijara obyektlari mavjud emas" },
-      "accruals": { "title": "Ijara hisob-kitoblari", "edit": "Ijara hisob-kitobini tahrirlash", "detail": "Ijara hisob-kitobi", "items": "Hisob-kitob satrlari", "itemNumber": "Hisob-kitob satri {{number}}", "editDetails": "Hisob-kitob ma'lumotlarini tahrirlash", "generateTitle": "Hisob-kitoblarni yaratish" },
-      "fields": { "lessorFullName": "Ijaraga beruvchi F.I.Sh.", "lessors": "Ijaraga beruvchilar", "lessorKind": "Ijaraga beruvchi turi", "innOrPinfl": "STIR / JShShIR", "lessorInn": "STIR", "lessorPinfl": "JShShIR", "phoneNumber": "Telefon raqami", "registeredAddress": "Ro'yxatdan o'tgan manzil", "residentialAddress": "Yashash manzili", "isFreeOfCharge": "Bepul ijara", "rentalType": "Ijara turi", "totalArea": "Umumiy maydon", "rentedArea": "Ijaraga olingan maydon", "utilities": "Kommunal xizmatlar", "utilityService": "Kommunal xizmat turi", "utilityPayer": "To'lovchi", "contractNumber": "Shartnoma raqami", "contractDate": "Shartnoma sanasi", "startDate": "Boshlanish sanasi", "endDate": "Tugash sanasi", "confirmationDate": "Tasdiqlash sanasi", "terminationDate": "Bekor qilish sanasi", "currency": "Valyuta", "lessorPayableAccount": "Ijaraga beruvchi hisobvarag'i", "taxPayableAccount": "Soliq hisobvarag'i", "comment": "Izoh", "objectType": "Obyekt turi", "objectName": "Obyekt nomi", "identifier": "Identifikator", "address": "Manzil", "period": "Davriylik", "periodAmount": "Davr summasi", "periodUnit": "Davr birligi", "dates": "Ijara davri", "contractAmount": "Shartnoma summasi", "taxBaseAmount": "Soliq bazasi", "taxRate": "Soliq stavkasi", "expenseAccount": "Xarajat hisobvarag'i", "objectCount": "Obyektlar soni", "docNumber": "Hujjat raqami", "docDate": "Hujjat sanasi", "taxAmount": "Soliq summasi", "payableAmount": "To'lanadigan summa", "amount": "Jami summa", "exchangeRate": "Valyuta kursi", "dateFrom": "Sanadan", "dateTo": "Shu sanagacha", "calculationMonth": "Hisoblash oyi" },
-      "period": { "month": "Oy", "day": "Kun" },
-      "lessor": { "individual": "Jismoniy shaxs", "legalEntity": "Yuridik shaxs" },
-      "modes": { "free": "Bepul", "paid": "Pullik" },
-      "utility": { "lessor": "Ijaraga beruvchi", "lessee": "Ijarachi" },
-      "actions": { "activate": "Faollashtirish", "post": "O'tkazish", "cancel": "Bekor qilish", "generate": "Hisob-kitob yaratish", "activateConfirm": "Shartnomani faollashtirasizmi?", "postConfirm": "Hisob-kitobni o'tkazasizmi?", "cancelConfirm": "Hujjatni bekor qilasizmi?", "deleteConfirm": "Qoralama hujjatni o'chirasizmi?" },
-       "messages": { "generated": "{{count}} ta hisob-kitob hujjati yaratildi", "documentIds": "Yaratilgan hujjatlar: {{ids}}", "lessorFound": "Ijaraga beruvchi ma'lumotlari topildi", "accountsRequired": "Pullik ijara uchun barcha hisobvaraqlarni tanlang" }
+    "title": "Ijara",
+    "contracts": {
+      "title": "Ijara shartnomalari",
+      "create": "Ijara shartnomasini yaratish",
+      "edit": "Ijara shartnomasini tahrirlash",
+      "detail": "Ijara shartnomasi",
+      "general": "Umumiy ma'lumotlar",
+      "objects": "Ijara obyektlari",
+      "objectNumber": "Ijara obyekti {{number}}",
+      "newObject": "Yangi obyekt",
+      "objectsDescription": "Har bir ijara obyektining ma'lumotlarini alohida ochiladigan blokda kiriting.",
+      "noObjects": "Ijara obyektlari mavjud emas"
+    },
+    "accruals": {
+      "title": "Ijara hisob-kitoblari",
+      "edit": "Ijara hisob-kitobini tahrirlash",
+      "detail": "Ijara hisob-kitobi",
+      "items": "Hisob-kitob satrlari",
+      "itemNumber": "Hisob-kitob satri {{number}}",
+      "editDetails": "Hisob-kitob ma'lumotlarini tahrirlash",
+      "generateTitle": "Hisob-kitoblarni yaratish"
+    },
+    "fields": {
+      "lessorFullName": "Ijaraga beruvchi F.I.Sh.",
+      "lessors": "Ijaraga beruvchilar",
+      "lessorKind": "Ijaraga beruvchi turi",
+      "innOrPinfl": "STIR / JShShIR",
+      "lessorInn": "STIR",
+      "lessorPinfl": "JShShIR",
+      "phoneNumber": "Telefon raqami",
+      "registeredAddress": "Ro'yxatdan o'tgan manzil",
+      "residentialAddress": "Yashash manzili",
+      "isFreeOfCharge": "Bepul ijara",
+      "rentalType": "Ijara turi",
+      "totalArea": "Umumiy maydon",
+      "rentedArea": "Ijaraga olingan maydon",
+      "utilities": "Kommunal xizmatlar",
+      "utilityService": "Kommunal xizmat turi",
+      "utilityPayer": "To'lovchi",
+      "contractNumber": "Shartnoma raqami",
+      "contractDate": "Shartnoma sanasi",
+      "startDate": "Boshlanish sanasi",
+      "endDate": "Tugash sanasi",
+      "confirmationDate": "Tasdiqlash sanasi",
+      "terminationDate": "Bekor qilish sanasi",
+      "currency": "Valyuta",
+      "lessorPayableAccount": "Ijaraga beruvchi hisobvarag'i",
+      "taxPayableAccount": "Soliq hisobvarag'i",
+      "comment": "Izoh",
+      "objectType": "Obyekt turi",
+      "objectName": "Obyekt nomi",
+      "identifier": "Identifikator",
+      "address": "Manzil",
+      "period": "Davriylik",
+      "periodAmount": "Davr summasi",
+      "periodUnit": "Davr birligi",
+      "dates": "Ijara davri",
+      "contractAmount": "Shartnoma summasi",
+      "taxBaseAmount": "Soliq bazasi",
+      "taxRate": "Soliq stavkasi",
+      "expenseAccount": "Xarajat hisobvarag'i",
+      "objectCount": "Obyektlar soni",
+      "docNumber": "Hujjat raqami",
+      "docDate": "Hujjat sanasi",
+      "taxAmount": "Soliq summasi",
+      "payableAmount": "To'lanadigan summa",
+      "amount": "Jami summa",
+      "exchangeRate": "Valyuta kursi",
+      "dateFrom": "Sanadan",
+      "dateTo": "Shu sanagacha",
+      "calculationMonth": "Hisoblash oyi"
+    },
+    "period": {
+      "month": "Oy",
+      "day": "Kun"
+    },
+    "lessor": {
+      "individual": "Jismoniy shaxs",
+      "legalEntity": "Yuridik shaxs"
+    },
+    "modes": {
+      "free": "Bepul",
+      "paid": "Pullik"
+    },
+    "utility": {
+      "lessor": "Ijaraga beruvchi",
+      "lessee": "Ijarachi"
+    },
+    "actions": {
+      "activate": "Faollashtirish",
+      "post": "O'tkazish",
+      "cancel": "Bekor qilish",
+      "generate": "Hisob-kitob yaratish",
+      "activateConfirm": "Shartnomani faollashtirasizmi?",
+      "postConfirm": "Hisob-kitobni o'tkazasizmi?",
+      "cancelConfirm": "Hujjatni bekor qilasizmi?",
+      "deleteConfirm": "Qoralama hujjatni o'chirasizmi?"
+    },
+    "messages": {
+      "generated": "{{count}} ta hisob-kitob hujjati yaratildi",
+      "documentIds": "Yaratilgan hujjatlar: {{ids}}",
+      "lessorFound": "Ijaraga beruvchi ma'lumotlari topildi",
+      "accountsRequired": "Pullik ijara uchun barcha hisobvaraqlarni tanlang"
+    }
   },
   "reports": {
     "title": "Operativ hisobotlar",

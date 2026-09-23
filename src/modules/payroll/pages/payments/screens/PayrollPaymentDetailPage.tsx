@@ -151,6 +151,19 @@ export default function PayrollPaymentDetailPage() {
     isFinal ? values.payrollDocId : null,
   );
 
+  // A final payment settles one payroll document: its liability account and currency are
+  // the document's (1C «Ведомость» takes both from the accrual), so they are taken from it
+  // rather than picked again by hand.
+  useEffect(() => {
+    if (!isCreate || !isFinal || !payrollDocument) return;
+    if (payrollDocument.id !== values.payrollDocId) return;
+    if (payrollDocument.salaryPayableAccountId && !values.offsetAccountId)
+      formik.setFieldValue("offsetAccountId", payrollDocument.salaryPayableAccountId, false);
+    if (payrollDocument.currencyId && !values.currencyId)
+      formik.setFieldValue("currencyId", payrollDocument.currencyId, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCreate, isFinal, payrollDocument, values.payrollDocId]);
+
   const total = useMemo(
     () => (isCreate ? paymentTotal(values.lines) : (record?.totalAmount ?? 0)),
     [isCreate, values.lines, record?.totalAmount],
@@ -252,7 +265,9 @@ export default function PayrollPaymentDetailPage() {
                   <PayrollPeriodSelect
                     formik={formik}
                     fieldName="periodId"
-                    onlyOpen={isCreate}
+                    // A final payment settles a closed month's salary — that is the usual
+                    // case, not an exception — so only an advance needs an open period.
+                    onlyOpen={isCreate && !isFinal}
                     required
                     disabled={!isCreate}
                   />

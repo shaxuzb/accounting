@@ -1,22 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, type ReactNode } from "react";
 import { Avatar, Popover, Space } from "antd";
+import type { TooltipPlacement } from "antd/es/tooltip";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import ProfileIcon from "@/assets/images/profile/profile.svg";
 import { useNavigate } from "react-router";
 import { ProfilePopoverContent } from "./components/ProfilePopoverContent";
 import { logout } from "@/store/features/authSlice";
-import { setMode } from "@/store/features/modeSlice";
 import toast from "react-hot-toast";
-import { useEffectiveTheme } from "@/shared/hooks/useEffectiveTheme";
 import { useTranslation } from "react-i18next";
-const ProfileNav: React.FC = () => {
+
+type ProfileMenuProps = {
+  /** Popoverni ochadigan element. Berilmasa oddiy avatar ishlatiladi. */
+  children?: ReactNode;
+  placement?: TooltipPlacement;
+};
+
+/**
+ * Profil popoveri. Mavzu va til bu yerdan headerga ko'chirildi
+ * (components/navbar/theme va components/navbar/language).
+ */
+const ProfileNav: React.FC<ProfileMenuProps> = ({
+  children,
+  placement = "bottomRight",
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  // const loading = useAppSelector((state) => state.auth.loading);
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth?.user);
-  const effectiveTheme = useEffectiveTheme();
   const [mainPopover, setMainPopover] = useState(false);
+
   const handleLogout = () => {
     // The logout middleware cancels the active EDO import before auth state is cleared.
     dispatch(logout());
@@ -29,12 +41,7 @@ const ProfileNav: React.FC = () => {
     <ProfilePopoverContent
       fullName={user?.user?.userName}
       phone={user?.user?.phoneNumber || "+998 -- --- -- --"}
-      onProfileClick={() => navigate("/profile")}
-      onThemeClick={() =>
-        dispatch(setMode(effectiveTheme === "dark" ? "light" : "dark"))
-      }
       onSecurityClick={() => navigate("/settings/security")}
-      onLanguageClick={() => {}}
       onWallpaperClick={() => navigate("/settings/wallpaper")}
       onDesktopDownload={() => window.open("/downloads/desktop", "_blank")}
       onMobileDownload={() => window.open("/downloads/mobile", "_blank")}
@@ -46,7 +53,7 @@ const ProfileNav: React.FC = () => {
     <Popover
       trigger={["click"]}
       content={content}
-      placement="bottomRight"
+      placement={placement}
       open={mainPopover}
       onOpenChange={setMainPopover}
       arrow={false}
@@ -58,24 +65,17 @@ const ProfileNav: React.FC = () => {
         },
       }}
     >
-      <div className="cursor-pointer" onClick={(e) => e.preventDefault()}>
-        <Space>
-          <Avatar
-            src={ProfileIcon}
-            size={40}
-            className="border border-border shadow-sm"
-          />
-          {/* <div className="flex flex-col justify-center">
-            <h2 className="text-[14px] text-text font-bold leading-tight m-0 flex items-center">
-              {user?.user?.userName}
-            </h2>
-            <p className="text-muted-second m-0 mt-0.5 text-[12px] font-medium leading-none">
-              {user?.user?.roleName}
-            </p>
-          </div> */}
-          {/* <ChevronDown className="size-4 text-text" /> */}
-        </Space>
-      </div>
+      {children ?? (
+        <div className="cursor-pointer" onClick={(e) => e.preventDefault()}>
+          <Space>
+            <Avatar
+              src={ProfileIcon}
+              size={40}
+              className="border border-border shadow-sm"
+            />
+          </Space>
+        </div>
+      )}
     </Popover>
   );
 };

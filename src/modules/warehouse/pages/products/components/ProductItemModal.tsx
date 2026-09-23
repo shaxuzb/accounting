@@ -1,4 +1,4 @@
-import { Button, Col, Form, Modal, Row, Switch } from "antd";
+import { Button, Col, Form, Modal, Row, Tag } from "antd";
 import { useFormik } from "formik";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -253,17 +253,12 @@ export default function ProductItemModal({
               </Button>
             </div>
           </Col>
+          {/* Goods are always tracked one unit at a time — each unit carries its own
+              marking — so this is stated, not chosen. Only a service has no units. */}
           {!isService && (
             <Col span={12}>
               <Form.Item label={t("products.fields.pieceTracked")}>
-                <Switch
-                  checked={Boolean(productFormik.values.isPieceTracked)}
-                  checkedChildren={t("app.common.yes")}
-                  unCheckedChildren={t("app.common.no")}
-                  onChange={(checked) =>
-                    productFormik.setFieldValue("isPieceTracked", checked, true)
-                  }
-                />
+                <Tag color="blue">{t("products.messages.alwaysPieceTracked")}</Tag>
               </Form.Item>
             </Col>
           )}

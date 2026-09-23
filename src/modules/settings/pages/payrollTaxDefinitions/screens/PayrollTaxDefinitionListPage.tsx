@@ -233,7 +233,7 @@ export default function PayrollTaxDefinitionListPage() {
           pagination={false}
           size="middle"
         />
-        <ListPagination {...paginationProps(data?.total)} />
+        <ListPagination {...paginationProps(data?.total ?? data?.totalCount)} />
       </Card>
 
       <PayrollTaxDefinitionAddEditPage

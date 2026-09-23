@@ -1,6 +1,7 @@
 import Messages from "@/components/navbar/messages";
 import OrgSwitcher from "@/components/navbar/org-switcher";
-import ProfileNav from "@/components/navbar/profile";
+import ThemeToggle from "@/components/navbar/theme";
+import LanguageSwitcher from "@/components/navbar/language";
 import { useWorkspaceNavigation } from "@/app/navigation/useWorkspaceNavigation";
 import { setClose } from "@/store/features/sidebarCloseSlice";
 
@@ -61,8 +62,9 @@ const Navbar = () => {
         </div>
         <div className="flex gap-2 items-center grow justify-end">
           <OrgSwitcher />
+          <ThemeToggle />
+          <LanguageSwitcher />
           <Messages />
-          <ProfileNav />
         </div>
       </div>
     </div>

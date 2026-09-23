@@ -242,10 +242,9 @@ export default function SalePricingEditor({
       toast.error(t("sale.messages.salePriceRequired"));
       return;
     }
-    if (lines.some((line) => line.costPrice <= 0)) {
-      toast.error(t("sale.messages.costPriceMissing"));
-      return;
-    }
+    // No cost check here any more: the server writes off the batches when the
+    // document posts and takes the cost from what they gave up, so a line that
+    // has no cost yet is normal rather than an error.
     if (lines.some((line) => line.vatRateId === null)) {
       toast.error(t("sale.messages.vatRateRequired"));
       return;

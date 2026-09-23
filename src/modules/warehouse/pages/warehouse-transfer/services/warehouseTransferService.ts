@@ -2,6 +2,7 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import type { ListParams, Paginated } from "@/shared/types";
 import { warehouseTransferEndpoints as endpoints } from "../constants/endpoints";
 import type { WarehouseTransferForm } from "../types/form";
+import { toWarehouseTransferPayload } from "../utils/transfer";
 import type { WarehouseTransferDocument } from "../types/type";
 
 type QueryParams = ListParams | URLSearchParams;
@@ -17,11 +18,11 @@ export const warehouseTransferService = {
       .then((res) => res.data),
   create: (payload: WarehouseTransferForm) =>
     $axiosPrivate
-      .post<WarehouseTransferDocument>(endpoints.create, payload)
+      .post<WarehouseTransferDocument>(endpoints.create, toWarehouseTransferPayload(payload))
       .then((res) => res.data),
   update: (id: string | number, payload: WarehouseTransferForm) =>
     $axiosPrivate
-      .put<WarehouseTransferDocument>(endpoints.update(id), payload)
+      .put<WarehouseTransferDocument>(endpoints.update(id), toWarehouseTransferPayload(payload))
       .then((res) => res.data),
   confirm: (id: string | number) =>
     $axiosPrivate

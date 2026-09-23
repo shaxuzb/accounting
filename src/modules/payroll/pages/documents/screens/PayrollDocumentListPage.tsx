@@ -213,7 +213,7 @@ export default function PayrollDocumentListPage() {
             onDoubleClick: () => navigate(`${LIST_PATH}/${record.id}`),
           })}
         />
-        <ListPagination {...paginationProps(data?.total)} />
+        <ListPagination {...paginationProps(data?.total ?? data?.totalCount)} />
       </Card>
 
       <PayrollCalculateModal

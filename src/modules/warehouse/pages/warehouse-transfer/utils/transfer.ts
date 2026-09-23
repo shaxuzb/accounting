@@ -56,6 +56,25 @@ export const mapTransferDetailToForm = (
     })) ?? [createDefaultTransferLine()],
 });
 
+/**
+ * Strips the placeholder item rows the form carries for its own editing before the
+ * document is sent.
+ *
+ * A line always holds at least one item so the marking editor has somewhere to write,
+ * but goods that are not tracked one unit at a time never fill it in. Sending it
+ * anyway put `productTableId: null` on the wire, which the API cannot read as an int —
+ * transfers of ordinary goods were rejected outright with a bare 400.
+ */
+export const toWarehouseTransferPayload = (
+  values: WarehouseTransferForm,
+): WarehouseTransferForm => ({
+  ...values,
+  lines: values.lines.map((line) => ({
+    ...line,
+    items: line.items.filter((item) => Boolean(item.productTableId)),
+  })),
+});
+
 export const toMarkingList = (items: WarehouseTransferItemForm[]) =>
   items
     .map((item) => item.markingNumber?.trim())

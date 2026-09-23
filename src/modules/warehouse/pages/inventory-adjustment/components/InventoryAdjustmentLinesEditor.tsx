@@ -14,9 +14,12 @@ import { useGetInventoryAdjustmentSerials } from "../hooks/useGetInventoryAdjust
 import type { InventoryAdjustmentForm, InventoryAdjustmentLineForm } from "../types/form";
 import { useTranslation } from "react-i18next";
 import InventoryAdjustmentMarkingModal from "./InventoryAdjustmentMarkingModal";
+import InventoryAdjustmentMarkingEntryModal from "./InventoryAdjustmentMarkingEntryModal";
 import {
   createDefaultAdjustmentItem,
   createDefaultAdjustmentLine,
+  isIncreaseAdjustment,
+  parseAdjustmentMarkingInput,
   takeBatchUnitCosts,
   toMarkingList,
 } from "../utils/inventoryAdjustment";
@@ -39,6 +42,34 @@ export default function InventoryAdjustmentLinesEditor({
   });
   const [activeLineIndex, setActiveLineIndex] = useState<number | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [markingInput, setMarkingInput] = useState("");
+
+  // Stock coming onto the books is made of units that never existed before, so their
+  // markings are typed in; stock leaving names units the warehouse already holds.
+  const isIncrease = isIncreaseAdjustment(formik.values.adjustmentType);
+
+  const setLineMarkings = (lineIndex: number, markings: string[]) => {
+    formik.setFieldValue(
+      `lines[${lineIndex}].items`,
+      markings.map((markingNumber) => ({
+        ...createDefaultAdjustmentItem(),
+        markingNumber,
+      })),
+      true,
+    );
+    formik.setFieldValue(`lines[${lineIndex}].quantity`, markings.length, true);
+  };
+
+  const addMarkings = (incoming: string[]) => {
+    if (activeLineIndex === null || !incoming.length) return;
+    const current = toMarkingList(formik.values.lines[activeLineIndex]?.items ?? []);
+    const merged = [...current];
+    incoming.forEach((marking) => {
+      if (!merged.includes(marking)) merged.push(marking);
+    });
+    setLineMarkings(activeLineIndex, merged);
+    setMarkingInput("");
+  };
 
   const stockMap = useMemo(() => {
     const map = new Map<number, ProductStock>();
@@ -234,13 +265,18 @@ export default function InventoryAdjustmentLinesEditor({
                   size="small"
                   onClick={() => {
                     setActiveLineIndex(index);
+                    setMarkingInput("");
                     setSelectedRowKeys(
                       (line.items ?? [])
                         .map((item) => item.productTableId)
                         .filter((item): item is number => Boolean(item)),
                     );
                   }}
-                  disabled={disabled || !canOpenMarking || serialsQuery.isFetching}
+                  disabled={
+                    disabled ||
+                    !canOpenMarking ||
+                    (!isIncrease && serialsQuery.isFetching)
+                  }
                 >
                   {t("warehouse.lines.marking")}
                 </Button>
@@ -260,8 +296,41 @@ export default function InventoryAdjustmentLinesEditor({
         })}
       </div>
 
+      <InventoryAdjustmentMarkingEntryModal
+        open={isIncrease && activeLineIndex !== null && Boolean(activeLine?.productId)}
+        title={activeLine?.productName || t("warehouse.lines.selectMarking")}
+        value={markingInput}
+        markings={toMarkingList(activeLine?.items ?? [])}
+        onChange={setMarkingInput}
+        onPaste={(event) => {
+          const pasted = parseAdjustmentMarkingInput(
+            event.clipboardData.getData("text"),
+          );
+          if (pasted.length < 2) return;
+          event.preventDefault();
+          addMarkings(pasted);
+        }}
+        onAdd={() => {
+          const marking = markingInput.trim();
+          if (marking) addMarkings([marking]);
+        }}
+        onRemove={(marking) => {
+          if (activeLineIndex === null) return;
+          setLineMarkings(
+            activeLineIndex,
+            toMarkingList(formik.values.lines[activeLineIndex]?.items ?? []).filter(
+              (item) => item !== marking,
+            ),
+          );
+        }}
+        onClose={() => {
+          setActiveLineIndex(null);
+          setMarkingInput("");
+        }}
+      />
+
       <InventoryAdjustmentMarkingModal
-        open={activeLineIndex !== null && Boolean(activeLine?.productId)}
+        open={!isIncrease && activeLineIndex !== null && Boolean(activeLine?.productId)}
         title={activeLine?.productName || t("warehouse.lines.selectMarking")}
         items={serialItems}
         selectedRowKeys={selectedRowKeys}

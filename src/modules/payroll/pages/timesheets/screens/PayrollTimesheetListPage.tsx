@@ -178,7 +178,7 @@ export default function PayrollTimesheetListPage() {
           pagination={false}
           size="middle"
         />
-        <ListPagination {...paginationProps(data?.total)} />
+        <ListPagination {...paginationProps(data?.total ?? data?.totalCount)} />
       </Card>
     </div>
   );

@@ -231,7 +231,7 @@ export default function BankOperationListPage() {
           scroll={{ x: "max-content", y: "calc(100vh - 230px)" }}
           size="small"
         />
-        <ListPagination {...paginationProps(data?.total)} />
+        <ListPagination {...paginationProps(data?.total ?? data?.totalCount)} />
       </Card>
     </div>
   );

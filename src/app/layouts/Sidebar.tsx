@@ -1,10 +1,10 @@
 import LogoSide from "@/components/sidebar/LogoSide";
 import MenuCustom from "@/components/sidebar/menu";
+import ProfileSide from "@/components/sidebar/ProfileSide";
 import { useAppSelector } from "@/store/hooks";
 import { useMemo } from "react";
 import { menuPermissions } from "../config/menuPermissions";
 import { logout } from "@/store/features/authSlice";
-import CustomScroller from "react-custom-scroller";
 import { useDispatch } from "react-redux";
 const Sidebar = () => {
   const sidebarInline = useAppSelector((state) => state.sidebar);
@@ -13,7 +13,6 @@ const Sidebar = () => {
   const memoizedMenus = useMemo(() => {
     if (user && user.user) {
       const topMenus = [];
-      const bottomMenus = [];
       for (let index = 0; index < menuPermissions.TOP.length; index++) {
         if (!user?.user?.permissions) {
           dispatch(logout());
@@ -33,30 +32,9 @@ const Sidebar = () => {
           });
         }
       }
-      for (let index = 0; index < menuPermissions.BOTTOM.length; index++) {
-        if (!user?.user?.permissions) {
-          dispatch(logout());
-        }
-        if (
-          user.user.permissions.find(
-            (item) => item === menuPermissions.BOTTOM[index].code,
-          ) ||
-          menuPermissions.BOTTOM[index].code === "SETTINGS"
-        ) {
-          bottomMenus.push({
-            ...menuPermissions.BOTTOM[index],
-          });
-        }
-      }
-      return {
-        TOP: topMenus,
-        BOTTOM: bottomMenus,
-      };
+      return { TOP: topMenus };
     }
-    return {
-      TOP: [],
-      BOTTOM: [],
-    };
+    return { TOP: [] };
   }, [dispatch, user]);
   // const snowflakeImages = useMemo(() => {
   //   const img = new Image();
@@ -68,18 +46,20 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`${sidebarInline.sidebar ? "w-16" : "w-[280px]"} sticky top-0 h-screen shrink-0 overflow-hidden border-r border-border bg-primary-bg transition-[width] duration-200 ease-out`}
+      // flex-col bo'lmasa o'rtadagi `flex-1 min-h-0` ishlamaydi: menyu
+      // balandlikka sig'maganda scroll o'rniga kesilib qolardi.
+      className={`${sidebarInline.sidebar ? "w-16" : "w-[280px]"} sticky top-0 flex h-screen shrink-0 flex-col overflow-hidden border-r border-border bg-primary-bg transition-[width] duration-200 ease-out`}
     >
-      <LogoSide />
-      <div className="flex-1 min-h-0 overflow-hidden">
-        <CustomScroller className="h-full">
-          {/* {!sidebarInline.sidebar && <ProfileSide />} */}
-          {/* <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden"> */}
-          <MenuCustom route={memoizedMenus.TOP} />
-          {/* </div> */}
-        </CustomScroller>
+      <div className="shrink-0">
+        <LogoSide />
       </div>
-      <MenuCustom route={memoizedMenus.BOTTOM} />
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+        {/* {!sidebarInline.sidebar && <ProfileSide />} */}
+        <MenuCustom route={memoizedMenus.TOP} />
+      </div>
+      <div className="shrink-0 border-t border-border">
+        <ProfileSide />
+      </div>
     </div>
   );
 };

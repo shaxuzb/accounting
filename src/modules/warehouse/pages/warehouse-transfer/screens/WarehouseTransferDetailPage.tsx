@@ -101,6 +101,7 @@ export default function WarehouseTransferDetailPage() {
         <div className="space-y-4">
           <WarehouseTransferActions
             isDraft={isDraft}
+            isSaved={!isCreate}
             saving={createMutation.isPending || updateMutation.isPending}
             confirming={confirmMutation.isPending}
             cancelling={cancelMutation.isPending}

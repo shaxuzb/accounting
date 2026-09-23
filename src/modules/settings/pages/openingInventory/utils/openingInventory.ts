@@ -115,9 +115,10 @@ export const getOpeningInventoryTotals = (
     },
   );
 
+/** Marking codes may contain `,`, `;` or spaces, so only the line breaks and tabs of an Excel paste split them. */
 export const parseMarkingInput = (value: string) =>
   value
-    .split(/[\s,;]+/)
+    .split(/[\r\n\t]+/)
     .map((item) => item.trim())
     .filter(Boolean);
 

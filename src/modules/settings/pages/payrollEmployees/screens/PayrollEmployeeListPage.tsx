@@ -217,7 +217,7 @@ export default function PayrollEmployeeListPage() {
           pagination={false}
           size="middle"
         />
-        <ListPagination {...paginationProps(data?.total)} />
+        <ListPagination {...paginationProps(data?.total ?? data?.totalCount)} />
       </Card>
 
       <PayrollEmployeeAddEditPage

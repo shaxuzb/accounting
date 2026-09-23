@@ -1136,28 +1136,23 @@ export default function SaleProductSelection({
       title: t("warehouse.fields.costPrice"),
       align: "center",
       width: 160,
-      render: (value, record) => (
-        <InputNumberFormat
-          standalone
-          height={tableControlHeight}
-          emptyZero
-          min={0}
-          value={Number(value ?? 0)}
-          disabled={isNewRow(record.rowKey) || disabled}
-          precision={2}
-          onValueChange={(costPrice) =>
-            updateLine(record.rowKey, (line) => {
-              const nextCostPrice = roundMoney(Number(costPrice ?? 0));
-
-              return {
-                ...line,
-                costPrice: nextCostPrice,
-                costPriceType: "manual",
-                markupPercent: getMarkupPercent(nextCostPrice, line.unitPrice),
-              };
-            })
-          }
-        />
+      // Shown, not typed: the server writes off the batches and the cost of goods
+      // sold follows from what they gave up, so a hand-entered figure would only
+      // disagree with the ledger.
+      render: (value) => (
+        <Tooltip title={t("sale.messages.costPriceFromBatches")}>
+          <div>
+            <InputNumberFormat
+              standalone
+              disabled
+              height={tableControlHeight}
+              emptyZero
+              min={0}
+              value={Number(value ?? 0)}
+              precision={2}
+            />
+          </div>
+        </Tooltip>
       ),
     },
     {

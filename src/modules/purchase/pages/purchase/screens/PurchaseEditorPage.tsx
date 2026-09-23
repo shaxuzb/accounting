@@ -1032,41 +1032,49 @@ export const PurchaseEditor = ({
     ],
   );
 
+  const appendMarkings = useCallback(
+    (rowIndex: number, markings: string[]) => {
+      const current = toMarkingNumbers(linesRef.current[rowIndex]);
+      const currentSet = new Set(current);
+      const uniqueMarkings = markings.filter((marking) => {
+        if (currentSet.has(marking)) return false;
+        currentSet.add(marking);
+        return true;
+      });
+
+      if (!uniqueMarkings.length) {
+        toast.error(t("purchase.messages.duplicateMarkings"));
+        return;
+      }
+
+      void updateRowMarkings(rowIndex, [...current, ...uniqueMarkings]);
+      setMarkingInput("");
+    },
+    [t, updateRowMarkings],
+  );
+
+  /** A marking code is taken verbatim — it may contain commas, quotes or any other character. */
   const handleAddMarking = useCallback(() => {
     if (markingRowIndex === null) return;
-    const nextMarkings = parseMarkingInput(markingInput);
-    if (!nextMarkings.length) return;
+    const marking = markingInput.trim();
+    if (!marking) return;
 
-    const current = toMarkingNumbers(linesRef.current[markingRowIndex]);
-    const currentSet = new Set(current);
-    const uniqueMarkings = nextMarkings.filter((marking) => {
-      if (currentSet.has(marking)) return false;
-      currentSet.add(marking);
-      return true;
-    });
-
-    if (!uniqueMarkings.length) {
-      toast.error(t("purchase.messages.duplicateMarkings"));
-      return;
-    }
-
-    void updateRowMarkings(markingRowIndex, [...current, ...uniqueMarkings]);
-    setMarkingInput("");
-  }, [markingInput, markingRowIndex, t, updateRowMarkings]);
+    appendMarkings(markingRowIndex, [marking]);
+  }, [appendMarkings, markingInput, markingRowIndex]);
 
   const handleMarkingPaste = useCallback(
     (event: ClipboardEvent<HTMLInputElement>) => {
-      const pastedText = event.clipboardData.getData("text");
-      const pastedMarkings = parseMarkingInput(pastedText);
+      const pastedMarkings = parseMarkingInput(
+        event.clipboardData.getData("text"),
+      );
 
-      if (pastedMarkings.length < 2) return;
+      // A single code keeps the default paste so it can be reviewed before adding.
+      if (pastedMarkings.length < 2 || markingRowIndex === null) return;
 
       event.preventDefault();
-      setMarkingInput((prev) =>
-        [...parseMarkingInput(prev), ...pastedMarkings].join(" "),
-      );
+      appendMarkings(markingRowIndex, pastedMarkings);
     },
-    [],
+    [appendMarkings, markingRowIndex],
   );
 
   const handleRemoveMarking = useCallback(

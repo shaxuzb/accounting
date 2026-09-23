@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 
 interface Props {
   isDraft: boolean;
+  /** False until the document exists; confirming or cancelling one that was never saved has no id to act on. */
+  isSaved: boolean;
   saving: boolean;
   confirming: boolean;
   cancelling: boolean;
@@ -15,6 +17,7 @@ interface Props {
 
 export default function WarehouseTransferActions({
   isDraft,
+  isSaved,
   saving,
   confirming,
   cancelling,
@@ -41,7 +44,7 @@ export default function WarehouseTransferActions({
         block
         icon={<CheckCircle2 className="size-4" />}
         onClick={onConfirm}
-        disabled={!isDraft}
+        disabled={!isDraft || !isSaved}
         loading={confirming}
       >
         {t("common.confirm")}
@@ -51,7 +54,7 @@ export default function WarehouseTransferActions({
         block
         icon={<CircleX className="size-4" />}
         onClick={onCancel}
-        disabled={!isDraft}
+        disabled={!isDraft || !isSaved}
         loading={cancelling}
       >
         {t("common.cancel")}

@@ -67,6 +67,7 @@
     "subtitle": "Sorry, there was a problem loading the page or processing requests.",
     "reload": "Reload page",
     "pageNotFound": "Page not found",
+    "goHome": "Back to home",
     "unknown": "An unknown error occurred",
     "noPermission": "You do not have permission to access this page"
   },
@@ -115,15 +116,93 @@
     "allCurrencies": "All currencies",
     "allPeriod": "All time",
     "notAvailable": "Data unavailable",
-    "status": { "available": "Data ready", "partial": "Partial data", "unavailable": "Source unavailable" },
+    "status": {
+      "available": "Data ready",
+      "partial": "Partial data",
+      "unavailable": "Source unavailable"
+    },
     "loadError": "Dashboard data could not be loaded",
     "loadErrorDescription": "Check the connection and try again.",
-    "cash": { "title": "Cash balances", "description": "Period movement across bank accounts and cash boxes.", "account": "Account", "unnamedAccount": "Unnamed account", "bankAccount": "Bank account", "cashBox": "Cash box", "opening": "Opening balance", "inflow": "Inflow", "outflow": "Outflow", "closing": "Closing balance", "empty": "No account data available" },
-    "relationships": { "title": "Relationships", "description": "Incoming and outgoing document counts.", "incoming": "Incoming", "outgoing": "Outgoing" },
-    "debts": { "title": "Receivables and payables", "description": "Current debt by counterparty.", "receivable": "Receivables", "payable": "Payables", "overdueUnavailable": "Overdue amount unavailable", "overdue": "Overdue: {{amount}}", "unknownCounterparty": "Unknown counterparty", "empty": "No debt data available" },
-    "tax": { "title": "Tax indicators", "description": "VAT from sale and purchase documents.", "total": "Total VAT", "vatPayer": "VAT payer", "yes": "Yes", "no": "No", "empty": "No tax data available" },
-    "documents": { "title": "Electronic documents", "description": "Document indicators by type, status, and direction.", "count": "items", "total": "Total documents", "empty": "No electronic documents", "byStatus": "By status", "countByStatus": "By count", "byType": "By type", "byDirection": "By direction", "directionSummary": "Direction", "incoming": "Incoming", "outgoing": "Outgoing", "filters": { "all": "All", "incoming": "Incoming", "outgoing": "Outgoing" }, "amountPeriod": "Amount", "amountMissing": "Amount unavailable", "amountReady": "Amount data is ready.", "realDataNote": "Metrics are based on API data", "typeLabels": { "CONTRACT": "Contracts", "POWER_OF_ATTORNEY": "Power of attorney", "FACTURA": "Invoices", "WAYBILL": "Waybills", "WAYBILL_LOCAL": "Waybills", "TTYU": "Waybills" }, "statusLabels": { "SIGNED": "Signed", "SENT": "In progress", "REJECTED": "Rejected", "CANCELLED": "Cancelled", "CANCELED": "Cancelled" } },
-    "tasks": { "title": "Task calendar", "description": "The generic task table is not available in the backend yet." }
+    "cash": {
+      "title": "Cash balances",
+      "description": "Period movement across bank accounts and cash boxes.",
+      "account": "Account",
+      "unnamedAccount": "Unnamed account",
+      "bankAccount": "Bank account",
+      "cashBox": "Cash box",
+      "opening": "Opening balance",
+      "inflow": "Inflow",
+      "outflow": "Outflow",
+      "closing": "Closing balance",
+      "empty": "No account data available"
+    },
+    "relationships": {
+      "title": "Relationships",
+      "description": "Incoming and outgoing document counts.",
+      "incoming": "Incoming",
+      "outgoing": "Outgoing"
+    },
+    "debts": {
+      "title": "Receivables and payables",
+      "description": "Current debt by counterparty.",
+      "receivable": "Receivables",
+      "payable": "Payables",
+      "overdueUnavailable": "Overdue amount unavailable",
+      "overdue": "Overdue: {{amount}}",
+      "unknownCounterparty": "Unknown counterparty",
+      "empty": "No debt data available"
+    },
+    "tax": {
+      "title": "Tax indicators",
+      "description": "VAT from sale and purchase documents.",
+      "total": "Total VAT",
+      "vatPayer": "VAT payer",
+      "yes": "Yes",
+      "no": "No",
+      "empty": "No tax data available"
+    },
+    "documents": {
+      "title": "Electronic documents",
+      "description": "Document indicators by type, status, and direction.",
+      "count": "items",
+      "total": "Total documents",
+      "empty": "No electronic documents",
+      "byStatus": "By status",
+      "countByStatus": "By count",
+      "byType": "By type",
+      "byDirection": "By direction",
+      "directionSummary": "Direction",
+      "incoming": "Incoming",
+      "outgoing": "Outgoing",
+      "filters": {
+        "all": "All",
+        "incoming": "Incoming",
+        "outgoing": "Outgoing"
+      },
+      "amountPeriod": "Amount",
+      "amountMissing": "Amount unavailable",
+      "amountReady": "Amount data is ready.",
+      "realDataNote": "Metrics are based on API data",
+      "typeLabels": {
+        "CONTRACT": "Contracts",
+        "POWER_OF_ATTORNEY": "Power of attorney",
+        "FACTURA": "Invoices",
+        "WAYBILL": "Waybills",
+        "WAYBILL_LOCAL": "Waybills",
+        "TTYU": "Waybills"
+      },
+      "statusLabels": {
+        "SIGNED": "Signed",
+        "SENT": "In progress",
+        "REJECTED": "Rejected",
+        "CANCELLED": "Cancelled",
+        "CANCELED": "Cancelled"
+      }
+    },
+    "tasks": {
+      "title": "Task calendar",
+      "description": "The generic task table is not available in the backend yet."
+    }
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -418,10 +497,25 @@
       "noAssets": "No fixed assets found",
       "amortizationDetails": "Depreciation parameters"
     },
-    "depreciation": { "period": "Calculation month" },
-    "filters": { "dateFrom": "Date from", "dateTo": "Date to" },
-    "statuses": { "draft": "Draft", "posted": "Posted", "cancelled": "Cancelled", "pending": "Pending" },
-    "assetStatuses": { "notCommissioned": "Not commissioned", "active": "Active", "conservation": "Conservation", "disposed": "Disposed" }
+    "depreciation": {
+      "period": "Calculation month"
+    },
+    "filters": {
+      "dateFrom": "Date from",
+      "dateTo": "Date to"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "posted": "Posted",
+      "cancelled": "Cancelled",
+      "pending": "Pending"
+    },
+    "assetStatuses": {
+      "notCommissioned": "Not commissioned",
+      "active": "Active",
+      "conservation": "Conservation",
+      "disposed": "Disposed"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -608,7 +702,10 @@
       "detail": "Obligation setting details",
       "notFound": "Obligation setting not found",
       "notConfigured": "Not configured",
-      "categories": { "tax": "Tax", "contribution": "Contribution" },
+      "categories": {
+        "tax": "Tax",
+        "contribution": "Contribution"
+      },
       "filters": {
         "category": "Category",
         "choosedDate": "Effective date",
@@ -737,22 +834,161 @@
             "REJECTED": "Rejected"
           }
         },
-        "navigation": { "inbox": "Incoming", "outbox": "Outgoing", "drafts": "Drafts", "all": "All documents", "templates": "Templates", "excelImport": "Excel upload", "received": "Received", "pendingSignature": "Signature pending", "pendingPartnerSignature": "Partner signature pending", "signed": "Signed", "rejected": "Rejected", "deleted": "Deleted", "powerOfAttorney": "Power of attorney", "notAvailable": "Not available yet", "sectionUnavailable": "This section is waiting for its backend endpoint." },
+        "navigation": {
+          "inbox": "Incoming",
+          "outbox": "Outgoing",
+          "drafts": "Drafts",
+          "all": "All documents",
+          "templates": "Templates",
+          "excelImport": "Excel upload",
+          "received": "Received",
+          "pendingSignature": "Signature pending",
+          "pendingPartnerSignature": "Partner signature pending",
+          "signed": "Signed",
+          "rejected": "Rejected",
+          "deleted": "Deleted",
+          "powerOfAttorney": "Power of attorney",
+          "notAvailable": "Not available yet",
+          "sectionUnavailable": "This section is waiting for its backend endpoint."
+        },
         "capabilityUnavailable": "This action is unavailable for the selected provider",
         "previewUnavailable": "This file cannot be previewed in the browser. Download it to open it.",
-        "provider": { "title": "EDO provider", "description": "Select the electronic document operator for this organization.", "notConfigured": "Provider credentials are not configured" },
-        "auth": { "title": "E-IMZO authentication", "description": "Open an organization session for the selected provider.", "selectProvider": "Select an active provider first", "unavailable": "Authentication capability is unavailable", "authenticated": "Authenticated with {{provider}}", "expiresAt": "Session expires: {{date}}", "authenticate": "Authenticate" },
-        "inbox": { "title": "Incoming EDO documents", "description": "Review incoming provider documents, check status, and perform available actions.", "unavailable": "Inbox capability is unavailable", "filtersUnavailable": "Provider-side search, status, and date filters are not confirmed for Edocs and are currently disabled.", "rejectTitle": "Reject incoming document" },
-        "outbox": { "create": "Create invoice", "createDescription": "Prepare internal document data as a common EDO invoice.", "unavailable": "Invoice creation capability is unavailable", "document": "Outgoing EDO document #{{id}}", "detailDescription": "Check provider status and sign the document with E-IMZO.", "sign": "Sign document", "signUnavailable": "The document cannot be signed in its current state" },
-        "sections": { "document": "Document information", "empowerment": "Empowerment", "lines": "Invoice lines" },
-        "actions": { "createFactura": "Create invoice", "sign": "Sign", "reject": "Reject", "download": "Download", "print": "Print", "basedOn": "Create based on this" },
-        "fields": {
-          "internalDocumentId": "Internal document ID", "internalDocumentType": "Internal document type", "documentNumber": "Document number", "documentDate": "Document date", "documentType": "Document type", "providerDocumentId": "Provider document ID", "contractNumber": "Contract number", "contractDate": "Contract date", "seller": "Seller", "buyer": "Buyer", "name": "Name", "taxIdentifier": "Tax identifier", "bankCode": "Bank code", "accountNumber": "Account number", "address": "Address", "branchCode": "Branch code", "branchName": "Branch name", "directorName": "Director", "accountantName": "Accountant", "vatRegistrationStatus": "VAT registration status", "districtId": "District ID", "empowermentNumber": "Empowerment number", "dateOfIssue": "Date of issue", "agentName": "Agent name", "agentPinfl": "Agent PINFL", "catalogCode": "Catalog code", "catalogName": "Catalog name", "unitCode": "Unit code", "unitName": "Unit name", "quantity": "Quantity", "amount": "Amount", "taxRate": "Tax rate", "taxAmount": "Tax amount", "isTaxFree": "Tax free", "markingCodes": "Marking codes", "companyInn": "Company TIN", "category": "Category", "hasMarks": "Has marks", "yes": "Yes", "no": "No", "fromDate": "From date", "toDate": "To date", "status": "Status", "localStatus": "Local status", "providerStatus": "Provider status", "checkedAt": "Checked at", "reason": "Reason", "preparedPkcs7": "Prepared PKCS#7"
+        "provider": {
+          "title": "EDO provider",
+          "description": "Select the electronic document operator for this organization.",
+          "notConfigured": "Provider credentials are not configured"
         },
-        "status": { "reconciliation": "Provider and local state require manual reconciliation" },
-        "statuses": { "ALL": "All", "UNKNOWN": "Unknown", "PENDING_SIGNATURE": "Signature pending", "PARTNER_SIGNATURE_PENDING": "Partner signature pending", "AGENT_SIGNATURE_PENDING": "Agent signature pending", "DRAFT": "Draft", "PENDING": "Pending", "SIGNED": "Signed", "SENT": "Sent", "RECEIVED": "Received", "REJECTED": "Rejected", "DELETED": "Deleted", "ARCHIVED": "Archived", "COMPLETED": "Completed", "CANCELLED": "Cancelled", "FAILED": "Failed", "RECONCILIATION_REQUIRED": "Reconciliation required" },
-        "messages": { "providerChanged": "Active provider changed", "authenticated": "EDO authentication completed", "created": "Invoice created", "replay": "Existing successful result returned", "signed": "Document signed", "rejected": "Document rejected", "downloaded": "File downloaded" },
-        "errors": { "providers": "Could not load providers", "capabilitiesLoad": "Could not load provider capabilities", "fileLoad": "Could not load the document file", "status": "Could not load document status", "challengeExpired": "The signing session expired. Try again.", "authRejected": "The provider did not confirm authentication", "providerUserNotFound": "The selected E-IMZO owner is not registered with this provider. Check the certificate and provider and try again.", "sessionExpired": "The EDO session has expired. Authenticate again.", "notConnected": "The EDO integration is not connected. Authenticate with E-IMZO first.", "inboxLoad": "Could not load incoming EDO documents" }
+        "auth": {
+          "title": "E-IMZO authentication",
+          "description": "Open an organization session for the selected provider.",
+          "selectProvider": "Select an active provider first",
+          "unavailable": "Authentication capability is unavailable",
+          "authenticated": "Authenticated with {{provider}}",
+          "expiresAt": "Session expires: {{date}}",
+          "authenticate": "Authenticate"
+        },
+        "inbox": {
+          "title": "Incoming EDO documents",
+          "description": "Review incoming provider documents, check status, and perform available actions.",
+          "unavailable": "Inbox capability is unavailable",
+          "filtersUnavailable": "Provider-side search, status, and date filters are not confirmed for Edocs and are currently disabled.",
+          "rejectTitle": "Reject incoming document"
+        },
+        "outbox": {
+          "create": "Create invoice",
+          "createDescription": "Prepare internal document data as a common EDO invoice.",
+          "unavailable": "Invoice creation capability is unavailable",
+          "document": "Outgoing EDO document #{{id}}",
+          "detailDescription": "Check provider status and sign the document with E-IMZO.",
+          "sign": "Sign document",
+          "signUnavailable": "The document cannot be signed in its current state"
+        },
+        "sections": {
+          "document": "Document information",
+          "empowerment": "Empowerment",
+          "lines": "Invoice lines"
+        },
+        "actions": {
+          "createFactura": "Create invoice",
+          "sign": "Sign",
+          "reject": "Reject",
+          "download": "Download",
+          "print": "Print",
+          "basedOn": "Create based on this"
+        },
+        "fields": {
+          "internalDocumentId": "Internal document ID",
+          "internalDocumentType": "Internal document type",
+          "documentNumber": "Document number",
+          "documentDate": "Document date",
+          "documentType": "Document type",
+          "providerDocumentId": "Provider document ID",
+          "contractNumber": "Contract number",
+          "contractDate": "Contract date",
+          "seller": "Seller",
+          "buyer": "Buyer",
+          "name": "Name",
+          "taxIdentifier": "Tax identifier",
+          "bankCode": "Bank code",
+          "accountNumber": "Account number",
+          "address": "Address",
+          "branchCode": "Branch code",
+          "branchName": "Branch name",
+          "directorName": "Director",
+          "accountantName": "Accountant",
+          "vatRegistrationStatus": "VAT registration status",
+          "districtId": "District ID",
+          "empowermentNumber": "Empowerment number",
+          "dateOfIssue": "Date of issue",
+          "agentName": "Agent name",
+          "agentPinfl": "Agent PINFL",
+          "catalogCode": "Catalog code",
+          "catalogName": "Catalog name",
+          "unitCode": "Unit code",
+          "unitName": "Unit name",
+          "quantity": "Quantity",
+          "amount": "Amount",
+          "taxRate": "Tax rate",
+          "taxAmount": "Tax amount",
+          "isTaxFree": "Tax free",
+          "markingCodes": "Marking codes",
+          "companyInn": "Company TIN",
+          "category": "Category",
+          "hasMarks": "Has marks",
+          "yes": "Yes",
+          "no": "No",
+          "fromDate": "From date",
+          "toDate": "To date",
+          "status": "Status",
+          "localStatus": "Local status",
+          "providerStatus": "Provider status",
+          "checkedAt": "Checked at",
+          "reason": "Reason",
+          "preparedPkcs7": "Prepared PKCS#7"
+        },
+        "status": {
+          "reconciliation": "Provider and local state require manual reconciliation"
+        },
+        "statuses": {
+          "ALL": "All",
+          "UNKNOWN": "Unknown",
+          "PENDING_SIGNATURE": "Signature pending",
+          "PARTNER_SIGNATURE_PENDING": "Partner signature pending",
+          "AGENT_SIGNATURE_PENDING": "Agent signature pending",
+          "DRAFT": "Draft",
+          "PENDING": "Pending",
+          "SIGNED": "Signed",
+          "SENT": "Sent",
+          "RECEIVED": "Received",
+          "REJECTED": "Rejected",
+          "DELETED": "Deleted",
+          "ARCHIVED": "Archived",
+          "COMPLETED": "Completed",
+          "CANCELLED": "Cancelled",
+          "FAILED": "Failed",
+          "RECONCILIATION_REQUIRED": "Reconciliation required"
+        },
+        "messages": {
+          "providerChanged": "Active provider changed",
+          "authenticated": "EDO authentication completed",
+          "created": "Invoice created",
+          "replay": "Existing successful result returned",
+          "signed": "Document signed",
+          "rejected": "Document rejected",
+          "downloaded": "File downloaded"
+        },
+        "errors": {
+          "providers": "Could not load providers",
+          "capabilitiesLoad": "Could not load provider capabilities",
+          "fileLoad": "Could not load the document file",
+          "status": "Could not load document status",
+          "challengeExpired": "The signing session expired. Try again.",
+          "authRejected": "The provider did not confirm authentication",
+          "providerUserNotFound": "The selected E-IMZO owner is not registered with this provider. Check the certificate and provider and try again.",
+          "sessionExpired": "The EDO session has expired. Authenticate again.",
+          "notConnected": "The EDO integration is not connected. Authenticate with E-IMZO first.",
+          "inboxLoad": "Could not load incoming EDO documents"
+        }
       }
     },
     "chartAccounts": {
@@ -1050,9 +1286,9 @@
     "operation": {
       "title": "Bank operation",
       "income": "Receipt",
-    "expense": "Expense",
-    "status": "Status",
-    "notFound": "Not found"
+      "expense": "Expense",
+      "status": "Status",
+      "notFound": "Not found"
     },
     "readonlySections": {
       "general": "General information",
@@ -1172,7 +1408,8 @@
       "itemCreated": "Product added to the list — press Save to store it",
       "itemUpdated": "Product changed in the list — press Save to store it",
       "serviceItemCreated": "Service added to the list — press Save to store it",
-      "serviceItemUpdated": "Service changed in the list — press Save to store it"
+      "serviceItemUpdated": "Service changed in the list — press Save to store it",
+      "alwaysPieceTracked": "Every unit is tracked by its own marking"
     }
   },
   "sale": {
@@ -1292,7 +1529,8 @@
       "productWithId": "Product #{{id}}",
       "collapseTable": "Collapse table",
       "expandTable": "Expand table",
-      "markingsChecking": "Marking codes are being checked"
+      "markingsChecking": "Marking codes are being checked",
+      "costPriceFromBatches": "Cost is calculated from the warehouse batches"
     },
     "warehouse": {
       "goodsToDispatch": "Goods to dispatch from warehouse",
@@ -1635,7 +1873,11 @@
       "chooseFiles": "Choose documents",
       "filesHint": "You can attach multiple supporting documents."
     },
-    "orders": { "title": "HR orders", "create": "Create order", "detailTitle": "HR order" },
+    "orders": {
+      "title": "HR orders",
+      "create": "Create order",
+      "detailTitle": "HR order"
+    },
     "schedules": {
       "title": "Personal work schedules",
       "description": "Set the schedule period and hours for each working day.",
@@ -1745,7 +1987,21 @@
       "noNumber": "No number",
       "info": "Information"
     },
-    "hrOrders": { "title": "HR orders", "create": "Create HR order", "formTitle": "HR order", "formHint": "The order is applied to employment history after confirmation.", "print": "Print", "printTitle": "HR order", "from": "Previous", "to": "New", "notFound": "Order not found", "printUnavailable": "Print data is unavailable", "confirmTitle": "Confirm this order?", "cancelTitle": "Cancel this order?", "deleteTitle": "Delete this order?" },
+    "hrOrders": {
+      "title": "HR orders",
+      "create": "Create HR order",
+      "formTitle": "HR order",
+      "formHint": "The order is applied to employment history after confirmation.",
+      "print": "Print",
+      "printTitle": "HR order",
+      "from": "Previous",
+      "to": "New",
+      "notFound": "Order not found",
+      "printUnavailable": "Print data is unavailable",
+      "confirmTitle": "Confirm this order?",
+      "cancelTitle": "Cancel this order?",
+      "deleteTitle": "Delete this order?"
+    },
     "units": {
       "hour": "hour",
       "day": "day"
@@ -1852,7 +2108,7 @@
       "basis": "Basis",
       "advanceMethod": "Advance method",
       "advancePercent": "Advance percent (%)",
-      "advanceAmount": "Advance amount",
+      "advanceAmount": "Advance",
       "targetAmount": "Target amount",
       "adjustmentMode": "Adjustment mode",
       "workedDays": "Worked days",
@@ -1881,7 +2137,6 @@
       "paidSickDays": "Paid sick days",
       "deductionAmount": "Deductions",
       "employerTaxAmount": "Employer taxes",
-      "advanceAmount": "Advance",
       "netAmount": "Net",
       "payableAmount": "Payable",
       "paidAmount": "Paid",
@@ -1979,9 +2234,22 @@
         "WITH_ADVANCE": "With advance",
         "WITH_ADVANCE_HINT": "Pay correction with the advance"
       },
-      "advanceMethod": { "PERCENT": "Percent", "PERCENT_HINT": "Percentage of salary", "FIXED": "Fixed amount", "FIXED_HINT": "Fixed monthly amount" },
-      "hrOrderType": { "HIRE": "Hire", "TRANSFER": "Transfer", "PAY_CHANGE": "Pay change", "DISMISSAL": "Dismissal" },
-      "adjustmentMode": { "AMOUNT": "Delta amount", "TARGET": "Target amount" },
+      "advanceMethod": {
+        "PERCENT": "Percent",
+        "PERCENT_HINT": "Percentage of salary",
+        "FIXED": "Fixed amount",
+        "FIXED_HINT": "Fixed monthly amount"
+      },
+      "hrOrderType": {
+        "HIRE": "Hire",
+        "TRANSFER": "Transfer",
+        "PAY_CHANGE": "Pay change",
+        "DISMISSAL": "Dismissal"
+      },
+      "adjustmentMode": {
+        "AMOUNT": "Delta amount",
+        "TARGET": "Target amount"
+      },
       "paymentKind": {
         "ADVANCE": "Advance",
         "ADVANCE_HINT": "Payment before the main payroll",
@@ -2585,16 +2853,110 @@
     }
   },
   "rental": {
-      "title": "Rental",
-      "contracts": { "title": "Rental contracts", "create": "Create rental contract", "edit": "Edit rental contract", "detail": "Rental contract", "general": "General information", "objects": "Rental objects", "objectNumber": "Rental object {{number}}", "newObject": "New object", "objectsDescription": "Enter each rental object in its own expandable section.", "noObjects": "No rental objects" },
-      "accruals": { "title": "Rental accruals", "edit": "Edit rental accrual", "detail": "Rental accrual", "items": "Accrual items", "itemNumber": "Accrual item {{number}}", "editDetails": "Edit accrual details", "generateTitle": "Generate accruals" },
-      "fields": { "lessorFullName": "Lessor full name", "lessors": "Lessors", "lessorKind": "Lessor type", "innOrPinfl": "TIN / PINFL", "lessorInn": "TIN", "lessorPinfl": "PINFL", "phoneNumber": "Phone number", "registeredAddress": "Registered address", "residentialAddress": "Residential address", "isFreeOfCharge": "Free rental", "rentalType": "Rental type", "totalArea": "Total area", "rentedArea": "Rented area", "utilities": "Utilities", "utilityService": "Utility service", "utilityPayer": "Payer", "contractNumber": "Contract number", "contractDate": "Contract date", "startDate": "Start date", "endDate": "End date", "confirmationDate": "Confirmation date", "terminationDate": "Termination date", "currency": "Currency", "lessorPayableAccount": "Lessor payable account", "taxPayableAccount": "Tax payable account", "comment": "Comment", "objectType": "Object type", "objectName": "Object name", "identifier": "Identifier", "address": "Address", "period": "Period", "periodAmount": "Period amount", "periodUnit": "Period unit", "dates": "Rental period", "contractAmount": "Contract amount", "taxBaseAmount": "Tax base amount", "taxRate": "Tax rate", "expenseAccount": "Expense account", "objectCount": "Object count", "docNumber": "Document number", "docDate": "Document date", "taxAmount": "Tax amount", "payableAmount": "Amount payable", "amount": "Total amount", "exchangeRate": "Exchange rate", "dateFrom": "From date", "dateTo": "To date", "calculationMonth": "Calculation month" },
-      "period": { "month": "Month", "day": "Day" },
-      "lessor": { "individual": "Individual", "legalEntity": "Legal entity" },
-      "modes": { "free": "Free", "paid": "Paid" },
-      "utility": { "lessor": "Lessor", "lessee": "Lessee" },
-      "actions": { "activate": "Activate", "post": "Post", "cancel": "Cancel", "generate": "Generate accruals", "activateConfirm": "Activate this contract?", "postConfirm": "Post this accrual?", "cancelConfirm": "Cancel this document?", "deleteConfirm": "Delete this draft?" },
-       "messages": { "generated": "{{count}} accrual document(s) created", "documentIds": "Created documents: {{ids}}", "lessorFound": "Lessor data found", "accountsRequired": "Select all accounts for paid rental" }
+    "title": "Rental",
+    "contracts": {
+      "title": "Rental contracts",
+      "create": "Create rental contract",
+      "edit": "Edit rental contract",
+      "detail": "Rental contract",
+      "general": "General information",
+      "objects": "Rental objects",
+      "objectNumber": "Rental object {{number}}",
+      "newObject": "New object",
+      "objectsDescription": "Enter each rental object in its own expandable section.",
+      "noObjects": "No rental objects"
+    },
+    "accruals": {
+      "title": "Rental accruals",
+      "edit": "Edit rental accrual",
+      "detail": "Rental accrual",
+      "items": "Accrual items",
+      "itemNumber": "Accrual item {{number}}",
+      "editDetails": "Edit accrual details",
+      "generateTitle": "Generate accruals"
+    },
+    "fields": {
+      "lessorFullName": "Lessor full name",
+      "lessors": "Lessors",
+      "lessorKind": "Lessor type",
+      "innOrPinfl": "TIN / PINFL",
+      "lessorInn": "TIN",
+      "lessorPinfl": "PINFL",
+      "phoneNumber": "Phone number",
+      "registeredAddress": "Registered address",
+      "residentialAddress": "Residential address",
+      "isFreeOfCharge": "Free rental",
+      "rentalType": "Rental type",
+      "totalArea": "Total area",
+      "rentedArea": "Rented area",
+      "utilities": "Utilities",
+      "utilityService": "Utility service",
+      "utilityPayer": "Payer",
+      "contractNumber": "Contract number",
+      "contractDate": "Contract date",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "confirmationDate": "Confirmation date",
+      "terminationDate": "Termination date",
+      "currency": "Currency",
+      "lessorPayableAccount": "Lessor payable account",
+      "taxPayableAccount": "Tax payable account",
+      "comment": "Comment",
+      "objectType": "Object type",
+      "objectName": "Object name",
+      "identifier": "Identifier",
+      "address": "Address",
+      "period": "Period",
+      "periodAmount": "Period amount",
+      "periodUnit": "Period unit",
+      "dates": "Rental period",
+      "contractAmount": "Contract amount",
+      "taxBaseAmount": "Tax base amount",
+      "taxRate": "Tax rate",
+      "expenseAccount": "Expense account",
+      "objectCount": "Object count",
+      "docNumber": "Document number",
+      "docDate": "Document date",
+      "taxAmount": "Tax amount",
+      "payableAmount": "Amount payable",
+      "amount": "Total amount",
+      "exchangeRate": "Exchange rate",
+      "dateFrom": "From date",
+      "dateTo": "To date",
+      "calculationMonth": "Calculation month"
+    },
+    "period": {
+      "month": "Month",
+      "day": "Day"
+    },
+    "lessor": {
+      "individual": "Individual",
+      "legalEntity": "Legal entity"
+    },
+    "modes": {
+      "free": "Free",
+      "paid": "Paid"
+    },
+    "utility": {
+      "lessor": "Lessor",
+      "lessee": "Lessee"
+    },
+    "actions": {
+      "activate": "Activate",
+      "post": "Post",
+      "cancel": "Cancel",
+      "generate": "Generate accruals",
+      "activateConfirm": "Activate this contract?",
+      "postConfirm": "Post this accrual?",
+      "cancelConfirm": "Cancel this document?",
+      "deleteConfirm": "Delete this draft?"
+    },
+    "messages": {
+      "generated": "{{count}} accrual document(s) created",
+      "documentIds": "Created documents: {{ids}}",
+      "lessorFound": "Lessor data found",
+      "accountsRequired": "Select all accounts for paid rental"
+    }
   },
   "reports": {
     "title": "Operational reports",

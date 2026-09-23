@@ -206,7 +206,7 @@ export default function PayrollPaymentListPage() {
           pagination={false}
           size="middle"
         />
-        <ListPagination {...paginationProps(data?.total)} />
+        <ListPagination {...paginationProps(data?.total ?? data?.totalCount)} />
       </Card>
     </div>
   );

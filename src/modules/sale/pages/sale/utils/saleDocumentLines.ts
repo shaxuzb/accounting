@@ -117,11 +117,10 @@ const normalizeDocumentLine = (
     rowKey,
     amount,
     price: firstPositiveNumber(detail.price, detail.unitPrice, amount),
-    costPrice: firstPositiveNumber(
-      detail.costPrice,
-      detail.unitPrice,
-      detail.price,
-    ),
+    // Never fall back to the sale price. The server works the cost out from the
+    // batches when the document posts, so before that it is genuinely unknown —
+    // borrowing the sale price here showed every line at a zero margin.
+    costPrice: toNumber(detail.costPrice),
     totalAmount: firstPositiveNumber(detail.totalAmount, amount * quantity),
     markingNumber: markingNumber ? String(markingNumber) : "",
     serialNumber: serialNumber ? String(serialNumber) : "",
@@ -221,11 +220,10 @@ export const getDocumentLines = (document?: SaleDoc): SaleDocTable[] => {
         (markingNumber ? String(markingNumber) : "") ||
         (productTableId ? `product-table-${productTableId}` : "") ||
         `product-${productId}-${detail.id}-${productIndex}-${tableIndex}`;
+      // Same as above: the sale price is not a stand-in for an unknown cost.
       const costPrice = firstPositiveNumber(
         tableDetail.costPrice,
         detail.costPrice,
-        detail.unitPrice,
-        detail.price,
       );
       const purchaseDocNumber =
         getPurchaseDocNumber(tableDetail) || getPurchaseDocNumber(detail);

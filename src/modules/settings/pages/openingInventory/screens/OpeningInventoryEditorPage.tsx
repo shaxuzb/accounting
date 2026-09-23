@@ -35,6 +35,7 @@ import {
   getUnmarkedPieceTrackedRow,
   isEmptyOpeningInventoryRow,
   mapDetailLinesToRows,
+  parseMarkingInput,
   toCreatePayload,
   toMarkingNumbers,
   toUpdatePayload,
@@ -402,11 +403,7 @@ export default function OpeningInventoryEditorPage() {
   const handleMarkingPaste = useCallback(
     (event: React.ClipboardEvent<HTMLInputElement>) => {
       event.preventDefault();
-      const pastedText = event.clipboardData.getData("text");
-      const parsed = pastedText
-        .split(/[\r\n,;]+/)
-        .map((item) => item.trim())
-        .filter(Boolean);
+      const parsed = parseMarkingInput(event.clipboardData.getData("text"));
 
       if (markingModalIndex === null) return;
       const row = lines[markingModalIndex];

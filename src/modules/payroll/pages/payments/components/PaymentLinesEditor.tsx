@@ -248,7 +248,12 @@ export default function PaymentLinesEditor({
       }
     >
       <Table<LineRow>
-        columns={columns}
+        // The outstanding amount is a guide while entering; a saved payment does not keep it.
+        columns={
+          disabled
+            ? columns.filter((column) => !("dataIndex" in column) || column.dataIndex !== "payableAmount")
+            : columns
+        }
         dataSource={dataSource}
         pagination={false}
         size="small"

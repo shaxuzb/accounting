@@ -15,7 +15,6 @@ import { router } from "./app/router";
 import customTheme from "./utils/customTheme";
 import { useAppSelector } from "./store/hooks";
 import { useEffectiveTheme } from "./shared/hooks/useEffectiveTheme";
-import "react-custom-scroller/dist/index.css";
 import "./components/ui/scroll/customscroll.css";
 dayjs.extend(isoWeek);
 dayjs.locale("uz");
