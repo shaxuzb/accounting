@@ -12,6 +12,8 @@ export interface CashOperation {
   paymentTypeName?: string | null;
   counterpartyId: number | null;
   counterpartyName?: string | null;
+  contractId?: number | null;
+  contractNumber?: string | null;
   docDate: string;
   currencyId: number | null;
   currencyName?: string | null;

@@ -8,6 +8,7 @@ import {
   useGetCurrentAccountingPolicy,
 } from "../hooks";
 import CurrentPolicyTab from "../components/CurrentPolicyTab";
+import SettlementPolicyCard from "../components/SettlementPolicyCard";
 import PolicyHistoryTab from "../components/PolicyHistoryTab";
 import PolicyImpactTab from "../components/PolicyImpactTab";
 import AccountingPolicyAddEditPage from "./AccountingPolicyAddEditPage";
@@ -46,12 +47,15 @@ export default function AccountingPolicyPage() {
         key: "current",
         label: "Current policy",
         children: (
-          <CurrentPolicyTab
-            data={current.data}
-            isLoading={current.isLoading}
-            isError={current.isError}
-            onEdit={() => setEditOpen(true)}
-          />
+          <div className="space-y-4">
+            <SettlementPolicyCard />
+            <CurrentPolicyTab
+              data={current.data}
+              isLoading={current.isLoading}
+              isError={current.isError}
+              onEdit={() => setEditOpen(true)}
+            />
+          </div>
         ),
       },
       {

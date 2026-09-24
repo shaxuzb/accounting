@@ -1011,6 +1011,13 @@
     },
     "openingBalance": {
       "noSubkontoRequired": "No subaccount is required for this account"
+    },
+    "settlementPolicy": {
+      "title": "Settlements with counterparties",
+      "byContract": "Per contract",
+      "byCounterpartyHint": "Debt and advances are kept per counterparty: a payment settles any of its debt, and a sale or purchase offsets any of its advances.",
+      "byContractHint": "Debt and advances are kept per contract (like the contract analytics in 1C): a payment settles only the debt of its contract and the rest is an advance under it; a sale or purchase offsets only the advances of its contract. Documents without a contract settle the balances without one.",
+      "saved": "Settlement policy saved. It applies to documents posted from now on."
     }
   },
   "openingBalance": {

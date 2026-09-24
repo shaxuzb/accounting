@@ -1013,6 +1013,13 @@
     },
     "openingBalance": {
       "noSubkontoRequired": "Bu hisobvaraq uchun subkonto talab qilinmaydi"
+    },
+    "settlementPolicy": {
+      "title": "Kontragentlar bilan hisob-kitoblar",
+      "byContract": "Shartnoma bo'yicha",
+      "byCounterpartyHint": "Qarz va avanslar kontragent bo'yicha yuritiladi: to'lov kontragentning istalgan qarzini yopadi, sotuv va xarid uning istalgan avansini hisobga oladi.",
+      "byContractHint": "Qarz va avanslar shartnoma bo'yicha yuritiladi (1C dagi «Договор» kabi): to'lov faqat o'z shartnomasi qarzini yopadi, ortig'i shu shartnoma avansi bo'ladi; sotuv va xarid faqat o'z shartnomasidagi avansni hisobga oladi. Shartnomasiz hujjatlar shartnomasiz qoldiqlar bilan hisoblashadi.",
+      "saved": "Hisob-kitob tartibi saqlandi. U bundan keyin o'tkaziladigan hujjatlarga qo'llanadi."
     }
   },
   "openingBalance": {

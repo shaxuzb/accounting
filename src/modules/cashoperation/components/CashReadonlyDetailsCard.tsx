@@ -47,6 +47,10 @@ export default function CashReadonlyDetailsCard({
           label: t("cash.fields.counterparty"),
           value: record.counterpartyName ?? record.counterpartyId,
         },
+        {
+          label: t("bank.fields.contract"),
+          value: record.contractNumber ?? "-",
+        },
       ]}
     />
   );

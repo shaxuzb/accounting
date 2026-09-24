@@ -42,6 +42,7 @@ const buildTouched = () => ({
   operationTypeId: true,
   paymentTypeId: true,
   counterpartyId: true,
+  contractId: true,
   docDate: true,
   currencyId: true,
   amount: true,

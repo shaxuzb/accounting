@@ -13,6 +13,7 @@ export const getCashOperationInitialValues = (
   operationTypeId: record?.operationTypeId ?? fallback.operationTypeId ?? null,
   paymentTypeId: record?.paymentTypeId ?? fallback.paymentTypeId ?? null,
   counterpartyId: record?.counterpartyId ?? fallback.counterpartyId ?? null,
+  contractId: record?.contractId ?? fallback.contractId ?? null,
   docDate: record?.docDate ?? fallback.docDate ?? "",
   currencyId: record?.currencyId ?? fallback.currencyId ?? null,
   amount: record?.amount ?? fallback.amount ?? null,
