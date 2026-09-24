@@ -2878,7 +2878,8 @@
       "confirmed": "Fiscal cash transfer confirmed",
       "cancelled": "Fiscal cash transfer cancelled",
       "fiscalCashAccount": "Fiscal cash account",
-      "cashBoxAccount": "Main cash account"
+      "cashBoxAccount": "Main cash account",
+      "fiscalBalance": "In the fiscal till: {{amount}}"
     }
   },
   "rental": {

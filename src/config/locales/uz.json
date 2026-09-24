@@ -2878,7 +2878,8 @@
       "confirmed": "Fiskal o'tkazma tasdiqlandi",
       "cancelled": "Fiskal o'tkazma bekor qilindi",
       "fiscalCashAccount": "Fiskal kassa hisobvarag'i",
-      "cashBoxAccount": "Asosiy kassa hisobvarag'i"
+      "cashBoxAccount": "Asosiy kassa hisobvarag'i",
+      "fiscalBalance": "Fiskal kassada: {{amount}}"
     }
   },
   "rental": {

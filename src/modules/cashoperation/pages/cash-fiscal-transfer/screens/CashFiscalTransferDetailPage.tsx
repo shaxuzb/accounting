@@ -11,7 +11,7 @@ import {
   Save,
   WalletCards,
 } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -33,6 +33,7 @@ import {
   useConfirmCashFiscalTransfer,
   useCreateCashFiscalTransfer,
   useGetCashFiscalTransfer,
+  useGetFiscalBalance,
   useUpdateCashFiscalTransfer,
 } from "../hooks";
 import { toCashFiscalTransferPayload } from "../utils/payload";
@@ -43,15 +44,37 @@ import {
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
 import { useAppSelector } from "@/store/hooks";
+import { useGetDetailDocumentAccountSettings } from "@/modules/settings/pages/documentAccountSettings/hooks";
+import { cashDocumentTypeIds } from "@/modules/cashoperation/constants/documentAccount";
 
 const listPath = "/main/cash-operationses/cash-fiscal-transfers";
+
+/** acc_document_account_type of retail cash payments: its cash account is the till's. */
+const RETAIL_PAYMENT_CASH_TYPE_ID = 11;
+const CASH_ACCOUNT_ROLE = "cash_account";
+/** National currency, as the other money documents start with. */
+const DEFAULT_CURRENCY_ID = 1;
+
+type AccountSettings = ReturnType<
+  typeof useGetDetailDocumentAccountSettings
+>["data"];
+
+const defaultCashAccountId = (settings: AccountSettings) => {
+  const role = settings?.accountSettings?.find(
+    (item) =>
+      item.documentAccountRoleCode.trim().toLowerCase() === CASH_ACCOUNT_ROLE,
+  );
+  const account =
+    role?.accounts?.find((item) => item.isDefault) ?? role?.accounts?.[0];
+  return account?.chartAccountId ?? null;
+};
 
 const createDefaultValues = (): CashFiscalTransferForm => ({
   fiscalCashRegisterId: null,
   cashBoxId: null,
   directionId: -1,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
-  currencyId: null,
+  currencyId: DEFAULT_CURRENCY_ID,
   amount: null,
   exchangeRate: 1,
   fiscalCashAccountId: null,
@@ -136,6 +159,54 @@ export default function CashFiscalTransferDetailPage() {
       }
     },
   });
+
+  // A new transfer takes the till's account (where retail cash was posted) and the cash
+  // desk's receipt account, as 1C posts «Выемка» and «Поступление из ККМ». Filled once,
+  // so a user who clears a field is not overruled.
+  const fiscalAccountSettings = useGetDetailDocumentAccountSettings(
+    RETAIL_PAYMENT_CASH_TYPE_ID,
+    isCreate,
+  );
+  const cashBoxAccountSettings = useGetDetailDocumentAccountSettings(
+    cashDocumentTypeIds.income,
+    isCreate,
+  );
+  const filledAccountsRef = useRef({ fiscal: false, cashBox: false });
+  useEffect(() => {
+    if (!isCreate) return;
+    const filled = filledAccountsRef.current;
+    const fiscal = defaultCashAccountId(fiscalAccountSettings.data);
+    if (!filled.fiscal && fiscal) {
+      filled.fiscal = true;
+      if (formik.values.fiscalCashAccountId === null)
+        void formik.setFieldValue("fiscalCashAccountId", fiscal, true);
+    }
+    const cashBox = defaultCashAccountId(cashBoxAccountSettings.data);
+    if (!filled.cashBox && cashBox) {
+      filled.cashBox = true;
+      if (formik.values.cashBoxAccountId === null)
+        void formik.setFieldValue("cashBoxAccountId", cashBox, true);
+    }
+  }, [cashBoxAccountSettings.data, fiscalAccountSettings.data, formik, isCreate]);
+
+  // Handing the till's cash to the cash desk moves what the till holds, so that is the
+  // amount offered; an amount the user typed is kept.
+  const isHandover = formik.values.directionId === -1;
+  const fiscalBalance = useGetFiscalBalance(
+    formik.values.fiscalCashRegisterId,
+    formik.values.currencyId,
+    formik.values.docDate,
+    isDraft && isHandover,
+  );
+  const offeredAmountRef = useRef<number | null>(null);
+  useEffect(() => {
+    const balance = fiscalBalance.data;
+    if (!isDraft || !isHandover || balance == null || balance <= 0) return;
+    const amount = formik.values.amount;
+    if (amount !== null && amount !== offeredAmountRef.current) return;
+    offeredAmountRef.current = balance;
+    if (amount !== balance) void formik.setFieldValue("amount", balance, true);
+  }, [fiscalBalance.data, formik, isDraft, isHandover]);
 
   useEffect(() => {
     if (!detailQuery.error) return;
@@ -309,6 +380,13 @@ export default function CashFiscalTransferDetailPage() {
                 min={0}
                 precision={2}
               />
+              {isHandover && fiscalBalance.data != null && (
+                <div className="-mt-4 mb-4 text-xs text-secondary-text">
+                  {t("cash.fiscalTransfer.fiscalBalance", {
+                    amount: numberSpacing(fiscalBalance.data),
+                  })}
+                </div>
+              )}
             </Col>
             <Col span={4}>
               <InputNumberFormat

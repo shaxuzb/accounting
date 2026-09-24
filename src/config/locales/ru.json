@@ -2873,7 +2873,8 @@
       "confirmed": "Перевод подтвержден",
       "cancelled": "Перевод отменен",
       "fiscalCashAccount": "Счет фискальной кассы",
-      "cashBoxAccount": "Счет основной кассы"
+      "cashBoxAccount": "Счет основной кассы",
+      "fiscalBalance": "В фискальной кассе: {{amount}}"
     }
   },
   "rental": {

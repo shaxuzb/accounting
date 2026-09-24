@@ -18,6 +18,24 @@ export const useGetCashFiscalTransfer = (id: string | number) =>
     enabled: Boolean(id),
   });
 
+/** Cash the till holds that has not been handed to the cash desk yet. */
+export const useGetFiscalBalance = (
+  fiscalCashRegisterId: number | null,
+  currencyId: number | null,
+  date: string,
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: cashFiscalTransferKeys.fiscalBalance({ fiscalCashRegisterId, currencyId, date }),
+    queryFn: () =>
+      cashFiscalTransferService.fiscalBalance({
+        fiscalCashRegisterId: Number(fiscalCashRegisterId),
+        currencyId: Number(currencyId),
+        date,
+      }),
+    enabled: enabled && Boolean(fiscalCashRegisterId) && Boolean(currencyId) && Boolean(date),
+  });
+
 export const useCreateCashFiscalTransfer = () => {
   const qc = useQueryClient();
   return useMutation({

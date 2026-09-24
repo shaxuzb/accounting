@@ -1,5 +1,6 @@
 export const cashFiscalTransferEndpoints = {
   list: "cash-fiscal-transfers",
+  fiscalBalance: "cash-fiscal-transfers/fiscal-balance",
   detail: (id: string | number) => `cash-fiscal-transfers/${id}`,
   create: "cash-fiscal-transfers",
   update: (id: string | number) => `cash-fiscal-transfers/${id}`,
