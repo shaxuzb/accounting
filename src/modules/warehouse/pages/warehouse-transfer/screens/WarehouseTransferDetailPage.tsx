@@ -1,5 +1,5 @@
 import { Spin } from "antd";
-import { useFormik } from "formik";
+import { setNestedObjectValues, useFormik } from "formik";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
@@ -38,6 +38,7 @@ export default function WarehouseTransferDetailPage() {
   const record = detailQuery.data;
   const statusId = record?.statusId ?? 1;
   const isDraft = isCreate || statusId === 1;
+  const isPosted = !isCreate && statusId === 2;
 
   const initialValues = useMemo<WarehouseTransferForm>(
     () =>
@@ -69,6 +70,8 @@ export default function WarehouseTransferDetailPage() {
   const saveDraft = async () => {
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
+      // Mark the invalid fields, lines included, so they show what is missing.
+      formik.setTouched(setNestedObjectValues(errors, true));
       toast.error(t("warehouse.messages.fillRequired"));
       return false;
     }
@@ -105,6 +108,7 @@ export default function WarehouseTransferDetailPage() {
             saving={createMutation.isPending || updateMutation.isPending}
             confirming={confirmMutation.isPending}
             cancelling={cancelMutation.isPending}
+            isPosted={isPosted}
             onSave={() => saveDraft()}
             onConfirm={async () => {
               try {

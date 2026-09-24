@@ -1,10 +1,12 @@
-import { Button } from "antd";
+import { Button, Popconfirm } from "antd";
 import { CheckCircle2, CircleX, Save } from "lucide-react";
 import Card from "@/components/ui/card/Card";
 import { useTranslation } from "react-i18next";
 
 interface Props {
   isDraft: boolean;
+  /** A posted transfer can be cancelled: its entries are reversed and the goods go back. */
+  isPosted: boolean;
   /** False until the document exists; confirming or cancelling one that was never saved has no id to act on. */
   isSaved: boolean;
   saving: boolean;
@@ -17,6 +19,7 @@ interface Props {
 
 export default function WarehouseTransferActions({
   isDraft,
+  isPosted,
   isSaved,
   saving,
   confirming,
@@ -49,16 +52,35 @@ export default function WarehouseTransferActions({
       >
         {t("common.confirm")}
       </Button>
-      <Button
-        danger
-        block
-        icon={<CircleX className="size-4" />}
-        onClick={onCancel}
-        disabled={!isDraft || !isSaved}
-        loading={cancelling}
-      >
-        {t("common.cancel")}
-      </Button>
+      {isPosted ? (
+        <Popconfirm
+          title={t("warehouse.actions.cancelPosted")}
+          description={
+            <div className="max-w-72">
+              {t("warehouse.messages.cancelPostedConfirm")}
+            </div>
+          }
+          okText={t("warehouse.actions.cancelPosted")}
+          okButtonProps={{ danger: true, loading: cancelling }}
+          cancelText={t("common.close")}
+          onConfirm={onCancel}
+        >
+          <Button danger block icon={<CircleX className="size-4" />} loading={cancelling}>
+            {t("warehouse.actions.cancelPosted")}
+          </Button>
+        </Popconfirm>
+      ) : (
+        <Button
+          danger
+          block
+          icon={<CircleX className="size-4" />}
+          onClick={onCancel}
+          disabled={!isDraft || !isSaved}
+          loading={cancelling}
+        >
+          {t("common.cancel")}
+        </Button>
+      )}
     </Card>
   );
 }

@@ -10,7 +10,7 @@ export const warehouseTransferSchema = Yup.object({
     .of(
       Yup.object({
         productId: requiredNumber("purchase.fields.product"),
-        unitId: requiredNumber("purchase.fields.quantity"),
+        unitId: requiredNumber("purchase.fields.unit"),
         quantity: Yup.number().nullable().required(),
         comment: Yup.string().nullable(),
         items: Yup.array().of(

@@ -2659,7 +2659,8 @@
       "countCompleted": "Count completed",
       "inventoryConfirmed": "Inventory count confirmed",
       "noData": "No data",
-      "noMarkings": "No marking codes found"
+      "noMarkings": "No marking codes found",
+      "cancelPostedConfirm": "The entries are reversed and the goods and marked units go back to the source warehouse. The document stays as cancelled."
     },
     "adjustment": {
       "title": "Inventory adjustment",
@@ -2714,6 +2715,9 @@
       "saveDraft": "Save draft",
       "positiveWithId": "Positive: {{id}}",
       "negativeWithId": "Negative: {{id}}"
+    },
+    "actions": {
+      "cancelPosted": "Cancel transfer"
     }
   },
   "notifications": {

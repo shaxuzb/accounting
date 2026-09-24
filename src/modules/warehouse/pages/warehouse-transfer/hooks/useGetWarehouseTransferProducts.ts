@@ -8,6 +8,8 @@ export interface TransferManualProductOption {
   unitId?: number | null;
   unitName?: string | null;
   unit?: string | null;
+  /** Kept unit by unit with a marking code; only such goods pick codes to move. */
+  isPieceTracked?: boolean;
 }
 
 interface Params {

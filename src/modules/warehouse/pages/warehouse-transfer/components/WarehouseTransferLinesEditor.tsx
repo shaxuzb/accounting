@@ -70,14 +70,18 @@ export default function WarehouseTransferLinesEditor({
       number,
       {
         name?: string;
+        unitId?: number | null;
         unitName?: string | null;
+        isPieceTracked: boolean;
       }
     >();
 
     (manualProductsQuery.data ?? []).forEach((item) => {
       map.set(Number(item.id), {
         name: item.name,
+        unitId: item.unitId ?? null,
         unitName: item.unitName ?? item.unit,
+        isPieceTracked: Boolean(item.isPieceTracked),
       });
     });
 
@@ -184,7 +188,11 @@ export default function WarehouseTransferLinesEditor({
             : undefined;
           const selectedMarkings = toMarkingList(line.items);
           const totalStock = stock?.quantity ?? 0;
-          const canOpenMarking = Boolean(line.productId);
+          const isPieceTracked = Boolean(
+            line.productId &&
+              manualProductMap.get(line.productId)?.isPieceTracked,
+          );
+          const canOpenMarking = isPieceTracked;
 
           return (
             <div
@@ -228,6 +236,9 @@ export default function WarehouseTransferLinesEditor({
                         const selectedManual =
                           manualProductMap.get(selectedProductId);
 
+                        // The product brings its own unit; goods kept by
+                        // quantity have no codes to pick, so only marked goods
+                        // open the marking list.
                         setLine(index, {
                           productId: Number.isNaN(selectedProductId)
                             ? null
@@ -237,16 +248,18 @@ export default function WarehouseTransferLinesEditor({
                             selectedStock?.name ??
                             selectedManual?.name ??
                             "",
-                          unitId: line.unitId,
+                          unitId: selectedManual?.unitId ?? line.unitId,
                           unitName:
-                            line.unitName ||
                             selectedManual?.unitName?.trim() ||
+                            line.unitName ||
                             null,
                           quantity: selectedStock?.quantity ? 1 : null,
                           items: [createDefaultTransferItem()],
                         });
-                        setActiveLineIndex(index);
                         setSelectedRowKeys([]);
+                        setActiveLineIndex(
+                          selectedManual?.isPieceTracked ? index : null,
+                        );
                       }}
                     />
                   </Col>
@@ -308,7 +321,7 @@ export default function WarehouseTransferLinesEditor({
                     {t("warehouse.lines.selectSourceWarehouseFirst")}
                   </span>
                 )}
-                {line.productId && !serialItems.length && canOpenMarking && (
+                {line.productId && !isPieceTracked && (
                   <span className="text-xs text-secondary-text">
                     {t("warehouse.lines.notPieceTracked")}
                   </span>

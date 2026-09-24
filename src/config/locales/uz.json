@@ -2659,7 +2659,8 @@
       "countCompleted": "Sanoq yakunlandi",
       "inventoryConfirmed": "Inventarizatsiya tasdiqlandi",
       "noData": "Ma'lumot yo'q",
-      "noMarkings": "Markirovkalar topilmadi"
+      "noMarkings": "Markirovkalar topilmadi",
+      "cancelPostedConfirm": "Provodkalar storno qilinadi, tovarlar va markirovkali donalar manba omborga qaytadi. Hujjat «Bekor qilingan» bo'lib qoladi."
     },
     "adjustment": {
       "title": "Inventar qoldig'ini tuzatish",
@@ -2714,6 +2715,9 @@
       "saveDraft": "Qoralama saqlash",
       "positiveWithId": "Musbat: {{id}}",
       "negativeWithId": "Manfiy: {{id}}"
+    },
+    "actions": {
+      "cancelPosted": "Ko'chirishni bekor qilish"
     }
   },
   "notifications": {
