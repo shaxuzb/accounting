@@ -82,17 +82,19 @@ const createDefaultValues = (): CashFiscalTransferForm => ({
   comment: "",
 });
 
-const buildTouched = (values: CashFiscalTransferForm) => ({
-  fiscalCashRegisterId: values.fiscalCashRegisterId !== null,
-  cashBoxId: values.cashBoxId !== null,
+// Every field is marked touched, so the empty required ones show their error
+// (marking only the filled ones hid exactly the fields that were missing).
+const buildTouched = () => ({
+  fiscalCashRegisterId: true,
+  cashBoxId: true,
   directionId: true,
-  docDate: Boolean(values.docDate),
-  currencyId: values.currencyId !== null,
-  amount: values.amount !== null,
-  exchangeRate: values.exchangeRate !== null,
-  fiscalCashAccountId: values.fiscalCashAccountId !== null,
-  cashBoxAccountId: values.cashBoxAccountId !== null,
-  comment: Boolean(values.comment),
+  docDate: true,
+  currencyId: true,
+  amount: true,
+  exchangeRate: true,
+  fiscalCashAccountId: true,
+  cashBoxAccountId: true,
+  comment: true,
 });
 
 export default function CashFiscalTransferDetailPage() {
@@ -216,7 +218,7 @@ export default function CashFiscalTransferDetailPage() {
   const saveDraft = async () => {
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
-      formik.setTouched(buildTouched(formik.values));
+      formik.setTouched(buildTouched());
       toast.error(t("cash.messages.fillRequired"));
       return false;
     }

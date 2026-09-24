@@ -32,18 +32,20 @@ import {
 } from "@/components/ui/card/DocumentSummary";
 import { useAppSelector } from "@/store/hooks";
 
-const buildTouched = (values: CashOperationForm) => ({
-  cashBoxId: values.cashBoxId !== null,
-  cashChartAccountId: values.cashChartAccountId !== null,
-  offsetAccountId: values.offsetAccountId !== null,
-  cashOperationId: values.cashOperationId !== null,
-  operationTypeId: values.operationTypeId !== null,
-  paymentTypeId: values.paymentTypeId !== null,
-  counterpartyId: values.counterpartyId !== null,
-  docDate: Boolean(values.docDate),
-  currencyId: values.currencyId !== null,
-  amount: values.amount !== null,
-  comment: Boolean(values.comment),
+// Every field is marked touched, so the empty required ones show their error
+// (marking only the filled ones hid exactly the fields that were missing).
+const buildTouched = () => ({
+  cashBoxId: true,
+  cashChartAccountId: true,
+  offsetAccountId: true,
+  cashOperationId: true,
+  operationTypeId: true,
+  paymentTypeId: true,
+  counterpartyId: true,
+  docDate: true,
+  currencyId: true,
+  amount: true,
+  comment: true,
 });
 
 export default function CashOperationDetailPage() {
@@ -96,7 +98,7 @@ export default function CashOperationDetailPage() {
 
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
-      formik.setTouched(buildTouched(formik.values));
+      formik.setTouched(buildTouched());
       toast.error(t("cash.messages.fillRequired"));
       return false;
     }

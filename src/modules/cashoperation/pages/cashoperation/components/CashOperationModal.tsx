@@ -36,6 +36,7 @@ export default function CashOperationFormFields({
           <SelectCustom
             formik={formik}
             fieldName="operationTypeId"
+            required
             label="cash.fields.operationType"
             path={selectListEndpoints.operationTypes}
             onChange={(value) => {
@@ -51,6 +52,7 @@ export default function CashOperationFormFields({
           <SelectCustom
             formik={formik}
             fieldName="cashBoxId"
+            required
             label="settings.entities.cashBox"
             path={selectListEndpoints.cashBoxesSelectList}
           />
@@ -59,6 +61,7 @@ export default function CashOperationFormFields({
           <SelectCustom
             formik={formik}
             fieldName="paymentTypeId"
+            required
             label="cash.fields.paymentType"
             path={selectListEndpoints.paymentTypesSelectList}
           />
@@ -67,6 +70,7 @@ export default function CashOperationFormFields({
           <DocumentAccountSelect
             formik={formik}
             fieldName="cashChartAccountId"
+            required
             label="cash.fields.cashChartAccount"
             documentTypeId={documentTypeId ?? cashDocumentTypeIds.income}
             documentRoleCode={cashDocumentAccountRoleCodes.cashAccount}
@@ -79,6 +83,7 @@ export default function CashOperationFormFields({
           <DocumentAccountSelect
             formik={formik}
             fieldName="offsetAccountId"
+            required
             label="cash.fields.offsetAccount"
             documentTypeId={documentTypeId ?? cashDocumentTypeIds.income}
             documentRoleCode={cashDocumentAccountRoleCodes.offsetAccount}
@@ -91,6 +96,7 @@ export default function CashOperationFormFields({
           <SelectCustom
             formik={formik}
             fieldName="currencyId"
+            required
             label="settings.fields.currency"
             path={selectListEndpoints.currenciesSelectList}
           />
@@ -99,6 +105,7 @@ export default function CashOperationFormFields({
           <SelectCustom
             formik={formik}
             fieldName="counterpartyId"
+            required
             label="bank.fields.counterparty"
             path={selectListEndpoints.counterpartiesSelectList}
             addOption={{
@@ -112,6 +119,7 @@ export default function CashOperationFormFields({
           <SelectDate
             formik={formik}
             fieldName="docDate"
+            required
             label="bank.fields.date"
           />
         </Col>
@@ -120,6 +128,7 @@ export default function CashOperationFormFields({
           <InputNumberFormat
             formik={formik}
             fieldName="amount"
+            required
             label="bank.fields.amount"
             min={0}
             precision={2}

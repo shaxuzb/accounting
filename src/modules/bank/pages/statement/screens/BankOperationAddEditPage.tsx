@@ -114,25 +114,27 @@ const toPositiveNumber = (value: unknown) => {
   return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : null;
 };
 
-const buildTouched = (values: BankOperationForm) => ({
-  bankAccountId: values.bankAccountId !== null,
-  bankChartAccountId: values.bankChartAccountId !== null,
-  offsetAccountId: values.offsetAccountId !== null,
-  docDate: Boolean(values.docDate),
-  directionId: values.directionId !== null,
-  operationTypeId: values.operationTypeId !== null,
-  paymentTypeId: values.paymentTypeId !== null,
-  counterpartyId: values.counterpartyId !== null,
-  currencyId: values.currencyId !== null,
-  amount: values.amount !== null,
-  comment: Boolean(values.comment),
-  counterpartyBankAccountId: values.counterpartyBankAccountId !== null,
-  contractId: values.contractId !== null,
-  relatedDocumentId: values.relatedDocumentId !== null,
-  exchangeRate: values.exchangeRate !== null,
-  bankDocumentNumber: Boolean(values.bankDocumentNumber),
-  classificationCategoryId: values.classificationCategoryId !== null,
-  classificationRuleId: values.classificationRuleId !== null,
+// Every field is marked touched, so the empty required ones show their error
+// (marking only the filled ones hid exactly the fields that were missing).
+const buildTouched = () => ({
+  bankAccountId: true,
+  bankChartAccountId: true,
+  offsetAccountId: true,
+  docDate: true,
+  directionId: true,
+  operationTypeId: true,
+  paymentTypeId: true,
+  counterpartyId: true,
+  currencyId: true,
+  amount: true,
+  comment: true,
+  counterpartyBankAccountId: true,
+  contractId: true,
+  relatedDocumentId: true,
+  exchangeRate: true,
+  bankDocumentNumber: true,
+  classificationCategoryId: true,
+  classificationRuleId: true,
 });
 
 export default function BankOperationAddEditPage() {
@@ -312,7 +314,7 @@ export default function BankOperationAddEditPage() {
   const saveDraft = async () => {
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
-      formik.setTouched(buildTouched(formik.values));
+      formik.setTouched(buildTouched());
       toast.error(t("bank.messages.fillRequired"));
       return false;
     }

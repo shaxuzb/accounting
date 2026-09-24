@@ -37,33 +37,39 @@ import {
 } from "@/components/ui/card/DocumentSummary";
 import { useAppSelector } from "@/store/hooks";
 
+/** cmn_payment_type «Naqd» and the national currency: what a cash document is by default. */
+const CASH_PAYMENT_TYPE_ID = 1;
+const DEFAULT_CURRENCY_ID = 1;
+
 const createDefaultValues = (): CashOperationForm => ({
   cashBoxId: null,
   cashChartAccountId: null,
   offsetAccountId: null,
   cashOperationId: null,
   operationTypeId: null,
-  paymentTypeId: null,
+  paymentTypeId: CASH_PAYMENT_TYPE_ID,
   counterpartyId: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
-  currencyId: null,
+  currencyId: DEFAULT_CURRENCY_ID,
   amount: null,
   comment: "",
   stateId: null,
 });
 
-const buildTouched = (values: CashOperationForm) => ({
-  cashBoxId: values.cashBoxId !== null,
-  cashChartAccountId: values.cashChartAccountId !== null,
-  offsetAccountId: values.offsetAccountId !== null,
-  cashOperationId: values.cashOperationId !== null,
-  operationTypeId: values.operationTypeId !== null,
-  paymentTypeId: values.paymentTypeId !== null,
-  counterpartyId: values.counterpartyId !== null,
-  docDate: Boolean(values.docDate),
-  currencyId: values.currencyId !== null,
-  amount: values.amount !== null,
-  comment: Boolean(values.comment),
+// Every field is marked touched, so the empty required ones show their error
+// (marking only the filled ones hid exactly the fields that were missing).
+const buildTouched = () => ({
+  cashBoxId: true,
+  cashChartAccountId: true,
+  offsetAccountId: true,
+  cashOperationId: true,
+  operationTypeId: true,
+  paymentTypeId: true,
+  counterpartyId: true,
+  docDate: true,
+  currencyId: true,
+  amount: true,
+  comment: true,
 });
 
 export default function CashOperationAddEditPage() {
@@ -126,7 +132,7 @@ export default function CashOperationAddEditPage() {
   const saveDraft = async () => {
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
-      formik.setTouched(buildTouched(formik.values));
+      formik.setTouched(buildTouched());
       toast.error(t("cash.messages.fillRequired"));
       return false;
     }

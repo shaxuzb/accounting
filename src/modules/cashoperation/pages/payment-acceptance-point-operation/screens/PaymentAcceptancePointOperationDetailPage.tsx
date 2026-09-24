@@ -54,15 +54,17 @@ const createDefaultValues = (): PaymentAcceptancePointOperationForm => ({
   comment: "",
 });
 
-const buildTouched = (values: PaymentAcceptancePointOperationForm) => ({
-  paymentAcceptancePointId: values.paymentAcceptancePointId !== null,
+// Every field is marked touched, so the empty required ones show their error
+// (marking only the filled ones hid exactly the fields that were missing).
+const buildTouched = () => ({
+  paymentAcceptancePointId: true,
   directionId: true,
-  docDate: Boolean(values.docDate),
-  currencyId: values.currencyId !== null,
-  amount: values.amount !== null,
-  exchangeRate: values.exchangeRate !== null,
-  externalTransactionNumber: Boolean(values.externalTransactionNumber),
-  comment: Boolean(values.comment),
+  docDate: true,
+  currencyId: true,
+  amount: true,
+  exchangeRate: true,
+  externalTransactionNumber: true,
+  comment: true,
 });
 
 export default function PaymentAcceptancePointOperationDetailPage() {
@@ -141,7 +143,7 @@ export default function PaymentAcceptancePointOperationDetailPage() {
   const saveDraft = async () => {
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
-      formik.setTouched(buildTouched(formik.values));
+      formik.setTouched(buildTouched());
       toast.error(t("cash.messages.fillRequired"));
       return false;
     }
