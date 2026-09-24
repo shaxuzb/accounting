@@ -27,7 +27,7 @@ import type { PayrollHrOrderForm } from "../types/form";
 import { hrOrderSchema } from "../types/schema";
 
 const LIST_PATH = "/main/hr/orders";
-const defaultValues: PayrollHrOrderForm = {
+const createDefaultValues = (): PayrollHrOrderForm => ({
   orderDate: dayjs().format("YYYY-MM-DD"),
   orderType: "HIRE",
   employeeId: null,
@@ -44,7 +44,7 @@ const defaultValues: PayrollHrOrderForm = {
   expenseAccountId: null,
   advanceMethod: "PERCENT",
   advanceValue: 0,
-};
+});
 
 const toPayload = (values: PayrollHrOrderForm): PayrollHrOrderForm => {
   const base = { ...values, basis: values.basis || null, note: values.note || null };
@@ -72,7 +72,7 @@ export default function HrOrderDetailPage() {
   const { data: printData, isFetching: isPrintFetching } = useHrOrderPrint(printOpen ? id : null);
 
   const initialValues = useMemo<PayrollHrOrderForm>(() => {
-    if (!record) return defaultValues;
+    if (!record) return createDefaultValues();
     return {
       orderDate: record.orderDate,
       orderType: record.orderType,

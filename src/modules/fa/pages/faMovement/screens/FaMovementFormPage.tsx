@@ -26,7 +26,7 @@ import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import FaMovementFormFields from "../components/FaMovementFormFields";
 import FaMovementReadonlyView from "../components/FaMovementReadonlyView";
 
-const defaultValues: FaMovementFormValues = {
+const createDefaultValues = (): FaMovementFormValues => ({
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   toDepartmentId: null,
   toResponsibleUserId: null,
@@ -37,7 +37,7 @@ const defaultValues: FaMovementFormValues = {
       note: "",
     },
   ],
-};
+});
 
 const toPayload = (
   values: FaMovementFormValues,
@@ -81,17 +81,17 @@ export default function FaMovementFormPage() {
 
   const initialValues = useMemo<FaMovementFormValues>(
     () => ({
-      docDate: record?.docDate ?? defaultValues.docDate,
-      toDepartmentId: record?.toDepartmentId ?? defaultValues.toDepartmentId,
+      docDate: record?.docDate ?? createDefaultValues().docDate,
+      toDepartmentId: record?.toDepartmentId ?? createDefaultValues().toDepartmentId,
       toResponsibleUserId:
-        record?.toResponsibleUserId ?? defaultValues.toResponsibleUserId,
+        record?.toResponsibleUserId ?? createDefaultValues().toResponsibleUserId,
       note: record?.note ?? "",
       lines: record?.lines?.length
         ? record.lines.map((line) => ({
             faAssetId: line.faAssetId,
             note: line.note ?? "",
           }))
-        : defaultValues.lines,
+        : createDefaultValues().lines,
     }),
     [record],
   );

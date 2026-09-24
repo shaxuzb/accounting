@@ -56,7 +56,7 @@ const emptyLine = (number: number): EdoFacturaLineDto => ({
   markingCodeIds: [],
 });
 
-const initialValues: EdoOutboxFacturaCreateRequestDto = {
+const createInitialValues = (): EdoOutboxFacturaCreateRequestDto => ({
   internalDocumentId: 0,
   internalDocumentType: "SALE",
   seller: emptyParty(),
@@ -73,7 +73,7 @@ const initialValues: EdoOutboxFacturaCreateRequestDto = {
   },
   lines: [emptyLine(1)],
   idempotencyKey: "",
-};
+});
 
 const requiredPartyFields: (keyof EdoPartyDto)[] = ["name", "taxIdentifier"];
 
@@ -237,7 +237,7 @@ export default function EdoOutboxCreatePage() {
     capabilitiesQuery.data,
   );
   const formik = useFormik<EdoOutboxFacturaCreateRequestDto>({
-    initialValues,
+    initialValues: createInitialValues(),
     onSubmit: async (values) => {
       if (!validateFactura(values, provider?.code)) {
         toast.error(t("common.requiredFields"));

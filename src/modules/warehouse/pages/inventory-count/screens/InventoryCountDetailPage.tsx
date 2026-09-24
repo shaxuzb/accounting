@@ -56,7 +56,7 @@ import {
 
 type JsonRecord = Record<string, unknown>;
 
-const defaultValues: InventoryCountForm = {
+const createDefaultValues = (): InventoryCountForm => ({
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   warehouseId: null,
   stateId: 1,
@@ -80,7 +80,7 @@ const defaultValues: InventoryCountForm = {
       ],
     },
   ],
-};
+});
 
 const getDifferenceStatusKey = (
   difference: InventoryCountDifference,
@@ -156,13 +156,13 @@ export default function InventoryCountDetailPage() {
 
   const initialValues = useMemo<InventoryCountForm>(() => {
     if (isCreate || !record) {
-      return defaultValues;
+      return createDefaultValues();
     }
 
     return {
       docDate: record.docDate,
       warehouseId: record.warehouseId,
-      stateId: record.stateId ?? defaultValues.stateId,
+      stateId: record.stateId ?? createDefaultValues().stateId,
       comment: record.comment ?? "",
       isCountCompleted: record.isCountCompleted ?? false,
       lines:
@@ -179,8 +179,8 @@ export default function InventoryCountDetailPage() {
               serialNumber: item.serialNumber ?? null,
               markingNumber: item.markingNumber ?? null,
               costPrice: item.costPrice,
-            })) ?? defaultValues.lines[0].items,
-        })) ?? defaultValues.lines,
+            })) ?? createDefaultValues().lines[0].items,
+        })) ?? createDefaultValues().lines,
     };
   }, [isCreate, record]);
 
@@ -201,7 +201,7 @@ export default function InventoryCountDetailPage() {
     comment: values.comment ?? "",
     isCountCompleted,
     lines: values.lines,
-    stateId: values.stateId ?? defaultValues.stateId ?? 1,
+    stateId: values.stateId ?? createDefaultValues().stateId ?? 1,
   });
 
   const formik = useFormik<InventoryCountForm>({

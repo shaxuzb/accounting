@@ -40,7 +40,7 @@ import {
   toRetailSaleUpdatePayload,
 } from "../utils/payload";
 
-const defaultValues: RetailSaleFormValues = {
+const createDefaultValues = (): RetailSaleFormValues => ({
   docDate: dayjs().format(formatDate),
   counterpartyId: null,
   warehouseId: null,
@@ -52,7 +52,7 @@ const defaultValues: RetailSaleFormValues = {
   comment: "",
   stateId: 1,
   payments: [],
-};
+});
 
 const getNumber = (value: unknown, fallback = 0) => {
   const parsed = Number(value);
@@ -65,6 +65,8 @@ interface RetailSaleDraft {
 }
 
 export default function RetailSaleEditorPage() {
+  // Taken once when the form opens; the factory reads the clock.
+  const [openedDefaults] = useState(createDefaultValues);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id = "" } = useParams();
@@ -173,7 +175,7 @@ export default function RetailSaleEditorPage() {
             transactionNumber: payment.transactionNumber ?? "",
           })),
         }
-      : savedDraft?.values ?? defaultValues,
+      : savedDraft?.values ?? openedDefaults,
     enableReinitialize: true,
     validationSchema: retailSaleSchema(t),
     onSubmit: async (values) => {

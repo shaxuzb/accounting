@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/card/DocumentSummary";
 import { useAppSelector } from "@/store/hooks";
 
-const defaultValues: CashOperationForm = {
+const createDefaultValues = (): CashOperationForm => ({
   cashBoxId: null,
   cashChartAccountId: null,
   offsetAccountId: null,
@@ -50,7 +50,7 @@ const defaultValues: CashOperationForm = {
   amount: null,
   comment: "",
   stateId: null,
-};
+});
 
 const buildTouched = (values: CashOperationForm) => ({
   cashBoxId: values.cashBoxId !== null,
@@ -87,7 +87,7 @@ export default function CashOperationAddEditPage() {
     updateMutation.isPending;
 
   const initialValues = useMemo<CashOperationForm>(
-    () => getCashOperationInitialValues(record, defaultValues),
+    () => getCashOperationInitialValues(record, createDefaultValues()),
     [record],
   );
 

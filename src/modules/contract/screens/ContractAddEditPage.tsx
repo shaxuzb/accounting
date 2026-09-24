@@ -21,7 +21,7 @@ import { contractEndpoints } from "../constants/endpoints";
 import { contractPermissions } from "../constants/permissions";
 import ContractResponsiblePersonAddEditModal from "./ContractResponsiblePersonAddEditModal";
 
-const defaultValues: ContractForm = {
+const createDefaultValues = (): ContractForm => ({
   organizationId: null,
   counterpartyId: null,
   contractTypeId: null,
@@ -32,7 +32,7 @@ const defaultValues: ContractForm = {
   comment: "",
   priceIncludesVat: false,
   stateId: null,
-};
+});
 
 /** «Yetkazib beruvchi bilan shartnoma» (cmn_contract_type). */
 const supplierContractTypeId = 1;
@@ -56,6 +56,8 @@ export default function ContractAddEditPage({
   initialContractDate,
   onCreated,
 }: ContractAddEditPageProps) {
+  // Taken once when the form opens; the factory reads the clock.
+  const [openedDefaults] = useState(createDefaultValues);
   const { t } = useTranslation();
   const editId = id ?? null;
   const isEdit = Boolean(editId);
@@ -71,11 +73,11 @@ export default function ContractAddEditPage({
 
   const formik = useFormik<ContractForm>({
     initialValues: {
-      ...defaultValues,
+      ...openedDefaults,
       contractTypeId: contractTypeId ?? null,
       counterpartyId: initialCounterpartyId ?? null,
-      contractDate: initialContractDate ?? defaultValues.contractDate,
-      startDate: initialContractDate ?? defaultValues.startDate,
+      contractDate: initialContractDate ?? openedDefaults.contractDate,
+      startDate: initialContractDate ?? openedDefaults.startDate,
       stateId: isEdit ? null : 1,
     },
     enableReinitialize: true,

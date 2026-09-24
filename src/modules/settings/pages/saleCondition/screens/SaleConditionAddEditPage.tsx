@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import { Button, Col, Form, Modal, Row } from "antd";
@@ -12,12 +13,12 @@ import type { SaleConditionForm } from "../types/form";
 import { saleConditionSchema } from "../types/schema";
 import { useCreateSaleCondition } from "../hooks/useCreateSaleCondition";
 
-const defaultValues: SaleConditionForm = {
+const createDefaultValues = (): SaleConditionForm => ({
   costingMethodId: null,
   vatRateId: null,
   startDate: dayjs().format(formatDate),
   endDate: null,
-};
+});
 
 interface SaleConditionAddEditPageProps {
   open: boolean;
@@ -28,11 +29,13 @@ export default function SaleConditionAddEditPage({
   open,
   onClose,
 }: SaleConditionAddEditPageProps) {
+  // Taken once when the form opens; the factory reads the clock.
+  const [openedDefaults] = useState(createDefaultValues);
   const { t } = useTranslation();
   const createMutation = useCreateSaleCondition();
 
   const formik = useFormik<SaleConditionForm>({
-    initialValues: defaultValues,
+    initialValues: openedDefaults,
     enableReinitialize: true,
     validationSchema: saleConditionSchema(),
     onSubmit: async (values, helpers) => {

@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/card/DocumentSummary";
 import { useAppSelector } from "@/store/hooks";
 
-const defaultValues: CashDocumentForm = {
+const createDefaultValues = (): CashDocumentForm => ({
   cashBoxId: null,
   paymentTypeId: null,
   counterpartyId: null,
@@ -49,7 +49,7 @@ const defaultValues: CashDocumentForm = {
   cashChartAccountId: null,
   offsetAccountId: null,
   comment: "",
-};
+});
 
 export default function CashDocumentDetailPage() {
   const { t } = useTranslation();
@@ -73,17 +73,17 @@ export default function CashDocumentDetailPage() {
 
   const initialValues = useMemo<CashDocumentForm>(
     () => ({
-      cashBoxId: record?.cashBoxId ?? defaultValues.cashBoxId,
-      paymentTypeId: record?.paymentTypeId ?? defaultValues.paymentTypeId,
-      counterpartyId: record?.counterpartyId ?? defaultValues.counterpartyId,
-      docDate: record?.docDate ?? defaultValues.docDate,
-      currencyId: record?.currencyId ?? defaultValues.currencyId,
-      amount: record?.amount ?? defaultValues.amount,
-      exchangeRate: record?.exchangeRate ?? defaultValues.exchangeRate,
-      comment: record?.comment ?? defaultValues.comment,
+      cashBoxId: record?.cashBoxId ?? createDefaultValues().cashBoxId,
+      paymentTypeId: record?.paymentTypeId ?? createDefaultValues().paymentTypeId,
+      counterpartyId: record?.counterpartyId ?? createDefaultValues().counterpartyId,
+      docDate: record?.docDate ?? createDefaultValues().docDate,
+      currencyId: record?.currencyId ?? createDefaultValues().currencyId,
+      amount: record?.amount ?? createDefaultValues().amount,
+      exchangeRate: record?.exchangeRate ?? createDefaultValues().exchangeRate,
+      comment: record?.comment ?? createDefaultValues().comment,
       cashChartAccountId:
-        record?.cashChartAccountId ?? defaultValues.cashChartAccountId,
-      offsetAccountId: record?.offsetAccountId ?? defaultValues.offsetAccountId,
+        record?.cashChartAccountId ?? createDefaultValues().cashChartAccountId,
+      offsetAccountId: record?.offsetAccountId ?? createDefaultValues().offsetAccountId,
     }),
     [record],
   );

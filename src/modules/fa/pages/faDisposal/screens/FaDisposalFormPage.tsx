@@ -25,7 +25,7 @@ import type { FaDisposalFormValues } from "../types/form";
 import { faDisposalSchema } from "../types/schema";
 import type { FaDisposalPayload } from "../types/type";
 
-const defaultValues: FaDisposalFormValues = {
+const createDefaultValues = (): FaDisposalFormValues => ({
   disposalDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   disposalTypeId: null,
   reason: "",
@@ -42,7 +42,7 @@ const defaultValues: FaDisposalFormValues = {
       note: "",
     },
   ],
-};
+});
 
 const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => ({
   disposalDate: values.disposalDate,
@@ -92,10 +92,10 @@ export default function FaDisposalFormPage() {
 
   const initialValues = useMemo<FaDisposalFormValues>(
     () => ({
-      disposalDate: record?.disposalDate ?? defaultValues.disposalDate,
+      disposalDate: record?.disposalDate ?? createDefaultValues().disposalDate,
       disposalTypeId: record?.disposalTypeId ?? null,
       reason: record?.reason ?? "",
-      stateId: record?.stateId ?? defaultValues.stateId,
+      stateId: record?.stateId ?? createDefaultValues().stateId,
       disposalAccountId: record?.disposalAccountId ?? null,
       customerAccountId: record?.customerAccountId ?? null,
       vatAccountId: null,
@@ -107,7 +107,7 @@ export default function FaDisposalFormPage() {
             saleAmount: line.saleAmount ?? 0,
             note: line.note ?? "",
           }))
-        : defaultValues.lines,
+        : createDefaultValues().lines,
     }),
     [record],
   );

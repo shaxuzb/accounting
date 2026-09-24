@@ -25,7 +25,7 @@ import type { FaCommissioningFormValues } from "../types/form";
 import type { FaCommissioningPayload } from "../types/type";
 import { faCommissioningSchema } from "../types/schema";
 
-const defaults: FaCommissioningFormValues = {
+const createDefaults = (): FaCommissioningFormValues => ({
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   note: "",
   lines: [
@@ -43,7 +43,7 @@ const defaults: FaCommissioningFormValues = {
       note: "",
     },
   ],
-};
+});
 
 const toPayload = (
   values: FaCommissioningFormValues,
@@ -97,7 +97,7 @@ export default function FaCommissioningFormPage() {
 
   const initialValues = useMemo<FaCommissioningFormValues>(
     () => ({
-      docDate: record?.docDate ?? defaults.docDate,
+      docDate: record?.docDate ?? createDefaults().docDate,
       note: record?.note ?? "",
       lines: record?.lines?.length
         ? record.lines.map((line) => ({
@@ -105,7 +105,7 @@ export default function FaCommissioningFormPage() {
             note: line.note ?? "",
             responsibleUserId: line.responsibleUserId ?? currentUserId,
           }))
-        : defaults.lines.map((line) => ({
+        : createDefaults().lines.map((line) => ({
             ...line,
             responsibleUserId: currentUserId,
           })),

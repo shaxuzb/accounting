@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import { Button, Col, Form, Modal, Row, Spin } from "antd";
@@ -24,7 +24,7 @@ import {
 import { accountingPolicySchema } from "../types/schema";
 import type { AccountingPolicyForm } from "../types/form";
 
-const defaultValues: AccountingPolicyForm = {
+const createDefaultValues = (): AccountingPolicyForm => ({
   inventoryValuationMethod: "FIFO",
   baseCurrencyId: 1,
   vatPayer: true,
@@ -37,7 +37,7 @@ const defaultValues: AccountingPolicyForm = {
   foreignCurrencyEnabled: null,
   costAllocationMethod: null,
   closedPeriodPolicy: "PROTECT_CLOSED_PERIOD",
-};
+});
 
 interface AccountingPolicyAddEditPageProps {
   open: boolean;
@@ -50,6 +50,8 @@ export default function AccountingPolicyAddEditPage({
   onClose,
   effectiveOn,
 }: AccountingPolicyAddEditPageProps) {
+  // Taken once when the form opens; the factory reads the clock.
+  const [openedDefaults] = useState(createDefaultValues);
   const { t } = useTranslation();
   const { data, isLoading } = useGetCurrentAccountingPolicy({
     effectiveOn,
@@ -58,7 +60,7 @@ export default function AccountingPolicyAddEditPage({
   const updateMutation = useUpdateAccountingPolicy();
 
   const formik = useFormik<AccountingPolicyForm>({
-    initialValues: defaultValues,
+    initialValues: openedDefaults,
     enableReinitialize: true,
     validationSchema: accountingPolicySchema,
     onSubmit: async (values, helpers) => {

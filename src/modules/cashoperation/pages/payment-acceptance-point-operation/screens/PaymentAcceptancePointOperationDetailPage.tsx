@@ -43,7 +43,7 @@ import { useAppSelector } from "@/store/hooks";
 
 const listPath = "/main/cash-operationses/payment-acceptance-point-operations";
 
-const defaultValues: PaymentAcceptancePointOperationForm = {
+const createDefaultValues = (): PaymentAcceptancePointOperationForm => ({
   paymentAcceptancePointId: null,
   directionId: 1,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
@@ -52,7 +52,7 @@ const defaultValues: PaymentAcceptancePointOperationForm = {
   exchangeRate: 1,
   externalTransactionNumber: "",
   comment: "",
-};
+});
 
 const buildTouched = (values: PaymentAcceptancePointOperationForm) => ({
   paymentAcceptancePointId: values.paymentAcceptancePointId !== null,
@@ -88,16 +88,16 @@ export default function PaymentAcceptancePointOperationDetailPage() {
     () => ({
       paymentAcceptancePointId:
         record?.paymentAcceptancePointId ??
-        defaultValues.paymentAcceptancePointId,
+        createDefaultValues().paymentAcceptancePointId,
       directionId: record?.directionId === -1 ? -1 : 1,
-      docDate: record?.docDate ?? defaultValues.docDate,
-      currencyId: record?.currencyId ?? defaultValues.currencyId,
-      amount: record?.amount ?? defaultValues.amount,
-      exchangeRate: record?.exchangeRate ?? defaultValues.exchangeRate,
+      docDate: record?.docDate ?? createDefaultValues().docDate,
+      currencyId: record?.currencyId ?? createDefaultValues().currencyId,
+      amount: record?.amount ?? createDefaultValues().amount,
+      exchangeRate: record?.exchangeRate ?? createDefaultValues().exchangeRate,
       externalTransactionNumber:
         record?.externalTransactionNumber ??
-        defaultValues.externalTransactionNumber,
-      comment: record?.comment ?? defaultValues.comment,
+        createDefaultValues().externalTransactionNumber,
+      comment: record?.comment ?? createDefaultValues().comment,
     }),
     [record],
   );

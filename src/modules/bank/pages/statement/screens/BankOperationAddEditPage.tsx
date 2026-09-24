@@ -81,7 +81,7 @@ type BankOperationForm = {
   classificationRuleId: number | null;
 };
 
-const defaultValues: BankOperationForm = {
+const createDefaultValues = (): BankOperationForm => ({
   bankAccountId: null,
   directionId: 1,
   bankChartAccountId: null,
@@ -101,7 +101,7 @@ const defaultValues: BankOperationForm = {
   classificationCategoryId: null,
   classificationRuleId: null,
   relatedDocumentId: null,
-};
+});
 
 const toPositiveNumber = (value: unknown) => {
   const numberValue = Number(value);
@@ -154,26 +154,26 @@ export default function BankOperationAddEditPage() {
 
   const initialValues = useMemo<BankOperationForm>(
     () => ({
-      bankAccountId: record?.bankAccountId ?? defaultValues.bankAccountId,
+      bankAccountId: record?.bankAccountId ?? createDefaultValues().bankAccountId,
       directionId:
         record?.directionId ??
-        (record?.operationTypeId === 2 ? -1 : defaultValues.directionId),
+        (record?.operationTypeId === 2 ? -1 : createDefaultValues().directionId),
       bankChartAccountId: record?.bankChartAccountId ?? null,
       offsetAccountId: record?.offsetAccountId ?? null,
       operationTypeId:
         record?.operationTypeId ??
-        (record?.directionId === -1 ? 2 : defaultValues.operationTypeId),
+        (record?.directionId === -1 ? 2 : createDefaultValues().operationTypeId),
       paymentTypeId: record?.paymentTypeId ?? null,
       counterpartyId: record?.counterpartyId ?? null,
       counterpartyBankAccountId: record?.counterpartyBankAccountId ?? null,
       contractId: record?.contractId ?? null,
-      exchangeRate: record?.exchangeRate ?? defaultValues.exchangeRate,
-      docDate: record?.docDate ?? defaultValues.docDate,
-      currencyId: record?.currencyId ?? defaultValues.currencyId,
+      exchangeRate: record?.exchangeRate ?? createDefaultValues().exchangeRate,
+      docDate: record?.docDate ?? createDefaultValues().docDate,
+      currencyId: record?.currencyId ?? createDefaultValues().currencyId,
       amount: record?.amount ?? null,
-      comment: record?.comment ?? defaultValues.comment,
+      comment: record?.comment ?? createDefaultValues().comment,
       bankDocumentNumber:
-        record?.bankDocumentNumber ?? defaultValues.bankDocumentNumber,
+        record?.bankDocumentNumber ?? createDefaultValues().bankDocumentNumber,
       classificationCategoryId: record?.classificationCategoryId ?? null,
       classificationRuleId: record?.classificationRuleId ?? null,
       relatedDocumentId: record?.relatedDocumentId ?? null,

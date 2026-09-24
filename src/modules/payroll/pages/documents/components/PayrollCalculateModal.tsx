@@ -33,7 +33,7 @@ import {
 } from "../constants/accounts";
 import { normalizeManualAdjustment } from "../utils/correction";
 
-const defaultValues: PayrollCalculateForm = {
+const createDefaultValues = (): PayrollCalculateForm => ({
   periodId: null,
   docDate: dayjs().format(DATE_TIME_FORMAT),
   documentKind: "REGULAR",
@@ -43,7 +43,7 @@ const defaultValues: PayrollCalculateForm = {
   salaryPayableAccountId: null,
   note: null,
   adjustments: [],
-};
+});
 
 interface Props {
   open: boolean;
@@ -64,7 +64,7 @@ export default function PayrollCalculateModal({
   const calculateMutation = useCalculatePayrollDocument();
 
   const formik = useFormik<PayrollCalculateForm>({
-    initialValues: defaultValues,
+    initialValues: createDefaultValues(),
     validationSchema: payrollCalculateSchema,
     onSubmit: async (values, helpers) => {
       try {
@@ -86,7 +86,7 @@ export default function PayrollCalculateModal({
               : [],
         });
         toast.success(t("payroll.messages.documentCalculated"));
-        helpers.resetForm({ values: defaultValues });
+        helpers.resetForm({ values: createDefaultValues() });
         onClose();
         const createdId =
           typeof created === "number" ? created : Number(created.id);
@@ -107,7 +107,7 @@ export default function PayrollCalculateModal({
   );
 
   useEffect(() => {
-    if (open) resetForm({ values: defaultValues });
+    if (open) resetForm({ values: createDefaultValues() });
   }, [open, resetForm]);
 
   const addAdjustment = () =>
@@ -138,7 +138,7 @@ export default function PayrollCalculateModal({
     );
 
   const handleClose = () => {
-    resetForm({ values: defaultValues });
+    resetForm({ values: createDefaultValues() });
     onClose();
   };
 

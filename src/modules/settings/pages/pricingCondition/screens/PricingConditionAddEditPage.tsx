@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { Button, Col, Form, Modal, Row, Spin } from "antd";
 import toast from "react-hot-toast";
@@ -15,14 +15,14 @@ import { pricingConditionSchema } from "../types/schema";
 import { useCreatePricingCondition } from "../hooks/useCreatePricingCondition";
 import { useGetDetailPricingCondition } from "../hooks/useGetDetailPricingCondition";
 
-const defaultValues: PricingConditionForm = {
+const createDefaultValues = (): PricingConditionForm => ({
   pricingMethodId: null,
   pricingValue: null,
   roundingMethodId: null,
   roundingPrecision: null,
   startDate: dayjs().format(formatDate),
   endDate: null,
-};
+});
 
 interface PricingConditionAddEditPageProps {
   open: boolean;
@@ -35,6 +35,8 @@ export default function PricingConditionAddEditPage({
   onClose,
   id,
 }: PricingConditionAddEditPageProps) {
+  // Taken once when the form opens; the factory reads the clock.
+  const [openedDefaults] = useState(createDefaultValues);
   const { t } = useTranslation();
   const viewId = id ?? null;
   const isView = Boolean(viewId);
@@ -44,7 +46,7 @@ export default function PricingConditionAddEditPage({
   const createMutation = useCreatePricingCondition();
 
   const formik = useFormik<PricingConditionForm>({
-    initialValues: defaultValues,
+    initialValues: openedDefaults,
     enableReinitialize: true,
     validationSchema: pricingConditionSchema(),
     onSubmit: async (values, helpers) => {

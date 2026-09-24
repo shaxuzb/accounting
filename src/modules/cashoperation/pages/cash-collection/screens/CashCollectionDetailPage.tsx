@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button, Col, Form, Modal, Row, Spin } from "antd";
 import { Calendar, CheckCircle2, CircleX, Save } from "lucide-react";
 import { useFormik } from "formik";
@@ -29,7 +30,7 @@ import { toCashCollectionPayload } from "../utils/payload";
 import type { CashCollectionForm } from "../types/form";
 import { cashCollectionSchema } from "../types/schema";
 
-const emptyValues: CashCollectionForm = {
+const createEmptyValues = (): CashCollectionForm => ({
   cashBoxId: null,
   bankAccountId: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
@@ -40,7 +41,7 @@ const emptyValues: CashCollectionForm = {
   cashInTransitAccountId: null,
   bankChartAccountId: null,
   comment: "",
-};
+});
 
 interface CashCollectionDetailPageProps {
   open?: boolean;
@@ -53,6 +54,8 @@ export default function CashCollectionDetailPage({
   onClose,
   id,
 }: CashCollectionDetailPageProps) {
+  // Taken once when the form opens; the factory reads the clock.
+  const [openedDefaults] = useState(createEmptyValues);
   const { t } = useTranslation();
   const routeParams = useParams();
   const navigate = useNavigate();
@@ -67,7 +70,7 @@ export default function CashCollectionDetailPage({
   const cancel = useCancelCashCollection(collectionId);
 
   const formik = useFormik<CashCollectionForm>({
-    initialValues: record ? { ...emptyValues, ...record } : emptyValues,
+    initialValues: record ? { ...openedDefaults, ...record } : openedDefaults,
     enableReinitialize: true,
     validationSchema: cashCollectionSchema(t),
     onSubmit: async (values) => {

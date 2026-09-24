@@ -25,7 +25,7 @@ import FaReceiptFormFields from "../components/FaReceiptFormFields";
 import FaReceiptReadonlyView from "../components/readonly/FaReceiptReadonlyView";
 import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 
-const defaultValues: FaReceiptFormValues = {
+const createDefaultValues = (): FaReceiptFormValues => ({
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   counterpartyId: null,
   currencyId: null,
@@ -51,7 +51,7 @@ const defaultValues: FaReceiptFormValues = {
       ],
     },
   ],
-};
+});
 
 const getFirstValidationError = (value: unknown): string | undefined => {
   if (typeof value === "string") return value;
@@ -128,13 +128,13 @@ export default function FaReceiptFormPage() {
 
   const initialValues = useMemo<FaReceiptFormValues>(
     () => ({
-      docDate: record?.docDate ?? defaultValues.docDate,
-      counterpartyId: record?.counterpartyId ?? defaultValues.counterpartyId,
-      currencyId: record?.currencyId ?? defaultValues.currencyId,
-      receiptTypeId: record?.receiptTypeId ?? defaultValues.receiptTypeId,
+      docDate: record?.docDate ?? createDefaultValues().docDate,
+      counterpartyId: record?.counterpartyId ?? createDefaultValues().counterpartyId,
+      currencyId: record?.currencyId ?? createDefaultValues().currencyId,
+      receiptTypeId: record?.receiptTypeId ?? createDefaultValues().receiptTypeId,
       supplierAccountId:
-        record?.supplierAccountId ?? defaultValues.supplierAccountId,
-      lines: record?.lines?.length ? record.lines : defaultValues.lines,
+        record?.supplierAccountId ?? createDefaultValues().supplierAccountId,
+      lines: record?.lines?.length ? record.lines : createDefaultValues().lines,
     }),
     [record],
   );

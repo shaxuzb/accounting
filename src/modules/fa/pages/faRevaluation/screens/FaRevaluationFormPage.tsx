@@ -25,7 +25,7 @@ import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 import FaRevaluationFormFields from "../components/FaRevaluationFormFields";
 import FaRevaluationReadonlyView from "../components/FaRevaluationReadonlyView";
 
-const defaultValues: FaRevaluationFormValues = {
+const createDefaultValues = (): FaRevaluationFormValues => ({
   revaluationDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   reason: "",
   stateId: faDocumentStatusIds.draft,
@@ -38,7 +38,7 @@ const defaultValues: FaRevaluationFormValues = {
       note: "",
     },
   ],
-};
+});
 
 const toPayload = (values: FaRevaluationFormValues): FaRevaluationPayload => ({
   revaluationDate: values.revaluationDate,
@@ -85,9 +85,9 @@ export default function FaRevaluationFormPage() {
   const initialValues = useMemo<FaRevaluationFormValues>(
     () => ({
       revaluationDate:
-        record?.revaluationDate ?? defaultValues.revaluationDate,
+        record?.revaluationDate ?? createDefaultValues().revaluationDate,
       reason: record?.reason ?? "",
-      stateId: record?.stateId ?? defaultValues.stateId,
+      stateId: record?.stateId ?? createDefaultValues().stateId,
       revaluationReserveAccountId:
         record?.revaluationReserveAccountId ?? null,
       revaluationLossAccountId: record?.revaluationLossAccountId ?? null,
@@ -97,7 +97,7 @@ export default function FaRevaluationFormPage() {
             newValue: line.newValue ?? 0,
             note: line.note ?? "",
           }))
-        : defaultValues.lines,
+        : createDefaultValues().lines,
     }),
     [record],
   );

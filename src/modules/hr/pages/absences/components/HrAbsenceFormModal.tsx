@@ -21,14 +21,14 @@ import type { HrAbsenceForm } from "../types/form";
 import { hrAbsenceSchema } from "../types/schema";
 import dayjs from "dayjs";
 
-const emptyValues: HrAbsenceForm = {
+const createEmptyValues = (): HrAbsenceForm => ({
   employeeId: null,
   absenceTypeId: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   startDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   endDate: "",
   note: null,
-};
+});
 
 interface Props {
   open: boolean;
@@ -46,7 +46,7 @@ export default function HrAbsenceFormModal({ open, id, onClose }: Props) {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const formik = useFormik<HrAbsenceForm>({
-    initialValues: emptyValues,
+    initialValues: createEmptyValues(),
     validationSchema: hrAbsenceSchema,
     onSubmit: async (values, helpers) => {
       const files = fileList.flatMap((item) =>
@@ -61,7 +61,7 @@ export default function HrAbsenceFormModal({ open, id, onClose }: Props) {
               : "hr.messages.absenceCreated",
           ),
         );
-        helpers.resetForm({ values: emptyValues });
+        helpers.resetForm({ values: createEmptyValues() });
         setFileList([]);
         onClose();
       } catch (error) {
@@ -84,13 +84,13 @@ export default function HrAbsenceFormModal({ open, id, onClose }: Props) {
             endDate: record.endDate,
             note: record.note ?? null,
           }
-        : emptyValues,
+        : createEmptyValues(),
     });
   }, [open, record, resetForm]);
 
   const handleClose = () => {
     setFileList([]);
-    resetForm({ values: emptyValues });
+    resetForm({ values: createEmptyValues() });
     onClose();
   };
 

@@ -46,7 +46,7 @@ import { useAppSelector } from "@/store/hooks";
 
 const listPath = "/main/cash-operationses/cash-fiscal-transfers";
 
-const defaultValues: CashFiscalTransferForm = {
+const createDefaultValues = (): CashFiscalTransferForm => ({
   fiscalCashRegisterId: null,
   cashBoxId: null,
   directionId: -1,
@@ -57,7 +57,7 @@ const defaultValues: CashFiscalTransferForm = {
   fiscalCashAccountId: null,
   cashBoxAccountId: null,
   comment: "",
-};
+});
 
 const buildTouched = (values: CashFiscalTransferForm) => ({
   fiscalCashRegisterId: values.fiscalCashRegisterId !== null,
@@ -94,18 +94,18 @@ export default function CashFiscalTransferDetailPage() {
   const initialValues = useMemo<CashFiscalTransferForm>(
     () => ({
       fiscalCashRegisterId:
-        record?.fiscalCashRegisterId ?? defaultValues.fiscalCashRegisterId,
-      cashBoxId: record?.cashBoxId ?? defaultValues.cashBoxId,
+        record?.fiscalCashRegisterId ?? createDefaultValues().fiscalCashRegisterId,
+      cashBoxId: record?.cashBoxId ?? createDefaultValues().cashBoxId,
       directionId: record?.directionId === 1 ? 1 : -1,
-      docDate: record?.docDate ?? defaultValues.docDate,
-      currencyId: record?.currencyId ?? defaultValues.currencyId,
-      amount: record?.amount ?? defaultValues.amount,
-      exchangeRate: record?.exchangeRate ?? defaultValues.exchangeRate,
+      docDate: record?.docDate ?? createDefaultValues().docDate,
+      currencyId: record?.currencyId ?? createDefaultValues().currencyId,
+      amount: record?.amount ?? createDefaultValues().amount,
+      exchangeRate: record?.exchangeRate ?? createDefaultValues().exchangeRate,
       fiscalCashAccountId:
-        record?.fiscalCashAccountId ?? defaultValues.fiscalCashAccountId,
+        record?.fiscalCashAccountId ?? createDefaultValues().fiscalCashAccountId,
       cashBoxAccountId:
-        record?.cashBoxAccountId ?? defaultValues.cashBoxAccountId,
-      comment: record?.comment ?? defaultValues.comment,
+        record?.cashBoxAccountId ?? createDefaultValues().cashBoxAccountId,
+      comment: record?.comment ?? createDefaultValues().comment,
     }),
     [record],
   );

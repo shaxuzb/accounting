@@ -39,7 +39,7 @@ const toPositiveNumber = (value: unknown) => {
   return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : null;
 };
 
-const defaultValues: SaleDocForm = {
+const createDefaultValues = (): SaleDocForm => ({
   docDate: dayjs().format(formatDate),
   exchangeRate: 0,
   counterpartyId: null,
@@ -50,9 +50,11 @@ const defaultValues: SaleDocForm = {
   vatAccountId: null,
   comment: "",
   stateId: 1,
-};
+});
 
 export default function SaleAddEditPage() {
+  // Taken once when the form opens; the factory reads the clock.
+  const [openedDefaults] = useState(createDefaultValues);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id = "" } = useParams();
@@ -154,7 +156,7 @@ export default function SaleAddEditPage() {
           comment: document.comment,
           stateId: document.stateId,
         }
-      : initialDraft?.form ?? defaultValues,
+      : initialDraft?.form ?? openedDefaults,
     enableReinitialize: true,
     validationSchema: saleDocSchema(t, isEdit),
     onSubmit: async (values) => {
@@ -300,7 +302,7 @@ export default function SaleAddEditPage() {
       if (initialDraft?.saleConditionKey !== saleConditionDraftKey) {
         clearSaleDraft(organizationId);
         setSelectedProducts([]);
-        formik.resetForm({ values: defaultValues });
+        formik.resetForm({ values: createDefaultValues() });
       }
 
       setIsDraftSynced(true);
