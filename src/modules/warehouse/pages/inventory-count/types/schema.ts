@@ -1,17 +1,20 @@
 import * as Yup from "yup";
 import { requiredNumber } from "@/modules/settings/shared/validation";
 
+// Barcode, serial and marking are optional: goods kept by quantity have none, and
+// Formik validates an empty input as undefined, so .defined() rejected every such
+// line and a count filled from the stock could not be saved.
 const itemSchema = Yup.object({
   productTableId: Yup.number().nullable(),
-  barcode: Yup.string().nullable().defined(),
-  serialNumber: Yup.string().nullable().defined(),
-  markingNumber: Yup.string().nullable().defined(),
+  barcode: Yup.string().nullable(),
+  serialNumber: Yup.string().nullable(),
+  markingNumber: Yup.string().nullable(),
   costPrice: Yup.number().nullable(),
 });
 
 const lineSchema = Yup.object({
   productId: requiredNumber("purchase.fields.product"),
-  unitId: requiredNumber("purchase.fields.quantity"),
+  unitId: requiredNumber("purchase.fields.unit"),
   countedQuantity: Yup.number().nullable().required(),
   defaultCostPrice: Yup.number().nullable(),
   comment: Yup.string().nullable(),

@@ -52,6 +52,8 @@ interface StockBatch {
 interface StockProduct {
   productId: number;
   unitId: number;
+  quantity?: number;
+  availableQuantity?: number;
   availableProductTableIds?: number[];
   batches?: StockBatch[];
 }
@@ -212,7 +214,24 @@ export default function InventoryCountLinesEditor({
       const nextLines: InventoryCountLineForm[] = [];
       stockProducts.forEach((product) => {
         const tableIds = product.availableProductTableIds ?? [];
-        if (!tableIds.length) return;
+        const onHand = Number(product.availableQuantity ?? product.quantity ?? 0);
+
+        // Miqdor bo'yicha yuritiladigan tovarning donalari yo'q: qator ombordagi
+        // miqdor bilan tushadi, sanovchi uni topilganiga to'g'rilaydi. Avval bunday
+        // tovarlar umuman tushmas edi — faqat markirovkalilar to'ldirilardi.
+        if (!tableIds.length) {
+          if (onHand <= 0) return;
+          const [cost] = takeBatchUnitCosts({ batches: product.batches }, 1);
+          nextLines.push({
+            productId: product.productId,
+            unitId: product.unitId ?? null,
+            countedQuantity: onHand,
+            defaultCostPrice: cost ?? null,
+            comment: "",
+            items: [createDefaultInventoryCountItem()],
+          });
+          return;
+        }
 
         // Tannarx mahsulotda emas, partiyalarda turadi va partiyalar har xil
         // narxda bo'ladi — shuning uchun FIFO tartibida olinadi.
@@ -221,7 +240,8 @@ export default function InventoryCountLinesEditor({
         nextLines.push({
           productId: product.productId,
           unitId: product.unitId ?? null,
-          countedQuantity: tableIds.length,
+          // Kodsiz qabul qilingan donalar ham omborda: ular kamomad deb o'qilmasin.
+          countedQuantity: Math.max(onHand, tableIds.length),
           defaultCostPrice: costs[0] ?? null,
           comment: "",
           items: tableIds.map((tableId, index) => {

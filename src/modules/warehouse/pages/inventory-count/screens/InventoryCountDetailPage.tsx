@@ -5,7 +5,7 @@ import {
   Save,
   ScrollText,
 } from "lucide-react";
-import { useFormik } from "formik";
+import { setNestedObjectValues, useFormik } from "formik";
 import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import toast from "react-hot-toast";
@@ -120,7 +120,8 @@ export default function InventoryCountDetailPage() {
   const safeId = isCreate ? undefined : id;
   const queryId = safeId ?? "";
 
-  const activeTab = searchParams.get("tab") ?? "general";
+  // A new count starts where it is filled in: the warehouse, the date and the lines.
+  const activeTab = searchParams.get("tab") ?? (isCreate ? "products" : "general");
   const action = searchParams.get("action");
   const detailQuery = useGetDetailInventoryCount(queryId);
   const differencesQuery = useGetInventoryCountDifferences(
@@ -218,7 +219,8 @@ export default function InventoryCountDetailPage() {
             toCreatePayload(values),
           );
           toast.success(t("warehouse.messages.saved"));
-          navigate(`/main/warehouses/inventory-counts/${createdId}`, {
+          // Back to the editor: the count goes on (finish it, then confirm) after the first save.
+          navigate(`/main/warehouses/inventory-counts/${createdId}/edit`, {
             replace: true,
           });
           return;
@@ -253,6 +255,7 @@ export default function InventoryCountDetailPage() {
   const saveDraft = async () => {
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
+      formik.setTouched(setNestedObjectValues(errors, true));
       toast.error(t("warehouse.messages.fillRequired"));
       return false;
     }
