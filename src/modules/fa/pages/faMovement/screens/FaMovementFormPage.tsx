@@ -190,7 +190,7 @@ export default function FaMovementFormPage() {
           title={t("actions.cancelConfirmTitle")}
           description={t("actions.cancelConfirmContent")}
           okText={t("actions.cancel")}
-          cancelText={t("common.cancel")}
+          cancelText={t("common.close")}
           okButtonProps={{ danger: true }}
           onConfirm={handleCancelDocument}
         >

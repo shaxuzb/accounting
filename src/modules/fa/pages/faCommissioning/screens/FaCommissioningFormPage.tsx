@@ -31,7 +31,8 @@ const createDefaults = (): FaCommissioningFormValues => ({
   lines: [
     {
       faAssetId: null,
-      deprStartDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
+      // NSBU 5 / 1C: depreciation starts on the 1st of the month after commissioning.
+      deprStartDate: dayjs().add(1, "month").startOf("month").format("YYYY-MM-DDTHH:mm:ss"),
       salvageValue: 0,
       usefulLifeMonths: 1,
       depreciationMethodId: null,
@@ -182,7 +183,7 @@ export default function FaCommissioningFormPage() {
           title={t("actions.cancelConfirmTitle")}
           description={t("actions.cancelConfirmContent")}
           okText={t("actions.cancel")}
-          cancelText={t("common.cancel")}
+          cancelText={t("common.close")}
           okButtonProps={{ danger: true }}
           onConfirm={handleCancel}
         >

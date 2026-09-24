@@ -24,7 +24,8 @@ const emptyLine = (
   responsibleUserId: number | null = null,
 ): FaCommissioningLineValues => ({
   faAssetId: null,
-  deprStartDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
+  // NSBU 5 / 1C: depreciation starts on the 1st of the month after commissioning.
+  deprStartDate: dayjs().add(1, "month").startOf("month").format("YYYY-MM-DDTHH:mm:ss"),
   salvageValue: 0,
   usefulLifeMonths: 1,
   depreciationMethodId: null,

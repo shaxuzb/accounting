@@ -30,6 +30,9 @@ export default function ChartAccountPresetTable({
   const { t } = useTranslation();
   const rowSelection: PresetRowSelection = {
     selectedRowKeys: selectedIds,
+    // The list is searched and paged on the server; without this a new search
+    // dropped every account chosen before it and only the last one was added.
+    preserveSelectedRowKeys: true,
     onChange: (keys: Key[]) => onSelectionChange(keys.map(Number)),
     getCheckboxProps: (record) => ({
       disabled: record.hasChartAccount,
