@@ -1265,7 +1265,8 @@
       "documentConfirmed": "Document confirmed",
       "documentCancelled": "Document cancelled",
       "fillRequired": "Fill in the required fields",
-      "documentCreated": "Bank document created"
+      "documentCreated": "Bank document created",
+      "cancelPostedConfirm": "The entries are reversed, and so are the money movement and the counterparty's debt or advance. The document stays as cancelled."
     },
     "import": {
       "title": "Bank statement import",
@@ -1319,6 +1320,9 @@
       "paymentTypeRequired": "Select a payment type",
       "counterpartyRequired": "Select a counterparty",
       "currencyRequired": "Select a currency"
+    },
+    "actions": {
+      "cancelPosted": "Cancel document"
     }
   },
   "contract": {

@@ -1,6 +1,7 @@
-import { Button, Col, Form, Input, Row, Spin } from "antd";
+import { Button, Col, Form, Input, Popconfirm, Row, Spin } from "antd";
 import { useFormik } from "formik";
 import {
+  Ban,
   Building2,
   CalendarDays,
   CheckCircle2,
@@ -59,6 +60,10 @@ import {
   getBankRelatedDocumentTypeCode,
 } from "../utils/bankImportRules";
 import { useAppSelector } from "@/store/hooks";
+import { bankPermissions } from "../constants/permissions";
+
+/** cmn_document_status: a posted document. */
+const POSTED_STATUS_ID = 2;
 import { DocumentSummary, DocumentSummaryItem } from "@/components/ui/card/DocumentSummary";
 
 type BankOperationForm = {
@@ -135,6 +140,9 @@ export default function BankOperationAddEditPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const organizationName = useAppSelector((state) => state.organization.name);
+  const permissions = useAppSelector(
+    (state) => state.auth.user?.user.permissions ?? [],
+  );
   const isCreate = !id;
   const detailQuery = useGetDetailBankOperation(id);
   const createMutation = useCreateBankOperation();
@@ -374,7 +382,51 @@ export default function BankOperationAddEditPage() {
   }
 
   if (!isDraft) {
-    return record ? <BankReadonlyDetailsCard record={record} /> : null;
+    if (!record) return null;
+    const canCancelPosted =
+      record.statusId === POSTED_STATUS_ID &&
+      permissions.includes(bankPermissions.cancel);
+
+    // Cancelling a posted payment reverses its entries (storno), the money movement and
+    // what it did to the counterparty's debt or advance.
+    const cancelPosted = async () => {
+      try {
+        await cancelMutation.mutateAsync();
+        toast.success(t("bank.messages.documentCancelled"));
+      } catch (error) {
+        errorHandlers(error);
+      }
+    };
+
+    return (
+      <div className="space-y-2">
+        {canCancelPosted && (
+          <div className="flex justify-end">
+            <Popconfirm
+              title={t("bank.actions.cancelPosted")}
+              description={
+                <div className="max-w-80">
+                  {t("bank.messages.cancelPostedConfirm")}
+                </div>
+              }
+              okText={t("bank.actions.cancelPosted")}
+              okButtonProps={{ danger: true, loading: cancelMutation.isPending }}
+              cancelText={t("common.close")}
+              onConfirm={cancelPosted}
+            >
+              <Button
+                danger
+                icon={<Ban className="size-4" />}
+                loading={cancelMutation.isPending}
+              >
+                {t("bank.actions.cancelPosted")}
+              </Button>
+            </Popconfirm>
+          </div>
+        )}
+        <BankReadonlyDetailsCard record={record} />
+      </div>
+    );
   }
 
   return (

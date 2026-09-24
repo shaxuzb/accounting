@@ -1267,7 +1267,8 @@
       "documentConfirmed": "Hujjat tasdiqlandi",
       "documentCancelled": "Hujjat bekor qilindi",
       "fillRequired": "Majburiy maydonlarni to'ldiring",
-      "documentCreated": "Bank hujjati yaratildi"
+      "documentCreated": "Bank hujjati yaratildi",
+      "cancelPostedConfirm": "Provodkalar storno qilinadi, pul harakati va kontragent qarzi (yoki avansi) qaytariladi. Hujjat «Bekor qilingan» bo'lib qoladi."
     },
     "import": {
       "title": "Bank ko'chirmasini import qilish",
@@ -1319,6 +1320,9 @@
       "paymentTypeRequired": "To'lov turini tanlang",
       "counterpartyRequired": "Kontragentni tanlang",
       "currencyRequired": "Valyutani tanlang"
+    },
+    "actions": {
+      "cancelPosted": "Hujjatni bekor qilish"
     }
   },
   "contract": {

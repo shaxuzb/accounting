@@ -1267,7 +1267,8 @@
       "documentConfirmed": "Документ подтверждён",
       "documentCancelled": "Документ отменён",
       "fillRequired": "Заполните обязательные поля",
-      "documentCreated": "Банковский документ создан"
+      "documentCreated": "Банковский документ создан",
+      "cancelPostedConfirm": "Проводки будут сторнированы, движение денег и долг (или аванс) контрагента вернутся назад. Документ останется в статусе «Отменён»."
     },
     "import": {
       "title": "Импорт банковской выписки",
@@ -1319,6 +1320,9 @@
       "paymentTypeRequired": "Выберите тип платежа",
       "counterpartyRequired": "Выберите контрагента",
       "currencyRequired": "Выберите валюту"
+    },
+    "actions": {
+      "cancelPosted": "Отменить документ"
     }
   },
   "contract": {
