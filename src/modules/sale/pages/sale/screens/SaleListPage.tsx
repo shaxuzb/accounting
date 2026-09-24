@@ -1,7 +1,7 @@
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, ReceiptText, RefreshCw } from "lucide-react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -27,6 +27,7 @@ const toPositiveInteger = (value: string | null, fallback: number) => {
 export default function SaleListPage() {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
@@ -63,6 +64,16 @@ export default function SaleListPage() {
       title: t("purchase.fields.docNumber"),
       dataIndex: "docNumber",
       minWidth: 150,
+      // Faqat raqam emas, butun katak bosiladi. Raqamning o'zi havola bo'lib
+      // qoladi (Ctrl+bosish yangi oynada ochadi) — uni bosganda ikki marta
+      // yo'naltirilmasligi uchun havola ichidagi bosishlar o'tkazib yuboriladi.
+      onCell: (record) => ({
+        className: "cursor-pointer",
+        onClick: (event) => {
+          if ((event.target as HTMLElement).closest("a")) return;
+          navigate(`${record.id}`);
+        },
+      }),
       render: (value, record) => (
         <Link to={`${record.id}`}>{value || record.id}</Link>
       ),

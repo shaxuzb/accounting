@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { Alert, Button, Empty, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
 import { FileUp, ReceiptText } from "lucide-react";
@@ -41,6 +41,7 @@ export default function PurchaseListPage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const userPermissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
@@ -79,6 +80,16 @@ export default function PurchaseListPage() {
     {
       dataIndex: "docNumber",
       title: t("purchase.fields.docNumber"),
+      // Faqat raqam emas, butun katak bosiladi. Raqamning o'zi havola bo'lib
+      // qoladi (Ctrl+bosish yangi oynada ochadi) — uni bosganda ikki marta
+      // yo'naltirilmasligi uchun havola ichidagi bosishlar o'tkazib yuboriladi.
+      onCell: (record) => ({
+        className: "cursor-pointer",
+        onClick: (event) => {
+          if ((event.target as HTMLElement).closest("a")) return;
+          navigate(getDocumentPath(record.id, record.docNumber || undefined));
+        },
+      }),
       render: (value, record) => (
         <Link to={getDocumentPath(record.id, record.docNumber || undefined)}>
           {value || record.id}

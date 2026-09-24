@@ -10,7 +10,7 @@ import { Alert, Button, Empty, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, ReceiptText, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import {
   retailSaleAccountingEntriesReportDocumentTypeId,
   retailSaleEndpoints,
@@ -28,6 +28,7 @@ const toPositiveInteger = (value: string | null, fallback: number) => {
 export default function RetailSaleListPage() {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
@@ -64,6 +65,16 @@ export default function RetailSaleListPage() {
       dataIndex: "docNumber",
       title: t("retailSale.fields.docNumber"),
       minWidth: 140,
+      // Faqat raqam emas, butun katak bosiladi. Raqamning o'zi havola bo'lib
+      // qoladi (Ctrl+bosish yangi oynada ochadi) — uni bosganda ikki marta
+      // yo'naltirilmasligi uchun havola ichidagi bosishlar o'tkazib yuboriladi.
+      onCell: (record) => ({
+        className: "cursor-pointer",
+        onClick: (event) => {
+          if ((event.target as HTMLElement).closest("a")) return;
+          navigate(`${record.id}`);
+        },
+      }),
       render: (value, record) => (
         <Link to={`${record.id}`}>{value || record.id}</Link>
       ),
