@@ -49,6 +49,7 @@ export default function TrialBalancePage() {
 
       {data && (
         <AccountingReportLedgerSummary
+          compact
           debitLabel={t("openingBalance.fields.debit")}
           creditLabel={t("openingBalance.fields.credit")}
           stages={[

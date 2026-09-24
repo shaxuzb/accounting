@@ -12,6 +12,8 @@ interface SummaryItem {
 interface Props {
   items: SummaryItem[];
   columns?: 2 | 3 | 4;
+  /** Kartochkalar balandligini kamaytiradi (ichki padding kichrayadi). */
+  compact?: boolean;
 }
 
 const toneClass: Record<NonNullable<SummaryItem["tone"]>, string> = {
@@ -41,18 +43,27 @@ const gridClass = {
 export default function AccountingReportSummaryGrid({
   items,
   columns = 4,
+  compact = false,
 }: Props) {
+  const cardPadding = compact ? "px-4 py-2.5" : "p-4";
+  const iconSize = compact ? "size-8" : "size-9";
+  const valueGap = compact ? "mt-0.5" : "mt-1";
+  const helperGap = compact ? "mt-0" : "mt-1";
+
   return (
     <div className={`grid gap-3 md:grid-cols-2 ${gridClass[columns]}`}>
       {items.map((item) => {
         const tone = item.tone ?? "default";
 
         return (
-          <Card key={item.label} className="border border-border p-4 shadow-sm">
+          <Card
+            key={item.label}
+            className={`border border-border ${cardPadding} shadow-sm`}
+          >
             <div className="flex items-start gap-3">
               {item.icon && (
                 <span
-                  className={`flex size-9 shrink-0 items-center justify-center rounded-full ${iconToneClass[tone]}`}
+                  className={`flex ${iconSize} shrink-0 items-center justify-center rounded-full ${iconToneClass[tone]}`}
                 >
                   {item.icon}
                 </span>
@@ -60,13 +71,13 @@ export default function AccountingReportSummaryGrid({
               <div className="min-w-0">
                 <div className="text-xs text-secondary-text">{item.label}</div>
                 <div
-                  className={`mt-1 truncate text-lg font-semibold tabular-nums ${toneClass[tone]}`}
+                  className={`${valueGap} truncate text-lg font-semibold tabular-nums ${toneClass[tone]}`}
                   title={typeof item.value === "string" ? item.value : undefined}
                 >
                   {item.value}
                 </div>
                 {item.helper && (
-                  <div className="mt-1 text-xs text-secondary-text">
+                  <div className={`${helperGap} text-xs text-secondary-text`}>
                     {item.helper}
                   </div>
                 )}

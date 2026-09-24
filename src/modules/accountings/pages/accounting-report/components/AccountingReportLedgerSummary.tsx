@@ -17,6 +17,8 @@ interface Props {
   stages: LedgerSummaryStage[];
   debitLabel: string;
   creditLabel: string;
+  /** Kataklar balandligini kamaytiradi (ichki padding kichrayadi). */
+  compact?: boolean;
 }
 
 const toneClasses: Record<
@@ -44,7 +46,13 @@ export default function AccountingReportLedgerSummary({
   stages,
   debitLabel,
   creditLabel,
+  compact = false,
 }: Props) {
+  const headerPadding = compact ? "py-1.5" : "py-3";
+  const iconSize = compact ? "size-7" : "size-8";
+  const cellPadding = compact ? "py-2" : "py-4";
+  const valueGap = compact ? "mt-0.5" : "mt-1";
+
   return (
     <Card className="grid overflow-hidden border border-border shadow-sm lg:grid-cols-3">
       {stages.map((stage) => {
@@ -56,10 +64,10 @@ export default function AccountingReportLedgerSummary({
             className="min-w-0 border-b border-border last:border-b-0 lg:border-r lg:border-b-0 lg:last:border-r-0"
           >
             <div
-              className={`flex items-center justify-center gap-2 border-b border-border px-4 py-3 ${tone.header}`}
+              className={`flex items-center justify-center gap-2 border-b border-border px-4 ${headerPadding} ${tone.header}`}
             >
               <span
-                className={`flex size-8 items-center justify-center rounded-full border border-border/60 ${tone.icon}`}
+                className={`flex ${iconSize} items-center justify-center rounded-full border border-border/60 ${tone.icon}`}
               >
                 {stage.icon}
               </span>
@@ -69,23 +77,23 @@ export default function AccountingReportLedgerSummary({
             </div>
 
             <div className="grid grid-cols-2 divide-x divide-border">
-              <div className="min-w-0 px-4 py-4 text-center">
+              <div className={`min-w-0 px-4 ${cellPadding} text-center`}>
                 <div className="text-xs font-medium text-brand-text">
                   {debitLabel}
                 </div>
                 <div
-                  className={`mt-1 truncate text-lg font-semibold tabular-nums ${tone.debit}`}
+                  className={`${valueGap} truncate text-lg font-semibold tabular-nums ${tone.debit}`}
                   title={String(stage.debit)}
                 >
                   {numberSpacing(stage.debit, undefined, true)}
                 </div>
               </div>
-              <div className="min-w-0 px-4 py-4 text-center">
+              <div className={`min-w-0 px-4 ${cellPadding} text-center`}>
                 <div className="text-xs font-medium text-warning">
                   {creditLabel}
                 </div>
                 <div
-                  className="mt-1 truncate text-lg font-semibold text-warning tabular-nums"
+                  className={`${valueGap} truncate text-lg font-semibold text-warning tabular-nums`}
                   title={String(stage.credit)}
                 >
                   {numberSpacing(stage.credit, undefined, true)}

@@ -85,6 +85,7 @@ export default function BalanceSheetPage() {
       {data && (
         <>
           <AccountingReportSummaryGrid
+            compact
             items={[
               {
                 label: t("app.reports.summary.totalAssets"),
