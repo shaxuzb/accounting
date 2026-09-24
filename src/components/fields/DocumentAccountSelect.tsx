@@ -55,6 +55,8 @@ export default function DocumentAccountSelect({
 
   return (
     <SelectCustom
+      // Account lists run long (taxes, settlements, advances); find one by number or name.
+      search={props.search ?? true}
       {...props}
       enabled={isEnabled}
       autoSelectSingle={props.autoSelectSingle ?? !allowUserSelection}

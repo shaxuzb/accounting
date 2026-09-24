@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
+import { useContractSettlementAccount } from "@/shared/hooks/useContractSettlementAccount";
 import InOutSelect from "@/components/fields/InOutSelect";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
@@ -288,6 +289,17 @@ export default function BankOperationAddEditPage() {
     if (!detailQuery.error) return;
     errorHandlers(detailQuery.error);
   }, [detailQuery.error]);
+
+  useContractSettlementAccount({
+    formik,
+    offsetFieldName: "offsetAccountId",
+    documentTypeId,
+    offsetRoleCode: bankDocumentAccountRoleCodes.offsetAccount,
+    counterpartyId,
+    contractId: toPositiveNumber(formik.values.contractId),
+    directionId: formik.values.directionId,
+    docDate: formik.values.docDate,
+  });
 
   const saveDraft = async () => {
     const errors = await formik.validateForm();
