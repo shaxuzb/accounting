@@ -1193,7 +1193,7 @@ export default function SaleProductSelection({
           <div>
             <InputNumberFormat
               standalone
-              disabled
+              // disabled
               height={tableControlHeight}
               emptyZero
               min={0}
