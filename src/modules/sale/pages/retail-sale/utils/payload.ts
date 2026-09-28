@@ -59,6 +59,7 @@ const toBasePayload = (
     : null,
   vatAccountId: values.vatAccountId ? Number(values.vatAccountId) : null,
   comment: values.comment.trim() || null,
+  withoutMarking: !withMarking,
   lines: toLines(products, withMarking),
   payments: toPayments(values.payments),
 });

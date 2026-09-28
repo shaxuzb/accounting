@@ -59,6 +59,11 @@ export interface RetailSaleCreatePayload {
   receivableAccountId: number | null;
   vatAccountId: number | null;
   comment: string | null;
+  /**
+   * "Markirovka bilan" is off: nothing is scanned and the server picks the units that
+   * leave stock in costing order, marked ones included.
+   */
+  withoutMarking: boolean;
   processingMode: RetailSaleProcessingMode;
   lines: RetailSaleLinePayload[];
   payments: RetailSalePaymentPayload[];

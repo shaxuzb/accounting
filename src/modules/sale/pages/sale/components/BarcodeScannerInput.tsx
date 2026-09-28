@@ -7,12 +7,15 @@ import { useTranslation } from "react-i18next";
 
 interface BarcodeScannerInputProps {
   disabled?: boolean;
+  /** Why the input is disabled; defaults to "create the sale document first". */
+  disabledPlaceholder?: string;
   loading?: boolean;
   onScan: (barcode: string) => Promise<void> | void;
 }
 
 export default function BarcodeScannerInput({
   disabled = false,
+  disabledPlaceholder,
   loading = false,
   onScan,
 }: BarcodeScannerInputProps) {
@@ -46,7 +49,7 @@ export default function BarcodeScannerInput({
       onPressEnter={() => void submit()}
       placeholder={
         disabled
-          ? t("sale.messages.createDocumentFirst")
+          ? (disabledPlaceholder ?? t("sale.messages.createDocumentFirst"))
           : t("sale.messages.scanBarcodeOrEnter")
       }
       size="large"

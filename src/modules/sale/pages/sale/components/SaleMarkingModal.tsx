@@ -141,6 +141,11 @@ export default function SaleMarkingModal({
           </div>
           <BarcodeScannerInput
             disabled={accountedQuantity >= quantity}
+            disabledPlaceholder={
+              quantity > 0
+                ? t("sale.messages.allUnitsAccounted")
+                : t("sale.messages.enterQuantityFirst")
+            }
             loading={loading}
             onScan={onScan}
           />

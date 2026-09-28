@@ -1540,6 +1540,8 @@
       "atLeastOneProduct": "Kamida bitta mahsulot tanlang",
       "commentPlaceholder": "Izoh kiriting...",
       "createDocumentFirst": "Avval sotuv hujjatini yarating",
+      "allUnitsAccounted": "Barcha donalar kiritildi — ko'proq skanerlash uchun miqdorni oshiring",
+      "enterQuantityFirst": "Avval qatorda miqdorni kiriting",
       "scanBarcodeOrEnter": "Shtrix-kodni skanerlang yoki qo'lda kiriting",
       "scanConfirmed": "Tasdiqlandi",
       "selectCounterparty": "Kontragentni tanlang",

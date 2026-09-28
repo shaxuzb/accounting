@@ -1540,6 +1540,8 @@
       "atLeastOneProduct": "Select at least one product",
       "commentPlaceholder": "Enter a comment...",
       "createDocumentFirst": "Create the sale document first",
+      "allUnitsAccounted": "All units are accounted for — raise the quantity to scan more",
+      "enterQuantityFirst": "Enter the quantity on the line first",
       "scanBarcodeOrEnter": "Scan a barcode or enter it manually",
       "scanConfirmed": "Confirmed",
       "selectCounterparty": "Select a counterparty",

@@ -46,8 +46,12 @@ export default function RetailSaleDetailPage() {
 
   const handleConfirm = async () => {
     try {
+      // One entry per product line, keyed by the line id the server stores.
+      // `lines` above is the display list: a marked line is spread into one row per
+      // unit there, each carrying the unit row's id, which the server rejects.
+      const productLines = document.lines ?? [];
       await confirmMutation.mutateAsync({
-        lines: lines.map((line) => ({
+        lines: productLines.map((line) => ({
           id: line.id,
           unitPrice: Number(line.unitPrice ?? line.price ?? line.amount ?? 0),
           costPrice: Number(line.costPrice ?? 0),

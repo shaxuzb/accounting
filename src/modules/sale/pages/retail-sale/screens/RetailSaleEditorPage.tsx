@@ -142,7 +142,10 @@ export default function RetailSaleEditorPage() {
     (totalAmount: number) => setSaleTotalAmount(totalAmount),
     [],
   );
-  const markingMode = true;
+  // On by default, as in the wholesale sale: a marked product is scanned unless the
+  // seller says otherwise. Turned off, the units that leave stock are picked in costing
+  // order — the only way to sell a marked product over the counter without scanning it.
+  const [markingMode, setMarkingMode] = useState(true);
   const activeSaleCondition = saleCondition ?? {
     id: 0,
     costingMethodId: 3,
@@ -358,6 +361,7 @@ export default function RetailSaleEditorPage() {
           onTotalsChange={handleSaleTotalChange}
           documentTypeId={retailSaleDocumentTypeIds.goods}
           markingMode={markingMode}
+          onMarkingModeChange={setMarkingMode}
           aggregateStockMode
           disableMarkingQuantityValidation
           onCancel={() => navigate(-1)}

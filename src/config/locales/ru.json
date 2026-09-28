@@ -1540,6 +1540,8 @@
       "atLeastOneProduct": "Выберите хотя бы один товар",
       "commentPlaceholder": "Введите комментарий...",
       "createDocumentFirst": "Сначала создайте документ продажи",
+      "allUnitsAccounted": "Все единицы учтены — чтобы сканировать ещё, увеличьте количество",
+      "enterQuantityFirst": "Сначала укажите количество в строке",
       "scanBarcodeOrEnter": "Сканируйте штрихкод или введите его вручную",
       "scanConfirmed": "Подтверждено",
       "selectCounterparty": "Выберите контрагента",
