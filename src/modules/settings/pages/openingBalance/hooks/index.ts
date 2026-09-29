@@ -47,6 +47,42 @@ export const useDeleteOpeningBalance = (id?: number | null) => {
   });
 };
 
+export const useDeleteOpeningBalanceAccount = (
+  openingBalanceId: string | number,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (accountId: string | number) =>
+      openingBalanceService.deleteAccount(openingBalanceId, accountId),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: openingBalanceKeys.all }),
+  });
+};
+
+export const usePostOpeningBalance = (id?: number | null) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      if (!id) throw new Error("Opening balance ID topilmadi");
+      return openingBalanceService.post(id);
+    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: openingBalanceKeys.all }),
+  });
+};
+
+export const useUnpostOpeningBalance = (id?: number | null) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      if (!id) throw new Error("Opening balance ID topilmadi");
+      return openingBalanceService.unpost(id);
+    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: openingBalanceKeys.all }),
+  });
+};
+
 export const useGetOpeningBalanceAccount = (
   openingBalanceId: string | number,
   accountId: string | number,

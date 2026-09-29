@@ -3,8 +3,8 @@ import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { Alert, Button, Form, Space, Spin } from "antd";
-import { Save } from "lucide-react";
+import { Alert, App, Button, Form, Space, Spin } from "antd";
+import { Save, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -19,6 +19,7 @@ import type { ChartAccounts } from "@/modules/settings/pages/chartAccounts/types
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { openingBalancePermissions } from "../constants/permissions";
 import {
+  useDeleteOpeningBalanceAccount,
   useGetOpeningBalanceAccount,
   useSaveOpeningBalanceAccount,
 } from "../hooks";
@@ -80,6 +81,8 @@ const buildSubkontoDefinitions = (
         accountTypeCode: chartAccount?.accountTypeCode,
       };
     })
+    // Turnover-only analytics (cash flow items, …) carry no balance, as in 1C.
+    .filter((definition) => !definition.code?.endsWith("_turnover"))
     .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0));
 
   if (fromAccount.length) return fromAccount;
@@ -122,6 +125,28 @@ export default function OpeningBalanceAccountPage() {
     refetch: refetchAccount,
   } = useGetOpeningBalanceAccount(id, accountId, Boolean(id) && !isNew);
   const saveMutation = useSaveOpeningBalanceAccount(id);
+  const deleteAccountMutation = useDeleteOpeningBalanceAccount(id);
+  const { modal } = App.useApp();
+
+  const handleDeleteAccount = () => {
+    modal.confirm({
+      title: t("openingBalance.actions.deleteAccountTitle"),
+      content: t("openingBalance.actions.deleteAccountDescription"),
+      okText: t("common.delete"),
+      cancelText: t("common.cancel"),
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          await deleteAccountMutation.mutateAsync(accountId);
+          toast.success(t("openingBalance.messages.accountDeleted"));
+          navigate("/main/settings/opening-balances");
+        } catch (error: unknown) {
+          errorHandlers(error);
+          throw error;
+        }
+      },
+    });
+  };
   const initialValues = accountData
     ? mapOpeningBalanceAccountToForm(accountData)
     : emptyAccount;
@@ -291,6 +316,18 @@ export default function OpeningBalanceAccountPage() {
               >
                 {t("common.cancel")}
               </Button>
+              {!isNew && (
+                <PermissionCard permission={openingBalancePermissions.update}>
+                  <Button
+                    danger
+                    icon={<Trash2 className="size-4" />}
+                    loading={deleteAccountMutation.isPending}
+                    onClick={handleDeleteAccount}
+                  >
+                    {t("common.delete")}
+                  </Button>
+                </PermissionCard>
+              )}
               <PermissionCard permission={openingBalancePermissions.update}>
                 <Button
                   type="primary"

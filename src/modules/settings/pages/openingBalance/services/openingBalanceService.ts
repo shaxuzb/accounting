@@ -48,6 +48,21 @@ export const openingBalanceService = {
     $axiosPrivate
       .delete(openingBalanceEndpoints.delete(id))
       .then((response) => response.data),
+  deleteAccount: (
+    openingBalanceId: string | number,
+    accountId: string | number,
+  ) =>
+    $axiosPrivate
+      .delete(openingBalanceEndpoints.deleteAccount(openingBalanceId, accountId))
+      .then((response) => response.data),
+  post: (id: string | number) =>
+    $axiosPrivate
+      .put(openingBalanceEndpoints.post(id))
+      .then((response) => response.data),
+  unpost: (id: string | number) =>
+    $axiosPrivate
+      .put(openingBalanceEndpoints.unpost(id))
+      .then((response) => response.data),
   accountDetail: (
     openingBalanceId: string | number,
     accountId: string | number,

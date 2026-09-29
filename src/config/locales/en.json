@@ -1049,7 +1049,9 @@
       "quantity": "Quantity",
       "currency": "Currency",
       "currencyAmount": "Currency amount",
-      "exchangeRate": "Exchange rate"
+      "exchangeRate": "Exchange rate",
+      "postedAt": "Posted at",
+      "offsetAccount": "Offset account"
     },
     "analytics": {
       "complete": "Complete",
@@ -1060,7 +1062,15 @@
       "addAccount": "Add account",
       "addDetail": "Add line",
       "deleteTitle": "Delete the opening balance?",
-      "deleteDescription": "All account, detail, and subkonto data will be deleted with it."
+      "deleteDescription": "All account, detail, and subkonto data will be deleted with it.",
+      "post": "Post",
+      "unpost": "Unpost",
+      "postTitle": "Post the opening balances?",
+      "postDescription": "Each account's balance is posted against 0000 (the auxiliary account), and customer and supplier debts are written to the counterparty register. To change the balances after posting, unpost first.",
+      "unpostTitle": "Unpost the opening balances?",
+      "unpostDescription": "The entries and counterparty debts are reversed and the balances can be edited again.",
+      "deleteAccountTitle": "Remove this account from the opening balances?",
+      "deleteAccountDescription": "All lines and analytics entered for the account are deleted."
     },
     "messages": {
       "created": "Opening balance created",
@@ -1072,7 +1082,11 @@
       "accountLoadError": "Failed to load account details",
       "loadingAccountMeta": "Loading account properties...",
       "noDetails": "No detail lines",
-      "selectDetail": "Select a row to view subkontos"
+      "selectDetail": "Select a row to view subkontos",
+      "posted": "Opening balances posted",
+      "unposted": "Posting reversed",
+      "lockedHint": "The balances are posted and in the ledger. To change them, click “Unpost”.",
+      "accountDeleted": "Account removed"
     },
     "states": {
       "notCreated": "Not created"

@@ -15,6 +15,10 @@ export interface OpeningBalance {
   balanceDate: string;
   description: string;
   stateId: number;
+  /** 1 — draft (editable), 2 — posted to the ledger (locked until unposted). */
+  statusId: number;
+  postedAt?: string | null;
+  offsetAccountNumber?: string | null;
   createdDate: string;
   organizationName: string;
   stateName: string;

@@ -2,7 +2,15 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Alert, App, Button, Spin } from "antd";
-import { Pencil, Plus, RefreshCw, Scale, Trash2 } from "lucide-react";
+import {
+  CheckCircle2,
+  Pencil,
+  Plus,
+  RefreshCw,
+  RotateCcw,
+  Scale,
+  Trash2,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -14,6 +22,8 @@ import { openingBalancePermissions } from "../constants/permissions";
 import {
   useDeleteOpeningBalance,
   useGetOpeningBalance,
+  usePostOpeningBalance,
+  useUnpostOpeningBalance,
 } from "../hooks";
 import type { OpeningBalance } from "../types/type";
 
@@ -31,6 +41,9 @@ export default function OpeningBalancePage() {
     refetch,
   } = useGetOpeningBalance();
   const deleteMutation = useDeleteOpeningBalance(data?.id);
+  const postMutation = usePostOpeningBalance(data?.id);
+  const unpostMutation = useUnpostOpeningBalance(data?.id);
+  const isPosted = data?.statusId === 2;
 
   const totals = useMemo(
     () =>
@@ -68,6 +81,43 @@ export default function OpeningBalancePage() {
         try {
           await deleteMutation.mutateAsync();
           toast.success(t("openingBalance.messages.deleted"));
+        } catch (error: unknown) {
+          errorHandlers(error);
+          throw error;
+        }
+      },
+    });
+  };
+
+  const handlePost = () => {
+    modal.confirm({
+      title: t("openingBalance.actions.postTitle"),
+      content: t("openingBalance.actions.postDescription"),
+      okText: t("openingBalance.actions.post"),
+      cancelText: t("common.cancel"),
+      onOk: async () => {
+        try {
+          await postMutation.mutateAsync();
+          toast.success(t("openingBalance.messages.posted"));
+        } catch (error: unknown) {
+          errorHandlers(error);
+          throw error;
+        }
+      },
+    });
+  };
+
+  const handleUnpost = () => {
+    modal.confirm({
+      title: t("openingBalance.actions.unpostTitle"),
+      content: t("openingBalance.actions.unpostDescription"),
+      okText: t("openingBalance.actions.unpost"),
+      cancelText: t("common.cancel"),
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          await unpostMutation.mutateAsync();
+          toast.success(t("openingBalance.messages.unposted"));
         } catch (error: unknown) {
           errorHandlers(error);
           throw error;
@@ -154,34 +204,72 @@ export default function OpeningBalancePage() {
                 >
                   {t("common.refresh")}
                 </Button>
-                <PermissionCard
-                  permission={openingBalancePermissions.update}
-                >
-                  <Button
-                    icon={<Pencil className="size-4" />}
-                    onClick={openEditModal}
+                {isPosted ? (
+                  <PermissionCard
+                    permission={openingBalancePermissions.update}
                   >
-                    {t("common.edit")}
-                  </Button>
-                </PermissionCard>
-                <PermissionCard
-                  permission={openingBalancePermissions.delete}
-                >
-                  <Button
-                    danger
-                    icon={<Trash2 className="size-4" />}
-                    loading={deleteMutation.isPending}
-                    onClick={handleDelete}
-                  >
-                    {t("common.delete")}
-                  </Button>
-                </PermissionCard>
+                    <Button
+                      danger
+                      icon={<RotateCcw className="size-4" />}
+                      loading={unpostMutation.isPending}
+                      onClick={handleUnpost}
+                    >
+                      {t("openingBalance.actions.unpost")}
+                    </Button>
+                  </PermissionCard>
+                ) : (
+                  <>
+                    <PermissionCard
+                      permission={openingBalancePermissions.update}
+                    >
+                      <Button
+                        icon={<Pencil className="size-4" />}
+                        onClick={openEditModal}
+                      >
+                        {t("common.edit")}
+                      </Button>
+                    </PermissionCard>
+                    <PermissionCard
+                      permission={openingBalancePermissions.delete}
+                    >
+                      <Button
+                        danger
+                        icon={<Trash2 className="size-4" />}
+                        loading={deleteMutation.isPending}
+                        onClick={handleDelete}
+                      >
+                        {t("common.delete")}
+                      </Button>
+                    </PermissionCard>
+                    <PermissionCard
+                      permission={openingBalancePermissions.update}
+                    >
+                      <Button
+                        type="primary"
+                        icon={<CheckCircle2 className="size-4" />}
+                        loading={postMutation.isPending}
+                        onClick={handlePost}
+                      >
+                        {t("openingBalance.actions.post")}
+                      </Button>
+                    </PermissionCard>
+                  </>
+                )}
               </>
             }
           />
 
+          {isPosted && (
+            <Alert
+              showIcon
+              type="success"
+              message={t("openingBalance.messages.lockedHint")}
+            />
+          )}
+
           <OpeningBalanceAccountsTable
             accounts={data.accounts ?? []}
+            readOnly={isPosted}
             onAddAccount={() => navigate(`${data.id}/accounts/new`)}
             onOpenAccount={(accountId) =>
               navigate(`${data.id}/accounts/${accountId}`)

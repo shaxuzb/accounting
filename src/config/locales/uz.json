@@ -1051,7 +1051,9 @@
       "quantity": "Miqdor",
       "currency": "Valyuta",
       "currencyAmount": "Valyutadagi summa",
-      "exchangeRate": "Kurs"
+      "exchangeRate": "Kurs",
+      "postedAt": "O'tkazilgan vaqt",
+      "offsetAccount": "Qarshi hisob"
     },
     "analytics": {
       "complete": "To'liq",
@@ -1062,7 +1064,15 @@
       "addAccount": "Hisobvaraq qo'shish",
       "addDetail": "Satr qo'shish",
       "deleteTitle": "Boshlang'ich balans o'chirilsinmi?",
-      "deleteDescription": "Balans bilan birga barcha hisobvaraq, detal va subkonto ma'lumotlari o'chadi."
+      "deleteDescription": "Balans bilan birga barcha hisobvaraq, detal va subkonto ma'lumotlari o'chadi.",
+      "post": "O'tkazish",
+      "unpost": "O'tkazishni bekor qilish",
+      "postTitle": "Boshlang'ich qoldiqlar o'tkazilsinmi?",
+      "postDescription": "Har bir hisob qoldig'i 0000 (yordamchi hisob) bilan provodka qilinadi, mijoz va yetkazib beruvchi qarzlari kontragentlar registriga yoziladi. O'tkazilgandan keyin qoldiqlarni o'zgartirish uchun avval o'tkazishni bekor qilish kerak.",
+      "unpostTitle": "O'tkazish bekor qilinsinmi?",
+      "unpostDescription": "Provodkalar va kontragent qarzlari storno qilinadi, qoldiqlarni yana tahrirlash mumkin bo'ladi.",
+      "deleteAccountTitle": "Hisob boshlang'ich qoldiqdan olib tashlansinmi?",
+      "deleteAccountDescription": "Shu hisob bo'yicha kiritilgan barcha satr va subkontolar o'chadi."
     },
     "messages": {
       "created": "Boshlang'ich balans yaratildi",
@@ -1074,7 +1084,11 @@
       "accountLoadError": "Hisobvaraq detalini yuklashda xatolik yuz berdi",
       "loadingAccountMeta": "Hisobvaraq xususiyatlari yuklanmoqda...",
       "noDetails": "Detallash satrlari mavjud emas",
-      "selectDetail": "Subkontolarni ko'rish uchun satrni tanlang"
+      "selectDetail": "Subkontolarni ko'rish uchun satrni tanlang",
+      "posted": "Boshlang'ich qoldiqlar o'tkazildi",
+      "unposted": "O'tkazish bekor qilindi",
+      "lockedHint": "Qoldiqlar o'tkazilgan va provodkalarda aks etgan. O'zgartirish uchun «O'tkazishni bekor qilish» ni bosing.",
+      "accountDeleted": "Hisob olib tashlandi"
     },
     "states": {
       "notCreated": "Yaratilmagan"

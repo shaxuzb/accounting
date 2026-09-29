@@ -9,4 +9,10 @@ export const openingBalanceEndpoints = {
   ) => `opening-balances/${openingBalanceId}/accounts/${accountId}`,
   saveAccount: (openingBalanceId: string | number) =>
     `opening-balances/${openingBalanceId}/accounts`,
+  deleteAccount: (
+    openingBalanceId: string | number,
+    accountId: string | number,
+  ) => `opening-balances/${openingBalanceId}/accounts/${accountId}`,
+  post: (id: string | number) => `opening-balances/${id}/post`,
+  unpost: (id: string | number) => `opening-balances/${id}/unpost`,
 } as const;

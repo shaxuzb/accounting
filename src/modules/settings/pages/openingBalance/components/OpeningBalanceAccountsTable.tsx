@@ -13,6 +13,8 @@ interface OpeningBalanceAccountsTableProps {
   accounts: OpeningBalanceAccountSummary[];
   onAddAccount: () => void;
   onOpenAccount: (accountId: number) => void;
+  /** Posted balances cannot take new accounts until they are unposted. */
+  readOnly?: boolean;
 }
 
 const getBalance = (account: OpeningBalanceAccountSummary) =>
@@ -22,6 +24,7 @@ export default function OpeningBalanceAccountsTable({
   accounts,
   onAddAccount,
   onOpenAccount,
+  readOnly = false,
 }: OpeningBalanceAccountsTableProps) {
   const { t } = useTranslation();
   const totals = useMemo(
@@ -126,6 +129,7 @@ export default function OpeningBalanceAccountsTable({
           <Button
             type="primary"
             icon={<Plus className="size-4" />}
+            disabled={readOnly}
             onClick={onAddAccount}
           >
             {t("openingBalance.actions.addAccount")}
@@ -170,7 +174,11 @@ export default function OpeningBalanceAccountsTable({
               description={t("openingBalance.messages.noAccounts")}
             >
               <PermissionCard permission={openingBalancePermissions.update}>
-                <Button type="primary" onClick={onAddAccount}>
+                <Button
+                  type="primary"
+                  disabled={readOnly}
+                  onClick={onAddAccount}
+                >
                   {t("openingBalance.actions.addAccount")}
                 </Button>
               </PermissionCard>

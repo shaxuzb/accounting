@@ -14,6 +14,7 @@ import {
   DocumentSummary,
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { formatDate, numberSpacing } from "@/utils/utils";
 import type { OpeningBalance } from "../types/type";
@@ -47,6 +48,7 @@ export default function OpeningBalanceDocumentHeader({
                   {t("openingBalance.title")}
                 </h1>
                 {stateStatus(data.stateId, data.stateName)}
+                <ProcessStatusBadge statusId={data.statusId} />
               </div>
               <p className="mt-0.5 text-sm text-secondary-text">
                 {t("openingBalance.subtitle")}
@@ -101,13 +103,31 @@ export default function OpeningBalanceDocumentHeader({
               {data.description || "-"}
             </div>
           </div>
-          <div className="md:min-w-48 md:border-l md:border-border md:pl-4">
-            <div className="text-xs text-secondary-text">
-              {t("settings.fields.createdDate")}
+          <div className="flex flex-wrap gap-6 md:border-l md:border-border md:pl-4">
+            <div className="md:min-w-40">
+              <div className="text-xs text-secondary-text">
+                {t("settings.fields.createdDate")}
+              </div>
+              <div className="mt-1 text-sm font-medium text-text">
+                {data.createdDate ? formatDate(data.createdDate) : "-"}
+              </div>
             </div>
-            <div className="mt-1 text-sm font-medium text-text">
-              {data.createdDate ? formatDate(data.createdDate) : "-"}
-            </div>
+            {data.postedAt && (
+              <div className="md:min-w-40">
+                <div className="text-xs text-secondary-text">
+                  {t("openingBalance.fields.postedAt")}
+                </div>
+                <div className="mt-1 text-sm font-medium text-text">
+                  {formatDate(data.postedAt)}
+                  {data.offsetAccountNumber && (
+                    <span className="ml-2 text-secondary-text">
+                      ({t("openingBalance.fields.offsetAccount")}:{" "}
+                      {data.offsetAccountNumber})
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </Card>
