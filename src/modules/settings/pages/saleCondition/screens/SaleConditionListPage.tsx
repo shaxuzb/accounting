@@ -7,6 +7,7 @@ import { useState } from "react";
 import dayjs from "dayjs";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
+import SearchFilter from "@/components/ui/filters/SearchFilter";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import { useAppSelector } from "@/store/hooks";
 import { generateKeyTable } from "@/utils/utils";
@@ -98,16 +99,17 @@ export default function SaleConditionListPage() {
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <Segmented<TabKey>
-          value={tab}
-          onChange={(value) => setTab(value)}
-          options={[
-            { label: t("settings.saleCondition.current"), value: "current" },
-            { label: t("settings.saleCondition.history"), value: "history" },
-          ]}
-        
-          
-        />
+        <div className="flex items-center gap-3">
+          <Segmented<TabKey>
+            value={tab}
+            onChange={(value) => setTab(value)}
+            options={[
+              { label: t("settings.saleCondition.current"), value: "current" },
+              { label: t("settings.saleCondition.history"), value: "history" },
+            ]}
+          />
+          {tab === "history" && <SearchFilter />}
+        </div>
         <Space>
           {tab === "history" && (
             <Button

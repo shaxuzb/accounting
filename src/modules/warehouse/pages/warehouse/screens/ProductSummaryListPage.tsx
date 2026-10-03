@@ -3,6 +3,7 @@ import type { TableColumnsType } from "antd";
 import { RefreshCw } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import Card from "@/components/ui/card/Card";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
 import { $axiosPrivate } from "@/services/AxiosService";
@@ -16,6 +17,7 @@ import { getLocalizedLabel } from "@/shared/utils/localizedLabel";
 import { useAppSelector } from "@/store/hooks";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import { useGetListWarehouse } from "../hooks/useGetListWarehouse";
+import GroupStockProductsRow from "../components/GroupStockProductsRow";
 import type { ProductStockGroup } from "../types/type";
 import { useTranslation } from "react-i18next";
 
@@ -40,6 +42,24 @@ export default function ProductSummaryListPage() {
 
   const warehouseId = searchParams.get(filterIds.warehouse);
   const selectedWarehouseId = warehouseId ? Number(warehouseId) : undefined;
+  // matches the group name or a product in the group (name, MXIK)
+  const search = searchParams.get("search") || undefined;
+
+  // Group rows open onto their products. While searching, the groups found open by
+  // themselves and show only the matching products; with no search they start closed.
+  // A row opened or closed by hand stays so until the search or the warehouse changes.
+  const expandContext = `${search ?? ""}|${warehouseId ?? ""}`;
+  const [manualExpand, setManualExpand] = useState<{
+    context: string;
+    keys: React.Key[];
+  } | null>(null);
+  const expandedKeys =
+    manualExpand && manualExpand.context === expandContext
+      ? manualExpand.keys
+      : search
+        ? items.map((item) => item.id)
+        : [];
+
   const detailQuery = warehouseId
     ? `?${filterIds.warehouse}=${encodeURIComponent(warehouseId)}`
     : "";
@@ -126,6 +146,19 @@ export default function ProductSummaryListPage() {
           loading={isLoading || isFetching}
           columns={columns}
           dataSource={generateKeyTable(items, "id")}
+          rowKey="id"
+          expandable={{
+            expandedRowKeys: expandedKeys,
+            onExpandedRowsChange: (keys) =>
+              setManualExpand({ context: expandContext, keys: [...keys] }),
+            expandedRowRender: (record) => (
+              <GroupStockProductsRow
+                groupId={record.id}
+                warehouseId={selectedWarehouseId ?? null}
+                search={search}
+              />
+            ),
+          }}
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 260px)" }}
         />

@@ -1,6 +1,7 @@
 export const purchaseEndpoints = {
   purchase: {
     list: "purchase-docs",
+    lines: "purchase-docs/lines",
     detail: (id: string | number) => `purchase-docs/${id}`,
     create: "purchase-docs",
     update: (id: string | number) => `purchase-docs/${id}`,

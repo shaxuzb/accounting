@@ -5,6 +5,7 @@ import type {
   PurchaseData,
   PurchaseDetailData,
   PurchaseForm,
+  PurchaseLineData,
 } from "../types/type";
 import type {
   PurchaseCreatePayload,
@@ -31,14 +32,14 @@ const toNumber = (value: unknown, fallback: number) => {
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
-const normalizePurchaseList = (
+const normalizePurchaseList = <T = PurchaseData,>(
   value: unknown,
-): Paginated<PurchaseData> => {
+): Paginated<T> => {
   const response = toRecord(value);
   const nested = toRecord(response.data ?? response.result);
   const root = Object.keys(nested).length ? nested : response;
   const rawItems = root.items ?? root.results ?? root.rows;
-  const items = Array.isArray(rawItems) ? (rawItems as PurchaseData[]) : [];
+  const items = Array.isArray(rawItems) ? (rawItems as T[]) : [];
 
   return {
     items,
@@ -57,6 +58,10 @@ export const purchaseService = {
         },
       })
       .then((res) => normalizePurchaseList(res.data)),
+  lines: (params?: QueryParams) =>
+    $axiosPrivate
+      .get<unknown>(endpoints.lines, { params: normalizeParams(params) })
+      .then((res) => normalizePurchaseList<PurchaseLineData>(res.data)),
   detail: (id: string | number) =>
     $axiosPrivate
       .get<PurchaseDetailData>(endpoints.detail(id))

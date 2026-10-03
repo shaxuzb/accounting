@@ -3,6 +3,7 @@ import { Alert, Button, Empty, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
 import { FileUp, ReceiptText } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { useAppSelector } from "@/store/hooks";
@@ -22,6 +23,7 @@ import DateRangeFilter from "@/components/ui/filters/DateRangeFilter";
 import ListToolbar from "@/components/ui/filters/ListToolbar";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import ListPagination from "@/components/ui/table/ListPagination";
+import PurchaseDocLinesRow from "../components/PurchaseDocLinesRow";
 
 const purchaseStatusOptions = [
   { value: 1, label: "processStatuses.draft" },
@@ -64,6 +66,21 @@ export default function PurchaseListPage() {
     const documentKey = encodeURIComponent(docNumber || String(id));
     return `${id}?docNumber=${documentKey}`;
   };
+
+  // Document rows open onto their products. While searching, the documents found open
+  // by themselves and show only the matching products; with no search they start closed.
+  // A row opened or closed by hand stays so until the search changes.
+  const search = searchParams.get("search")?.trim() || undefined;
+  const [manualExpand, setManualExpand] = useState<{
+    search?: string;
+    keys: React.Key[];
+  } | null>(null);
+  const expandedKeys =
+    manualExpand && manualExpand.search === search
+      ? manualExpand.keys
+      : search
+        ? tableData.map((item) => item.id)
+        : [];
 
   const handlePaginationChange = (page: number, nextPageSize: number) => {
     const nextParams = new URLSearchParams(searchParams);
@@ -214,7 +231,6 @@ export default function PurchaseListPage() {
               width={180}
             />
             <DateRangeFilter
-              paramKeys={["startDate", "endDate"]}
               placeholderKeys={[
                 "purchase.fields.dateFrom",
                 "purchase.fields.dateTo",
@@ -248,28 +264,38 @@ export default function PurchaseListPage() {
             }
           />
         )}
-        <Table
-          loading={isLoading || isFetching}
-          columns={columns}
-          dataSource={tableData}
-          rowKey="id"
-          locale={{
-            emptyText: (
-              <Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={t("purchase.messages.listEmpty")}
-              />
-            ),
-          }}
-          pagination={false}
-          scroll={{ x: "max-content", y: "calc(100vh - 280px)" }}
-        />
-        <ListPagination
-          current={currentPage}
-          pageSize={pageSize}
-          total={total}
-          onChange={handlePaginationChange}
-        />
+        <>
+          <Table
+            loading={isLoading || isFetching}
+            columns={columns}
+            dataSource={tableData}
+            rowKey="id"
+            expandable={{
+              expandedRowKeys: expandedKeys,
+              onExpandedRowsChange: (keys) =>
+                setManualExpand({ search, keys: [...keys] }),
+              expandedRowRender: (record) => (
+                <PurchaseDocLinesRow docId={record.id} search={search} />
+              ),
+            }}
+            locale={{
+              emptyText: (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={t("purchase.messages.listEmpty")}
+                />
+              ),
+            }}
+            pagination={false}
+            scroll={{ x: "max-content", y: "calc(100vh - 280px)" }}
+          />
+          <ListPagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={total}
+            onChange={handlePaginationChange}
+          />
+        </>
       </Card>
     </div>
   );

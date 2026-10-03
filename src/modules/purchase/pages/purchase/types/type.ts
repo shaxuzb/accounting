@@ -45,6 +45,30 @@ export interface ProductListResponse {
   results?: ProductSelectOption[];
   data?: ProductSelectOption[];
 }
+/** A purchased product line, from /purchase-docs/lines. */
+export interface PurchaseLineData {
+  id: number;
+  docId: number;
+  docNumber: string;
+  externalDocNumber?: string | null;
+  docDate: string;
+  statusId: number;
+  statusName: string;
+  counterpartyName: string;
+  warehouseName: string;
+  productId: number;
+  productName: string;
+  productMxik?: string | null;
+  productGroupName?: string | null;
+  unitName: string;
+  quantity: number;
+  unitPrice: number;
+  amount: number;
+  vatAmount: number;
+  totalAmount: number;
+  currencyCode: string;
+}
+
 export interface PurchaseData {
   counterpartyId: number;
   counterpartyName: string;

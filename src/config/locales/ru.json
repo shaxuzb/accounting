@@ -1186,7 +1186,8 @@
       "supplierAccountRequired": "Выберите счёт поставщика",
       "unmarkedLine": "Без маркировки (количество вводится вручную). Нажмите, чтобы ввести маркировку.",
       "priceIncludesVatOn": "НДС выделяется из суммы",
-      "priceIncludesVatOff": "НДС начисляется сверху"
+      "priceIncludesVatOff": "НДС начисляется сверху",
+      "linesEmpty": "Закупленные товары не найдены"
     },
     "import": {
       "nonSerial": "Без серии",

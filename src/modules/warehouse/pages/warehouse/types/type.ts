@@ -30,6 +30,8 @@ export interface ProductStockBatch {
 export interface ProductStock {
   id: number;
   productId: number;
+  productMxik?: string | null;
+  productGroupId?: number | null;
   batches?: ProductStockBatch[];
   name?: string;
   productName?: string;

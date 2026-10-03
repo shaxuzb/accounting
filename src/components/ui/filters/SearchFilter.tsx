@@ -22,6 +22,9 @@ const SearchFilter: FC<ClientFilterProps> = () => {
     const newParams = new URLSearchParams(searchParams.toString());
     const valueInterval = setTimeout(() => {
       if (value) {
+        // a new search starts from the first page — an old page number can lie past
+        // the end of the shorter result
+        if (value !== searchParams.get("search")) newParams.delete("page");
         newParams.set("search", value);
       } else {
         setValue(searchParams.get("search") || "");

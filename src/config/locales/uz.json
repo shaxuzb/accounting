@@ -1186,7 +1186,8 @@
       "supplierAccountRequired": "Yetkazib beruvchi hisobvarag'ini tanlang",
       "unmarkedLine": "Markirovkasiz (miqdor qo'lda kiritiladi). Markirovka kiritish uchun bosing.",
       "priceIncludesVatOn": "QQS summadan ajratiladi",
-      "priceIncludesVatOff": "QQS narx ustiga qo'shiladi"
+      "priceIncludesVatOff": "QQS narx ustiga qo'shiladi",
+      "linesEmpty": "Xarid qilingan mahsulotlar topilmadi"
     },
     "import": {
       "nonSerial": "Seriyasiz",

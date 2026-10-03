@@ -1184,7 +1184,8 @@
       "supplierAccountRequired": "Select the supplier account",
       "unmarkedLine": "Unmarked (quantity entered by hand). Click to enter markings.",
       "priceIncludesVatOn": "VAT is extracted from the amount",
-      "priceIncludesVatOff": "VAT is added on top of the price"
+      "priceIncludesVatOff": "VAT is added on top of the price",
+      "linesEmpty": "No purchased products found"
     },
     "import": {
       "nonSerial": "Non-serial",

@@ -3,7 +3,7 @@ import type { TableColumnType, TableColumnsType } from "antd";
 import { Plus, RefreshCw } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -14,6 +14,7 @@ import { stateStatus } from "@/utils/helpers/statusHelper";
 import { useGetListProducts } from "../hooks";
 import { productPermissions } from "../constants/permissions";
 import type { ProductType } from "../types/type";
+import ProductGroupProductsRow from "../components/ProductGroupProductsRow";
 
 export default function ProductListPage() {
   const { t } = useTranslation();
@@ -34,6 +35,22 @@ export default function ProductListPage() {
     useGetListProducts(queryParams);
   const items = data?.items ?? data?.results ?? [];
   const permissions = user?.user.permissions ?? [];
+
+  // Every group row opens onto its products. While searching, the groups the search
+  // found open by themselves and show only the products that match; with no search
+  // they all start closed.
+  const search = searchParams.get("search")?.trim() || undefined;
+  // rows the user opened or closed by hand, until the search changes
+  const [manualExpand, setManualExpand] = useState<{
+    search?: string;
+    keys: React.Key[];
+  } | null>(null);
+  const expandedKeys =
+    manualExpand && manualExpand.search === search
+      ? manualExpand.keys
+      : search
+        ? items.map((item) => item.id)
+        : [];
 
   const handleSegmentChange = (value: string | number) => {
     const next = new URLSearchParams(searchParams);
@@ -145,6 +162,19 @@ export default function ProductListPage() {
           loading={isLoading || isFetching}
           columns={columns}
           dataSource={generateKeyTable(items, "id")}
+          rowKey="id"
+          expandable={{
+            expandedRowKeys: expandedKeys,
+            onExpandedRowsChange: (keys) =>
+              setManualExpand({ search, keys: [...keys] }),
+            expandedRowRender: (record) => (
+              <ProductGroupProductsRow
+                groupId={record.id}
+                isService={isService}
+                search={search}
+              />
+            ),
+          }}
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 280px)" }}
         />
