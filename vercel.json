@@ -6,7 +6,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "script-src 'self'; frame-src 'self' https://hujjat.uz;"
+          "value": "script-src 'self' https://docs.crmuz.uz; frame-src 'self' blob: https://hujjat.uz https://docs.crmuz.uz;"
         }
       ]
     }
