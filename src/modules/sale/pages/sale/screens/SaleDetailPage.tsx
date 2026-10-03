@@ -1,6 +1,8 @@
 import { Spin } from "antd";
 import { useParams } from "react-router";
+import type { ReactNode } from "react";
 import { useAppSelector } from "@/store/hooks";
+import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
 import {
   ConfirmedSaleDocument,
   SalePricingEditor,
@@ -29,38 +31,52 @@ export default function SaleDetailPage() {
     );
   }
 
+  // every state of the document can print its contract
+  const withContract = (content: ReactNode) => (
+    <div className="space-y-3">
+      <div className="flex justify-end">
+        <DocumentContractButton
+          kind="sale"
+          documentId={document.id}
+          documentNumber={document.docNumber}
+        />
+      </div>
+      {content}
+    </div>
+  );
+
   if (isConfirmed) {
-    return (
+    return withContract(
       <ConfirmedSaleDocument
         document={document}
         lines={documentLines}
         loading={documentQuery.isFetching}
         organizationName={organizationName}
-      />
+      />,
     );
   }
 
   if (isWarehouseConfirm) {
-    return <SaleWarehouseConfirm key={document.id} document={document} />;
+    return withContract(<SaleWarehouseConfirm key={document.id} document={document} />);
   }
 
   if (isPricing) {
-    return (
+    return withContract(
       <SalePricingEditor
         document={document}
         lines={documentLines}
         loading={documentQuery.isFetching}
         organizationName={organizationName}
-      />
+      />,
     );
   }
 
-  return (
+  return withContract(
     <SalePricingEditor
       document={document}
       lines={documentLines}
       loading={documentQuery.isFetching}
       organizationName={organizationName}
-    />
+    />,
   );
 }

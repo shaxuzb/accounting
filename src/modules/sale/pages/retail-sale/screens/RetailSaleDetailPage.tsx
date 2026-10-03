@@ -1,4 +1,5 @@
 import PermissionCard from "@/components/ui/card/PermissionCard";
+import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { useAppSelector } from "@/store/hooks";
@@ -100,6 +101,11 @@ export default function RetailSaleDetailPage() {
             <ProcessStatusBadge
               statusId={document.statusId}
               statusName={document.statusName}
+            />
+            <DocumentContractButton
+              kind="retail"
+              documentId={document.id}
+              documentNumber={document.docNumber}
             />
           </div>
           {isDraft && (

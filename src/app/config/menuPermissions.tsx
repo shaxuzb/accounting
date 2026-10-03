@@ -33,6 +33,7 @@ import {
   Percent,
   KeyRound,
   UserCheck,
+  FileSignature,
   ChartColumnBig,
 } from "lucide-react";
 import { salePermissions } from "@/modules/sale";
@@ -48,6 +49,7 @@ import { settingsBankPermissions } from "@/modules/settings/pages/bank/constants
 import { pricingConditionPermissions } from "@/modules/settings/pages/pricingCondition/constants/permissions";
 import { saleConditionPermissions } from "@/modules/settings/pages/saleCondition/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
+import { contractTemplatePermissions } from "@/modules/settings/pages/contractTemplates/constants";
 import { openingBalancePermissions } from "@/modules/settings/pages/openingBalance/constants/permissions";
 import { openingInventoryPermissions } from "@/modules/settings/pages/openingInventory/constants/permissions";
 import { integrationPermissions } from "@/modules/settings/pages/integrations/constants/permissions";
@@ -125,6 +127,7 @@ export const settingsViewPermissions = [
   regulatedObligationSettingPermissions.view,
   accountingPolicyPermissions.view,
   contractPermissions.view,
+  contractTemplatePermissions.view,
 ] as const;
 
 export const menuPermissions: MainMenu = {
@@ -850,6 +853,15 @@ export const menuPermissions: MainMenu = {
         path: "payroll-taxes",
         title: "payroll.taxes.title",
         description: "payroll.taxes.description",
+      },
+    },
+    {
+      code: contractTemplatePermissions.view,
+      iconName: <FileSignature className="size-5" />,
+      linkData: {
+        path: "contract-templates",
+        title: "contractTemplates.title",
+        description: "contractTemplates.description",
       },
     },
     {

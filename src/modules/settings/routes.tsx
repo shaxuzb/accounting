@@ -53,6 +53,8 @@ import { integrationPermissions } from "./pages/integrations/constants/permissio
 const PayrollComponentListPage = lazy(() => import("./pages/payrollComponents/screens/PayrollComponentListPage"));
 const PayrollTaxDefinitionListPage = lazy(() => import("./pages/payrollTaxDefinitions/screens/PayrollTaxDefinitionListPage"));
 const ContractResponsiblePersonListPage = lazy(() => import("@/modules/contract/screens/ContractResponsiblePersonListPage"));
+const ContractTemplateListPage = lazy(() => import("./pages/contractTemplates/screens/ContractTemplateListPage"));
+import { contractTemplatePermissions } from "./pages/contractTemplates/constants";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 import { payrollComponentPermissions } from "./pages/payrollComponents/constants/permissions";
 import { payrollTaxDefinitionPermissions } from "./pages/payrollTaxDefinitions/constants/permissions";
@@ -72,6 +74,7 @@ const AccountingPolicyPage = lazy(() => import("./pages/accountingPolicy/screens
 import { accountingPolicyPermissions } from "./pages/accountingPolicy/constants/permissions";
 
 const settingsPermissions = [
+  contractTemplatePermissions.view,
   rolePermissions.view,
   userPermissions.view,
   organizationsPermissions.view,
@@ -548,6 +551,18 @@ export const settingsRoutes: RouteObject = {
       element: withPermission(
         <PayrollTaxDefinitionListPage />,
         payrollTaxDefinitionPermissions.view,
+      ),
+    },
+    {
+      path: "contract-templates",
+      handle: {
+        title: "contractTemplates.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        <ContractTemplateListPage />,
+        contractTemplatePermissions.view,
       ),
     },
     {

@@ -24,6 +24,7 @@ import ListToolbar from "@/components/ui/filters/ListToolbar";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import ListPagination from "@/components/ui/table/ListPagination";
 import PurchaseDocLinesRow from "../components/PurchaseDocLinesRow";
+import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
 
 const purchaseStatusOptions = [
   { value: 1, label: "processStatuses.draft" },
@@ -128,6 +129,21 @@ export default function PurchaseListPage() {
           documentId={record.id}
           statusId={record.statusId}
           icon={<ReceiptText className="size-4" />}
+        />
+      ),
+    },
+    {
+      // the purchase's contract from a template: counterparty, contract, goods and sums
+      // all come from the document
+      dataIndex: "contractDocument",
+      title: t("contractTemplates.document.button"),
+      align: "center",
+      render: (_, record) => (
+        <DocumentContractButton
+          kind="purchase"
+          documentId={record.id}
+          documentNumber={record.externalDocNumber || record.docNumber || undefined}
+          iconOnly
         />
       ),
     },

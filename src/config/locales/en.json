@@ -3095,5 +3095,77 @@
       "pageExpense": "Page outflow",
       "pageScopeNote": "The total covers the current page only. Use export for the full figure."
     }
+  },
+  "contractTemplates": {
+    "title": "Contract templates",
+    "description": "Word templates: contracts filled in automatically by keys",
+    "kinds": {
+      "purchase": "Purchase",
+      "sale": "Sale",
+      "retail": "Retail",
+      "service": "Services",
+      "rental": "Rental",
+      "other": "Other"
+    },
+    "fields": {
+      "name": "Name",
+      "kind": "Kind",
+      "file": "File",
+      "fileHint": "Word (.docx). Without a file an empty template is created.",
+      "isDefault": "Default template for this kind",
+      "default": "Default",
+      "updatedDate": "Updated"
+    },
+    "actions": {
+      "add": "Add template",
+      "edit": "Template details",
+      "openEditor": "Open in editor",
+      "download": "Download",
+      "replaceFile": "Replace file",
+      "chooseFile": "Choose file",
+      "deleteConfirm": "Delete this template?"
+    },
+    "keys": {
+      "title": "Keys",
+      "hint": "Click a key to copy it, then paste it (Ctrl+V) where it belongs; the system replaces it when it builds a contract. For the goods table put {{start}} in the first cell of the row and {{end}} in the last.",
+      "example": "Example"
+    },
+    "messages": {
+      "copied": "Copied: {{key}}",
+      "copyFailed": "Could not copy",
+      "saved": "Saved",
+      "created": "Template created",
+      "deleted": "Template deleted",
+      "fileReplaced": "File replaced",
+      "rendered": "Contract ready",
+      "unknownKeysTitle": "The template has keys the system does not know",
+      "unknownKeysHint": "They will not be filled and stay empty. Check the spelling or take a key from the list:",
+      "unknownKeysShort": "Unknown keys: {{keys}}",
+      "editorUnavailable": "The editor could not be opened",
+      "editorUnavailableHint": "Check that the ONLYOFFICE server is running and the OnlyOffice section of the backend settings is filled in."
+    },
+    "validation": {
+      "nameRequired": "Enter the name"
+    },
+    "document": {
+      "button": "Contract",
+      "title": "Document No. {{number}} — contract",
+      "chooseTemplate": "Choose a template",
+      "building": "Building the contract…",
+      "previewFailed": "The preview could not be built. You can still download the Word file.",
+      "noTemplates": "No templates for “{{kind}}”. Add them in Settings → Contract templates."
+    },
+    "editor": {
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Template saved",
+      "nothingToSave": "No changes — the template is unchanged",
+      "unsaved": "Unsaved changes",
+      "noChanges": "No changes",
+      "closeTitle": "Changes are not saved",
+      "closeText": "The template has unsaved changes. Closing without saving discards them.",
+      "closeWithoutSaving": "Close without saving",
+      "saveAndClose": "Save and close"
+    }
   }
 }

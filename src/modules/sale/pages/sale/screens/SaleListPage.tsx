@@ -16,6 +16,7 @@ import { useGetListSale } from "../hooks";
 import type { SaleDoc } from "../types/type";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import ListPagination from "@/components/ui/table/ListPagination";
+import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
 
 const toPositiveInteger = (value: string | null, fallback: number) => {
   const numberValue = Number(value);
@@ -89,6 +90,21 @@ export default function SaleListPage() {
           documentId={record.id}
           statusId={record.statusId}
           icon={<ReceiptText className="size-4" />}
+        />
+      ),
+    },
+    {
+      // the document's contract from a template: counterparty, contract, goods and
+      // sums all come from the document
+      dataIndex: "contractDocument",
+      title: t("contractTemplates.document.button"),
+      align: "center",
+      render: (_, record) => (
+        <DocumentContractButton
+          kind="sale"
+          documentId={record.id}
+          documentNumber={record.docNumber || undefined}
+          iconOnly
         />
       ),
     },

@@ -3095,5 +3095,77 @@
       "pageExpense": "Sahifa chiqimi",
       "pageScopeNote": "Yig'indi joriy sahifadagi satrlar bo'yicha. To'liq summa uchun eksportdan foydalaning."
     }
+  },
+  "contractTemplates": {
+    "title": "Shartnoma shablonlari",
+    "description": "Word shablonlar: kalitlar bilan avtomatik to'ldiriladigan shartnomalar",
+    "kinds": {
+      "purchase": "Xarid",
+      "sale": "Sotuv",
+      "retail": "Chakana savdo",
+      "service": "Xizmat ko'rsatish",
+      "rental": "Ijara",
+      "other": "Boshqa"
+    },
+    "fields": {
+      "name": "Nomi",
+      "kind": "Turi",
+      "file": "Fayl",
+      "fileHint": "Word (.docx). Fayl tanlanmasa, bo'sh shablon yaratiladi.",
+      "isDefault": "Shu tur uchun asosiy shablon",
+      "default": "Asosiy",
+      "updatedDate": "O'zgartirilgan"
+    },
+    "actions": {
+      "add": "Shablon qo'shish",
+      "edit": "Shablon ma'lumotlari",
+      "openEditor": "Muharrirda ochish",
+      "download": "Yuklab olish",
+      "replaceFile": "Faylni almashtirish",
+      "chooseFile": "Fayl tanlash",
+      "deleteConfirm": "Shablon o'chirilsinmi?"
+    },
+    "keys": {
+      "title": "Kalitlar",
+      "hint": "Kalitni bosing — u nusxalanadi. Hujjatda kerakli joyga qo'yib (Ctrl+V), shartnoma yaratilganda tizim uni haqiqiy qiymat bilan almashtiradi. Tovarlar jadvali uchun qatorning birinchi katagiga {{start}}, oxirgisiga {{end}} qo'ying.",
+      "example": "Misol"
+    },
+    "messages": {
+      "copied": "Nusxalandi: {{key}}",
+      "copyFailed": "Nusxalab bo'lmadi",
+      "saved": "Saqlandi",
+      "created": "Shablon yaratildi",
+      "deleted": "Shablon o'chirildi",
+      "fileReplaced": "Fayl almashtirildi",
+      "rendered": "Shartnoma tayyor",
+      "unknownKeysTitle": "Shablonda tizim bilmaydigan kalitlar bor",
+      "unknownKeysHint": "Ular to'ldirilmaydi va hujjatda bo'sh qoladi. Imlosini tekshiring yoki o'ngdagi ro'yxatdan kalit oling:",
+      "unknownKeysShort": "Noma'lum kalitlar: {{keys}}",
+      "editorUnavailable": "Hujjat muharriri ochilmadi",
+      "editorUnavailableHint": "ONLYOFFICE serveri ishlayotganini va backend sozlamalarida OnlyOffice bo'limi to'ldirilganini tekshiring."
+    },
+    "validation": {
+      "nameRequired": "Nomini kiriting"
+    },
+    "document": {
+      "button": "Shartnoma",
+      "title": "Hujjat № {{number}} — shartnoma",
+      "chooseTemplate": "Shablonni tanlang",
+      "building": "Shartnoma tayyorlanmoqda…",
+      "previewFailed": "Ko'rinishni tayyorlab bo'lmadi. Word faylni yuklab olishingiz mumkin.",
+      "noTemplates": "«{{kind}}» uchun shablon yo'q. Sozlamalar → Shartnoma shablonlari bo'limida qo'shing."
+    },
+    "editor": {
+      "save": "Saqlash",
+      "saving": "Saqlanmoqda…",
+      "saved": "Shablon saqlandi",
+      "nothingToSave": "O'zgarish yo'q — shablon avvalgidek",
+      "unsaved": "Saqlanmagan o'zgarishlar bor",
+      "noChanges": "O'zgarish yo'q",
+      "closeTitle": "O'zgarishlar saqlanmagan",
+      "closeText": "Shablonda saqlanmagan o'zgarishlar bor. Saqlamasdan yopilsa, ular yo'qoladi.",
+      "closeWithoutSaving": "Saqlamasdan yopish",
+      "saveAndClose": "Saqlash va yopish"
+    }
   }
 }
