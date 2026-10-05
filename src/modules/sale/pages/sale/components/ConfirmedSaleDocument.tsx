@@ -76,7 +76,7 @@ export default function ConfirmedSaleDocument({
       <SaleDocumentSummary
         document={document}
         organizationName={organizationName}
-        totalAmount={totalAmount || document.totalAmount || 0}
+        totalAmount={totalAmount || document.finalAmount || document.totalAmount || 0}
       />
       <Card className="overflow-hidden border border-border">
         <SaleConfirmedLinesTable

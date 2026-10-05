@@ -165,7 +165,7 @@ export default function RetailSaleDetailPage() {
       <SaleDocumentSummary
         document={document as SaleDoc}
         organizationName={organizationName}
-        totalAmount={document.totalAmount ?? 0}
+        totalAmount={document.finalAmount ?? document.totalAmount ?? 0}
       />
       <Card className="overflow-hidden border border-border">
         <SaleConfirmedLinesTable

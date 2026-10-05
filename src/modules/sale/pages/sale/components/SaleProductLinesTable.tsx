@@ -3,7 +3,7 @@ import type { ColumnsType } from "antd/es/table";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import type { SalePricingLine } from "../types/type";
-import { getVatAmount } from "../utils/pricing";
+import { getLineTotal, getVatAmount } from "../utils/pricing";
 import SaleUnitMarkingCell from "./SaleUnitMarkingCell";
 import { useTranslation } from "react-i18next";
 
@@ -52,8 +52,21 @@ export default function SaleProductLinesTable({
     {
       dataIndex: "costPrice",
       title: t("warehouse.fields.costPrice"),
-      render: (value: number) =>
-        `${numberSpacing(value, undefined, true)} ${currencyCode}`,
+      // the stock cost is in UZS; in a foreign-currency sale it is shown in that
+      // currency too, the one the margin is counted in
+      render: (value: number, line) =>
+        currencyCode === "UZS" ? (
+          `${numberSpacing(value, undefined, true)} UZS`
+        ) : (
+          <div>
+            <div>
+              {numberSpacing(line.docCostPrice, undefined, true)} {currencyCode}
+            </div>
+            <div className="text-xs text-secondary-text">
+              {numberSpacing(value, undefined, true)} UZS
+            </div>
+          </div>
+        ),
     },
     {
       dataIndex: "marginPercent",
@@ -121,7 +134,11 @@ export default function SaleProductLinesTable({
       align: "center",
       render: (_, line) => (
         <span className="font-semibold">
-          {numberSpacing(line.amount * line.quantity, undefined, true)}{" "}
+          {numberSpacing(
+            getLineTotal(line.amount, line.quantity, vatRateName || line.vatRateName),
+            undefined,
+            true,
+          )}{" "}
           {currencyCode}
         </span>
       ),

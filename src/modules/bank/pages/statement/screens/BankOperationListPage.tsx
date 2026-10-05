@@ -112,7 +112,12 @@ export default function BankOperationListPage() {
       dataIndex: "amount",
       title: t("bank.fields.amount"),
       align: "center",
-      render: (value) => numberSpacing(value) + " UZS",
+      render: (value, record) =>
+        `${numberSpacing(value)} ${
+          record.currencyId && record.currencyId !== 1
+            ? (record.currencyName ?? "")
+            : "UZS"
+        }`,
     },
     {
       dataIndex: "comment",

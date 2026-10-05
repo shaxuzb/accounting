@@ -84,6 +84,10 @@ import {
 import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
 import { ledgerPermissions } from "@/modules/accountings/pages/ledger/constants/permissions";
 import { trialBalancePermissions } from "@/modules/accountings/pages/trial-balance/constants/permissions";
+import {
+  currencyRatePermissions,
+  currencyRevaluationPermissions,
+} from "@/modules/accountings/pages/currency/constants";
 import { paymentAcceptancePointPermissions } from "@/modules/cashoperation/pages/paymentAcceptancePoint/constants/permissions";
 import { rentalContractPermissions } from "@/modules/rental/pages/contracts/constants/permissions";
 import { rentalAccrualPermissions } from "@/modules/rental/pages/accruals/constants/permissions";
@@ -317,6 +321,20 @@ export const menuPermissions: MainMenu = {
           linkData: {
             path: "trial-balance",
             title: "app.accounting.trialBalance",
+          },
+        },
+        {
+          code: currencyRevaluationPermissions.view,
+          linkData: {
+            path: "currency-revaluation",
+            title: "currency.revaluation.title",
+          },
+        },
+        {
+          code: currencyRatePermissions.view,
+          linkData: {
+            path: "currency-rates",
+            title: "currency.rates.title",
           },
         },
         // {

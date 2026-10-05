@@ -126,10 +126,10 @@ export default function SaleListPage() {
     },
     {
       title: t("purchase.fields.amount"),
-      dataIndex: "totalAmount",
+      dataIndex: "finalAmount",
       align: "right",
-      render: (value, record) =>
-        `${numberSpacing(value)} ${record.currencyCode ?? ""}`.trim(),
+      render: (_, record) =>
+        `${numberSpacing(record.finalAmount ?? record.totalAmount)} ${record.currencyCode ?? ""}`.trim(),
     },
     {
       title: t("settings.fields.status"),

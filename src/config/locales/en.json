@@ -3167,5 +3167,49 @@
       "closeWithoutSaving": "Close without saving",
       "saveAndClose": "Save and close"
     }
+  },
+  "currency": {
+    "dateFrom": "From",
+    "dateTo": "To",
+    "rate": "Rate",
+    "rateHint": "Central Bank rate: {{rate}} ({{date}})",
+    "rateMissing": "No rate for {{date}}, enter it by hand",
+    "status": {
+      "title": "Status",
+      "draft": "Draft",
+      "posted": "Posted",
+      "cancelled": "Cancelled"
+    },
+    "rates": {
+      "title": "Exchange rates",
+      "date": "Date",
+      "currency": "Currency",
+      "rate": "Rate (UZS)",
+      "source": "Source",
+      "inactive": "Inactive",
+      "import": "Load from Central Bank",
+      "imported": "Rates for {{date}} loaded"
+    },
+    "revaluation": {
+      "title": "Currency revaluation",
+      "new": "New revaluation",
+      "date": "Date",
+      "calculate": "Calculate",
+      "post": "Save and post",
+      "posted": "Revaluation posted",
+      "cancelConfirm": "Cancel the revaluation? Its entries will be reversed.",
+      "cancelled": "Revaluation cancelled",
+      "account": "Account and analytics",
+      "balance": "Balance in currency",
+      "carrying": "Carrying UZS (rate)",
+      "revalued": "UZS at new rate",
+      "difference": "Exchange difference",
+      "gain": "Gain (9540)",
+      "loss": "Loss (9620)",
+      "lines": "Lines",
+      "totals": "Total",
+      "noLines": "No balances to revalue",
+      "hint": "Money and settlements on currency accounts (52xx, 5020, 4015, 6015 ...) are revalued at the Central Bank rate of the chosen date. Advances (43xx, 63xx) are not revalued (NSBU 22)."
+    }
   }
 }

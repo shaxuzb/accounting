@@ -78,6 +78,8 @@ interface Props {
   aggregateStockMode?: boolean;
   submitting?: boolean;
   disabled?: boolean;
+  /** UZS for one unit of the document currency; 1 (or nothing) for a sale in UZS. */
+  exchangeRate?: number | null;
 }
 
 /** Code-less units of the product left in stock, from the batches kept on the line. */
@@ -172,6 +174,7 @@ const recalculateLine = ({
   unitPrice,
   costingMethodId,
   keepManualPrice = true,
+  costRate = 1,
 }: {
   line: SaleSelectedProduct;
   quantity?: number;
@@ -179,6 +182,12 @@ const recalculateLine = ({
   unitPrice?: number;
   costingMethodId: number;
   keepManualPrice?: boolean;
+  /**
+   * UZS for one unit of the document currency. The stock cost is in UZS; a sale in a
+   * foreign currency is priced in it, so the markup applies to cost / costRate and the
+   * UZS price layers do not apply.
+   */
+  costRate?: number;
 }): SaleSelectedProduct => {
   const allocatedLayers = line.priceLayers?.length
     ? line.priceLayers
@@ -219,7 +228,9 @@ const recalculateLine = ({
     unitPrice ??
     (shouldKeepManualPrice
       ? line.unitPrice
-      : prices.unitPrice || getSalePriceByMarkup(nextCostPrice, markupPercent));
+      : costRate > 1
+        ? getSalePriceByMarkup(nextCostPrice / costRate, markupPercent)
+        : prices.unitPrice || getSalePriceByMarkup(nextCostPrice, markupPercent));
 
   const nextMarkings = trimMarkingsForLayers(line.markings, allocatedLayers, quantity);
   return {
@@ -258,8 +269,13 @@ export default function SaleProductSelection({
   aggregateStockMode = false,
   submitting = false,
   disabled = false,
+  exchangeRate,
 }: Props) {
   const { t } = useTranslation();
+  const costRate = Number(exchangeRate) > 1 ? Number(exchangeRate) : 1;
+  // the stock cost (UZS) in the document currency, where prices and markups are counted
+  const docCost = (costPrice: number) =>
+    costRate > 1 ? roundMoney((costPrice || 0) / costRate) : costPrice;
   const [search, setSearch] = useState("");
   const [warehouseOpen, setWarehouseOpen] = useState(false);
   const [accountLine, setAccountLine] = useState<SaleSelectedProduct | null>(
@@ -545,13 +561,16 @@ export default function SaleProductSelection({
         prices.unitPrice ??
         prices.costPrice ??
         0;
+      const unitPrice =
+        costRate > 1
+          ? (salePriceBySelection ?? existingLine?.unitPrice ?? docCost(prices.costPrice))
+          : allocatedLayers.length
+            ? prices.unitPrice || selectedSalePrice || prices.costPrice
+            : selectedSalePrice || prices.unitPrice || prices.costPrice;
       const nextMarkupPercent = getMarkupPercent(
-        prices.costPrice,
-        selectedSalePrice,
+        docCost(prices.costPrice),
+        costRate > 1 ? unitPrice : selectedSalePrice,
       );
-      const unitPrice = allocatedLayers.length
-        ? prices.unitPrice || selectedSalePrice || prices.costPrice
-        : selectedSalePrice || prices.unitPrice || prices.costPrice;
       const nextLine: SaleSelectedProduct = {
         id: existingLine?.id,
         rowKey: existingLine?.rowKey ?? `${productId}-${Date.now()}`,
@@ -595,7 +614,7 @@ export default function SaleProductSelection({
             : [],
         markupPercent:
           salePriceBySelection === undefined
-            ? getMarkupPercent(prices.costPrice, unitPrice)
+            ? getMarkupPercent(docCost(prices.costPrice), unitPrice)
             : nextMarkupPercent,
         priceType:
           salePriceBySelection === undefined
@@ -705,10 +724,11 @@ export default function SaleProductSelection({
         line: {
           ...line,
           priceType: "manual",
-          markupPercent: getMarkupPercent(line.costPrice, unitPrice),
+          markupPercent: getMarkupPercent(docCost(line.costPrice), unitPrice),
         },
         unitPrice,
         costingMethodId: saleCondition.costingMethodId,
+        costRate,
       });
     });
   };
@@ -776,7 +796,7 @@ export default function SaleProductSelection({
       const unitPrice =
         line.priceType === "manual"
           ? line.unitPrice
-          : getSalePriceByMarkup(costPrice, line.markupPercent ?? 0);
+          : getSalePriceByMarkup(docCost(costPrice), line.markupPercent ?? 0);
 
       return {
         ...line,
@@ -1037,6 +1057,7 @@ export default function SaleProductSelection({
         recalculateLine({
           line: { ...line, markings: nextMarkings },
           costingMethodId: saleCondition.costingMethodId,
+          costRate,
         }),
       );
     }
@@ -1173,6 +1194,7 @@ export default function SaleProductSelection({
                   line,
                   quantity: Number(quantity ?? 0),
                   costingMethodId: saleCondition.costingMethodId,
+                  costRate,
                   keepManualPrice: false,
                 }),
               );
@@ -1280,12 +1302,13 @@ export default function SaleProductSelection({
                     ...line,
                     priceType: "manual",
                     markupPercent: getMarkupPercent(
-                      line.costPrice,
+                      docCost(line.costPrice),
                       nextSalePrice,
                     ),
                   },
                   unitPrice: nextSalePrice,
                   costingMethodId: saleCondition.costingMethodId,
+                  costRate,
                 });
               });
             }}
@@ -1752,6 +1775,7 @@ export default function SaleProductSelection({
                   recalculateLine({
                     line: { ...line, unmarkedQuantity: value },
                     costingMethodId: saleCondition.costingMethodId,
+                    costRate,
                   }),
                 )
             : undefined

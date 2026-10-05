@@ -146,7 +146,7 @@ export default function SaleAddEditPage() {
     initialValues: document
       ? {
           docDate: document.docDate,
-          exchangeRate: 0,
+          exchangeRate: document.exchangeRate ?? 0,
           counterpartyId: document.counterpartyId,
           contractId: document.contractId ?? null,
           warehouseId: document.warehouseId,
@@ -377,6 +377,7 @@ export default function SaleAddEditPage() {
         {!isEdit && <SaleDocumentFormFields formik={formik} isEdit={false} />}
         <SaleProductSelection
           warehouseId={warehouseId}
+          exchangeRate={Number(formik.values.currencyId) > 1 ? formik.values.exchangeRate : 1}
           comment={formik.values.comment}
           products={products}
           saleCondition={activeSaleCondition}

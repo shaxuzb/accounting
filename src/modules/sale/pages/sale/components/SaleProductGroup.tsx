@@ -8,6 +8,7 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { numberSpacing } from "@/utils/utils";
 import type { SaleProductGroupForm } from "../types/form";
 import type { SaleProductGroupData } from "../types/type";
+import { getLineTotal } from "../utils/pricing";
 import SaleProductLinesTable from "./SaleProductLinesTable";
 import { useTranslation } from "react-i18next";
 
@@ -45,7 +46,8 @@ function SaleProductGroup({
   const groupTotalAmount = useMemo(
     () =>
       group.lines.reduce(
-        (total, line) => total + line.amount * line.quantity,
+        (total, line) =>
+          total + getLineTotal(line.amount, line.quantity, line.vatRateName),
         0,
       ),
     [group.lines],

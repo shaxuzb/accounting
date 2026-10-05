@@ -31,6 +31,7 @@ import type {
 } from "../types/form";
 import {
   createSalePricingLine,
+  getLineTotal,
   getMarginBySalePrice,
   getSalePriceByMargin,
   getSalePriceByMarginAmount,
@@ -89,13 +90,18 @@ export default function SalePricingEditor({
     readPersistedValue(`sale:pricing:${document.id}`, [], "local"),
   );
   const [editedLines, setEditedLines] = useState<SalePricingLine[] | null>(null);
+  // a sale in a foreign currency is priced in it while the stock cost is in UZS
+  const rate =
+    document.currencyCode && document.currencyCode !== "UZS"
+      ? Number(document.exchangeRate) || 1
+      : 1;
   const updateLineAmounts = useCallback((line: SalePricingLine) => {
     const vatAmount = getVatAmount(line.amount, line.quantity, line.vatRateName);
 
     return {
       ...line,
       vatAmount,
-      totalAmount: roundMoney(line.amount * line.quantity),
+      totalAmount: getLineTotal(line.amount, line.quantity, line.vatRateName),
     };
   }, []);
   const draftLineByKey = useMemo(() => {
@@ -110,7 +116,7 @@ export default function SalePricingEditor({
   }, [draftLines]);
   const initialLines = useMemo(
     () =>
-      sourceLines.map(createSalePricingLine).map((line) => {
+      sourceLines.map((line, index) => createSalePricingLine(line, index, rate)).map((line) => {
         const draftLine =
           draftLineByKey.get(line.rowKey) ?? draftLineByKey.get(line.id);
         if (!draftLine) return line;
@@ -123,7 +129,7 @@ export default function SalePricingEditor({
           marginPercent: draftLine.marginPercent,
         });
       }),
-    [draftLineByKey, sourceLines, updateLineAmounts],
+    [draftLineByKey, rate, sourceLines, updateLineAmounts],
   );
   const lines = editedLines ?? initialLines;
 
@@ -161,7 +167,7 @@ export default function SalePricingEditor({
         updateLineAmounts({
           ...line,
           marginPercent: margin,
-          amount: getSalePriceByMargin(line.costPrice, margin),
+          amount: getSalePriceByMargin(line.docCostPrice, margin),
         }),
       ),
     [updateLineAmounts, updateLines],
@@ -172,7 +178,7 @@ export default function SalePricingEditor({
         updateLineAmounts({
           ...line,
           amount: roundMoney(Math.max(0, salePrice)),
-          marginPercent: getMarginBySalePrice(line.costPrice, salePrice),
+          marginPercent: getMarginBySalePrice(line.docCostPrice, salePrice),
         }),
       ),
     [updateLineAmounts, updateLines],
@@ -181,13 +187,13 @@ export default function SalePricingEditor({
     (lineKeys: string[], marginAmount: number) =>
       updateLines(lineKeys, (line) => {
         const salePrice = getSalePriceByMarginAmount(
-          line.costPrice,
+          line.docCostPrice,
           marginAmount,
         );
         return updateLineAmounts({
           ...line,
           amount: salePrice,
-          marginPercent: getMarginBySalePrice(line.costPrice, salePrice),
+          marginPercent: getMarginBySalePrice(line.docCostPrice, salePrice),
         });
       }),
     [updateLineAmounts, updateLines],
@@ -220,15 +226,18 @@ export default function SalePricingEditor({
   const totals = useMemo(() => {
     const productIds = new Set<number>();
     let totalAmount = 0;
+    let finalAmount = 0;
     let totalQuantity = 0;
     lines.forEach((line) => {
       productIds.add(line.productId);
       totalAmount += line.amount * line.quantity;
+      finalAmount += getLineTotal(line.amount, line.quantity, line.vatRateName);
       totalQuantity += line.quantity;
     });
     return {
       productCount: productIds.size,
       totalAmount: roundMoney(totalAmount),
+      finalAmount: roundMoney(finalAmount),
       totalQuantity,
     };
   }, [lines]);
@@ -393,7 +402,7 @@ export default function SalePricingEditor({
       <SaleDocumentSummary
         document={document}
         organizationName={organizationName}
-        totalAmount={totals.totalAmount}
+        totalAmount={totals.finalAmount}
       />
       <DocumentSummary>
         <DocumentSummaryItem
@@ -415,7 +424,7 @@ export default function SalePricingEditor({
         <DocumentSummaryItem
           icon={<Sigma size={24} strokeWidth={1.8} />}
           label={t("sale.fields.totalAmount")}
-          value={`${numberSpacing(totals.totalAmount, undefined, true)} ${currencyCode}`}
+          value={`${numberSpacing(totals.finalAmount, undefined, true)} ${currencyCode}`}
           emphasized
           iconClassName="text-violet-600"
         />

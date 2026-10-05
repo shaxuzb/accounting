@@ -109,6 +109,17 @@ export default function CashDocumentFormFields({
             path={selectListEndpoints.currenciesSelectList}
           />
         </Col>
+        {Number(formik.values.currencyId) > 1 && (
+          <Col span={4}>
+            <InputNumberFormat
+              formik={formik}
+              fieldName="exchangeRate"
+              label="currency.rate"
+              min={0}
+              precision={6}
+            />
+          </Col>
+        )}
         <Col span={4}>
           <InputNumberFormat
             formik={formik}

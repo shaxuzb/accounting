@@ -3167,5 +3167,49 @@
       "closeWithoutSaving": "Saqlamasdan yopish",
       "saveAndClose": "Saqlash va yopish"
     }
+  },
+  "currency": {
+    "dateFrom": "Sanadan",
+    "dateTo": "Sanagacha",
+    "rate": "Kurs",
+    "rateHint": "Markaziy bank kursi: {{rate}} ({{date}})",
+    "rateMissing": "{{date}} sanasiga kurs topilmadi, qo'lda kiriting",
+    "status": {
+      "title": "Holati",
+      "draft": "Qoralama",
+      "posted": "O'tkazilgan",
+      "cancelled": "Bekor qilingan"
+    },
+    "rates": {
+      "title": "Valyuta kurslari",
+      "date": "Sana",
+      "currency": "Valyuta",
+      "rate": "Kurs (so'm)",
+      "source": "Manba",
+      "inactive": "Nofaol",
+      "import": "Markaziy bankdan yuklash",
+      "imported": "{{date}} kurslari yuklandi"
+    },
+    "revaluation": {
+      "title": "Valyuta qayta baholash",
+      "new": "Yangi qayta baholash",
+      "date": "Sana",
+      "calculate": "Hisoblash",
+      "post": "Saqlash va o'tkazish",
+      "posted": "Qayta baholash o'tkazildi",
+      "cancelConfirm": "Qayta baholash bekor qilinsinmi? Provodkalar storno qilinadi.",
+      "cancelled": "Qayta baholash bekor qilindi",
+      "account": "Hisob va analitika",
+      "balance": "Valyutadagi qoldiq",
+      "carrying": "Hisobdagi so'm (kurs)",
+      "revalued": "Yangi kursda so'm",
+      "difference": "Kurs farqi",
+      "gain": "Foyda (9540)",
+      "loss": "Zarar (9620)",
+      "lines": "Qatorlar",
+      "totals": "Jami",
+      "noLines": "Qayta baholanadigan qoldiq yo'q",
+      "hint": "Valyuta hisoblaridagi pul va hisob-kitoblar (52xx, 5020, 4015, 6015 ...) tanlangan sanadagi Markaziy bank kursida qayta baholanadi. Avanslar (43xx, 63xx) qayta baholanmaydi (BHMS 22)."
+    }
   }
 }

@@ -56,7 +56,7 @@ export default function SaleConfirmedLinesTable({
       dataIndex: "costPrice",
       width: 140,
       align: "right",
-      render: (value: number) => `${getNumber(value)} ${currency}`,
+      render: (value: number) => `${getNumber(value)} UZS`,
     },
     {
       title: t("sale.fields.salePrice"),

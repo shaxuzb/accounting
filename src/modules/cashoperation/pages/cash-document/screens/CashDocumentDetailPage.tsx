@@ -37,6 +37,7 @@ import {
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
 import { useAppSelector } from "@/store/hooks";
+import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAutoExchangeRate";
 
 const createDefaultValues = (): CashDocumentForm => ({
   cashBoxId: null,
@@ -113,6 +114,7 @@ export default function CashDocumentDetailPage() {
       }
     },
   });
+  useAutoExchangeRate(formik);
 
   const saveDraft = async () => {
     const errors = await formik.validateForm();

@@ -8,6 +8,10 @@ import { trialBalancePermissions } from "./pages/trial-balance/constants/permiss
 import { auditLogPermissions } from "./pages/audit-log/constants/permissions";
 import { repostPermissions } from "./pages/repost/constants/permissions";
 import { accountingReportPermissions } from "./pages/accounting-report/constants/permissions";
+import {
+  currencyRatePermissions,
+  currencyRevaluationPermissions,
+} from "./pages/currency/constants";
 const AccountCardPage = lazy(() => import("./pages").then((m) => ({ default: m.AccountCardPage })));
 const AccountTurnoverPage = lazy(() => import("./pages").then((m) => ({ default: m.AccountTurnoverPage })));
 const BalanceSheetPage = lazy(() => import("./pages").then((m) => ({ default: m.BalanceSheetPage })));
@@ -18,6 +22,8 @@ const JournalPage = lazy(() => import("./pages").then((m) => ({ default: m.Journ
 const LedgerPage = lazy(() => import("./pages").then((m) => ({ default: m.LedgerPage })));
 const RepostPage = lazy(() => import("./pages").then((m) => ({ default: m.RepostPage })));
 const TrialBalancePage = lazy(() => import("./pages/trial-balance/screens/TrialBalancePage"));
+const CurrencyRatesPage = lazy(() => import("./pages/currency/screens/CurrencyRatesPage"));
+const CurrencyRevaluationPage = lazy(() => import("./pages/currency/screens/CurrencyRevaluationPage"));
 
 const withAccess = (element: ReactElement, permission: string) => (
   <PermissionCard permission={permission} mode="redirect">
@@ -98,6 +104,16 @@ export const accountingsRoutes: RouteObject = {
       path: "trial-balance",
       handle: { title: "app.accounting.trialBalance" },
       element: withAccess(<TrialBalancePage />, trialBalancePermissions.view),
+    },
+    {
+      path: "currency-rates",
+      handle: { title: "currency.rates.title" },
+      element: withAccess(<CurrencyRatesPage />, currencyRatePermissions.view),
+    },
+    {
+      path: "currency-revaluation",
+      handle: { title: "currency.revaluation.title" },
+      element: withAccess(<CurrencyRevaluationPage />, currencyRevaluationPermissions.view),
     },
     {
       path: "audit-log",

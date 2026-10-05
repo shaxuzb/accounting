@@ -35,17 +35,35 @@ const getPricingLineKey = (line: SaleDocTable, index: number) =>
   (line.productTableId ? `product-table-${line.productTableId}` : "") ||
   `line-${line.id}-${index}`;
 
+/** The line total with VAT, as the document stores it. */
+export const getLineTotal = (
+  salePrice: number,
+  quantity: number,
+  vatRateName?: string | null,
+) =>
+  roundMoney(
+    salePrice * quantity + getVatAmount(salePrice, quantity, vatRateName),
+  );
+
+/** UZS stock cost in the document's currency (rate = UZS for one unit, 1 for UZS). */
+export const toDocumentCost = (costPrice: number, rate: number) =>
+  rate > 1 ? roundMoney((costPrice || 0) / rate) : costPrice || 0;
+
 export const createSalePricingLine = (
   line: SaleDocTable,
   index = 0,
+  rate = 1,
 ): SalePricingLine => {
   const amount = roundMoney(line.amount || line.price || 0);
+  const docCostPrice = toDocumentCost(line.costPrice, rate);
 
   return {
     ...line,
     amount,
-    totalAmount: roundMoney(amount * line.quantity),
+    docCostPrice,
+    vatAmount: getVatAmount(amount, line.quantity, line.vatRateName),
+    totalAmount: getLineTotal(amount, line.quantity, line.vatRateName),
     rowKey: getPricingLineKey(line, index),
-    marginPercent: getMarginBySalePrice(line.costPrice, amount),
+    marginPercent: getMarginBySalePrice(docCostPrice, amount),
   };
 };

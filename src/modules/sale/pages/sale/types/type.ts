@@ -9,6 +9,7 @@ export interface SaleDoc {
   warehouseId: number;
   warehouseName: string;
   currencyId: number;
+  exchangeRate?: number | null;
   currencyCode: string;
   customerAccountId?: number | null;
   vatAccountId?: number | null;
@@ -18,7 +19,11 @@ export interface SaleDoc {
   stateName: string;
   statusId: number;
   statusName: string;
+  /** Without VAT. */
   totalAmount: number;
+  vatAmount?: number;
+  /** With VAT: what the customer owes. */
+  finalAmount?: number;
   createdDate: string;
   products?: SaleDocProduct[];
   lines?: SaleDocTable[];
@@ -276,6 +281,11 @@ export interface SaleScannedProduct {
 export interface SalePricingLine extends SaleDocTable {
   rowKey: string;
   marginPercent: number;
+  /**
+   * The cost in the document's currency. costPrice is the stock cost and stock is kept in
+   * UZS; a sale in USD prices and marks up against costPrice / rate.
+   */
+  docCostPrice: number;
 }
 
 export interface SaleProductGroupData {

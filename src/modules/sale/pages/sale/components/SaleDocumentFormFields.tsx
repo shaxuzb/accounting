@@ -5,6 +5,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import InputNumberFormat from "@/components/fields/InputNumber";
+import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAutoExchangeRate";
 import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
@@ -32,6 +34,7 @@ interface Props {
 }
 
 export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
+  const rate = useAutoExchangeRate(formik);
   const { t } = useTranslation();
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
@@ -141,7 +144,7 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
             getFirst
           />
         </Col>
-        <div className="hidden">
+        <Col span={24} sm={12} lg={8} xl={4}>
           <SelectCustom
             label={t("app.fields.currency")}
             fieldName="currencyId"
@@ -150,7 +153,18 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
             getFirst
             required
           />
-        </div>
+        </Col>
+        {rate.isForeign && (
+          <Col span={24} sm={12} lg={8} xl={4}>
+            <InputNumberFormat
+              formik={formik}
+              fieldName="exchangeRate"
+              label="currency.rate"
+              min={0}
+              precision={6}
+            />
+          </Col>
+        )}
         {isEdit && (
           <SelectCustom
             label={t("settings.fields.status")}

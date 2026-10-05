@@ -65,6 +65,7 @@ import { bankPermissions } from "../constants/permissions";
 /** cmn_document_status: a posted document. */
 const POSTED_STATUS_ID = 2;
 import { DocumentSummary, DocumentSummaryItem } from "@/components/ui/card/DocumentSummary";
+import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAutoExchangeRate";
 
 type BankOperationForm = {
   bankAccountId: number | null;
@@ -240,6 +241,7 @@ export default function BankOperationAddEditPage() {
       }
     },
   });
+  useAutoExchangeRate(formik);
 
   const operationTypeId = useMemo(
     () => toPositiveNumber(formik.values.operationTypeId),
