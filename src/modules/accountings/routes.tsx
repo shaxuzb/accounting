@@ -22,6 +22,8 @@ const JournalPage = lazy(() => import("./pages").then((m) => ({ default: m.Journ
 const LedgerPage = lazy(() => import("./pages").then((m) => ({ default: m.LedgerPage })));
 const RepostPage = lazy(() => import("./pages").then((m) => ({ default: m.RepostPage })));
 const TrialBalancePage = lazy(() => import("./pages/trial-balance/screens/TrialBalancePage"));
+const ManualEntriesPage = lazy(() => import("./pages/manual-entries/ManualEntriesPage"));
+const ManualEntryEditorPage = lazy(() => import("./pages/manual-entries/ManualEntryEditorPage"));
 const PeriodsPage = lazy(() => import("./pages/periods/PeriodsPage"));
 const CurrencyRatesPage = lazy(() => import("./pages/currency/screens/CurrencyRatesPage"));
 const CurrencyRevaluationPage = lazy(() => import("./pages/currency/screens/CurrencyRevaluationPage"));
@@ -105,6 +107,16 @@ export const accountingsRoutes: RouteObject = {
       path: "trial-balance",
       handle: { title: "app.accounting.trialBalance" },
       element: withAccess(<TrialBalancePage />, trialBalancePermissions.view),
+    },
+    {
+      path: "manual-entries",
+      handle: { title: "manualEntries.title" },
+      element: <Outlet />,
+      children: [
+        { index: true, element: withAccess(<ManualEntriesPage />, "MANUAL_ENTRY_VIEW") },
+        { path: "new", element: withAccess(<ManualEntryEditorPage />, "MANUAL_ENTRY_CREATE") },
+        { path: ":id", element: withAccess(<ManualEntryEditorPage />, "MANUAL_ENTRY_VIEW") },
+      ],
     },
     {
       path: "periods",

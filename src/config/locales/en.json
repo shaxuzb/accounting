@@ -3269,5 +3269,34 @@
       "11": "November",
       "12": "December"
     }
+  },
+  "manualEntries": {
+    "title": "Manual entries",
+    "new": "New entry",
+    "number": "Number",
+    "newNumber": "New",
+    "date": "Date",
+    "comment": "Comment",
+    "commentPlaceholder": "E.g. profit tax for September",
+    "accounts": "Dt / Ct",
+    "amount": "Amount (UZS)",
+    "currency": "Currency",
+    "currencyAmount": "Amount in currency",
+    "content": "Content",
+    "line": "Entry",
+    "debit": "Debit (Dt)",
+    "credit": "Credit (Ct)",
+    "addLine": "Add entry",
+    "total": "Total",
+    "saveDraft": "Save draft",
+    "post": "Save and post",
+    "saved": "Saved",
+    "posted": "Entry posted",
+    "cancel": "Cancel (storno)",
+    "cancelConfirm": "Reverse the entries?",
+    "cancelled": "Cancelled",
+    "deleteConfirm": "Delete the draft?",
+    "postedHint": "A posted entry is not changed: cancel it and enter a new one if needed.",
+    "currencyNeeded": "A currency account is chosen: give the currency and the amount in it."
   }
 }

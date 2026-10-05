@@ -324,6 +324,13 @@ export const menuPermissions: MainMenu = {
           },
         },
         {
+          code: "MANUAL_ENTRY_VIEW",
+          linkData: {
+            path: "manual-entries",
+            title: "manualEntries.title",
+          },
+        },
+        {
           code: "ACCOUNTING_PERIOD_CLOSE",
           linkData: {
             path: "periods",
