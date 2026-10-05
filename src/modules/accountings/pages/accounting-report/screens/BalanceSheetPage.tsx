@@ -1,3 +1,4 @@
+import { Alert } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useFormik } from "formik";
 import { Landmark, Layers3, PiggyBank, Scale } from "lucide-react";
@@ -84,6 +85,15 @@ export default function BalanceSheetPage() {
 
       {data && (
         <>
+          {!isBalanced && Math.abs(data.openingOffsetBalance ?? 0) >= 0.01 && (
+            <Alert
+              type="warning"
+              showIcon
+              message={t("app.reports.balance.openingOffset", {
+                amount: money(Math.abs(data.openingOffsetBalance ?? 0)),
+              })}
+            />
+          )}
           <AccountingReportSummaryGrid
             compact
             items={[

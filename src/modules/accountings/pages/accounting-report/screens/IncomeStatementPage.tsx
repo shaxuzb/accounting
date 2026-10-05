@@ -21,8 +21,15 @@ const initialValues: IncomeStatementQuery = { dateFrom: "", dateTo: "" };
 const money = (value: number) => numberSpacing(value, undefined, true);
 
 const sectionTone = (code: string) => {
-  if (code === "REVENUE" || code === "OTHER_INCOME") return "success" as const;
-  if (code === "COST_OF_SALES" || code === "OTHER_EXPENSE") return "danger" as const;
+  if (code === "REVENUE" || code === "OTHER_INCOME" || code === "FINANCIAL_INCOME")
+    return "success" as const;
+  if (
+    code === "COST_OF_SALES" ||
+    code === "OTHER_EXPENSE" ||
+    code === "FINANCIAL_EXPENSE" ||
+    code === "INCOME_TAX"
+  )
+    return "danger" as const;
   if (code === "OPERATING_EXPENSE") return "warning" as const;
   return "default" as const;
 };
@@ -78,6 +85,10 @@ export default function IncomeStatementPage() {
     OPERATING_EXPENSE: t("app.reports.income.operatingExpenses"),
     OTHER_INCOME: t("app.reports.income.otherIncome"),
     OTHER_EXPENSE: t("app.reports.income.otherExpenses"),
+    FINANCIAL_INCOME: t("app.reports.income.financialIncome"),
+    FINANCIAL_EXPENSE: t("app.reports.income.financialExpenses"),
+    EXTRAORDINARY: t("app.reports.income.extraordinary"),
+    INCOME_TAX: t("app.reports.income.incomeTax"),
   };
 
   return (
@@ -112,6 +123,12 @@ export default function IncomeStatementPage() {
                 tone: data.operatingProfit >= 0 ? "primary" : "danger",
               },
               {
+                label: t("app.reports.summary.profitBeforeTax"),
+                value: money(data.profitBeforeTax ?? data.netProfit),
+                icon: <ReceiptText className="size-4" />,
+                tone: (data.profitBeforeTax ?? data.netProfit) >= 0 ? "primary" : "danger",
+              },
+              {
                 label: t("app.reports.summary.netProfit"),
                 value: money(data.netProfit),
                 icon: <ChartNoAxesCombined className="size-4" />,
@@ -121,7 +138,13 @@ export default function IncomeStatementPage() {
           />
 
           <div className="grid items-start gap-4 xl:grid-cols-2">
-            {data.sections.map((section) => (
+            {data.sections
+              .filter(
+                (section) =>
+                  section.rows.length > 0 ||
+                  ["REVENUE", "COST_OF_SALES", "OPERATING_EXPENSE"].includes(section.code),
+              )
+              .map((section) => (
               <AccountingReportSectionCard
                 key={section.code}
                 title={sectionTitles[section.code] ?? section.name}

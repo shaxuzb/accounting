@@ -1688,18 +1688,23 @@
         "liabilities": "Liabilities",
         "equity": "Equity",
         "balanced": "Balance is equal",
-        "notBalanced": "Balance is not equal"
+        "notBalanced": "Balance is not equal",
+        "openingOffset": "The auxiliary account 0000 holds {{amount}}: opening balances are incomplete or unbalanced. That is the balance difference."
       },
       "income": {
         "title": "Income statement",
         "description": "Analysis of income, cost, and profit / loss.",
         "table": "Income statement rows",
         "empty": "No income statement results",
-        "revenue": "Revenue",
-        "costOfSales": "Cost of sales",
-        "operatingExpenses": "Operating expenses",
-        "otherIncome": "Other income",
-        "otherExpenses": "Other expenses"
+        "revenue": "Net sales revenue (90)",
+        "costOfSales": "Cost of goods sold (91)",
+        "operatingExpenses": "Period expenses (94)",
+        "otherIncome": "Other operating income (93, 92)",
+        "otherExpenses": "Other operating expenses (92)",
+        "financialIncome": "Financial income (95)",
+        "financialExpenses": "Financial expenses (96)",
+        "extraordinary": "Extraordinary gains and losses (97)",
+        "incomeTax": "Profit tax (98)"
       },
       "cashFlow": {
         "title": "Cash flow",
@@ -1791,7 +1796,9 @@
         "totalInflow": "Total inflow",
         "totalOutflow": "Total outflow",
         "openingCashBalance": "Opening cash balance",
-        "closingCashBalance": "Closing cash balance"
+        "closingCashBalance": "Closing cash balance",
+        "generalActivityProfit": "Profit from general activity",
+        "profitBeforeTax": "Profit before tax"
       },
       "actions": {
         "show": "Show report"

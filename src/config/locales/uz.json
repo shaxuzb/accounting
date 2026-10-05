@@ -1688,18 +1688,23 @@
         "liabilities": "Majburiyatlar",
         "equity": "Kapital",
         "balanced": "Balans teng",
-        "notBalanced": "Balans teng emas"
+        "notBalanced": "Balans teng emas",
+        "openingOffset": "0000 yordamchi hisobda {{amount}} qoldiq bor: boshlang'ich qoldiqlar to'liq yoki teng kiritilmagan. Balans farqi shundan."
       },
       "income": {
         "title": "Daromadlar hisoboti",
         "description": "Daromad, tannarx va foyda / zarar bo'yicha tahlil.",
         "table": "Daromadlar hisoboti qatorlari",
         "empty": "Daromadlar hisoboti natijasi yo'q",
-        "revenue": "Daromad",
-        "costOfSales": "Sotuv tannarxi",
-        "operatingExpenses": "Operatsion xarajatlar",
-        "otherIncome": "Boshqa daromadlar",
-        "otherExpenses": "Boshqa xarajatlar"
+        "revenue": "Sotishdan tushgan sof tushum (90)",
+        "costOfSales": "Sotilgan mahsulot tannarxi (91)",
+        "operatingExpenses": "Davr xarajatlari (94)",
+        "otherIncome": "Boshqa operatsion daromadlar (93, 92)",
+        "otherExpenses": "Boshqa operatsion xarajatlar (92)",
+        "financialIncome": "Moliyaviy faoliyat daromadlari (95)",
+        "financialExpenses": "Moliyaviy faoliyat xarajatlari (96)",
+        "extraordinary": "Favqulodda foyda va zararlar (97)",
+        "incomeTax": "Foyda solig'i (98)"
       },
       "cashFlow": {
         "title": "Pul oqimi",
@@ -1791,7 +1796,9 @@
         "totalInflow": "Jami kirim",
         "totalOutflow": "Jami chiqim",
         "openingCashBalance": "Boshlang'ich pul qoldig'i",
-        "closingCashBalance": "Yakuniy pul qoldig'i"
+        "closingCashBalance": "Yakuniy pul qoldig'i",
+        "generalActivityProfit": "Umumxo'jalik faoliyati foydasi",
+        "profitBeforeTax": "Soliq to'lagunga qadar foyda"
       },
       "actions": {
         "show": "Hisobotni ko'rsat"

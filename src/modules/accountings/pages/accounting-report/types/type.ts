@@ -25,6 +25,8 @@ export interface BalanceSheetResponse {
   totalLiabilities: number;
   totalEquity: number;
   totalLiabilitiesAndEquity: number;
+  /** What is left on 0000, the account opening balances are entered against. */
+  openingOffsetBalance?: number;
   sections: ReportSection<BalanceSheetRow>[];
 }
 
@@ -46,8 +48,14 @@ export interface IncomeStatementResponse {
   operatingExpenseTotal: number;
   otherIncomeTotal: number;
   otherExpenseTotal: number;
+  financialIncomeTotal?: number;
+  financialExpenseTotal?: number;
+  extraordinaryTotal?: number;
+  incomeTaxTotal?: number;
   grossProfit: number;
   operatingProfit: number;
+  generalActivityProfit?: number;
+  profitBeforeTax?: number;
   netProfit: number;
   sections: ReportSection<IncomeStatementRow>[];
 }
