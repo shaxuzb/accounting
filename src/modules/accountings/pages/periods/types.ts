@@ -30,6 +30,12 @@ export interface MonthCloseCheck {
   revaluationDifference: number;
   revaluationError?: string | null;
   missingAccounts: string[];
+  /** Input VAT (4410) and output VAT (6410) at the month end, and what is offset. */
+  vatInput: number;
+  vatOutput: number;
+  vatOffset: number;
+  /** 20/23/25/26 balances carried to 9130 (amount: debit balance). */
+  costLines: MonthCloseLine[];
   lines: MonthCloseLine[];
   result: number;
   yearResult?: number | null;

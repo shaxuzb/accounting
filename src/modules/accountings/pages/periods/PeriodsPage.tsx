@@ -196,6 +196,27 @@ function CloseMonthModal({ periodId, onClose }: { periodId: number; onClose: () 
     },
   ];
 
+  const costColumns: TableColumnsType<MonthCloseLine> = [
+    columns[0],
+    {
+      dataIndex: "amount",
+      title: t("periods.amount"),
+      align: "right",
+      width: 170,
+      render: (value: number) => money(Math.abs(value)),
+    },
+    {
+      key: "entry",
+      title: t("periods.entry"),
+      width: 170,
+      render: (_, line) => (
+        <Tag className="m-0">
+          {line.amount >= 0 ? `Dt 9130 — Kt ${line.accountNumber}` : `Dt ${line.accountNumber} — Kt 9130`}
+        </Tag>
+      ),
+    },
+  ];
+
   return (
     <Modal
       open
@@ -256,6 +277,32 @@ function CloseMonthModal({ periodId, onClose }: { periodId: number; onClose: () 
             </CheckItem>
           </div>
 
+          <div className="font-semibold">{t("periods.stepVat")}</div>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md border border-border p-3 md:grid-cols-3">
+            <span className="text-secondary-text">{t("periods.vatInput")}</span>
+            <b className="text-right md:col-span-2 md:text-left">{money(check.vatInput)}</b>
+            <span className="text-secondary-text">{t("periods.vatOutput")}</span>
+            <b className="text-right md:col-span-2 md:text-left">{money(check.vatOutput)}</b>
+            <span className="text-secondary-text">{t("periods.vatOffset")}</span>
+            <b className="text-right md:col-span-2 md:text-left">{money(check.vatOffset)}</b>
+            <span className="text-secondary-text">
+              {check.vatOutput >= check.vatInput ? t("periods.vatPayable") : t("periods.vatCarry")}
+            </span>
+            <b className="text-right md:col-span-2 md:text-left">{money(Math.abs(check.vatOutput - check.vatInput))}</b>
+          </div>
+
+          <div className="font-semibold">{t("periods.stepCosts")}</div>
+          <Table<MonthCloseLine>
+            rowKey={(line) => `${line.accountNumber}-${line.analytics ?? ""}`}
+            size="small"
+            columns={costColumns}
+            dataSource={check.costLines}
+            pagination={false}
+            scroll={{ y: 200 }}
+            locale={{ emptyText: t("periods.noCosts") }}
+          />
+
+          <div className="font-semibold">{t("periods.stepResult")}</div>
           <Table<MonthCloseLine>
             rowKey={(line) => `${line.accountNumber}-${line.analytics ?? ""}`}
             size="small"
