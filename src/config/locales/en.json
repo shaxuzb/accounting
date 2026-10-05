@@ -3218,5 +3218,56 @@
       "noLines": "No balances to revalue",
       "hint": "Money and settlements on currency accounts (52xx, 5020, 4015, 6015 ...) are revalued at the Central Bank rate of the chosen date. Advances (43xx, 63xx) are not revalued (NSBU 22)."
     }
+  },
+  "periods": {
+    "title": "Accounting periods",
+    "month": "Month",
+    "status": "Status",
+    "result": "Financial result",
+    "closedAt": "Closed at",
+    "noActivity": "No activity",
+    "closed": "Closed",
+    "open": "Open",
+    "close": "Close month",
+    "reopen": "Reopen",
+    "reopenConfirm": "Reopen the month? Its closing entries will be reversed.",
+    "reopened": "Month reopened",
+    "closedMessage": "Month closed",
+    "hint": "Months close in order; only the last closed one can be reopened.",
+    "closeTitle": "Month closing",
+    "account": "Account and analytics",
+    "amount": "Amount",
+    "entry": "Entry",
+    "noLines": "No turnover on class 9 accounts",
+    "monthResult": "Month result",
+    "yearProfit": "Year end: the profit of {{amount}} goes to retained earnings Dt 9910 — Ct 8710.",
+    "yearLoss": "Year end: the loss of {{amount}} goes to uncovered loss Dt 8710 — Ct 9910.",
+    "check": {
+      "monthOver": "The month is over",
+      "monthNotOver": "The month is not over yet",
+      "previousClosed": "Earlier months are closed",
+      "previousOpen": "Earlier months are open",
+      "revaluationDone": "Currency balances are revalued at the month end (or there are none)",
+      "revaluationNeeded": "Currency not revalued: {{count}} balances, difference {{amount}}.",
+      "goRevaluation": "Go to revaluation",
+      "accountsPresent": "Accounts 9910 (and 8710 in December) are present",
+      "accountsMissing": "Not in the chart of accounts: {{accounts}}. Add them from the preset chart.",
+      "noDrafts": "No unposted documents",
+      "drafts": "{{count}} documents are not posted — they are not in the books (warning)."
+    },
+    "monthNames": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    }
   }
 }

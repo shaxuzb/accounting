@@ -3218,5 +3218,56 @@
       "noLines": "Qayta baholanadigan qoldiq yo'q",
       "hint": "Valyuta hisoblaridagi pul va hisob-kitoblar (52xx, 5020, 4015, 6015 ...) tanlangan sanadagi Markaziy bank kursida qayta baholanadi. Avanslar (43xx, 63xx) qayta baholanmaydi (BHMS 22)."
     }
+  },
+  "periods": {
+    "title": "Hisob davrlari",
+    "month": "Oy",
+    "status": "Holati",
+    "result": "Moliyaviy natija",
+    "closedAt": "Yopilgan vaqti",
+    "noActivity": "Faoliyat yo'q",
+    "closed": "Yopilgan",
+    "open": "Ochiq",
+    "close": "Oyni yopish",
+    "reopen": "Qayta ochish",
+    "reopenConfirm": "Oy qayta ochilsinmi? Yopish provodkalari storno qilinadi.",
+    "reopened": "Oy qayta ochildi",
+    "closedMessage": "Oy yopildi",
+    "hint": "Oylar ketma-ket yopiladi; faqat oxirgi yopilgan oy qayta ochiladi.",
+    "closeTitle": "Oyni yopish",
+    "account": "Hisob va analitika",
+    "amount": "Summa",
+    "entry": "Provodka",
+    "noLines": "Oyda 9-sinf hisoblarida aylanma yo'q",
+    "monthResult": "Oyning moliyaviy natijasi",
+    "yearProfit": "Yil yakuni: {{amount}} foyda Dt 9910 — Kt 8710 bilan taqsimlanmagan foydaga o'tkaziladi.",
+    "yearLoss": "Yil yakuni: {{amount}} zarar Dt 8710 — Kt 9910 bilan qoplanmagan zararga o'tkaziladi.",
+    "check": {
+      "monthOver": "Oy tugagan",
+      "monthNotOver": "Oy hali tugamagan",
+      "previousClosed": "Oldingi oylar yopilgan",
+      "previousOpen": "Oldingi oylar yopilmagan",
+      "revaluationDone": "Valyuta qoldiqlari oy oxiriga qayta baholangan (yoki yo'q)",
+      "revaluationNeeded": "Valyuta qayta baholanmagan: {{count}} ta qoldiq, farq {{amount}}.",
+      "goRevaluation": "Qayta baholashga o'tish",
+      "accountsPresent": "9910 (va dekabrda 8710) hisoblari mavjud",
+      "accountsMissing": "Hisoblar rejasida yo'q: {{accounts}}. Namunaviy rejadan qo'shing.",
+      "noDrafts": "O'tkazilmagan hujjatlar yo'q",
+      "drafts": "{{count}} ta hujjat o'tkazilmagan — ular buxgalteriyaga kirmaydi (ogohlantirish)."
+    },
+    "monthNames": {
+      "1": "Yanvar",
+      "2": "Fevral",
+      "3": "Mart",
+      "4": "Aprel",
+      "5": "May",
+      "6": "Iyun",
+      "7": "Iyul",
+      "8": "Avgust",
+      "9": "Sentabr",
+      "10": "Oktabr",
+      "11": "Noyabr",
+      "12": "Dekabr"
+    }
   }
 }

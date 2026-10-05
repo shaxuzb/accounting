@@ -22,6 +22,7 @@ const JournalPage = lazy(() => import("./pages").then((m) => ({ default: m.Journ
 const LedgerPage = lazy(() => import("./pages").then((m) => ({ default: m.LedgerPage })));
 const RepostPage = lazy(() => import("./pages").then((m) => ({ default: m.RepostPage })));
 const TrialBalancePage = lazy(() => import("./pages/trial-balance/screens/TrialBalancePage"));
+const PeriodsPage = lazy(() => import("./pages/periods/PeriodsPage"));
 const CurrencyRatesPage = lazy(() => import("./pages/currency/screens/CurrencyRatesPage"));
 const CurrencyRevaluationPage = lazy(() => import("./pages/currency/screens/CurrencyRevaluationPage"));
 
@@ -104,6 +105,11 @@ export const accountingsRoutes: RouteObject = {
       path: "trial-balance",
       handle: { title: "app.accounting.trialBalance" },
       element: withAccess(<TrialBalancePage />, trialBalancePermissions.view),
+    },
+    {
+      path: "periods",
+      handle: { title: "periods.title" },
+      element: <PeriodsPage />,
     },
     {
       path: "currency-rates",

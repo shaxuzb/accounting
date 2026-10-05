@@ -324,6 +324,13 @@ export const menuPermissions: MainMenu = {
           },
         },
         {
+          code: "ACCOUNTING_PERIOD_CLOSE",
+          linkData: {
+            path: "periods",
+            title: "periods.title",
+          },
+        },
+        {
           code: currencyRevaluationPermissions.view,
           linkData: {
             path: "currency-revaluation",
