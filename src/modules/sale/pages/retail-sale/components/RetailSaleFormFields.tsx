@@ -16,13 +16,11 @@ import type { RetailSaleFormValues } from "../types/form";
 
 interface Props {
   formik: FormikProps<RetailSaleFormValues>;
-  isEdit: boolean;
   documentTypeId?: number;
 }
 
 export default function RetailSaleFormFields({
   formik,
-  isEdit,
   documentTypeId,
 }: Props) {
   const { t } = useTranslation();
@@ -97,15 +95,6 @@ export default function RetailSaleFormFields({
             required
           />
         </div>
-        {isEdit && (
-          <SelectCustom
-            label={t("retailSale.fields.state")}
-            fieldName="stateId"
-            path={selectListEndpoints.statesSelectList}
-            formik={formik}
-            required
-          />
-        )}
       </div>
     </Card>
   );

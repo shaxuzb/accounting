@@ -341,7 +341,6 @@ export default function RetailSaleEditorPage() {
         />
         <RetailSaleFormFields
           formik={formik}
-          isEdit={isEdit}
           documentTypeId={retailSaleDocumentTypeIds.goods}
         />
         <RetailSalePayments
