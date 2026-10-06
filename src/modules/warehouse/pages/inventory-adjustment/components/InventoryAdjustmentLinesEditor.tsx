@@ -215,12 +215,14 @@ export default function InventoryAdjustmentLinesEditor({
                       setLine(index, {
                         productId: Number(value),
                         productName: selected?.productName ?? selected?.name ?? "",
-                        unitId: line.unitId,
-                        unitName: line.unitName,
+                        // the product brings its own unit
+                        unitId: selected?.unitId ?? line.unitId,
+                        unitName: selected?.unitName || line.unitName,
                         quantity: selected?.quantity ? 1 : null,
                         items: [createDefaultAdjustmentItem()],
                       });
-                      setActiveLineIndex(index);
+                      // only marked goods have codes to pick
+                      setActiveLineIndex(selected?.isPieceTracked ? index : null);
                       setSelectedRowKeys([]);
                     }}
                     style={{ width: "100%" }}

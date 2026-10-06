@@ -37,7 +37,10 @@ export interface ProductStock {
   productName?: string;
   barcode?: string;
   sapCode?: string;
+  unitId?: number | null;
   unitName?: string;
+  /** Kept unit by unit with a marking code. */
+  isPieceTracked?: boolean;
   productGroupName?: string;
   quantity: number;
   price?: number;
