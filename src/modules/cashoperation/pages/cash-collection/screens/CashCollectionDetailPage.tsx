@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import Card from "@/components/ui/card/Card";
 import SelectCustom from "@/components/fields/SelectCustom";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
+import { useCashBoxCurrency } from "@/modules/cashoperation/hooks/useCashBoxCurrency";
 import SelectDate from "@/components/fields/SelectDate";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
@@ -29,6 +31,11 @@ import {
 import { toCashCollectionPayload } from "../utils/payload";
 import type { CashCollectionForm } from "../types/form";
 import { cashCollectionSchema } from "../types/schema";
+
+/** The RKO and the bank receipt: their settings give the cash and the bank accounts. */
+const CASH_EXPENSE_DOCUMENT_TYPE_ID = 8;
+const BANK_INCOME_DOCUMENT_TYPE_ID = 5;
+const CASH_IN_TRANSIT_ACCOUNT = "5710";
 
 const createEmptyValues = (): CashCollectionForm => ({
   cashBoxId: null,
@@ -91,6 +98,7 @@ export default function CashCollectionDetailPage({
   });
 
   const isDraft = isCreate || record?.statusId === 1;
+  useCashBoxCurrency(formik, isDraft);
   const isBusy =
     detail.isLoading ||
     create.isPending ||
@@ -117,6 +125,9 @@ export default function CashCollectionDetailPage({
           toast.error(t("cash.messages.fillRequired"));
           return;
         }
+        // what is on the screen is what goes to the bank: an edit is saved first
+        if (!isCreate && formik.dirty)
+          await update.mutateAsync(toCashCollectionPayload(formik.values));
         await sendToBank.mutateAsync();
       } else {
         await cancel.mutateAsync();
@@ -196,13 +207,14 @@ export default function CashCollectionDetailPage({
           />
         </Col>
         <Col span={8}>
-          <SelectCustom
+          {/* the cash leaves on the RKO's cash account, as 1C's инкассация credits 50 */}
+          <DocumentAccountSelect
             formik={formik}
             fieldName="cashChartAccountId"
             label="cash.fields.cashChartAccount"
-            path={selectListEndpoints.chartAccountsSelectList}
-            displayConfig={chartAccountSelectDisplayConfig}
-            search
+            documentTypeId={CASH_EXPENSE_DOCUMENT_TYPE_ID}
+            documentRoleCode="cash_account"
+            fallbackToAllAccounts
             disabled={!isDraft}
           />
         </Col>
@@ -213,18 +225,21 @@ export default function CashCollectionDetailPage({
             label="cash.collection.cashInTransitAccount"
             path={selectListEndpoints.chartAccountsSelectList}
             displayConfig={chartAccountSelectDisplayConfig}
+            // money in transit (1C 57.01): Dt 5710 Kt 5010, then Dt 5110 Kt 5710
+            autoSelectValue={isDraft ? CASH_IN_TRANSIT_ACCOUNT : null}
+            autoSelectKeys={["number"]}
             search
             disabled={!isDraft}
           />
         </Col>
         <Col span={8}>
-          <SelectCustom
+          <DocumentAccountSelect
             formik={formik}
             fieldName="bankChartAccountId"
             label="cash.collection.bankChartAccount"
-            path={selectListEndpoints.chartAccountsSelectList}
-            displayConfig={chartAccountSelectDisplayConfig}
-            search
+            documentTypeId={BANK_INCOME_DOCUMENT_TYPE_ID}
+            documentRoleCode="bank_account"
+            fallbackToAllAccounts
             disabled={!isDraft}
           />
         </Col>
