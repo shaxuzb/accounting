@@ -41,7 +41,8 @@ import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAut
 
 const createDefaultValues = (): CashDocumentForm => ({
   cashBoxId: null,
-  paymentTypeId: null,
+  // a cash order is paid in cash
+  paymentTypeId: 1,
   counterpartyId: null,
   contractId: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),

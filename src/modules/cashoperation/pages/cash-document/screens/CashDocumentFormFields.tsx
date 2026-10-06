@@ -1,8 +1,9 @@
 import type { FormikProps } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { Col, Form, Input, Row } from "antd";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { $axiosPrivate } from "@/services/AxiosService";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -50,6 +51,26 @@ export default function CashDocumentFormFields({
     directionId: documentTypeId,
     docDate: formik.values.docDate,
   });
+
+  // A cash box is kept in one currency: the document takes it (the server refuses another).
+  const { data: cashBoxes } = useQuery({
+    queryKey: ["cash-box-currencies"],
+    queryFn: async () =>
+      (
+        await $axiosPrivate.get<{ id: number; currencyId: number }[]>(
+          selectListEndpoints.cashBoxesSelectList,
+        )
+      ).data,
+    staleTime: 5 * 60 * 1000,
+  });
+  const cashBoxCurrencyId = cashBoxes?.find(
+    (box) => box.id === Number(formik.values.cashBoxId),
+  )?.currencyId;
+  useEffect(() => {
+    if (cashBoxCurrencyId && Number(formik.values.currencyId) !== cashBoxCurrencyId)
+      void formik.setFieldValue("currencyId", cashBoxCurrencyId, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cashBoxCurrencyId]);
 
   return (
     <>
