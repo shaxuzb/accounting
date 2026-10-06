@@ -1,4 +1,5 @@
-import { Button, Col, Form, Input, Row, Spin } from "antd";
+import { Button, Col, Form, Input, Popconfirm, Row, Spin } from "antd";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import { useFormik } from "formik";
 import {
   Building2,
@@ -18,11 +19,15 @@ import { useTranslation } from "react-i18next";
 import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import SelectCustom from "@/components/fields/SelectCustom";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import InOutSelect from "@/components/fields/InOutSelect";
 import SelectDate from "@/components/fields/SelectDate";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import PaymentAcceptancePointOperationReadonlyDetailsCard from "@/modules/cashoperation/components/PaymentAcceptancePointOperationReadonlyDetailsCard";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import {
+  chartAccountSelectDisplayConfig,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, numberSpacing } from "@/utils/utils";
 import {
@@ -47,12 +52,20 @@ const createDefaultValues = (): PaymentAcceptancePointOperationForm => ({
   paymentAcceptancePointId: null,
   directionId: 1,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
-  currencyId: null,
+  currencyId: 1,
   amount: null,
   exchangeRate: 1,
   externalTransactionNumber: "",
   comment: "",
+  pointAccountId: null,
+  offsetAccountId: null,
 });
+
+/** The register's document type of a payment acceptance point operation. */
+const PAYMENT_ACCEPTANCE_POINT_OPERATION_DOCUMENT_TYPE_ID = 25;
+
+/** Acquiring: its settings give the point's clearing account (5710). */
+const ACQUIRING_DOCUMENT_TYPE_ID = 13;
 
 // Every field is marked touched, so the empty required ones show their error
 // (marking only the filled ones hid exactly the fields that were missing).
@@ -65,6 +78,8 @@ const buildTouched = () => ({
   exchangeRate: true,
   externalTransactionNumber: true,
   comment: true,
+  pointAccountId: true,
+  offsetAccountId: true,
 });
 
 export default function PaymentAcceptancePointOperationDetailPage() {
@@ -100,6 +115,8 @@ export default function PaymentAcceptancePointOperationDetailPage() {
         record?.externalTransactionNumber ??
         createDefaultValues().externalTransactionNumber,
       comment: record?.comment ?? createDefaultValues().comment,
+      pointAccountId: record?.pointAccountId ?? null,
+      offsetAccountId: record?.offsetAccountId ?? null,
     }),
     [record],
   );
@@ -189,9 +206,44 @@ export default function PaymentAcceptancePointOperationDetailPage() {
   }
 
   if (!isDraft) {
-    return record ? (
-      <PaymentAcceptancePointOperationReadonlyDetailsCard record={record} />
-    ) : null;
+    if (!record) return null;
+    const isPosted = record.statusId === 2;
+    return (
+      <div className="space-y-2">
+        <PaymentAcceptancePointOperationReadonlyDetailsCard record={record} />
+        <div className="flex justify-end gap-2">
+          <AccountingEntriesButton
+            documentTypeId={PAYMENT_ACCEPTANCE_POINT_OPERATION_DOCUMENT_TYPE_ID}
+            documentId={id}
+            statusId={record.statusId}
+          >
+            {t("app.routes.accountingEntries")}
+          </AccountingEntriesButton>
+          {isPosted && (
+            <Popconfirm
+              title={t("actions.cancelConfirmTitle")}
+              description={t("actions.cancelConfirmContent")}
+              okText={t("actions.cancel")}
+              cancelText={t("common.close")}
+              okButtonProps={{ danger: true }}
+              onConfirm={async () => {
+                try {
+                  await cancelMutation.mutateAsync();
+                  toast.success(t("cash.paymentAcceptancePointOperation.cancelled"));
+                  navigate(listPath, { replace: true });
+                } catch (error) {
+                  errorHandlers(error);
+                }
+              }}
+            >
+              <Button danger loading={cancelMutation.isPending}>
+                {t("common.cancel")}
+              </Button>
+            </Popconfirm>
+          )}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -277,6 +329,33 @@ export default function PaymentAcceptancePointOperationDetailPage() {
                 label="bank.fields.amount"
                 min={0}
                 precision={2}
+              />
+            </Col>
+            <Col span={4}>
+              {/* the point's money is on its own account; the movement posts against the offset */}
+              <DocumentAccountSelect
+                formik={formik}
+                fieldName="pointAccountId"
+                label="cash.fields.pointAccount"
+                documentTypeId={ACQUIRING_DOCUMENT_TYPE_ID}
+                documentRoleCode="acquiring_clearing"
+                allowUserSelection
+                preselectDefault
+                fallbackToAllAccounts
+                required
+                disabled={!isDraft}
+              />
+            </Col>
+            <Col span={4}>
+              <SelectCustom
+                formik={formik}
+                fieldName="offsetAccountId"
+                label="cash.fields.offsetAccount"
+                path={selectListEndpoints.chartAccountsSelectList}
+                displayConfig={chartAccountSelectDisplayConfig}
+                search
+                required
+                disabled={!isDraft}
               />
             </Col>
             <Col span={4}>

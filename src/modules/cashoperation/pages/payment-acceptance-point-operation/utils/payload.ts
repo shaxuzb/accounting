@@ -12,4 +12,6 @@ export const toPaymentAcceptancePointOperationPayload = (
   exchangeRate: Number(values.exchangeRate || 1),
   externalTransactionNumber: values.externalTransactionNumber.trim() || "",
   comment: values.comment.trim() || "",
+  pointAccountId: values.pointAccountId ? Number(values.pointAccountId) : null,
+  offsetAccountId: values.offsetAccountId ? Number(values.offsetAccountId) : null,
 });

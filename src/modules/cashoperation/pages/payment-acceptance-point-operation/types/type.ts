@@ -20,6 +20,8 @@ export interface PaymentAcceptancePointOperation {
   stateId?: number | null;
   stateName?: string | null;
   comment?: string | null;
+  pointAccountId?: number | null;
+  offsetAccountId?: number | null;
 }
 
 export interface PaymentAcceptancePointBalance {

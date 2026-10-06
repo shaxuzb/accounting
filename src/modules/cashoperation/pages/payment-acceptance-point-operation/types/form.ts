@@ -7,6 +7,10 @@ export interface PaymentAcceptancePointOperationForm {
   exchangeRate: number;
   externalTransactionNumber: string;
   comment: string;
+  /** The point's own account (5710 acquiring, 5720 cards). */
+  pointAccountId: number | null;
+  /** The other side of the movement. */
+  offsetAccountId: number | null;
 }
 
 export interface PaymentAcceptancePointOperationRequest extends PaymentAcceptancePointOperationForm {

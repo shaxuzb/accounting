@@ -2864,6 +2864,7 @@
   },
   "cash": {
     "fields": {
+      "pointAccount": "Счёт точки",
       "destinationCashBox": "Касса-получатель (передача)",
       "date": "Дата",
       "cashBox": "Касса",

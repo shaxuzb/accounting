@@ -2864,6 +2864,7 @@
   },
   "cash": {
     "fields": {
+      "pointAccount": "Point account",
       "destinationCashBox": "Receiving cash box (transfer)",
       "date": "Date",
       "cashBox": "Cash register",
