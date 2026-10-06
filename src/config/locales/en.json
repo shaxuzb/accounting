@@ -2751,6 +2751,21 @@
     },
     "actions": {
       "cancelPosted": "Cancel transfer"
+    },
+    "shortage": {
+      "title": "Shortage (5910)",
+      "onAccount": "Put on 5910",
+      "settledLabel": "Settled",
+      "remaining": "Still open",
+      "settle": "Settle the shortage",
+      "hint": "As the inventory commission decides: no one responsible or natural loss — to losses (Dt 9430); an employee responsible — to be recovered from them (Dt 4730); a supplier or carrier — a claim (Dt 4860). A manual entry is created and posted.",
+      "targetLoss": "To losses (Dt 9430 — Ct 5910)",
+      "targetEmployee": "To the responsible employee (Dt 4730 — Ct 5910)",
+      "targetSupplier": "To the supplier / carrier (Dt 4860 — Ct 5910)",
+      "employee": "Employee",
+      "counterparty": "Counterparty",
+      "amount": "Amount",
+      "settled": "Shortage settled, a manual entry was created and posted"
     }
   },
   "notifications": {

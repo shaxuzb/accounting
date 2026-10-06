@@ -2751,6 +2751,21 @@
     },
     "actions": {
       "cancelPosted": "Ko'chirishni bekor qilish"
+    },
+    "shortage": {
+      "title": "Kamomad (5910)",
+      "onAccount": "5910 ga yozilgan",
+      "settledLabel": "Yopilgan",
+      "remaining": "Ochiq qoldiq",
+      "settle": "Kamomadni yopish",
+      "hint": "Inventarizatsiya komissiyasi qaroriga ko'ra: aybdor topilmasa yoki tabiiy yo'qotish bo'lsa — zararga (Dt 9430), aybdor xodim bo'lsa — undan undirishga (Dt 4730), yetkazib beruvchi yoki tashuvchi bo'lsa — da'voga (Dt 4860). Qo'lda provodka yaratilib o'tkaziladi.",
+      "targetLoss": "Zararga (Dt 9430 — Kt 5910)",
+      "targetEmployee": "Aybdor xodimga (Dt 4730 — Kt 5910)",
+      "targetSupplier": "Yetkazib beruvchi / tashuvchiga (Dt 4860 — Kt 5910)",
+      "employee": "Xodim",
+      "counterparty": "Kontragent",
+      "amount": "Summa",
+      "settled": "Kamomad yopildi, qo'lda provodka yaratib o'tkazildi"
     }
   },
   "notifications": {

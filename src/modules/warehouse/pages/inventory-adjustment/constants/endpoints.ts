@@ -6,6 +6,9 @@ export const inventoryAdjustmentEndpoints = {
   delete: (id: string | number) => `inventory-adjustments/${id}`,
   confirm: (id: string | number) => `inventory-adjustments/${id}/confirm`,
   cancel: (id: string | number) => `inventory-adjustments/${id}/cancel`,
+  shortage: (id: string | number) => `inventory-adjustments/${id}/shortage`,
+  settleShortage: (id: string | number) =>
+    `inventory-adjustments/${id}/shortage/settle`,
   postingBatches: (id: string | number) =>
     `inventory-adjustments/${id}/posting-batches`,
   inventoryMovements: (id: string | number) =>

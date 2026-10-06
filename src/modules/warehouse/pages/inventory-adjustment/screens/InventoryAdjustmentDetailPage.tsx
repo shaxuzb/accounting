@@ -7,6 +7,7 @@ import InventoryAdjustmentActions from "../components/InventoryAdjustmentActions
 import InventoryAdjustmentFormFields from "../components/InventoryAdjustmentFormFields";
 import InventoryAdjustmentHeader from "../components/InventoryAdjustmentHeader";
 import InventoryAdjustmentLinesEditor from "../components/InventoryAdjustmentLinesEditor";
+import InventoryShortageSettlement from "../components/InventoryShortageSettlement";
 import {
   useCancelInventoryAdjustment,
   useConfirmInventoryAdjustment,
@@ -157,6 +158,10 @@ export default function InventoryAdjustmentDetailPage() {
               }
             }}
           />
+
+          {!isCreate && statusId === 2 && (
+            <InventoryShortageSettlement adjustmentId={id} />
+          )}
 
           {!isCreate && (
             <AccountingEntriesButton
