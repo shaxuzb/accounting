@@ -81,6 +81,7 @@ export default function PayrollPaymentDetailPage() {
   const record = detailQuery.data;
   const statusId = record?.statusId ?? 1;
   const isDraft = isCreate || isDraftStatus(statusId);
+  const isCancelled = !isCreate && statusId === 3;
   const canSave =
     isCreate && permissions.includes(payrollPaymentPermissions.create);
   const canConfirm =
@@ -223,12 +224,14 @@ export default function PayrollPaymentDetailPage() {
     <div className="min-w-0 space-y-4">
       {!isCreate && record && (
         <Alert
-          type={isDraft ? "warning" : "success"}
+          type={isDraft ? "warning" : isCancelled ? "info" : "success"}
           showIcon
           message={
             isDraft
-              ? t("payroll.payments.draftInfo", { defaultValue: "Payment is a draft and has not been posted." })
-              : t("payroll.payments.postedInfo", { defaultValue: "Payment is posted." })
+              ? t("payroll.payments.draftInfo")
+              : isCancelled
+                ? t("payroll.payments.cancelledInfo")
+                : t("payroll.payments.postedInfo")
           }
           description={
             record?.bankOperationId || record?.cashOperationId ? (

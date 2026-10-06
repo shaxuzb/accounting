@@ -2485,6 +2485,8 @@
       "fillFromDocumentTitle": "Maosh hujjatidan to'ldirasizmi?",
       "fillFromDocumentText": "{{count}} ta xodimning qolgan summasi qatorlarga ko'chiriladi.",
       "noLines": "Hozircha xodim qo'shilmagan",
+      "draftInfo": "To'lov qoralama holatida, hali o'tkazilmagan.",
+      "cancelledInfo": "To'lov bekor qilingan, uning pul operatsiyasi ham bekor qilingan.",
       "postedInfo": "To'lov tasdiqlangan va bank/kassa operatsiyasi yaratilgan",
       "openPayrollDocument": "Maosh hujjatini ochish",
       "confirmTitle": "To'lovni tasdiqlaysizmi?",

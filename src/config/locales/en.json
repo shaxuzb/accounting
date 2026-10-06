@@ -2495,6 +2495,8 @@
       "fillFromDocumentTitle": "Fill from the payroll document?",
       "fillFromDocumentText": "Outstanding amounts for {{count}} employees will be copied into the rows.",
       "noLines": "No employees added yet",
+      "draftInfo": "Payment is a draft and has not been posted.",
+      "cancelledInfo": "The payment is cancelled, and so is its money operation.",
       "postedInfo": "The payment is confirmed and a bank/cash operation was created",
       "openPayrollDocument": "Open payroll document",
       "confirmTitle": "Confirm the payment?",
