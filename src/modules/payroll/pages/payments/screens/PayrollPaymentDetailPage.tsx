@@ -21,10 +21,7 @@ import {
   useGetDetailPayrollDocument,
   usePayrollDocumentLookup,
 } from "@/modules/payroll/pages/documents/hooks";
-import {
-  chartAccountSelectDisplayConfig,
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { Alert, Button, Col, Form, Popconfirm, Row, Select, Spin } from "antd";
@@ -44,6 +41,9 @@ import { useEffect, useMemo, useRef } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
+/** RKO and the bank expense: their settings give the money account a payment leaves from. */
+const CASH_EXPENSE_DOCUMENT_TYPE_ID = 8;
+const BANK_EXPENSE_DOCUMENT_TYPE_ID = 6;
 import PaymentLinesEditor from "../components/PaymentLinesEditor";
 import {
   useCancelPayrollPayment,
@@ -160,7 +160,7 @@ export default function PayrollPaymentDetailPage() {
     if (payrollDocument.id !== values.payrollDocId) return;
     if (payrollDocument.salaryPayableAccountId && !values.offsetAccountId)
       formik.setFieldValue("offsetAccountId", payrollDocument.salaryPayableAccountId, false);
-    if (payrollDocument.currencyId && !values.currencyId)
+    if (payrollDocument.currencyId && payrollDocument.currencyId !== values.currencyId)
       formik.setFieldValue("currencyId", payrollDocument.currencyId, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCreate, isFinal, payrollDocument, values.payrollDocId]);
@@ -335,7 +335,7 @@ export default function PayrollPaymentDetailPage() {
                     required
                     disabled={!isCreate}
                     marginBottom="mb-4"
-                    resetFields={["bankAccountId", "cashBoxId"]}
+                    resetFields={["bankAccountId", "cashBoxId", "sourceChartAccountId"]}
                   />
                 </Col>
 
@@ -368,12 +368,15 @@ export default function PayrollPaymentDetailPage() {
                 )}
 
                 <Col xs={24} md={8}>
-                  <SelectCustom
+                  {/* the money account as the RKO / bank expense settings give it (5010.1, 5110) */}
+                  <DocumentAccountSelect
+                    key={values.sourceType}
                     formik={formik}
                     fieldName="sourceChartAccountId"
                     label="payroll.fields.sourceChartAccount"
-                    path={selectListEndpoints.chartAccountsSelectList}
-                    displayConfig={chartAccountSelectDisplayConfig}
+                    documentTypeId={values.sourceType === "BANK" ? BANK_EXPENSE_DOCUMENT_TYPE_ID : CASH_EXPENSE_DOCUMENT_TYPE_ID}
+                    documentRoleCode={values.sourceType === "BANK" ? "bank_account" : "cash_account"}
+                    fallbackToAllAccounts
                     search
                     required
                     disabled={!isCreate}
@@ -392,6 +395,7 @@ export default function PayrollPaymentDetailPage() {
                         : "salary_payable"
                     }
                     allowUserSelection
+                    preselectDefault
                     fallbackToAllAccounts
                     search
                     required

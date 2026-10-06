@@ -1012,6 +1012,7 @@
       "accountWithId": "Счёт №{{id}}"
     },
     "openingBalance": {
+      "subkontoItem": {"title": "Новый элемент: {{name}}", "name": "Наименование"},
       "noSubkontoRequired": "Для этого счёта субконто не требуется"
     },
     "settlementPolicy": {
@@ -2764,6 +2765,8 @@
       "targetLoss": "На убытки (Дт 9430 — Кт 5910)",
       "targetEmployee": "На виновного сотрудника (Дт 4730 — Кт 5910)",
       "targetSupplier": "На поставщика / перевозчика (Дт 4860 — Кт 5910)",
+      "expenseItem": "Статья прочих расходов",
+      "expenseItemDefault": "Недостачи и потери от порчи ценностей (по умолчанию)",
       "employee": "Сотрудник",
       "counterparty": "Контрагент",
       "amount": "Сумма",

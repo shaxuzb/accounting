@@ -4,7 +4,7 @@ import {
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
 import OpeningBalanceSubkontoEditor from "@/modules/settings/pages/openingBalance/components/OpeningBalanceSubkontoEditor";
-import type { ManualEntrySubkonto } from "./types";
+import { manualEntryPermissions, type ManualEntrySubkonto } from "./types";
 import { useAccountDefinitions } from "./useAccountDefinitions";
 
 interface Props {
@@ -48,6 +48,8 @@ export default function AccountSide({
         <div className={disabled ? "pointer-events-none opacity-70" : undefined}>
           <OpeningBalanceSubkontoEditor
             definitions={definitions}
+            addPermission={manualEntryPermissions.create}
+            compact
             value={subkontos.map((x) => ({ subkontoTypeId: x.subkontoTypeId, subkontoId: x.entityId }))}
             onChange={(next) =>
               onSubkontosChange(

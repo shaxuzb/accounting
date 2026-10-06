@@ -33,7 +33,8 @@ export const createDefaultPaymentForm = (): PayrollPaymentForm => ({
   cashBoxId: null,
   sourceChartAccountId: null,
   offsetAccountId: null,
-  currencyId: null,
+  // salaries are paid in so'm; a final payment takes the payroll document's currency
+  currencyId: 1,
   note: null,
   lines: [],
 });

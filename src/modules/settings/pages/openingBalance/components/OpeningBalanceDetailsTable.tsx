@@ -11,6 +11,7 @@ import type {
 } from "../types/form";
 import type { SubkontoTypeOption } from "../types/type";
 import OpeningBalanceSubkontoEditor from "./OpeningBalanceSubkontoEditor";
+import { openingBalancePermissions } from "../constants/permissions";
 
 interface OpeningBalanceDetailsTableProps {
   details: OpeningBalanceDetailForm[];
@@ -267,6 +268,7 @@ function OpeningBalanceDetailsTable({
               </div>
               <OpeningBalanceSubkontoEditor
                 definitions={definitions}
+                addPermission={openingBalancePermissions.update}
                 value={record.subkontos}
                 onChange={(subkontos) =>
                   onChangeSubkontos(record.clientKey, subkontos)

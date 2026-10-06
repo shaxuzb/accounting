@@ -1010,6 +1010,7 @@
       "accountWithId": "Account #{{id}}"
     },
     "openingBalance": {
+      "subkontoItem": {"title": "New item: {{name}}", "name": "Name"},
       "noSubkontoRequired": "No subaccount is required for this account"
     },
     "settlementPolicy": {
@@ -2764,6 +2765,8 @@
       "targetLoss": "To losses (Dt 9430 — Ct 5910)",
       "targetEmployee": "To the responsible employee (Dt 4730 — Ct 5910)",
       "targetSupplier": "To the supplier / carrier (Dt 4860 — Ct 5910)",
+      "expenseItem": "Expense item",
+      "expenseItemDefault": "Shortages and spoilage losses (default)",
       "employee": "Employee",
       "counterparty": "Counterparty",
       "amount": "Amount",

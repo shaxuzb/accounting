@@ -12,6 +12,9 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { inventoryAdjustmentEndpoints } from "../constants/endpoints";
 
+/** The subkonto type 9430 is kept by (1C «Прочие доходы и расходы»). */
+const OTHER_INCOME_AND_EXPENSES = 46;
+
 /** 1 — losses (9430), 2 — the responsible employee (4730), 3 — a supplier or carrier (4860). */
 type Target = 1 | 2 | 3;
 
@@ -43,6 +46,7 @@ export default function InventoryShortageSettlement({
   const [target, setTarget] = useState<Target>(1);
   const [employeeId, setEmployeeId] = useState<number | null>(null);
   const [counterpartyId, setCounterpartyId] = useState<number | null>(null);
+  const [expenseItemId, setExpenseItemId] = useState<number | null>(null);
   const [amount, setAmount] = useState<number | null>(null);
 
   const statusQuery = useQuery({
@@ -63,6 +67,7 @@ export default function InventoryShortageSettlement({
             target,
             employeeId: target === 2 ? employeeId : null,
             counterpartyId: target === 3 ? counterpartyId : null,
+            expenseItemId: target === 1 ? expenseItemId : null,
             amount,
           },
         )
@@ -80,6 +85,7 @@ export default function InventoryShortageSettlement({
     setTarget(1);
     setEmployeeId(null);
     setCounterpartyId(null);
+    setExpenseItemId(null);
     setAmount(status.remaining);
     setOpen(true);
   };
@@ -142,6 +148,19 @@ export default function InventoryShortageSettlement({
             <Radio value={2}>{t("warehouse.shortage.targetEmployee")}</Radio>
             <Radio value={3}>{t("warehouse.shortage.targetSupplier")}</Radio>
           </Radio.Group>
+          {target === 1 && (
+            <SelectCustom
+              label={t("warehouse.shortage.expenseItem")}
+              fieldName="shortage-expense-item"
+              path={`subkonto-values/${OTHER_INCOME_AND_EXPENSES}`}
+              value={expenseItemId}
+              placeholder={t("warehouse.shortage.expenseItemDefault")}
+              search
+              clearable
+              marginBottom="mb-0"
+              onChange={(value) => setExpenseItemId(Number(value) || null)}
+            />
+          )}
           {target === 2 && (
             <PayrollEmployeeSelect
               label="warehouse.shortage.employee"

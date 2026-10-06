@@ -1012,6 +1012,7 @@
       "accountWithId": "Hisobvaraq #{{id}}"
     },
     "openingBalance": {
+      "subkontoItem": {"title": "Yangi element: {{name}}", "name": "Nomi"},
       "noSubkontoRequired": "Bu hisobvaraq uchun subkonto talab qilinmaydi"
     },
     "settlementPolicy": {
@@ -2764,6 +2765,8 @@
       "targetLoss": "Zararga (Dt 9430 — Kt 5910)",
       "targetEmployee": "Aybdor xodimga (Dt 4730 — Kt 5910)",
       "targetSupplier": "Yetkazib beruvchi / tashuvchiga (Dt 4860 — Kt 5910)",
+      "expenseItem": "Xarajat moddasi",
+      "expenseItemDefault": "Kamomad va qimmatliklarning buzilishidan yo'qotishlar (standart)",
       "employee": "Xodim",
       "counterparty": "Kontragent",
       "amount": "Summa",

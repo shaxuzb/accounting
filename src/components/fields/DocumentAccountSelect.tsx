@@ -23,6 +23,8 @@ type DocumentAccountSelectProps = Omit<
   allowUserSelection?: boolean;
   /** Use the full chart of accounts when the role has no configured options. */
   fallbackToAllAccounts?: boolean;
+  /** With allowUserSelection, still start from the role's default account (the user may change it). */
+  preselectDefault?: boolean;
 };
 
 export default function DocumentAccountSelect({
@@ -30,6 +32,7 @@ export default function DocumentAccountSelect({
   documentRoleCode,
   allowUserSelection = false,
   fallbackToAllAccounts = false,
+  preselectDefault = false,
   ...props
 }: DocumentAccountSelectProps) {
   const settingsQuery = useGetDetailDocumentAccountSettings(
@@ -62,7 +65,8 @@ export default function DocumentAccountSelect({
       autoSelectSingle={props.autoSelectSingle ?? !allowUserSelection}
       autoSelectValue={
         allowUserSelection
-          ? props.autoSelectValue
+          ? (props.autoSelectValue ??
+            (preselectDefault ? defaultAccount?.chartAccountId : undefined))
           : (props.autoSelectValue ?? selectedDefaultAccount?.chartAccountId)
       }
       autoSelectKeys={
