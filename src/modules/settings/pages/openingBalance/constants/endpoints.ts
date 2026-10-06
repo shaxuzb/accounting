@@ -15,4 +15,5 @@ export const openingBalanceEndpoints = {
   ) => `opening-balances/${openingBalanceId}/accounts/${accountId}`,
   post: (id: string | number) => `opening-balances/${id}/post`,
   unpost: (id: string | number) => `opening-balances/${id}/unpost`,
+  closeOffset: (id: string | number) => `opening-balances/${id}/close-offset`,
 } as const;

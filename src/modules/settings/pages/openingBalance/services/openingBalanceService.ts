@@ -63,6 +63,11 @@ export const openingBalanceService = {
     $axiosPrivate
       .put(openingBalanceEndpoints.unpost(id))
       .then((response) => response.data),
+  /** Puts the 0000 difference on 8710; returns the amount (credit positive). */
+  closeOffset: (id: string | number) =>
+    $axiosPrivate
+      .put<number>(openingBalanceEndpoints.closeOffset(id))
+      .then((response) => response.data),
   accountDetail: (
     openingBalanceId: string | number,
     accountId: string | number,

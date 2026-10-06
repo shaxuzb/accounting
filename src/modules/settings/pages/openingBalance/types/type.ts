@@ -19,6 +19,8 @@ export interface OpeningBalance {
   statusId: number;
   postedAt?: string | null;
   offsetAccountNumber?: string | null;
+  /** 0000 in the ledger, from every opening document; zero once the balances agree. */
+  offsetBalance?: number;
   createdDate: string;
   organizationName: string;
   stateName: string;

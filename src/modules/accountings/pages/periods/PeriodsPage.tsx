@@ -265,6 +265,11 @@ function CloseMonthModal({ periodId, onClose }: { periodId: number; onClose: () 
                 t("periods.check.revaluationDone")
               )}
             </CheckItem>
+            <CheckItem ok={Math.abs(check.openingOffsetBalance ?? 0) < 0.01}>
+              {Math.abs(check.openingOffsetBalance ?? 0) < 0.01
+                ? t("periods.check.openingOffsetZero")
+                : t("periods.check.openingOffsetNotZero", { amount: money(check.openingOffsetBalance) })}
+            </CheckItem>
             <CheckItem ok={check.missingAccounts.length === 0}>
               {check.missingAccounts.length === 0
                 ? t("periods.check.accountsPresent")

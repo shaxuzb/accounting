@@ -71,6 +71,18 @@ export const usePostOpeningBalance = (id?: number | null) => {
   });
 };
 
+export const useCloseOpeningBalanceOffset = (id?: number | null) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      if (!id) throw new Error("Opening balance ID topilmadi");
+      return openingBalanceService.closeOffset(id);
+    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: openingBalanceKeys.all }),
+  });
+};
+
 export const useUnpostOpeningBalance = (id?: number | null) => {
   const queryClient = useQueryClient();
   return useMutation({

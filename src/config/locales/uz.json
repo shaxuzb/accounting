@@ -1104,6 +1104,13 @@
       "balanceDateRequired": "Balans sanasini kiriting",
       "descriptionMax": "Izoh 500 belgidan oshmasligi kerak",
       "stateRequired": "Holatni tanlang"
+    },
+    "offset": {
+      "notZero": "0000 yordamchi hisobda {{amount}} qoldiq bor: boshlang'ich qoldiqlar teng emas, balans shu summaga farq qiladi. Xatoni tuzating yoki farqni taqsimlanmagan foydaga (8710) yoping.",
+      "close": "Farqni 8710 ga yopish",
+      "confirmTitle": "Farqni 8710 ga yopish",
+      "confirmDescription": "0000 dagi {{amount}} farq taqsimlanmagan foyda (8710) qatoriga yoziladi va hujjat qayta o'tkaziladi. Avval qoldiqlarni tekshiring: 1C da ham farq xato topilmagandagina 84 (bizda 8710) ga o'tkaziladi.",
+      "closed": "0000 yopildi: 8710 ga {{side}} {{amount}}"
     }
   },
   "purchase": {
@@ -3264,7 +3271,9 @@
       "accountsPresent": "9910 (va dekabrda 8710) hisoblari mavjud",
       "accountsMissing": "Hisoblar rejasida yo'q: {{accounts}}. Namunaviy rejadan qo'shing.",
       "noDrafts": "O'tkazilmagan hujjatlar yo'q",
-      "drafts": "{{count}} ta hujjat o'tkazilmagan — ular buxgalteriyaga kirmaydi (ogohlantirish)."
+      "drafts": "{{count}} ta hujjat o'tkazilmagan — ular buxgalteriyaga kirmaydi (ogohlantirish).",
+      "openingOffsetZero": "Boshlang'ich qoldiqlar teng (0000 = 0)",
+      "openingOffsetNotZero": "0000 da {{amount}} qoldiq: boshlang'ich qoldiqlar teng emas"
     },
     "monthNames": {
       "1": "Yanvar",

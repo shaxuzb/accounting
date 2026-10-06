@@ -30,6 +30,8 @@ export interface MonthCloseCheck {
   revaluationDifference: number;
   revaluationError?: string | null;
   missingAccounts: string[];
+  /** 0000 at the month end: the month closes only once the opening balances agree. */
+  openingOffsetBalance: number;
   /** Input VAT (4410) and output VAT (6410) at the month end, and what is offset. */
   vatInput: number;
   vatOutput: number;

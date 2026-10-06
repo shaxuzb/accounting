@@ -1102,6 +1102,13 @@
       "balanceDateRequired": "Enter the opening balance date",
       "descriptionMax": "Comment must not exceed 500 characters",
       "stateRequired": "Select a state"
+    },
+    "offset": {
+      "notZero": "The auxiliary account 0000 holds {{amount}}: the opening balances do not agree and the balance sheet is off by that much. Correct them or close the difference to retained earnings (8710).",
+      "close": "Close the difference to 8710",
+      "confirmTitle": "Close the difference to 8710",
+      "confirmDescription": "The {{amount}} on 0000 goes to a retained earnings (8710) line and the document is posted again. Check the balances first: 1C too carries the difference to 84 (here 8710) only when the error cannot be found.",
+      "closed": "0000 closed: 8710 {{side}} {{amount}}"
     }
   },
   "purchase": {
@@ -3264,7 +3271,9 @@
       "accountsPresent": "Accounts 9910 (and 8710 in December) are present",
       "accountsMissing": "Not in the chart of accounts: {{accounts}}. Add them from the preset chart.",
       "noDrafts": "No unposted documents",
-      "drafts": "{{count}} documents are not posted — they are not in the books (warning)."
+      "drafts": "{{count}} documents are not posted — they are not in the books (warning).",
+      "openingOffsetZero": "Opening balances agree (0000 = 0)",
+      "openingOffsetNotZero": "0000 holds {{amount}}: the opening balances do not agree"
     },
     "monthNames": {
       "1": "January",

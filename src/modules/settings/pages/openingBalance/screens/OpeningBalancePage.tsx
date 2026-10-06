@@ -20,12 +20,19 @@ import OpeningBalanceAddEditModal from "../components/OpeningBalanceAddEditModal
 import OpeningBalanceDocumentHeader from "../components/OpeningBalanceDocumentHeader";
 import { openingBalancePermissions } from "../constants/permissions";
 import {
+  useCloseOpeningBalanceOffset,
   useDeleteOpeningBalance,
   useGetOpeningBalance,
   usePostOpeningBalance,
   useUnpostOpeningBalance,
 } from "../hooks";
 import type { OpeningBalance } from "../types/type";
+
+const money = (value: number) =>
+  value.toLocaleString("ru-RU", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
 export default function OpeningBalancePage() {
   const { t } = useTranslation();
@@ -43,7 +50,9 @@ export default function OpeningBalancePage() {
   const deleteMutation = useDeleteOpeningBalance(data?.id);
   const postMutation = usePostOpeningBalance(data?.id);
   const unpostMutation = useUnpostOpeningBalance(data?.id);
+  const closeOffsetMutation = useCloseOpeningBalanceOffset(data?.id);
   const isPosted = data?.statusId === 2;
+  const offsetBalance = Number(data?.offsetBalance ?? 0);
 
   const totals = useMemo(
     () =>
@@ -99,6 +108,31 @@ export default function OpeningBalancePage() {
         try {
           await postMutation.mutateAsync();
           toast.success(t("openingBalance.messages.posted"));
+        } catch (error: unknown) {
+          errorHandlers(error);
+          throw error;
+        }
+      },
+    });
+  };
+
+  const handleCloseOffset = () => {
+    modal.confirm({
+      title: t("openingBalance.offset.confirmTitle"),
+      content: t("openingBalance.offset.confirmDescription", {
+        amount: money(Math.abs(offsetBalance)),
+      }),
+      okText: t("openingBalance.offset.close"),
+      cancelText: t("common.cancel"),
+      onOk: async () => {
+        try {
+          const amount = Number((await closeOffsetMutation.mutateAsync()) ?? 0);
+          toast.success(
+            t("openingBalance.offset.closed", {
+              amount: money(Math.abs(amount)),
+              side: amount >= 0 ? "Kt" : "Dt",
+            }),
+          );
         } catch (error: unknown) {
           errorHandlers(error);
           throw error;
@@ -258,6 +292,28 @@ export default function OpeningBalancePage() {
               </>
             }
           />
+
+          {Math.abs(offsetBalance) >= 0.01 && (
+            <Alert
+              showIcon
+              type="warning"
+              message={t("openingBalance.offset.notZero", {
+                amount: money(offsetBalance),
+              })}
+              action={
+                <PermissionCard permission={openingBalancePermissions.update}>
+                  <Button
+                    size="small"
+                    type="primary"
+                    loading={closeOffsetMutation.isPending}
+                    onClick={handleCloseOffset}
+                  >
+                    {t("openingBalance.offset.close")}
+                  </Button>
+                </PermissionCard>
+              }
+            />
+          )}
 
           {isPosted && (
             <Alert
