@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  Pencil,
   Plus,
   Trash2,
   WalletCards,
@@ -85,6 +86,8 @@ export default function RetailSalePayments({
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(true);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  // the payment being changed; null while a new one is added
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [draftPayment, setDraftPayment] =
     useState<RetailSalePaymentForm>(createEmptyPayment);
   const payments = formik.values.payments;
@@ -258,13 +261,34 @@ export default function RetailSalePayments({
     "w-full [&_.ant-form-item]:mb-0 [&_.ant-form-item]:w-full [&_.ant-select]:w-full";
 
   const openPaymentModal = () => {
-    setDraftPayment(createEmptyPayment());
+    // a new payment starts at what is left to pay
+    const remaining = Math.round(Math.max(remainingTotal, 0) * 100) / 100;
+    setDraftPayment({
+      ...createEmptyPayment(),
+      amount: remaining > 0 ? remaining : null,
+    });
+    setEditingIndex(null);
+    setPaymentModalOpen(true);
+  };
+
+  const openEditPayment = (index: number) => {
+    setDraftPayment({ ...payments[index] });
+    setEditingIndex(index);
     setPaymentModalOpen(true);
   };
 
   const saveDraftPayment = () => {
-    void formik.setFieldValue("payments", [...payments, draftPayment], true);
+    void formik.setFieldValue(
+      "payments",
+      editingIndex === null
+        ? [...payments, draftPayment]
+        : payments.map((payment, index) =>
+            index === editingIndex ? draftPayment : payment,
+          ),
+      true,
+    );
     setPaymentModalOpen(false);
+    setEditingIndex(null);
   };
 
   return (
@@ -378,6 +402,15 @@ export default function RetailSalePayments({
                     </div>
                     <div className="mt-auto flex gap-2 border-t border-border pt-3">
                       <Button
+                        type="text"
+                        className="flex-1"
+                        aria-label={t("retailSale.payments.edit")}
+                        title={t("retailSale.payments.edit")}
+                        icon={<Pencil className="size-4" />}
+                        disabled={disabled}
+                        onClick={() => openEditPayment(index)}
+                      />
+                      <Button
                         danger
                         type="text"
                         className="flex-1"
@@ -415,9 +448,16 @@ export default function RetailSalePayments({
       )}
 
       <Modal maskClosable={false}
-        title={t("retailSale.payments.add")}
+        title={t(
+          editingIndex === null
+            ? "retailSale.payments.add"
+            : "retailSale.payments.edit",
+        )}
         open={paymentModalOpen}
-        onCancel={() => setPaymentModalOpen(false)}
+        onCancel={() => {
+          setPaymentModalOpen(false);
+          setEditingIndex(null);
+        }}
         destroyOnHidden
         width={620}
         okText={t("common.save")}

@@ -1632,7 +1632,8 @@
       "remaining": "Qoldiq",
       "fullyPaid": "To'liq to'langan",
       "partiallyPaid": "Qisman to'langan",
-      "empty": "To'lovlar kiritilmagan"
+      "empty": "To'lovlar kiritilmagan",
+      "edit": "To'lovni tahrirlash"
     },
     "messages": {
       "dateRequired": "Hujjat sanasini kiriting",

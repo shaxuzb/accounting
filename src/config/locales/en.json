@@ -1632,7 +1632,8 @@
       "remaining": "Remaining",
       "fullyPaid": "Fully paid",
       "partiallyPaid": "Partially paid",
-      "empty": "No payments entered"
+      "empty": "No payments entered",
+      "edit": "Edit payment"
     },
     "messages": {
       "dateRequired": "Enter the document date",
