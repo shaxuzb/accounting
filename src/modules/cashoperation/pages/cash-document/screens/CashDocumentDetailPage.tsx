@@ -46,6 +46,7 @@ const createDefaultValues = (): CashDocumentForm => ({
   counterpartyId: null,
   contractId: null,
   destinationCashBoxId: null,
+  employeeId: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   currencyId: null,
   amount: null,
@@ -84,6 +85,9 @@ export default function CashDocumentDetailPage() {
       destinationCashBoxId:
         (record as { destinationCashBoxId?: number | null } | undefined)
           ?.destinationCashBoxId ?? null,
+      employeeId:
+        (record as { employeeId?: number | null } | undefined)?.employeeId ??
+        null,
       docDate: record?.docDate ?? createDefaultValues().docDate,
       currencyId: record?.currencyId ?? createDefaultValues().currencyId,
       amount: record?.amount ?? createDefaultValues().amount,

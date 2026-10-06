@@ -276,6 +276,10 @@ export const menuPermissions: MainMenu = {
           linkData: { path: "cash-collection", title: "cash.collection.title" },
         },
         {
+          code: "MANUAL_ENTRY_VIEW",
+          linkData: { path: "expense-reports", title: "expenseReport.title" },
+        },
+        {
           code: paymentAcceptancePointOperationPermissions.view,
           linkData: {
             path: "payment-acceptance-point-operations",

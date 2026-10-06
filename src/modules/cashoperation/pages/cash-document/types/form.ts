@@ -5,6 +5,8 @@ export interface CashDocumentForm {
   contractId: number | null;
   /** RKO only: the cash box the money is handed to (a transfer, no counterparty). */
   destinationCashBoxId: number | null;
+  /** The employee the money settles with (an accountable person, 4220 ...). */
+  employeeId: number | null;
   docDate: string;
   currencyId: number | null;
   amount: number | null;

@@ -11,6 +11,8 @@ const CashOperationListPage = lazy(() => import("./pages/cashoperation/screens/C
 const CashOperationAddEditPage = lazy(() => import("./pages/cashoperation/screens/CashOperationAddEditPage"));
 const CashDocumentListPage = lazy(() => import("./pages/cash-document/screens/CashDocumentListPage"));
 const CashDocumentDetailPage = lazy(() => import("./pages/cash-document/screens/CashDocumentDetailPage"));
+const ExpenseReportsPage = lazy(() => import("./pages/expense-report/ExpenseReportsPage"));
+const ExpenseReportEditorPage = lazy(() => import("./pages/expense-report/ExpenseReportEditorPage"));
 const CashBookListPage = lazy(() => import("./pages/cash-book/screens/CashBookListPage"));
 const CashBookDetailPage = lazy(() => import("./pages/cash-book/screens/CashBookDetailPage"));
 const CashCollectionListPage = lazy(() => import("./pages/cash-collection/screens/CashCollectionListPage"));
@@ -199,6 +201,28 @@ export const cashOperationRoutes: RouteObject = {
             showBack: true,
             backTo: "..",
           },
+        },
+      ],
+    },
+    {
+      // accountable persons' expense reports (1C «Авансовые отчеты»)
+      path: "expense-reports",
+      handle: { title: "expenseReport.title" },
+      element: <Outlet />,
+      children: [
+        {
+          index: true,
+          element: withPermission(<ExpenseReportsPage />, "MANUAL_ENTRY_VIEW"),
+        },
+        {
+          path: "new",
+          handle: { title: "expenseReport.new", showBack: true, backTo: ".." },
+          element: withPermission(<ExpenseReportEditorPage />, "MANUAL_ENTRY_CREATE"),
+        },
+        {
+          path: ":id",
+          handle: { title: "expenseReport.title", showBack: true, backTo: ".." },
+          element: withPermission(<ExpenseReportEditorPage />, "MANUAL_ENTRY_VIEW"),
         },
       ],
     },

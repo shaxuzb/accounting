@@ -1232,6 +1232,7 @@
     "title": "Bank",
     "statementImport": "Bank statement import",
     "fields": {
+      "employee": "Employee (accountable person)",
       "bankAccount": "Bank account",
       "operationType": "Operation type",
       "counterparty": "Counterparty",
@@ -3311,6 +3312,18 @@
       "11": "November",
       "12": "December"
     }
+  },
+  "expenseReport": {
+    "title": "Expense reports",
+    "new": "New expense report",
+    "employee": "Accountable person",
+    "advanceAccount": "Advance account",
+    "expenseAccount": "Expense / payment account",
+    "commentPlaceholder": "E.g. business trip to Tashkent",
+    "contentPlaceholder": "E.g. hotel, ticket, fuel",
+    "balance": "Advance held: {{held}} · in this report: {{spent}} · left: {{left}} UZS",
+    "balancePosted": "The report is posted. Advance still held: {{left}} UZS (the unspent part comes back by a PKO).",
+    "overspent": "More was spent than advanced: pay the difference by an RKO (Dt 4220 — Ct 5010)."
   },
   "manualEntries": {
     "title": "Manual entries",

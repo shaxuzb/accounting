@@ -15,6 +15,8 @@ export interface BankOperationCreatePayload {
   exchangeRate?: number | null;
   comment?: string | null;
   contractId?: number | null;
+  /** The employee the money settles with (an accountable person, 4220 ...). */
+  employeeId?: number | null;
   relatedDocumentId?: number | null;
   stateId?: number | null;
 }

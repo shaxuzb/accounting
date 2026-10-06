@@ -4,6 +4,8 @@ import dayjs from "dayjs";
 import { Col, Form, Input, Row } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCashBoxCurrency } from "@/modules/cashoperation/hooks/useCashBoxCurrency";
+import { useAccountKeptByEmployee } from "@/shared/hooks/useAccountKeptByEmployee";
+import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeSelect";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -56,6 +58,10 @@ export default function CashDocumentFormFields({
   });
 
   useCashBoxCurrency(formik);
+  // an advance to an accountable person (4220) and the like is kept by employee
+  const offsetKeptByEmployee = useAccountKeptByEmployee(
+    Number(formik.values.offsetAccountId) || null,
+  );
 
   return (
     <>
@@ -128,6 +134,16 @@ export default function CashDocumentFormFields({
                   formik.setFieldValue("contractId", null, false);
                 }
               }}
+            />
+          </Col>
+        )}
+        {!isTransfer && offsetKeptByEmployee && (
+          <Col span={4}>
+            <PayrollEmployeeSelect
+              formik={formik}
+              fieldName="employeeId"
+              label="bank.fields.employee"
+              required
             />
           </Col>
         )}

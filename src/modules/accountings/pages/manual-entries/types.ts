@@ -29,6 +29,10 @@ export interface ManualEntry {
   statusId: number;
   postedAt?: string | null;
   cancelledAt?: string | null;
+  /** 1 manual entry, 2 an accountable person's expense report. */
+  kind?: number;
+  employeeId?: number | null;
+  advanceAccountId?: number | null;
   lines: ManualEntryLine[];
 }
 
@@ -41,11 +45,16 @@ export interface ManualEntryListItem {
   totalAmount: number;
   lineCount: number;
   accounts?: string | null;
+  kind?: number;
+  employeeId?: number | null;
 }
 
 export interface ManualEntrySave {
   docDate: string;
   comment?: string | null;
+  kind?: number;
+  employeeId?: number | null;
+  advanceAccountId?: number | null;
   lines: ManualEntryLine[];
 }
 

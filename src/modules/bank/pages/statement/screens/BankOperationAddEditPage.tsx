@@ -66,6 +66,8 @@ import { bankPermissions } from "../constants/permissions";
 const POSTED_STATUS_ID = 2;
 import { DocumentSummary, DocumentSummaryItem } from "@/components/ui/card/DocumentSummary";
 import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAutoExchangeRate";
+import { useAccountKeptByEmployee } from "@/shared/hooks/useAccountKeptByEmployee";
+import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeSelect";
 
 type BankOperationForm = {
   bankAccountId: number | null;
@@ -81,6 +83,7 @@ type BankOperationForm = {
   comment: string;
   counterpartyBankAccountId: number | null;
   contractId: number | null;
+  employeeId: number | null;
   relatedDocumentId: number | null;
   exchangeRate: number | null;
   bankDocumentNumber: string;
@@ -98,6 +101,7 @@ const createDefaultValues = (): BankOperationForm => ({
   counterpartyId: null,
   counterpartyBankAccountId: null,
   contractId: null,
+  employeeId: null,
   exchangeRate: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   // National currency, as on the other documents; a foreign account is changed by hand.
@@ -179,6 +183,9 @@ export default function BankOperationAddEditPage() {
       counterpartyId: record?.counterpartyId ?? null,
       counterpartyBankAccountId: record?.counterpartyBankAccountId ?? null,
       contractId: record?.contractId ?? null,
+      employeeId:
+        (record as { employeeId?: number | null } | undefined)?.employeeId ??
+        null,
       exchangeRate: record?.exchangeRate ?? createDefaultValues().exchangeRate,
       docDate: record?.docDate ?? createDefaultValues().docDate,
       currencyId: record?.currencyId ?? createDefaultValues().currencyId,
@@ -208,6 +215,7 @@ export default function BankOperationAddEditPage() {
           offsetAccountId: toPositiveNumber(values.offsetAccountId),
           paymentTypeId: toPositiveNumber(values.paymentTypeId),
           counterpartyId: toPositiveNumber(values.counterpartyId),
+          employeeId: toPositiveNumber(values.employeeId),
           counterpartyBankAccountId: toPositiveNumber(
             values.counterpartyBankAccountId,
           ),
@@ -242,6 +250,10 @@ export default function BankOperationAddEditPage() {
     },
   });
   useAutoExchangeRate(formik);
+  // an advance to an accountable person (4220) and the like is kept by employee
+  const offsetKeptByEmployee = useAccountKeptByEmployee(
+    Number(formik.values.offsetAccountId) || null,
+  );
 
   const operationTypeId = useMemo(
     () => toPositiveNumber(formik.values.operationTypeId),
@@ -547,6 +559,16 @@ export default function BankOperationAddEditPage() {
                 path={selectListEndpoints.paymentTypesSelectList}
               />
             </Col>
+            {offsetKeptByEmployee && (
+              <Col span={4}>
+                <PayrollEmployeeSelect
+                  formik={formik}
+                  fieldName="employeeId"
+                  label="bank.fields.employee"
+                  required
+                />
+              </Col>
+            )}
             <Col span={4}>
               <SelectCustom
                 formik={formik}

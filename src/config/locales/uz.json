@@ -1234,6 +1234,7 @@
     "title": "Bank",
     "statementImport": "Bank ko'chirmasini import qilish",
     "fields": {
+      "employee": "Xodim (hisobdor shaxs)",
       "bankAccount": "Bank hisobi",
       "operationType": "Operatsiya turi",
       "counterparty": "Kontragent",
@@ -3311,6 +3312,18 @@
       "11": "Noyabr",
       "12": "Dekabr"
     }
+  },
+  "expenseReport": {
+    "title": "Bo'nak hisobotlari",
+    "new": "Yangi bo'nak hisoboti",
+    "employee": "Hisobdor shaxs",
+    "advanceAccount": "Bo'nak hisobvarag'i",
+    "expenseAccount": "Xarajat / to'lov hisobvarag'i",
+    "commentPlaceholder": "Masalan: Toshkentga xizmat safari",
+    "contentPlaceholder": "Masalan: mehmonxona, chipta, yoqilg'i",
+    "balance": "Xodimda bo'nak: {{held}} · hisobot bo'yicha: {{spent}} · qoladi: {{left}} so'm",
+    "balancePosted": "Hisobot o'tkazilgan. Xodimda qolgan bo'nak: {{left}} so'm (ortgani PKO bilan qaytariladi).",
+    "overspent": "Sarflangani berilgan bo'nakdan ko'p: farqni RKO bilan xodimga qaytaring (Dt 4220 — Kt 5010)."
   },
   "manualEntries": {
     "title": "Qo'lda provodkalar",
