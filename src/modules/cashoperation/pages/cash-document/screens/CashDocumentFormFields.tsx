@@ -38,6 +38,9 @@ export default function CashDocumentFormFields({
       ? "cash.fields.expense"
       : "cash.fields.income";
   const counterpartyId = Number(formik.values.counterpartyId) || null;
+  const isExpense = documentTypeId === cashDocumentTypeIds.expense;
+  // 1C «Передача в другую кассу»: an RKO to another cash box moves money between the boxes
+  const isTransfer = isExpense && Boolean(formik.values.destinationCashBoxId);
 
   // As in 1C's ПКО/РКО: the contract decides the settlement account (4010 with a customer,
   // 6010 with a supplier) and, with settlements per contract, which debt the money closes.
@@ -92,48 +95,80 @@ export default function CashDocumentFormFields({
         </Col>
         <Col span={4}>
           <DocumentAccountSelect
+            key={isTransfer ? "transfer" : "settlement"}
             formik={formik}
             fieldName="offsetAccountId"
             label="cash.fields.offsetAccount"
             documentTypeId={documentTypeId}
-            documentRoleCode={cashDocumentAccountRoleCodes.offsetAccount}
+            // a transfer lands on the receiving box's cash account
+            documentRoleCode={
+              isTransfer
+                ? cashDocumentAccountRoleCodes.cashAccount
+                : cashDocumentAccountRoleCodes.offsetAccount
+            }
             getFirst
           />
         </Col>
-        <Col span={4}>
-          <SelectCustom
-            formik={formik}
-            fieldName="counterpartyId"
-            label="bank.fields.counterparty"
-            path={selectListEndpoints.counterpartiesSelectList}
-            onChange={(value) => {
-              if (Number(value) !== Number(formik.values.counterpartyId))
-                formik.setFieldValue("contractId", null, false);
-            }}
-            addOption={{
-              bool: true,
-              permissionCode: counterpartyPermissions.create,
-              onClick: () => setCounterpartyCreateOpen(true),
-            }}
-          />
-        </Col>
-        <Col span={4}>
-          <SelectCustom
-            formik={formik}
-            fieldName="contractId"
-            label="bank.fields.contract"
-            path={selectListEndpoints.contractsSelectList}
-            queryParams={{
-              choosedDate: dayjs(formik.values.docDate).format(
-                formatDateWithOutTime,
-              ),
-              [filterIds.counterparty]: counterpartyId,
-            }}
-            enabled={Boolean(counterpartyId)}
-            refetchSync={`${counterpartyId ?? ""}${formik.values.docDate ?? ""}`}
-            disabled={!counterpartyId}
-          />
-        </Col>
+        {isExpense && (
+          <Col span={4}>
+            <SelectCustom
+              formik={formik}
+              fieldName="destinationCashBoxId"
+              label="cash.fields.destinationCashBox"
+              path={selectListEndpoints.cashBoxesSelectList}
+              clearable
+              getFirst={false}
+              autoSelectSingle={false}
+              onChange={(value) => {
+                const transfer = Boolean(value);
+                if (transfer === isTransfer) return;
+                formik.setFieldValue("offsetAccountId", null, false);
+                if (transfer) {
+                  formik.setFieldValue("counterpartyId", null, false);
+                  formik.setFieldValue("contractId", null, false);
+                }
+              }}
+            />
+          </Col>
+        )}
+        {!isTransfer && (
+          <>
+            <Col span={4}>
+              <SelectCustom
+                formik={formik}
+                fieldName="counterpartyId"
+                label="bank.fields.counterparty"
+                path={selectListEndpoints.counterpartiesSelectList}
+                onChange={(value) => {
+                  if (Number(value) !== Number(formik.values.counterpartyId))
+                    formik.setFieldValue("contractId", null, false);
+                }}
+                addOption={{
+                  bool: true,
+                  permissionCode: counterpartyPermissions.create,
+                  onClick: () => setCounterpartyCreateOpen(true),
+                }}
+              />
+            </Col>
+            <Col span={4}>
+              <SelectCustom
+                formik={formik}
+                fieldName="contractId"
+                label="bank.fields.contract"
+                path={selectListEndpoints.contractsSelectList}
+                queryParams={{
+                  choosedDate: dayjs(formik.values.docDate).format(
+                    formatDateWithOutTime,
+                  ),
+                  [filterIds.counterparty]: counterpartyId,
+                }}
+                enabled={Boolean(counterpartyId)}
+                refetchSync={`${counterpartyId ?? ""}${formik.values.docDate ?? ""}`}
+                disabled={!counterpartyId}
+              />
+            </Col>
+          </>
+        )}
 
         <Col span={4}>
           <SelectDate

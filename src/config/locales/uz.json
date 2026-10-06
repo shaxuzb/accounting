@@ -2864,6 +2864,7 @@
   },
   "cash": {
     "fields": {
+      "destinationCashBox": "Qabul qiluvchi kassa (o'tkazma)",
       "date": "Sana",
       "cashBox": "Kassa",
       "operationType": "Operatsiya turi",

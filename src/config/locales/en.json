@@ -2864,6 +2864,7 @@
   },
   "cash": {
     "fields": {
+      "destinationCashBox": "Receiving cash box (transfer)",
       "date": "Date",
       "cashBox": "Cash register",
       "operationType": "Operation type",
