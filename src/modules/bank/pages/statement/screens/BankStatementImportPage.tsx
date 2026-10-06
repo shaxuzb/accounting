@@ -54,6 +54,7 @@ import {
 } from "../utils/bankImportDraft";
 import {
   canMapBankCounterparty,
+  requiresBankContract,
   findMatchingOrgBankAccount,
   formatBankOperationDate,
   getBankClassificationMetadata,
@@ -365,8 +366,8 @@ export default function BankStatementImportPage() {
         !toValidNumber(card.bankChartAccountId) ||
         !toValidNumber(transaction.offsetAccountId) ||
         !toValidNumber(transaction.classificationCategoryId) ||
-        (canMapCounterparty &&
-          (!counterpartyId || !counterpartyBankAccountId || !contractId))
+        (requiresBankContract(transaction.classificationCode) &&
+          (!counterpartyId || !contractId))
       ) {
         return null;
       }
@@ -459,7 +460,7 @@ export default function BankStatementImportPage() {
           sum +
           card.transactions.filter(
             (transaction) =>
-              canMapBankCounterparty(transaction.classificationCode) &&
+              requiresBankContract(transaction.classificationCode) &&
               Boolean(transaction.counterpartyId) &&
               !toValidNumber(transaction.contractId),
           ).length,
@@ -894,16 +895,29 @@ export default function BankStatementImportPage() {
         { operations: validOperations },
         {
           onSuccess: () => {
+            // the rows still missing something stay on the screen to be completed and saved;
+            // the saved ones become existing operations (they were cleared with the rest before)
             if (invalidNewOperationCount > 0) {
+              setCards((prev) =>
+                prev.map((card) => ({
+                  ...card,
+                  transactions: card.transactions.map((transaction) =>
+                    isImportableBankOperation(transaction) &&
+                    buildOperationPayload(card, transaction)
+                      ? { ...transaction, isNewOperation: false }
+                      : transaction,
+                  ),
+                })),
+              );
               toast.success(
                 t("bank.messages.partialSaved", {
                   saved: validOperations.length,
                   skipped: invalidNewOperationCount,
                 }),
               );
-            } else {
-              toast.success(t("bank.messages.saved"));
+              return;
             }
+            toast.success(t("bank.messages.saved"));
             if (existingOperationCount > 0) {
               toast.success(
                 t("bank.messages.existingSkipped", {
@@ -1073,8 +1087,7 @@ export default function BankStatementImportPage() {
                 )}
                 {(missingBankChartAccountCount > 0 ||
                   missingOffsetAccountCount > 0 ||
-                  missingContractCount > 0 ||
-                  missingCounterpartyBankAccountCount > 0) && (
+                  missingContractCount > 0) && (
                   <div className="text-xs text-danger">
                     {t("bank.import.missingSummary", {
                       bankAccounts: missingBankChartAccountCount,

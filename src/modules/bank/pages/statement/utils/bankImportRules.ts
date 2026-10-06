@@ -90,6 +90,14 @@ export const getBankClassificationMetadata = (
 export const canMapBankCounterparty = (classificationCode: unknown) =>
   COUNTERPARTY_MAPPING_CODES.has(normalizeCode(classificationCode));
 
+/**
+ * Only a settlement with a customer or a supplier needs its counterparty and contract (1C:
+ * «Договор» on 4010/6010); a bank's own service is paid without either, and the
+ * counterparty's bank account is never required to take a statement in.
+ */
+export const requiresBankContract = (classificationCode: unknown) =>
+  normalizeCode(classificationCode) === "COUNTERPARTY";
+
 export interface MissingOrgBankAccountPayload {
   organizationId: number;
   bankId: number;
