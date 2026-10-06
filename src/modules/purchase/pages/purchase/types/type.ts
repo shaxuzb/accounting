@@ -221,6 +221,7 @@ export interface PurchaseDetailData extends PurchaseData {
   externalDocNumber?: string | null;
   externalId?: string | null;
   priceIncludesVat?: boolean;
+  exchangeRate?: number;
 }
 
 export interface PurchaseForm {

@@ -543,6 +543,7 @@ export const PurchaseEditor = ({
             docDate: detailData.docDate,
             counterpartyId: detailData.counterpartyId ?? null,
             currencyId: detailData.currencyId ?? null,
+            exchangeRate: Number(detailData.exchangeRate) || 1,
             contractId:
               "contractId" in detailData
                 ? (detailData.contractId as number | null)
@@ -555,6 +556,7 @@ export const PurchaseEditor = ({
           }
         : {
             ...headerDraft,
+            exchangeRate: Number(headerDraft.exchangeRate) || 1,
             priceIncludesVat: Boolean(headerDraft.priceIncludesVat),
             lines: initialLines,
           },

@@ -77,6 +77,7 @@ const getInitialValues = (
   counterpartyId: detail.counterpartyId ?? null,
   contractId: detail.contractId ?? null,
   currencyId: detail.currencyId ?? null,
+  exchangeRate: 1,
   warehouseId: detail.warehouseId ?? null,
   supplierAccountId: null,
   comment: "",
@@ -151,6 +152,7 @@ export default function EdoImportCandidateMappingPage() {
           counterpartyId: null,
           contractId: null,
           currencyId: null,
+          exchangeRate: 1,
           warehouseId: null,
           supplierAccountId: null,
           comment: "",
@@ -346,6 +348,8 @@ export default function EdoImportCandidateMappingPage() {
               purchaseMode={purchaseMode}
               readOnlyDate
               showCurrency
+              // the purchase takes the Central Bank rate of its date; it is edited there
+              showExchangeRate={false}
               showSupplierAccount={false}
               allowCreateOptions={false}
               showPriceIncludesVat={false}

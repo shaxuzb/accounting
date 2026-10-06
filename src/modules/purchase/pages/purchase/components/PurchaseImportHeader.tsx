@@ -6,6 +6,8 @@ import type { FormikProps } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectCustom from "@/components/fields/SelectCustom";
+import InputNumberFormat from "@/components/fields/InputNumber";
+import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAutoExchangeRate";
 import SwitchField from "@/components/fields/SwitchField";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import CounterpartySelect from "@/components/fields/CounterpartySelect";
@@ -28,6 +30,8 @@ interface PurchaseImportHeaderProps {
   purchaseMode: PurchaseMode;
   readOnlyDate?: boolean;
   showCurrency?: boolean;
+  /** The rate a purchase in another currency is posted at; off where it is not saved. */
+  showExchangeRate?: boolean;
   showSupplierAccount?: boolean;
   allowCreateOptions?: boolean;
   /** EDO import takes the invoice's own amounts, so the switch means nothing there. */
@@ -40,6 +44,7 @@ export default function PurchaseImportHeader({
   purchaseMode,
   readOnlyDate = false,
   showCurrency = false,
+  showExchangeRate = true,
   showSupplierAccount = true,
   allowCreateOptions = true,
   showPriceIncludesVat = true,
@@ -51,6 +56,8 @@ export default function PurchaseImportHeader({
   const queryClient = useQueryClient();
   const hasCounterparty = Boolean(formik.values.counterpartyId);
   useContractPriceIncludesVatDefault(formik, showPriceIncludesVat && !disabled);
+  // a purchase in another currency is posted at this rate (CBU on the date, editable)
+  const rate = useAutoExchangeRate(formik);
 
   const clearContract = () => {
     if (formik.values.contractId !== null) {
@@ -160,6 +167,18 @@ export default function PurchaseImportHeader({
                 disabled={disabled}
                 getFirst={allowCreateOptions}
                 required
+              />
+            </Col>
+          ) : null}
+          {showExchangeRate && rate.isForeign ? (
+            <Col span={24} sm={12} lg={8} xl={4}>
+              <InputNumberFormat
+                formik={formik}
+                fieldName="exchangeRate"
+                label="currency.rate"
+                min={0}
+                precision={6}
+                disabled={disabled}
               />
             </Col>
           ) : null}

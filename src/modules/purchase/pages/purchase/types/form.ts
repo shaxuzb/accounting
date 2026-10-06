@@ -25,6 +25,8 @@ export interface PurchaseDocumentPayload {
   counterpartyId: number;
   warehouseId: number;
   currencyId: number;
+  /** UZS for one unit of the currency; 1 for UZS. */
+  exchangeRate: number;
   comment: string | null;
   contractId: number | null;
   supplierAccountId: number;
@@ -39,6 +41,7 @@ export interface PurchaseImportForm {
   docDate: string;
   counterpartyId: number | null;
   currencyId: number | null;
+  exchangeRate: number;
   contractId: number | null;
   warehouseId: number | null;
   supplierAccountId: number | null;
@@ -53,6 +56,7 @@ export type PurchaseImportHeaderDraft = Pick<
   | "counterpartyId"
   | "contractId"
   | "currencyId"
+  | "exchangeRate"
   | "warehouseId"
   | "supplierAccountId"
   | "comment"
