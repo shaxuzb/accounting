@@ -43,6 +43,7 @@ const createDefaultValues = (): CashDocumentForm => ({
   cashBoxId: null,
   paymentTypeId: null,
   counterpartyId: null,
+  contractId: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   currencyId: null,
   amount: null,
@@ -77,6 +78,7 @@ export default function CashDocumentDetailPage() {
       cashBoxId: record?.cashBoxId ?? createDefaultValues().cashBoxId,
       paymentTypeId: record?.paymentTypeId ?? createDefaultValues().paymentTypeId,
       counterpartyId: record?.counterpartyId ?? createDefaultValues().counterpartyId,
+      contractId: record?.contractId ?? createDefaultValues().contractId,
       docDate: record?.docDate ?? createDefaultValues().docDate,
       currencyId: record?.currencyId ?? createDefaultValues().currencyId,
       amount: record?.amount ?? createDefaultValues().amount,
@@ -111,6 +113,8 @@ export default function CashDocumentDetailPage() {
         });
       } catch (error) {
         errorHandlers(error);
+        // a failed save must stop a confirm that follows it, or the old version is posted
+        throw error;
       }
     },
   });
@@ -123,6 +127,7 @@ export default function CashDocumentDetailPage() {
         cashBoxId: true,
         paymentTypeId: true,
         counterpartyId: true,
+        contractId: true,
         docDate: true,
         currencyId: true,
         amount: true,
@@ -135,8 +140,12 @@ export default function CashDocumentDetailPage() {
       return false;
     }
 
-    await formik.submitForm();
-    return true;
+    try {
+      await formik.submitForm();
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const ensureSavedBeforeAction = async () => {

@@ -2,6 +2,7 @@ export interface CashDocumentForm {
   cashBoxId: number | null;
   paymentTypeId: number | null;
   counterpartyId: number | null;
+  contractId: number | null;
   docDate: string;
   currencyId: number | null;
   amount: number | null;

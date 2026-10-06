@@ -1,5 +1,6 @@
 import type { FormikProps } from "formik";
 import { useState } from "react";
+import dayjs from "dayjs";
 import { Col, Form, Input, Row } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import InputNumberFormat from "@/components/fields/InputNumber";
@@ -8,7 +9,9 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
+import { useContractSettlementAccount } from "@/shared/hooks/useContractSettlementAccount";
+import { formatDateWithOutTime } from "@/utils/helpers";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import {
   cashDocumentAccountRoleCodes,
@@ -33,6 +36,20 @@ export default function CashDocumentFormFields({
     documentTypeId === cashDocumentTypeIds.expense
       ? "cash.fields.expense"
       : "cash.fields.income";
+  const counterpartyId = Number(formik.values.counterpartyId) || null;
+
+  // As in 1C's ПКО/РКО: the contract decides the settlement account (4010 with a customer,
+  // 6010 with a supplier) and, with settlements per contract, which debt the money closes.
+  useContractSettlementAccount({
+    formik,
+    offsetFieldName: "offsetAccountId",
+    documentTypeId,
+    offsetRoleCode: cashDocumentAccountRoleCodes.offsetAccount,
+    counterpartyId,
+    contractId: Number(formik.values.contractId) || null,
+    directionId: documentTypeId,
+    docDate: formik.values.docDate,
+  });
 
   return (
     <>
@@ -86,11 +103,32 @@ export default function CashDocumentFormFields({
             fieldName="counterpartyId"
             label="bank.fields.counterparty"
             path={selectListEndpoints.counterpartiesSelectList}
+            onChange={(value) => {
+              if (Number(value) !== Number(formik.values.counterpartyId))
+                formik.setFieldValue("contractId", null, false);
+            }}
             addOption={{
               bool: true,
               permissionCode: counterpartyPermissions.create,
               onClick: () => setCounterpartyCreateOpen(true),
             }}
+          />
+        </Col>
+        <Col span={4}>
+          <SelectCustom
+            formik={formik}
+            fieldName="contractId"
+            label="bank.fields.contract"
+            path={selectListEndpoints.contractsSelectList}
+            queryParams={{
+              choosedDate: dayjs(formik.values.docDate).format(
+                formatDateWithOutTime,
+              ),
+              [filterIds.counterparty]: counterpartyId,
+            }}
+            enabled={Boolean(counterpartyId)}
+            refetchSync={`${counterpartyId ?? ""}${formik.values.docDate ?? ""}`}
+            disabled={!counterpartyId}
           />
         </Col>
 
