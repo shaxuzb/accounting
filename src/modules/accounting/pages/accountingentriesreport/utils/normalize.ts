@@ -38,10 +38,17 @@ const tableSideMap: Record<string, "debit" | "credit"> = {
   CR: "credit",
 };
 
-const tableTypeLabel: Record<number, string> = {
-  1: "Tovar:",
-  2: "Ombor:",
-  3: "Kontragent:",
+/** A batch is kept as {"number","date"}; shown the way a person reads it. */
+const formatDisplayValue = (value: string) => {
+  if (!value.startsWith("{")) return value;
+  try {
+    const parsed = JSON.parse(value) as { number?: unknown; date?: unknown };
+    if (parsed.number == null) return value;
+    const date = typeof parsed.date === "string" ? parsed.date.slice(0, 10).split("-").reverse().join(".") : "";
+    return date ? `№${String(parsed.number)} (${date})` : `№${String(parsed.number)}`;
+  } catch {
+    return value;
+  }
 };
 
 const toSubkontoItem = (
@@ -50,14 +57,10 @@ const toSubkontoItem = (
 ): AccountingEntriesReportSubkontoItem => {
   const record = toRecord(value);
   const tableSide = String(getValue(record, ["side"], "")).toUpperCase();
-  const subkontoTypeId = toNumber(getValue(record, ["subkontoTypeId"], 0));
-  const label = String(
-    getValue(
-      record,
-      ["label", "name", "key", "type", "title"],
-      tableTypeLabel[subkontoTypeId] ?? "",
-    ),
+  const typeName = String(
+    getValue(record, ["subkontoTypeName", "label", "name", "key", "type", "title"], ""),
   );
+  const label = typeName ? `${typeName}:` : "";
   const rawItemValue = getValue(
     record,
     ["value", "displayValue", "name", "text", "title"],
@@ -66,7 +69,7 @@ const toSubkontoItem = (
   const itemValue =
     rawItemValue && typeof rawItemValue === "object"
       ? JSON.stringify(rawItemValue)
-      : String(rawItemValue ?? "");
+      : formatDisplayValue(String(rawItemValue ?? ""));
   return { label, value: itemValue, side: side ?? tableSideMap[tableSide] };
 };
 

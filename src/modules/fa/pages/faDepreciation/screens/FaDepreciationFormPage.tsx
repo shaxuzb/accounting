@@ -1,10 +1,13 @@
-import { Button, DatePicker, Spin } from "antd";
+import { Button, DatePicker, Popconfirm, Spin, Table } from "antd";
+import type { TableColumnsType } from "antd";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
+import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate } from "@/utils/utils";
@@ -14,8 +17,13 @@ import {
   useGetDetailFaDepreciation,
   useRunFaDepreciation,
 } from "../hooks";
+import type { FaDepreciationRunLine } from "../types/type";
+import { formatMoney } from "../utils/formatMoney";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import dayjs from "@/config/dayjs";
+
+/** The register's document type of a depreciation run. */
+const FA_DEPRECIATION_DOCUMENT_TYPE_ID = 13;
 
 export default function FaDepreciationFormPage() {
   const { t } = useTranslation();
@@ -59,6 +67,19 @@ export default function FaDepreciationFormPage() {
     }
   };
 
+  const lineColumns: TableColumnsType<FaDepreciationRunLine> = [
+    { title: t("fa.fields.inventoryNumber"), dataIndex: "inventoryNumber", width: 160 },
+    { title: t("fa.fields.name"), dataIndex: "assetName", minWidth: 220 },
+    { title: t("fa.fields.depreciationMethod"), dataIndex: "depreciationMethodName", width: 200 },
+    {
+      title: t("fa.fields.amount"),
+      dataIndex: "amount",
+      align: "right",
+      width: 180,
+      render: (value: number) => formatMoney(value),
+    },
+  ];
+
   if (isEdit && detailQuery.isLoading) {
     return (
       <Card className="border border-border p-4">
@@ -69,7 +90,12 @@ export default function FaDepreciationFormPage() {
 
   return (
     <Card className="border border-border p-4">
-      <div className="mb-4 text-xl font-semibold">{title}</div>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="text-xl font-semibold">{title}</div>
+        {isEdit && detail && (
+          <ProcessStatusBadge statusId={detail.statusId} statusName={detail.statusName} />
+        )}
+      </div>
 
       {!isEdit && (
         <div className="mb-4 max-w-xs">
@@ -85,32 +111,38 @@ export default function FaDepreciationFormPage() {
         </div>
       )}
 
-      <div className="grid gap-3 md:grid-cols-2">
-        <div>
-          <div className="text-sm text-muted-foreground">
-            {t("fa.fields.documentNumber")}
+      {isEdit && detail && (
+        <>
+          <div className="grid gap-3 md:grid-cols-4">
+            <div>
+              <div className="text-sm text-muted-foreground">{t("fa.fields.documentNumber")}</div>
+              <div className="font-medium">{detail.docNumber}</div>
+            </div>
+            <div>
+              <div className="text-sm text-muted-foreground">{t("fa.depreciation.period")}</div>
+              <div className="font-medium">{dayjs(detail.periodMonth).format("MMMM YYYY")}</div>
+            </div>
+            <div>
+              <div className="text-sm text-muted-foreground">{t("fa.fields.amount")}</div>
+              <div className="font-medium">{formatMoney(detail.totalAmount)}</div>
+            </div>
+            <div>
+              <div className="text-sm text-muted-foreground">{t("fa.fields.note")}</div>
+              <div>{detail.note || "-"}</div>
+            </div>
           </div>
-          <div>{detail?.documentNumber ?? "-"}</div>
-        </div>
-        <div>
-          <div className="text-sm text-muted-foreground">
-            {t("fa.fields.documentDate")}
-          </div>
-          <div>{detail?.documentDate ? customDate(detail.documentDate) : "-"}</div>
-        </div>
-        <div className="md:col-span-2">
-          <div className="text-sm text-muted-foreground">
-            {t("fa.fields.comment")}
-          </div>
-          <div>{detail?.comment ?? "-"}</div>
-        </div>
-        <div>
-          <div className="text-sm text-muted-foreground">
-            {t("settings.fields.status")}
-          </div>
-          <div>{detail?.statusName ?? "-"}</div>
-        </div>
-      </div>
+
+          <Table<FaDepreciationRunLine>
+            className="mt-4"
+            size="small"
+            rowKey="id"
+            columns={lineColumns}
+            dataSource={detail.lines ?? []}
+            pagination={false}
+            scroll={{ x: "max-content" }}
+          />
+        </>
+      )}
 
       <div className="mt-4 flex flex-wrap gap-3">
         {!isEdit && canRun && (
@@ -121,15 +153,30 @@ export default function FaDepreciationFormPage() {
           </PermissionCard>
         )}
 
+        {isEdit && (
+          <AccountingEntriesButton
+            documentTypeId={FA_DEPRECIATION_DOCUMENT_TYPE_ID}
+            documentId={id}
+            statusId={detail?.statusId}
+          >
+            {t("app.routes.accountingEntries")}
+          </AccountingEntriesButton>
+        )}
+
         {isPosted && canCancel && (
           <PermissionCard permission={faDepreciationPermissions.cancel}>
-            <Button
-              danger
-              loading={isSubmitting}
-              onClick={() => void handleCancel()}
+            <Popconfirm
+              title={t("actions.cancelConfirmTitle")}
+              description={t("actions.cancelConfirmContent")}
+              okText={t("actions.cancel")}
+              cancelText={t("common.close")}
+              okButtonProps={{ danger: true }}
+              onConfirm={() => handleCancel()}
             >
-              {t("common.cancel")}
-            </Button>
+              <Button danger loading={isSubmitting}>
+                {t("common.cancel")}
+              </Button>
+            </Popconfirm>
           </PermissionCard>
         )}
       </div>

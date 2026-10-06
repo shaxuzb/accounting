@@ -6,7 +6,9 @@ import { useTranslation } from "react-i18next";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import Card from "@/components/ui/card/Card";
 import { useAppSelector } from "@/store/hooks";
-import { customDate, generateKeyTable } from "@/utils/utils";
+import { generateKeyTable } from "@/utils/utils";
+import dayjs from "@/config/dayjs";
+import { formatMoney } from "../utils/formatMoney";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { faDepreciationPermissions } from "../constants/permissions";
 import { useGetListFaDepreciations } from "../hooks";
@@ -30,22 +32,24 @@ export default function FaDepreciationListPage() {
     },
     {
       title: t("fa.fields.documentNumber"),
-      dataIndex: "documentNumber",
+      dataIndex: "docNumber",
       render: (_, record) => (
-        <Link to={`${record.id}`}>{record.documentNumber ?? record.id}</Link>
+        <Link to={`${record.id}`}>{record.docNumber ?? record.id}</Link>
       ),
-      minWidth: 180,
+      minWidth: 140,
     },
     {
-      title: t("fa.fields.documentDate"),
-      dataIndex: "documentDate",
-      render: (value) => customDate(value),
+      title: t("fa.depreciation.period"),
+      dataIndex: "periodMonth",
+      render: (value: string) => dayjs(value).format("MMMM YYYY"),
       width: 180,
     },
     {
-      title: t("fa.fields.comment"),
-      dataIndex: "comment",
-      minWidth: 240,
+      title: t("fa.fields.amount"),
+      dataIndex: "totalAmount",
+      align: "right",
+      render: (value: number) => formatMoney(value),
+      width: 180,
     },
     {
       dataIndex: "statusName",
