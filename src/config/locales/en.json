@@ -2672,7 +2672,8 @@
       "stock": "Stock",
       "marking": "Marking",
       "selectMarking": "Select markings",
-      "pieces": "{{count}} pcs"
+      "pieces": "{{count}} pcs",
+      "noStock": "No stock in this warehouse"
     },
     "messages": {
       "created": "Document created",

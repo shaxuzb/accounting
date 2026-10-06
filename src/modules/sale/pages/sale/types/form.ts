@@ -62,13 +62,17 @@ export interface SaleDocCreateForm {
 
 export interface SaleDocUpdateForm {
   docDate: string;
+  exchangeRate: number;
   counterpartyId: number;
   warehouseId: number;
   currencyId: number;
   contractId: number | null;
+  customerAccountId: number | null;
+  vatAccountId: number | null;
   comment: string | null;
-  stateId: number;
-  products: SaleDocProductForm[];
+  lines: (SaleDocProductForm & {
+    productBatches?: SaleDocCreateProductBatchForm[];
+  })[];
 }
 
 export interface SaleDocTableUpdateForm {

@@ -116,6 +116,8 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
             path={selectListEndpoints.warehousesSelectList}
             formik={formik}
             required
+            // the lines' stock and batches belong to this warehouse
+            disabled={isEdit}
           />
         </Col>
         <Col span={4}>
@@ -164,15 +166,6 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
               precision={6}
             />
           </Col>
-        )}
-        {isEdit && (
-          <SelectCustom
-            label={t("settings.fields.status")}
-            fieldName="stateId"
-            path={selectListEndpoints.statesSelectList}
-            formik={formik}
-            required
-          />
         )}
         <CounterpartyAddEditPage
           open={counterpartyCreateOpen}

@@ -2672,7 +2672,8 @@
       "stock": "Qoldiq",
       "marking": "Markirovka",
       "selectMarking": "Markirovkani tanlash",
-      "pieces": "{{count}} dona"
+      "pieces": "{{count}} dona",
+      "noStock": "Omborda qoldiq yo'q"
     },
     "messages": {
       "created": "Hujjat yaratildi",

@@ -2667,7 +2667,8 @@
       "stock": "Остаток",
       "marking": "Маркировка",
       "selectMarking": "Выбор маркировки",
-      "pieces": "{{count}} шт."
+      "pieces": "{{count}} шт.",
+      "noStock": "На складе нет остатка"
     },
     "messages": {
       "created": "Документ создан",

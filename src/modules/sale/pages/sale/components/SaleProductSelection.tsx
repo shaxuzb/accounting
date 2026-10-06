@@ -319,6 +319,20 @@ export default function SaleProductSelection({
     Boolean(warehouseId),
   );
   const stockProducts = productStockData?.items ?? EMPTY_STOCK_PRODUCTS;
+  // A draft holds nothing back, so a saved line may take up to what the warehouse has
+  // now, not only the quantity it was saved with.
+  const stockByProductId = useMemo(
+    () =>
+      new Map(
+        stockProducts.map((item) => [
+          getStockProductId(item),
+          getAvailableQuantity(item),
+        ]),
+      ),
+    [stockProducts],
+  );
+  const getLineStock = (line: SaleSelectedProduct) =>
+    stockByProductId.get(line.productId) ?? line.availableQuantity;
   const productById = useMemo(
     () =>
       new Map(
@@ -448,9 +462,9 @@ export default function SaleProductSelection({
     () =>
       stockProducts.map((item) => ({
         value: getStockProductId(item),
-        label: getProductName(item),
+        label: `${getProductName(item)} - ${t("warehouse.lines.pieces", { count: numberSpacing(getAvailableQuantity(item), undefined, true) })}`,
       })),
-    [stockProducts],
+    [stockProducts, t],
   );
   const tableRows = useMemo<SaleSelectedProduct[]>(
     () => [
@@ -1161,7 +1175,16 @@ export default function SaleProductSelection({
       title: t("warehouse.lines.stock"),
       width: 120,
       align: "center",
-      render: (value) => numberSpacing(Number(value ?? 0)),
+      render: (_, record) => {
+        const stock = Number(getLineStock(record) ?? 0);
+        return !isNewRow(record.rowKey) && stock <= 0 ? (
+          <Tooltip title={t("warehouse.lines.noStock")}>
+            <span className="text-red-500">0</span>
+          </Tooltip>
+        ) : (
+          numberSpacing(stock, undefined, true)
+        );
+      },
     },
     {
       dataIndex: "quantity",
@@ -1182,7 +1205,7 @@ export default function SaleProductSelection({
             height={tableControlHeight}
             emptyZero
             min={0}
-            max={record.availableQuantity}
+            max={getLineStock(record)}
             precision={3}
             value={value}
             disabled={disabled || Boolean(record.priceLayers?.length)}
@@ -1471,7 +1494,7 @@ export default function SaleProductSelection({
       dataIndex: "availableQuantity",
       title: t("sale.fields.available"),
       align: "center",
-      render: (value) => numberSpacing(Number(value ?? 0)),
+      render: (value) => numberSpacing(Number(value ?? 0), undefined, true),
     },
     {
       dataIndex: "writeOffQuantity",

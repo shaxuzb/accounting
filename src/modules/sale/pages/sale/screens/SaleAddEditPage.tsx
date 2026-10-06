@@ -30,6 +30,7 @@ import {
   getIncompleteSaleMarkingLines,
   getSaleMarkingCount,
   toSaleCreatePayload,
+  toSaleUpdatePayload,
 } from "../utils/saleCreatePayload";
 // import { getSaleCostingValidationError } from "../utils/saleCostingValidation";
 import { useTranslation } from "react-i18next";
@@ -153,7 +154,7 @@ export default function SaleAddEditPage() {
           currencyId: document.currencyId,
           customerAccountId: document.customerAccountId ?? null,
           vatAccountId: document.vatAccountId ?? null,
-          comment: document.comment,
+          comment: document.comment ?? "",
           stateId: document.stateId,
         }
       : initialDraft?.form ?? openedDefaults,
@@ -218,24 +219,10 @@ export default function SaleAddEditPage() {
 
       try {
         if (isEdit && document) {
-          const payload: SaleDocUpdateForm = {
-            docDate: values.docDate,
-            counterpartyId: values.counterpartyId ?? document.counterpartyId,
-            warehouseId: values.warehouseId ?? document.warehouseId,
-            currencyId: values.currencyId ?? document.currencyId,
-            contractId: values.contractId,
-            comment: values.comment || null,
-            stateId: values.stateId ?? document.stateId,
-            products: validProducts.map((product) => ({
-              id: product.id,
-              productId: product.productId,
-              quantity: product.quantity,
-              costPrice: product.costPrice,
-              unitId: product.unitId,
-              unitPrice: product.unitPrice,
-              vatRateId: product.vatRateId ?? null,
-            })),
-          };
+          const payload: SaleDocUpdateForm = toSaleUpdatePayload(
+            values,
+            validProducts,
+          );
           await updateSale.mutateAsync({ id: document.id, payload });
         } else {
           const payload: SaleDocCreateForm = toSaleCreatePayload(
@@ -276,6 +263,19 @@ export default function SaleAddEditPage() {
     }
 
     previousCounterpartyId.current = counterpartyId;
+  }, [counterpartyId, formik, isEdit]);
+
+  // a saved sale keeps its lines when the customer changes: only the contract is theirs
+  const previousEditCounterpartyId = useRef<number | null>(null);
+  useEffect(() => {
+    if (!isEdit) return;
+    if (
+      previousEditCounterpartyId.current !== null &&
+      previousEditCounterpartyId.current !== counterpartyId
+    )
+      formik.setFieldValue("contractId", null, false);
+
+    previousEditCounterpartyId.current = counterpartyId;
   }, [counterpartyId, formik, isEdit]);
 
   useEffect(() => {
@@ -368,13 +368,21 @@ export default function SaleAddEditPage() {
   return (
     <Form
       layout="vertical"
-      onFinish={formik.handleSubmit}
+      onFinish={async () => {
+        // the header may be checked while it is out of view: say what stops the save
+        const errors = await formik.validateForm();
+        const firstError = Object.values(errors).find(
+          (error): error is string => typeof error === "string",
+        );
+        if (firstError) toast.error(firstError);
+        formik.handleSubmit();
+      }}
       onKeyDown={(event) => {
         if (event.key === "Enter") event.preventDefault();
       }}
     >
       <div className="space-y-3">
-        {!isEdit && <SaleDocumentFormFields formik={formik} isEdit={false} />}
+        <SaleDocumentFormFields formik={formik} isEdit={isEdit} />
         <SaleProductSelection
           warehouseId={warehouseId}
           exchangeRate={Number(formik.values.currencyId) > 1 ? formik.values.exchangeRate : 1}

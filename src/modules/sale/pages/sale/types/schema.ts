@@ -20,7 +20,7 @@ export const saleDocSchema = (t: TFunction, isEdit = false) =>
     vatAccountId: isEdit
       ? Yup.number().nullable()
       : requiredId(t("sale.messages.selectVatAccount")),
-    comment: Yup.string().trim().default(""),
+    comment: Yup.string().trim().nullable().default(""),
   });
 
 export const saleDocLinesSchema = (t: TFunction, isEdit = false) =>
