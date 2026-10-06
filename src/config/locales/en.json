@@ -1715,7 +1715,7 @@
         "operating": "Operating activities",
         "investing": "Investing activities",
         "financing": "Financing activities",
-        "transfers": "Cash transfers"
+        "exchangeEffect": "Effect of exchange rate changes"
       },
       "turnover": {
         "title": "Account turnover",

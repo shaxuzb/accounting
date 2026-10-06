@@ -1715,7 +1715,7 @@
         "operating": "Operatsion faoliyat",
         "investing": "Investitsion faoliyat",
         "financing": "Moliyalashtirish faoliyati",
-        "transfers": "Pul o'tkazmalari"
+        "exchangeEffect": "Valyuta kursi o'zgarishining ta'siri"
       },
       "turnover": {
         "title": "Hisob aylanmasi",

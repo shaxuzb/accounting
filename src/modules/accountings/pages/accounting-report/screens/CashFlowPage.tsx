@@ -92,7 +92,7 @@ export default function CashFlowPage() {
     OPERATING: t("app.reports.cashFlow.operating"),
     INVESTING: t("app.reports.cashFlow.investing"),
     FINANCING: t("app.reports.cashFlow.financing"),
-    TRANSFERS: t("app.reports.cashFlow.transfers"),
+    EXCHANGE_EFFECT: t("app.reports.cashFlow.exchangeEffect"),
   };
 
   return (
