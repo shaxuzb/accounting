@@ -2137,6 +2137,12 @@
       "pinfl": "JShShIR",
       "tin": "STIR",
       "birthDate": "Tug'ilgan sana",
+      "experienceSince": "Mehnat staji boshlangan sana",
+      "experienceSinceHint": "Kasallik nafaqasi: 8 yilgacha 60%, 8 yildan 80%",
+      "sickBenefitFull": "Kasallik nafaqasi 100%",
+      "sickBenefitFullHint": "Stajdan qat'i nazar (3 va undan ortiq bola, faxriylar va h.k.)",
+      "isTaxResident": "Soliq rezidenti",
+      "isTaxResidentHint": "Norezident: JShDS 20%, INPS ushlanmaydi",
       "bankAccountNumber": "Hisob raqami / karta",
       "department": "Bo'lim",
       "position": "Lavozim",
@@ -2303,7 +2309,9 @@
         "AVERAGE_SICK": "O'rtacha (kasallik)",
         "AVERAGE_SICK_HINT": "Kasallik uchun o'rtacha ish haqi",
         "PERCENT_OF_NET": "Soliqdan keyin qolgan summadan foiz",
-        "PERCENT_OF_NET_HINT": "Ushlanma: JShDS ushlangandan keyingi summadan foiz (aliment kabi)"
+        "PERCENT_OF_NET_HINT": "Ushlanma: JShDS ushlangandan keyingi summadan foiz (aliment kabi)",
+        "AVERAGE_MATERNITY": "O'rtacha (dekret)",
+        "AVERAGE_MATERNITY_HINT": "Homiladorlik va tug'ish nafaqasi: 100% o'rtacha, soliqdan ozod"
       },
       "prorationBasis": {
         "DAYS": "Ishlangan kunlar bo'yicha",

@@ -56,6 +56,9 @@ export interface PayrollEmployee {
   middleName?: string | null;
   fullName?: string | null;
   birthDate?: string | null;
+  experienceSince?: string | null;
+  sickBenefitFull?: boolean;
+  isTaxResident?: boolean;
   phoneNumber?: string | null;
   email?: string | null;
   bankAccountNumber?: string | null;

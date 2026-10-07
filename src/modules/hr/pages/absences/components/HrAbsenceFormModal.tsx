@@ -24,8 +24,9 @@ import dayjs from "dayjs";
 const createEmptyValues = (): HrAbsenceForm => ({
   employeeId: null,
   absenceTypeId: null,
-  docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
-  startDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
+  // the dates are DateOnly on the server: a value with a time was not read at all
+  docDate: dayjs().format("YYYY-MM-DD"),
+  startDate: dayjs().format("YYYY-MM-DD"),
   endDate: "",
   note: null,
 });

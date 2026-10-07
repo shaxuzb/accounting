@@ -54,6 +54,11 @@ export interface PayrollEmployeeMainForm {
   phoneNumber: string | null;
   email: string | null;
   bankAccountNumber: string | null;
+  /** Mehnat staji hisoblanadigan sana — kasallik nafaqasi foizi (60/80%) shundan. */
+  experienceSince: string | null;
+  /** Kasallik nafaqasi stajdan qat'i nazar 100% (3+ bola, faxriylar ...). */
+  sickBenefitFull: boolean;
+  isTaxResident: boolean;
 }
 
 export interface PayrollEmployeeForm extends PayrollEmployeeMainForm {

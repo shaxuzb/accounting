@@ -2,6 +2,7 @@ import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import InputText from "@/components/fields/InputText";
 import SearchInnField from "@/components/fields/SearchInnField";
 import SelectDate from "@/components/fields/SelectDate";
+import SwitchField from "@/components/fields/SwitchField";
 import { emptyToNull, normalizePhone } from "@/modules/payroll/utils/format";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { Alert, Button, Col, Divider, Form, Modal, Row, Spin } from "antd";
@@ -34,6 +35,9 @@ const defaultValues: PayrollEmployeeForm = {
   phoneNumber: null,
   email: null,
   bankAccountNumber: null,
+  experienceSince: null,
+  sickBenefitFull: false,
+  isTaxResident: true,
   employment: {
     departmentId: null,
     positionId: null,
@@ -104,6 +108,9 @@ export default function PayrollEmployeeAddEditPage({
         phoneNumber: normalizePhone(values.phoneNumber),
         email: emptyToNull(values.email),
         bankAccountNumber: emptyToNull(values.bankAccountNumber),
+        experienceSince: values.experienceSince || null,
+        sickBenefitFull: values.sickBenefitFull,
+        isTaxResident: values.isTaxResident,
       };
 
       try {
@@ -146,6 +153,9 @@ export default function PayrollEmployeeAddEditPage({
         phoneNumber: employee.phoneNumber ?? null,
         email: employee.email ?? null,
         bankAccountNumber: employee.bankAccountNumber ?? null,
+        experienceSince: employee.experienceSince ?? null,
+        sickBenefitFull: Boolean(employee.sickBenefitFull),
+        isTaxResident: employee.isTaxResident ?? true,
       });
       return;
     }
@@ -297,6 +307,37 @@ export default function PayrollEmployeeAddEditPage({
                 formik={formik}
                 fieldName="bankAccountNumber"
                 label="payroll.fields.bankAccountNumber"
+              />
+            </Col>
+
+            <Col xs={24} md={8}>
+              <SelectDate
+                formik={formik}
+                fieldName="experienceSince"
+                label="payroll.fields.experienceSince"
+                valueFormat="YYYY-MM-DD"
+                clearable
+              />
+              <div className="-mt-3 mb-3 text-xs text-secondary-text">
+                {t("payroll.fields.experienceSinceHint")}
+              </div>
+            </Col>
+            <Col xs={24} md={8}>
+              <SwitchField
+                formik={formik}
+                fieldName="sickBenefitFull"
+                label="payroll.fields.sickBenefitFull"
+                description="payroll.fields.sickBenefitFullHint"
+                marginBottom="mb-4"
+              />
+            </Col>
+            <Col xs={24} md={8}>
+              <SwitchField
+                formik={formik}
+                fieldName="isTaxResident"
+                label="payroll.fields.isTaxResident"
+                description="payroll.fields.isTaxResidentHint"
+                marginBottom="mb-4"
               />
             </Col>
           </Row>

@@ -109,6 +109,7 @@ export const CALCULATION_METHODS = [
   "AVERAGE_LEAVE",
   "AVERAGE_SICK",
   "PERCENT_OF_NET",
+  "AVERAGE_MATERNITY",
 ] as const;
 export type PayrollCalculationMethod = (typeof CALCULATION_METHODS)[number];
 
@@ -158,6 +159,11 @@ export const calculationMethodOptions: readonly StaticOption[] = [
     value: "AVERAGE_SICK",
     label: "payroll.enums.calculationMethod.AVERAGE_SICK",
     description: "payroll.enums.calculationMethod.AVERAGE_SICK_HINT",
+  },
+  {
+    value: "AVERAGE_MATERNITY",
+    label: "payroll.enums.calculationMethod.AVERAGE_MATERNITY",
+    description: "payroll.enums.calculationMethod.AVERAGE_MATERNITY_HINT",
   },
   {
     value: "PERCENT_OF_NET",

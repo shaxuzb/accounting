@@ -2137,6 +2137,12 @@
       "pinfl": "PINFL",
       "tin": "TIN",
       "birthDate": "Birth date",
+      "experienceSince": "Insurance record since",
+      "experienceSinceHint": "Sick pay: under 8 years 60%, from 8 years 80%",
+      "sickBenefitFull": "Sick pay 100%",
+      "sickBenefitFullHint": "Whatever the record (3+ children, veterans, etc.)",
+      "isTaxResident": "Tax resident",
+      "isTaxResidentHint": "Non-resident: income tax 20%, no INPS",
       "bankAccountNumber": "Account / card number",
       "department": "Department",
       "position": "Position",
@@ -2303,7 +2309,9 @@
         "AVERAGE_SICK": "Average (sick leave)",
         "AVERAGE_SICK_HINT": "Average earnings for sick leave",
         "PERCENT_OF_NET": "Percent of pay after tax",
-        "PERCENT_OF_NET_HINT": "Deduction: percent of pay left after income tax (like alimony)"
+        "PERCENT_OF_NET_HINT": "Deduction: percent of pay left after income tax (like alimony)",
+        "AVERAGE_MATERNITY": "Average (maternity)",
+        "AVERAGE_MATERNITY_HINT": "Maternity benefit: 100% of average, tax-free"
       },
       "prorationBasis": {
         "DAYS": "By worked days",

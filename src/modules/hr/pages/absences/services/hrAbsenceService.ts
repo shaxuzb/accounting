@@ -27,6 +27,8 @@ const toCreateFormData = (payload: HrAbsenceForm, files: File[]) => {
   const formData = new FormData();
   appendFormValue(formData, "employeeId", payload.employeeId);
   appendFormValue(formData, "absenceTypeId", payload.absenceTypeId);
+  // the server numbers the document by its date; without it every absence was refused
+  appendFormValue(formData, "docDate", payload.docDate?.slice(0, 10) ?? null);
   appendFormValue(formData, "startDate", payload.startDate);
   appendFormValue(formData, "endDate", payload.endDate);
   appendFormValue(formData, "note", payload.note);
