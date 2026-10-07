@@ -11,7 +11,7 @@ import {
   Wrench,
 } from "lucide-react";
 
-import { Button, Table, type TableColumnType } from "antd";
+import { Button, Popconfirm, Table, type TableColumnType } from "antd";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -75,6 +75,7 @@ const PurchaseDetailPage = () => {
   const confirmMutation = useConfirmPurchase(Number(params.id));
   const cancelMutation = useCancelPurchase(Number(params.id));
   const isDraft = data?.statusId === 1;
+  const isPosted = data?.statusId === 2;
   const currency = data?.currencyName || "UZS";
   const documentAmount = data?.finalAmount || data?.totalAmount || 0;
   const productTotals = useMemo(() => {
@@ -326,6 +327,28 @@ const PurchaseDetailPage = () => {
                     }}
                   >
                     {t("common.cancel")}</Button>
+                </PermissionCard>
+              )}
+              {/* a posted purchase is cancelled by storno: entries reversed, goods out of stock */}
+              {isPosted && (
+                <PermissionCard permission={purchasePermissions.cancel}>
+                  <Popconfirm
+                    title={t("purchase.actions.cancelPosted")}
+                    description={<div className="max-w-80">{t("purchase.messages.cancelPostedConfirm")}</div>}
+                    okButtonProps={{ danger: true, loading: cancelMutation.isPending }}
+                    onConfirm={async () => {
+                      try {
+                        await cancelMutation.mutateAsync();
+                        toast.success(t("purchase.messages.cancelled"));
+                      } catch (error) {
+                        errorHandlers(error);
+                      }
+                    }}
+                  >
+                    <Button danger loading={cancelMutation.isPending}>
+                      {t("purchase.actions.cancelPosted")}
+                    </Button>
+                  </Popconfirm>
                 </PermissionCard>
               )}
             </div>

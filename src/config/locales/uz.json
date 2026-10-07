@@ -1185,6 +1185,7 @@
       "listLoadError": "Xarid hujjatlarini yuklashda xatolik yuz berdi",
       "listEmpty": "Xarid hujjatlari topilmadi",
       "confirmed": "Hujjat tasdiqlandi",
+      "cancelPostedConfirm": "Provodkalar storno qilinadi, tovar omborga kirmagan bo'ladi, yetkazuvchi qarzi kamayadi. Tovar sotilgan yoki qaytarilgan bo'lsa, avval o'sha hujjatlarni bekor qiling.",
       "cancelled": "Hujjat bekor qilindi",
       "commentPlaceholder": "Izoh kiriting...",
       "markingCount": "{{count}} ta markirovka",
@@ -1211,6 +1212,7 @@
       "selectField": "Maydonni tanlang"
     },
     "actions": {
+      "cancelPosted": "Xaridni bekor qilish",
       "goodsReceipt": "Tovar kirimi",
       "serviceReceipt": "Xizmat kirimi",
       "addLine": "Qator qo'shish",
@@ -1536,6 +1538,7 @@
       "vatRateRequired": "Barcha mahsulotlar uchun QQS stavkasini tanlang",
       "saleDocTableIdMissing": "Mahsulotlarda sotuv hujjati qatori IDsi topilmadi",
       "invalidConfirmLines": "Tasdiqlash uchun yaroqli mahsulot qatorlari shakllanmadi",
+      "documentCancelledInfo": "Sotuv bekor qilingan: provodkalar storno qilingan, tovar omborga qaytgan.",
       "documentCancelled": "Sotuv hujjati bekor qilindi",
       "cancelDocumentQuestion": "Sotuv hujjatini bekor qilishni tasdiqlaysizmi?",
       "productsNotFound": "Mahsulotlar topilmadi",
@@ -3344,6 +3347,8 @@
     "quantity": "Qaytariladi",
     "amountNet": "Summa (QQSsiz)",
     "total": "Jami",
+    "chooseCodes": "Kodlarni tanlang",
+    "currency": "Valyuta",
     "returnAll": "Hammasini qaytarish",
     "saveDraft": "Saqlash",
     "post": "O'tkazish",

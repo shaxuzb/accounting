@@ -1183,6 +1183,7 @@
       "listLoadError": "Failed to load purchase documents",
       "listEmpty": "No purchase documents found",
       "confirmed": "Document confirmed",
+      "cancelPostedConfirm": "Its entries are reversed, the goods leave stock and the supplier debt falls. If the goods were sold or returned, cancel those documents first.",
       "cancelled": "Document cancelled",
       "commentPlaceholder": "Enter a comment...",
       "markingCount": "Markings: {{count}}",
@@ -1209,6 +1210,7 @@
       "selectField": "Select field"
     },
     "actions": {
+      "cancelPosted": "Cancel purchase",
       "goodsReceipt": "Goods receipt",
       "serviceReceipt": "Service receipt",
       "addLine": "Add line",
@@ -1536,6 +1538,7 @@
       "vatRateRequired": "Select a VAT rate for every product",
       "saleDocTableIdMissing": "Sale document line ID is missing",
       "invalidConfirmLines": "No valid product lines could be prepared for confirmation",
+      "documentCancelledInfo": "The sale is cancelled: its entries are reversed and the goods are back in stock.",
       "documentCancelled": "Sale document cancelled",
       "cancelDocumentQuestion": "Confirm cancellation of the sale document?",
       "productsNotFound": "No products found",
@@ -3344,6 +3347,8 @@
     "quantity": "Returned",
     "amountNet": "Amount (net of VAT)",
     "total": "Total",
+    "chooseCodes": "Choose codes",
+    "currency": "Currency",
     "returnAll": "Return all",
     "saveDraft": "Save",
     "post": "Post",

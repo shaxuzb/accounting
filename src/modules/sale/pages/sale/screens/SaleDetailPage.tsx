@@ -18,7 +18,8 @@ export default function SaleDetailPage() {
   );
   const documentQuery = useGetDetailSale(id);
   const document = documentQuery.data;
-  const isConfirmed = document?.statusId === 2;
+  // posted or cancelled: shown as it stands, not open for pricing again
+  const isConfirmed = document?.statusId === 2 || document?.statusId === 3;
   const isWarehouseConfirm = document?.statusId === 1;
   const isPricing = document?.statusId === 4;
   const documentLines = getDocumentLines(document);

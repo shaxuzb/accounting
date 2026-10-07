@@ -17,6 +17,18 @@ export interface ReturnLine {
   vatAmount: number;
   totalAmount: number;
   costAmount?: number;
+  /** Goods kept by marking code: they come back by code. */
+  isPieceTracked?: boolean;
+  /** The units chosen to come back. */
+  productTableIds?: number[];
+  /** The units that may come back. */
+  units?: ReturnUnit[];
+}
+
+export interface ReturnUnit {
+  productTableId: number;
+  markingNumber?: string | null;
+  serialNumber?: string | null;
 }
 
 export interface ReturnListItem {
@@ -69,7 +81,7 @@ export interface ReturnSave {
   baseDocumentId: number;
   docDate: string;
   comment?: string | null;
-  lines: { baseLineId: number; quantity: number }[];
+  lines: { baseLineId: number; quantity: number; productTableIds?: number[] }[];
 }
 
 const base = "/return-docs";

@@ -1,4 +1,4 @@
-import { Button, Popconfirm } from "antd";
+import { Alert, Button, Popconfirm } from "antd";
 import { Ban } from "lucide-react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -14,6 +14,8 @@ import SaleDocumentSummary from "./SaleDocumentSummary";
 
 /** cmn_document_status: a posted document. */
 const POSTED_STATUS_ID = 2;
+/** cmn_document_status: a cancelled one. */
+const CANCELLED_STATUS_ID = 3;
 
 interface Props {
   document: SaleDoc;
@@ -55,6 +57,9 @@ export default function ConfirmedSaleDocument({
 
   return (
     <div className="space-y-4">
+      {document.statusId === CANCELLED_STATUS_ID && (
+        <Alert showIcon type="warning" message={t("sale.messages.documentCancelledInfo")} />
+      )}
       {canCancel && (
         <div className="flex justify-end">
           <Popconfirm

@@ -2,6 +2,8 @@ import { Alert, Button, DatePicker, Input, InputNumber, Popconfirm, Select, Spac
 import type { TableColumnsType } from "antd";
 import { Ban, Save, Send, Trash2, Undo2 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getJson } from "@/modules/accountings/services/request";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
@@ -67,6 +69,10 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
   const [quantities, setQuantities] = useState<Record<number, number>>(() =>
     Object.fromEntries((data?.lines ?? []).map((line) => [line.baseLineId, line.quantity])),
   );
+  // goods kept by marking code come back by code
+  const [codes, setCodes] = useState<Record<number, number[]>>(() =>
+    Object.fromEntries((data?.lines ?? []).map((line) => [line.baseLineId, line.productTableIds ?? []])),
+  );
 
   const { data: baseDocuments = [], isFetching: searching } = useReturnBaseDocuments(kind, search);
   const { data: baseDocument } = useReturnBaseDocument(kind, readOnly ? null : baseDocumentId);
@@ -80,6 +86,18 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
       return { ...line, quantity, amount, totalAmount: amount };
     });
   }, [readOnly, data, baseDocument, quantities]);
+
+  // the money is in the base document's currency (a purchase in USD is returned in USD)
+  const currencyId = baseDocument?.currencyId ?? data?.currencyId ?? 1;
+  const { data: currencies = [] } = useQuery({
+    queryKey: ["selectlist", "currencies-codes"],
+    queryFn: () => getJson<{ id: number; code?: string; name?: string }[]>("/manuals/currencies"),
+    staleTime: 10 * 60 * 1000,
+  });
+  const currencyCode =
+    currencies.find((item) => item.id === currencyId)?.code ??
+    currencies.find((item) => item.id === currencyId)?.name ??
+    "UZS";
 
   const total = lines.reduce((sum, line) => sum + (readOnly ? line.totalAmount : line.amount), 0);
 
@@ -102,7 +120,11 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
     comment: comment || null,
     lines: Object.entries(quantities)
       .filter(([, quantity]) => quantity > 0)
-      .map(([baseLineId, quantity]) => ({ baseLineId: Number(baseLineId), quantity })),
+      .map(([baseLineId, quantity]) => ({
+        baseLineId: Number(baseLineId),
+        quantity,
+        productTableIds: codes[Number(baseLineId)] ?? [],
+      })),
   });
 
   const saveDraft = async () => {
@@ -115,7 +137,23 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
   const run = (action: () => Promise<unknown>) => () => void action().catch(errorHandlers);
 
   const columns: TableColumnsType<ReturnLine> = [
-    { dataIndex: "productName", title: t("returnDoc.product") },
+    {
+      dataIndex: "productName",
+      title: t("returnDoc.product"),
+      render: (value: string, line) =>
+        readOnly && line.productTableIds?.length ? (
+          <div>
+            <div>{value}</div>
+            <div className="text-xs text-secondary-text">
+              {line.productTableIds
+                .map((id) => line.units?.find((unit) => unit.productTableId === id)?.markingNumber ?? `#${id}`)
+                .join(", ")}
+            </div>
+          </div>
+        ) : (
+          value
+        ),
+    },
     {
       dataIndex: "unitPrice",
       title: t("returnDoc.price"),
@@ -137,6 +175,22 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
       render: (value: number, line) =>
         readOnly ? (
           value
+        ) : line.isPieceTracked ? (
+          <Select
+            mode="multiple"
+            className="min-w-56"
+            popupMatchSelectWidth={false}
+            placeholder={t("returnDoc.chooseCodes")}
+            value={codes[line.baseLineId] ?? []}
+            options={(line.units ?? []).map((unit) => ({
+              value: unit.productTableId,
+              label: unit.markingNumber || unit.serialNumber || `#${unit.productTableId}`,
+            }))}
+            onChange={(next: number[]) => {
+              setCodes((current) => ({ ...current, [line.baseLineId]: next }));
+              setQuantities((current) => ({ ...current, [line.baseLineId]: next.length }));
+            }}
+          />
         ) : (
           <InputNumber
             min={0}
@@ -194,6 +248,7 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
               onChange={(value: number) => {
                 setBaseDocumentId(value);
                 setQuantities({});
+                setCodes({});
               }}
             />
           </div>
@@ -210,8 +265,11 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
                 {t("returnDoc.counterparty")}: <b>{baseDocument?.counterpartyName ?? data?.counterpartyName}</b>
               </span>
             )}
-            <span>
+            <span className="mr-4">
               {t("returnDoc.warehouse")}: <b>{baseDocument?.warehouseName ?? data?.warehouseName}</b>
+            </span>
+            <span>
+              {t("returnDoc.currency")}: <b>{currencyCode}</b>
             </span>
           </div>
         )}
@@ -222,11 +280,17 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
               <Button
                 icon={<Undo2 className="size-4" />}
                 disabled={!baseDocument}
-                onClick={() =>
-                  setQuantities(
-                    Object.fromEntries((baseDocument?.lines ?? []).map((line) => [line.baseLineId, line.returnableQuantity])),
-                  )
-                }
+                onClick={() => {
+                  const baseLines = baseDocument?.lines ?? [];
+                  setQuantities(Object.fromEntries(baseLines.map((line) => [line.baseLineId, line.returnableQuantity])));
+                  setCodes(
+                    Object.fromEntries(
+                      baseLines
+                        .filter((line) => line.isPieceTracked)
+                        .map((line) => [line.baseLineId, (line.units ?? []).map((unit) => unit.productTableId)]),
+                    ),
+                  );
+                }}
               >
                 {t("returnDoc.returnAll")}
               </Button>
@@ -288,7 +352,7 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
           pagination={false}
           footer={() => (
             <div className="text-right">
-              {readOnly ? t("returnDoc.total") : t("returnDoc.amountNet")}: <b>{money(total)}</b>
+              {readOnly ? t("returnDoc.total") : t("returnDoc.amountNet")}: <b>{money(total)} {currencyCode}</b>
             </div>
           )}
         />
