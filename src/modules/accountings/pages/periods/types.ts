@@ -28,6 +28,7 @@ export interface MonthCloseCheck {
   draftDocumentCount: number;
   /** Assets in use not yet depreciated for the month: the month closes only after the run. */
   assetsAwaitingDepreciation?: number;
+  entriesMissingAnalytics?: number;
   revaluationLineCount: number;
   revaluationDifference: number;
   revaluationError?: string | null;

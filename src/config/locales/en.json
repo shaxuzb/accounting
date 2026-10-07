@@ -3329,6 +3329,8 @@
       "accountsPresent": "Accounts 9910 (and 8710 in December) are present",
       "accountsMissing": "Not in the chart of accounts: {{accounts}}. Add them from the preset chart.",
       "noDrafts": "No unposted documents",
+      "analyticsFilled": "Entry analytics are filled",
+      "analyticsMissing": "{{count}} entries have empty analytics (counterparty, item, etc.) — they show as blank in reports (warning)",
       "drafts": "{{count}} documents are not posted — they are not in the books (warning).",
       "openingOffsetZero": "Opening balances agree (0000 = 0)",
       "openingOffsetNotZero": "0000 holds {{amount}}: the opening balances do not agree"
