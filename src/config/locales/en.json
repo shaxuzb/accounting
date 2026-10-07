@@ -2715,6 +2715,8 @@
       "cancelPostedConfirm": "The entries are reversed and the goods and marked units go back to the source warehouse. The document stays as cancelled."
     },
     "adjustment": {
+      "surplusPrice": "Price (per unit)",
+      "surplusPriceHint": "Empty — last receipt price",
       "title": "Inventory adjustment",
       "increase": "Increase",
       "decrease": "Decrease"

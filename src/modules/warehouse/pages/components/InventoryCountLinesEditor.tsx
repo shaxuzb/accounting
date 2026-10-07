@@ -214,7 +214,9 @@ export default function InventoryCountLinesEditor({
       const nextLines: InventoryCountLineForm[] = [];
       stockProducts.forEach((product) => {
         const tableIds = product.availableProductTableIds ?? [];
-        const onHand = Number(product.availableQuantity ?? product.quantity ?? 0);
+        // 1C «Заполнить по остаткам»: the book balance, reserved goods included — they are
+        // still on the shelf; taking only the free part read the reserve as a shortage
+        const onHand = Number(product.quantity ?? product.availableQuantity ?? 0);
 
         // Miqdor bo'yicha yuritiladigan tovarning donalari yo'q: qator ombordagi
         // miqdor bilan tushadi, sanovchi uni topilganiga to'g'rilaydi. Avval bunday

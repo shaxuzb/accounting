@@ -19,6 +19,8 @@ export interface InventoryAdjustmentLineForm {
   unitId: number | null;
   unitName?: string | null;
   quantity: number | null;
+  /** Surplus price of one unit (1C «Оприходование»: Цена); empty takes the last receipt cost. */
+  unitCost?: number | null;
   comment: string;
   items: InventoryAdjustmentItemForm[];
 }

@@ -12,6 +12,7 @@ export interface InventoryAdjustmentLine {
   unitId: number | null;
   unitName?: string | null;
   quantity: number | null;
+  unitCost?: number | null;
   comment?: string | null;
   items: InventoryAdjustmentItem[];
 }

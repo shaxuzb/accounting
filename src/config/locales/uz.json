@@ -2715,6 +2715,8 @@
       "cancelPostedConfirm": "Provodkalar storno qilinadi, tovarlar va markirovkali donalar manba omborga qaytadi. Hujjat «Bekor qilingan» bo'lib qoladi."
     },
     "adjustment": {
+      "surplusPrice": "Narx (1 dona)",
+      "surplusPriceHint": "Bo'sh — oxirgi kirim narxi",
       "title": "Inventar qoldig'ini tuzatish",
       "increase": "Ko'paytirish",
       "decrease": "Kamaytirish"

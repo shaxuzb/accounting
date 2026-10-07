@@ -65,6 +65,7 @@ export const mapAdjustmentDetailToForm = (
       unitId: line.unitId ?? null,
       unitName: line.unitName ?? "",
       quantity: line.quantity ?? null,
+      unitCost: line.unitCost ?? null,
       comment: line.comment ?? "",
       items:
         line.items?.map((item) => ({
@@ -123,6 +124,7 @@ export const toInventoryAdjustmentPayload = (form: InventoryAdjustmentForm) => (
     productId: line.productId,
     unitId: line.unitId,
     quantity: line.quantity,
+    unitCost: line.unitCost || null,
     comment: line.comment,
     // Only units actually named go out: the server adds the rest — blank units when
     // stock is booked in, unmarked stock (FIFO) when it is written off.

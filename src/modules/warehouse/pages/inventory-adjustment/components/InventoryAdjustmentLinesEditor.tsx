@@ -246,6 +246,18 @@ export default function InventoryAdjustmentLinesEditor({
                   min={0}
                 />
 
+                {isIncrease && (
+                  <InputNumber
+                    formik={formik}
+                    fieldName={`lines[${index}].unitCost`}
+                    label={t("warehouse.adjustment.surplusPrice")}
+                    placeholder={t("warehouse.adjustment.surplusPriceHint")}
+                    disabled={disabled}
+                    min={0}
+                    precision={2}
+                  />
+                )}
+
                 <div className="xl:col-span-2">
                   <InputText
                     formik={formik}
