@@ -2301,7 +2301,9 @@
         "AVERAGE_LEAVE": "O'rtacha (ta'til)",
         "AVERAGE_LEAVE_HINT": "Ta'til uchun o'rtacha ish haqi",
         "AVERAGE_SICK": "O'rtacha (kasallik)",
-        "AVERAGE_SICK_HINT": "Kasallik uchun o'rtacha ish haqi"
+        "AVERAGE_SICK_HINT": "Kasallik uchun o'rtacha ish haqi",
+        "PERCENT_OF_NET": "Soliqdan keyin qolgan summadan foiz",
+        "PERCENT_OF_NET_HINT": "Ushlanma: JShDS ushlangandan keyingi summadan foiz (aliment kabi)"
       },
       "prorationBasis": {
         "DAYS": "Ishlangan kunlar bo'yicha",

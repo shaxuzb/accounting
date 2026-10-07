@@ -8,6 +8,7 @@ import SwitchField from "@/components/fields/SwitchField";
 import PayrollComponentSelect from "@/modules/payroll/components/PayrollComponentSelect";
 import {
   calculationMethodOptions,
+  methodIsPercent,
   componentTypeOptions,
   methodUsesAmount,
   methodUsesRate,
@@ -256,7 +257,7 @@ export default function PayrollComponentAddEditPage({
                   formik={formik}
                   fieldName="defaultRate"
                   label={
-                    method === "PERCENT_OF_GROSS"
+                    methodIsPercent(method)
                       ? "payroll.fields.defaultRatePercent"
                       : "payroll.fields.defaultRateHourly"
                   }

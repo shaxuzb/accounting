@@ -2301,7 +2301,9 @@
         "AVERAGE_LEAVE": "Average (leave)",
         "AVERAGE_LEAVE_HINT": "Average earnings for leave",
         "AVERAGE_SICK": "Average (sick leave)",
-        "AVERAGE_SICK_HINT": "Average earnings for sick leave"
+        "AVERAGE_SICK_HINT": "Average earnings for sick leave",
+        "PERCENT_OF_NET": "Percent of pay after tax",
+        "PERCENT_OF_NET_HINT": "Deduction: percent of pay left after income tax (like alimony)"
       },
       "prorationBasis": {
         "DAYS": "By worked days",

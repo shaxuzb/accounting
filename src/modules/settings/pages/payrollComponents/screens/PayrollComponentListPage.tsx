@@ -7,6 +7,7 @@ import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import {
   componentTypeColor,
   componentTypeOptions,
+  methodIsPercent,
   stateFilterOptions,
 } from "@/modules/payroll/constants/options";
 import { usePaginationParams } from "@/shared/hooks/usePaginationParams";
@@ -113,7 +114,7 @@ export default function PayrollComponentListPage() {
       title: t("payroll.fields.defaultValue"),
       align: "center",
       render: (_, record) => {
-        if (record.calculationMethod === "PERCENT_OF_GROSS") {
+        if (methodIsPercent(record.calculationMethod)) {
           return record.defaultRate != null ? `${record.defaultRate} %` : "—";
         }
         if (record.calculationMethod === "PER_HOUR") {

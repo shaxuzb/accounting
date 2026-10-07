@@ -108,6 +108,7 @@ export const CALCULATION_METHODS = [
   "PER_HOUR",
   "AVERAGE_LEAVE",
   "AVERAGE_SICK",
+  "PERCENT_OF_NET",
 ] as const;
 export type PayrollCalculationMethod = (typeof CALCULATION_METHODS)[number];
 
@@ -148,14 +149,33 @@ export const calculationMethodOptions: readonly StaticOption[] = [
     label: "payroll.enums.calculationMethod.PER_HOUR",
     description: "payroll.enums.calculationMethod.PER_HOUR_HINT",
   },
+  {
+    value: "AVERAGE_LEAVE",
+    label: "payroll.enums.calculationMethod.AVERAGE_LEAVE",
+    description: "payroll.enums.calculationMethod.AVERAGE_LEAVE_HINT",
+  },
+  {
+    value: "AVERAGE_SICK",
+    label: "payroll.enums.calculationMethod.AVERAGE_SICK",
+    description: "payroll.enums.calculationMethod.AVERAGE_SICK_HINT",
+  },
+  {
+    value: "PERCENT_OF_NET",
+    label: "payroll.enums.calculationMethod.PERCENT_OF_NET",
+    description: "payroll.enums.calculationMethod.PERCENT_OF_NET_HINT",
+  },
 ] as const;
+
+/** Foiz bilan hisoblanadigan usullar (bruttodan yoki soliqdan keyingi summadan). */
+export const methodIsPercent = (method?: string | null) =>
+  method === "PERCENT_OF_GROSS" || method === "PERCENT_OF_NET";
 
 /** Qat'iy summa kiritiladigan usullar. */
 export const methodUsesAmount = (method?: string | null) => method === "FIXED";
 
 /** Foiz yoki soatlik stavka kiritiladigan usullar. */
 export const methodUsesRate = (method?: string | null) =>
-  method === "PERCENT_OF_GROSS" || method === "PER_HOUR";
+  methodIsPercent(method) || method === "PER_HOUR";
 
 /* ------------------------------------------------------------------ */
 /* Kadr buyruqlari                                                     */
