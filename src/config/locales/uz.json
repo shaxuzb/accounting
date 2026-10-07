@@ -1,4 +1,23 @@
 {
+  "repost": {
+    "period": "Davr",
+    "allTypes": "Barcha hujjatlar",
+    "types": {
+      "purchase": "Xarid",
+      "sale": "Sotuv",
+      "retailSale": "Chakana savdo",
+      "bank": "Bank",
+      "cash": "Kassa",
+      "transfer": "Omborlar orasida ko'chirish",
+      "adjustment": "Qoldiqni tuzatish",
+      "faReceipt": "AV kirimi",
+      "faCommissioning": "AV foydalanishga topshirish",
+      "fiscalTransfer": "Fiskal kassadan o'tkazma"
+    },
+    "date": "Sana",
+    "hint": "Tanlangan davrdagi o'tkazilgan hujjatlar sana tartibida joriy qoidalar va hisob sozlamalari bo'yicha qayta o'tkaziladi (1C «Перепроведение»). Hujjat holati va ombor qoldig'i o'zgarmaydi; yopilgan oy qayta yozilmaydi.",
+    "done": "{{count}} ta hujjat qayta o'tkazildi"
+  },
   "common": {
     "add": "Qo'shish",
     "exportExcel": "Excelga yuklash",

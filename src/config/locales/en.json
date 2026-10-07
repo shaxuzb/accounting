@@ -1,4 +1,23 @@
 {
+  "repost": {
+    "period": "Period",
+    "allTypes": "All documents",
+    "types": {
+      "purchase": "Purchase",
+      "sale": "Sale",
+      "retailSale": "Retail sale",
+      "bank": "Bank",
+      "cash": "Cash",
+      "transfer": "Warehouse transfer",
+      "adjustment": "Stock adjustment",
+      "faReceipt": "FA receipt",
+      "faCommissioning": "FA commissioning",
+      "fiscalTransfer": "Fiscal cash transfer"
+    },
+    "date": "Date",
+    "hint": "Posted documents of the range are posted again in date order with the current rules and account settings. Status and stock stay as they are; a closed month is never rewritten.",
+    "done": "{{count}} documents re-posted"
+  },
   "common": {
     "add": "Add",
     "exportExcel": "Export to Excel",
