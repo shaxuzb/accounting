@@ -14,7 +14,8 @@ import { saleConditionSchema } from "../types/schema";
 import { useCreateSaleCondition } from "../hooks/useCreateSaleCondition";
 
 const createDefaultValues = (): SaleConditionForm => ({
-  costingMethodId: null,
+  // written off FIFO by the accounting policy; kept only because the API stores it
+  costingMethodId: 1,
   vatRateId: null,
   startDate: dayjs().format(formatDate),
   endDate: null,
@@ -65,15 +66,7 @@ export default function SaleConditionAddEditPage({
     >
       <Form layout="vertical" onFinish={formik.handleSubmit}>
         <Row gutter={[16, 8]}>
-          <Col span={12}>
-            <SelectCustom
-              formik={formik}
-              fieldName="costingMethodId"
-              label="settings.fields.costingMethod"
-              path={selectListEndpoints.costingMethodsSelectList}
-            />
-          </Col>
-          <Col span={12}>
+          <Col span={24}>
             <SelectCustom
               formik={formik}
               fieldName="vatRateId"
@@ -94,6 +87,11 @@ export default function SaleConditionAddEditPage({
               fieldName="endDate"
               label="settings.fields.endDate"
             />
+          </Col>
+          <Col span={24}>
+            <div className="mb-4 rounded-lg border border-border p-3 text-sm text-secondary-text">
+              {t("settings.messages.costingIsFifo")}
+            </div>
           </Col>
         </Row>
 

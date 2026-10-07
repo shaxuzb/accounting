@@ -693,6 +693,7 @@
       "viewRegulatedObligationSetting": "Majburiyat sozlamasi"
     },
     "messages": {
+      "costingIsFifo": "Tovar hisobdan FIFO bo'yicha chiqariladi (hisob siyosati) — tannarx eng eski partiyalardan olinadi. Sotuv sharti faqat yangi qatorlarning QQS stavkasini belgilaydi.",
       "created": "Ma'lumot muvaffaqiyatli yaratildi",
       "updated": "Ma'lumot muvaffaqiyatli o'zgartirildi",
       "userCreated": "Foydalanuvchi muvaffaqiyatli yaratildi",
@@ -1186,6 +1187,7 @@
       "listEmpty": "Xarid hujjatlari topilmadi",
       "confirmed": "Hujjat tasdiqlandi",
       "cancelPostedConfirm": "Provodkalar storno qilinadi, tovar omborga kirmagan bo'ladi, yetkazuvchi qarzi kamayadi. Tovar sotilgan yoki qaytarilgan bo'lsa, avval o'sha hujjatlarni bekor qiling.",
+      "incompleteRows": "Qator(lar) to'liq emas: {{rows}}. Miqdor, narx, birlik va hisobvaraqlarni to'ldiring yoki qatorni o'chiring — chala qator saqlanmaydi.",
       "cancelled": "Hujjat bekor qilindi",
       "commentPlaceholder": "Izoh kiriting...",
       "markingCount": "{{count}} ta markirovka",
@@ -1530,6 +1532,8 @@
       "cancelPosted": "Sotuvni bekor qilish"
     },
     "messages": {
+      "pricesSaved": "Narxlar hujjatga saqlandi",
+      "savePricesHint": "Narxlarni hujjatga saqlash (o'tkazmasdan) — boshqa xodim ham ko'radi",
       "scanOrEnter": "Kodni skanerlang yoki kiriting va Enter tugmasini bosing",
       "scanOrEnterMarking": "Markirovka kodini skanerlang yoki kiriting",
       "noProductsToConfirm": "Tasdiqlash uchun mahsulotlar topilmadi",
@@ -2438,6 +2442,7 @@
       "initializeDays": "Kunlarni yuklash"
     },
     "documents": {
+      "saveBeforeConfirm": "Avval tahrirlangan qoralamani saqlang yoki tahrirlashni bekor qiling — tasdiqlash saqlangan holatni o'tkazadi.",
       "title": "Maosh hisoblash",
       "detailTitle": "Hisoblash hujjati",
       "calculate": "Maoshni hisoblash",
@@ -2616,6 +2621,7 @@
       "retry": "Qayta urinish"
     },
     "messages": {
+      "costWithoutVat": "Qoldiq tannarxda, QQSsiz kiritiladi. Hisobga olinadigan kirish QQSi 4410 hisobvarag'ining boshlang'ich qoldig'i sifatida kiritiladi.",
       "atLeastOneCompletedLine": "Kamida bitta to'ldirilgan {{type}} qatori bo'lishi shart",
       "fillAccountsAndPrices": "Barcha qatorlardagi hisobvaraqlar va narxlarni to'ldiring",
       "saved": "Hujjat muvaffaqiyatli saqlandi",
@@ -3368,6 +3374,42 @@
       "1": "Qaytarish o'tkazilgan xarid asosida qilinadi: qatorlar, narx, QQS va hisoblar xariddan olinadi, faqat miqdorni kiriting. Tovar aynan o'sha xarid partiyasidan chiqadi (Dt 6010 Kt 2910, QQS Dt 6010 Kt 4410).",
       "2": "Qaytarish o'tkazilgan sotuv asosida qilinadi: qatorlar, narx va QQS sotuvdan olinadi, faqat miqdorni kiriting. Tushum 9040 ga, tovar sotilgandagi tannarx bilan omborga qaytadi (Dt 9040 Kt 4010, Dt 6410 Kt 4010, Dt 2910 Kt 9120).",
       "3": "Qaytarish chakana savdo cheki asosida qilinadi: faqat miqdorni kiriting, pul to'langan joyidan qaytariladi."
+    }
+  },
+  "accountingPolicy": {
+    "view": {
+      "title": "Joriy qoidalar",
+      "newVersion": "Yangi versiya",
+      "currentTab": "Joriy siyosat",
+      "historyTab": "Versiyalar tarixi",
+      "loadError": "Hisob siyosatini yuklab bo'lmadi",
+      "noHistory": "Versiyalar yo'q",
+      "yes": "Ha",
+      "no": "Yo'q",
+      "period": "Amal qilish davri",
+      "openEnded": "muddatsiz",
+      "defaultVersion": "Sukut bo'yicha (versiya yaratilmagan)",
+      "accountingStart": "Hisob yuritish boshlangan sana",
+      "valuation": "Zaxiralarni baholash",
+      "baseCurrency": "Asosiy valyuta",
+      "vatPeriod": "QQS davri",
+      "vatPeriodMonth": "Oy",
+      "vatBase": "QQS bazasi",
+      "vatBaseShipment": "Yuklash paytida",
+      "closedPeriods": "Yopilgan oylar",
+      "closedProtected": "Himoyalangan",
+      "version": "Versiya"
+    },
+    "form": {
+      "title": "Hisob siyosatining yangi versiyasi",
+      "vatPayer": "QQS to'lovchi",
+      "vatPayerHint": "O'chirilsa: kirish QQSi xarid va asosiy vosita tannarxiga qo'shiladi (4410 ga emas), sotuvlar «QQSsiz» bo'ladi (1C: «Плательщик НДС»).",
+      "effectiveFrom": "Amal qilish boshlanishi",
+      "effectiveTo": "Amal qilish tugashi",
+      "fixedRules": "O'zgarmas qoidalar: zaxiralar FIFO bo'yicha baholanadi, asosiy valyuta — so'm, QQS davri — oy, QQS bazasi — yuklash paytida, yopilgan oylar himoyalangan.",
+      "confirmTitle": "Yangi versiya saqlansinmi?",
+      "confirmText": "Tanlangan sanadan boshlab yangi qoidalar amal qiladi; oldingi versiya shu sanadan bir kun oldin yopiladi. O'tkazilgan hujjatlar qayta hisoblanmaydi.",
+      "saved": "Hisob siyosati saqlandi"
     }
   },
   "manualEntries": {

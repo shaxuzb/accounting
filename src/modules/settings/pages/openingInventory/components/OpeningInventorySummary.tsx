@@ -5,8 +5,6 @@ import { useTranslation } from "react-i18next";
 interface OpeningInventorySummaryProps {
   comment: string;
   totals: {
-    amount: number;
-    vatAmount: number;
     totalAmount: number;
   };
   onCommentChange: (value: string) => void;
@@ -21,27 +19,14 @@ export default function OpeningInventorySummary({
 
   return (
     <div className="flex flex-col gap-4 border-x border-b border-border bg-primary-bg p-4">
-      <div className="grid overflow-hidden rounded-lg border border-border bg-primary-bg sm:grid-cols-3">
-        <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
-          <div className="text-xs text-secondary-text">
-            {t("openingInventory.fields.amountWithoutVat")}
-          </div>
-          <div className="mt-1 text-base font-semibold">
-            {numberSpacing(totals.amount)}
-          </div>
+      <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-primary/5 px-4 py-3">
+        <div className="text-xs text-secondary-text">
+          {t("openingInventory.messages.costWithoutVat")}
         </div>
-        <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
-          <div className="text-xs text-secondary-text">
-            {t("openingInventory.fields.vatAmount")}
-          </div>
-          <div className="mt-1 text-base font-semibold">
-            {numberSpacing(totals.vatAmount)}
-          </div>
-        </div>
-        <div className="bg-primary/5 px-4 py-3 text-center">
+        <div className="text-right">
           <div className="text-xs text-secondary-text">{t("common.total")}</div>
-          <div className="mt-1 text-base font-bold text-primary">
-            {numberSpacing(totals.totalAmount)}
+          <div className="text-base font-bold text-primary">
+            {numberSpacing(totals.totalAmount, undefined, true)}
           </div>
         </div>
       </div>

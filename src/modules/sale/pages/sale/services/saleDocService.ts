@@ -54,6 +54,8 @@ export const saleDocService = {
     $axiosPrivate
       .put<SaleDoc>(endpoints.confirm(id), payload)
       .then((res) => res.data),
+  savePrices: (id: string | number, payload: SaleDocConfirmForm) =>
+    $axiosPrivate.put(endpoints.prices(id), payload).then((res) => res.data),
   cancel: (id: string | number) =>
     $axiosPrivate
       .put<SaleDoc>(endpoints.cancel(id))

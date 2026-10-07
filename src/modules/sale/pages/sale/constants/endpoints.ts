@@ -9,6 +9,7 @@ export const saleEndpoints = {
       `sale-docs/${id}/available-products`,
     availableProductsByWarehouse: "sale-docs/available-products",
     confirm: (id: string | number) => `sale-docs/${id}/confirm`,
+    prices: (id: string | number) => `sale-docs/${id}/prices`,
     cancel: (id: string | number) => `sale-docs/${id}/cancel`,
   },
   saleDocTable: {

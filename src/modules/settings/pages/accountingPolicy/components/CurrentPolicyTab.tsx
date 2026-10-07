@@ -1,11 +1,18 @@
-import { Alert, Button, Col, Empty, Row, Skeleton } from "antd";
+import { Alert, Button, Empty, Skeleton, Tag } from "antd";
+import dayjs from "dayjs";
 import { Pencil } from "lucide-react";
-import * as React from "react";
+import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
-import PolicyFieldCard from "./PolicyFieldCard";
-import PolicyStatusBadge from "./PolicyStatusBadge";
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import type { AccountingPolicyCurrentDto } from "../types/type";
 
+const formatDay = (value?: string | null) =>
+  value ? dayjs(value).format("DD.MM.YYYY") : null;
+
+/**
+ * The rules the documents are posted by today (1C «Учетная политика»): only what the server
+ * applies is shown — the VAT payer as the posting engine resolves it, and the fixed rules.
+ */
 export default function CurrentPolicyTab({
   data,
   isLoading,
@@ -17,237 +24,63 @@ export default function CurrentPolicyTab({
   isError: boolean;
   onEdit: () => void;
 }) {
-  if (isLoading) {
-    return <Skeleton active paragraph={{ rows: 10 }} />;
-  }
+  const { t } = useTranslation();
+  const vatPayer = useVatPayer();
 
-  if (isError) {
-    return (
-      <Alert
-        type="error"
-        showIcon
-        message="Current policy could not be loaded."
-      />
-    );
-  }
+  if (isLoading) return <Skeleton active paragraph={{ rows: 6 }} />;
+  if (isError)
+    return <Alert type="error" showIcon message={t("accountingPolicy.view.loadError")} />;
+  if (!data) return <Empty description={t("accountingPolicy.view.loadError")} />;
 
-  if (!data) {
-    return <Empty description="Current policy is not available." />;
-  }
+  const from = formatDay(data.effectiveFrom);
+  const to = formatDay(data.effectiveTo);
+  const rows: { label: string; value: React.ReactNode }[] = [
+    {
+      label: t("accountingPolicy.form.vatPayer"),
+      value: (
+        <Tag color={vatPayer.isVatPayer ? "green" : "orange"}>
+          {vatPayer.isVatPayer ? t("accountingPolicy.view.yes") : t("accountingPolicy.view.no")}
+        </Tag>
+      ),
+    },
+    {
+      label: t("accountingPolicy.view.period"),
+      value: from
+        ? `${from} — ${to ?? t("accountingPolicy.view.openEnded")}`
+        : t("accountingPolicy.view.defaultVersion"),
+    },
+    {
+      label: t("accountingPolicy.view.accountingStart"),
+      value: formatDay(data.accountingStartDate) ?? "—",
+    },
+    { label: t("accountingPolicy.view.valuation"), value: "FIFO" },
+    { label: t("accountingPolicy.view.baseCurrency"), value: data.baseCurrencyCode ?? "UZS" },
+    { label: t("accountingPolicy.view.vatPeriod"), value: t("accountingPolicy.view.vatPeriodMonth") },
+    { label: t("accountingPolicy.view.vatBase"), value: t("accountingPolicy.view.vatBaseShipment") },
+    { label: t("accountingPolicy.view.closedPeriods"), value: t("accountingPolicy.view.closedProtected") },
+  ];
 
   return (
-    <div className="space-y-4">
-      <Card className="border border-border p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="text-xs uppercase tracking-[0.18em] text-muted-second">
-              Policy status
-            </div>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <PolicyStatusBadge status={data.sourceStatus} />
-              {data.requiresBusinessDecision && (
-                <span className="text-sm text-muted-second">
-                  Business approval is required before activation.
-                </span>
-              )}
-            </div>
-          </div>
-          <Button
-            type="primary"
-            icon={<Pencil className="size-4" />}
-            onClick={onEdit}
-          >
-            Edit policy
-          </Button>
+    <Card className="border border-border p-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="text-base font-semibold text-primary-text">
+          {t("accountingPolicy.view.title")}
         </div>
-      </Card>
-
-      {/* {data.requiresBusinessDecision && (
-        <Alert
-          type="warning"
-          showIcon
-          message="Business approval is required"
-          description={
-            data.sourceEvidence ??
-            "Some policy fields are not fully configured."
-          }
-        />
-      )} */}
-
-      <PolicySection title="General information">
-        <PolicyFieldCard
-          label="Accounting start date"
-          field={data.general?.accountingStartDate}
-          fallback={data.accountingStartDate}
-          kind="date"
-        />
-        <PolicyFieldCard
-          label="Fiscal year start month"
-          field={data.general?.fiscalYearStartMonth}
-          fallback={data.fiscalYearStartMonth}
-          kind="month"
-        />
-        <PolicyFieldCard
-          label="Effective from"
-          field={data.governance?.effectiveFrom}
-          fallback={data.effectiveFrom}
-          kind="date"
-        />
-        <PolicyFieldCard
-          label="Effective to"
-          field={data.governance?.effectiveTo}
-          fallback={data.effectiveTo}
-          kind="date"
-        />
-      </PolicySection>
-
-      <PolicySection title="Inventory valuation">
-        <PolicyFieldCard
-          label="Valuation method"
-          field={data.inventory?.inventoryValuationMethod}
-          fallback={data.inventoryValuationMethod}
-          kind="valuation"
-        />
-      </PolicySection>
-
-      <PolicySection title="VAT">
-        <PolicyFieldCard
-          label="VAT payer"
-          field={data.vat?.isVatPayer}
-          fallback={data.isVatPayer}
-          kind="boolean"
-        />
-        <PolicyFieldCard
-          label="Tax type ID"
-          field={data.vat?.taxTypeId}
-          fallback={data.taxTypeId}
-        />
-        <PolicyFieldCard
-          label="VAT period"
-          field={data.vat?.vatTaxPeriod}
-          fallback={data.vatTaxPeriod}
-          kind="policy"
-        />
-        <PolicyFieldCard
-          label="VAT base moment"
-          field={data.vat?.vatBaseMoment}
-          fallback={data.vatBaseMoment}
-          kind="policy"
-        />
-        <PolicyFieldCard
-          label="Active VAT rate catalog"
-          field={data.vat?.activeVatRateCatalog}
-        />
-      </PolicySection>
-
-      <PolicySection title="Currency">
-        <PolicyFieldCard
-          label="Base currency"
-          field={data.currency?.baseCurrencyCode}
-          fallback={data.baseCurrencyCode}
-          kind="currency"
-        />
-        <PolicyFieldCard
-          label="Base currency ID"
-          field={data.currency?.baseCurrencyId}
-          fallback={data.baseCurrencyId}
-        />
-        <PolicyFieldCard
-          label="Currency revaluation"
-          field={data.currency?.currencyRevaluationService}
-        />
-        <PolicyFieldCard
-          label="Revaluation scope"
-          field={data.currency?.revaluationScope}
-        />
-        <PolicyFieldCard
-          label="Foreign currency enabled"
-          fallback={data.foreignCurrencyEnabled}
-          kind="boolean"
-          status={9}
-        />
-        <PolicyFieldCard
-          label="Foreign currency"
-          fallback={data.foreignCurrency}
-          status={9}
-        />
-      </PolicySection>
-
-      <PolicySection title="Payroll">
-        <PolicyFieldCard
-          label="Payroll component model"
-          field={data.payroll?.payrollComponentModel}
-        />
-        <PolicyFieldCard
-          label="Individual tax policy"
-          field={data.payroll?.individualTaxPolicy}
-        />
-        <PolicyFieldCard
-          label="Social tax policy"
-          field={data.payroll?.socialTaxPolicy}
-        />
-      </PolicySection>
-
-      <PolicySection title="Scope and governance">
-        <PolicyFieldCard
-          label="Production"
-          field={data.production?.productionEnabled}
-          fallback={data.productionEnabled}
-          kind="boolean"
-        />
-        <PolicyFieldCard
-          label="Production output account ID"
-          field={data.production?.productionOutputAccountId}
-        />
-        <PolicyFieldCard
-          label="Production output account code"
-          field={data.production?.outputAccountCode}
-        />
-        <PolicyFieldCard
-          label="Cost allocation"
-          field={data.costing?.costAllocationMethod}
-          fallback={data.costAllocationMethod}
-        />
-        <PolicyFieldCard
-          label="Document account settings"
-          field={data.accounts?.documentAccountSettingsCount}
-        />
-        <PolicyFieldCard
-          label="Policy versioning"
-          field={data.governance?.policyVersioning}
-          fallback={data.policyVersioning}
-          kind="boolean"
-        />
-        <PolicyFieldCard
-          label="Closed-period policy"
-          field={data.governance?.closedPeriodPolicy}
-          fallback={data.closedPeriodPolicy}
-          kind="policy"
-        />
-      </PolicySection>
-    </div>
-  );
-}
-
-function PolicySection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section>
-      <div className="mb-2 text-base font-semibold text-primary-text">
-        {title}
+        <Button type="primary" icon={<Pencil className="size-4" />} onClick={onEdit}>
+          {t("accountingPolicy.view.newVersion")}
+        </Button>
       </div>
-      <Row gutter={[12, 12]}>
-        {React.Children.map(children, (child) => (
-          <Col xs={24} sm={12} lg={8} xl={6}>
-            {child}
-          </Col>
+      <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
+        {rows.map((row) => (
+          <div
+            key={row.label}
+            className="flex items-center justify-between gap-3 border-b border-border pb-2"
+          >
+            <dt className="text-sm text-secondary-text">{row.label}</dt>
+            <dd className="m-0 text-sm font-semibold text-primary-text">{row.value}</dd>
+          </div>
         ))}
-      </Row>
-    </section>
+      </dl>
+    </Card>
   );
 }

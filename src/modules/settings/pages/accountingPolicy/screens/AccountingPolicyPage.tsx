@@ -2,27 +2,23 @@ import { Button, Tabs } from "antd";
 import dayjs from "dayjs";
 import { RefreshCw } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   useGetAccountingPolicyHistory,
-  useGetAccountingPolicyImpact,
   useGetCurrentAccountingPolicy,
 } from "../hooks";
 import CurrentPolicyTab from "../components/CurrentPolicyTab";
 import SettlementPolicyCard from "../components/SettlementPolicyCard";
 import PolicyHistoryTab from "../components/PolicyHistoryTab";
-import PolicyImpactTab from "../components/PolicyImpactTab";
 import AccountingPolicyAddEditPage from "./AccountingPolicyAddEditPage";
 
-type PolicyTab = "current" | "impact" | "history";
+type PolicyTab = "current" | "history";
 
 export default function AccountingPolicyPage() {
+  const { t } = useTranslation();
   const today = dayjs().format("YYYY-MM-DD");
   const [activeTab, setActiveTab] = useState<PolicyTab>("current");
   const [editOpen, setEditOpen] = useState(false);
-  const [impactParams, setImpactParams] = useState({
-    effectiveOn: today,
-    documentType: "SALE",
-  });
   const [historyParams, setHistoryParams] = useState({
     dateFrom: `${dayjs().year()}-01-01`,
     dateTo: today,
@@ -31,10 +27,6 @@ export default function AccountingPolicyPage() {
   const current = useGetCurrentAccountingPolicy({
     effectiveOn: today,
     enabled: activeTab === "current" || editOpen,
-  });
-  const impact = useGetAccountingPolicyImpact({
-    ...impactParams,
-    enabled: activeTab === "impact",
   });
   const history = useGetAccountingPolicyHistory({
     ...historyParams,
@@ -45,7 +37,7 @@ export default function AccountingPolicyPage() {
     () => [
       {
         key: "current",
-        label: "Current policy",
+        label: t("accountingPolicy.view.currentTab"),
         children: (
           <div className="space-y-4">
             <SettlementPolicyCard />
@@ -59,24 +51,8 @@ export default function AccountingPolicyPage() {
         ),
       },
       {
-        key: "impact",
-        label: "Check impact",
-        children: (
-          <PolicyImpactTab
-            effectiveOn={impactParams.effectiveOn}
-            documentType={impactParams.documentType}
-            data={impact.data}
-            isLoading={impact.isLoading}
-            isError={impact.isError}
-            onCheck={(effectiveOn, documentType) =>
-              setImpactParams({ effectiveOn, documentType: documentType ?? "" })
-            }
-          />
-        ),
-      },
-      {
         key: "history",
-        label: "Policy history",
+        label: t("accountingPolicy.view.historyTab"),
         children: (
           <PolicyHistoryTab
             dateFrom={historyParams.dateFrom}
@@ -100,17 +76,12 @@ export default function AccountingPolicyPage() {
       history.isLoading,
       historyParams.dateFrom,
       historyParams.dateTo,
-      impact.data,
-      impact.isError,
-      impact.isLoading,
-      impactParams.documentType,
-      impactParams.effectiveOn,
+      t,
     ],
   );
 
   const refresh = () => {
     if (activeTab === "current") void current.refetch();
-    if (activeTab === "impact") void impact.refetch();
     if (activeTab === "history") void history.refetch();
   };
 
@@ -126,10 +97,10 @@ export default function AccountingPolicyPage() {
             icon={<RefreshCw className="size-4" />}
             onClick={refresh}
             loading={
-              current.isFetching || impact.isFetching || history.isFetching
+              current.isFetching || history.isFetching
             }
           >
-            Refresh
+            {t("common.refresh")}
           </Button>
         }
       />

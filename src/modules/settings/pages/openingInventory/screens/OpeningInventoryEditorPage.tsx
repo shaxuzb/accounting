@@ -76,7 +76,6 @@ export default function OpeningInventoryEditorPage() {
     itemOptions,
     productByMxik,
     unitOptions,
-    vatRateOptions,
     isLoading: isOptionsLoading,
   } = useOpeningInventoryOptions(mode);
 
@@ -210,8 +209,8 @@ export default function OpeningInventoryEditorPage() {
   );
 
   const totals = useMemo(
-    () => getOpeningInventoryTotals(lines, vatRateOptions),
-    [lines, vatRateOptions],
+    () => getOpeningInventoryTotals(lines),
+    [lines],
   );
 
   const addManualRow = useCallback(() => {
@@ -515,7 +514,6 @@ export default function OpeningInventoryEditorPage() {
     openMarkingModal,
     openAccountModal,
     unitOptions,
-    vatRateOptions,
   });
 
   const pageLoading =

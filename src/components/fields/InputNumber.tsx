@@ -65,7 +65,11 @@ const InputNumberFormat: React.FC<InputNumberFormaterProps> = (props) => {
     <NumericFormat
       value={inputValue ?? ""}
       customInput={Input}
-      onValueChange={(values) => {
+      onValueChange={(values, sourceInfo) => {
+        // A value the parent pushed in (sourceInfo "prop") is not an edit. Echoing it back
+        // made linked fields feed each other: a price turned into a rounded margin and the
+        // margin, "changed", rewrote the price (50 000 typed became 4.50).
+        if (sourceInfo.source === "prop") return;
         const nextValue = values.value === "" ? null : values.floatValue ?? null;
         if (onValueChange) {
           onValueChange(nextValue);

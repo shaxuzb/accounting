@@ -4,13 +4,9 @@ import { useTranslation } from "react-i18next";
 import { Button, Col, Form, Modal, Row, Spin } from "antd";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
-import InputText from "@/components/fields/InputText";
 import PermissionCard from "@/components/ui/card/PermissionCard";
-import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import SelectStatic from "@/components/fields/SelectStatic";
 import SwitchField from "@/components/fields/SwitchField";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { accountingPolicyPermissions } from "../constants/permissions";
 import {
@@ -65,17 +61,16 @@ export default function AccountingPolicyAddEditPage({
     validationSchema: accountingPolicySchema,
     onSubmit: async (values, helpers) => {
       Modal.confirm({
-        title: "Accounting policy’ni yangilaysizmi?",
-        content:
-          "Yangi policy version yaratiladi. Mavjud hujjatlar qayta hisoblanmaydi.",
-        okText: "Tasdiqlash",
-        cancelText: "Bekor qilish",
+        title: t("accountingPolicy.form.confirmTitle"),
+        content: t("accountingPolicy.form.confirmText"),
+        okText: t("common.confirm"),
+        cancelText: t("common.cancel"),
         onOk: async () => {
           try {
             await updateMutation.mutateAsync(
               buildAccountingPolicyUpdatePayload(values),
             );
-            toast.success("Accounting policy yangilandi");
+            toast.success(t("accountingPolicy.form.saved"));
             helpers.resetForm();
             onClose();
           } catch (error) {
@@ -89,7 +84,7 @@ export default function AccountingPolicyAddEditPage({
   const { setValues, submitForm } = formik;
 
   useEffect(() => {
-    if (data && open) setValues(buildAccountingPolicyFormValues(data));
+    if (data && open) setValues(buildAccountingPolicyFormValues(data, dayjs().format("YYYY-MM-DD")));
   }, [data, open, setValues]);
 
   if (!open) return null;
@@ -99,7 +94,7 @@ export default function AccountingPolicyAddEditPage({
   return (
     <Modal
       maskClosable={false}
-      title="Accounting Policy’ni tahrirlash"
+      title={t("accountingPolicy.form.title")}
       open={open}
       onCancel={() => {
         formik.resetForm();
@@ -113,59 +108,21 @@ export default function AccountingPolicyAddEditPage({
       <Spin spinning={isLoading}>
         <Form layout="vertical" onFinish={() => void submitForm()}>
           <Row gutter={[16, 8]}>
-            <Col span={12}>
-              <SelectStatic
-                formik={formik}
-                fieldName="inventoryValuationMethod"
-                label="Accounting valuation method"
-                options={[{ value: "FIFO", label: "FIFO" }]}
-              />
-            </Col>
-            <Col span={12}>
-              <SelectStatic
-                formik={formik}
-                fieldName="baseCurrencyId"
-                label="Base currency ID"
-                options={[{ value: 1, label: "UZS" }]}
-              />
-            </Col>
-            <Col span={12}>
+            <Col span={24}>
               <SwitchField
                 formik={formik}
                 fieldName="vatPayer"
-                label="VAT payer"
+                label={t("accountingPolicy.form.vatPayer")}
               />
-            </Col>
-            <Col span={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="taxTypeId"
-                label="Tax type"
-                path={selectListEndpoints.taxTypesSelectList}
-                clearable
-              />
-            </Col>
-            <Col span={12}>
-              <SelectStatic
-                formik={formik}
-                fieldName="vatTaxPeriod"
-                label="VAT period"
-                options={[{ value: "MONTH", label: "Oyma-oy" }]}
-              />
-            </Col>
-            <Col span={12}>
-              <SelectStatic
-                formik={formik}
-                fieldName="vatBaseMoment"
-                label="VAT base moment"
-                options={[{ value: "SHIPMENT", label: "Yuklash vaqtida" }]}
-              />
+              <div className="mb-3 text-xs text-secondary-text">
+                {t("accountingPolicy.form.vatPayerHint")}
+              </div>
             </Col>
             <Col span={12}>
               <SelectDate
                 formik={formik}
                 fieldName="effectiveFrom"
-                label="Effective from"
+                label={t("accountingPolicy.form.effectiveFrom")}
                 valueFormat="YYYY-MM-DD"
                 required
               />
@@ -174,44 +131,15 @@ export default function AccountingPolicyAddEditPage({
               <SelectDate
                 formik={formik}
                 fieldName="effectiveTo"
-                label="Effective to"
+                label={t("accountingPolicy.form.effectiveTo")}
                 valueFormat="YYYY-MM-DD"
                 clearable
               />
             </Col>
-            <Col span={12}>
-              <SwitchField
-                formik={formik}
-                fieldName="productionEnabled"
-                label="Production enabled"
-              />
-            </Col>
-            <Col span={12}>
-              <SwitchField
-                formik={formik}
-                fieldName="foreignCurrencyEnabled"
-                label="Foreign currency enabled"
-              />
-            </Col>
-            <Col span={12}>
-              <InputText
-                formik={formik}
-                fieldName="costAllocationMethod"
-                label="Cost allocation method"
-              />
-            </Col>
-            <Col span={12}>
-              <SelectStatic
-                formik={formik}
-                fieldName="closedPeriodPolicy"
-                label="Closed-period policy"
-                options={[
-                  {
-                    value: "PROTECT_CLOSED_PERIOD",
-                    label: "Yopiq davrni himoyalash",
-                  },
-                ]}
-              />
+            <Col span={24}>
+              <div className="mb-4 rounded-lg border border-border p-3 text-sm text-secondary-text">
+                {t("accountingPolicy.form.fixedRules")}
+              </div>
             </Col>
           </Row>
 

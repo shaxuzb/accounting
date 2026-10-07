@@ -61,18 +61,6 @@ export const useOpeningInventoryOptions = (
     staleTime: 5 * 60 * 1000,
   });
 
-  const vatRateQuery = useQuery<SelectOption[]>({
-    queryKey: ["selectlist", selectListKeys.vatRate],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<SelectOption[]>(
-        selectListEndpoints.vatRatesSelectList,
-      );
-      return data ?? [];
-    },
-    enabled,
-    staleTime: 5 * 60 * 1000,
-  });
-
   const itemOptions = useMemo<ProductSelectOption[]>(
     () => productQuery.data ?? [],
     [productQuery.data],
@@ -119,6 +107,5 @@ export const useOpeningInventoryOptions = (
     itemOptions,
     ...productMxikLookup,
     unitOptions: unitQuery.data ?? [],
-    vatRateOptions: vatRateQuery.data ?? [],
   };
 };

@@ -112,6 +112,16 @@ export default function WarehouseTransferDetailPage() {
             onSave={() => saveDraft()}
             onConfirm={async () => {
               try {
+                // what is on screen is what posts: unsaved edits are saved first
+                if (formik.dirty) {
+                  const errors = await formik.validateForm();
+                  if (Object.keys(errors).length > 0) {
+                    formik.setTouched(setNestedObjectValues(errors, true));
+                    toast.error(t("warehouse.messages.fillRequired"));
+                    return;
+                  }
+                  await updateMutation.mutateAsync(formik.values);
+                }
                 await confirmMutation.mutateAsync();
                 toast.success(t("warehouse.messages.confirmed"));
               } catch (error) {

@@ -1,8 +1,12 @@
-import { Alert, DatePicker, Empty, Skeleton, Table } from "antd";
+import { Alert, DatePicker, Empty, Skeleton, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import type { AccountingPolicyHistoryDto, AccountingPolicyVersionDto } from "../types/type";
+
+const formatDay = (value?: string | null) =>
+  value ? dayjs(value).format("DD.MM.YYYY") : "—";
 
 export default function PolicyHistoryTab({
   dateFrom,
@@ -19,15 +23,28 @@ export default function PolicyHistoryTab({
   isError: boolean;
   onFilter: (dateFrom: string, dateTo: string) => void;
 }) {
+  const { t } = useTranslation();
   const columns: TableColumnsType<AccountingPolicyVersionDto> = [
-    { title: "Version", dataIndex: "version", width: 90 },
-    { title: "Effective from", dataIndex: "effectiveFrom" },
-    { title: "Effective to", dataIndex: "effectiveTo", render: (value) => value ?? "—" },
-    { title: "Valuation", dataIndex: "inventoryValuationMethod", render: (value) => value ?? "—" },
-    { title: "Currency ID", dataIndex: "baseCurrencyId", render: (value) => value ?? "—" },
-    { title: "VAT payer", dataIndex: "vatPayer", render: (value) => value === null ? "—" : value ? "Yes" : "No" },
-    { title: "VAT period", dataIndex: "vatTaxPeriod", render: (value) => value ?? "—" },
-    { title: "Closed period", dataIndex: "closedPeriodPolicy", render: (value) => value ?? "—" },
+    { title: t("accountingPolicy.view.version"), dataIndex: "version", width: 90 },
+    { title: t("accountingPolicy.form.effectiveFrom"), dataIndex: "effectiveFrom", render: formatDay },
+    {
+      title: t("accountingPolicy.form.effectiveTo"),
+      dataIndex: "effectiveTo",
+      render: (value) => (value ? formatDay(value) : t("accountingPolicy.view.openEnded")),
+    },
+    {
+      title: t("accountingPolicy.form.vatPayer"),
+      dataIndex: "vatPayer",
+      render: (value) =>
+        value === null ? (
+          "—"
+        ) : (
+          <Tag color={value ? "green" : "orange"}>
+            {value ? t("accountingPolicy.view.yes") : t("accountingPolicy.view.no")}
+          </Tag>
+        ),
+    },
+    { title: t("accountingPolicy.view.valuation"), dataIndex: "inventoryValuationMethod", render: (value) => value ?? "—" },
   ];
 
   return (
@@ -45,8 +62,10 @@ export default function PolicyHistoryTab({
         />
       </Card>
       {isLoading && <Skeleton active paragraph={{ rows: 6 }} />}
-      {isError && <Alert type="error" showIcon message="Policy history could not be loaded." />}
-      {!isLoading && !isError && !data?.items?.length && <Empty description="No policy history found." />}
+      {isError && <Alert type="error" showIcon message={t("accountingPolicy.view.loadError")} />}
+      {!isLoading && !isError && !data?.items?.length && (
+        <Empty description={t("accountingPolicy.view.noHistory")} />
+      )}
       {!isLoading && !isError && Boolean(data?.items?.length) && (
         <Card className="overflow-hidden border border-border">
           <Table<AccountingPolicyVersionDto>

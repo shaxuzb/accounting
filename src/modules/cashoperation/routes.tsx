@@ -1,14 +1,11 @@
 import { lazy } from "react";
 import type { ReactElement } from "react";
 import type { RouteObject } from "react-router";
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
-import { cashOperationPermissions } from "./pages/cashoperation/constants/permissions";
 import { cashDocumentPermissions } from "./pages/cash-document/constants/permissions";
 import { cashBookPermissions } from "./pages/cash-book/constants/permissions";
-const CashOperationDetailPage = lazy(() => import("./pages/cashoperation/screens/CashOperationDetailPage"));
-const CashOperationListPage = lazy(() => import("./pages/cashoperation/screens/CashOperationListPage"));
-const CashOperationAddEditPage = lazy(() => import("./pages/cashoperation/screens/CashOperationAddEditPage"));
+const LegacyCashOperationRedirect = lazy(() => import("./pages/cashoperation/screens/LegacyCashOperationRedirect"));
 const CashDocumentListPage = lazy(() => import("./pages/cash-document/screens/CashDocumentListPage"));
 const CashDocumentDetailPage = lazy(() => import("./pages/cash-document/screens/CashDocumentDetailPage"));
 const ExpenseReportsPage = lazy(() => import("./pages/expense-report/ExpenseReportsPage"));
@@ -42,52 +39,20 @@ export const cashOperationRoutes: RouteObject = {
   element: <Outlet />,
   children: [
     {
+      // the old single form is replaced by the PKO/RKO documents (the same record)
       path: "cash-operations",
       handle: { title: "app.menu.cashOperations" },
       children: [
         {
           index: true,
-          element: withPermission(
-            <CashOperationListPage />,
-            cashOperationPermissions.view,
-          ),
+          element: <Navigate to="/main/cash-operationses/cash-documents/pko" replace />,
         },
         {
           path: "add",
-          element: withPermission(
-            <CashOperationAddEditPage />,
-            cashOperationPermissions.create,
-          ),
-          handle: {
-            title: "app.fields.cashOperation",
-            showBack: true,
-            backTo: "..",
-          },
+          element: <Navigate to="/main/cash-operationses/cash-documents/pko/add" replace />,
         },
-        {
-          path: ":id/edit",
-          element: withPermission(
-            <CashOperationAddEditPage />,
-            cashOperationPermissions.update,
-          ),
-          handle: {
-            title: "app.fields.cashOperation",
-            showBack: true,
-            backTo: "..",
-          },
-        },
-        {
-          path: ":id",
-          element: withPermission(
-            <CashOperationDetailPage />,
-            cashOperationPermissions.detail,
-          ),
-          handle: {
-            title: "app.fields.cashOperation",
-            showBack: true,
-            backTo: "..",
-          },
-        },
+        { path: ":id/edit", element: <LegacyCashOperationRedirect /> },
+        { path: ":id", element: <LegacyCashOperationRedirect /> },
       ],
     },
     {

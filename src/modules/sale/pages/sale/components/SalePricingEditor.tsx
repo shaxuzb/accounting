@@ -3,6 +3,7 @@ import {
   Boxes,
   CheckCircle2,
   PackageCheck,
+  Save,
   Sigma,
   UserRound,
   XCircle,
@@ -23,9 +24,10 @@ import {
 } from "@/components/ui/card/DocumentSummary";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { numberSpacing } from "@/utils/utils";
-import { useCancelSale, useConfirmSale } from "../hooks";
+import { useCancelSale, useConfirmSale, useSaveSalePrices } from "../hooks";
 import type { SaleDoc, SaleDocTable, SalePricingLine } from "../types/type";
 import type {
+  SaleDocConfirmForm,
   SaleDocConfirmLineForm,
   SaleDocConfirmLineItemForm,
 } from "../types/form";
@@ -84,6 +86,7 @@ export default function SalePricingEditor({
   const navigate = useNavigate();
   const confirmSale = useConfirmSale(document.id);
   const cancelSale = useCancelSale(document.id);
+  const savePrices = useSaveSalePrices(document.id);
   const draftKey = useScopedStorageKey("form-draft", `sale-pricing:${document.id}`);
   const [draftLines, setDraftLines] = useLocalStorage<SalePricingDraftLine[]>(
     draftKey,
@@ -242,25 +245,26 @@ export default function SalePricingEditor({
     };
   }, [lines]);
 
-  const handleConfirm = async () => {
+  /** The confirm payload of the screen's prices, or null (with the reason shown). */
+  const buildPricePayload = (): SaleDocConfirmForm | null => {
     if (!lines.length) {
       toast.error(t("sale.messages.noProductsToConfirm"));
-      return;
+      return null;
     }
     if (lines.some((line) => line.amount <= 0)) {
       toast.error(t("sale.messages.salePriceRequired"));
-      return;
+      return null;
     }
     // No cost check here any more: the server writes off the batches when the
     // document posts and takes the cost from what they gave up, so a line that
     // has no cost yet is normal rather than an error.
     if (lines.some((line) => line.vatRateId === null)) {
       toast.error(t("sale.messages.vatRateRequired"));
-      return;
+      return null;
     }
     if (lines.some((line) => !line.id)) {
       toast.error(t("sale.messages.saleDocTableIdMissing"));
-      return;
+      return null;
     }
 
     const toPositiveNumber = (value: number | string | null | undefined) => {
@@ -364,21 +368,44 @@ export default function SalePricingEditor({
 
     if (!payloadLines.length) {
       toast.error(t("sale.messages.invalidConfirmLines"));
-      return;
+      return null;
     }
 
+    return {
+      // the VAT rate goes too: changed here, it used to show on screen and post the old one
+      lines: payloadLines.map(({ id, costPrice, unitPrice, vatRateId }) => ({
+        id,
+        costPrice,
+        unitPrice,
+        vatRateId: vatRateId || null,
+      })),
+    };
+  };
+
+  const clearLocalDraft = () => {
+    setDraftLines([]);
+    setEditedLines(null);
+    removePersistedValue(`sale:pricing:${document.id}`, "local");
+  };
+
+  const handleSavePrices = async () => {
+    const payload = buildPricePayload();
+    if (!payload) return;
     try {
-      await confirmSale.mutateAsync({
-        // the VAT rate goes too: changed here, it used to show on screen and post the old one
-        lines: payloadLines.map(({ id, costPrice, unitPrice, vatRateId }) => ({
-          id,
-          costPrice,
-          unitPrice,
-          vatRateId: vatRateId || null,
-        })),
-      });
-      setDraftLines([]);
-      removePersistedValue(`sale:pricing:${document.id}`, "local");
+      await savePrices.mutateAsync(payload);
+      clearLocalDraft();
+      toast.success(t("sale.messages.pricesSaved"));
+    } catch (error) {
+      errorHandlers(error);
+    }
+  };
+
+  const handleConfirm = async () => {
+    const payload = buildPricePayload();
+    if (!payload) return;
+    try {
+      await confirmSale.mutateAsync(payload);
+      clearLocalDraft();
       navigate("/main/sales/sale", { replace: true });
     } catch (error) {
       errorHandlers(error);
@@ -388,8 +415,7 @@ export default function SalePricingEditor({
   const handleCancel = async () => {
     try {
       await cancelSale.mutateAsync();
-      setDraftLines([]);
-      removePersistedValue(`sale:pricing:${document.id}`, "local");
+      clearLocalDraft();
       toast.success(t("sale.messages.documentCancelled"));
       navigate("/main/sales/sale", { replace: true });
     } catch (error) {
@@ -441,6 +467,18 @@ export default function SalePricingEditor({
             onClick={handleConfirm}
           >
             {t("common.confirm")}
+          </Button>
+          <Button
+            size="large"
+            icon={<Save size={18} />}
+            loading={savePrices.isPending}
+            disabled={
+              !lines.length || confirmSale.isPending || cancelSale.isPending
+            }
+            title={t("sale.messages.savePricesHint")}
+            onClick={handleSavePrices}
+          >
+            {t("common.save")}
           </Button>
           <Popconfirm
             title={t("sale.actions.cancelDocument")}

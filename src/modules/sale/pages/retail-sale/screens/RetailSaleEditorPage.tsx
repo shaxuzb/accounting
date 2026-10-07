@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 import { ValidationError } from "yup";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { formatDate } from "@/utils/helpers";
@@ -15,6 +15,7 @@ import {
 } from "@/shared/persistence/usePersistedState";
 import { useGetNowSaleCondition } from "@/modules/settings/pages/saleCondition/hooks";
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
+import { COSTING_METHOD } from "../../sale/utils/salePricingDetails";
 import DocumentProcessingModeModal from "@/components/ui/DocumentProcessingModeModal";
 import SaleProductSelection from "../../sale/components/SaleProductSelection";
 // import { getSaleCostingValidationError } from "../../sale/utils/saleCostingValidation";
@@ -146,14 +147,30 @@ export default function RetailSaleEditorPage() {
   // On by default, as in the wholesale sale: a marked product is scanned unless the
   // seller says otherwise. Turned off, the units that leave stock are picked in costing
   // order — the only way to sell a marked product over the counter without scanning it.
-  const [markingMode, setMarkingMode] = useState(true);
+  // A reopened check keeps its choice: a marked line with fewer codes than pieces was
+  // entered with the switch off, so it opens off rather than asking for codes again.
+  const savedWithoutMarking = useMemo(
+    () =>
+      (document?.lines ?? []).some(
+        (line) =>
+          line.isPieceTracked &&
+          (line.items?.length ?? 0) < Number(line.quantity ?? 0),
+      ),
+    [document],
+  );
+  const [markingModeChoice, setMarkingMode] = useState<boolean | null>(null);
+  const markingMode = markingModeChoice ?? !savedWithoutMarking;
   const vatPayer = useVatPayer();
-  const baseSaleCondition = saleCondition ?? {
-    id: 0,
-    costingMethodId: 3,
-    vatRateId: products[0]?.vatRateId ?? 0,
-    startDate: "",
-    endDate: null,
+  // the server writes stock off FIFO (accounting policy), so the cost and margin
+  // previews follow the same order whatever an old sale condition still says
+  const baseSaleCondition = {
+    ...(saleCondition ?? {
+      id: 0,
+      vatRateId: products[0]?.vatRateId ?? 0,
+      startDate: "",
+      endDate: null,
+    }),
+    costingMethodId: COSTING_METHOD.FIFO,
   };
   // a non-payer sells «QQSsiz» (1C «Без НДС»): new lines take that rate
   const activeSaleCondition =
@@ -281,6 +298,11 @@ export default function RetailSaleEditorPage() {
     toast.error(t("sale.messages.saleRuleMissing"));
     navigate(-1);
   }, [isEdit, isSaleConditionError, navigate, t]);
+
+  // a posted or cancelled check is not edited: it opens as it stands
+  if (isEdit && document && (document.statusId === 2 || document.statusId === 3)) {
+    return <Navigate to={`/main/sales/retail-sale/${document.id}`} replace />;
+  }
 
   if (
     (isEdit && (detailQuery.isLoading || !document)) ||

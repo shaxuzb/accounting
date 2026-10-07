@@ -117,7 +117,7 @@ export interface AccountingPolicyImpactDto {
 export interface AccountingPolicyUpdateRequest {
   inventoryValuationMethod: "FIFO";
   baseCurrencyId: 1;
-  vatPayer: true;
+  vatPayer: boolean;
   taxTypeId: number | null;
   vatTaxPeriod: "MONTH";
   vatBaseMoment: "SHIPMENT";

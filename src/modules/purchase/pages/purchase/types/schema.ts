@@ -10,6 +10,10 @@ export const isCompletePurchaseLine = (line: PurchaseImportRow) => {
   return Boolean(line.productId && line.unitId && qty > 0 && price > 0);
 };
 
+/** A row the user started (a product is chosen) but left without qty, price, unit or accounts. */
+export const isStartedIncompletePurchaseLine = (line: PurchaseImportRow) =>
+  Boolean(line.productId) && !isCompletePurchaseLineWithAccounts(line);
+
 export const isCompletePurchaseLineWithAccounts = (
   line: PurchaseImportRow,
 ) =>

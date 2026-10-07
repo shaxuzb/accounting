@@ -69,6 +69,7 @@ import { payrollComponentPermissions } from "@/modules/settings/pages/payrollCom
 import { payrollTaxDefinitionPermissions } from "@/modules/settings/pages/payrollTaxDefinitions/constants/permissions";
 import { fiscalCashRegisterPermissions } from "@/modules/settings/pages/fiscalCashRegister/constants/permissions";
 import { cashCollectionPermissions } from "@/modules/cashoperation/pages/cash-collection/constants/permissions";
+import { cashDocumentPermissions } from "@/modules/cashoperation/pages/cash-document/constants/permissions";
 import { paymentAcceptancePointOperationPermissions } from "@/modules/cashoperation/pages/payment-acceptance-point-operation/constants/permissions";
 import { cashFiscalTransferPermissions } from "@/modules/cashoperation/pages/cash-fiscal-transfer/constants/permissions";
 import { cashBookPermissions } from "@/modules/cashoperation";
@@ -240,27 +241,21 @@ export const menuPermissions: MainMenu = {
         title: "app.menu.cash",
       },
       items: [
-        // {
-        //   code: cashOperationPermissions.view,
-        //   linkData: {
-        //     path: "cash-operations",
-        //     title: "app.menu.cashOperations",
-        //   },
-        // },
-        // {
-        //   code: cashDocumentPermissions.view,
-        //   linkData: {
-        //     path: "cash-documents/pko",
-        //     title: "app.menu.incomeOrders",
-        //   },
-        // },
-        // {
-        //   code: cashDocumentPermissions.view,
-        //   linkData: {
-        //     path: "cash-documents/rko",
-        //     title: "app.menu.expenseOrders",
-        //   },
-        // },
+        // 1C «Приходный / Расходный кассовый ордер» — every cash movement starts here
+        {
+          code: cashDocumentPermissions.view,
+          linkData: {
+            path: "cash-documents/pko",
+            title: "app.menu.incomeOrders",
+          },
+        },
+        {
+          code: cashDocumentPermissions.view,
+          linkData: {
+            path: "cash-documents/rko",
+            title: "app.menu.expenseOrders",
+          },
+        },
         {
           code: cashBookPermissions.view,
           linkData: {

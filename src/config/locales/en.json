@@ -691,6 +691,7 @@
       "viewRegulatedObligationSetting": "Obligation setting"
     },
     "messages": {
+      "costingIsFifo": "Goods are written off FIFO (accounting policy): the cost comes from the oldest batches. The sale condition only sets the VAT rate of new lines.",
       "created": "Record created successfully",
       "updated": "Record updated successfully",
       "userCreated": "User created successfully",
@@ -1184,6 +1185,7 @@
       "listEmpty": "No purchase documents found",
       "confirmed": "Document confirmed",
       "cancelPostedConfirm": "Its entries are reversed, the goods leave stock and the supplier debt falls. If the goods were sold or returned, cancel those documents first.",
+      "incompleteRows": "Incomplete row(s): {{rows}}. Fill in quantity, price, unit and accounts or remove the row; an incomplete row is not saved.",
       "cancelled": "Document cancelled",
       "commentPlaceholder": "Enter a comment...",
       "markingCount": "Markings: {{count}}",
@@ -1530,6 +1532,8 @@
       "cancelPosted": "Cancel sale"
     },
     "messages": {
+      "pricesSaved": "Prices saved to the document",
+      "savePricesHint": "Write the prices to the document (without posting) so others see them too",
       "scanOrEnter": "Scan or enter the code and press Enter",
       "scanOrEnterMarking": "Scan or enter the marking code",
       "noProductsToConfirm": "No products found to confirm",
@@ -2438,6 +2442,7 @@
       "initializeDays": "Load days"
     },
     "documents": {
+      "saveBeforeConfirm": "Save the edited draft or cancel editing first: confirming posts what is saved.",
       "title": "Payroll calculation",
       "detailTitle": "Payroll document",
       "calculate": "Calculate payroll",
@@ -2616,6 +2621,7 @@
       "retry": "Retry"
     },
     "messages": {
+      "costWithoutVat": "Stock is entered at cost, without VAT. Input VAT to be claimed is entered as an opening balance of account 4410.",
       "atLeastOneCompletedLine": "Add at least one completed {{type}} line",
       "fillAccountsAndPrices": "Fill in the accounts and prices on every line",
       "saved": "Document saved successfully",
@@ -3368,6 +3374,42 @@
       "1": "A return is made on a posted purchase: lines, prices, VAT and accounts come from it; enter the quantities only. The goods leave from that purchase's batch (Dt 6010 Ct 2910, VAT Dt 6010 Ct 4410).",
       "2": "A return is made on a posted sale: lines, prices and VAT come from it; enter the quantities only. Revenue goes to 9040, the goods come back at their cost of sale (Dt 9040 Ct 4010, Dt 6410 Ct 4010, Dt 2910 Ct 9120).",
       "3": "A return is made on a retail sale: enter the quantities; the money goes back where it was paid."
+    }
+  },
+  "accountingPolicy": {
+    "view": {
+      "title": "Rules in force",
+      "newVersion": "New version",
+      "currentTab": "Current policy",
+      "historyTab": "Version history",
+      "loadError": "The accounting policy could not be loaded",
+      "noHistory": "No versions",
+      "yes": "Yes",
+      "no": "No",
+      "period": "Effective period",
+      "openEnded": "open-ended",
+      "defaultVersion": "Default (no version created)",
+      "accountingStart": "Accounting start date",
+      "valuation": "Inventory valuation",
+      "baseCurrency": "Base currency",
+      "vatPeriod": "VAT period",
+      "vatPeriodMonth": "Month",
+      "vatBase": "VAT base",
+      "vatBaseShipment": "On shipment",
+      "closedPeriods": "Closed months",
+      "closedProtected": "Protected",
+      "version": "Version"
+    },
+    "form": {
+      "title": "New accounting policy version",
+      "vatPayer": "VAT payer",
+      "vatPayerHint": "When off: input VAT goes into the cost of purchases and fixed assets (not 4410) and sales carry no VAT.",
+      "effectiveFrom": "Effective from",
+      "effectiveTo": "Effective to",
+      "fixedRules": "Fixed rules: stock valued by FIFO, base currency UZS, monthly VAT period, VAT on shipment, closed periods protected.",
+      "confirmTitle": "Save the new version?",
+      "confirmText": "The new rules apply from the chosen date; the previous version ends the day before. Posted documents are not recalculated.",
+      "saved": "Accounting policy saved"
     }
   },
   "manualEntries": {

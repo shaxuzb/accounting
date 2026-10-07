@@ -33,7 +33,10 @@ import type {
   PurchaseImportHeaderDraft,
   PurchaseProcessingMode,
 } from "@/modules/purchase/pages/purchase/types/form";
-import { isCompletePurchaseLine } from "../types/schema";
+import {
+  isCompletePurchaseLine,
+  isStartedIncompletePurchaseLine,
+} from "../types/schema";
 import {
   createPurchaseValidationSchema,
   isCompletePurchaseLineWithAccounts,
@@ -596,6 +599,15 @@ export const PurchaseEditor = ({
         return false;
       }
 
+      // a started row is never dropped quietly: it is finished or removed by the user
+      const incompleteRows = values.lines
+        .map((line, index) => (isStartedIncompletePurchaseLine(line) ? index + 1 : 0))
+        .filter((row) => row > 0);
+      if (incompleteRows.length > 0) {
+        toast.error(t("purchase.messages.incompleteRows", { rows: incompleteRows.join(", ") }));
+        return false;
+      }
+
       const completedRows = values.lines.filter(
         isCompletePurchaseLineWithAccounts,
       );
@@ -1014,6 +1026,8 @@ export const PurchaseEditor = ({
       commitRows(nextRows);
 
       if (!isEdit || !purchaseId || !isDraft) return;
+      // saved together with the rest only when nothing would be left out
+      if (nextRows.some(isStartedIncompletePurchaseLine)) return;
 
       try {
         const payloadRows = nextRows.filter(isCompletePurchaseLine);

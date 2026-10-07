@@ -15,10 +15,8 @@ import type {
 import { openingInventoryDocumentTypeIds } from "../constants/endpoints";
 import {
   getNumber,
-  getRowAmount,
   getRowUnitLabel,
   getRowUnitPrice,
-  getRowVatAmount,
   toMarkingNumbers,
 } from "../utils/openingInventory";
 
@@ -42,7 +40,6 @@ interface UseOpeningInventoryColumnsParams {
   openMarkingModal: (rowIndex: number) => void;
   openAccountModal: (rowIndex: number) => void;
   unitOptions: SelectOption[];
-  vatRateOptions: SelectOption[];
 }
 
 export const useOpeningInventoryColumns = ({
@@ -58,7 +55,6 @@ export const useOpeningInventoryColumns = ({
   openMarkingModal,
   openAccountModal,
   unitOptions,
-  vatRateOptions,
 }: UseOpeningInventoryColumnsParams): TableColumnType<OpeningInventoryRow>[] => {
   const { t } = useTranslation();
 
@@ -260,49 +256,6 @@ export const useOpeningInventoryColumns = ({
         },
       },
       {
-        dataIndex: "vatRateId",
-        title: t("openingInventory.fields.vatRateAndAmount"),
-        align: "center",
-        render: (_: unknown, record: OpeningInventoryRow, rowIndex: number) => {
-          const vatAmount = getRowVatAmount(record, vatRateOptions);
-          return (
-            <div className="flex items-center">
-              <Select
-                showSearch
-                optionFilterProp="label"
-                allowClear
-                className="min-w-28"
-                placeholder={t("settings.fields.vatRate")}
-                value={record.vatRateId ?? undefined}
-                options={vatRateOptions.map((item) => ({
-                  value: item.id,
-                  label: item.name,
-                }))}
-                onChange={(value) =>
-                  handleRowValueChange(rowIndex, {
-                    vatRateId: value ? Number(value) : null,
-                  })
-                }
-              />
-              <span className="min-w-24 text-right">
-                {numberSpacing(vatAmount)}
-              </span>
-            </div>
-          );
-        },
-      },
-      {
-        dataIndex: "totalAmount",
-        title: t("common.total"),
-        width: 140,
-        align: "center",
-        render: (_: unknown, record: OpeningInventoryRow) => {
-          const amount = getRowAmount(record);
-          const vatAmount = getRowVatAmount(record, vatRateOptions);
-          return numberSpacing(amount + vatAmount, undefined, true);
-        },
-      },
-      {
         dataIndex: "accounts",
         title: t("openingInventory.fields.accounts"),
         align: "center",
@@ -352,7 +305,6 @@ export const useOpeningInventoryColumns = ({
     openMarkingModal,
     rows,
     unitOptions,
-    vatRateOptions,
     chartAccountById,
     t,
   ]);

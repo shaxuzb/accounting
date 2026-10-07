@@ -1210,12 +1210,18 @@ export default function SaleProductSelection({
             value={value}
             disabled={disabled || Boolean(record.priceLayers?.length)}
             onValueChange={(quantity) => {
+              // the price of one unit stays as typed or saved (1C keeps «Цена» when
+              // «Количество» changes); only the totals follow the new quantity
               clearManualTotal(record.rowKey);
               clearManualSalePrice(record.rowKey);
               updateLine(record.rowKey, (line) =>
                 recalculateLine({
                   line,
                   quantity: Number(quantity ?? 0),
+                  unitPrice:
+                    line.priceType === "manual" || line.id
+                      ? line.unitPrice
+                      : undefined,
                   costingMethodId: saleCondition.costingMethodId,
                   costRate,
                   keepManualPrice: false,
@@ -1235,16 +1241,8 @@ export default function SaleProductSelection({
       // disagree with the ledger.
       render: (value) => (
         <Tooltip title={t("sale.messages.costPriceFromBatches")}>
-          <div>
-            <InputNumberFormat
-              standalone
-              // disabled
-              height={tableControlHeight}
-              emptyZero
-              min={0}
-              value={Number(value ?? 0)}
-              precision={2}
-            />
+          <div className="px-2 text-right text-secondary-text">
+            {numberSpacing(Number(value ?? 0), undefined, true)}
           </div>
         </Tooltip>
       ),

@@ -596,11 +596,16 @@ export default function PayrollDocumentDetailPage() {
                   type="primary"
                   icon={<CheckCircle2 className="size-4" />}
                   loading={confirmMutation.isPending}
-                  disabled={cancelMutation.isPending || deleteMutation.isPending}
+                  // the draft editor's changes post only once saved
+                  disabled={editing || cancelMutation.isPending || deleteMutation.isPending}
+                  title={editing ? t("payroll.documents.saveBeforeConfirm") : undefined}
                 >
                   {t("payroll.actions.confirmAndPost")}
                 </Button>
               </Popconfirm>
+            )}
+            {canConfirm && editing && (
+              <div className="w-full text-xs text-secondary-text">{t("payroll.documents.saveBeforeConfirm")}</div>
             )}
           </div>
         </Card>

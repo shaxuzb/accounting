@@ -2,7 +2,7 @@ import { App, Form, Spin } from "antd";
 import dayjs from "dayjs";
 import { useFormik } from "formik";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useAppSelector } from "@/store/hooks";
@@ -10,6 +10,7 @@ import { formatDate } from "@/utils/helpers";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { useGetNowSaleCondition } from "@/modules/settings/pages/saleCondition/hooks";
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
+import { COSTING_METHOD } from "../utils/salePricingDetails";
 import { SaleDocumentFormFields, SaleProductSelection } from "../components";
 import { useCreateSale, useGetDetailSale, useUpdateSale } from "../hooks";
 import type {
@@ -118,9 +119,13 @@ export default function SaleAddEditPage() {
       productName: line.productName,
       quantity: line.quantity,
       availableQuantity: line.quantity,
-      costPrice: line.costPrice || line.price || line.amount || 0,
+      costPrice: line.costPrice || 0,
       unitId: line.unitId ?? 0,
-      unitPrice: line.price || line.amount || 0,
+      // amount is the line's net total; the price of one unit is unitPrice
+      unitPrice:
+        line.unitPrice ||
+        line.price ||
+        (line.quantity ? (line.amount || 0) / line.quantity : 0),
       unitName: line.unitName,
       vatRateId: line.vatRateId,
       inventoryAccountId: line.inventoryAccountId ?? null,
@@ -137,12 +142,16 @@ export default function SaleAddEditPage() {
     [isEdit, savedProducts, selectedProducts],
   );
   const vatPayer = useVatPayer();
-  const baseSaleCondition = saleCondition ?? {
-    id: 0,
-    costingMethodId: 3,
-    vatRateId: products[0]?.vatRateId ?? 0,
-    startDate: "",
-    endDate: null,
+  // the server writes stock off FIFO (accounting policy), so the cost and margin
+  // previews follow the same order whatever an old sale condition still says
+  const baseSaleCondition = {
+    ...(saleCondition ?? {
+      id: 0,
+      vatRateId: products[0]?.vatRateId ?? 0,
+      startDate: "",
+      endDate: null,
+    }),
+    costingMethodId: COSTING_METHOD.FIFO,
   };
   // a non-payer sells «QQSsiz» (1C «Без НДС»): new lines take that rate
   const activeSaleCondition =
@@ -362,6 +371,11 @@ export default function SaleAddEditPage() {
         <Spin />
       </div>
     );
+  }
+
+  // a posted or cancelled sale is not edited: it opens as it stands
+  if (isEdit && document && (document.statusId === 2 || document.statusId === 3)) {
+    return <Navigate to={`/main/sales/sale/${document.id}`} replace />;
   }
 
   if (!isEdit && (isSaleConditionLoading || !saleCondition)) {

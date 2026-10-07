@@ -343,10 +343,20 @@ export default function PayrollTimesheetDetailPage() {
                 okText={t("payroll.actions.confirm")}
                 cancelText={t("common.cancel")}
                 onConfirm={() =>
-                  runMutation(
-                    () => confirmMutation.mutateAsync(),
-                    "payroll.messages.timesheetConfirmed",
-                  )
+                  runMutation(async () => {
+                    // what is on screen is what posts: unsaved hours are saved first
+                    if (formik.dirty) {
+                      await updateMutation.mutateAsync({
+                        ...formik.values,
+                        lines: formik.values.lines.map((line) => ({
+                          ...line,
+                          days: line.days ?? [],
+                          overtimeHours: line.overtimeHours ?? 0,
+                        })),
+                      });
+                    }
+                    return confirmMutation.mutateAsync();
+                  }, "payroll.messages.timesheetConfirmed")
                 }
               >
                 <Button

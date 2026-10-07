@@ -62,12 +62,6 @@ export const getNumber = (value: unknown) => {
   return Number.isFinite(numberValue) ? numberValue : 0;
 };
 
-export const getVatPercent = (vatRateId: unknown, options: SelectOption[]) => {
-  const option = options.find((item) => item.id === Number(vatRateId));
-  const match = String(option?.name ?? "").match(/(\d+(?:[.,]\d+)?)/);
-  return match ? Number(match[1].replace(",", ".")) : 0;
-};
-
 export const getProductMxik = (
   item?: ProductSelectOption | SelectOption | null,
 ) => String((item as ProductSelectOption | undefined)?.mxik ?? "").trim();
@@ -88,31 +82,17 @@ export const getRowUnitPrice = (row: OpeningInventoryRow) =>
 export const getRowAmount = (row: OpeningInventoryRow) =>
   getNumber(row.qty) * getRowUnitPrice(row);
 
-export const getRowVatAmount = (
-  row: OpeningInventoryRow,
-  options: SelectOption[],
-) => (getRowAmount(row) * getVatPercent(row.vatRateId, options)) / 100;
-
-export const getOpeningInventoryTotals = (
-  rows: OpeningInventoryRow[],
-  vatRateOptions: SelectOption[],
-) =>
+/**
+ * Stock is brought in at its cost (1C: «Ввод начальных остатков» — товары by quantity and
+ * cost); the input VAT still to be claimed is an opening balance of 4410, entered there.
+ */
+export const getOpeningInventoryTotals = (rows: OpeningInventoryRow[]) =>
   rows.reduce(
-    (acc, row) => {
-      if (!isCompleteOpeningInventoryLine(row)) return acc;
-      const amount = getRowAmount(row);
-      const vatAmount = getRowVatAmount(row, vatRateOptions);
-      return {
-        amount: acc.amount + amount,
-        vatAmount: acc.vatAmount + vatAmount,
-        totalAmount: acc.totalAmount + amount + vatAmount,
-      };
-    },
-    {
-      amount: 0,
-      vatAmount: 0,
-      totalAmount: 0,
-    },
+    (acc, row) =>
+      isCompleteOpeningInventoryLine(row)
+        ? { totalAmount: acc.totalAmount + getRowAmount(row) }
+        : acc,
+    { totalAmount: 0 },
   );
 
 /** Marking codes may contain `,`, `;` or spaces, so only the line breaks and tabs of an Excel paste split them. */

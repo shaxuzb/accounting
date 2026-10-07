@@ -20,8 +20,6 @@ interface OpeningInventoryLinesSectionProps extends OpeningInventoryActionsProps
   modeDisabled: boolean;
   onModeChange: (mode: OpeningInventoryMode) => void;
   totals: {
-    amount: number;
-    vatAmount: number;
     totalAmount: number;
   };
 }

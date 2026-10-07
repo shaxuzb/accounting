@@ -16,30 +16,26 @@ export const buildAccountingPolicyUpdatePayload = (
   return payload;
 };
 
+/**
+ * A new policy version: the VAT payer as it stands now, starting today. Only what the server
+ * takes is in the form: the valuation (FIFO), base currency (UZS), VAT period and moment are
+ * fixed by the approved policy and sent as such; the rest is out of scope and sent empty.
+ */
 export const buildAccountingPolicyFormValues = (
   policy: AccountingPolicyCurrentDto,
+  today: string,
 ): AccountingPolicyFormValues => ({
   inventoryValuationMethod: "FIFO",
   baseCurrencyId: 1,
-  vatPayer: true,
-  taxTypeId: getFieldValue(policy.vat?.taxTypeId, policy.taxTypeId),
+  vatPayer: getFieldValue(policy.vat?.isVatPayer, policy.isVatPayer) ?? true,
+  taxTypeId: null,
   vatTaxPeriod: "MONTH",
   vatBaseMoment: "SHIPMENT",
-  effectiveFrom:
-    getFieldValue(policy.governance?.effectiveFrom, policy.effectiveFrom) ?? "",
-  effectiveTo: getFieldValue(
-    policy.governance?.effectiveTo,
-    policy.effectiveTo,
-  ),
-  productionEnabled: getFieldValue(
-    policy.production?.productionEnabled,
-    policy.productionEnabled,
-  ),
-  foreignCurrencyEnabled: policy.foreignCurrencyEnabled,
-  costAllocationMethod: getFieldValue(
-    policy.costing?.costAllocationMethod,
-    policy.costAllocationMethod,
-  ),
+  effectiveFrom: today,
+  effectiveTo: null,
+  productionEnabled: null,
+  foreignCurrencyEnabled: null,
+  costAllocationMethod: null,
   closedPeriodPolicy: "PROTECT_CLOSED_PERIOD",
 });
 

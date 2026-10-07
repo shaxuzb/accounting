@@ -757,6 +757,8 @@ export default function InventoryCountDetailPage() {
         confirmLoading={confirmMutation.isPending}
         onOk={async () => {
           try {
+            // what is on screen is what posts: unsaved counts are saved first
+            if (formik.dirty) await updateMutation.mutateAsync(toUpdatePayload(formik.values));
             await confirmMutation.mutateAsync();
             toast.success(t("warehouse.messages.inventoryConfirmed"));
             closeActionModals();

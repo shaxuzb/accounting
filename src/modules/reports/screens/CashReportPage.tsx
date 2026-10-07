@@ -26,7 +26,9 @@ export default function CashReportPage() {
       dataIndex: "docNumber",
       title: t("reports.fields.docNumber"),
       render: (value, record) => (
-        <Link to={`/main/cash-operationses/cash-operations/${record.id}`}>
+        <Link
+          to={`/main/cash-operationses/cash-documents/${isIncome(record) ? "pko" : "rko"}/${record.id}`}
+        >
           {value || record.id}
         </Link>
       ),

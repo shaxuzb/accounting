@@ -41,6 +41,7 @@ export default function WarehouseTransferLinesEditor({
 
   const stockQuery = useGetWarehouseTransferStocks({
     warehouseId: sourceWarehouseId,
+    onDate: formik.values.docDate,
     isService: false,
     page: 1,
     pageSize: 1000,
