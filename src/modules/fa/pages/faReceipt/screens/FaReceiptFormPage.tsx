@@ -26,6 +26,9 @@ import FaReceiptFormFields from "../components/FaReceiptFormFields";
 import FaReceiptReadonlyView from "../components/readonly/FaReceiptReadonlyView";
 import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 
+/** 1C «Провести и закрыть»: the form closes into its journal, not to whatever page was open before. */
+const FA_RECEIPT_LIST_PATH = "/main/fa/receipts";
+
 const createDefaultValues = (): FaReceiptFormValues => ({
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   counterpartyId: null,
@@ -154,7 +157,7 @@ export default function FaReceiptFormPage() {
             ? t("settings.messages.created")
             : t("settings.messages.updated"),
         );
-        navigate(-1);
+        navigate(FA_RECEIPT_LIST_PATH);
       } catch (error: unknown) {
         errorHandlers(error);
         throw error;
@@ -189,7 +192,7 @@ export default function FaReceiptFormPage() {
       await persistReceipt(formik.values);
       await confirmMutation.mutateAsync(id);
       toast.success(t("actions.confirmSuccess", { id }));
-      navigate(-1);
+      navigate(FA_RECEIPT_LIST_PATH);
     } catch (error: unknown) {
       errorHandlers(error);
     }
@@ -199,7 +202,7 @@ export default function FaReceiptFormPage() {
     try {
       await cancelMutation.mutateAsync();
       toast.success(t("actions.cancelSuccess", { id: record?.id ?? id }));
-      navigate(-1);
+      navigate(FA_RECEIPT_LIST_PATH);
     } catch (error: unknown) {
       errorHandlers(error);
     }

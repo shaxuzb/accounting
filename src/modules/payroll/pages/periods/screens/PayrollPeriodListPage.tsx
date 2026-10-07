@@ -250,6 +250,7 @@ export default function PayrollPeriodListPage() {
         open={periodModal.open}
         mode={periodModal.mode}
         periodId={periodModal.periodId}
+        existingPeriods={data?.items ?? []}
         onClose={() =>
           setPeriodModal((current) => ({ ...current, open: false }))
         }

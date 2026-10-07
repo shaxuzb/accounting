@@ -94,6 +94,9 @@ import {
   toPurchaseUpdatePayload,
 } from "../utils/purchaseImport";
 
+/** 1C «Провести и закрыть»: the form closes into its journal, not to whatever page was open before. */
+const PURCHASE_LIST_PATH = "/main/purchases/purchase";
+
 const buildTouched = () => ({
   docDate: true,
   counterpartyId: true,
@@ -704,7 +707,7 @@ export const PurchaseEditor = ({
         lines: defaultLines,
       },
     });
-    navigate(-1);
+    navigate(PURCHASE_LIST_PATH);
   }, [
     formik,
     navigate,
@@ -1464,7 +1467,7 @@ export const PurchaseEditor = ({
     try {
       await confirmMutation.mutateAsync();
       toast.success(t("purchase.messages.confirmed"));
-      navigate(-1);
+      navigate(PURCHASE_LIST_PATH);
     } catch (error) {
       errorHandlers(error);
     }
@@ -1488,7 +1491,7 @@ export const PurchaseEditor = ({
     try {
       await cancelMutation.mutateAsync();
       toast.success(t("purchase.messages.cancelled"));
-      navigate(-1);
+      navigate(PURCHASE_LIST_PATH);
     } catch (error) {
       errorHandlers(error);
     }

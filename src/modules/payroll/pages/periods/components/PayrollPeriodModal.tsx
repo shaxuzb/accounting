@@ -45,10 +45,22 @@ interface Props {
   mode: PayrollPeriodModalMode;
   periodId?: number | null;
   onClose: () => void;
+  /** Periods already opened: a new one starts after the latest of them. */
+  existingPeriods?: { year: number; month: number }[];
 }
 
-const getDefaultValues = (): PayrollPeriodForm => {
-  const current = dayjs();
+/**
+ * The month a new period is opened for: the one after the latest period, or the current
+ * month when none is open yet — never a month that already has a period.
+ */
+const getDefaultValues = (
+  existingPeriods: { year: number; month: number }[] = [],
+): PayrollPeriodForm => {
+  const latest = existingPeriods.reduce<dayjs.Dayjs | null>((max, item) => {
+    const value = dayjs(new Date(item.year, item.month - 1, 1));
+    return !max || value.isAfter(max) ? value : max;
+  }, null);
+  const current = latest ? latest.add(1, "month") : dayjs();
   const year = current.year();
   const month = current.month() + 1;
   const calendarDays = createPeriodCalendarDays(year, month, 8);
@@ -101,6 +113,7 @@ export default function PayrollPeriodModal({
   mode,
   periodId,
   onClose,
+  existingPeriods,
 }: Props) {
   const { t } = useTranslation();
   const createMutation = useCreatePayrollPeriod();
@@ -134,11 +147,13 @@ export default function PayrollPeriodModal({
 
   useEffect(() => {
     if (!open) return;
-    if (mode === "create") resetForm({ values: getDefaultValues() });
+    if (mode === "create") resetForm({ values: getDefaultValues(existingPeriods) });
     // The selection belongs to the modal session, so it must be cleared when
     // a new period form opens (the calendar itself is local UI state).
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (mode === "create") setSelectedDate(null);
+    // only on opening: the list refreshing must not reset what the user picked
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, open, resetForm]);
 
   useEffect(() => {
