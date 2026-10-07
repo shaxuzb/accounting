@@ -7,6 +7,8 @@ const SaleListPage = lazy(() => import("./pages/sale/screens/SaleListPage"));
 import { salePermissions } from "./pages/sale/constants/permissions";
 const ContractListPage = lazy(() => import("../contract/screens/ContractListPage"));
 import { contractPermissions } from "../contract/constants/permissions";
+import { returnRoute } from "../returns/routes";
+import { returnKind } from "../returns/constants";
 const RetailSaleDetailPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleDetailPage })));
 const RetailSaleEditorPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleEditorPage })));
 const RetailSaleListPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleListPage })));
@@ -47,6 +49,9 @@ export const saleRoutes: RouteObject = {
         },
       ],
     },
+    // returns from customers (1C «Возврат товаров от покупателя», «… от розничного покупателя»)
+    returnRoute(returnKind.fromCustomer, "sale-returns"),
+    returnRoute(returnKind.fromRetail, "retail-returns"),
     {
       path: "contracts",
       handle: { title: "contract.saleTitle" },

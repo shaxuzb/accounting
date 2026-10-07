@@ -3325,6 +3325,46 @@
     "balancePosted": "Hisobot o'tkazilgan. Xodimda qolgan bo'nak: {{left}} so'm (ortgani PKO bilan qaytariladi).",
     "overspent": "Sarflangani berilgan bo'nakdan ko'p: farqni RKO bilan xodimga qaytaring (Dt 4220 — Kt 5010)."
   },
+  "returnDoc": {
+    "kinds": {
+      "toSupplier": "Yetkazuvchiga qaytarish",
+      "fromCustomer": "Xaridordan qaytarish",
+      "fromRetail": "Chakana qaytarish"
+    },
+    "new": "Yangi qaytarish",
+    "newNumber": "Yangi",
+    "date": "Sana",
+    "baseDocument": "Asos hujjat",
+    "counterparty": "Kontragent",
+    "warehouse": "Ombor",
+    "comment": "Izoh",
+    "product": "Mahsulot",
+    "price": "Narx",
+    "returnable": "Qaytarish mumkin",
+    "quantity": "Qaytariladi",
+    "amountNet": "Summa (QQSsiz)",
+    "total": "Jami",
+    "returnAll": "Hammasini qaytarish",
+    "saveDraft": "Saqlash",
+    "post": "O'tkazish",
+    "cancel": "Bekor qilish",
+    "entries": "Provodkalar",
+    "saved": "Qaytarish saqlandi",
+    "posted": "Qaytarish o'tkazildi",
+    "cancelled": "Qaytarish bekor qilindi",
+    "deleteConfirm": "Qoralamani o'chirasizmi?",
+    "cancelConfirm": "Qaytarish bekor qilinsinmi? Provodkalar storno qilinadi, ombor harakati bekor bo'ladi.",
+    "basePlaceholder": {
+      "1": "Xarid hujjatini tanlang",
+      "2": "Sotuv hujjatini tanlang",
+      "3": "Chakana savdo chekini tanlang"
+    },
+    "hint": {
+      "1": "Qaytarish o'tkazilgan xarid asosida qilinadi: qatorlar, narx, QQS va hisoblar xariddan olinadi, faqat miqdorni kiriting. Tovar aynan o'sha xarid partiyasidan chiqadi (Dt 6010 Kt 2910, QQS Dt 6010 Kt 4410).",
+      "2": "Qaytarish o'tkazilgan sotuv asosida qilinadi: qatorlar, narx va QQS sotuvdan olinadi, faqat miqdorni kiriting. Tushum 9040 ga, tovar sotilgandagi tannarx bilan omborga qaytadi (Dt 9040 Kt 4010, Dt 6410 Kt 4010, Dt 2910 Kt 9120).",
+      "3": "Qaytarish chakana savdo cheki asosida qilinadi: faqat miqdorni kiriting, pul to'langan joyidan qaytariladi."
+    }
+  },
   "manualEntries": {
     "title": "Qo'lda provodkalar",
     "new": "Yangi provodka",

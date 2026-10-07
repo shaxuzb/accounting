@@ -162,6 +162,10 @@ export const menuPermissions: MainMenu = {
           },
         },
         {
+          code: "RETURN_DOC_VIEW",
+          linkData: { path: "purchase-returns", title: "returnDoc.kinds.toSupplier" },
+        },
+        {
           code: contractPermissions.view,
           linkData: {
             path: "contracts",
@@ -506,6 +510,14 @@ export const menuPermissions: MainMenu = {
             path: "retail-sale",
             title: "app.menu.retailSales",
           },
+        },
+        {
+          code: "RETURN_DOC_VIEW",
+          linkData: { path: "sale-returns", title: "returnDoc.kinds.fromCustomer" },
+        },
+        {
+          code: "RETURN_DOC_VIEW",
+          linkData: { path: "retail-returns", title: "returnDoc.kinds.fromRetail" },
         },
 
         {

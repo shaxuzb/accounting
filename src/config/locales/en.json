@@ -3325,6 +3325,46 @@
     "balancePosted": "The report is posted. Advance still held: {{left}} UZS (the unspent part comes back by a PKO).",
     "overspent": "More was spent than advanced: pay the difference by an RKO (Dt 4220 — Ct 5010)."
   },
+  "returnDoc": {
+    "kinds": {
+      "toSupplier": "Returns to suppliers",
+      "fromCustomer": "Returns from customers",
+      "fromRetail": "Retail returns"
+    },
+    "new": "New return",
+    "newNumber": "New",
+    "date": "Date",
+    "baseDocument": "Base document",
+    "counterparty": "Counterparty",
+    "warehouse": "Warehouse",
+    "comment": "Comment",
+    "product": "Product",
+    "price": "Price",
+    "returnable": "Returnable",
+    "quantity": "Returned",
+    "amountNet": "Amount (net of VAT)",
+    "total": "Total",
+    "returnAll": "Return all",
+    "saveDraft": "Save",
+    "post": "Post",
+    "cancel": "Cancel",
+    "entries": "Entries",
+    "saved": "Return saved",
+    "posted": "Return posted",
+    "cancelled": "Return cancelled",
+    "deleteConfirm": "Delete the draft?",
+    "cancelConfirm": "Cancel the return? Its entries are reversed and its stock movement undone.",
+    "basePlaceholder": {
+      "1": "Choose a purchase",
+      "2": "Choose a sale",
+      "3": "Choose a retail sale"
+    },
+    "hint": {
+      "1": "A return is made on a posted purchase: lines, prices, VAT and accounts come from it; enter the quantities only. The goods leave from that purchase's batch (Dt 6010 Ct 2910, VAT Dt 6010 Ct 4410).",
+      "2": "A return is made on a posted sale: lines, prices and VAT come from it; enter the quantities only. Revenue goes to 9040, the goods come back at their cost of sale (Dt 9040 Ct 4010, Dt 6410 Ct 4010, Dt 2910 Ct 9120).",
+      "3": "A return is made on a retail sale: enter the quantities; the money goes back where it was paid."
+    }
+  },
   "manualEntries": {
     "title": "Manual entries",
     "new": "New entry",
