@@ -2871,6 +2871,9 @@
     }
   },
   "notifications": {
+    "title": "Notifications",
+    "markAll": "Mark all read",
+    "empty": "No notifications",
     "defaultSender": "System message",
     "dayAgo": "1 day ago",
     "defaultMessage": "A new notification is available for you.",

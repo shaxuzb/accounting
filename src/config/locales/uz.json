@@ -2871,6 +2871,9 @@
     }
   },
   "notifications": {
+    "title": "Bildirishnomalar",
+    "markAll": "Hammasini o'qildi",
+    "empty": "Bildirishnoma yo'q",
     "defaultSender": "Tizim xabari",
     "dayAgo": "1 kun oldin",
     "defaultMessage": "Siz uchun yangi bildirishnoma mavjud.",
