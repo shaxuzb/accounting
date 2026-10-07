@@ -4,6 +4,8 @@ import { Button, Empty, Input, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import { ListTree, Plus, Trash2 } from "lucide-react";
 import InputNumberFormat from "@/components/fields/InputNumber";
+import SelectCustom from "@/components/fields/SelectCustom";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import Card from "@/components/ui/card/Card";
 import type {
   OpeningBalanceDetailForm,
@@ -18,6 +20,8 @@ interface OpeningBalanceDetailsTableProps {
   definitions: SubkontoTypeOption[];
   expandedDetailKey: string | null;
   isQuantity: boolean;
+  /** A currency account: each balance is entered with its currency and currency amount. */
+  isCurrency: boolean;
   onAdd: () => void;
   onChange: (
     clientKey: string,
@@ -50,11 +54,30 @@ const getAnalyticsProgress = (
   };
 };
 
+const UZS = 1;
+
+// a sum account carries no currency; a currency account keeps the currency amount entered
+// and its rate follows the UZS amount
+const amountCurrency = (
+  isCurrency: boolean,
+  record: OpeningBalanceDetailForm,
+  amount: number,
+) =>
+  isCurrency && record.currencyId !== UZS
+    ? {
+        exchangeRate:
+          Number(record.currencyAmount ?? 0) > 0
+            ? amount / Number(record.currencyAmount)
+            : 1,
+      }
+    : { currencyId: UZS, currencyAmount: amount, exchangeRate: 1 };
+
 function OpeningBalanceDetailsTable({
   details,
   definitions,
   expandedDetailKey,
   isQuantity,
+  isCurrency,
   onAdd,
   onChange,
   onChangeSubkontos,
@@ -106,9 +129,7 @@ function OpeningBalanceDetailsTable({
                     onChange(record.clientKey, {
                       debitAmount,
                       creditAmount,
-                      currencyId: 1,
-                      currencyAmount: debitAmount || creditAmount,
-                      exchangeRate: 1,
+                      ...amountCurrency(isCurrency, record, debitAmount || creditAmount),
                     });
                   }}
                 />
@@ -136,9 +157,50 @@ function OpeningBalanceDetailsTable({
                     onChange(record.clientKey, {
                       debitAmount,
                       creditAmount,
-                      currencyId: 1,
-                      currencyAmount: creditAmount || debitAmount,
-                      exchangeRate: 1,
+                      ...amountCurrency(isCurrency, record, creditAmount || debitAmount),
+                    });
+                  }}
+                />
+              ),
+            },
+          ]
+        : []),
+      ...(isCurrency
+        ? [
+            {
+              title: t("openingBalance.fields.currency"),
+              width: 150,
+              render: (_value: unknown, record: OpeningBalanceDetailForm) => (
+                <SelectCustom
+                  fieldName={`currency-${record.clientKey}`}
+                  path={selectListEndpoints.currenciesSelectList}
+                  value={record.currencyId === UZS ? null : record.currencyId}
+                  marginBottom="mb-0"
+                  onChange={(value) =>
+                    onChange(record.clientKey, {
+                      currencyId: Number(value) || UZS,
+                    })
+                  }
+                />
+              ),
+            },
+            {
+              title: t("openingBalance.fields.currencyAmount"),
+              width: 165,
+              align: "center" as const,
+              render: (_value: unknown, record: OpeningBalanceDetailForm) => (
+                <InputNumberFormat
+                  standalone
+                  emptyZero
+                  min={0}
+                  precision={2}
+                  value={record.currencyId === UZS ? null : record.currencyAmount}
+                  onValueChange={(value) => {
+                    const currencyAmount = Number(value ?? 0);
+                    const uzs = Number(record.debitAmount || record.creditAmount || 0);
+                    onChange(record.clientKey, {
+                      currencyAmount,
+                      exchangeRate: currencyAmount > 0 ? uzs / currencyAmount : 1,
                     });
                   }}
                 />
@@ -209,7 +271,7 @@ function OpeningBalanceDetailsTable({
         ),
       },
     ],
-    [definitions, isQuantity, onChange, onRemove, t],
+    [definitions, isCurrency, isQuantity, onChange, onRemove, t],
   );
 
   return (

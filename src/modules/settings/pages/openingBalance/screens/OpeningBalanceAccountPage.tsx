@@ -178,6 +178,15 @@ export default function OpeningBalanceAccountPage() {
           );
           return;
         }
+        if (
+          chartAccount?.isCurrency &&
+          (Number(detail.currencyId ?? 1) === 1 || Number(detail.currencyAmount ?? 0) <= 0)
+        ) {
+          toast.error(
+            t("openingBalance.validation.currencyRequired", { row: index + 1 }),
+          );
+          return;
+        }
         if (chartAccount?.isQuantity && Number(detail.quantity ?? 0) <= 0) {
           toast.error(
             t("openingBalance.validation.quantityRequired", {
@@ -374,6 +383,7 @@ export default function OpeningBalanceAccountPage() {
           definitions={subkontoDefinitions}
           expandedDetailKey={expandedDetailKey}
           isQuantity={Boolean(chartAccount?.isQuantity)}
+          isCurrency={Boolean(chartAccount?.isCurrency)}
           onAdd={addDetail}
           onChange={updateDetail}
           onChangeSubkontos={(clientKey, subkontos) =>
