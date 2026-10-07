@@ -3453,6 +3453,9 @@
     }
   },
   "deferredExpenses": {
+    "purchaseLine": "Kelgusi davr xarajati",
+    "purchaseLinePlaceholder": "Qaysi xarajat (sug'urta, litsenziya, obuna ...)",
+    "purchaseLineHint": "Oy yopilganda jadval bo'yicha hisobdan chiqariladi. Yangisini qo'shish yoki jadvalini o'zgartirish:",
     "title": "Kelgusi davr xarajatlari",
     "new": "Kelgusi davr xarajati",
     "name": "Nomi",

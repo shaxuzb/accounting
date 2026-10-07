@@ -121,8 +121,9 @@ export const usePurchaseImportColumns = ({
     // a non-payer's VAT goes into the cost, so only the debit account is used
     const getAccountPreview = (row: PurchaseImportRow) =>
       [
-        getAccountPreviewLabel(row.debitAccountId, row.debitAccountName) ||
-          (row.debitAccountId ? `#${row.debitAccountId}` : "—"),
+        (getAccountPreviewLabel(row.debitAccountId, row.debitAccountName) ||
+          (row.debitAccountId ? `#${row.debitAccountId}` : "—")) +
+          (row.deferredExpenseName ? ` · ${row.deferredExpenseName}` : ""),
         ...(vatPayer
           ? [
               getAccountPreviewLabel(row.vatAccountId, row.vatAccountName) ||

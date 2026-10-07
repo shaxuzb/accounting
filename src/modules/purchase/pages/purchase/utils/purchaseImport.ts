@@ -392,6 +392,7 @@ const toPurchaseDocumentPayload = (
       vatRateId: item.vatRateId ?? null,
       debitAccountId: Number(item.debitAccountId ?? 0),
       vatAccountId: Number(item.vatAccountId ?? 0),
+      deferredExpenseItemId: item.deferredExpenseItemId ?? null,
     };
 
     if (!hasMarking) return line;

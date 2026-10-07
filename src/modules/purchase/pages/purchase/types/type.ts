@@ -152,6 +152,9 @@ export interface PurchaseImportRow {
   vatAccountId?: number | null;
   debitAccountName?: string;
   vatAccountName?: string;
+  /** A service posted to 31xx: the deferred expense it is kept by. */
+  deferredExpenseItemId?: number | null;
+  deferredExpenseName?: string | null;
   isSerial?: boolean;
   isPieceTracked?: boolean;
   markingCount?: number;
@@ -189,6 +192,8 @@ export interface PurchaseDetailLine {
   vatAccountId?: number | null;
   debitAccountName?: string;
   vatAccountName?: string;
+  deferredExpenseItemId?: number | null;
+  deferredExpenseName?: string | null;
 }
 
 export interface PurchaseDetailLineItem {

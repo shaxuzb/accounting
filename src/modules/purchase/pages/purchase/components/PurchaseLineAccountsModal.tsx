@@ -1,17 +1,28 @@
-import { Button, Modal, Space } from "antd";
+import { Button, Modal, Select, Space } from "antd";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { useFormik } from "formik";
+import { Link } from "react-router";
 import { Check, CheckCheck } from "lucide-react";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import type { PurchaseImportRow } from "../types/type";
 import type { PurchaseMode } from "../types/type";
 import { purchaseDocumentTypeIds } from "../constants/endpoints";
 import { useTranslation } from "react-i18next";
+import { getJson } from "@/modules/accountings/services/request";
+import { useAccountDefinitions } from "@/modules/accountings/pages/manual-entries/useAccountDefinitions";
+import type { DeferredExpense } from "@/modules/accountings/pages/deferred-expenses/types";
+
+/** The deferred expenses analytics (31xx). */
+const DEFERRED_EXPENSES_SUBKONTO = 20;
 
 export interface PurchaseLineAccountValues {
   debitAccountId: number | null;
   debitAccountName: string;
   vatAccountId: number | null;
   vatAccountName: string;
+  deferredExpenseItemId: number | null;
+  deferredExpenseName: string | null;
 }
 
 interface Props {
@@ -31,6 +42,8 @@ const getInitialValues = (
   debitAccountName: line?.debitAccountName ?? "",
   vatAccountId: line?.vatAccountId ?? null,
   vatAccountName: line?.vatAccountName ?? "",
+  deferredExpenseItemId: line?.deferredExpenseItemId ?? null,
+  deferredExpenseName: line?.deferredExpenseName ?? null,
 });
 
 export default function PurchaseLineAccountsModal({
@@ -48,6 +61,18 @@ export default function PurchaseLineAccountsModal({
     onSubmit: (values) => onApply(values, false),
   });
 
+  // a service on 31xx (1C сч. 97) names its deferred expense, which the month close writes off
+  const { definitions } = useAccountDefinitions(formik.values.debitAccountId);
+  const isDeferredAccount =
+    purchaseMode === "services" &&
+    definitions.some((definition) => definition.id === DEFERRED_EXPENSES_SUBKONTO);
+  const deferredExpenses = useQuery({
+    queryKey: ["deferred-expenses"],
+    queryFn: () => getJson<DeferredExpense[]>("/deferred-expenses"),
+    enabled: open && isDeferredAccount,
+  });
+  const [deferredTouched, setDeferredTouched] = useState(false);
+
   const handleApply = (applyToAll: boolean) => {
     if (
       !formik.values.debitAccountId ||
@@ -56,8 +81,17 @@ export default function PurchaseLineAccountsModal({
       formik.setTouched({ debitAccountId: true, vatAccountId: true });
       return;
     }
+    if (isDeferredAccount && !formik.values.deferredExpenseItemId) {
+      setDeferredTouched(true);
+      return;
+    }
 
-    onApply(formik.values, applyToAll);
+    onApply(
+      isDeferredAccount
+        ? formik.values
+        : { ...formik.values, deferredExpenseItemId: null, deferredExpenseName: null },
+      applyToAll,
+    );
   };
 
   return (
@@ -126,6 +160,40 @@ export default function PurchaseLineAccountsModal({
             required
             clearable
           />
+        )}
+        {isDeferredAccount && (
+          <div className="pt-2">
+            <span className="mb-1 block text-sm">
+              {t("deferredExpenses.purchaseLine")} <span className="text-red-500">*</span>
+            </span>
+            <Select
+              className="w-full"
+              showSearch
+              optionFilterProp="label"
+              loading={deferredExpenses.isLoading}
+              status={deferredTouched && !formik.values.deferredExpenseItemId ? "error" : undefined}
+              value={formik.values.deferredExpenseItemId ?? undefined}
+              placeholder={t("deferredExpenses.purchaseLinePlaceholder")}
+              options={(deferredExpenses.data ?? []).map((item) => ({
+                value: item.itemId,
+                label: item.hasSchedule ? item.name : `${item.name} (${t("deferredExpenses.noSchedule")})`,
+              }))}
+              onChange={(value: number) => {
+                const item = deferredExpenses.data?.find((x) => x.itemId === value);
+                void formik.setValues({
+                  ...formik.values,
+                  deferredExpenseItemId: value,
+                  deferredExpenseName: item?.name ?? null,
+                });
+              }}
+            />
+            <div className="mt-1 text-xs text-secondary-text">
+              {t("deferredExpenses.purchaseLineHint")}{" "}
+              <Link to="/main/accountings/deferred-expenses" target="_blank">
+                {t("deferredExpenses.title")}
+              </Link>
+            </div>
+          </div>
         )}
       </div>
     </Modal>

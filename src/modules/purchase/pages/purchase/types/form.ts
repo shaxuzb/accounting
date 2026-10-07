@@ -15,6 +15,7 @@ export interface PurchaseDocLineDto {
   vatRateId: number | null;
   debitAccountId: number;
   vatAccountId: number;
+  deferredExpenseItemId?: number | null;
   items?: PurchaseDocLineItemDto[];
 }
 

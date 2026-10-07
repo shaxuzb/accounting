@@ -277,6 +277,8 @@ const mapDetailLinesToRows = (
         vatAccountId: getNumberValue(detailLine.vatAccountId, NaN) || null,
         debitAccountName: String(detailLine.debitAccountName ?? ""),
         vatAccountName: String(detailLine.vatAccountName ?? ""),
+        deferredExpenseItemId: getNumberValue(detailLine.deferredExpenseItemId, NaN) || null,
+        deferredExpenseName: detailLine.deferredExpenseName ? String(detailLine.deferredExpenseName) : null,
         isSerial: false,
         isPieceTracked: Boolean(
           resolvedProduct?.isPieceTracked || markingNumbers.length,
@@ -339,6 +341,8 @@ const mapDetailLinesToRows = (
       vatAccountId: detailLine.vatAccountId ?? null,
       debitAccountName: detailLine.debitAccountName,
       vatAccountName: detailLine.vatAccountName,
+      deferredExpenseItemId: detailLine.deferredExpenseItemId ?? null,
+      deferredExpenseName: detailLine.deferredExpenseName ?? null,
       isSerial: false,
       isPieceTracked: Boolean(
         product?.isPieceTracked ||
@@ -934,6 +938,8 @@ export const PurchaseEditor = ({
               debitAccountName: values.debitAccountName,
               vatAccountId: values.vatAccountId,
               vatAccountName: values.vatAccountName,
+              deferredExpenseItemId: values.deferredExpenseItemId,
+              deferredExpenseName: values.deferredExpenseName,
             }
           : item,
       );

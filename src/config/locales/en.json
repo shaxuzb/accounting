@@ -3453,6 +3453,9 @@
     }
   },
   "deferredExpenses": {
+    "purchaseLine": "Deferred expense",
+    "purchaseLinePlaceholder": "Which expense (insurance, licence, subscription ...)",
+    "purchaseLineHint": "Written off by its schedule when the month is closed. Add one or change its schedule:",
     "title": "Deferred expenses",
     "new": "Deferred expense",
     "name": "Name",
