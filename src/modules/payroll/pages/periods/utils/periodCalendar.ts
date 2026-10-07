@@ -35,12 +35,24 @@ export const toggleWorkDate = (dates: string[], date: string) =>
     ? dates.filter((item) => item !== date)
     : [...dates, date].sort();
 
+/**
+ * Uzbekistan's fixed public holidays (MM-DD), days off whatever the weekday, as 1C's
+ * production calendar has them: New Year, Women's Day, Navruz, Remembrance Day,
+ * Independence Day, Teachers' Day, Constitution Day. The two Hayit days move every year
+ * (set by decree) and are marked by hand.
+ */
+export const UZ_FIXED_HOLIDAYS = ["01-01", "03-08", "03-21", "05-09", "09-01", "10-01", "12-08"];
+
+const isFixedHoliday = (date: Dayjs) => UZ_FIXED_HOLIDAYS.includes(date.format("MM-DD"));
+const isWorkingWeekday = (date: Dayjs) =>
+  date.day() !== 0 && date.day() !== 6 && !isFixedHoliday(date);
+
 export const proposeWeekdayWorkDates = (year: number, month: number) => {
   const start = dayjs(`${year}-${String(month).padStart(2, "0")}-01`);
   return Array.from({ length: start.daysInMonth() }, (_, index) =>
     start.add(index, "day"),
   )
-    .filter((date) => date.day() !== 0 && date.day() !== 6)
+    .filter(isWorkingWeekday)
     .map((date) => date.format("YYYY-MM-DD"));
 };
 
@@ -52,11 +64,14 @@ export const createPeriodCalendarDays = (
   const start = dayjs(`${year}-${String(month).padStart(2, "0")}-01`);
   return Array.from({ length: start.daysInMonth() }, (_, index) => {
     const date = start.add(index, "day");
-    const isWeekday = date.day() !== 0 && date.day() !== 6;
+    const isWeekday = isWorkingWeekday(date);
+    // the working day before a public holiday is one hour shorter (Labour Code)
+    const isEve = isWeekday && isFixedHoliday(date.add(1, "day"));
+    const hours = isEve ? Math.max(dailyWorkHours - 1, 0) : dailyWorkHours;
     return {
       date: date.format("YYYY-MM-DD"),
-      dayType: (isWeekday ? "NORMAL" : "HOLIDAY") as PayrollPeriodDayType,
-      workHours: isWeekday ? dailyWorkHours : 0,
+      dayType: (isWeekday ? (isEve ? "SHORTENED" : "NORMAL") : "HOLIDAY") as PayrollPeriodDayType,
+      workHours: isWeekday ? hours : 0,
       isWorkDay: isWeekday,
     };
   });
