@@ -28,7 +28,8 @@ import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 const createDefaultValues = (): FaReceiptFormValues => ({
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   counterpartyId: null,
-  currencyId: null,
+  // UZS, as every other document starts (CurrencyIdConst.UZS)
+  currencyId: 1,
   receiptTypeId: null,
   supplierAccountId: null,
   lines: [

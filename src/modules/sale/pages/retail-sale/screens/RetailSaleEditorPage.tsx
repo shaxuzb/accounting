@@ -14,6 +14,7 @@ import {
   useScopedStorageKey,
 } from "@/shared/persistence/usePersistedState";
 import { useGetNowSaleCondition } from "@/modules/settings/pages/saleCondition/hooks";
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import DocumentProcessingModeModal from "@/components/ui/DocumentProcessingModeModal";
 import SaleProductSelection from "../../sale/components/SaleProductSelection";
 // import { getSaleCostingValidationError } from "../../sale/utils/saleCostingValidation";
@@ -146,13 +147,19 @@ export default function RetailSaleEditorPage() {
   // seller says otherwise. Turned off, the units that leave stock are picked in costing
   // order — the only way to sell a marked product over the counter without scanning it.
   const [markingMode, setMarkingMode] = useState(true);
-  const activeSaleCondition = saleCondition ?? {
+  const vatPayer = useVatPayer();
+  const baseSaleCondition = saleCondition ?? {
     id: 0,
     costingMethodId: 3,
     vatRateId: products[0]?.vatRateId ?? 0,
     startDate: "",
     endDate: null,
   };
+  // a non-payer sells «QQSsiz» (1C «Без НДС»): new lines take that rate
+  const activeSaleCondition =
+    !vatPayer.isVatPayer && vatPayer.noVatRateId
+      ? { ...baseSaleCondition, vatRateId: vatPayer.noVatRateId }
+      : baseSaleCondition;
 
   const formik = useFormik<RetailSaleFormValues>({
     initialValues: document

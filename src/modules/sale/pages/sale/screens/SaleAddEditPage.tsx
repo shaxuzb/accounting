@@ -9,6 +9,7 @@ import { useAppSelector } from "@/store/hooks";
 import { formatDate } from "@/utils/helpers";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { useGetNowSaleCondition } from "@/modules/settings/pages/saleCondition/hooks";
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import { SaleDocumentFormFields, SaleProductSelection } from "../components";
 import { useCreateSale, useGetDetailSale, useUpdateSale } from "../hooks";
 import type {
@@ -135,13 +136,19 @@ export default function SaleAddEditPage() {
     () => selectedProducts ?? (isEdit ? savedProducts : []),
     [isEdit, savedProducts, selectedProducts],
   );
-  const activeSaleCondition = saleCondition ?? {
+  const vatPayer = useVatPayer();
+  const baseSaleCondition = saleCondition ?? {
     id: 0,
     costingMethodId: 3,
     vatRateId: products[0]?.vatRateId ?? 0,
     startDate: "",
     endDate: null,
   };
+  // a non-payer sells «QQSsiz» (1C «Без НДС»): new lines take that rate
+  const activeSaleCondition =
+    !vatPayer.isVatPayer && vatPayer.noVatRateId
+      ? { ...baseSaleCondition, vatRateId: vatPayer.noVatRateId }
+      : baseSaleCondition;
 
   const formik = useFormik<SaleDocForm>({
     initialValues: document
