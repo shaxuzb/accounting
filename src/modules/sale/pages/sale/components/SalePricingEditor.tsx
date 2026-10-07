@@ -60,7 +60,7 @@ interface SalePricingDraftLine {
   marginPercent: number;
 }
 
-interface SaleConfirmAggregate extends SaleDocConfirmLineForm {
+interface SaleConfirmAggregate extends Omit<SaleDocConfirmLineForm, "items"> {
   productId: number;
   productName: string;
   productMxik?: string | null;
@@ -373,11 +373,15 @@ export default function SalePricingEditor({
 
     return {
       // the VAT rate goes too: changed here, it used to show on screen and post the old one
-      lines: payloadLines.map(({ id, costPrice, unitPrice, vatRateId }) => ({
+      // marked units keep the price each was given, not the line's average
+      lines: payloadLines.map(({ id, costPrice, unitPrice, vatRateId, items }) => ({
         id,
         costPrice,
         unitPrice,
         vatRateId: vatRateId || null,
+        items: items
+          .filter((item) => item.id > 0)
+          .map((item) => ({ id: item.id, unitPrice: item.amount })),
       })),
     };
   };
