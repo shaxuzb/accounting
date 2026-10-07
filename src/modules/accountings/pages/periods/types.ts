@@ -5,6 +5,8 @@ export interface AccountingPeriod {
   hasPeriod: boolean;
   isClosed: boolean;
   closedAt?: string | null;
+  /** Opened again with an earlier month: has to be closed again, in order. */
+  recloseRequired?: boolean;
   /** Profit (negative: loss) the closing moved to 9910. */
   result?: number | null;
 }
@@ -67,4 +69,19 @@ export interface MonthCloseDeferredLine {
   /** The 31xx balance at the month end, before the write-off. */
   balance: number;
   amount: number;
+}
+
+export interface AccountingPeriodMonth {
+  id: number;
+  year: number;
+  month: number;
+}
+
+export interface MonthCloseThroughResult {
+  closed: AccountingPeriodMonth[];
+  stopped?: AccountingPeriodMonth | null;
+  /** MONTH_NOT_OVER, REVALUATION_REQUIRED, DEPRECIATION_REQUIRED, ACCOUNTS_MISSING, OPENING_OFFSET, PREVIOUS_OPEN, ERROR. */
+  stopReasons: string[];
+  stopMessage?: string | null;
+  recloseRemaining: AccountingPeriodMonth[];
 }

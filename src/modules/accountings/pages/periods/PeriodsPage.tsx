@@ -1,4 +1,4 @@
-import { Alert, Button, Modal, Popconfirm, Space, Spin, Table, Tag } from "antd";
+import { Alert, Button, Modal, Space, Spin, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import {
   ChevronLeft,
@@ -18,8 +18,20 @@ import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import { useAppSelector } from "@/store/hooks";
 import { periodPermissions } from "./api";
-import { useCloseCheck, useClosePeriod, usePeriods, useReopenPeriod } from "./hooks";
-import type { AccountingPeriod, MonthCloseDeferredLine, MonthCloseLine } from "./types";
+import {
+  useCloseCheck,
+  useClosePeriod,
+  usePeriods,
+  useRecloseRequired,
+  useReopenPeriod,
+  useReopenPreview,
+} from "./hooks";
+import type {
+  AccountingPeriod,
+  AccountingPeriodMonth,
+  MonthCloseDeferredLine,
+  MonthCloseLine,
+} from "./types";
 
 const money = (value?: number | null) =>
   (value ?? 0).toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -27,23 +39,28 @@ const money = (value?: number | null) =>
 
 /**
  * The accounting months: each closes by hand once it is over (its 9xxx accounts go to 9910,
- * in December 9910 to 8710) and only someone allowed to reopen periods opens it again.
+ * in December 9910 to 8710). Any closed month opens again (1C «Отмена закрытия месяца»): the
+ * months closed after it open with it and are closed again in order — closing the first of
+ * them goes on through the rest.
  */
 export default function PeriodsPage() {
   const { t } = useTranslation();
   const monthName = (month: number) => t(`periods.monthNames.${month}`);
+  const monthLabel = (period: AccountingPeriodMonth) => `${monthName(period.month)} ${period.year}`;
   const [year, setYear] = useState(dayjs().year());
   const { data = [], isLoading } = usePeriods(year);
-  const reopen = useReopenPeriod();
+  const { data: reclose = [] } = useRecloseRequired();
   const [closing, setClosing] = useState<number | null>(null);
+  const [reopening, setReopening] = useState<number | null>(null);
   const userPermissions = useAppSelector((state) => state.auth.user?.user.permissions ?? []);
   const canClose = userPermissions.includes(periodPermissions.close);
   const canReopen = userPermissions.includes(periodPermissions.reopen);
 
-  // a month opens again only when it is the last closed one
-  const lastClosedId = [...data].reverse().find((x) => x.isClosed)?.id;
-  // and closes only when every earlier month is closed
-  const firstOpenId = data.find((x) => x.hasPeriod && !x.isClosed)?.id;
+  // a month closes only when every earlier month is closed — across years too
+  const firstOpenId =
+    reclose.length > 0 && reclose[0].year < year
+      ? undefined
+      : data.find((x) => x.hasPeriod && !x.isClosed)?.id;
 
   const columns: TableColumnsType<AccountingPeriod> = [
     {
@@ -57,6 +74,10 @@ export default function PeriodsPage() {
       render: (_, period) =>
         !period.hasPeriod ? (
           <Tag>{t("periods.noActivity")}</Tag>
+        ) : period.recloseRequired ? (
+          <Tag color="orange" icon={<TriangleAlert className="mr-1 inline size-3" />}>
+            {t("periods.recloseRequired")}
+          </Tag>
         ) : period.isClosed ? (
           <Tag color="green" icon={<Lock className="mr-1 inline size-3" />}>
             {t("periods.closed")}
@@ -92,21 +113,13 @@ export default function PeriodsPage() {
         if (!period.isClosed)
           return canClose && period.id === firstOpenId ? (
             <Button type="primary" size="small" icon={<Lock className="size-4" />} onClick={() => setClosing(period.id)}>
-              {t("periods.close")}
+              {period.recloseRequired ? t("periods.reclose") : t("periods.close")}
             </Button>
           ) : null;
-        return canReopen && period.id === lastClosedId ? (
-          <Popconfirm
-            title={t("periods.reopenConfirm")}
-            okButtonProps={{ danger: true }}
-            onConfirm={() =>
-              reopen.mutateAsync(period.id!).then(() => toast.success(t("periods.reopened")))
-            }
-          >
-            <Button size="small" danger icon={<LockOpen className="size-4" />}>
-              {t("periods.reopen")}
-            </Button>
-          </Popconfirm>
+        return canReopen ? (
+          <Button size="small" danger icon={<LockOpen className="size-4" />} onClick={() => setReopening(period.id)}>
+            {t("periods.reopen")}
+          </Button>
         ) : null;
       },
     },
@@ -122,6 +135,25 @@ export default function PeriodsPage() {
         </Space>
         <span className="text-sm text-secondary-text">{t("periods.hint")}</span>
       </Card>
+      {reclose.length > 0 && (
+        <Alert
+          type="warning"
+          showIcon
+          message={t("periods.recloseBanner", {
+            from: monthLabel(reclose[0]),
+            to: monthLabel(reclose[reclose.length - 1]),
+            count: reclose.length,
+          })}
+          description={t("periods.recloseBannerHint")}
+          action={
+            reclose[0].year !== year ? (
+              <Button size="small" onClick={() => setYear(reclose[0].year)}>
+                {t("periods.recloseGo")}
+              </Button>
+            ) : undefined
+          }
+        />
+      )}
       <Card className="overflow-hidden border border-border">
         <Table<AccountingPeriod>
           rowKey="month"
@@ -132,8 +164,53 @@ export default function PeriodsPage() {
           pagination={false}
         />
       </Card>
-      {closing !== null && <CloseMonthModal periodId={closing} onClose={() => setClosing(null)} />}
+      {closing !== null && (
+        <CloseMonthModal periodId={closing} recloseCount={reclose.length} onClose={() => setClosing(null)} />
+      )}
+      {reopening !== null && <ReopenMonthModal periodId={reopening} onClose={() => setReopening(null)} />}
     </div>
+  );
+}
+
+/** Which months reopening one opens with it, before anything is done. */
+function ReopenMonthModal({ periodId, onClose }: { periodId: number; onClose: () => void }) {
+  const { t } = useTranslation();
+  const monthName = (month: number) => t(`periods.monthNames.${month}`);
+  const { data: months = [], isLoading } = useReopenPreview(periodId);
+  const reopen = useReopenPeriod();
+  const first = months[0];
+  const later = months.slice(1);
+
+  const submit = async () => {
+    const reopened = await reopen.mutateAsync(periodId);
+    toast.success(t("periods.reopenedCount", { count: reopened.length }));
+    onClose();
+  };
+
+  return (
+    <Modal
+      open
+      title={first ? t("periods.reopenTitle", { month: `${monthName(first.month)} ${first.year}` }) : t("periods.reopen")}
+      okText={t("periods.reopen")}
+      okButtonProps={{ danger: true, disabled: isLoading || !first, loading: reopen.isPending }}
+      onOk={submit}
+      onCancel={onClose}
+    >
+      <Spin spinning={isLoading}>
+        <div className="space-y-3">
+          <p>{t("periods.reopenExplain")}</p>
+          {later.length > 0 && (
+            <Alert
+              type="warning"
+              showIcon
+              message={t("periods.reopenLater", { count: later.length })}
+              description={later.map((x) => `${monthName(x.month)} ${x.year}`).join(", ")}
+            />
+          )}
+          <p className="text-sm text-secondary-text">{t("periods.reopenAfter")}</p>
+        </div>
+      </Spin>
+    </Modal>
   );
 }
 
@@ -152,15 +229,38 @@ function CheckItem({ ok, warning, children }: { ok: boolean; warning?: boolean; 
   );
 }
 
-function CloseMonthModal({ periodId, onClose }: { periodId: number; onClose: () => void }) {
+function CloseMonthModal({
+  periodId,
+  recloseCount,
+  onClose,
+}: {
+  periodId: number;
+  recloseCount: number;
+  onClose: () => void;
+}) {
   const { t } = useTranslation();
   const monthName = (month: number) => t(`periods.monthNames.${month}`);
   const { data: check, isLoading } = useCloseCheck(periodId);
   const close = useClosePeriod();
 
   const submit = async () => {
-    await close.mutateAsync(periodId);
-    toast.success(t("periods.closedMessage"));
+    const result = await close.mutateAsync(periodId);
+    const closed = result.closed.map((x) => `${monthName(x.month)} ${x.year}`).join(", ");
+    if (result.stopped) {
+      const reasons = result.stopReasons
+        .map((reason) => (reason === "ERROR" && result.stopMessage ? result.stopMessage : t(`periods.stopReasons.${reason}`)))
+        .join("; ");
+      toast(
+        t("periods.recloseStopped", {
+          closed,
+          month: `${monthName(result.stopped.month)} ${result.stopped.year}`,
+          reasons,
+        }),
+        { icon: "⚠️", duration: 9000 },
+      );
+    } else {
+      toast.success(result.closed.length > 1 ? t("periods.reclosedMessage", { closed }) : t("periods.closedMessage"));
+    }
     onClose();
   };
 
@@ -300,6 +400,9 @@ function CloseMonthModal({ periodId, onClose }: { periodId: number; onClose: () 
         </div>
       ) : (
         <div className="space-y-3">
+          {recloseCount > 1 && (
+            <Alert type="info" showIcon message={t("periods.recloseChain", { count: recloseCount - 1 })} />
+          )}
           <div className="rounded-md border border-border p-3">
             <CheckItem ok={check.monthIsOver}>{t(check.monthIsOver ? "periods.check.monthOver" : "periods.check.monthNotOver")}</CheckItem>
             <CheckItem ok={!check.previousPeriodsOpen}>

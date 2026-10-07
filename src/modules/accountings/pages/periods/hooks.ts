@@ -15,7 +15,20 @@ export const useCloseCheck = (id: number | null) =>
     enabled: !!id,
   });
 
-const usePeriodMutation = (action: (id: number) => Promise<unknown>) => {
+export const useRecloseRequired = () =>
+  useQuery({
+    queryKey: ["accounting-periods", "reclose-required"],
+    queryFn: periodService.recloseRequired,
+  });
+
+export const useReopenPreview = (id: number | null) =>
+  useQuery({
+    queryKey: ["accounting-period-reopen-preview", id],
+    queryFn: () => periodService.reopenPreview(id!),
+    enabled: !!id,
+  });
+
+const usePeriodMutation = <T,>(action: (id: number) => Promise<T>) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: action,
@@ -23,6 +36,7 @@ const usePeriodMutation = (action: (id: number) => Promise<unknown>) => {
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ["accounting-periods"] });
       void queryClient.invalidateQueries({ queryKey: ["accounting-period-close-check"] });
+      void queryClient.invalidateQueries({ queryKey: ["accounting-period-reopen-preview"] });
     },
   });
 };
