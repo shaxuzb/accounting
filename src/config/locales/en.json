@@ -2719,6 +2719,8 @@
       "noStock": "No stock in this warehouse"
     },
     "messages": {
+      "cancelPostedTitle": "Cancel the posted document?",
+      "cancelPostedHint": "Its entries and stock movements are reversed (on the document date).",
       "created": "Document created",
       "saved": "Document saved",
       "fillRequired": "Fill in the required fields",

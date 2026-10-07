@@ -131,6 +131,7 @@ export default function InventoryAdjustmentDetailPage() {
         <div className="space-y-4">
           <InventoryAdjustmentActions
             isDraft={isDraft}
+            isPosted={!isCreate && statusId === 2}
             saving={createMutation.isPending || updateMutation.isPending}
             confirming={confirmMutation.isPending}
             cancelling={cancelMutation.isPending}

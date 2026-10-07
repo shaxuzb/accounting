@@ -1,10 +1,12 @@
-import { Button } from "antd";
+import { Button, Popconfirm } from "antd";
 import { CheckCircle2, CircleX, Save } from "lucide-react";
 import Card from "@/components/ui/card/Card";
 import { useTranslation } from "react-i18next";
 
 interface Props {
   isDraft: boolean;
+  /** A posted document is cancelled with a storno (asked first); a draft simply. */
+  isPosted?: boolean;
   saving: boolean;
   confirming: boolean;
   cancelling: boolean;
@@ -15,6 +17,7 @@ interface Props {
 
 export default function InventoryAdjustmentActions({
   isDraft,
+  isPosted = false,
   saving,
   confirming,
   cancelling,
@@ -46,16 +49,31 @@ export default function InventoryAdjustmentActions({
       >
         {t("common.confirm")}
       </Button>
-      <Button
-        danger
-        block
-        icon={<CircleX className="size-4" />}
-        onClick={onCancel}
-        disabled={!isDraft}
-        loading={cancelling}
-      >
-        {t("common.cancel")}
-      </Button>
+      {isPosted ? (
+        <Popconfirm
+          title={t("warehouse.messages.cancelPostedTitle")}
+          description={t("warehouse.messages.cancelPostedHint")}
+          okText={t("common.cancel")}
+          okButtonProps={{ danger: true }}
+          cancelText={t("common.close")}
+          onConfirm={onCancel}
+        >
+          <Button danger block icon={<CircleX className="size-4" />} loading={cancelling}>
+            {t("common.cancel")}
+          </Button>
+        </Popconfirm>
+      ) : (
+        <Button
+          danger
+          block
+          icon={<CircleX className="size-4" />}
+          onClick={onCancel}
+          disabled={!isDraft}
+          loading={cancelling}
+        >
+          {t("common.cancel")}
+        </Button>
+      )}
     </Card>
   );
 }

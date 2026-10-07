@@ -2719,6 +2719,8 @@
       "noStock": "Omborda qoldiq yo'q"
     },
     "messages": {
+      "cancelPostedTitle": "Tasdiqlangan hujjatni bekor qilasizmi?",
+      "cancelPostedHint": "Provodkalar va ombor harakati storno qilinadi (hujjat sanasi bilan).",
       "created": "Hujjat yaratildi",
       "saved": "Hujjat saqlandi",
       "fillRequired": "Majburiy maydonlarni to'ldiring",
