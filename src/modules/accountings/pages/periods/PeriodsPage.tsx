@@ -285,6 +285,11 @@ function CloseMonthModal({ periodId, onClose }: { periodId: number; onClose: () 
                 ? t("periods.check.noDrafts")
                 : t("periods.check.drafts", { count: check.draftDocumentCount })}
             </CheckItem>
+            <CheckItem ok={(check.rentAwaitingAccrual ?? 0) === 0} warning>
+              {(check.rentAwaitingAccrual ?? 0) === 0
+                ? t("periods.check.rentAccrued")
+                : t("periods.check.rentMissing", { count: check.rentAwaitingAccrual })}
+            </CheckItem>
             <CheckItem ok={(check.entriesMissingAnalytics ?? 0) === 0} warning>
               {(check.entriesMissingAnalytics ?? 0) === 0
                 ? t("periods.check.analyticsFilled")

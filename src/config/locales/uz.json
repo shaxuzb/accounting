@@ -3329,6 +3329,8 @@
       "accountsPresent": "9910 (va dekabrda 8710) hisoblari mavjud",
       "accountsMissing": "Hisoblar rejasida yo'q: {{accounts}}. Namunaviy rejadan qo'shing.",
       "noDrafts": "O'tkazilmagan hujjatlar yo'q",
+      "rentAccrued": "Ijara hisoblangan (yoki kerak emas)",
+      "rentMissing": "{{count}} ta ijara obyekti uchun bu oy ijarasi hisoblanmagan — xarajat to'liq emas (ogohlantirish). Ijara → Hisob-kitob yaratish",
       "analyticsFilled": "Provodkalarda analitika to'liq",
       "analyticsMissing": "{{count}} ta provodkada analitika (kontragent, modda va h.k.) to'ldirilmagan — hisobotlarda ular «bo'sh» chiqadi (ogohlantirish)",
       "drafts": "{{count}} ta hujjat o'tkazilmagan — ular buxgalteriyaga kirmaydi (ogohlantirish).",

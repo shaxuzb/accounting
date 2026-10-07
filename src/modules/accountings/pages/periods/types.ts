@@ -29,6 +29,7 @@ export interface MonthCloseCheck {
   /** Assets in use not yet depreciated for the month: the month closes only after the run. */
   assetsAwaitingDepreciation?: number;
   entriesMissingAnalytics?: number;
+  rentAwaitingAccrual?: number;
   revaluationLineCount: number;
   revaluationDifference: number;
   revaluationError?: string | null;
