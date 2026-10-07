@@ -70,6 +70,9 @@ export interface AccountingPolicyCurrentDto {
   effectiveTo: string | null;
   policyVersioning: boolean | null;
   closedPeriodPolicy: string | null;
+  payrollTaxRegimeId?: number | null;
+  /** The payroll tax regime in force on the date asked, with its rates then. */
+  payrollTaxRegime?: PayrollTaxRegimeOnDate | null;
   sourceStatus: SourceStatus;
   sourceEvidence?: string | null;
   requiresBusinessDecision: boolean;
@@ -85,6 +88,8 @@ export interface AccountingPolicyVersionDto {
   inventoryValuationMethod: string | null;
   baseCurrencyId: number | null;
   vatPayer: boolean | null;
+  payrollTaxRegimeId?: number | null;
+  payrollTaxRegimeName?: string | null;
   taxTypeId: number | null;
   vatTaxPeriod: string | null;
   vatBaseMoment: string | null;
@@ -118,6 +123,8 @@ export interface AccountingPolicyUpdateRequest {
   inventoryValuationMethod: "FIFO";
   baseCurrencyId: 1;
   vatPayer: boolean;
+  /** The payroll tax regime the organization is entitled to; null keeps its own tax rates. */
+  payrollTaxRegimeId: number | null;
   taxTypeId: number | null;
   vatTaxPeriod: "MONTH";
   vatBaseMoment: "SHIPMENT";
@@ -141,4 +148,38 @@ export interface VatRate {
   id: number;
   name: string;
   code: string | null;
+}
+
+/** A statutory payroll tax a regime rates. */
+export type PayrollTaxKind = "NDFL" | "INPS" | "SOCIAL";
+
+export interface PayrollTaxRegimeRate {
+  id?: number | null;
+  taxKind: PayrollTaxKind;
+  rate: number;
+  nonResidentRate?: number | null;
+  effectiveFrom: string;
+  effectiveTo?: string | null;
+  legalBasis?: string | null;
+}
+
+/** A payroll tax regime the platform keeps (general, budget organization, IT Park resident ...). */
+export interface PayrollTaxRegime {
+  id: number;
+  code: string;
+  name: string;
+  description?: string | null;
+  legalBasis?: string | null;
+  sortOrder: number;
+  stateId: number;
+  organizationCount: number;
+  rates: PayrollTaxRegimeRate[];
+}
+
+export interface PayrollTaxRegimeOnDate {
+  id: number;
+  code: string;
+  name: string;
+  legalBasis?: string | null;
+  rates: PayrollTaxRegimeRate[];
 }

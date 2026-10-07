@@ -44,6 +44,11 @@ export default function PolicyHistoryTab({
           </Tag>
         ),
     },
+    {
+      title: t("taxRegime.field"),
+      dataIndex: "payrollTaxRegimeName",
+      render: (value?: string | null) => value ?? t("taxRegime.none"),
+    },
     { title: t("accountingPolicy.view.valuation"), dataIndex: "inventoryValuationMethod", render: (value) => value ?? "—" },
   ];
 

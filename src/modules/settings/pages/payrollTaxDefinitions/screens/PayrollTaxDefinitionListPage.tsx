@@ -15,7 +15,7 @@ import { useAppSelector } from "@/store/hooks";
 import { stateStatus } from "@/utils/helpers/statusHelper";
 import { numberSpacing } from "@/utils/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button, Table, Tag } from "antd";
+import { Button, Table, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import dayjs from "dayjs";
 import { Plus } from "lucide-react";
@@ -93,7 +93,21 @@ export default function PayrollTaxDefinitionListPage() {
       dataIndex: "rate",
       title: t("payroll.fields.taxRate"),
       align: "center",
-      render: (value: number) => `${value} %`,
+      // the regime's rate is what payroll charges; the own rate is kept for a version
+      // without a regime
+      render: (value: number, record) =>
+        record.regimeRate != null ? (
+          <Tooltip title={t("payroll.messages.regimeRateHint", { regime: record.regimeName, own: value })}>
+            <Tag color="blue">{`${record.regimeRate} %`}</Tag>
+          </Tooltip>
+        ) : (
+          `${value} %`
+        ),
+    },
+    {
+      dataIndex: "taxKind",
+      title: t("payroll.fields.taxKind"),
+      render: (value?: string | null) => (value ? t(`taxRegime.kinds.${value}`) : "—"),
     },
     {
       dataIndex: "exemptionAmount",

@@ -8,7 +8,9 @@ export interface PayrollTaxDefinitionForm {
   name: string;
   taxType: PayrollTaxType | null;
   baseType: PayrollTaxBaseType | null;
+  taxKind: string | null;
   rate: number | null;
+  nonResidentRate: number | null;
   exemptionAmount: number | null;
   limitAmount: number | null;
   reducesTaxCode: string | null;

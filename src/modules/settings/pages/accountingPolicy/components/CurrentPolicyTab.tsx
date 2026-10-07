@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import type { AccountingPolicyCurrentDto } from "../types/type";
+import { PayrollTaxRegimeRates } from "./PayrollTaxRegimeField";
 
 const formatDay = (value?: string | null) =>
   value ? dayjs(value).format("DD.MM.YYYY") : null;
@@ -58,6 +59,14 @@ export default function CurrentPolicyTab({
     { label: t("accountingPolicy.view.vatPeriod"), value: t("accountingPolicy.view.vatPeriodMonth") },
     { label: t("accountingPolicy.view.vatBase"), value: t("accountingPolicy.view.vatBaseShipment") },
     { label: t("accountingPolicy.view.closedPeriods"), value: t("accountingPolicy.view.closedProtected") },
+    {
+      label: t("taxRegime.field"),
+      value: data.payrollTaxRegime ? (
+        <Tag color="blue">{data.payrollTaxRegime.name}</Tag>
+      ) : (
+        <span className="font-normal text-secondary-text">{t("taxRegime.none")}</span>
+      ),
+    },
   ];
 
   return (
@@ -81,6 +90,12 @@ export default function CurrentPolicyTab({
           </div>
         ))}
       </dl>
+      {data.payrollTaxRegime && data.payrollTaxRegime.rates.length > 0 && (
+        <div className="mt-4 space-y-2">
+          <div className="text-sm font-semibold">{t("taxRegime.ratesNow")}</div>
+          <PayrollTaxRegimeRates rates={data.payrollTaxRegime.rates} />
+        </div>
+      )}
     </Card>
   );
 }

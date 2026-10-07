@@ -19,11 +19,13 @@ import {
 } from "../utils/payload";
 import { accountingPolicySchema } from "../types/schema";
 import type { AccountingPolicyForm } from "../types/form";
+import PayrollTaxRegimeField from "../components/PayrollTaxRegimeField";
 
 const createDefaultValues = (): AccountingPolicyForm => ({
   inventoryValuationMethod: "FIFO",
   baseCurrencyId: 1,
   vatPayer: true,
+  payrollTaxRegimeId: null,
   taxTypeId: null,
   vatTaxPeriod: "MONTH",
   vatBaseMoment: "SHIPMENT",
@@ -117,6 +119,13 @@ export default function AccountingPolicyAddEditPage({
               <div className="mb-3 text-xs text-secondary-text">
                 {t("accountingPolicy.form.vatPayerHint")}
               </div>
+            </Col>
+            <Col span={24}>
+              <PayrollTaxRegimeField
+                value={formik.values.payrollTaxRegimeId}
+                onChange={(value) => void formik.setFieldValue("payrollTaxRegimeId", value)}
+                date={formik.values.effectiveFrom || dayjs().format("YYYY-MM-DD")}
+              />
             </Col>
             <Col span={12}>
               <SelectDate

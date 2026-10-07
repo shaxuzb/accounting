@@ -13,6 +13,10 @@ export const payrollTaxDefinitionSchema = Yup.object({
   rate: requiredNumber("payroll.fields.taxRate")
     .min(0, () => tMessage("payroll.messages.notNegative"))
     .max(100, () => tMessage("payroll.messages.rateMax")),
+  nonResidentRate: Yup.number()
+    .nullable()
+    .min(0, () => tMessage("payroll.messages.notNegative"))
+    .max(100, () => tMessage("payroll.messages.rateMax")),
   exemptionAmount: Yup.number()
     .nullable()
     .min(0, () => tMessage("payroll.messages.notNegative")),

@@ -5,6 +5,7 @@ import SelectDate from "@/components/fields/SelectDate";
 import SelectStatic from "@/components/fields/SelectStatic";
 import {
   taxBaseTypeOptions,
+  taxKindOptions,
   taxTypeOptions,
 } from "@/modules/payroll/constants/options";
 import {
@@ -31,7 +32,9 @@ const defaultValues: PayrollTaxDefinitionForm = {
   name: "",
   taxType: "WITHHOLDING",
   baseType: "TAXABLE_EARNINGS",
+  taxKind: null,
   rate: null,
+  nonResidentRate: null,
   exemptionAmount: null,
   limitAmount: null,
   reducesTaxCode: null,
@@ -71,6 +74,8 @@ export default function PayrollTaxDefinitionAddEditPage({
         limitAmount: values.limitAmount ?? null,
         reducesTaxCode: values.reducesTaxCode || null,
         effectiveTo: values.effectiveTo || null,
+        taxKind: values.taxKind || null,
+        nonResidentRate: values.nonResidentRate ?? null,
       };
       try {
         if (isEdit && editId) {
@@ -98,7 +103,9 @@ export default function PayrollTaxDefinitionAddEditPage({
         name: definition.name ?? "",
         taxType: definition.taxType ?? "WITHHOLDING",
         baseType: definition.baseType ?? "TAXABLE_EARNINGS",
+        taxKind: definition.taxKind ?? null,
         rate: definition.rate ?? null,
+        nonResidentRate: definition.nonResidentRate ?? null,
         exemptionAmount: definition.exemptionAmount ?? null,
         limitAmount: definition.limitAmount ?? null,
         reducesTaxCode: definition.reducesTaxCode ?? null,
@@ -186,6 +193,16 @@ export default function PayrollTaxDefinitionAddEditPage({
             </Col>
 
             <Col xs={24} md={12}>
+              <SelectStatic
+                formik={formik}
+                fieldName="taxKind"
+                label="payroll.fields.taxKind"
+                options={taxKindOptions}
+                clearable
+                marginBottom="mb-4"
+              />
+            </Col>
+            <Col xs={24} md={12}>
               <InputNumber
                 formik={formik}
                 fieldName="rate"
@@ -195,6 +212,26 @@ export default function PayrollTaxDefinitionAddEditPage({
                 precision={4}
               />
             </Col>
+            <Col xs={24} md={12}>
+              <InputNumber
+                formik={formik}
+                fieldName="nonResidentRate"
+                label="payroll.fields.nonResidentRate"
+                min={0}
+                max={100}
+                precision={4}
+              />
+            </Col>
+            {formik.values.taxKind && (
+              <Col span={24}>
+                <Alert
+                  className="mb-4"
+                  type="info"
+                  showIcon
+                  message={t("payroll.messages.taxKindRegimeHint")}
+                />
+              </Col>
+            )}
             <Col xs={24} md={12}>
               <SelectCustom
                 formik={formik}

@@ -28,6 +28,7 @@ export const buildAccountingPolicyFormValues = (
   inventoryValuationMethod: "FIFO",
   baseCurrencyId: 1,
   vatPayer: getFieldValue(policy.vat?.isVatPayer, policy.isVatPayer) ?? true,
+  payrollTaxRegimeId: policy.payrollTaxRegimeId ?? null,
   taxTypeId: null,
   vatTaxPeriod: "MONTH",
   vatBaseMoment: "SHIPMENT",

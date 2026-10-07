@@ -326,6 +326,13 @@ export const stateFilterOptions = [
 export const TAX_TYPES = ["WITHHOLDING", "EMPLOYER"] as const;
 export type PayrollTaxType = (typeof TAX_TYPES)[number];
 
+/** The statutory tax a definition is; its rate then comes from the organization's tax regime. */
+export const taxKindOptions: readonly StaticOption[] = [
+  { value: "NDFL", label: "taxRegime.kinds.NDFL" },
+  { value: "INPS", label: "taxRegime.kinds.INPS" },
+  { value: "SOCIAL", label: "taxRegime.kinds.SOCIAL" },
+];
+
 export const taxTypeOptions: readonly StaticOption[] = [
   {
     value: "WITHHOLDING",

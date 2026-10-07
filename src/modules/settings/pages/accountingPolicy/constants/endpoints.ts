@@ -6,4 +6,5 @@ export const accountingPolicyEndpoints = {
   settlements: "accounting-policies/settlements",
   taxTypes: "manuals/tax-types",
   vatRates: "manuals/vat-rates",
+  taxRegimes: "payroll/tax-regimes",
 } as const;

@@ -1,4 +1,22 @@
 {
+  "taxRegime": {
+    "field": "Payroll tax regime (privilege)",
+    "none": "Not chosen — the organization's own tax rates",
+    "noneOffered": "The platform has not entered any tax regimes yet",
+    "hint": "The platform keeps the rates (income tax, INPS, social tax) by Presidential decrees and the Tax Code, with their dates. The organization picks the regime it is entitled to (general, budget organization, IT Park resident ...) — payroll uses its rates from that date.",
+    "noRatesOnDate": "The regime has no rates on {{date}} — the organization's own rates apply",
+    "ratesNow": "The regime's rates today",
+    "kind": "Tax",
+    "rate": "Rate",
+    "nonResidentRate": "Non-resident",
+    "period": "In force",
+    "legalBasis": "Basis",
+    "kinds": {
+      "NDFL": "Personal income tax",
+      "INPS": "INPS (accumulative pension)",
+      "SOCIAL": "Social tax"
+    }
+  },
   "saleServices": {
     "title": "Services",
     "add": "Add service",
@@ -2167,6 +2185,8 @@
       "12": "December"
     },
     "fields": {
+      "taxKind": "Statutory tax",
+      "nonResidentRate": "Non-resident rate (%)",
       "employee": "Employee",
       "employeeNumber": "Employee number",
       "middleName": "Middle name",
@@ -2587,6 +2607,8 @@
       "noData": "No data found"
     },
     "messages": {
+      "taxKindRegimeHint": "When the accounting policy names a tax regime, this tax is charged at the regime's rate; the rate here applies only without one.",
+      "regimeRateHint": "Rate of the «{{regime}}» regime; own rate {{own}} %",
       "notNegative": "The value cannot be negative",
       "rateMax": "The rate cannot exceed 100%",
       "accountRequired": "Select an active account",
@@ -3323,6 +3345,20 @@
     }
   },
   "periods": {
+    "recloseChain": "After this month the next {{count}} month(s) to be closed again close in turn (each if it passes its check).",
+    "recloseRequired": "To be closed again",
+    "reclose": "Close again",
+    "reopenTitle": "Reopen {{month}}",
+    "reopenExplain": "The month opens and its closing entries (VAT offset, deferred expenses, profit tax, closing to 9910) are reversed. Its documents can then be entered, corrected and cancelled.",
+    "reopenLater": "The {{count}} month(s) closed after it open too — their result depends on this month (profit tax from the year's start, 8710 in December):",
+    "reopenAfter": "The reopened months are marked «To be closed again» and must be closed again in order: closing the first goes on through the rest.",
+    "reopenedCount": "{{count}} month(s) reopened",
+    "recloseBanner": "{{from}} — {{to}} ({{count}} months) to be closed again",
+    "recloseBannerHint": "These months were opened with an earlier one. Close the first with «Close again» — the next ones close in turn if they pass their check.",
+    "recloseGo": "Go to that year",
+    "reclosedMessage": "Months closed again: {{closed}}",
+    "recloseStopped": "Closed: {{closed}}. {{month}} was not closed: {{reasons}}",
+    "stopReasons": {"MONTH_NOT_OVER": "the month is not over", "REVALUATION_REQUIRED": "a currency revaluation is required", "DEPRECIATION_REQUIRED": "depreciation of fixed assets is not posted", "ACCOUNTS_MISSING": "accounts are missing from the chart", "OPENING_OFFSET": "account 0000 has a balance", "PREVIOUS_OPEN": "the previous month is open", "CHECK_FAILED": "the closing check failed"},
     "title": "Accounting periods",
     "month": "Month",
     "status": "Status",
@@ -3336,7 +3372,7 @@
     "reopenConfirm": "Reopen the month? Its closing entries will be reversed.",
     "reopened": "Month reopened",
     "closedMessage": "Month closed",
-    "hint": "Months close in order; only the last closed month can be reopened. A closed month is frozen: no document can be posted, changed or cancelled in it.",
+    "hint": "Months close in order. Any closed month can be opened again — the months closed after it open too and must be closed again. A closed month is frozen: no document is accepted, changed or cancelled in it.",
     "closeTitle": "Month closing",
     "account": "Account and analytics",
     "amount": "Amount",
