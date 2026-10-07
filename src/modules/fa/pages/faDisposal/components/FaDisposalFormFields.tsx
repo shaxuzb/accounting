@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react";
+import dayjs from "dayjs";
 import { Button, Col, Row, Table } from "antd";
 import type { TableColumnsType } from "antd";
 import type { FormikProps } from "formik";
@@ -10,9 +11,12 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import Card from "@/components/ui/card/Card";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
+import { formatDateWithOutTime } from "@/utils/helpers";
 import { numberSpacing } from "@/utils/utils";
 import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
+import { faDisposalTypeIds } from "../constants/disposalTypes";
 import type {
   FaDisposalFormValues,
   FaDisposalLineValues,
@@ -22,6 +26,7 @@ import { faDisposalAssetDisplayConfig } from "./useFaDisposalLookups";
 const emptyLine: FaDisposalLineValues = {
   faAssetId: null,
   saleAmount: 0,
+  vatRateId: null,
   note: "",
 };
 
@@ -42,6 +47,12 @@ export default function FaDisposalFormFields({
   documentTypeId,
 }: FaDisposalFormFieldsProps) {
   const { t } = useTranslation();
+  const vatPayer = useVatPayer(formik.values.disposalDate);
+  // 1C «Продажа ОС»: a sale has a buyer and a price (with output VAT for a payer);
+  // a write-off has neither
+  const isSale = Number(formik.values.disposalTypeId) === faDisposalTypeIds.sale;
+  const chargesVat = isSale && vatPayer.isVatPayer;
+  const counterpartyId = formik.values.counterpartyId;
 
   const handleAddLine = useCallback(() => {
     void formik.setFieldValue("lines", [
@@ -106,22 +117,48 @@ export default function FaDisposalFormFields({
           </div>
         ),
       },
-      {
-        title: t("fa.fields.saleAmount"),
-        dataIndex: "saleAmount",
-        minWidth: 170,
-        render: (_, row) => (
-          <div className="[&_.ant-form-item]:mb-0!">
-            <InputNumber
-              formik={formik}
-              fieldName={`lines[${row.index}].saleAmount`}
-              min={0}
-              emptyZero
-              required
-            />
-          </div>
-        ),
-      },
+      ...(isSale
+        ? [
+            {
+              title: t(chargesVat ? "fa.fields.saleAmountWithVat" : "fa.fields.saleAmount"),
+              dataIndex: "saleAmount",
+              minWidth: 170,
+              render: (_: unknown, row: DisposalLineRow) => (
+                <div className="[&_.ant-form-item]:mb-0!">
+                  <InputNumber
+                    formik={formik}
+                    fieldName={`lines[${row.index}].saleAmount`}
+                    min={0}
+                    emptyZero
+                    required
+                  />
+                </div>
+              ),
+            },
+          ]
+        : []),
+      ...(chargesVat
+        ? [
+            {
+              title: t("fa.fields.vatRateId"),
+              dataIndex: "vatRateId",
+              minWidth: 150,
+              render: (_: unknown, row: DisposalLineRow) => (
+                <div className="[&_.ant-form-item]:mb-0!">
+                  <SelectCustom
+                    path={selectListEndpoints.vatRatesSelectList}
+                    formik={formik}
+                    fieldName={`lines[${row.index}].vatRateId`}
+                    // the standard rate, as a sale of goods starts from
+                    autoSelectValue="vat_12"
+                    autoSelectKeys={["code"]}
+                    marginBottom="mb-0"
+                  />
+                </div>
+              ),
+            },
+          ]
+        : []),
       {
         title: t("fa.fields.note"),
         dataIndex: "note",
@@ -148,7 +185,7 @@ export default function FaDisposalFormFields({
           ) : null,
       },
     ],
-    [formik, handleRemoveLine, isDraft, t],
+    [chargesVat, formik, handleRemoveLine, isDraft, isSale, t],
   );
 
   return (
@@ -181,19 +218,62 @@ export default function FaDisposalFormFields({
             />
           </Col>
 
-          {[
-            ["disposalAccountId", "fa.fields.disposalAccount", faDocumentAccountRoleCodes.disposal],
-            ["customerAccountId", "fa.fields.customerAccount", faDocumentAccountRoleCodes.customerSettlement],
-            ["gainAccountId", "fa.fields.gainAccount", faDocumentAccountRoleCodes.disposalGain],
-            ["lossAccountId", "fa.fields.lossAccount", faDocumentAccountRoleCodes.disposalLoss],
-          ].map(([fieldName, label, roleCode]) => (
+          {isSale && (
+            <>
+              <Col span={6}>
+                <SelectCustom
+                  path={selectListEndpoints.counterpartiesSelectList}
+                  formik={formik}
+                  fieldName="counterpartyId"
+                  label="fa.fields.buyer"
+                  search
+                  required
+                  autoSelectSingle={false}
+                  onChange={(value) => {
+                    if (Number(value) !== Number(formik.values.counterpartyId))
+                      void formik.setFieldValue("contractId", null, false);
+                  }}
+                />
+              </Col>
+              <Col span={6}>
+                <SelectCustom
+                  path={selectListEndpoints.contractsSelectList}
+                  formik={formik}
+                  fieldName="contractId"
+                  label="fa.fields.contract"
+                  queryParams={{
+                    choosedDate: dayjs(formik.values.disposalDate).format(
+                      formatDateWithOutTime,
+                    ),
+                    [filterIds.counterparty]: counterpartyId,
+                  }}
+                  enabled={Boolean(counterpartyId)}
+                  refetchSync={`${counterpartyId ?? ""}${formik.values.disposalDate ?? ""}`}
+                  disabled={!counterpartyId}
+                  clearable
+                />
+              </Col>
+            </>
+          )}
+
+          {(
+            [
+              ["disposalAccountId", "fa.fields.disposalAccount", faDocumentAccountRoleCodes.disposal, true],
+              ["customerAccountId", "fa.fields.customerAccount", faDocumentAccountRoleCodes.customerSettlement, isSale],
+              ["vatAccountId", "fa.fields.vatAccount", faDocumentAccountRoleCodes.saleVat, chargesVat],
+              ["gainAccountId", "fa.fields.gainAccount", faDocumentAccountRoleCodes.disposalGain, isSale],
+              ["lossAccountId", "fa.fields.lossAccount", faDocumentAccountRoleCodes.disposalLoss, true],
+            ] as const
+          )
+            .filter(([, , , shown]) => shown)
+            .map(([fieldName, label, roleCode]) => (
             <Col key={fieldName} span={6}>
               <DocumentAccountSelect
                 documentTypeId={documentTypeId ?? 0}
                 documentRoleCode={roleCode}
                 formik={formik}
-                fieldName={fieldName as string}
-                label={label as string}
+                fieldName={fieldName}
+                label={label}
                 search
                 required
                 enabled={Boolean(documentTypeId)}
@@ -239,9 +319,11 @@ export default function FaDisposalFormFields({
               count: formik.values.lines.length,
             })}
           </span>
-          <span className="font-semibold tabular-nums text-text">
-            {t("fa.sections.totalSaleAmount")}: {numberSpacing(totalSaleAmount)}
-          </span>
+          {isSale && (
+            <span className="font-semibold tabular-nums text-text">
+              {t("fa.sections.totalSaleAmount")}: {numberSpacing(totalSaleAmount)}
+            </span>
+          )}
         </div>
 
         {typeof formik.errors.lines === "string" && (

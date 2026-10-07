@@ -323,7 +323,12 @@
       "disposalAccount": "Disposal account",
       "customerAccount": "Customer account",
       "gainAccount": "Gain account",
-      "lossAccount": "Loss account"
+      "lossAccount": "Loss account",
+      "buyer": "Buyer",
+      "contract": "Contract",
+      "saleAmountWithVat": "Sale amount (VAT included)",
+      "vatAmount": "VAT amount",
+      "reserveTransfer": "Revaluation reserve (to 8710)"
     },
     "form": {
       "create": "Create fixed asset document",
@@ -403,7 +408,8 @@
       "lossAccountRequired": "Select a loss account",
       "assetQuantityMismatch": "The number of assets must equal the quantity",
       "movementDestinationRequired": "Select at least a destination department or responsible person",
-      "saleAmountForSaleRequired": "For a sale, at least one asset must have a sale amount greater than zero"
+      "saleAmountForSaleRequired": "For a sale, at least one asset must have a sale amount greater than zero",
+      "buyerRequired": "Choose the buyer of the sale"
     },
     "sections": {
       "disposalDetails": "Disposal details",

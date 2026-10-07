@@ -8,9 +8,27 @@ export const faDisposalSchema = (t: TFunction) => Yup.object().shape({
     .required(t("fa.validation.disposalTypeRequired")),
   reason: Yup.string().required(t("fa.validation.reasonRequired")),
   disposalAccountId: Yup.number().nullable().required(t("fa.validation.disposalAccountRequired")),
-  customerAccountId: Yup.number().nullable().required(t("fa.validation.customerAccountRequired")),
+  // a sale has a buyer who owes the price (4010) and a gain; a write-off has neither
+  counterpartyId: Yup.number()
+    .nullable()
+    .when("disposalTypeId", {
+      is: 1,
+      then: (schema) => schema.required(t("fa.validation.buyerRequired")),
+    }),
+  contractId: Yup.number().nullable().default(null),
+  customerAccountId: Yup.number()
+    .nullable()
+    .when("disposalTypeId", {
+      is: 1,
+      then: (schema) => schema.required(t("fa.validation.customerAccountRequired")),
+    }),
   vatAccountId: Yup.number().nullable().default(null),
-  gainAccountId: Yup.number().nullable().required(t("fa.validation.gainAccountRequired")),
+  gainAccountId: Yup.number()
+    .nullable()
+    .when("disposalTypeId", {
+      is: 1,
+      then: (schema) => schema.required(t("fa.validation.gainAccountRequired")),
+    }),
   lossAccountId: Yup.number().nullable().required(t("fa.validation.lossAccountRequired")),
   lines: Yup.array()
     .of(
@@ -21,6 +39,7 @@ export const faDisposalSchema = (t: TFunction) => Yup.object().shape({
         saleAmount: Yup.number()
           .required(t("fa.validation.saleAmountRequired"))
           .min(0, t("fa.validation.nonNegative")),
+        vatRateId: Yup.number().nullable().default(null),
         note: Yup.string().nullable(),
       }),
     )

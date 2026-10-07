@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { useMemo } from "react";
 import { Table } from "antd";
 import type { TableColumnsType } from "antd";
 import {
@@ -27,6 +26,8 @@ interface DisposalReadonlyRow {
   inventoryNumber: string;
   assetName: string;
   saleAmount: number;
+  vatAmount: number;
+  reserveTransfer: number;
   assetAccount: string;
   accumulatedDepreciationAccount: string;
   note: string;
@@ -75,6 +76,8 @@ export default function FaDisposalReadonlyView({
         inventoryNumber: asset.inventoryNumber,
         assetName: asset.assetName,
         saleAmount: Number(line.saleAmount ?? 0),
+        vatAmount: Number(line.vatAmount ?? 0),
+        reserveTransfer: Number(line.reserveTransfer ?? 0),
         assetAccount:
           joinAccount(line.assetAccountNumber, line.assetAccountName) ||
           lookups.accountLabel(line.assetAccountId),
@@ -92,6 +95,8 @@ export default function FaDisposalReadonlyView({
     (total, row) => total + row.saleAmount,
     0,
   );
+  const hasVat = rows.some((row) => row.vatAmount !== 0);
+  const hasReserve = rows.some((row) => row.reserveTransfer !== 0);
 
   const accountItems = [
     {
@@ -126,63 +131,86 @@ export default function FaDisposalReadonlyView({
     },
   ];
 
-  const columns = useMemo<TableColumnsType<DisposalReadonlyRow>>(
-    () => [
-      {
-        title: t("common.rowNumber"),
-        dataIndex: "index",
-        align: "center",
-      },
-      {
-        title: t("fa.fields.inventoryNumber"),
-        dataIndex: "inventoryNumber",
-        align: "center",
-        width: 150,
-        render: (value: string) => (
-          <span className="font-mono font-semibold">{value}</span>
-        ),
-      },
-      {
-        title: t("fa.fields.faAssetId"),
-        dataIndex: "assetName",
-        align: "center",
-        minWidth: 230,
-        render: (value: string) => (
-          <span className="font-medium text-text">{value}</span>
-        ),
-      },
-      {
-        title: t("fa.fields.saleAmount"),
-        dataIndex: "saleAmount",
-        align: "center",
-        minWidth: 170,
-        render: (value: number) => (
-          <span className="font-semibold tabular-nums text-primary">
-            {numberSpacing(value)}
-          </span>
-        ),
-      },
-      {
-        title: t("fa.fields.assetAccount"),
-        dataIndex: "assetAccount",
-        align: "center",
-        minWidth: 240,
-      },
-      {
-        title: t("fa.fields.accumulatedDepreciationAccount"),
-        dataIndex: "accumulatedDepreciationAccount",
-        align: "center",
-        minWidth: 280,
-      },
-      {
-        title: t("fa.fields.note"),
-        dataIndex: "note",
-        align: "center",
-        minWidth: 220,
-      },
-    ],
-    [t],
-  );
+  const columns: TableColumnsType<DisposalReadonlyRow> = [
+    {
+      title: t("common.rowNumber"),
+      dataIndex: "index",
+      align: "center",
+    },
+    {
+      title: t("fa.fields.inventoryNumber"),
+      dataIndex: "inventoryNumber",
+      align: "center",
+      width: 150,
+      render: (value: string) => (
+        <span className="font-mono font-semibold">{value}</span>
+      ),
+    },
+    {
+      title: t("fa.fields.faAssetId"),
+      dataIndex: "assetName",
+      align: "center",
+      minWidth: 230,
+      render: (value: string) => (
+        <span className="font-medium text-text">{value}</span>
+      ),
+    },
+    {
+      title: t("fa.fields.saleAmount"),
+      dataIndex: "saleAmount",
+      align: "center",
+      minWidth: 170,
+      render: (value: number) => (
+        <span className="font-semibold tabular-nums text-primary">
+          {numberSpacing(value)}
+        </span>
+      ),
+    },
+    ...(hasVat
+      ? [
+          {
+            title: t("fa.fields.vatAmount"),
+            dataIndex: "vatAmount",
+            align: "center" as const,
+            minWidth: 140,
+            render: (value: number) => (
+              <span className="tabular-nums">{numberSpacing(value)}</span>
+            ),
+          },
+        ]
+      : []),
+    ...(hasReserve
+      ? [
+          {
+            title: t("fa.fields.reserveTransfer"),
+            dataIndex: "reserveTransfer",
+            align: "center" as const,
+            minWidth: 180,
+            render: (value: number) => (
+              <span className="tabular-nums">{numberSpacing(value)}</span>
+            ),
+          },
+        ]
+      : []),
+    {
+      title: t("fa.fields.assetAccount"),
+      dataIndex: "assetAccount",
+      align: "center",
+      minWidth: 240,
+    },
+    {
+      title: t("fa.fields.accumulatedDepreciationAccount"),
+      dataIndex: "accumulatedDepreciationAccount",
+      align: "center",
+      minWidth: 280,
+    },
+    {
+      title: t("fa.fields.note"),
+      dataIndex: "note",
+      align: "center",
+      minWidth: 220,
+    },
+  ];
 
   return (
     <div className="min-w-0 space-y-4">
@@ -226,6 +254,17 @@ export default function FaDisposalReadonlyView({
                 lookups.disposalTypeLabel(record.disposalTypeId)}
             </div>
           </div>
+          {record.counterpartyName && (
+            <div className="min-w-40">
+              <div className="text-xs text-secondary-text">
+                {t("fa.fields.buyer")}
+              </div>
+              <div className="mt-0.5 text-sm font-semibold text-text">
+                {record.counterpartyName}
+                {record.contractNumber ? ` · ${record.contractNumber}` : ""}
+              </div>
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <div className="text-xs text-secondary-text">
               {t("fa.fields.reason")}

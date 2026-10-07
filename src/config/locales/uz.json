@@ -325,7 +325,12 @@
       "disposalAccount": "Hisobdan chiqarish hisobvarag'i",
       "customerAccount": "Mijoz hisobvarag'i",
       "gainAccount": "Foyda hisobvarag'i",
-      "lossAccount": "Zarar hisobvarag'i"
+      "lossAccount": "Zarar hisobvarag'i",
+      "buyer": "Xaridor",
+      "contract": "Shartnoma",
+      "saleAmountWithVat": "Sotish summasi (QQS bilan)",
+      "vatAmount": "QQS summasi",
+      "reserveTransfer": "Qayta baholash zaxirasi (8710 ga)"
     },
     "form": {
       "create": "Asosiy vosita yaratish",
@@ -405,7 +410,8 @@
       "lossAccountRequired": "Zarar hisobvarag'ini tanlang",
       "assetQuantityMismatch": "Vositalar soni miqdorga teng bo'lishi kerak",
       "movementDestinationRequired": "Yangi bo'lim yoki mas'ul shaxsdan kamida bittasini tanlang",
-      "saleAmountForSaleRequired": "Sotish turida kamida bitta vosita summasi noldan katta bo'lishi kerak"
+      "saleAmountForSaleRequired": "Sotish turida kamida bitta vosita summasi noldan katta bo'lishi kerak",
+      "buyerRequired": "Sotishda xaridorni tanlang"
     },
     "sections": {
       "disposalDetails": "Hisobdan chiqarish tafsilotlari",

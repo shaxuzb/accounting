@@ -10,6 +10,7 @@ import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import FaDraftActionsBar from "../../../shared/components/FaDraftActionsBar";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
+import { faDisposalTypeIds } from "../constants/disposalTypes";
 import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 import FaDisposalFormFields from "../components/FaDisposalFormFields";
 import FaDisposalReadonlyView from "../components/FaDisposalReadonlyView";
@@ -29,6 +30,8 @@ const createDefaultValues = (): FaDisposalFormValues => ({
   disposalDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   disposalTypeId: null,
   reason: "",
+  counterpartyId: null,
+  contractId: null,
   stateId: faDocumentStatusIds.draft,
   disposalAccountId: null,
   customerAccountId: null,
@@ -39,27 +42,35 @@ const createDefaultValues = (): FaDisposalFormValues => ({
     {
       faAssetId: null,
       saleAmount: 0,
+      vatRateId: null,
       note: "",
     },
   ],
 });
 
-const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => ({
-  disposalDate: values.disposalDate,
-  disposalTypeId: Number(values.disposalTypeId),
-  reason: values.reason || "",
-  stateId: values.stateId ?? faDocumentStatusIds.draft,
-  disposalAccountId: Number(values.disposalAccountId),
-  customerAccountId: Number(values.customerAccountId),
-  vatAccountId: null,
-  gainAccountId: Number(values.gainAccountId),
-  lossAccountId: Number(values.lossAccountId),
-  lines: values.lines.map((line) => ({
-    faAssetId: Number(line.faAssetId),
-    saleAmount: Number(line.saleAmount),
-    note: line.note || "",
-  })),
-});
+const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => {
+  // only a sale has a buyer, a price and output VAT
+  const isSale = Number(values.disposalTypeId) === faDisposalTypeIds.sale;
+  return {
+    disposalDate: values.disposalDate,
+    disposalTypeId: Number(values.disposalTypeId),
+    reason: values.reason || "",
+    counterpartyId: isSale ? (values.counterpartyId ?? null) : null,
+    contractId: isSale ? (values.contractId ?? null) : null,
+    stateId: values.stateId ?? faDocumentStatusIds.draft,
+    disposalAccountId: Number(values.disposalAccountId),
+    customerAccountId: Number(values.customerAccountId),
+    vatAccountId: isSale ? (values.vatAccountId ?? null) : null,
+    gainAccountId: Number(values.gainAccountId),
+    lossAccountId: Number(values.lossAccountId),
+    lines: values.lines.map((line) => ({
+      faAssetId: Number(line.faAssetId),
+      saleAmount: isSale ? Number(line.saleAmount) : 0,
+      vatRateId: isSale ? (line.vatRateId ?? null) : null,
+      note: line.note || "",
+    })),
+  };
+};
 
 export default function FaDisposalFormPage() {
   const { t } = useTranslation();
@@ -95,16 +106,19 @@ export default function FaDisposalFormPage() {
       disposalDate: record?.disposalDate ?? createDefaultValues().disposalDate,
       disposalTypeId: record?.disposalTypeId ?? null,
       reason: record?.reason ?? "",
+      counterpartyId: record?.counterpartyId ?? null,
+      contractId: record?.contractId ?? null,
       stateId: record?.stateId ?? createDefaultValues().stateId,
       disposalAccountId: record?.disposalAccountId ?? null,
       customerAccountId: record?.customerAccountId ?? null,
-      vatAccountId: null,
+      vatAccountId: record?.vatAccountId ?? null,
       gainAccountId: record?.gainAccountId ?? null,
       lossAccountId: record?.lossAccountId ?? null,
       lines: record?.lines?.length
         ? record.lines.map((line) => ({
             faAssetId: line.faAssetId,
             saleAmount: line.saleAmount ?? 0,
+            vatRateId: line.vatRateId ?? null,
             note: line.note ?? "",
           }))
         : createDefaultValues().lines,

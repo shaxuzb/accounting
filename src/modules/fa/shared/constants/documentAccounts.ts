@@ -17,6 +17,7 @@ export const faDocumentAccountRoleCodes = {
   revaluationLoss: "revaluation_loss",
   disposal: "disposal",
   customerSettlement: "customer_settlement",
+  saleVat: "sale_vat",
   disposalGain: "disposal_gain",
   disposalLoss: "disposal_loss",
 } as const;

@@ -1,8 +1,9 @@
 import type { FaDisposalLineItem, FaDisposalPayload } from "./type";
 
 export interface FaDisposalLineValues
-  extends Omit<FaDisposalLineItem, "faAssetId"> {
+  extends Omit<FaDisposalLineItem, "faAssetId" | "vatRateId"> {
   faAssetId: number | null;
+  vatRateId: number | null;
 }
 
 export interface FaDisposalFormValues

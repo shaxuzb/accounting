@@ -325,7 +325,12 @@
       "disposalAccount": "Счёт выбытия",
       "customerAccount": "Счёт покупателя",
       "gainAccount": "Счёт прибыли",
-      "lossAccount": "Счёт убытка"
+      "lossAccount": "Счёт убытка",
+      "buyer": "Покупатель",
+      "contract": "Договор",
+      "saleAmountWithVat": "Сумма продажи (с НДС)",
+      "vatAmount": "Сумма НДС",
+      "reserveTransfer": "Резерв переоценки (на 8710)"
     },
     "form": {
       "create": "Создать документ ОФ",
@@ -405,7 +410,8 @@
       "lossAccountRequired": "Выберите счёт убытка",
       "assetQuantityMismatch": "Количество основных средств должно совпадать с количеством в строке",
       "movementDestinationRequired": "Выберите хотя бы новый отдел или ответственное лицо",
-      "saleAmountForSaleRequired": "Для продажи сумма хотя бы по одному основному средству должна быть больше нуля"
+      "saleAmountForSaleRequired": "Для продажи сумма хотя бы по одному основному средству должна быть больше нуля",
+      "buyerRequired": "Укажите покупателя для продажи"
     },
     "sections": {
       "disposalDetails": "Детали выбытия",
