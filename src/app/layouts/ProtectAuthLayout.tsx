@@ -169,7 +169,9 @@ const ProtectAuthLayout = () => {
           className="fixed inset-0 z-[1000]"
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.3 } }}
+          // the splash lets clicks through as soon as it starts leaving: in a window the
+          // browser does not paint the fade never ends, and it stayed over the page
+          exit={{ opacity: 0, pointerEvents: "none", transition: { duration: 0.3 } }}
         >
           <LoadingScreen />
         </motion.div>
