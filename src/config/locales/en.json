@@ -9,6 +9,7 @@
     "vat": "VAT",
     "total": "Total",
     "errors": {
+      "postAtOnce": "A sale with services is posted at once: turn on «With marking» (a draft goes through the warehouse and pricing steps, which take goods only).",
       "service": "Choose the service on the line",
       "unit": "The service has no unit — set it on its card",
       "quantity": "Enter the service quantity",

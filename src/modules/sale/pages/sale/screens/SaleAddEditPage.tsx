@@ -12,6 +12,14 @@ import { useGetNowSaleCondition } from "@/modules/settings/pages/saleCondition/h
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import { COSTING_METHOD } from "../utils/salePricingDetails";
 import { SaleDocumentFormFields, SaleProductSelection } from "../components";
+import SaleServiceLines from "../components/SaleServiceLines";
+import {
+  savedServiceLines,
+  serviceLinesError,
+  serviceToSaleLine,
+  useSaleServiceOptions,
+  type SaleServiceLine,
+} from "../utils/serviceLines";
 import { useCreateSale, useGetDetailSale, useUpdateSale } from "../hooks";
 import type {
   SaleDocCreateForm,
@@ -89,7 +97,7 @@ export default function SaleAddEditPage() {
   const updateSale = useUpdateSale();
 
   const savedProducts = useMemo<SaleSelectedProduct[]>(() => {
-    const products = document?.products ?? [];
+    const products = (document?.products ?? []).filter((product) => !product.isService);
     if (products.length) {
       return products.map((product) => ({
         id: product.id,
@@ -112,7 +120,7 @@ export default function SaleAddEditPage() {
       }));
     }
 
-    return (document?.lines ?? []).map((line) => ({
+    return (document?.lines ?? []).filter((line) => !line.isService).map((line) => ({
       id: line.id,
       rowKey: `saved-line-${line.id}`,
       productId: line.productId,
@@ -141,6 +149,18 @@ export default function SaleAddEditPage() {
     () => selectedProducts ?? (isEdit ? savedProducts : []),
     [isEdit, savedProducts, selectedProducts],
   );
+  // services sold with the goods (1C «Услуги» of «Реализация»): no stock, income 9030
+  const [selectedServices, setSelectedServices] = useState<SaleServiceLine[] | null>(
+    () => initialDraft?.services ?? null,
+  );
+  const savedServices = useMemo(
+    () => (document ? savedServiceLines(document.products?.length ? document.products : (document.lines ?? [])) : []),
+    [document],
+  );
+  const services = selectedServices ?? savedServices;
+  const { vatRates: serviceVatRates } = useSaleServiceOptions();
+  const vatPayerFlag = useVatPayer().isVatPayer;
+  const serviceLines = services.map((line) => serviceToSaleLine(line, serviceVatRates, vatPayerFlag));
   const vatPayer = useVatPayer();
   // the server writes stock off FIFO (accounting policy), so the cost and margin
   // previews follow the same order whatever an old sale condition still says
@@ -177,10 +197,23 @@ export default function SaleAddEditPage() {
     enableReinitialize: true,
     validationSchema: saleDocSchema(t, isEdit, vatPayer.isVatPayer),
     onSubmit: async (values) => {
+      const serviceError = serviceLinesError(services);
+      if (serviceError) {
+        toast.error(t(serviceError));
+        return;
+      }
+      // a sale kept as a draft goes through the warehouse and pricing steps, which take
+      // goods; services are sold on a sale posted at once
+      if (services.length > 0 && (isEdit || processingMode !== 2)) {
+        toast.error(t("saleServices.errors.postAtOnce"));
+        return;
+      }
       try {
-        await saleDocLinesSchema(t, isEdit).validate(products, {
-          abortEarly: false,
-        });
+        // a sale of services only has no goods to validate
+        if (products.length > 0 || services.length === 0)
+          await saleDocLinesSchema(t, isEdit).validate(products, {
+            abortEarly: false,
+          });
       } catch (error) {
         if (error instanceof ValidationError) {
           toast.error(error.errors[0] || t("sale.messages.checkProductData"));
@@ -201,6 +234,7 @@ export default function SaleAddEditPage() {
       // }
 
       const validProducts = products;
+      const allLines = [...products, ...serviceLines];
 
       // A marked line whose units are not all scanned or stated code-less cannot
       // leave the warehouse, so the document may only be kept as a draft: no stock
@@ -243,7 +277,7 @@ export default function SaleAddEditPage() {
         } else {
           const payload: SaleDocCreateForm = toSaleCreatePayload(
             values,
-            validProducts,
+            allLines,
             mode,
           );
           await createSale.mutateAsync(payload);
@@ -337,10 +371,11 @@ export default function SaleAddEditPage() {
     () => ({
       form: formik.values,
       products,
+      services,
       processingMode,
       saleConditionKey: saleConditionDraftKey,
     }),
-    [formik.values, processingMode, products, saleConditionDraftKey],
+    [formik.values, processingMode, products, services, saleConditionDraftKey],
   );
   const draft = useDebounce(draftValue, 300);
   useEffect(() => {
@@ -429,6 +464,12 @@ export default function SaleAddEditPage() {
           }
           onCancel={() => navigate(-1)}
           submitting={createSale.isPending || updateSale.isPending}
+          disabled={createSale.isPending || updateSale.isPending}
+        />
+        <SaleServiceLines
+          lines={services}
+          onChange={setSelectedServices}
+          vatPayer={vatPayer.isVatPayer}
           disabled={createSale.isPending || updateSale.isPending}
         />
       </div>

@@ -1,9 +1,11 @@
+import type { SaleServiceLine } from "./serviceLines";
 import type { SaleDocForm, SaleProcessingMode } from "../types/form";
 import type { SaleSelectedProduct } from "../types/type";
 
 export interface SaleDraft {
   form: SaleDocForm;
   products: SaleSelectedProduct[];
+  services?: SaleServiceLine[];
   processingMode?: SaleProcessingMode;
   saleConditionKey?: string;
 }
