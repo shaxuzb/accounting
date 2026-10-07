@@ -195,7 +195,7 @@ export default function FaDisposalReadonlyView({
         <DocumentSummaryItem
           icon={<FileText size={24} strokeWidth={1.8} />}
           label={t("fa.fields.documentNumber")}
-          value={record.documentNumber || `#${record.id}`}
+          value={record.docNumber || record.documentNumber || `#${record.id}`}
         />
         <DocumentSummaryItem
           icon={<CalendarDays size={24} strokeWidth={1.8} />}

@@ -3301,6 +3301,8 @@
     "yearProfit": "Year end: the profit of {{amount}} goes to retained earnings Dt 9910 — Ct 8710.",
     "yearLoss": "Year end: the loss of {{amount}} goes to uncovered loss Dt 8710 — Ct 9910.",
     "check": {
+      "depreciationDone": "Fixed-asset depreciation is posted (or not needed)",
+      "depreciationMissing": "{{count}} fixed assets are not depreciated for the month — post the depreciation run first.",
       "monthOver": "The month is over",
       "monthNotOver": "The month is not over yet",
       "previousClosed": "Earlier months are closed",

@@ -31,10 +31,12 @@ export interface FaReceiptPayload {
 export interface FaReceiptResponse extends FaReceiptPayload {
   id: number;
   documentNumber?: string;
+  docNumber?: string;
   documentDate?: string;
   comment?: string;
   counterpartyName?: string;
   currencyName?: string;
+  currencyCode?: string;
   receiptTypeName?: string;
   supplierAccountNumber?: string;
   supplierAccountName?: string;

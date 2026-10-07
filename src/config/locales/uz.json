@@ -3301,6 +3301,8 @@
     "yearProfit": "Yil yakuni: {{amount}} foyda Dt 9910 — Kt 8710 bilan taqsimlanmagan foydaga o'tkaziladi.",
     "yearLoss": "Yil yakuni: {{amount}} zarar Dt 8710 — Kt 9910 bilan qoplanmagan zararga o'tkaziladi.",
     "check": {
+      "depreciationDone": "Asosiy vositalar amortizatsiyasi hisoblangan (yoki kerak emas)",
+      "depreciationMissing": "{{count}} ta asosiy vosita uchun shu oy amortizatsiyasi hisoblanmagan — avval «Amortizatsiya hisoblash»ni o'tkazing.",
       "monthOver": "Oy tugagan",
       "monthNotOver": "Oy hali tugamagan",
       "previousClosed": "Oldingi oylar yopilgan",

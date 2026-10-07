@@ -34,23 +34,23 @@ export default function FaRevaluationListPage() {
     },
     {
       title: t("fa.fields.documentNumber"),
-      dataIndex: "documentNumber",
+      dataIndex: "docNumber",
       render: (_, record) => (
         <Link to={`${record.id}`}>
-          {record.documentNumber ?? record.id}
+          {record.docNumber ?? record.documentNumber ?? record.id}
         </Link>
       ),
       minWidth: 180,
     },
     {
       title: t("fa.fields.documentDate"),
-      dataIndex: "documentDate",
+      dataIndex: "revaluationDate",
       render: (value) => customDate(value),
       width: 180,
     },
     {
-      title: t("fa.fields.comment"),
-      dataIndex: "comment",
+      title: t("fa.fields.reason"),
+      dataIndex: "reason",
       minWidth: 240,
     },
     {

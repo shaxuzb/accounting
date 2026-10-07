@@ -38,8 +38,8 @@ export default function FaDisposalListPage() {
       width: 80,
     },
     {
-      title: "ID",
-      dataIndex: "id",
+      title: t("fa.fields.documentNumber"),
+      dataIndex: "docNumber",
       render: (_, record) => {
         const isDraft = isFaDraftStatus(record);
         const path =
@@ -48,9 +48,9 @@ export default function FaDisposalListPage() {
             : `/main/fa/disposals/${record.id}`;
 
         return canOpenDetail || (isDraft && canUpdate) ? (
-          <Link to={path}>{record.id}</Link>
+          <Link to={path}>{record.docNumber || record.id}</Link>
         ) : (
-          <span>{record.id}</span>
+          <span>{record.docNumber || record.id}</span>
         );
       },
       minWidth: 100,

@@ -9,7 +9,7 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
-import { generateKeyTable, customDate } from "@/utils/utils";
+import { generateKeyTable, customDate, numberSpacing } from "@/utils/utils";
 import { endpoints } from "../constants/endpoints";
 import { faReceiptPermissions } from "../constants/permissions";
 import { useGetListFaReceipts } from "../hooks";
@@ -35,7 +35,7 @@ export default function FaReceiptListPage() {
       width: 80,
     },
     {
-      dataIndex: "documentNumber",
+      dataIndex: "docNumber",
       title: t("fa.fields.documentNumber"),
       render: (value, record) => (
         <Link to={`${record.id}`}>{value || record.id}</Link>
@@ -43,14 +43,25 @@ export default function FaReceiptListPage() {
       minWidth: 180,
     },
     {
-      dataIndex: "documentDate",
+      dataIndex: "docDate",
       title: t("fa.fields.documentDate"),
       render: (value) => customDate(value),
       width: 180,
     },
     {
-      dataIndex: "comment",
-      title: t("fa.fields.comment"),
+      dataIndex: "counterpartyName",
+      title: t("app.reports.fields.counterparty"),
+      render: (value) => value || "—",
+    },
+    {
+      dataIndex: "finalAmount",
+      title: t("common.total"),
+      align: "right",
+      // a foreign-currency receipt is totalled in its own currency: name it
+      render: (value, record) =>
+        `${numberSpacing(Number(value ?? 0), undefined, true)}${
+          record.currencyCode && record.currencyCode !== "UZS" ? ` ${record.currencyCode}` : ""
+        }`,
     },
     {
       dataIndex: "statusName",

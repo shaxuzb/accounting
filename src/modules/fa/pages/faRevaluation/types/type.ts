@@ -36,6 +36,7 @@ export interface FaRevaluation
   stateId?: number;
   stateName?: string;
   documentNumber?: string;
+  docNumber?: string;
   documentDate?: string;
   comment?: string;
   revaluationReserveAccountName?: string;

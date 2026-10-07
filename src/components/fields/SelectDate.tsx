@@ -5,7 +5,7 @@
 import { DatePicker, Form, type FormProps } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { type FormikProps, getIn } from "formik";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 // import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
@@ -174,6 +174,12 @@ const SelectDate: React.FC<SelectDateProps> = ({
   // ]);
 
   const fieldValue = getIn(formik.values, fieldName) as string | undefined;
+  // one Dayjs per stored value: a fresh object every render makes the picker resync its
+  // typed text on each keystroke elsewhere in the form, which loops until React aborts
+  const pickerValue = useMemo(
+    () => (fieldValue ? dayjs(fieldValue) : null),
+    [fieldValue],
+  );
   const hasError = !!(
     getIn(formik.touched, fieldName) && getIn(formik.errors, fieldName)
   );
@@ -219,7 +225,7 @@ const SelectDate: React.FC<SelectDateProps> = ({
       }
     >
       <DatePicker
-        value={fieldValue ? dayjs(fieldValue) : null}
+        value={pickerValue}
         format={DISPLAY_FORMAT}
         // cellRender={
         //   checkCurrencyExchange.viewCurrencyExchange ? cellRender : undefined

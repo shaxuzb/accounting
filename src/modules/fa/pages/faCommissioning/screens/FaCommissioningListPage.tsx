@@ -51,7 +51,7 @@ export default function FaCommissioningListPage() {
       dataIndex: "lines",
       align: "center",
       width: 130,
-      render: (lines) => lines?.length ?? 0,
+      render: (_, record) => record.assetCount ?? record.lines?.length ?? 0,
     },
     {
       title: t("settings.fields.status"),

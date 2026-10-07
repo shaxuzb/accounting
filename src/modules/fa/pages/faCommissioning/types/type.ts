@@ -28,6 +28,7 @@ export interface FaCommissioning extends FaCommissioningPayload {
   organizationName?: string;
   docNumber?: string;
   documentNumber?: string;
+  assetCount?: number;
   documentDate?: string;
   statusId: number;
   statusName?: string;

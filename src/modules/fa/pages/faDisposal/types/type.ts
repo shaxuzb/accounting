@@ -33,6 +33,7 @@ export interface FaDisposalResponse {
   organizationId?: number;
   organizationName?: string;
   documentNumber?: string;
+  docNumber?: string;
   documentDate?: string;
   comment?: string;
   disposalAccountNumber?: string;

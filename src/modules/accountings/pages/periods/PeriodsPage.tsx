@@ -275,6 +275,11 @@ function CloseMonthModal({ periodId, onClose }: { periodId: number; onClose: () 
                 ? t("periods.check.accountsPresent")
                 : t("periods.check.accountsMissing", { accounts: check.missingAccounts.join(", ") })}
             </CheckItem>
+            <CheckItem ok={(check.assetsAwaitingDepreciation ?? 0) === 0}>
+              {(check.assetsAwaitingDepreciation ?? 0) === 0
+                ? t("periods.check.depreciationDone")
+                : t("periods.check.depreciationMissing", { count: check.assetsAwaitingDepreciation })}
+            </CheckItem>
             <CheckItem ok={check.draftDocumentCount === 0} warning>
               {check.draftDocumentCount === 0
                 ? t("periods.check.noDrafts")
