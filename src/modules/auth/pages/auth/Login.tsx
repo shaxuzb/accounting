@@ -34,6 +34,13 @@ function Login() {
           return toast.error(t("auth.noPermissions"));
         }
         dispatch(login(response.data));
+        // the user's own language opens the screens; the flag in the navbar still switches
+        // it for the session, and the next sign-in starts from the user's language again
+        const userLang = response.data.user.languageCode;
+        if (userLang === "uz" || userLang === "ru" || userLang === "en") {
+          dispatch(setLang(userLang));
+          await i18n.changeLanguage(userLang);
+        }
         navigate("/main", { replace: true });
         toast.success(t("auth.loginSuccess"));
       } catch (error) {

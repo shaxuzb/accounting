@@ -33,6 +33,8 @@ export interface User {
   modules?: number[];
   organizations?: OrgListItem[];
   permissions: string[];
+  /** The interface language set on the user (uz, ru, en): the screens open in it at sign-in. */
+  languageCode?: string | null;
 }
 
 export interface Paginated<T> {
