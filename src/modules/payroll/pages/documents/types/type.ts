@@ -40,6 +40,12 @@ export interface PayrollTaxLine {
   payableAmount?: number | null;
   reducesTaxCode?: string | null;
   liabilityAccountId: number;
+  /** The tax regime whose rate the line was charged by. */
+  taxRegimeName?: string | null;
+  /** The minimum base the tax was charged on, and the minimum wage it came from. */
+  minimumBase?: number | null;
+  minimumWageAmount?: number | null;
+  minimumWageFrom?: string | null;
 }
 
 export interface PayrollLineSegment {

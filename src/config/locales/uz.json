@@ -2520,6 +2520,9 @@
       "initializeDays": "Kunlarni yuklash"
     },
     "documents": {
+      "regimeRate": "«{{regime}}» soliq rejimi stavkasi",
+      "minimumBase": "Minimal baza (EKIH)",
+      "minimumBaseHint": "Daromad eng kam ish haqidan kam bo'lgani uchun soliq minimal bazadan hisoblandi: EKIH {{wage}} ({{from}} dan)",
       "saveBeforeConfirm": "Avval tahrirlangan qoralamani saqlang yoki tahrirlashni bekor qiling — tasdiqlash saqlangan holatni o'tkazadi.",
       "title": "Maosh hisoblash",
       "detailTitle": "Hisoblash hujjati",

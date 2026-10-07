@@ -1,5 +1,6 @@
 import { money } from "@/modules/payroll/utils/format";
-import { Empty, Table, Tag } from "antd";
+import { Empty, Table, Tag, Tooltip } from "antd";
+import dayjs from "dayjs";
 import type { TableColumnsType } from "antd";
 import { useTranslation } from "react-i18next";
 import type { PayrollTaxLine } from "../types/type";
@@ -17,7 +18,40 @@ export default function PayrollTaxLinesTable({ lines }: Props) {
     { dataIndex: "baseAmount", title: t("payroll.fields.baseAmount"), align: "right", width: 140, render: (value: number) => money(value) },
     { dataIndex: "exemptionAmount", title: t("payroll.fields.taxExemption", { defaultValue: "Imtiyoz" }), align: "right", width: 110, render: (value: number) => money(value) },
     { dataIndex: "taxableBase", title: t("payroll.fields.taxableBase", { defaultValue: "Soliq bazasi" }), align: "right", width: 140, render: (value: number) => money(value) },
-    { dataIndex: "rate", title: t("payroll.fields.rate"), align: "right", width: 90, render: (value: number) => `${value}%` },
+    {
+      dataIndex: "rate",
+      title: t("payroll.fields.rate"),
+      align: "right",
+      width: 90,
+      // the regime the rate came from, kept with the line as history
+      render: (value: number, record) =>
+        record.taxRegimeName ? (
+          <Tooltip title={t("payroll.documents.regimeRate", { regime: record.taxRegimeName })}>
+            <Tag color="blue" className="m-0">{`${value}%`}</Tag>
+          </Tooltip>
+        ) : (
+          `${value}%`
+        ),
+    },
+    {
+      dataIndex: "minimumBase",
+      title: t("payroll.documents.minimumBase"),
+      align: "right",
+      width: 170,
+      render: (value: number | null | undefined, record) =>
+        value != null ? (
+          <Tooltip
+            title={t("payroll.documents.minimumBaseHint", {
+              wage: money(record.minimumWageAmount ?? 0),
+              from: record.minimumWageFrom ? dayjs(record.minimumWageFrom).format("DD.MM.YYYY") : "—",
+            })}
+          >
+            <Tag color="orange" className="m-0">{money(value)}</Tag>
+          </Tooltip>
+        ) : (
+          "—"
+        ),
+    },
     { dataIndex: "amount", title: t("payroll.fields.amount"), align: "right", width: 140, render: (value: number) => money(value) },
     // ИНПС is paid out of НДФЛ, so the assessed amount and what is really withheld differ.
     { dataIndex: "offsetAmount", title: t("payroll.fields.taxOffsetAmount"), align: "right", width: 130, render: (value?: number | null) => (value ? <span className="text-secondary-text">−{money(value)}</span> : "—") },

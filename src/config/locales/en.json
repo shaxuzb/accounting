@@ -2520,6 +2520,9 @@
       "initializeDays": "Load days"
     },
     "documents": {
+      "regimeRate": "Rate of the «{{regime}}» regime",
+      "minimumBase": "Minimum base (MW)",
+      "minimumBaseHint": "Earnings below the minimum wage: the tax is charged on the minimum base, minimum wage {{wage}} (from {{from}})",
       "saveBeforeConfirm": "Save the edited draft or cancel editing first: confirming posts what is saved.",
       "title": "Payroll calculation",
       "detailTitle": "Payroll document",
