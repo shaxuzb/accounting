@@ -8,6 +8,7 @@ const ContractListPage = lazy(() => import("../contract/screens/ContractListPage
 import { contractPermissions } from "../contract/constants/permissions";
 import { returnRoute } from "../returns/routes";
 import { returnKind } from "../returns/constants";
+import { extraCostRoute } from "../extraCosts/routes";
 const PurchaseEditor = lazy(() => import("./pages/purchase/screens/PurchaseEditorPage"));
 
 
@@ -75,6 +76,8 @@ export const purchaseRoutes: RouteObject = {
     },
     // returns to suppliers (1C «Возврат товаров поставщику»)
     returnRoute(returnKind.toSupplier, "purchase-returns"),
+    // additional costs put on purchased goods (1C «Поступление доп. расходов»)
+    extraCostRoute("extra-costs"),
     {
       path: "contracts",
       handle: { title: "contract.purchaseTitle" },

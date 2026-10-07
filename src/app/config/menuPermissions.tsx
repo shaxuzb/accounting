@@ -167,6 +167,10 @@ export const menuPermissions: MainMenu = {
           linkData: { path: "purchase-returns", title: "returnDoc.kinds.toSupplier" },
         },
         {
+          code: "PURCHASE_EXTRA_COST_VIEW",
+          linkData: { path: "extra-costs", title: "extraCost.title" },
+        },
+        {
           code: contractPermissions.view,
           linkData: {
             path: "contracts",
