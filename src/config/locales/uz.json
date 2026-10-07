@@ -2285,7 +2285,7 @@
         "WITHHOLDING": "Xodimdan ushlanadi",
         "WITHHOLDING_HINT": "Qo'lga beriladigan summani kamaytiradi (NDFL, INPS)",
         "EMPLOYER": "Ish beruvchi to'laydi",
-        "EMPLOYER_HINT": "Xodimdan ushlanmaydi, tashkilot xarajati (ЕСП)"
+        "EMPLOYER_HINT": "Xodimdan ushlanmaydi, tashkilot xarajati (ijtimoiy soliq)"
       },
       "taxBaseType": {
         "TAXABLE_EARNINGS": "Soliqqa tortiladigan hisoblanmalar",

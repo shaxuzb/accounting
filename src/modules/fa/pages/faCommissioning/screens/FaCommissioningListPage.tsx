@@ -33,17 +33,17 @@ export default function FaCommissioningListPage() {
     },
     {
       title: t("fa.fields.documentNumber"),
-      dataIndex: "documentNumber",
+      dataIndex: "docNumber",
       minWidth: 170,
       render: (value, record) => (
-        <Link to={`${record.id}`}>{value || record.id}</Link>
+        <Link to={`${record.id}`}>{value || record.documentNumber || record.id}</Link>
       ),
     },
     {
       title: t("fa.fields.documentDate"),
-      dataIndex: "documentDate",
+      dataIndex: "docDate",
       width: 160,
-      render: (_, record) => customDate(record.documentDate ?? record.docDate),
+      render: (_, record) => customDate(record.docDate ?? record.documentDate),
     },
     { title: t("fa.fields.note"), dataIndex: "note" },
     {
