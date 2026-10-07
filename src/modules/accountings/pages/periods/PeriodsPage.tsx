@@ -19,7 +19,7 @@ import Card from "@/components/ui/card/Card";
 import { useAppSelector } from "@/store/hooks";
 import { periodPermissions } from "./api";
 import { useCloseCheck, useClosePeriod, usePeriods, useReopenPeriod } from "./hooks";
-import type { AccountingPeriod, MonthCloseLine } from "./types";
+import type { AccountingPeriod, MonthCloseDeferredLine, MonthCloseLine } from "./types";
 
 const money = (value?: number | null) =>
   (value ?? 0).toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -196,6 +196,61 @@ function CloseMonthModal({ periodId, onClose }: { periodId: number; onClose: () 
     },
   ];
 
+  const deferredColumns: TableColumnsType<MonthCloseDeferredLine> = [
+
+    {
+
+      key: "name",
+
+      title: t("deferredExpenses.name"),
+
+      render: (_, line) => `${line.deferredAccountNumber} · ${line.name}`,
+
+    },
+
+    {
+
+      key: "expense",
+
+      title: t("deferredExpenses.expenseAccount"),
+
+      render: (_, line) =>
+
+        [`${line.expenseAccountNumber} ${line.expenseAccountName}`, line.expenseAnalytics].filter(Boolean).join(" · "),
+
+    },
+
+    {
+
+      dataIndex: "balance",
+
+      title: t("deferredExpenses.balance"),
+
+      align: "right",
+
+      width: 140,
+
+      render: (value: number) => money(value),
+
+    },
+
+    {
+
+      dataIndex: "amount",
+
+      title: t("periods.amount"),
+
+      align: "right",
+
+      width: 140,
+
+      render: (value: number) => money(value),
+
+    },
+
+  ];
+
+
   const costColumns: TableColumnsType<MonthCloseLine> = [
     columns[0],
     {
@@ -290,6 +345,16 @@ function CloseMonthModal({ periodId, onClose }: { periodId: number; onClose: () 
                 ? t("periods.check.rentAccrued")
                 : t("periods.check.rentMissing", { count: check.rentAwaitingAccrual })}
             </CheckItem>
+            <CheckItem ok={(check.deferredWithoutSchedule ?? 0) === 0} warning>
+              {(check.deferredWithoutSchedule ?? 0) === 0 ? (
+                t("periods.check.deferredScheduled")
+              ) : (
+                <>
+                  {t("periods.check.deferredMissing", { count: check.deferredWithoutSchedule })}{" "}
+                  <Link to="/main/accountings/deferred-expenses">{t("deferredExpenses.title")}</Link>
+                </>
+              )}
+            </CheckItem>
             <CheckItem ok={(check.entriesMissingAnalytics ?? 0) === 0} warning>
               {(check.entriesMissingAnalytics ?? 0) === 0
                 ? t("periods.check.analyticsFilled")
@@ -311,6 +376,17 @@ function CloseMonthModal({ periodId, onClose }: { periodId: number; onClose: () 
             <b className="text-right md:col-span-2 md:text-left">{money(Math.abs(check.vatOutput - check.vatInput))}</b>
           </div>
 
+          <div className="font-semibold">{t("periods.stepDeferred")}</div>
+          <Table<MonthCloseDeferredLine>
+            rowKey={(line) => `${line.deferredAccountNumber}-${line.name}`}
+            size="small"
+            columns={deferredColumns}
+            dataSource={check.deferredLines ?? []}
+            pagination={false}
+            scroll={{ y: 200 }}
+            locale={{ emptyText: t("periods.noDeferred") }}
+          />
+
           <div className="font-semibold">{t("periods.stepCosts")}</div>
           <Table<MonthCloseLine>
             rowKey={(line) => `${line.accountNumber}-${line.analytics ?? ""}`}
@@ -321,6 +397,24 @@ function CloseMonthModal({ periodId, onClose }: { periodId: number; onClose: () 
             scroll={{ y: 200 }}
             locale={{ emptyText: t("periods.noCosts") }}
           />
+
+          {check.profitTax != null && (
+            <>
+              <div className="font-semibold">{t("periods.stepProfitTax")}</div>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md border border-border p-3 md:grid-cols-3">
+                <span className="text-secondary-text">{t("periods.profitTaxBase")}</span>
+                <b className="text-right md:col-span-2 md:text-left">{money(check.profitTaxBase ?? 0)}</b>
+                <span className="text-secondary-text">{t("periods.profitTaxYear", { rate: check.profitTaxRate })}</span>
+                <b className="text-right md:col-span-2 md:text-left">{money(check.profitTaxYear ?? 0)}</b>
+                <span className="text-secondary-text">{t("periods.profitTaxCharged")}</span>
+                <b className="text-right md:col-span-2 md:text-left">{money(check.profitTaxCharged ?? 0)}</b>
+                <span className="text-secondary-text">
+                  {check.profitTax >= 0 ? t("periods.profitTaxMonth") : t("periods.profitTaxReturned")}
+                </span>
+                <b className="text-right md:col-span-2 md:text-left">{money(Math.abs(check.profitTax))}</b>
+              </div>
+            </>
+          )}
 
           <div className="font-semibold">{t("periods.stepResult")}</div>
           <Table<MonthCloseLine>

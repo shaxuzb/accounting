@@ -25,6 +25,7 @@ const TrialBalancePage = lazy(() => import("./pages/trial-balance/screens/TrialB
 const ManualEntriesPage = lazy(() => import("./pages/manual-entries/ManualEntriesPage"));
 const ManualEntryEditorPage = lazy(() => import("./pages/manual-entries/ManualEntryEditorPage"));
 const PeriodsPage = lazy(() => import("./pages/periods/PeriodsPage"));
+const DeferredExpensesPage = lazy(() => import("./pages/deferred-expenses/DeferredExpensesPage"));
 const CurrencyRatesPage = lazy(() => import("./pages/currency/screens/CurrencyRatesPage"));
 const CurrencyRevaluationPage = lazy(() => import("./pages/currency/screens/CurrencyRevaluationPage"));
 
@@ -122,6 +123,11 @@ export const accountingsRoutes: RouteObject = {
       path: "periods",
       handle: { title: "periods.title" },
       element: <PeriodsPage />,
+    },
+    {
+      path: "deferred-expenses",
+      handle: { title: "deferredExpenses.title" },
+      element: withAccess(<DeferredExpensesPage />, "ACCOUNTING_PERIOD_CLOSE"),
     },
     {
       path: "currency-rates",
