@@ -98,6 +98,8 @@ export interface SaleDocConfirmLineForm {
   id: number;
   costPrice: number;
   unitPrice: number;
+  /** The rate chosen on the pricing screen; the line keeps its own when absent. */
+  vatRateId?: number | null;
 }
 
 export interface SaleDocConfirmForm {

@@ -6,7 +6,7 @@ export const accountingPolicySchema = Yup.object({
       .oneOf(["FIFO"])
       .required(),
     baseCurrencyId: Yup.number().oneOf([1]).required(),
-    vatPayer: Yup.boolean().oneOf([true]).required(),
+    vatPayer: Yup.boolean().required(),
     taxTypeId: Yup.number().nullable(),
     vatTaxPeriod: Yup.mixed<"MONTH">().oneOf(["MONTH"]).required(),
     vatBaseMoment: Yup.mixed<"SHIPMENT">().oneOf(["SHIPMENT"]).required(),

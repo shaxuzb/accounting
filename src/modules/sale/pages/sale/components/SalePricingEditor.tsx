@@ -369,10 +369,12 @@ export default function SalePricingEditor({
 
     try {
       await confirmSale.mutateAsync({
-        lines: payloadLines.map(({ id, costPrice, unitPrice }) => ({
+        // the VAT rate goes too: changed here, it used to show on screen and post the old one
+        lines: payloadLines.map(({ id, costPrice, unitPrice, vatRateId }) => ({
           id,
           costPrice,
           unitPrice,
+          vatRateId: vatRateId || null,
         })),
       });
       setDraftLines([]);
