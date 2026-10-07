@@ -3377,6 +3377,7 @@
     "overspent": "Sarflangani berilgan bo'nakdan ko'p: farqni RKO bilan xodimga qaytaring (Dt 4220 — Kt 5010)."
   },
   "returnDoc": {
+    "createFromBase": "Qaytarish yaratish",
     "kinds": {
       "toSupplier": "Yetkazuvchiga qaytarish",
       "fromCustomer": "Xaridordan qaytarish",

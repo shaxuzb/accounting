@@ -5,7 +5,7 @@ import { Ban, Save, Send, Trash2, Undo2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getJson } from "@/modules/accountings/services/request";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
@@ -63,7 +63,11 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
   const statusId = data?.statusId ?? returnStatus.draft;
   const readOnly = statusId !== returnStatus.draft || !can(returnPermissions.create);
 
-  const [baseDocumentId, setBaseDocumentId] = useState<number | null>(data?.baseDocumentId ?? null);
+  // «Создать на основании»: a new return opened from a sale or purchase starts on it
+  const [searchParams] = useSearchParams();
+  const [baseDocumentId, setBaseDocumentId] = useState<number | null>(
+    () => data?.baseDocumentId ?? (Number(searchParams.get("base")) || null),
+  );
   const [docDate, setDocDate] = useState(() => (data ? dayjs(data.docDate) : dayjs()));
   // a non-payer returns «QQSsiz»: the amount is simply the amount
   const vatPayer = useVatPayer(docDate.format("YYYY-MM-DD"));
@@ -113,8 +117,15 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
     }));
     if (data && !options.some((option) => option.value === data.baseDocumentId))
       options.unshift({ value: data.baseDocumentId, label: `№${data.baseDocNumber ?? data.baseDocumentId}` });
+    else if (!data && baseDocument && !options.some((option) => option.value === baseDocument.id))
+      options.unshift({
+        value: baseDocument.id,
+        label: `№${baseDocument.docNumber} · ${dayjs(baseDocument.docDate).format("DD.MM.YYYY")}${
+          baseDocument.counterpartyName ? ` · ${baseDocument.counterpartyName}` : ""
+        } · ${money(baseDocument.finalAmount)}`,
+      });
     return options;
-  }, [baseDocuments, data]);
+  }, [baseDocuments, data, baseDocument]);
 
   const body = () => ({
     kind,

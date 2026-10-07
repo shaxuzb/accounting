@@ -3,6 +3,8 @@ import { useParams } from "react-router";
 import type { ReactNode } from "react";
 import { useAppSelector } from "@/store/hooks";
 import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
+import CreateReturnButton from "@/modules/returns/CreateReturnButton";
+import { returnKind } from "@/modules/returns/constants";
 import {
   ConfirmedSaleDocument,
   SalePricingEditor,
@@ -35,7 +37,10 @@ export default function SaleDetailPage() {
   // every state of the document can print its contract
   const withContract = (content: ReactNode) => (
     <div className="space-y-3">
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        {document.statusId === 2 && (
+          <CreateReturnButton kind={returnKind.fromCustomer} baseId={Number(document.id)} />
+        )}
         <DocumentContractButton
           kind="sale"
           documentId={document.id}

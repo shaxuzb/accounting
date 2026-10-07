@@ -1,3 +1,5 @@
+import CreateReturnButton from "@/modules/returns/CreateReturnButton";
+import { returnKind } from "@/modules/returns/constants";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
 import Card from "@/components/ui/card/Card";
@@ -138,6 +140,9 @@ export default function RetailSaleDetailPage() {
                 </Button>
               </PermissionCard>
             </div>
+          )}
+          {document.statusId === 2 && (
+            <CreateReturnButton kind={returnKind.fromRetail} baseId={Number(document.id)} />
           )}
           {document.statusId === 2 && (
             // A posted check is undone like in 1C («Отмена проведения»): the
