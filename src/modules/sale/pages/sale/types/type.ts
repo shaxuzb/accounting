@@ -53,6 +53,8 @@ export interface SaleDocProduct {
   vatAmount?: number;
   totalAmount?: number;
   isPieceTracked?: boolean;
+  /** A service line: no stock, no cost (1C «Услуги»). */
+  isService?: boolean;
   batches?: SaleDocBatch[];
   tables?: SaleDocProductTable[];
 }
@@ -120,6 +122,7 @@ export interface SaleDocTable {
   vatAmount: number;
   totalAmount: number;
   isPieceTracked?: boolean;
+  isService?: boolean;
   batches?: SaleDocBatch[];
   markingNumber: string;
   serialNumber: string;

@@ -1,4 +1,20 @@
 {
+  "saleServices": {
+    "title": "Xizmatlar",
+    "add": "Xizmat qo'shish",
+    "service": "Xizmat",
+    "choose": "Xizmatni tanlang",
+    "quantity": "Miqdori",
+    "price": "Narxi (QQSsiz)",
+    "vat": "QQS",
+    "total": "Jami",
+    "errors": {
+      "service": "Xizmat qatorida xizmatni tanlang",
+      "unit": "Xizmatning o'lchov birligi yo'q — xizmat kartochkasida birlikni belgilang",
+      "quantity": "Xizmat miqdorini kiriting",
+      "price": "Xizmat narxini kiriting"
+    }
+  },
   "repost": {
     "period": "Davr",
     "allTypes": "Barcha hujjatlar",

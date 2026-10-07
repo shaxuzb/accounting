@@ -1,4 +1,20 @@
 {
+  "saleServices": {
+    "title": "Services",
+    "add": "Add service",
+    "service": "Service",
+    "choose": "Choose a service",
+    "quantity": "Quantity",
+    "price": "Price (net of VAT)",
+    "vat": "VAT",
+    "total": "Total",
+    "errors": {
+      "service": "Choose the service on the line",
+      "unit": "The service has no unit — set it on its card",
+      "quantity": "Enter the service quantity",
+      "price": "Enter the service price"
+    }
+  },
   "repost": {
     "period": "Period",
     "allTypes": "All documents",

@@ -18,6 +18,15 @@ import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import { COSTING_METHOD } from "../../sale/utils/salePricingDetails";
 import DocumentProcessingModeModal from "@/components/ui/DocumentProcessingModeModal";
 import SaleProductSelection from "../../sale/components/SaleProductSelection";
+import SaleServiceLines from "../../sale/components/SaleServiceLines";
+import {
+  savedServiceLines,
+  serviceLinesError,
+  serviceToSaleLine,
+  useSaleServiceOptions,
+  type SaleServiceLine,
+} from "../../sale/utils/serviceLines";
+import { roundMoney } from "../../sale/utils/pricing";
 // import { getSaleCostingValidationError } from "../../sale/utils/saleCostingValidation";
 import { saleDocLinesSchema } from "../../sale/types/schema";
 import type { SaleSelectedProduct } from "../../sale/types/type";
@@ -64,6 +73,7 @@ const getNumber = (value: unknown, fallback = 0) => {
 interface RetailSaleDraft {
   values: RetailSaleFormValues;
   products: SaleSelectedProduct[];
+  services?: SaleServiceLine[];
 }
 
 export default function RetailSaleEditorPage() {
@@ -81,6 +91,10 @@ export default function RetailSaleEditorPage() {
     SaleSelectedProduct[] | null
   >(() => (!isEdit ? savedDraft?.products ?? null : null));
   const [saleTotalAmount, setSaleTotalAmount] = useState(0);
+  // services sold at the till (1C «Услуги» of the retail report): no stock, income 9030
+  const [selectedServices, setSelectedServices] = useState<SaleServiceLine[] | null>(
+    () => (!isEdit ? savedDraft?.services ?? null : null),
+  );
   const [processingModeModalOpen, setProcessingModeModalOpen] =
     useState(false);
   const previousWarehouseId = useRef<number | null>(null);
@@ -105,7 +119,7 @@ export default function RetailSaleEditorPage() {
       ? document.products
       : (document.lines ?? []);
 
-    return rawLines.map((line, index) => {
+    const goods = rawLines.map((line, index) => {
       const items = "tables" in line
         ? (line.tables ?? [])
         : (line.items ?? []);
@@ -137,9 +151,24 @@ export default function RetailSaleEditorPage() {
           })),
       };
     });
+    // the services go to their own table
+    return goods.filter((_, index) => !rawLines[index].isService);
   }, [document]);
 
   const products = selectedProducts ?? savedProducts;
+  const vatPayerFlag = useVatPayer().isVatPayer;
+  const savedServices = useMemo(
+    () => (document ? savedServiceLines(document.products?.length ? document.products : (document.lines ?? [])) : []),
+    [document],
+  );
+  const services = selectedServices ?? savedServices;
+  const { vatRates: serviceVatRates } = useSaleServiceOptions();
+  const serviceLines = services.map((line) => serviceToSaleLine(line, serviceVatRates, vatPayerFlag));
+  const allLines = [...products, ...serviceLines];
+  const servicesTotal = serviceLines.reduce(
+    (sum, line) => sum + (line.netAmount ?? 0) + (line.vatAmount ?? 0),
+    0,
+  );
   const handleSaleTotalChange = useCallback(
     (totalAmount: number) => setSaleTotalAmount(totalAmount),
     [],
@@ -206,10 +235,17 @@ export default function RetailSaleEditorPage() {
     enableReinitialize: true,
     validationSchema: retailSaleSchema(t),
     onSubmit: async (values) => {
+      const serviceError = serviceLinesError(services);
+      if (serviceError) {
+        toast.error(t(serviceError));
+        return;
+      }
       try {
-        await saleDocLinesSchema(t, isEdit).validate(products, {
-          abortEarly: false,
-        });
+        // a check of services only has no goods to validate
+        if (products.length > 0 || services.length === 0)
+          await saleDocLinesSchema(t, isEdit).validate(products, {
+            abortEarly: false,
+          });
       } catch (error) {
         if (error instanceof ValidationError) {
           toast.error(error.errors[0]);
@@ -243,7 +279,7 @@ export default function RetailSaleEditorPage() {
             id: document.id,
             payload: toRetailSaleUpdatePayload(
               values,
-              products,
+              allLines,
               markingMode,
             ),
           });
@@ -269,12 +305,14 @@ export default function RetailSaleEditorPage() {
     setSavedDraft({
       values: formik.values,
       products,
+      services,
     });
   }, [
     formik.dirty,
     formik.values,
     isEdit,
     products,
+    services,
     saleCondition,
     setSavedDraft,
   ]);
@@ -330,7 +368,7 @@ export default function RetailSaleEditorPage() {
       await createMutation.mutateAsync(
         toRetailSaleCreatePayload(
           formik.values,
-          products,
+          allLines,
           processingMode,
           markingMode,
         ),
@@ -375,7 +413,7 @@ export default function RetailSaleEditorPage() {
         />
         <RetailSalePayments
           formik={formik}
-          totalAmount={saleTotalAmount}
+          totalAmount={roundMoney(saleTotalAmount + servicesTotal)}
           disabled={isSubmitting}
         />
         <SaleProductSelection
@@ -396,6 +434,12 @@ export default function RetailSaleEditorPage() {
           disableMarkingQuantityValidation
           onCancel={() => navigate(-1)}
           submitting={isSubmitting}
+          disabled={isSubmitting}
+        />
+        <SaleServiceLines
+          lines={services}
+          onChange={setSelectedServices}
+          vatPayer={vatPayer.isVatPayer}
           disabled={isSubmitting}
         />
       </div>
