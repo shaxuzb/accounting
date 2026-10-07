@@ -1,4 +1,5 @@
-import { Col, Row } from "antd";
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
+import { Alert, Col, Row } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -51,6 +52,7 @@ export default function PurchaseImportHeader({
   disabled = false,
 }: PurchaseImportHeaderProps) {
   const { t } = useTranslation();
+  const vatPayer = useVatPayer(formik.values.docDate);
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -218,6 +220,14 @@ export default function PurchaseImportHeader({
             </Col>
           )}
         </Row>
+        {!vatPayer.isVatPayer && (
+          <Alert
+            type="info"
+            showIcon
+            className="mt-1"
+            message={t("purchase.messages.nonVatPayerHint")}
+          />
+        )}
       </div>
       <CounterpartyAddEditPage
         open={counterpartyCreateOpen}

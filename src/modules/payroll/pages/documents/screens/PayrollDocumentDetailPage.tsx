@@ -1,3 +1,4 @@
+import { payrollPeriodText } from "../../../utils/format";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import Card from "@/components/ui/card/Card";
 import {
@@ -291,11 +292,7 @@ export default function PayrollDocumentDetailPage() {
               {t("payroll.fields.period")}
             </dt>
             <dd className="mt-1 font-medium">
-              {record.periodMonth
-                ? `${t(`payroll.months.${record.periodMonth}`, {
-                    defaultValue: record.periodName ?? "",
-                  })} ${record.periodYear ?? ""}`
-                : (record.periodName ?? "—")}
+              {payrollPeriodText(t, record)}
             </dd>
           </div>
           <div>

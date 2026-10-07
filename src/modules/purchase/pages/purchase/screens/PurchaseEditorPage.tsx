@@ -1,3 +1,4 @@
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import { Button, Form, Spin } from "antd";
 import { useFormik } from "formik";
 import {
@@ -1270,6 +1271,7 @@ export const PurchaseEditor = ({
     [data, productByMxik],
   );
 
+  const vatPayer = useVatPayer(formik.values.docDate);
   const tableColumns = usePurchaseImportColumns({
     columnConfig,
     enabled: optionsEnabled,
@@ -1286,6 +1288,7 @@ export const PurchaseEditor = ({
     unitOptions,
     vatRateOptions,
     priceIncludesVat: formik.values.priceIncludesVat,
+    vatPayer: vatPayer.isVatPayer,
   });
 
   useEffect(() => {
@@ -1594,6 +1597,7 @@ export const PurchaseEditor = ({
           selectBoxOptions={selectBoxOptions}
           setSelectBoxOptions={setSelectBoxOptions}
           totals={totals}
+          vatPayer={vatPayer.isVatPayer}
         />
         <PurchaseMarkingModal
           open={markingRowIndex !== null}
@@ -1615,6 +1619,7 @@ export const PurchaseEditor = ({
           }
           onClose={() => setAccountRowIndex(null)}
           onApply={handleApplyLineAccounts}
+          vatPayer={vatPayer.isVatPayer}
         />
         <ProductsCreateModal
           open={productCreateOpen}

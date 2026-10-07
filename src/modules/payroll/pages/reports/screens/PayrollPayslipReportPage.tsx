@@ -1,3 +1,4 @@
+import { payrollPeriodText } from "../../../utils/format";
 import Card from "@/components/ui/card/Card";
 import {
   DocumentSummary,
@@ -169,11 +170,7 @@ export default function PayrollPayslipReportPage() {
                 </div>
               </div>
               <Tag className="m-0!" color="blue">
-                {data.periodMonth
-                  ? `${t(`payroll.months.${data.periodMonth}`, {
-                      defaultValue: data.periodName ?? "",
-                    })} ${data.periodYear ?? ""}`
-                  : (data.periodName ?? "")}
+                {payrollPeriodText(t, data)}
               </Tag>
             </div>
           </Card>

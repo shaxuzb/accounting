@@ -349,7 +349,7 @@ export default function CashCollectionDetailPage({
           </div>
         </div>
       </Card>}
-      <div className={isDraft ? "grid gap-4 lg:grid-cols-[1.7fr_0.9fr]" : ""}>
+      <div className={isDraft ? "grid gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,0.9fr)]" : ""}>
         {isDraft ? (
           <Card className="p-4">{form(false)}</Card>
         ) : (

@@ -49,6 +49,8 @@ interface UsePurchaseImportColumnsParams {
   vatRateOptions: SelectOption[];
   /** Entered prices already contain VAT (it is extracted, not added on top). */
   priceIncludesVat?: boolean;
+  /** A non-payer adds the supplier's VAT to the cost (1C «НДС включается в стоимость»). */
+  vatPayer?: boolean;
   readOnlyValues?: boolean;
   disabled?: boolean;
 }
@@ -69,6 +71,7 @@ export const usePurchaseImportColumns = ({
   unitOptions,
   vatRateOptions,
   priceIncludesVat = false,
+  vatPayer = true,
   readOnlyValues = false,
   disabled = false,
 }: UsePurchaseImportColumnsParams): TableColumnType<PurchaseImportRow>[] => {
@@ -115,12 +118,17 @@ export const usePurchaseImportColumns = ({
         : accountName || (accountId ? String(accountId) : "—");
     };
 
+    // a non-payer's VAT goes into the cost, so only the debit account is used
     const getAccountPreview = (row: PurchaseImportRow) =>
       [
         getAccountPreviewLabel(row.debitAccountId, row.debitAccountName) ||
           (row.debitAccountId ? `#${row.debitAccountId}` : "—"),
-        getAccountPreviewLabel(row.vatAccountId, row.vatAccountName) ||
-          (row.vatAccountId ? `#${row.vatAccountId}` : "—"),
+        ...(vatPayer
+          ? [
+              getAccountPreviewLabel(row.vatAccountId, row.vatAccountName) ||
+                (row.vatAccountId ? `#${row.vatAccountId}` : "—"),
+            ]
+          : []),
       ].join(" / ");
 
     const visibleColumnConfig = columnConfig.filter(
@@ -326,7 +334,9 @@ export const usePurchaseImportColumns = ({
       },
       {
         dataIndex: "vatRateId",
-        title: t("purchase.fields.vatRateAndAmount"),
+        title: vatPayer
+          ? t("purchase.fields.vatRateAndAmount")
+          : t("purchase.fields.vatIntoCost"),
         align: "center",
         render: (_: unknown, record: PurchaseImportRow, rowIndex: number) => {
           const vatAmount = getRowMoney(record, vatRateOptions, priceIncludesVat).vat;
@@ -337,7 +347,7 @@ export const usePurchaseImportColumns = ({
                 optionFilterProp="label"
                 allowClear
                 className="min-w-28"
-                placeholder="QQS"
+                placeholder={t("settings.fields.vatRate")}
                 value={record.vatRateId ?? undefined}
                 options={vatRateOptions.map((item) => ({
                   value: item.id,
@@ -359,7 +369,7 @@ export const usePurchaseImportColumns = ({
       },
       {
         dataIndex: "totalAmount",
-        title: t("common.total"),
+        title: vatPayer ? t("common.total") : t("purchase.fields.totalCost"),
         width: 140,
         align: "center",
         render: (_: unknown, record: PurchaseImportRow) =>
@@ -422,6 +432,7 @@ export const usePurchaseImportColumns = ({
     unitOptions,
     vatRateOptions,
     priceIncludesVat,
+    vatPayer,
     chartAccountById,
     readOnlyValues,
     disabled,

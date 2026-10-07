@@ -3,25 +3,24 @@ import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import {
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import type { FormikProps } from "formik";
 import { useTranslation } from "react-i18next";
-import {
-  saleDocumentAccountRoleCodes,
-} from "../../sale/constants/documentAccount";
+import { saleDocumentAccountRoleCodes } from "../../sale/constants/documentAccount";
 import { retailSaleDocumentTypeIds } from "../constants/endpoints";
 import type { RetailSaleFormValues } from "../types/form";
 
 interface Props {
   formik: FormikProps<RetailSaleFormValues>;
   documentTypeId?: number;
+  /** A non-payer sells «QQSsiz» and needs no VAT account. */
+  vatPayer?: boolean;
 }
 
 export default function RetailSaleFormFields({
   formik,
   documentTypeId,
+  vatPayer = true,
 }: Props) {
   const { t } = useTranslation();
 
@@ -72,19 +71,21 @@ export default function RetailSaleFormFields({
           disabled={!documentTypeId}
           getFirst
         />
-        <DocumentAccountSelect
-          label={t("retailSale.fields.vatAccount")}
-          fieldName="vatAccountId"
-          formik={formik}
-          search
-          clearable
-          optional
-          documentTypeId={documentTypeId ?? retailSaleDocumentTypeIds.goods}
-          documentRoleCode={saleDocumentAccountRoleCodes.vat}
-          enabled={Boolean(documentTypeId)}
-          disabled={!documentTypeId}
-          getFirst
-        />
+        {vatPayer && (
+          <DocumentAccountSelect
+            label={t("retailSale.fields.vatAccount")}
+            fieldName="vatAccountId"
+            formik={formik}
+            search
+            clearable
+            optional
+            documentTypeId={documentTypeId ?? retailSaleDocumentTypeIds.goods}
+            documentRoleCode={saleDocumentAccountRoleCodes.vat}
+            enabled={Boolean(documentTypeId)}
+            disabled={!documentTypeId}
+            getFirst
+          />
+        )}
         <div className="hidden">
           <SelectCustom
             label={t("retailSale.fields.currency")}

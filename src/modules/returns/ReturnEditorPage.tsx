@@ -1,3 +1,4 @@
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import { Alert, Button, DatePicker, Input, InputNumber, Popconfirm, Select, Space, Table } from "antd";
 import type { TableColumnsType } from "antd";
 import { Ban, Save, Send, Trash2, Undo2 } from "lucide-react";
@@ -64,6 +65,8 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
 
   const [baseDocumentId, setBaseDocumentId] = useState<number | null>(data?.baseDocumentId ?? null);
   const [docDate, setDocDate] = useState(() => (data ? dayjs(data.docDate) : dayjs()));
+  // a non-payer returns «QQSsiz»: the amount is simply the amount
+  const vatPayer = useVatPayer(docDate.format("YYYY-MM-DD"));
   const [comment, setComment] = useState(data?.comment ?? "");
   const [search, setSearch] = useState("");
   const [quantities, setQuantities] = useState<Record<number, number>>(() =>
@@ -204,7 +207,7 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
     },
     {
       dataIndex: readOnly ? "totalAmount" : "amount",
-      title: readOnly ? t("returnDoc.total") : t("returnDoc.amountNet"),
+      title: readOnly || !vatPayer.isVatPayer ? t("returnDoc.total") : t("returnDoc.amountNet"),
       align: "right",
       width: 160,
       render: (value: number) => money(value),
@@ -352,7 +355,7 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
           pagination={false}
           footer={() => (
             <div className="text-right">
-              {readOnly ? t("returnDoc.total") : t("returnDoc.amountNet")}: <b>{money(total)} {currencyCode}</b>
+              {readOnly || !vatPayer.isVatPayer ? t("returnDoc.total") : t("returnDoc.amountNet")}: <b>{money(total)} {currencyCode}</b>
             </div>
           )}
         />

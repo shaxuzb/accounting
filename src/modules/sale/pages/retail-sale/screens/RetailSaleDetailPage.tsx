@@ -172,6 +172,7 @@ export default function RetailSaleDetailPage() {
           lines={lines}
           loading={documentQuery.isFetching}
           currency={document.currencyCode || "UZS"}
+          docDate={document.docDate}
         />
       </Card>
       <RetailSalePaymentDetails

@@ -266,6 +266,7 @@
       "depreciation": "Depreciation run"
     },
     "fields": {
+      "vatRateIntoCost": "VAT rate (added to cost)",
       "documentNumber": "Document number",
       "documentDate": "Document date",
       "comment": "Comment",
@@ -1118,6 +1119,8 @@
     "detailTitle": "Purchase document",
     "importTitle": "Purchase import",
     "fields": {
+      "vatIntoCost": "VAT (added to cost)",
+      "totalCost": "Total cost",
       "amount": "Amount",
       "warehouse": "Warehouse",
       "contract": "Contract",
@@ -1160,6 +1163,7 @@
       "priceIncludesVat": "Price includes VAT"
     },
     "messages": {
+      "nonVatPayerHint": "The organization is not a VAT payer: the supplier's VAT is added to the cost of goods (not 4410); no VAT account is needed.",
       "imported": "Purchase data imported",
       "productNameRequired": "Product name is required",
       "mxikRequired": "MXIK code is required",
@@ -1466,6 +1470,8 @@
   "sale": {
     "title": "Sales",
     "fields": {
+      "price": "Price",
+      "totalNoVatPayer": "Total (no VAT — the organization is not a VAT payer)",
       "product": "Product",
       "quantity": "Quantity",
       "inventoryAccount": "Inventory account",
@@ -2448,7 +2454,7 @@
       "calculate": "Calculate payroll",
       "calculateTitle": "Calculate payroll",
       "accountsTitle": "Accounting accounts",
-      "accountsHint": "Choose the accounts used for this calculation. The system will not replace your choices automatically.",
+      "accountsHint": "The default accounts from settings are filled in (usually Dr 9420 / Cr 6710); change them if needed.",
       "accountsSavedHint": "Accounts saved when this document was calculated",
       "accountsLoading": "Loading account names...",
       "calculateHintTitle": "The calculation runs on the server",

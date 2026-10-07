@@ -62,3 +62,22 @@ export const periodLabel = (
   if (!year || !month) return "—";
   return monthName ? `${monthName} ${year}` : `${month}.${year}`;
 };
+
+/**
+ * A payroll period for people: «Oktabr 2026». The API sends the month and year when it
+ * has them and otherwise a bare "2026-10"; both become the month's name.
+ */
+export const payrollPeriodText = (
+  t: (key: string, options?: Record<string, unknown>) => string,
+  record?: {
+    periodMonth?: number | null;
+    periodYear?: number | null;
+    periodName?: string | null;
+  } | null,
+) => {
+  const parsed = /^(\d{4})-(\d{1,2})$/.exec(String(record?.periodName ?? "").trim());
+  const month = record?.periodMonth ?? (parsed ? Number(parsed[2]) : null);
+  const year = record?.periodYear ?? (parsed ? Number(parsed[1]) : null);
+  if (!month || !year) return record?.periodName || "—";
+  return `${t(`payroll.months.${month}`, { defaultValue: String(month) })} ${year}`;
+};

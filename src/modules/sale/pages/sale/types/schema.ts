@@ -2,12 +2,9 @@ import * as Yup from "yup";
 import type { TFunction } from "i18next";
 
 const requiredId = (message: string) =>
-  Yup.number()
-    .nullable()
-    .required(message)
-    .moreThan(0, message);
+  Yup.number().nullable().required(message).moreThan(0, message);
 
-export const saleDocSchema = (t: TFunction, isEdit = false) =>
+export const saleDocSchema = (t: TFunction, isEdit = false, vatPayer = true) =>
   Yup.object({
     docDate: Yup.string().required(t("sale.messages.dateRequired")),
     counterpartyId: requiredId(t("sale.messages.selectCounterparty")),
@@ -17,9 +14,10 @@ export const saleDocSchema = (t: TFunction, isEdit = false) =>
     customerAccountId: isEdit
       ? Yup.number().nullable()
       : requiredId(t("sale.messages.selectCustomerAccount")),
-    vatAccountId: isEdit
-      ? Yup.number().nullable()
-      : requiredId(t("sale.messages.selectVatAccount")),
+    vatAccountId:
+      isEdit || !vatPayer
+        ? Yup.number().nullable()
+        : requiredId(t("sale.messages.selectVatAccount")),
     comment: Yup.string().trim().nullable().default(""),
   });
 

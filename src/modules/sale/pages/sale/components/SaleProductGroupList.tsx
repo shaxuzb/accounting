@@ -18,6 +18,7 @@ interface Props {
   ) => void;
   onLineMarginChange: (lineKey: string, margin: number) => void;
   onLineSalePriceChange: (lineKey: string, salePrice: number) => void;
+  vatPayer?: boolean;
 }
 
 export default function SaleProductGroupList({ lines, ...props }: Props) {

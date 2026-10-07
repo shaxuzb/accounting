@@ -4,7 +4,8 @@ import { App, ConfigProvider, theme } from "antd";
 import uzUz from "antd/es/locale/uz_UZ";
 import ruRU from "antd/es/locale/ru_RU";
 import enUS from "antd/es/locale/en_US";
-import "dayjs/locale/uz";
+// the app writes Uzbek in Latin script; dayjs "uz" is Cyrillic («октябр», «Ду Се»)
+import "dayjs/locale/uz-latn";
 import "dayjs/locale/ru";
 import "dayjs/locale/en";
 import isoWeek from "dayjs/plugin/isoWeek";
@@ -17,7 +18,7 @@ import { useAppSelector } from "./store/hooks";
 import { useEffectiveTheme } from "./shared/hooks/useEffectiveTheme";
 import "./components/ui/scroll/customscroll.css";
 dayjs.extend(isoWeek);
-dayjs.locale("uz");
+dayjs.locale("uz-latn");
 
 const Root = () => {
   const lang = useAppSelector((state) => state.lang.lang);
@@ -43,7 +44,7 @@ const Root = () => {
       }),
   );
   useEffect(() => {
-    dayjs.locale(lang);
+    dayjs.locale(lang === "uz" ? "uz-latn" : lang);
   }, [lang]);
 
   useEffect(() => {

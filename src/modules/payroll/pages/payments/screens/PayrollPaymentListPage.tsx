@@ -1,3 +1,4 @@
+import { payrollPeriodText } from "../../../utils/format";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import ListToolbar from "@/components/ui/filters/ListToolbar";
@@ -60,11 +61,7 @@ export default function PayrollPaymentListPage() {
       width: 160,
       align: "center",
       render: (_, record) =>
-        record.periodMonth
-          ? `${t(`payroll.months.${record.periodMonth}`, {
-              defaultValue: record.periodName ?? "",
-            })} ${record.periodYear ?? ""}`
-          : (record.periodName ?? "—"),
+        payrollPeriodText(t, record),
     },
     {
       dataIndex: "paymentKind",

@@ -26,7 +26,7 @@ export const toSaleCreatePayload = (
   currencyId: values.currencyId ?? 0,
   contractId: values.contractId,
   customerAccountId: values.customerAccountId ?? 0,
-  vatAccountId: values.vatAccountId ?? 0,
+  vatAccountId: values.vatAccountId || null,
   comment: values.comment || null,
   processingMode,
   lines: products.map((product) => {

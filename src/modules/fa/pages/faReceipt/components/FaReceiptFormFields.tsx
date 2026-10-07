@@ -1,3 +1,4 @@
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import { useState } from "react";
 import { Button, Col, Collapse, Row } from "antd";
 import type { CollapseProps } from "antd";
@@ -49,6 +50,7 @@ export default function FaReceiptFormFields({
   documentTypeId,
 }: FaReceiptFormFieldsProps) {
   const { t } = useTranslation();
+  const vatPayer = useVatPayer(formik.values.docDate);
   const [activeLineKeys, setActiveLineKeys] = useState<string[]>(["line-0"]);
   const [activeAssetKeys, setActiveAssetKeys] = useState<
     Record<number, string[]>
@@ -283,7 +285,11 @@ export default function FaReceiptFormFields({
                   path={selectListEndpoints.vatRatesSelectList}
                   formik={formik}
                   fieldName={`lines[${lineIndex}].vatRateId`}
-                  label="fa.fields.vatRateId"
+                  label={
+                    vatPayer.isVatPayer
+                      ? "fa.fields.vatRateId"
+                      : "fa.fields.vatRateIntoCost"
+                  }
                   clearable
                 />
               </Col>
@@ -301,19 +307,21 @@ export default function FaReceiptFormFields({
                   enabled={Boolean(documentTypeId)}
                 />
               </Col>
-              <Col span={6}>
-                <DocumentAccountSelect
-                  documentTypeId={documentTypeId ?? 0}
-                  documentRoleCode={faDocumentAccountRoleCodes.inputVat}
-                  formik={formik}
-                  fieldName={`lines[${lineIndex}].vatAccountId`}
-                  label="fa.fields.vatAccount"
-                  search
-                  required={Boolean(line.vatRateId)}
-                  clearable
-                  enabled={Boolean(documentTypeId)}
-                />
-              </Col>
+              {vatPayer.isVatPayer && (
+                <Col span={6}>
+                  <DocumentAccountSelect
+                    documentTypeId={documentTypeId ?? 0}
+                    documentRoleCode={faDocumentAccountRoleCodes.inputVat}
+                    formik={formik}
+                    fieldName={`lines[${lineIndex}].vatAccountId`}
+                    label="fa.fields.vatAccount"
+                    search
+                    required={Boolean(line.vatRateId)}
+                    clearable
+                    enabled={Boolean(documentTypeId)}
+                  />
+                </Col>
+              )}
             </Row>
 
             <div className="rounded-lg border border-border bg-background/40">

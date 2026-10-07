@@ -175,7 +175,7 @@ export default function SaleAddEditPage() {
         }
       : initialDraft?.form ?? openedDefaults,
     enableReinitialize: true,
-    validationSchema: saleDocSchema(t, isEdit),
+    validationSchema: saleDocSchema(t, isEdit, vatPayer.isVatPayer),
     onSubmit: async (values) => {
       try {
         await saleDocLinesSchema(t, isEdit).validate(products, {
@@ -403,8 +403,13 @@ export default function SaleAddEditPage() {
       }}
     >
       <div className="space-y-3">
-        <SaleDocumentFormFields formik={formik} isEdit={isEdit} />
+        <SaleDocumentFormFields
+          formik={formik}
+          isEdit={isEdit}
+          vatPayer={vatPayer.isVatPayer}
+        />
         <SaleProductSelection
+          vatPayer={vatPayer.isVatPayer}
           warehouseId={warehouseId}
           exchangeRate={Number(formik.values.currencyId) > 1 ? formik.values.exchangeRate : 1}
           comment={formik.values.comment}

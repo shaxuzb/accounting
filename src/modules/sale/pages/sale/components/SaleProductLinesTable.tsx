@@ -13,6 +13,8 @@ interface Props {
   vatRateName?: string | null;
   onMarginChange: (lineKey: string, margin: number) => void;
   onSalePriceChange: (lineKey: string, salePrice: number) => void;
+  /** A non-payer sells «QQSsiz»: no VAT rate or amount columns. */
+  vatPayer?: boolean;
 }
 
 export default function SaleProductLinesTable({
@@ -21,6 +23,7 @@ export default function SaleProductLinesTable({
   vatRateName,
   onMarginChange,
   onSalePriceChange,
+  vatPayer = true,
 }: Props) {
   const { t } = useTranslation();
   const columns: ColumnsType<SalePricingLine> = [
@@ -87,7 +90,7 @@ export default function SaleProductLinesTable({
     },
     {
       dataIndex: "amount",
-      title: t("sale.fields.salePrice"),
+      title: vatPayer ? t("sale.fields.salePrice") : t("sale.fields.price"),
       width: 120,
       render: (value, line) => (
         <InputNumberFormat
@@ -147,7 +150,16 @@ export default function SaleProductLinesTable({
   return (
     <Table<SalePricingLine>
       size="small"
-      columns={columns}
+      columns={
+        vatPayer
+          ? columns
+          : columns.filter(
+              (column) =>
+                !("dataIndex" in column) ||
+                (column.dataIndex !== "vatRateName" &&
+                  column.dataIndex !== "vatAmount"),
+            )
+      }
       dataSource={generateKeyTable(lines, "rowKey")}
       pagination={false}
       scroll={{ x: "max-content" }}

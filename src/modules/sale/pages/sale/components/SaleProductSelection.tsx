@@ -80,6 +80,11 @@ interface Props {
   disabled?: boolean;
   /** UZS for one unit of the document currency; 1 (or nothing) for a sale in UZS. */
   exchangeRate?: number | null;
+  /**
+   * The organization is a VAT payer on the document date. A non-payer sells «QQSsiz»
+   * (1C «Без НДС»): no VAT columns, the price is simply the price.
+   */
+  vatPayer?: boolean;
 }
 
 /** Code-less units of the product left in stock, from the batches kept on the line. */
@@ -230,9 +235,14 @@ const recalculateLine = ({
       ? line.unitPrice
       : costRate > 1
         ? getSalePriceByMarkup(nextCostPrice / costRate, markupPercent)
-        : prices.unitPrice || getSalePriceByMarkup(nextCostPrice, markupPercent));
+        : prices.unitPrice ||
+          getSalePriceByMarkup(nextCostPrice, markupPercent));
 
-  const nextMarkings = trimMarkingsForLayers(line.markings, allocatedLayers, quantity);
+  const nextMarkings = trimMarkingsForLayers(
+    line.markings,
+    allocatedLayers,
+    quantity,
+  );
   return {
     ...line,
     quantity,
@@ -270,6 +280,7 @@ export default function SaleProductSelection({
   submitting = false,
   disabled = false,
   exchangeRate,
+  vatPayer = true,
 }: Props) {
   const { t } = useTranslation();
   const costRate = Number(exchangeRate) > 1 ? Number(exchangeRate) : 1;
@@ -577,7 +588,9 @@ export default function SaleProductSelection({
         0;
       const unitPrice =
         costRate > 1
-          ? (salePriceBySelection ?? existingLine?.unitPrice ?? docCost(prices.costPrice))
+          ? (salePriceBySelection ??
+            existingLine?.unitPrice ??
+            docCost(prices.costPrice))
           : allocatedLayers.length
             ? prices.unitPrice || selectedSalePrice || prices.costPrice
             : selectedSalePrice || prices.unitPrice || prices.costPrice;
@@ -1251,10 +1264,12 @@ export default function SaleProductSelection({
       dataIndex: "unitPrice",
       // The sale price is net: VAT is added on top of it. A shelf price that already
       // holds VAT goes into "Total (with VAT)", which works the net price back out.
-      title: (
+      title: vatPayer ? (
         <Tooltip title={t("sale.messages.salePriceIsNet")}>
           <span>{t("sale.fields.salePrice")}</span>
         </Tooltip>
+      ) : (
+        t("sale.fields.price")
       ),
       width: 170,
       render: (_, record) => {
@@ -1372,7 +1387,7 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "total",
-      title: t("sale.fields.totalWithVat"),
+      title: vatPayer ? t("sale.fields.totalWithVat") : t("common.total"),
       align: "center",
       width: 190,
       render: (_, record) => {
@@ -1419,12 +1434,22 @@ export default function SaleProductSelection({
                 [totalInputKey]: netUnitPrice,
               }));
             }}
-            onBlur={() =>
+            onBlur={() => {
+              // leaving the total untouched keeps the price: only a typed total
+              // works the price back out (it used to reset the price to 0)
+              if (
+                !Object.prototype.hasOwnProperty.call(
+                  manualTotalValuesRef.current,
+                  totalInputKey,
+                )
+              ) {
+                return;
+              }
               applyManualTotal(
                 record.rowKey,
                 manualTotalValuesRef.current[totalInputKey],
-              )
-            }
+              );
+            }}
           />
         );
       },
@@ -1657,7 +1682,14 @@ export default function SaleProductSelection({
         </div>
       </div>
       <Table<SaleSelectedProduct>
-        columns={columns}
+        columns={
+          vatPayer
+            ? columns
+            : columns.filter(
+                (column) =>
+                  !("dataIndex" in column) || column.dataIndex !== "vatRateId",
+              )
+        }
         dataSource={tableData}
         pagination={false}
         tableLayout="auto"
@@ -1674,7 +1706,12 @@ export default function SaleProductSelection({
                       </div>
                       <Table<SaleProductPriceLayer>
                         size="small"
-                        columns={getLayerColumns(record)}
+                        columns={getLayerColumns(record).filter(
+                          (column) =>
+                            vatPayer ||
+                            !("dataIndex" in column) ||
+                            column.dataIndex !== "vatAmount",
+                        )}
                         dataSource={generateKeyTable(
                           record.priceLayers,
                           "batchId",
@@ -1703,26 +1740,32 @@ export default function SaleProductSelection({
             />
           </div>
         </div>
-        <div className="grid overflow-hidden rounded-lg border border-border bg-primary-bg sm:grid-cols-3">
-          <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
-            <div className="text-xs text-secondary-text">
-              {t("sale.fields.amountWithoutVat")}
-            </div>
-            <div className="mt-1 text-base font-semibold">
-              {numberSpacing(totals.amount, undefined, true)}
-            </div>
-          </div>
-          <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
-            <div className="text-xs text-secondary-text">
-              {t("sale.fields.vatAmount")}
-            </div>
-            <div className="mt-1 text-base font-semibold">
-              {numberSpacing(totals.vatAmount, undefined, true)}
-            </div>
-          </div>
+        <div
+          className={`grid overflow-hidden rounded-lg border border-border bg-primary-bg ${vatPayer ? "sm:grid-cols-3" : ""}`}
+        >
+          {vatPayer && (
+            <>
+              <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
+                <div className="text-xs text-secondary-text">
+                  {t("sale.fields.amountWithoutVat")}
+                </div>
+                <div className="mt-1 text-base font-semibold">
+                  {numberSpacing(totals.amount, undefined, true)}
+                </div>
+              </div>
+              <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
+                <div className="text-xs text-secondary-text">
+                  {t("sale.fields.vatAmount")}
+                </div>
+                <div className="mt-1 text-base font-semibold">
+                  {numberSpacing(totals.vatAmount, undefined, true)}
+                </div>
+              </div>
+            </>
+          )}
           <div className="bg-primary/5 px-4 py-3 text-center">
             <div className="text-xs text-secondary-text">
-              {t("common.total")}
+              {vatPayer ? t("common.total") : t("sale.fields.totalNoVatPayer")}
             </div>
             <div className="mt-1 text-base font-bold text-primary">
               {numberSpacing(totals.totalAmount, undefined, true)}

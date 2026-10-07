@@ -27,6 +27,7 @@ interface PurchaseImportLinesSectionProps extends PurchaseImportActionsProps {
   showActions?: boolean;
   showAddLine?: boolean;
   showComment?: boolean;
+  vatPayer?: boolean;
 }
 
 export default function PurchaseImportLinesSection({
@@ -54,6 +55,7 @@ export default function PurchaseImportLinesSection({
   showActions = true,
   showAddLine = true,
   showComment = true,
+  vatPayer = true,
 }: PurchaseImportLinesSectionProps) {
   const { t } = useTranslation();
   const loading = isLoading || isFetching;
@@ -95,6 +97,7 @@ export default function PurchaseImportLinesSection({
           totals={totals}
           onCommentChange={onCommentChange}
           showComment={showComment}
+          vatPayer={vatPayer}
         />
         {showAddLine ? (
           <div className="sticky bottom-0 z-10 flex justify-center border-t border-border bg-primary-bg/95 py-2 backdrop-blur">

@@ -25,6 +25,7 @@ interface Props {
   ) => void;
   onLineMarginChange: (lineKey: string, margin: number) => void;
   onLineSalePriceChange: (lineKey: string, salePrice: number) => void;
+  vatPayer?: boolean;
 }
 
 function SaleProductGroup({
@@ -36,6 +37,7 @@ function SaleProductGroup({
   onApplyVat,
   onLineMarginChange,
   onLineSalePriceChange,
+  vatPayer = true,
 }: Props) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(true);
@@ -154,17 +156,19 @@ function SaleProductGroup({
           layout="vertical"
           className="grid w-full gap-3 sm:grid-cols-2 xl:grid-cols-[280px_240px_190px_120px] xl:items-end 2xl:w-215"
         >
-          <div className="min-w-0 [&_.ant-form-item]:mb-0! [&_.ant-form-item-label]:pb-1! [&_.ant-select-selector]:h-9.5!">
-            <SelectCustom
-              label={t("sale.fields.allVat")}
-              fieldName="vatRateId"
-              getFieldName="vatRateName"
-              path={selectListEndpoints.vatRatesSelectList}
-              formik={formik}
-              marginBottom="mb-0"
-              clearable
-            />
-          </div>
+          {vatPayer && (
+            <div className="min-w-0 [&_.ant-form-item]:mb-0! [&_.ant-form-item-label]:pb-1! [&_.ant-select-selector]:h-9.5!">
+              <SelectCustom
+                label={t("sale.fields.allVat")}
+                fieldName="vatRateId"
+                getFieldName="vatRateName"
+                path={selectListEndpoints.vatRatesSelectList}
+                formik={formik}
+                marginBottom="mb-0"
+                clearable
+              />
+            </div>
+          )}
           <div className="min-w-0">
             <Segmented
               block
@@ -253,6 +257,7 @@ function SaleProductGroup({
           vatRateName={formik.values.vatRateName}
           onMarginChange={onLineMarginChange}
           onSalePriceChange={onLineSalePriceChange}
+          vatPayer={vatPayer}
         />
       )}
     </section>
@@ -261,6 +266,7 @@ function SaleProductGroup({
 
 const sameProductGroup = (previous: Props, next: Props) =>
   previous.currencyCode === next.currencyCode &&
+  previous.vatPayer === next.vatPayer &&
   previous.group.key === next.group.key &&
   previous.group.totalQuantity === next.group.totalQuantity &&
   previous.group.lines.length === next.group.lines.length &&

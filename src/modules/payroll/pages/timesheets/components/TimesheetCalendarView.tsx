@@ -1,3 +1,4 @@
+import { payrollPeriodText } from "../../../utils/format";
 import SectionCard from "@/components/ui/card/SectionCard";
 import { Empty, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
@@ -401,7 +402,7 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
         <div className="flex flex-wrap items-center justify-end gap-2">
           {actions}
           <Tag className="bg-primary-bg text-primary-text flex! items-center gap-1.5">
-            <Clock3 className="size-3.5" /> {calendar.periodName ?? "-"}
+            <Clock3 className="size-3.5" /> {payrollPeriodText(t, calendar)}
           </Tag>
         </div>
       }

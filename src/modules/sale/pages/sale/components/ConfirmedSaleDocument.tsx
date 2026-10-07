@@ -88,6 +88,7 @@ export default function ConfirmedSaleDocument({
           lines={lines}
           loading={loading}
           currency={currency}
+          docDate={document.docDate}
         />
       </Card>
     </div>

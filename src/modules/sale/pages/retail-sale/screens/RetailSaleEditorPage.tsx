@@ -369,6 +369,7 @@ export default function RetailSaleEditorPage() {
           onSelect={(mode) => void handleCreate(mode)}
         />
         <RetailSaleFormFields
+          vatPayer={vatPayer.isVatPayer}
           formik={formik}
           documentTypeId={retailSaleDocumentTypeIds.goods}
         />
@@ -378,6 +379,7 @@ export default function RetailSaleEditorPage() {
           disabled={isSubmitting}
         />
         <SaleProductSelection
+          vatPayer={vatPayer.isVatPayer}
           warehouseId={formik.values.warehouseId}
           comment={formik.values.comment}
           products={products}

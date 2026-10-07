@@ -12,11 +12,14 @@ import type {
 import { groupSaleDocumentLines } from "../utils/saleDocumentGroups";
 import SaleUnitMarkingCell from "./SaleUnitMarkingCell";
 import { useTranslation } from "react-i18next";
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
 
 interface Props {
   lines: SaleDocTable[];
   loading: boolean;
   currency: string;
+  /** The document's date: a non-payer's «QQSsiz» sale shows no VAT columns. */
+  docDate?: string | null;
 }
 
 const getNumber = (value: number) => numberSpacing(value, undefined, true);
@@ -25,8 +28,20 @@ export default function SaleConfirmedLinesTable({
   lines,
   loading,
   currency,
+  docDate,
 }: Props) {
   const { t } = useTranslation();
+  const vatPayer = useVatPayer(docDate);
+  const hideVat =
+    !vatPayer.isVatPayer && lines.every((line) => !Number(line.vatAmount));
+  const withoutVat = <T,>(list: TableColumnsType<T>) =>
+    hideVat
+      ? list.filter(
+          (column) =>
+            !("dataIndex" in column) ||
+            (column.dataIndex !== "vatRateName" && column.dataIndex !== "vatAmount"),
+        )
+      : list;
   const [expandedRowKeys, setExpandedRowKeys] = useState<Key[]>([]);
   const groups = useMemo(() => groupSaleDocumentLines(lines), [lines]);
 
@@ -175,7 +190,7 @@ export default function SaleConfirmedLinesTable({
   return (
     <Table<SaleDocumentLineGroup>
       loading={loading}
-      columns={columns}
+      columns={withoutVat(columns)}
       dataSource={generateKeyTable(groups, "key")}
       pagination={false}
       size="large"
@@ -185,7 +200,7 @@ export default function SaleConfirmedLinesTable({
         showExpandColumn: false,
         expandedRowRender: (record) => (
           <Table<SaleDocTable>
-            columns={itemColumns}
+            columns={withoutVat(itemColumns)}
             dataSource={generateKeyTable(record.lines, "rowKey")}
             pagination={false}
             size="small"

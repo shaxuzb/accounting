@@ -41,8 +41,8 @@ export default function PayrollDraftEditor({ record, onSubmit, loading }: Props)
   return (
     <Form layout="vertical" onFinish={formik.handleSubmit} className="space-y-4">
       <Row gutter={[16, 0]}>
-        <Col xs={24} md={12}><DocumentAccountSelect formik={formik} fieldName="salaryExpenseAccountId" label="payroll.fields.salaryExpenseAccount" documentTypeId={PAYROLL_ACCRUAL_DOCUMENT_TYPE_ID} documentRoleCode="salary_expense" allowUserSelection fallbackToAllAccounts search clearable marginBottom="mb-4" /></Col>
-        <Col xs={24} md={12}><DocumentAccountSelect formik={formik} fieldName="salaryPayableAccountId" label="payroll.fields.salaryPayableAccount" documentTypeId={PAYROLL_ACCRUAL_DOCUMENT_TYPE_ID} documentRoleCode="salary_payable" allowUserSelection fallbackToAllAccounts search clearable marginBottom="mb-4" /></Col>
+        <Col xs={24} md={12}><DocumentAccountSelect formik={formik} fieldName="salaryExpenseAccountId" label="payroll.fields.salaryExpenseAccount" documentTypeId={PAYROLL_ACCRUAL_DOCUMENT_TYPE_ID} documentRoleCode="salary_expense" allowUserSelection preselectDefault fallbackToAllAccounts search clearable marginBottom="mb-4" /></Col>
+        <Col xs={24} md={12}><DocumentAccountSelect formik={formik} fieldName="salaryPayableAccountId" label="payroll.fields.salaryPayableAccount" documentTypeId={PAYROLL_ACCRUAL_DOCUMENT_TYPE_ID} documentRoleCode="salary_payable" allowUserSelection preselectDefault fallbackToAllAccounts search clearable marginBottom="mb-4" /></Col>
       </Row>
       <div className="space-y-3">
         {formik.values.lines.map((line, lineIndex) => {

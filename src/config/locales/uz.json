@@ -268,6 +268,7 @@
       "depreciation": "Eskirish hisoblash"
     },
     "fields": {
+      "vatRateIntoCost": "QQS stavkasi (tannarxga qo'shiladi)",
       "documentNumber": "Hujjat raqami",
       "documentDate": "Hujjat sanasi",
       "comment": "Izoh",
@@ -1120,6 +1121,8 @@
     "detailTitle": "Sotib olish hujjati",
     "importTitle": "Sotib olish importi",
     "fields": {
+      "vatIntoCost": "QQS (tannarxga qo'shiladi)",
+      "totalCost": "Jami tannarx",
       "amount": "Summa",
       "warehouse": "Ombor",
       "contract": "Shartnoma",
@@ -1162,6 +1165,7 @@
       "priceIncludesVat": "Narx QQS bilan"
     },
     "messages": {
+      "nonVatPayerHint": "Tashkilot QQS to'lovchi emas: yetkazib beruvchi QQSi tovar tannarxiga qo'shiladi (4410 ga yozilmaydi), QQS hisobvarag'i kerak emas (1C: «НДС включается в стоимость»).",
       "imported": "Sotib olish ma'lumotlari import qilindi",
       "productNameRequired": "Mahsulot nomi majburiy",
       "mxikRequired": "MXIK kodi majburiy",
@@ -1466,6 +1470,8 @@
   "sale": {
     "title": "Sotuv",
     "fields": {
+      "price": "Narx",
+      "totalNoVatPayer": "Jami (QQSsiz — tashkilot QQS to'lovchi emas)",
       "product": "Mahsulot",
       "quantity": "Miqdor",
       "inventoryAccount": "Tovarlar hisobvarag'i",
@@ -2448,7 +2454,7 @@
       "calculate": "Maoshni hisoblash",
       "calculateTitle": "Maoshni hisoblash",
       "accountsTitle": "Buxgalteriya hisobvaraqlari",
-      "accountsHint": "Hisoblash uchun kerakli hisobvaraqlarni tanlang. Tizim ularni avtomatik almashtirmaydi.",
+      "accountsHint": "Sozlamalardagi standart hisobvaraqlar avtomatik qo'yiladi (odatda Dt 9420 / Kt 6710); kerak bo'lsa o'zgartiring.",
       "accountsSavedHint": "Hujjat hisoblanganda saqlangan hisobvaraqlar",
       "accountsLoading": "Hisobvaraq nomlari yuklanmoqda...",
       "calculateHintTitle": "Hisob-kitobni backend bajaradi",

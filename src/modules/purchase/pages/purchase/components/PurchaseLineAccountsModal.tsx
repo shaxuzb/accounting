@@ -20,6 +20,8 @@ interface Props {
   purchaseMode: PurchaseMode;
   onClose: () => void;
   onApply: (values: PurchaseLineAccountValues, applyToAll: boolean) => void;
+  /** A non-payer's VAT goes into the cost: no VAT account is asked for. */
+  vatPayer?: boolean;
 }
 
 const getInitialValues = (
@@ -37,6 +39,7 @@ export default function PurchaseLineAccountsModal({
   purchaseMode,
   onClose,
   onApply,
+  vatPayer = true,
 }: Props) {
   const { t } = useTranslation();
   const formik = useFormik<PurchaseLineAccountValues>({
@@ -46,7 +49,10 @@ export default function PurchaseLineAccountsModal({
   });
 
   const handleApply = (applyToAll: boolean) => {
-    if (!formik.values.debitAccountId || !formik.values.vatAccountId) {
+    if (
+      !formik.values.debitAccountId ||
+      (vatPayer && !formik.values.vatAccountId)
+    ) {
       formik.setTouched({ debitAccountId: true, vatAccountId: true });
       return;
     }
@@ -55,7 +61,8 @@ export default function PurchaseLineAccountsModal({
   };
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       title={t("app.modals.accountSelectionTitle")}
       centered
       width={600}
@@ -106,18 +113,20 @@ export default function PurchaseLineAccountsModal({
           required
           clearable
         />
-        <DocumentAccountSelect
-          label="purchase.fields.vatAccount"
-          fieldName="vatAccountId"
-          getFieldName="vatAccountName"
-          documentTypeId={purchaseDocumentTypeIds[purchaseMode]}
-          documentRoleCode="purchase_vat"
-          formik={formik}
-          getFirst
-          search
-          required
-          clearable
-        />
+        {vatPayer && (
+          <DocumentAccountSelect
+            label="purchase.fields.vatAccount"
+            fieldName="vatAccountId"
+            getFieldName="vatAccountName"
+            documentTypeId={purchaseDocumentTypeIds[purchaseMode]}
+            documentRoleCode="purchase_vat"
+            formik={formik}
+            getFirst
+            search
+            required
+            clearable
+          />
+        )}
       </div>
     </Modal>
   );

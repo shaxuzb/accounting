@@ -271,6 +271,7 @@ export default function PayrollCalculateModal({
                   documentTypeId={PAYROLL_ACCRUAL_DOCUMENT_TYPE_ID}
                   documentRoleCode={account.roleCode}
                   allowUserSelection
+                  preselectDefault
                   fallbackToAllAccounts
                   search
                   clearable

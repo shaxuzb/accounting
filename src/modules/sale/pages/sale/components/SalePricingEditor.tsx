@@ -25,6 +25,7 @@ import {
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { numberSpacing } from "@/utils/utils";
 import { useCancelSale, useConfirmSale, useSaveSalePrices } from "../hooks";
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import type { SaleDoc, SaleDocTable, SalePricingLine } from "../types/type";
 import type {
   SaleDocConfirmForm,
@@ -87,6 +88,7 @@ export default function SalePricingEditor({
   const confirmSale = useConfirmSale(document.id);
   const cancelSale = useCancelSale(document.id);
   const savePrices = useSaveSalePrices(document.id);
+  const vatPayer = useVatPayer(document.docDate);
   const draftKey = useScopedStorageKey("form-draft", `sale-pricing:${document.id}`);
   const [draftLines, setDraftLines] = useLocalStorage<SalePricingDraftLine[]>(
     draftKey,
@@ -518,6 +520,7 @@ export default function SalePricingEditor({
           onApplyVat={applyVat}
           onLineMarginChange={changeLineMargin}
           onLineSalePriceChange={changeLineSalePrice}
+          vatPayer={vatPayer.isVatPayer}
         />
       ) : (
         <Card className="border border-border p-8">

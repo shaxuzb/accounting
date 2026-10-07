@@ -52,7 +52,8 @@ export interface SaleDocCreateForm {
   currencyId: number;
   contractId: number | null;
   customerAccountId: number;
-  vatAccountId: number;
+  /** Empty for a non-payer: «QQSsiz» posts no output VAT. */
+  vatAccountId: number | null;
   docDate: string;
   exchangeRate: number;
   comment: string | null;

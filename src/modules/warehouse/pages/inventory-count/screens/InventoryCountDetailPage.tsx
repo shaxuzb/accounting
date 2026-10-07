@@ -105,6 +105,10 @@ const buildJsonTableColumns = (rows: JsonRecord[] = []) =>
 const buildJsonRows = (rows: JsonRecord[] | undefined): (JsonRecord & { key: string })[] =>
   (rows ?? []).map((row, index) => ({ ...row, key: `${index}` }));
 
+/** «07.10.2026 08:33» instead of the raw ISO stamp the API sends. */
+const showDateTime = (value?: string | null) =>
+  value ? dayjs(value).format("DD.MM.YYYY HH:mm") : null;
+
 export default function InventoryCountDetailPage() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
@@ -420,7 +424,7 @@ export default function InventoryCountDetailPage() {
         </div>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-[1.8fr_0.9fr]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,0.9fr)]">
         <Card className="space-y-3 p-4">
           <Tabs
             activeKey={activeTab}
@@ -443,7 +447,7 @@ export default function InventoryCountDetailPage() {
                         {t("warehouse.fields.documentDate")}
                       </div>
                       <div className="font-medium">
-                        {record?.docDate ?? "-"}
+                        {showDateTime(record?.docDate) ?? "-"}
                       </div>
                     </div>
                     <div>
@@ -485,7 +489,7 @@ export default function InventoryCountDetailPage() {
                         {t("warehouse.fields.createdDate")}
                       </div>
                       <div className="font-medium">
-                        {record?.createdDate ?? "-"}
+                        {showDateTime(record?.createdDate) ?? "-"}
                       </div>
                     </div>
                     <div>
@@ -493,7 +497,7 @@ export default function InventoryCountDetailPage() {
                         {t("warehouse.count.posted")}
                       </div>
                       <div className="font-medium">
-                        {record?.postedAt ?? t("warehouse.count.notPosted")}
+                        {showDateTime(record?.postedAt) ?? t("warehouse.count.notPosted")}
                       </div>
                     </div>
                     <div>
@@ -501,7 +505,7 @@ export default function InventoryCountDetailPage() {
                         {t("warehouse.count.cancelledAt")}
                       </div>
                       <div className="font-medium">
-                        {record?.cancelledAt ?? t("warehouse.count.notCancelled")}
+                        {showDateTime(record?.cancelledAt) ?? t("warehouse.count.notCancelled")}
                       </div>
                     </div>
                   </div>

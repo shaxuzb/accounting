@@ -11,6 +11,7 @@ interface PurchaseImportSummaryProps {
   };
   onCommentChange: (value: string) => void;
   showComment?: boolean;
+  vatPayer?: boolean;
 }
 
 export default function PurchaseImportSummary({
@@ -18,27 +19,36 @@ export default function PurchaseImportSummary({
   totals,
   onCommentChange,
   showComment = true,
+  vatPayer = true,
 }: PurchaseImportSummaryProps) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4 border-x border-b border-border bg-primary-bg p-4">
       <div className="grid overflow-hidden rounded-lg border border-border bg-primary-bg sm:grid-cols-3">
         <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
-          <div className="text-xs text-secondary-text">{t("purchase.fields.amountWithoutVat")}</div>
+          <div className="text-xs text-secondary-text">
+            {t("purchase.fields.amountWithoutVat")}
+          </div>
           <div className="mt-1 text-base font-semibold">
-            {numberSpacing(totals.amount)}
+            {numberSpacing(totals.amount, undefined, true)}
           </div>
         </div>
         <div className="border-b border-border px-4 py-3 text-center sm:border-b-0 sm:border-r">
-          <div className="text-xs text-secondary-text">{t("purchase.fields.vatAmount")}</div>
+          <div className="text-xs text-secondary-text">
+            {vatPayer
+              ? t("purchase.fields.vatAmount")
+              : t("purchase.fields.vatIntoCost")}
+          </div>
           <div className="mt-1 text-base font-semibold">
-            {numberSpacing(totals.vatAmount)}
+            {numberSpacing(totals.vatAmount, undefined, true)}
           </div>
         </div>
         <div className="bg-primary/5 px-4 py-3 text-center">
-          <div className="text-xs text-secondary-text">{t("common.total")}</div>
+          <div className="text-xs text-secondary-text">
+            {vatPayer ? t("common.total") : t("purchase.fields.totalCost")}
+          </div>
           <div className="mt-1 text-base font-bold text-primary">
-            {numberSpacing(totals.totalAmount)}
+            {numberSpacing(totals.totalAmount, undefined, true)}
           </div>
         </div>
       </div>

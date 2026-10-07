@@ -1,3 +1,4 @@
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import { Alert, Button, Form, Popconfirm, Spin } from "antd";
 import { useMemo } from "react";
 import { setNestedObjectValues, useFormik } from "formik";
@@ -140,10 +141,11 @@ export default function FaReceiptFormPage() {
     [record],
   );
 
+  const vatPayer = useVatPayer();
   const formik = useFormik<FaReceiptFormValues>({
     initialValues,
     enableReinitialize: true,
-    validationSchema: faReceiptSchema(t),
+    validationSchema: faReceiptSchema(t, vatPayer.isVatPayer),
     onSubmit: async (values) => {
       try {
         await persistReceipt(values);

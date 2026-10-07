@@ -10,10 +10,7 @@ import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAut
 import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
-import {
-  filterIds,
-  selectListEndpoints,
-} from "@/shared/constants/selectLists";
+import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
@@ -31,9 +28,15 @@ import { useTranslation } from "react-i18next";
 interface Props {
   formik: FormikProps<SaleDocForm>;
   isEdit: boolean;
+  /** A non-payer posts no output VAT, so it needs no VAT account (1C «Без НДС»). */
+  vatPayer?: boolean;
 }
 
-export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
+export default function SaleDocumentFormFields({
+  formik,
+  isEdit,
+  vatPayer = true,
+}: Props) {
   const rate = useAutoExchangeRate(formik);
   const { t } = useTranslation();
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
@@ -57,7 +60,7 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
 
   return (
     // <div className="grid gap-x-3 border-b border-border pb-1 sm:grid-cols-2 xl:grid-cols-4">
-    <Card className="p-3" >
+    <Card className="p-3">
       <Row gutter={[16, 0]}>
         <Col span={4}>
           <SelectDate
@@ -128,24 +131,24 @@ export default function SaleDocumentFormFields({ formik, isEdit }: Props) {
             search
             required
             documentTypeId={saleDocumentTypeId}
-            documentRoleCode={
-              saleDocumentAccountRoleCodes.customerSettlement
-            }
+            documentRoleCode={saleDocumentAccountRoleCodes.customerSettlement}
             getFirst
           />
         </Col>
-        <Col span={4}>
-          <DocumentAccountSelect
-            label={t("sale.fields.vatAccount")}
-            fieldName="vatAccountId"
-            formik={formik}
-            search
-            required
-            documentTypeId={saleDocumentTypeId}
-            documentRoleCode={saleDocumentAccountRoleCodes.vat}
-            getFirst
-          />
-        </Col>
+        {vatPayer && (
+          <Col span={4}>
+            <DocumentAccountSelect
+              label={t("sale.fields.vatAccount")}
+              fieldName="vatAccountId"
+              formik={formik}
+              search
+              required
+              documentTypeId={saleDocumentTypeId}
+              documentRoleCode={saleDocumentAccountRoleCodes.vat}
+              getFirst
+            />
+          </Col>
+        )}
         <Col span={24} sm={12} lg={8} xl={4}>
           <SelectCustom
             label={t("app.fields.currency")}

@@ -1,3 +1,4 @@
+import { payrollPeriodText } from "../../../utils/format";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -65,11 +66,7 @@ export default function PayrollDocumentListPage() {
       align: "center",
       width: 160,
       render: (_, record) =>
-        record.periodMonth
-          ? `${t(`payroll.months.${record.periodMonth}`, {
-              defaultValue: record.periodName ?? "",
-            })} ${record.periodYear ?? ""}`
-          : (record.periodName ?? "—"),
+        payrollPeriodText(t, record),
     },
     {
       dataIndex: "documentKind",

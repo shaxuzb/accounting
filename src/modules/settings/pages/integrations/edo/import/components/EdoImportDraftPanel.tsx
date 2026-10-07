@@ -326,7 +326,7 @@ export default function EdoImportDraftPanel({
               />
             )}
 
-            <div className="grid gap-3 lg:grid-cols-[1.4fr_1fr]">
+            <div className="grid gap-3 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
               <div className="rounded-xl border border-border p-4">
                 <div className="flex items-center gap-2 font-semibold text-heading">
                   <PackageCheck className="size-4 text-brand" />

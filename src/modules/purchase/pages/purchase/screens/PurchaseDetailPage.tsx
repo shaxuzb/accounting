@@ -1,3 +1,4 @@
+import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import { useParams } from "react-router";
 import Card from "@/components/ui/card/Card";
 import {
@@ -78,6 +79,8 @@ const PurchaseDetailPage = () => {
   const isPosted = data?.statusId === 2;
   const currency = data?.currencyName || "UZS";
   const documentAmount = data?.finalAmount || data?.totalAmount || 0;
+  // a non-payer's supplier VAT went into the cost, not to 4410
+  const vatPayer = useVatPayer(data?.docDate);
   const productTotals = useMemo(() => {
     const totals = (data?.lines ?? []).reduce(
       (accumulator, line) => {
@@ -190,7 +193,9 @@ const PurchaseDetailPage = () => {
     },
     {
       dataIndex: "vatAmount",
-      title: t("purchase.fields.vatAmount"),
+      title: vatPayer.isVatPayer
+        ? t("purchase.fields.vatAmount")
+        : t("purchase.fields.vatIntoCost"),
       align: "center",
       render: (val) => numberSpacing(val),
     },

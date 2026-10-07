@@ -95,7 +95,7 @@ export default function WarehouseTransferDetailPage() {
         onBack={() => navigate("..")}
       />
 
-      <div className="grid gap-4 lg:grid-cols-[1.8fr_0.9fr]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,0.9fr)]">
         <div className="space-y-4">
           <WarehouseTransferFormFields formik={formik} disabled={!isDraft} />
           <WarehouseTransferLinesEditor formik={formik} disabled={!isDraft} />

@@ -429,7 +429,8 @@ export default function SaleWarehouseProductsModal({
     },
     {
       dataIndex: "salePrice",
-      title: t("sale.fields.totalWithVat"),
+      // «QQSsiz» (rate 0) has no VAT to add: the total is just the total
+      title: vatPercent ? t("sale.fields.totalWithVat") : t("common.total"),
       width: 170,
       render: (_, product) => {
         const productId = getStockProductId(product);

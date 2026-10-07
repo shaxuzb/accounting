@@ -11,7 +11,7 @@ const assetSchema = (t: TFunction) =>
     assetAccountId: yup.number().nullable().required(t("fa.validation.assetAccountRequired")),
   });
 
-const lineSchema = (t: TFunction) =>
+const lineSchema = (t: TFunction, vatPayer: boolean) =>
   yup.object({
     name: yup.string().trim().required(t("fa.validation.nameRequired")),
     quantity: yup.number().integer().min(1, t("fa.validation.quantityMin")).required(t("fa.validation.quantityRequired")),
@@ -19,7 +19,8 @@ const lineSchema = (t: TFunction) =>
     vatRateId: yup.number().nullable(),
     capitalInvestmentAccountId: yup.number().nullable().required(t("fa.validation.capitalInvestmentAccountRequired")),
     vatAccountId: yup.number().nullable().when("vatRateId", {
-      is: (value: unknown) => Boolean(value),
+      // a non-payer puts the VAT into the asset's cost: no VAT account
+      is: (value: unknown) => vatPayer && Boolean(value),
       then: (schema) => schema.required(t("fa.validation.vatAccountRequired")),
       otherwise: (schema) => schema.nullable(),
     }),
@@ -28,12 +29,12 @@ const lineSchema = (t: TFunction) =>
     Boolean(line && line.assets?.length === Number(line.quantity)),
   );
 
-export const faReceiptSchema = (t: TFunction) =>
+export const faReceiptSchema = (t: TFunction, vatPayer = true) =>
   yup.object({
     docDate: yup.string().required(t("fa.validation.dateRequired")),
     counterpartyId: yup.number().nullable().required(t("fa.validation.counterpartyRequired")),
     currencyId: yup.number().nullable().required(t("fa.validation.currencyRequired")),
     receiptTypeId: yup.number().nullable().required(t("fa.validation.receiptTypeRequired")),
     supplierAccountId: yup.number().nullable().required(t("fa.validation.supplierAccountRequired")),
-    lines: yup.array().of(lineSchema(t)).min(1, t("fa.validation.atLeastOneLine")).required(t("fa.validation.atLeastOneLine")),
+    lines: yup.array().of(lineSchema(t, vatPayer)).min(1, t("fa.validation.atLeastOneLine")).required(t("fa.validation.atLeastOneLine")),
   });
