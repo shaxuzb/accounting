@@ -83,4 +83,9 @@ export const $axiosPublic = axios.create({
   timeout: 50000,
 });
 $axiosPrivate.interceptors.request.use(addToken);
+// sign-in answers (wrong password, locked account) come in the screen's language
+$axiosPublic.interceptors.request.use((config) => {
+  config.headers["X-Language"] = localStorage.getItem("lang") ?? "uz";
+  return config;
+});
 $axiosPrivate.interceptors.response.use((res) => res, handleResponseError);
