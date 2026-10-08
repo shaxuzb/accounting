@@ -1,6 +1,7 @@
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import CreateReturnButton from "@/modules/returns/CreateReturnButton";
 import CreateExtraCostButton from "@/modules/extraCosts/CreateExtraCostButton";
+import CreateCustomsButton from "@/modules/customs/CreateCustomsButton";
 import { returnKind } from "@/modules/returns/constants";
 import { useParams } from "react-router";
 import Card from "@/components/ui/card/Card";
@@ -341,6 +342,7 @@ const PurchaseDetailPage = () => {
                 <CreateReturnButton kind={returnKind.toSupplier} baseId={Number(data.id)} />
               )}
               {isPosted && data && <CreateExtraCostButton purchaseId={Number(data.id)} />}
+              {isPosted && data && <CreateCustomsButton purchaseId={Number(data.id)} />}
               {/* a posted purchase is cancelled by storno: entries reversed, goods out of stock */}
               {isPosted && (
                 <PermissionCard permission={purchasePermissions.cancel}>

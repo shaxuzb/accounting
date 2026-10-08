@@ -9,6 +9,7 @@ import { contractPermissions } from "../contract/constants/permissions";
 import { returnRoute } from "../returns/routes";
 import { returnKind } from "../returns/constants";
 import { extraCostRoute } from "../extraCosts/routes";
+import { customsRoute } from "../customs/routes";
 const PurchaseEditor = lazy(() => import("./pages/purchase/screens/PurchaseEditorPage"));
 
 
@@ -78,6 +79,8 @@ export const purchaseRoutes: RouteObject = {
     returnRoute(returnKind.toSupplier, "purchase-returns"),
     // additional costs put on purchased goods (1C «Поступление доп. расходов»)
     extraCostRoute("extra-costs"),
+    // customs declarations of imports (1C «Таможенная декларация (импорт)»)
+    customsRoute("customs-declarations"),
     {
       path: "contracts",
       handle: { title: "contract.purchaseTitle" },

@@ -171,6 +171,10 @@ export const menuPermissions: MainMenu = {
           linkData: { path: "extra-costs", title: "extraCost.title" },
         },
         {
+          code: "CUSTOMS_DECLARATION_VIEW",
+          linkData: { path: "customs-declarations", title: "customs.title" },
+        },
+        {
           code: contractPermissions.view,
           linkData: {
             path: "contracts",
