@@ -46,7 +46,12 @@ export default function AnnotatedScreenshot({
 
   return (
     <figure className="m-0">
-      <div ref={rootRef} className="relative w-full" style={{ aspectRatio: `${shot.width} / ${shot.height}` }}>
+      {/* a narrow shot (a dialog) keeps its own size instead of being blown up to the column */}
+      <div
+        ref={rootRef}
+        className="relative mx-auto w-full"
+        style={{ aspectRatio: `${shot.width} / ${shot.height}`, maxWidth: shot.width }}
+      >
         <div className="absolute inset-0 overflow-hidden rounded-xl border border-border bg-secondary-foreground">
           <img src={shot.src} alt={shot.alt} className="h-full w-full object-cover object-top" />
         </div>
