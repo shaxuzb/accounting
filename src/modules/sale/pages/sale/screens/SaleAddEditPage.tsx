@@ -263,6 +263,12 @@ export default function SaleAddEditPage() {
             cancelText: t("common.cancel"),
           });
           if (!keepAsDraft) return;
+          // a draft goes through the warehouse step, which takes goods only: a sale with
+          // services is assembled at once, so its codes must all be entered first
+          if (services.length > 0) {
+            toast.error(t("saleServices.errors.markingsRequired"));
+            return;
+          }
           mode = 1;
         }
       }
@@ -466,12 +472,15 @@ export default function SaleAddEditPage() {
           submitting={createSale.isPending || updateSale.isPending}
           disabled={createSale.isPending || updateSale.isPending}
         />
-        <SaleServiceLines
-          lines={services}
-          onChange={setSelectedServices}
-          vatPayer={vatPayer.isVatPayer}
-          disabled={createSale.isPending || updateSale.isPending}
-        />
+        {/* services are sold on a new sale only: a draft is edited goods by goods */}
+        {!isEdit && (
+          <SaleServiceLines
+            lines={services}
+            onChange={setSelectedServices}
+            vatPayer={vatPayer.isVatPayer}
+            disabled={createSale.isPending || updateSale.isPending}
+          />
+        )}
       </div>
     </Form>
   );

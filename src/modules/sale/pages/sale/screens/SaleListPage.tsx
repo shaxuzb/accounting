@@ -161,9 +161,10 @@ export default function SaleListPage() {
               customPath={`/main/sales/sale/edit/${record.id}`}
               record={record}
               permissions={permissions}
+              // only a draft is edited or deleted; a posted sale is cancelled instead
               permissionsCode={{
-                editCode: salePermissions.update,
-                deleteCode: salePermissions.delete,
+                editCode: record.statusId === 1 ? salePermissions.update : "",
+                deleteCode: record.statusId === 1 ? salePermissions.delete : "",
               }}
               refetch={refetch}
             />

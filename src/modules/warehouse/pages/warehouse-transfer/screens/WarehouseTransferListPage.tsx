@@ -109,7 +109,11 @@ export default function WarehouseTransferListPage() {
               record={record}
               permissions={permissions}
               permissionsCode={{
-                deleteCode: warehouseTransferPermissions.delete,
+                // only a draft is deleted; a posted transfer is cancelled instead
+                deleteCode:
+                  record.statusId === 1
+                    ? warehouseTransferPermissions.delete
+                    : "",
                 editCode:
                   record.statusId === 1
                     ? warehouseTransferPermissions.update

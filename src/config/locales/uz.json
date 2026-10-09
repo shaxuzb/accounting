@@ -120,7 +120,8 @@
     "vat": "QQS",
     "total": "Jami",
     "errors": {
-      "postAtOnce": "Xizmat bor sotuv darhol o'tkaziladi: «Markirovka bilan» rejimini yoqing (qoralama ombor va narx bosqichlaridan o'tadi — ular faqat tovar uchun).",
+      "postAtOnce": "Xizmat bor sotuv «Markirovka bilan» rejimida rasmiylashtiriladi: qoralama ombor bosqichidan o'tadi, u faqat tovar uchun.",
+      "markingsRequired": "Xizmat bor sotuvni qoralama qilib bo'lmaydi: avval barcha markirovkalarni kiriting yoki «Markirovkasiz» deb belgilang.",
       "service": "Xizmat qatorida xizmatni tanlang",
       "unit": "Xizmatning o'lchov birligi yo'q — xizmat kartochkasida birlikni belgilang",
       "quantity": "Xizmat miqdorini kiriting",

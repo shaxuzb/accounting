@@ -27,7 +27,8 @@ export default function SaleProductLinesTable({
 }: Props) {
   const { t } = useTranslation();
   const columns: ColumnsType<SalePricingLine> = [
-    { title: "ID", dataIndex: "id" },
+    // the row's place, not the database id the reader cannot use
+    { title: t("common.rowNumber"), key: "rowNumber", width: 60, render: (_value, _line, index) => index + 1 },
     // {
     //   dataIndex: "purchaseDocNumber",
     //   title: "Kirim hujjati",

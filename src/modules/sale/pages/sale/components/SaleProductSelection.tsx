@@ -1623,7 +1623,8 @@ export default function SaleProductSelection({
     <Card className="overflow-hidden border border-border">
       <div className="flex w-full flex-nowrap items-center justify-between gap-3 overflow-x-auto border-b border-border p-3">
         <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
-          <Button type="primary">{t("purchase.fields.goods")}</Button>
+          {/* the block's heading (services are in their own block below), not a button */}
+          <span className="px-2 font-semibold">{t("purchase.fields.goods")}</span>
           <Button
             className="w-32"
             disabled={disabled || !warehouseId}

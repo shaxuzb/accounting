@@ -18,6 +18,8 @@ import {
   removePersistedValue,
 } from "@/shared/persistence/storage";
 import Card from "@/components/ui/card/Card";
+import PermissionCard from "@/components/ui/card/PermissionCard";
+import { salePermissions } from "../constants/permissions";
 import {
   DocumentSummary,
   DocumentSummaryItem,
@@ -462,30 +464,34 @@ export default function SalePricingEditor({
           emphasized
           iconClassName="text-violet-600"
         />
-        <div className="flex min-h-20 items-center gap-2 border-b border-border px-5 py-3 lg:border-b-0">
-          <Button
-            type="primary"
-            size="large"
-            className="flex-1"
-            icon={<CheckCircle2 size={18} />}
-            loading={confirmSale.isPending || cancelSale.isPending}
-            disabled={!lines.length || cancelSale.isPending}
-            onClick={handleConfirm}
-          >
-            {t("common.confirm")}
-          </Button>
-          <Button
-            size="large"
-            icon={<Save size={18} />}
-            loading={savePrices.isPending}
-            disabled={
-              !lines.length || confirmSale.isPending || cancelSale.isPending
-            }
-            title={t("sale.messages.savePricesHint")}
-            onClick={handleSavePrices}
-          >
-            {t("common.save")}
-          </Button>
+        {/* the three actions wrap in a narrow cell instead of running off the card */}
+        <div className="flex min-h-20 flex-wrap items-center gap-2 border-b border-border px-5 py-3 lg:border-b-0">
+          <PermissionCard permission={salePermissions.confirm}>
+            <Button
+              type="primary"
+              size="large"
+              className="flex-1"
+              icon={<CheckCircle2 size={18} />}
+              loading={confirmSale.isPending || cancelSale.isPending}
+              disabled={!lines.length || cancelSale.isPending}
+              onClick={handleConfirm}
+            >
+              {t("common.confirm")}
+            </Button>
+            <Button
+              size="large"
+              icon={<Save size={18} />}
+              loading={savePrices.isPending}
+              disabled={
+                !lines.length || confirmSale.isPending || cancelSale.isPending
+              }
+              title={t("sale.messages.savePricesHint")}
+              onClick={handleSavePrices}
+            >
+              {t("common.save")}
+            </Button>
+          </PermissionCard>
+          <PermissionCard permission={salePermissions.cancel}>
           <Popconfirm
             title={t("sale.actions.cancelDocument")}
             description={t("sale.messages.cancelDocumentQuestion")}
@@ -503,6 +509,7 @@ export default function SalePricingEditor({
               {t("common.cancel")}
             </Button>
           </Popconfirm>
+          </PermissionCard>
         </div>
       </DocumentSummary>
 

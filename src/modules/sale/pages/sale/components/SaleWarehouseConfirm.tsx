@@ -11,6 +11,8 @@ import {
   removePersistedValue,
 } from "@/shared/persistence/storage";
 import Card from "@/components/ui/card/Card";
+import PermissionCard from "@/components/ui/card/PermissionCard";
+import { salePermissions } from "../constants/permissions";
 import LineClampCell from "@/components/widget/text/LineClampCell";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
@@ -810,18 +812,20 @@ export default function SaleWarehouseConfirm({ document }: Props) {
           );
         })}
       </div>
-      <div className="flex justify-end">
-        <Button
-          type="primary"
-          size="large"
-          icon={<CheckCircle2 className="size-4" />}
-          loading={confirmSale.isPending}
-          disabled={!rows.length}
-          onClick={handleConfirm}
-        >
-          {t("common.confirm")}
-        </Button>
-      </div>
+      <PermissionCard permission={salePermissions.assembly}>
+        <div className="flex justify-end">
+          <Button
+            type="primary"
+            size="large"
+            icon={<CheckCircle2 className="size-4" />}
+            loading={confirmSale.isPending}
+            disabled={!rows.length}
+            onClick={handleConfirm}
+          >
+            {t("common.confirm")}
+          </Button>
+        </div>
+      </PermissionCard>
     </div>
   );
 }
