@@ -5,6 +5,8 @@ import { customsArticle } from "./purchases-customs";
 import { extraCostsArticle } from "./purchases-extra-costs";
 import { supplierReturnArticle } from "./purchases-supplier-return";
 import { productsArticle } from "./warehouse-products";
+import { adjustmentArticle } from "./warehouse-adjustment";
+import { inventoryArticle } from "./warehouse-inventory";
 import { stockArticle } from "./warehouse-stock";
 import { transfersArticle } from "./warehouse-transfers";
 
@@ -18,4 +20,6 @@ export const manualArticles: Record<string, ManualArticle> = {
   [productsArticle.id]: productsArticle,
   [stockArticle.id]: stockArticle,
   [transfersArticle.id]: transfersArticle,
+  [inventoryArticle.id]: inventoryArticle,
+  [adjustmentArticle.id]: adjustmentArticle,
 };
