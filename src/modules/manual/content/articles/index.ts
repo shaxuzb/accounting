@@ -1,5 +1,6 @@
 import type { ManualArticle } from "../../types";
 import { purchaseArticle } from "./purchases-purchase";
+import { customsArticle } from "./purchases-customs";
 import { extraCostsArticle } from "./purchases-extra-costs";
 import { supplierReturnArticle } from "./purchases-supplier-return";
 
@@ -8,4 +9,5 @@ export const manualArticles: Record<string, ManualArticle> = {
   [purchaseArticle.id]: purchaseArticle,
   [supplierReturnArticle.id]: supplierReturnArticle,
   [extraCostsArticle.id]: extraCostsArticle,
+  [customsArticle.id]: customsArticle,
 };
