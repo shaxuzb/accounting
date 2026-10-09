@@ -22,6 +22,8 @@ const Sidebar = () => {
             (item) => item === menuPermissions.TOP[index].code,
           ) ||
           menuPermissions.TOP[index].code === "SETTINGS" ||
+          // open to every user: the manual
+          menuPermissions.TOP[index].code === "PUBLIC" ||
           (menuPermissions.TOP[index].code === "DROPDOWN" &&
             menuPermissions.TOP[index].items?.some((item) =>
               user.user.permissions.find((item2) => item2 === item.code),
@@ -48,7 +50,7 @@ const Sidebar = () => {
     <div
       // flex-col bo'lmasa o'rtadagi `flex-1 min-h-0` ishlamaydi: menyu
       // balandlikka sig'maganda scroll o'rniga kesilib qolardi.
-      className={`${sidebarInline.sidebar ? "w-16" : "w-[280px]"} sticky top-0 flex h-screen shrink-0 flex-col overflow-hidden border-r border-border bg-primary-bg transition-[width] duration-200 ease-out`}
+      className={`${sidebarInline.sidebar ? "w-16" : "w-[280px]"} print:hidden sticky top-0 flex h-screen shrink-0 flex-col overflow-hidden border-r border-border bg-primary-bg transition-[width] duration-200 ease-out`}
     >
       <div className="shrink-0">
         <LogoSide />

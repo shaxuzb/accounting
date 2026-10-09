@@ -18,6 +18,7 @@ import { rentalRoutes } from "@/modules/rental";
 import { dashboardRoutes } from "@/modules/dashboard";
 import RouteErrorPage, { NotFoundPage } from "./RouteErrorPage";
 import { reportsRoutes } from "@/modules/reports";
+import { manualRoutes } from "@/modules/manual/routes";
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +53,7 @@ export const router = createBrowserRouter([
           settingsRoutes,
           warehouseRoutes,
           rentalRoutes,
+          manualRoutes,
           // Layout ichida qoladi: sidebar va header saqlanadi.
           { path: "*", element: <NotFoundPage /> },
         ],

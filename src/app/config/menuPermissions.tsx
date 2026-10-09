@@ -146,6 +146,14 @@ export const menuPermissions: MainMenu = {
       iconName: <LayoutDashboard className="size-5" />,
     },
     {
+      code: "PUBLIC",
+      linkData: {
+        path: "manual",
+        title: "manual.title",
+      },
+      iconName: <BookOpen className="size-5" />,
+    },
+    {
       code: "DROPDOWN",
       iconName: <ShoppingCart className="size-5" />,
       dropdown: true,

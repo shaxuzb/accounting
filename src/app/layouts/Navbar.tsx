@@ -2,6 +2,7 @@ import Messages from "@/components/navbar/messages";
 import OrgSwitcher from "@/components/navbar/org-switcher";
 import ThemeToggle from "@/components/navbar/theme";
 import LanguageSwitcher from "@/components/navbar/language";
+import ManualSearch from "@/modules/manual/components/ManualSearch";
 import { useWorkspaceNavigation } from "@/app/navigation/useWorkspaceNavigation";
 import { setClose } from "@/store/features/sidebarCloseSlice";
 
@@ -29,7 +30,7 @@ const Navbar = () => {
   }, [goBack]);
 
   return (
-    <div className="flex h-16 shrink-0 items-center border-b border-border bg-primary-bg">
+    <div className="flex h-16 shrink-0 items-center border-b border-border bg-primary-bg print:hidden">
       <div className={`flex justify-between py-1.5 items-center w-full px-4`}>
         <div className="flex gap-3 items-center">
           <Button onClick={handleClickMenu} className="p-0!" type="link">
@@ -61,6 +62,7 @@ const Navbar = () => {
           )}
         </div>
         <div className="flex gap-2 items-center grow justify-end">
+          <ManualSearch />
           <OrgSwitcher />
           <ThemeToggle />
           <LanguageSwitcher />

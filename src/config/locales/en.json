@@ -1,4 +1,7 @@
 {
+  "manual": {
+    "title": "User manual"
+  },
   "customs": {
     "title": "Customs declarations",
     "new": "New customs declaration",
