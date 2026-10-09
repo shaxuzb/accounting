@@ -6,3 +6,4 @@ export { useGetInventoryAdjustments } from "./useGetInventoryAdjustments";
 export { useGetInventoryAdjustmentStocks } from "./useGetInventoryAdjustmentStocks";
 export { useGetInventoryAdjustmentSerials } from "./useGetInventoryAdjustmentSerials";
 export { useUpdateInventoryAdjustment } from "./useUpdateInventoryAdjustment";
+export { useGetInventoryAdjustmentTypes } from "./useGetInventoryAdjustmentTypes";

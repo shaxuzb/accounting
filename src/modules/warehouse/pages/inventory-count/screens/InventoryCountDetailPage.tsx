@@ -150,14 +150,18 @@ export default function InventoryCountDetailPage() {
 
   const isPosted = Boolean(record?.postedAt);
   const isCancelled = Boolean(record?.cancelledAt);
+  // only a draft is edited: a finished count (PENDING) waits for confirmation as it is,
+  // the server refuses any change to it
   const canEdit =
-    isCreate || (isEditMode && !isPosted && !isCancelled);
+    isCreate ||
+    (isEditMode && !isPosted && !isCancelled && !record?.isCountCompleted);
   const canConfirm =
     Boolean(record?.isCountCompleted) &&
     !isPosted &&
     !isCancelled &&
     !isCreate;
-  const canCancel = !isPosted && !isCancelled && !isCreate;
+  // a posted count is cancelled too: its two adjustments are reversed with it
+  const canCancel = !isCancelled && !isCreate;
 
   const initialValues = useMemo<InventoryCountForm>(() => {
     if (isCreate || !record) {

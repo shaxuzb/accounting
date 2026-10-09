@@ -112,22 +112,18 @@ export default function InventoryCountListPage() {
         fixed: "right",
         align: "center",
         render: (_, record) => {
-          const canEdit =
-            !record.postedAt &&
-            !record.cancelledAt &&
-            permissions.includes(inventoryCountPermissions.update);
-          const canDelete =
-            !record.postedAt &&
-            !record.cancelledAt &&
-            permissions.includes(inventoryCountPermissions.delete);
+          // edit and delete are for a draft only (a finished count is confirmed or cancelled)
+          const isDraft = !record.postedAt && !record.cancelledAt && !record.isCountCompleted;
+          const canEdit = isDraft && permissions.includes(inventoryCountPermissions.update);
+          const canDelete = isDraft && permissions.includes(inventoryCountPermissions.delete);
           const canDifferences = Boolean(record.isCountCompleted);
           const canConfirm =
             Boolean(record.isCountCompleted) &&
             !record.postedAt &&
             !record.cancelledAt &&
             permissions.includes(inventoryCountPermissions.confirm);
+          // a posted count is cancelled too: its two adjustments are reversed with it
           const canCancel =
-            !record.postedAt &&
             !record.cancelledAt &&
             permissions.includes(inventoryCountPermissions.cancel);
 

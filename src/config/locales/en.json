@@ -2918,7 +2918,7 @@
       "deleteTitle": "Delete document",
       "deleteQuestion": "Delete this document?",
       "new": "New inventory count",
-      "state": "State",
+      "state": "Activity",
       "count": "Count",
       "completed": "Completed",
       "inProgress": "In progress",

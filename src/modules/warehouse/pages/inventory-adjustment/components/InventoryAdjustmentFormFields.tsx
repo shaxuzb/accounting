@@ -1,21 +1,14 @@
 import type { FormikProps } from "formik";
 import { useMemo } from "react";
 import { Select } from "antd";
-import { useQuery } from "@tanstack/react-query";
 import Card from "@/components/ui/card/Card";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import { $axiosPrivate } from "@/services/AxiosService";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import type { InventoryAdjustmentForm } from "../types/form";
+import { useGetInventoryAdjustmentTypes } from "../hooks";
 import { useTranslation } from "react-i18next";
-
-interface AdjustmentTypeOption {
-  id: number;
-  code: string;
-  name: string;
-}
 
 interface Props {
   formik: FormikProps<InventoryAdjustmentForm>;
@@ -32,16 +25,7 @@ export default function InventoryAdjustmentFormFields({
   // qo'lda yozilgan edi, backend esa cmn_inventory_adjustment_type dagi
   // kodlarni kutadi (WRITE_OFF, LOSS, FOUND_STOCK ...) — shuning uchun forma
   // orqali hujjat umuman yaratib bo'lmasdi: 422 InvalidAdjustmentType.
-  const typesQuery = useQuery<AdjustmentTypeOption[]>({
-    queryKey: ["manuals", "inventory-adjustment-types"],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<AdjustmentTypeOption[]>(
-        "/manuals/inventory-adjustment-types",
-      );
-      return Array.isArray(data) ? data : [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  const typesQuery = useGetInventoryAdjustmentTypes();
 
   const adjustmentTypeOptions = useMemo(
     () =>

@@ -12,12 +12,15 @@ import { useAppSelector } from "@/store/hooks";
 import { customDate, generateKeyTable } from "@/utils/utils";
 import { inventoryAdjustmentEndpoints } from "../constants/endpoints";
 import { inventoryAdjustmentPermissions } from "../constants/permissions";
-import { useGetInventoryAdjustments } from "../hooks";
+import { useGetInventoryAdjustments, useGetInventoryAdjustmentTypes } from "../hooks";
+import { isIncreaseAdjustment } from "../utils/inventoryAdjustment";
 import type { InventoryAdjustmentDocument } from "../types/type";
 
 export default function InventoryAdjustmentListPage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const { data: types = [] } = useGetInventoryAdjustmentTypes();
+  const typeNames = new Map(types.map((type) => [type.code, type.name]));
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
@@ -44,9 +47,10 @@ export default function InventoryAdjustmentListPage() {
     {
       dataIndex: "adjustmentType",
       title: t("warehouse.fields.adjustmentType"),
-      render: (value) => (
-        <Tag color={String(value).toLowerCase() === "increase" ? "green" : "red"}>
-          {value}
+      // the kind's name; green when stock comes in, red when it goes out
+      render: (value: string) => (
+        <Tag color={isIncreaseAdjustment(value) ? "green" : "red"}>
+          {typeNames.get(value) ?? value}
         </Tag>
       ),
     },
@@ -72,7 +76,9 @@ export default function InventoryAdjustmentListPage() {
     },
   ];
 
-  const hasActions = permissions.includes(inventoryAdjustmentPermissions.delete);
+  const hasActions =
+    permissions.includes(inventoryAdjustmentPermissions.update) ||
+    permissions.includes(inventoryAdjustmentPermissions.delete);
   const columns: TableColumnType<InventoryAdjustmentDocument>[] = hasActions
     ? [
         ...tableColumns,
