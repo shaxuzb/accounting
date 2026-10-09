@@ -4,6 +4,9 @@ import type { ReactNode } from "react";
 import { useAppSelector } from "@/store/hooks";
 import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
 import CreateReturnButton from "@/modules/returns/CreateReturnButton";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
+import { ProcessStatusBadge } from "@/components/ui/status";
+import { useTranslation } from "react-i18next";
 import { returnKind } from "@/modules/returns/constants";
 import {
   ConfirmedSaleDocument,
@@ -14,6 +17,7 @@ import { useGetDetailSale } from "../hooks";
 import { getDocumentLines } from "../utils/saleDocumentLines";
 
 export default function SaleDetailPage() {
+  const { t } = useTranslation();
   const { id = "" } = useParams();
   const organizationName = useAppSelector(
     (state) => state.organization.name,
@@ -37,7 +41,14 @@ export default function SaleDetailPage() {
   // every state of the document can print its contract
   const withContract = (content: ReactNode) => (
     <div className="space-y-3">
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        {/* where the document stands, and its entries once posted */}
+        <span className="mr-auto">
+          <ProcessStatusBadge statusId={document.statusId} statusName={document.statusName} />
+        </span>
+        <AccountingEntriesButton documentId={Number(document.id)} documentTypeId={2} statusId={document.statusId}>
+          {t("common.accountingEntries")}
+        </AccountingEntriesButton>
         {document.statusId === 2 && (
           <CreateReturnButton kind={returnKind.fromCustomer} baseId={Number(document.id)} />
         )}

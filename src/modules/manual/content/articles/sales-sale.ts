@@ -3,6 +3,7 @@ import { px } from "./px";
 
 const editor = px(1568, 650);
 const pricing = px(1568, 500);
+const posted = px(1568, 385);
 
 /**
  * «Sotuv» (1C «Реализация товаров и услуг»): the wholesale sale in two steps — the goods are
@@ -43,8 +44,7 @@ export const saleArticle: ManualArticle = {
         editor(15, 1310, 346, [1219, 372, 1318, 446]),
         editor(16, 1330, 346, [1319, 372, 1445, 446]),
         editor(17, 1447, 323, [1447, 372, 1540, 446]),
-        editor(18, 1528, 550, [257, 550, 1528, 606]),
-        editor(19, 920, 630, [878, 615, 908, 645]),
+        editor(18, 1528, 587, [257, 587, 1528, 642]),
       ],
     },
     {
@@ -63,6 +63,21 @@ export const saleArticle: ManualArticle = {
         pricing(26, 1548, 350, [1285, 350, 1548, 380]),
         pricing(27, 785, 418, [690, 450, 790, 486]),
         pricing(28, 880, 418, [790, 450, 885, 486]),
+      ],
+    },
+    {
+      src: "/manual/sales/sale-posted.jpg",
+      alt: "O'tkazilgan sotuv",
+      caption: "O'tkazilgan sotuv: hujjat faqat o'qiladi; undan qaytarish va shartnoma hujjati yaratiladi.",
+      width: 1568,
+      height: 385,
+      markers: [
+        posted(29, 342, 108, [243, 96, 331, 120]),
+        posted(30, 1245, 132, [1200, 96, 1291, 121]),
+        posted(31, 1370, 88, [1298, 96, 1442, 121]),
+        posted(32, 1555, 96, [1449, 96, 1555, 121]),
+        posted(33, 1395, 144, [1403, 131, 1555, 157]),
+        posted(34, 282, 250, [252, 282, 282, 372]),
       ],
     },
   ],
@@ -209,7 +224,7 @@ export const saleArticle: ManualArticle = {
           enter: "Barcha qatorlar yig'indisi.",
           affects: "Jami — mijoz qarzi.",
         },
-        { n: 19, name: "«+»", enter: "Yangi qator qo'shadi." },
+        { name: "«+» (jadval ostida)", enter: "Yangi qator qo'shadi." },
         {
           name: "QQS (stavka va summa), Hisobvaraqlar, Xizmatlar",
           enter:
@@ -248,6 +263,27 @@ export const saleArticle: ManualArticle = {
           onChange: "Sotuv narxi qayta hisoblanadi.",
         },
         { n: 28, name: "Sotuv narxi (QQSsiz)", enter: "Qator narxi.", onChange: "Marja qayta hisoblanadi." },
+      ],
+    },
+    {
+      title: "O'tkazilgan sotuv",
+      fields: [
+        { n: 29, name: "Holat", enter: "Qoralama, Kutilmoqda (band qilingan), O'tkazilgan yoki Bekor qilingan." },
+        { n: 30, name: "Provodkalar", enter: "Sotuv yozgan provodkalar (faqat o'tkazilganda faol)." },
+        {
+          n: 31,
+          name: "Qaytarish yaratish",
+          enter: "Shu sotuv asosida xaridordan qaytarish hujjatini ochadi.",
+          affects: "Qatorlar, narx va QQS sotuvdan olinadi.",
+        },
+        { n: 32, name: "Shartnoma", enter: "Shablon asosida shartnoma yoki hisob hujjatini Word/PDF qilib chiqaradi." },
+        {
+          n: 33,
+          name: "Sotuvni bekor qilish",
+          enter: "O'tkazilgan sotuvni bekor qiladi (CANCEL_SALE huquqi, tasdiqlash so'raladi).",
+          affects: "Provodkalar storno, tovar omborga qaytadi, mijoz qarzi kamayadi.",
+        },
+        { n: 34, name: "CH", enter: "Qatordagi markirovka kodlari ro'yxati." },
       ],
     },
   ],
