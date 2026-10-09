@@ -89,6 +89,12 @@ function Article({ article, sectionTitle, sectionIcon }: { article: ManualArticl
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [article.id, isRead, progressLoaded]);
 
+  // another article opens at its top, not where the previous one was scrolled to
+  const topRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    topRef.current?.scrollIntoView({ block: "start" });
+  }, [article.id]);
+
   const fieldsByMarker = useMemo(
     () =>
       new Map(
@@ -98,7 +104,7 @@ function Article({ article, sectionTitle, sectionIcon }: { article: ManualArticl
   );
 
   return (
-    <div className="space-y-4">
+    <div ref={topRef} className="space-y-4">
       {/* the path, the title and the actions */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-sm text-secondary-text">
