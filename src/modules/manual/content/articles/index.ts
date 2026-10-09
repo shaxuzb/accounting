@@ -3,6 +3,7 @@ import { purchaseArticle } from "./purchases-purchase";
 import { contractsArticle } from "./purchases-contracts";
 import { customsArticle } from "./purchases-customs";
 import { extraCostsArticle } from "./purchases-extra-costs";
+import { saleArticle } from "./sales-sale";
 import { supplierReturnArticle } from "./purchases-supplier-return";
 import { productsArticle } from "./warehouse-products";
 import { adjustmentArticle } from "./warehouse-adjustment";
@@ -22,4 +23,5 @@ export const manualArticles: Record<string, ManualArticle> = {
   [transfersArticle.id]: transfersArticle,
   [inventoryArticle.id]: inventoryArticle,
   [adjustmentArticle.id]: adjustmentArticle,
+  [saleArticle.id]: saleArticle,
 };
