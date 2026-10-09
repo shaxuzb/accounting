@@ -2,6 +2,7 @@ import type { ManualArticle } from "../../types";
 import { px } from "./px";
 
 const editor = px(1568, 750);
+const posted = px(1568, 660);
 
 /**
  * «Qo'shimcha xarajatlar» (1C «Поступление доп. расходов»): transport, loading and similar costs
@@ -34,13 +35,27 @@ export const extraCostsArticle: ManualArticle = {
         editor(7, 734, 242, [598, 258, 742, 283]),
         editor(8, 868, 271, [755, 260, 852, 283]),
         editor(9, 1212, 262, [912, 262, 1202, 285]),
-        editor(10, 663, 305, [257, 322, 671, 350]),
-        editor(11, 1092, 305, [685, 322, 1100, 350]),
+        editor(10, 640, 305, [257, 322, 671, 350]),
+        editor(11, 1062, 305, [685, 322, 1100, 350]),
         editor(12, 1520, 305, [1113, 322, 1528, 350]),
         editor(13, 1520, 392, [257, 405, 1528, 431]),
         editor(14, 328, 486, [257, 444, 400, 470]),
         editor(15, 455, 486, [407, 444, 503, 470]),
         editor(16, 1425, 593, [1410, 575, 1542, 740], { callout: "Har tovarga tushadigan ulush", calloutSide: "left" }),
+      ],
+    },
+    {
+      src: "/manual/purchases/extra-cost-posted.jpg",
+      alt: "O'tkazilgan qo'shimcha xarajat",
+      caption: "O'tkazilgandan keyin: taqsimot va har partiya bo'yicha natija. Qaytarilgan 1 dona mashina omborda yo'q — uning ulushi 9120 ga yozilgan.",
+      width: 1568,
+      height: 660,
+      markers: [
+        posted(17, 311, 146, [257, 103, 366, 129]),
+        posted(18, 417, 146, [372, 103, 463, 129]),
+        posted(19, 972, 455, [905, 487, 1205, 652]),
+        posted(20, 1357, 417, [1296, 487, 1418, 652]),
+        posted(21, 1090, 590, [244, 572, 1540, 610], { callout: "Omborda yo'q qism — 9120 ga", calloutSide: "top" }),
       ],
     },
   ],
@@ -200,10 +215,8 @@ export const extraCostsArticle: ManualArticle = {
           affects: "Partiyalar tannarxi oshadi, provodkalar yoziladi, qarz yoziladi. Jadval o'rniga «O'tkazish natijasi partiyalar bo'yicha» chiqadi.",
         },
         {
-          name: "O'chirish / Bekor qilish / Provodkalar",
-          enter:
-            "Qoralamani o'chirish (savat belgisi); o'tkazilganni bekor qilish — partiya tannarxi qaytariladi, provodkalar storno qilinadi; «Provodkalar» — yozilgan provodkalarni ochadi.",
-          affects: "Xarajat qo'shilgandan keyin tovar sotilgan yoki ko'chirilgan bo'lsa, bekor qilib bo'lmaydi.",
+          name: "O'chirish (savat belgisi)",
+          enter: "Saqlangan qoralamani o'chiradi (tasdiqlash so'raladi).",
         },
         {
           n: 16,
@@ -211,6 +224,41 @@ export const extraCostsArticle: ManualArticle = {
           enter: "Har tovar: miqdor, tovar summasi va unga tushadigan xarajat ulushi. Qoralamada kiritish bilan birga yangilanadi.",
           affects:
             "O'tkazilgandan keyin har partiya bo'yicha natija ko'rinadi: «Omborda — tannarx oshdi» yoki «Sotilgan — 9120 ga» va birlik tannarxiga qancha qo'shilgani.",
+        },
+      ],
+    },
+    {
+      title: "O'tkazilgan hujjat",
+      fields: [
+        {
+          n: 17,
+          name: "Bekor qilish",
+          enter: "O'tkazilgan xarajatni bekor qiladi (tasdiqlash so'raladi).",
+          onChange: "Partiyalar tannarxidan qo'shilgan summa ayiriladi, provodkalar storno qilinadi, qarz kamayadi.",
+          affects: "Xarajat qo'shilgandan keyin partiyadan tovar sotilgan yoki ko'chirilgan bo'lsa, rad etiladi.",
+        },
+        {
+          n: 18,
+          name: "Provodkalar",
+          enter: "Hujjat yozgan provodkalarni analitikasi bilan ochadi.",
+        },
+        {
+          n: 19,
+          name: "Natija",
+          enter: "«Omborda — tannarx oshdi»: partiya hali omborda, uning tannarxi oshdi. «Sotilgan — 9120 ga»: bu qism ombordan chiqib ketgan.",
+          affects: "Omborda qolgan tovar keyin sotilganda oshgan tannarx bilan chiqadi.",
+        },
+        {
+          n: 20,
+          name: "Birlik tannarxiga qo'shildi",
+          enter: "Partiyadagi har bir donaning tannarxi qanchaga oshgani (ulush ÷ partiyaning boshlang'ich miqdori).",
+          affects: "Masalan, muzlatgich: 461 538,46 ÷ 5 = 92 307,69 so'm har donaga.",
+        },
+        {
+          n: 21,
+          name: "Omborda yo'q qism",
+          enter: "Sotilgan, yetkazib beruvchiga qaytarilgan yoki hisobdan chiqarilgan miqdor ulushi.",
+          affects: "Partiyaga emas, to'g'ridan-to'g'ri sotilgan tovar tannarxiga (Dt 9120) yoziladi.",
         },
       ],
     },
