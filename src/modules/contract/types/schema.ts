@@ -8,11 +8,11 @@ import * as Yup from "yup";
 export const contractSchema = (isEdit = false) =>
   Yup.object({
     organizationId: requiredNumber("settings.fields.organization"),
-    counterpartyId: requiredNumber("settings.fields.supplyContractor"),
-    contractTypeId: requiredNumber("settings.fields.contractType"),
+    counterpartyId: requiredNumber("contract.fields.counterpartyName"),
+    contractTypeId: requiredNumber("contract.fields.contractType"),
     // Mas'ul shaxs ixtiyoriy — shartnomaning o'zi undan mustaqil.
     responsiblePersonId: Yup.number().nullable(),
-    contractDate: requiredString("settings.fields.contractDate"),
+    contractDate: requiredString("contract.fields.contractDate"),
     startDate: requiredString("settings.fields.startDate"),
     stateId: editStateSchema(isEdit),
   });

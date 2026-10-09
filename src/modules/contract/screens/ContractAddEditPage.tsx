@@ -1,3 +1,4 @@
+import { useAppSelector } from "@/store/hooks";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
@@ -59,6 +60,8 @@ export default function ContractAddEditPage({
   // Taken once when the form opens; the factory reads the clock.
   const [openedDefaults] = useState(createDefaultValues);
   const { t } = useTranslation();
+  // a contract always belongs to the organization in work (the server takes it from there)
+  const currentOrganizationId = useAppSelector((state) => state.organization.id);
   const editId = id ?? null;
   const isEdit = Boolean(editId);
   const { data: Contract, isLoading: isOrgonizationsLoading } =
@@ -74,6 +77,7 @@ export default function ContractAddEditPage({
   const formik = useFormik<ContractForm>({
     initialValues: {
       ...openedDefaults,
+      organizationId: currentOrganizationId ?? null,
       contractTypeId: contractTypeId ?? null,
       counterpartyId: initialCounterpartyId ?? null,
       contractDate: initialContractDate ?? openedDefaults.contractDate,

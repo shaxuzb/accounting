@@ -149,7 +149,7 @@ export const contractsArticle: ManualArticle = {
           n: 9,
           name: "Tashkilot",
           required: true,
-          enter: "Sizning tashkilotingiz.",
+          enter: "Sizning tashkilotingiz — joriy tanlangan tashkilot o'zi qo'yiladi.",
           affects: "Shartnoma doim joriy tanlangan tashkilotga yoziladi.",
         },
         {
