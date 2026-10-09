@@ -12,6 +12,7 @@ export const retailSaleSchema = (t: TFunction) =>
       t("retailSale.messages.cashRegisterRequired"),
     ),
     currencyId: requiredId(t("retailSale.messages.currencyRequired")),
+    receivableAccountId: requiredId(t("retailSale.messages.receivableAccountRequired")),
     payments: Yup.array().of(
       Yup.object({
         paymentMethodId: requiredId(

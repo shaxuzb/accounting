@@ -172,12 +172,15 @@ export default function RetailSaleListPage() {
               }
               record={record}
               permissions={permissions}
+              // a posted or cancelled check only opens to be viewed
+              editLabel={record.statusId === 1 ? undefined : t("common.view")}
               permissionsCode={{
                 editCode:
                   record.statusId === 1
                     ? retailSalePermissions.update
                     : retailSalePermissions.detail,
-                deleteCode: retailSalePermissions.delete,
+                // only a draft is deleted; a posted check is cancelled instead
+                deleteCode: record.statusId === 1 ? retailSalePermissions.delete : "",
               }}
               refetch={refetch}
             />

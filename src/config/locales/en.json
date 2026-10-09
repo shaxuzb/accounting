@@ -1808,6 +1808,7 @@
       "remaining": "Remaining",
       "fullyPaid": "Fully paid",
       "partiallyPaid": "Partially paid",
+      "notPaid": "Not paid",
       "empty": "No payments entered",
       "edit": "Edit payment"
     },
@@ -1816,6 +1817,7 @@
       "warehouseRequired": "Select a warehouse",
       "cashRegisterRequired": "Select a fiscal cash register",
       "currencyRequired": "Select a currency",
+      "receivableAccountRequired": "Choose the receivable account",
       "paymentMethodRequired": "Select a payment method",
       "debitAccountRequired": "Select a debit account",
       "paymentAmountRequired": "Enter a payment amount",
@@ -1827,7 +1829,8 @@
       "updated": "Retail sale document updated",
       "confirmed": "Retail sale document confirmed",
       "cancelled": "Retail sale document cancelled",
-      "cancelPostedConfirm": "Cancel this posted check? Its postings are reversed and the goods return to stock."
+      "cancelPostedConfirm": "Cancel this posted check? Its postings are reversed and the goods return to stock.",
+      "cancelDraftConfirm": "Cancel the draft check? It cannot be reopened."
     }
   },
   "warehouses": {

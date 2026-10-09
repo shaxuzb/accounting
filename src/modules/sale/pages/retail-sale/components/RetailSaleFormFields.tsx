@@ -63,8 +63,8 @@ export default function RetailSaleFormFields({
           fieldName="receivableAccountId"
           formik={formik}
           search
-          clearable
-          optional
+          // the check posts through it (Dt receivable — Kt income, Dt payment — Kt receivable)
+          required
           documentTypeId={documentTypeId ?? retailSaleDocumentTypeIds.goods}
           documentRoleCode={saleDocumentAccountRoleCodes.customerSettlement}
           enabled={Boolean(documentTypeId)}

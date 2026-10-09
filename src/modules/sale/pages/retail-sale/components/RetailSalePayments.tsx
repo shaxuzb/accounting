@@ -225,6 +225,7 @@ export default function RetailSalePayments({
       ? debitRoleCodes.get(documentTypeId)
       : undefined;
     const commonProps = {
+      label: "retailSale.fields.debitAccount",
       value: payment.debitAccountId,
       marginBottom: "mb-0",
       height: "38px",
@@ -339,10 +340,13 @@ export default function RetailSalePayments({
             }`}
           >
             <CheckCircle2 className="size-4" />
+            {/* nothing paid yet is «not paid», not «partly paid» */}
             {t(
               isFullyPaid
                 ? "retailSale.payments.fullyPaid"
-                : "retailSale.payments.partiallyPaid",
+                : paidTotal > 0
+                  ? "retailSale.payments.partiallyPaid"
+                  : "retailSale.payments.notPaid",
             )}
           </div>
         )}

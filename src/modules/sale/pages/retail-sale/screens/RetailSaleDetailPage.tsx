@@ -2,6 +2,8 @@ import CreateReturnButton from "@/modules/returns/CreateReturnButton";
 import { returnKind } from "@/modules/returns/constants";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
+import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
+import { retailSaleAccountingEntriesReportDocumentTypeId } from "../constants/endpoints";
 import Card from "@/components/ui/card/Card";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { useAppSelector } from "@/store/hooks";
@@ -53,11 +55,18 @@ export default function RetailSaleDetailPage() {
       // `lines` above is the display list: a marked line is spread into one row per
       // unit there, each carrying the unit row's id, which the server rejects.
       const productLines = document.lines ?? [];
+      // a marked line with fewer codes than pieces was saved with «Markirovka bilan»
+      // off (the editor reopens it the same way): its pieces leave without codes
+      const allowMarkedFallback = productLines.some(
+        (line) => line.isPieceTracked && (line.items?.length ?? 0) < Number(line.quantity ?? 0),
+      );
       await confirmMutation.mutateAsync({
+        allowMarkedFallback,
         lines: productLines.map((line) => ({
           id: line.id,
           unitPrice: Number(line.unitPrice ?? line.price ?? line.amount ?? 0),
           costPrice: Number(line.costPrice ?? 0),
+          vatAmount: line.vatAmount ?? null,
         })),
         payments: toRetailSalePaymentPayloads(
           payments.map((payment) => ({
@@ -109,6 +118,13 @@ export default function RetailSaleDetailPage() {
               documentId={document.id}
               documentNumber={document.docNumber}
             />
+            <AccountingEntriesButton
+              documentId={Number(document.id)}
+              documentTypeId={retailSaleAccountingEntriesReportDocumentTypeId}
+              statusId={document.statusId}
+            >
+              {t("common.accountingEntries")}
+            </AccountingEntriesButton>
           </div>
           {isDraft && (
             <div className="flex flex-wrap gap-2">
@@ -120,14 +136,22 @@ export default function RetailSaleDetailPage() {
                 </Link>
               </PermissionCard>
               <PermissionCard permission={retailSalePermissions.cancel}>
-                <Button
-                  danger
-                  icon={<CircleX className="size-4" />}
-                  loading={cancelMutation.isPending}
-                  onClick={() => void handleCancel()}
+                {/* asked first, as the posted check is: a cancelled draft cannot be reopened */}
+                <Popconfirm
+                  title={t("retailSale.messages.cancelDraftConfirm")}
+                  okText={t("common.cancel")}
+                  cancelText={t("common.close")}
+                  okButtonProps={{ danger: true }}
+                  onConfirm={() => void handleCancel()}
                 >
-                  {t("common.cancel")}
-                </Button>
+                  <Button
+                    danger
+                    icon={<CircleX className="size-4" />}
+                    loading={cancelMutation.isPending}
+                  >
+                    {t("common.cancel")}
+                  </Button>
+                </Popconfirm>
               </PermissionCard>
               <PermissionCard permission={retailSalePermissions.confirm}>
                 <Button

@@ -79,6 +79,10 @@ export interface RetailSaleConfirmPayload {
     id: number;
     unitPrice: number;
     costPrice: number;
+    /** The VAT saved on the line, so the posted total stays the one the payments cover. */
+    vatAmount?: number | null;
   }>;
   payments: RetailSalePaymentPayload[];
+  /** The check was entered with «Markirovka bilan» off: unscanned marked pieces leave in costing order. */
+  allowMarkedFallback?: boolean;
 }

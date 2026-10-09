@@ -33,6 +33,8 @@ interface Props {
   }[];
   customPath?: string | null;
   deleteLabel?: string;
+  /** The edit item's label when it only opens the record to view (a posted document). */
+  editLabel?: string;
   deleteConfirmTitle?: string;
   deleteConfirmContent?: string;
   editModal?: {
@@ -55,6 +57,7 @@ const ActionColumn: React.FC<Props> = ({
   },
   customActions = [],
   deleteLabel,
+  editLabel,
   deleteConfirmTitle,
   deleteConfirmContent,
 }) => {
@@ -78,7 +81,7 @@ const ActionColumn: React.FC<Props> = ({
   if (permissions.includes(permissionsCode?.editCode || "")) {
     actions.push({
       key: "edit",
-      label: t("common.edit"),
+      label: editLabel ?? t("common.edit"),
       icon: <Pencil className="size-4" />,
       onClick: () => {
         if (!editModal.isModal)
