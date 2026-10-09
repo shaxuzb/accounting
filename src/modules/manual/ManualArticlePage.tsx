@@ -154,7 +154,11 @@ function Article({ article, sectionTitle, sectionIcon }: { article: ManualArticl
                 {article.prerequisites.map((link) => (
                   <li key={link.title} className="flex gap-1.5">
                     <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-green-600" />
-                    <Link to={linkTarget(link)} className="text-text! hover:text-blue-600!">{link.title}</Link>
+                    {link.articleId || link.route ? (
+                      <Link to={linkTarget(link)} className="text-text! hover:text-blue-600!">{link.title}</Link>
+                    ) : (
+                      <span>{link.title}</span>
+                    )}
                   </li>
                 ))}
               </ul>
