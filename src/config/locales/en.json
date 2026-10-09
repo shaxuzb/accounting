@@ -2887,6 +2887,8 @@
       "cancelPostedConfirm": "The entries are reversed and the goods and marked units go back to the source warehouse. The document stays as cancelled."
     },
     "adjustment": {
+      "fromCount": "Result of inventory count №{{number}} — cancelled together with it.",
+      "openCount": "Open the count",
       "surplusPrice": "Price (per unit)",
       "surplusPriceHint": "Empty — last receipt price",
       "title": "Inventory adjustment",

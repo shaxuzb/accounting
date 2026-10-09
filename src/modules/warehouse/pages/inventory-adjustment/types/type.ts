@@ -32,5 +32,8 @@ export interface InventoryAdjustmentDocument {
   createdDate?: string | null;
   postedAt?: string | null;
   cancelledAt?: string | null;
+  /** The posted count this adjustment came from: it is cancelled through that count. */
+  inventoryCountId?: number | null;
+  inventoryCountNumber?: string | null;
   lines?: InventoryAdjustmentLine[];
 }

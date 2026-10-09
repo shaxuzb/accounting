@@ -1,4 +1,5 @@
-import { Button, Popconfirm } from "antd";
+import { Alert, Button, Popconfirm } from "antd";
+import { Link } from "react-router";
 import { CheckCircle2, CircleX, Save } from "lucide-react";
 import Card from "@/components/ui/card/Card";
 import { useTranslation } from "react-i18next";
@@ -7,6 +8,9 @@ interface Props {
   isDraft: boolean;
   /** A posted document is cancelled with a storno (asked first); a draft simply. */
   isPosted?: boolean;
+  /** A count's own surplus/shortage: cancelled through the count, not here. */
+  countId?: number | null;
+  countNumber?: string | null;
   saving: boolean;
   confirming: boolean;
   cancelling: boolean;
@@ -18,6 +22,8 @@ interface Props {
 export default function InventoryAdjustmentActions({
   isDraft,
   isPosted = false,
+  countId = null,
+  countNumber = null,
   saving,
   confirming,
   cancelling,
@@ -49,7 +55,20 @@ export default function InventoryAdjustmentActions({
       >
         {t("common.confirm")}
       </Button>
-      {isPosted ? (
+      {isPosted && countId ? (
+        <Alert
+          type="info"
+          showIcon
+          message={
+            <span>
+              {t("warehouse.adjustment.fromCount", { number: countNumber ?? countId })}{" "}
+              <Link to={`/main/warehouses/inventory-counts/${countId}`}>
+                {t("warehouse.adjustment.openCount")}
+              </Link>
+            </span>
+          }
+        />
+      ) : isPosted ? (
         <Popconfirm
           title={t("warehouse.messages.cancelPostedTitle")}
           description={t("warehouse.messages.cancelPostedHint")}

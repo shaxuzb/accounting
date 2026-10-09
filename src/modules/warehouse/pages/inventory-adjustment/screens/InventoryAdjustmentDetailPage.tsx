@@ -132,6 +132,8 @@ export default function InventoryAdjustmentDetailPage() {
           <InventoryAdjustmentActions
             isDraft={isDraft}
             isPosted={!isCreate && statusId === 2}
+            countId={record?.inventoryCountId ?? null}
+            countNumber={record?.inventoryCountNumber ?? null}
             saving={createMutation.isPending || updateMutation.isPending}
             confirming={confirmMutation.isPending}
             cancelling={cancelMutation.isPending}
