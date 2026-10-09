@@ -87,7 +87,7 @@ export default function WarehouseTransferListPage() {
     },
     {
       dataIndex: "stateId",
-      title: t("products.fields.status"),
+      title: t("warehouse.transfer.state"),
       align: "center",
       render: (_, record) =>
         stateStatus(record.stateId, record.stateName),

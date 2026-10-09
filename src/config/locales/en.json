@@ -2895,7 +2895,8 @@
     },
     "transfer": {
       "title": "Warehouse transfer",
-      "additional": "Additional"
+      "additional": "Additional",
+      "state": "Activity"
     },
     "count": {
       "generalInfo": "General information",

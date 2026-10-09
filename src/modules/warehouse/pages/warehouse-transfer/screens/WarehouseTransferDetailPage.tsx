@@ -53,9 +53,10 @@ export default function WarehouseTransferDetailPage() {
     onSubmit: async (values) => {
       try {
         if (isCreate) {
-          await createMutation.mutateAsync(values);
+          // stay on the new document, so it can be confirmed right away
+          const id = await createMutation.mutateAsync(values);
           toast.success(t("warehouse.messages.created"));
-          navigate(`/main/warehouses/transfers`, { replace: true });
+          navigate(`/main/warehouses/transfers/${id}`, { replace: true });
           return;
         }
 

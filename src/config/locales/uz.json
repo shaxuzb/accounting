@@ -2895,7 +2895,8 @@
     },
     "transfer": {
       "title": "Omborlararo ko'chirish",
-      "additional": "Qo'shimcha"
+      "additional": "Qo'shimcha",
+      "state": "Faolligi"
     },
     "count": {
       "generalInfo": "Umumiy ma'lumot",

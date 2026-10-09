@@ -18,7 +18,8 @@ export const warehouseTransferService = {
       .then((res) => res.data),
   create: (payload: WarehouseTransferForm) =>
     $axiosPrivate
-      .post<WarehouseTransferDocument>(endpoints.create, toWarehouseTransferPayload(payload))
+      // the server answers with the new document's id
+      .post<number>(endpoints.create, toWarehouseTransferPayload(payload))
       .then((res) => res.data),
   update: (id: string | number, payload: WarehouseTransferForm) =>
     $axiosPrivate
