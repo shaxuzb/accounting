@@ -15,7 +15,8 @@ export interface AccountingEntriesReportPosting {
   creditAccountNumber: string;
   amount: number;
   currency: string;
-  // debitQuantity: number;
+  /** The entry's quantity (debit or credit side), empty for a money-only entry. */
+  quantity: string;
   documentNumber: string;
   subkonto: AccountingEntriesReportSubkontoItem[];
   debitDetails: AccountingEntriesReportSubkontoItem[];

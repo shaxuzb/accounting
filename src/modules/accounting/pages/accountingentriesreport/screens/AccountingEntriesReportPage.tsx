@@ -149,10 +149,11 @@ export default function AccountingEntriesReportPage() {
         ),
       },
       {
-        dataIndex: "debitQuantity",
+        dataIndex: "quantity",
         title: t("app.fields.quantity"),
         width: 110,
         align: "center",
+        render: (value: string) => (value ? numberSpacing(Number(value), undefined, true) : ""),
       },
       {
         dataIndex: "currency",

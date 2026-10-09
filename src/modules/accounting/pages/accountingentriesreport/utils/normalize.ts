@@ -151,7 +151,8 @@ export const normalizeAccountingEntriesReport = (
         date: String(
           getValue(item, ["date", "entryDate", "createdDate", "docDate"], ""),
         ),
-        quantity: String(getValue(item, ["creditQuantity"], "")),
+        // a receipt carries its quantity on the debit side, an issue on the credit side
+        quantity: String(getValue(item, ["debitQuantity", "creditQuantity"], "")),
         debitAccountCode: String(
           getValue(
             item,

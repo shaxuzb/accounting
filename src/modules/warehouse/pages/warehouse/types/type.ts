@@ -5,6 +5,8 @@ export interface ProductStockGroup {
   quantity: number;
   costPrice: number;
   totalAmount: number;
+  /** The stock at cost (quantity × average cost). */
+  totalCostAmount: number;
   currencyCode?: string;
   currencyName?: string;
 }

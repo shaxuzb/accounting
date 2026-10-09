@@ -103,12 +103,13 @@ export default function ProductSummaryListPage() {
     },
     {
       dataIndex: "costPrice",
-      title: t("warehouse.fields.salesPrice"),
+      title: t("warehouse.fields.costPrice"),
       align: "center",
       render: (value: number) => numberSpacing(value),
     },
     {
-      dataIndex: "totalAmount",
+      // at cost, as the product rows below it: the stock's book value, not its sale price
+      dataIndex: "totalCostAmount",
       title: t("warehouse.fields.totalPrice"),
       align: "center",
       render: (value: number) => numberSpacing(value),
