@@ -8,7 +8,6 @@ import {
   ChevronRight,
   Circle,
   ExternalLink,
-  FileDown,
   FileText,
   Lightbulb,
   ListChecks,
@@ -60,7 +59,6 @@ export default function ManualArticlePage() {
 function Article({ article, sectionTitle, sectionIcon }: { article: ManualArticle; sectionTitle: string; sectionIcon: string }) {
   const navigate = useNavigate();
   const [active, setActive] = useState<number | null>(null);
-  const rowRefs = useRef<Record<number, HTMLTableRowElement | null>>({});
   const { data: read = [], isSuccess: progressLoaded } = useManualProgress();
   const setRead = useSetArticleRead();
   const isRead = read.includes(article.id);
@@ -91,16 +89,19 @@ function Article({ article, sectionTitle, sectionIcon }: { article: ManualArticl
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [article.id, isRead, progressLoaded]);
 
-  const select = (n: number) => {
-    setActive(n);
-    rowRefs.current[n]?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
+  const fieldsByMarker = useMemo(
+    () =>
+      new Map(
+        article.fieldGroups.flatMap((group) => group.fields).flatMap((field) => (field.n !== undefined ? [[field.n, field] as const] : [])),
+      ),
+    [article],
+  );
 
   return (
-    <div className="space-y-4 print:space-y-3">
+    <div className="space-y-4">
       {/* the path, the title and the actions */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 text-sm text-secondary-text print:hidden">
+        <div className="flex items-center gap-2 text-sm text-secondary-text">
           <button type="button" className="cursor-pointer" onClick={() => navigate("/main/manual")}>
             <ChevronLeft className="size-4" />
           </button>
@@ -120,15 +121,12 @@ function Article({ article, sectionTitle, sectionIcon }: { article: ManualArticl
               <p className="m-0 mt-1 max-w-3xl text-secondary-text">{article.summary}</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 print:hidden">
+          <div className="flex flex-wrap gap-2">
             {article.videoUrl && (
               <Button type="primary" size="large" icon={<PlayCircle className="size-4" />} href={article.videoUrl} target="_blank">
                 Video qo'llanma
               </Button>
             )}
-            <Button size="large" icon={<FileDown className="size-4" />} onClick={() => window.print()}>
-              PDF yuklab olish
-            </Button>
             {article.routes[0] && (
               <Button size="large" icon={<ExternalLink className="size-4" />} onClick={() => navigate(article.routes[0])}>
                 Sahifani ochish
@@ -138,12 +136,12 @@ function Article({ article, sectionTitle, sectionIcon }: { article: ManualArticl
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_300px] print:block">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0 space-y-4">
           {/* the page as it looks, numbered */}
           {article.screenshots.map((shot) => (
             <div key={shot.src} className={`${card} p-3`}>
-              <AnnotatedScreenshot shot={shot} active={active} onActivate={setActive} onSelect={select} />
+              <AnnotatedScreenshot shot={shot} fields={fieldsByMarker} active={active} onActivate={setActive} />
             </div>
           ))}
 
@@ -233,9 +231,6 @@ function Article({ article, sectionTitle, sectionIcon }: { article: ManualArticl
                           return (
                             <tr
                               key={`${group.title}-${field.name}`}
-                              ref={(row) => {
-                                if (field.n !== undefined) rowRefs.current[field.n] = row;
-                              }}
                               className="border-t border-border align-top transition-colors"
                               style={lit ? { background: `${colorOf(field.n!).bg}14` } : undefined}
                               onMouseEnter={() => field.n !== undefined && setActive(field.n)}
@@ -328,7 +323,7 @@ function Article({ article, sectionTitle, sectionIcon }: { article: ManualArticl
           )}
 
           {/* the end: read, previous, next */}
-          <div ref={endRef} className={`${card} flex flex-wrap items-center justify-between gap-3 p-4 print:hidden`}>
+          <div ref={endRef} className={`${card} flex flex-wrap items-center justify-between gap-3 p-4`}>
             <Button
               icon={isRead ? <BookOpenCheck className="size-4" /> : <CheckCircle2 className="size-4" />}
               type={isRead ? "default" : "primary"}
@@ -355,7 +350,7 @@ function Article({ article, sectionTitle, sectionIcon }: { article: ManualArticl
         </div>
 
         {/* the side panel: progress, related topics, a tip */}
-        <aside className="space-y-4 print:hidden xl:sticky xl:top-4 xl:self-start">
+        <aside className="space-y-4 xl:sticky xl:top-4 xl:self-start">
           <div className={`${card} p-4`}>
             <div className="mb-2 font-semibold text-text">Sizning o'rganish progressingiz</div>
             <div className="flex items-center gap-3">

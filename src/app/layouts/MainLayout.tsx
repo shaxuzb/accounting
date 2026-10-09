@@ -25,20 +25,18 @@ const MainLayout = () => {
   return (
     <motion.div
       ref={containerRef}
-      className="relative h-screen overflow-hidden print:h-auto print:overflow-visible"
+      className="relative h-screen overflow-hidden"
     >
-      <div className="relative z-10! flex h-full box-border! print:block print:h-auto">
+      <div className="relative z-10! flex h-full box-border!">
         <Sidebar />
-        <div className="relative flex w-full min-w-0 flex-1 flex-col overflow-hidden print:overflow-visible">
+        <div className="relative flex w-full min-w-0 flex-1 flex-col overflow-hidden">
           <Navbar />
           <WorkspaceNavigationManager />
-          <div className="print:hidden">
-            <WorkspaceTabs key={`${userId}:${organizationId}`} />
-          </div>
+          <WorkspaceTabs key={`${userId}:${organizationId}`} />
 
           <div
             ref={scrollContainerRef}
-            className="relative min-h-0 flex-1 overflow-auto print:overflow-visible"
+            className="relative min-h-0 flex-1 overflow-auto"
           >
             <div className="relative w-full min-w-0 px-4 py-2">
               <Suspense fallback={<RouteFallback />}>

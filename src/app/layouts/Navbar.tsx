@@ -30,7 +30,7 @@ const Navbar = () => {
   }, [goBack]);
 
   return (
-    <div className="flex h-16 shrink-0 items-center border-b border-border bg-primary-bg print:hidden">
+    <div className="flex h-16 shrink-0 items-center border-b border-border bg-primary-bg">
       <div className={`flex justify-between py-1.5 items-center w-full px-4`}>
         <div className="flex gap-3 items-center">
           <Button onClick={handleClickMenu} className="p-0!" type="link">

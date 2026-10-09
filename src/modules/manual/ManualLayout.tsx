@@ -28,8 +28,8 @@ export default function ManualLayout() {
   const isOpen = (id: string) => Boolean(filter.trim()) || (open[id] ?? id === sectionId);
 
   return (
-    <div className="flex min-h-full w-full gap-4 print:block">
-      <aside className="sticky top-0 hidden w-[290px] shrink-0 self-start rounded-xl border border-border bg-primary-bg p-4 lg:block print:hidden">
+    <div className="flex min-h-full w-full gap-4">
+      <aside className="sticky top-0 hidden w-[290px] shrink-0 self-start rounded-xl border border-border bg-primary-bg p-4 lg:block">
         <div className="text-lg font-semibold text-text">Qo'llanma markazi</div>
         <div className="mb-3 text-sm text-secondary-text">Tizimdan samarali foydalanish uchun batafsil yo'riqnomalar</div>
         <Input

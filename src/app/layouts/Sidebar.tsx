@@ -50,7 +50,7 @@ const Sidebar = () => {
     <div
       // flex-col bo'lmasa o'rtadagi `flex-1 min-h-0` ishlamaydi: menyu
       // balandlikka sig'maganda scroll o'rniga kesilib qolardi.
-      className={`${sidebarInline.sidebar ? "w-16" : "w-[280px]"} print:hidden sticky top-0 flex h-screen shrink-0 flex-col overflow-hidden border-r border-border bg-primary-bg transition-[width] duration-200 ease-out`}
+      className={`${sidebarInline.sidebar ? "w-16" : "w-[280px]"} sticky top-0 flex h-screen shrink-0 flex-col overflow-hidden border-r border-border bg-primary-bg transition-[width] duration-200 ease-out`}
     >
       <div className="shrink-0">
         <LogoSide />

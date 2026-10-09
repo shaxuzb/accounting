@@ -28,7 +28,7 @@ export const purchaseArticle: ManualArticle = {
     {
       src: "/manual/purchases/purchase-editor.jpg",
       alt: "Sotib olish hujjatini to'ldirish oynasi",
-      caption: "Yangi xarid hujjati: Xaridlar → Xaridlar → «Sotib olish importi» tugmasi. Raqam ustiga boring — pastdagi jadvalda shu maydon izohi yoritiladi.",
+      caption: "Yangi xarid hujjati: Xaridlar → Xaridlar → «Sotib olish importi» tugmasi. Raqam ustiga boring — izoh shu yerning o'zida chiqadi; bossangiz, izoh ochiq qoladi.",
       width: 1568,
       height: 655,
       markers: [
