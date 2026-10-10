@@ -1,7 +1,7 @@
 import { Alert, Button, Form, Popconfirm, Spin } from "antd";
 import { useMemo } from "react";
 import { setNestedObjectValues, useFormik } from "formik";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
@@ -12,6 +12,7 @@ import FaDraftActionsBar from "../../../shared/components/FaDraftActionsBar";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import { faDisposalTypeIds } from "../constants/disposalTypes";
 import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
+import { faAssetKindFromParams, faAssetKinds } from "../../../shared/constants/assetKinds";
 import FaDisposalFormFields from "../components/FaDisposalFormFields";
 import FaDisposalReadonlyView from "../components/FaDisposalReadonlyView";
 import { faDisposalPermissions } from "../constants/permissions";
@@ -28,6 +29,7 @@ import type { FaDisposalPayload } from "../types/type";
 
 const createDefaultValues = (): FaDisposalFormValues => ({
   disposalDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
+  assetKindId: faAssetKinds.fixed,
   disposalTypeId: null,
   reason: "",
   counterpartyId: null,
@@ -56,6 +58,7 @@ const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => {
   const isSale = Number(values.disposalTypeId) === faDisposalTypeIds.sale;
   return {
     disposalDate: values.disposalDate,
+    assetKindId: values.assetKindId,
     disposalTypeId: Number(values.disposalTypeId),
     reason: values.reason || "",
     counterpartyId: isSale ? (values.counterpartyId ?? null) : null,
@@ -104,9 +107,12 @@ export default function FaDisposalFormPage() {
   const showEditor = isCreate || (isDraft && canSubmit);
   const listPath = canViewList ? "/main/fa/disposals" : "/main";
 
+  const [searchParams] = useSearchParams();
+  const newKind = faAssetKindFromParams(searchParams);
   const initialValues = useMemo<FaDisposalFormValues>(
     () => ({
       disposalDate: record?.disposalDate ?? createDefaultValues().disposalDate,
+      assetKindId: record?.assetKindId ?? newKind,
       disposalTypeId: record?.disposalTypeId ?? null,
       reason: record?.reason ?? "",
       counterpartyId: record?.counterpartyId ?? null,
@@ -126,7 +132,7 @@ export default function FaDisposalFormPage() {
           }))
         : createDefaultValues().lines,
     }),
-    [record],
+    [record, newKind],
   );
 
   const persistDisposal = async (
@@ -152,7 +158,7 @@ export default function FaDisposalFormPage() {
           t(isCreate ? "settings.messages.created" : "settings.messages.updated"),
         );
 
-        navigate(-1);
+        navigate(listPath);
       } catch (error: unknown) {
         errorHandlers(error);
       }
@@ -175,7 +181,7 @@ export default function FaDisposalFormPage() {
       await persistDisposal(formik.values);
       await confirmMutation.mutateAsync();
       toast.success(t("actions.confirmSuccess", { id }));
-      navigate(-1);
+      navigate(listPath);
     } catch (error: unknown) {
       errorHandlers(error);
     }
@@ -185,7 +191,7 @@ export default function FaDisposalFormPage() {
     try {
       await cancelMutation.mutateAsync();
       toast.success(t("actions.cancelSuccess", { id: record?.id ?? id }));
-      navigate(-1);
+      navigate(listPath);
     } catch (error: unknown) {
       errorHandlers(error);
     }

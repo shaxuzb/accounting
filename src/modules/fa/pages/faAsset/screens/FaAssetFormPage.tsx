@@ -12,6 +12,7 @@ import FaAssetReadonlyView from "../components/FaAssetReadonlyView";
 import { useGetDetailFaAsset, useUpdateFaAsset } from "../hooks";
 import type { FaAssetFormValues, FaAssetUpdatePayload } from "../types/form";
 import { faAssetSchema } from "../types/schema";
+import { faAssetKinds } from "../../../shared/constants/assetKinds";
 
 const defaults: FaAssetFormValues = {
   inventoryNumber: "",
@@ -43,13 +44,13 @@ export default function FaAssetFormPage() {
   const formik = useFormik<FaAssetFormValues>({
     initialValues,
     enableReinitialize: true,
-    validationSchema: faAssetSchema(t),
+    validationSchema: faAssetSchema(t, record?.assetKindId === faAssetKinds.intangible),
     onSubmit: async (values) => {
       const payload: FaAssetUpdatePayload = {
         inventoryNumber: values.inventoryNumber.trim(),
         name: values.name.trim(),
         faGroupId: Number(values.faGroupId),
-        okofId: Number(values.okofId),
+        okofId: values.okofId == null ? null : Number(values.okofId),
       };
       try {
         await updateMutation.mutateAsync({ id, payload });
@@ -67,7 +68,7 @@ export default function FaAssetFormPage() {
 
   return (
     <Form layout="vertical" onFinish={formik.handleSubmit}>
-      <FaAssetFormFields formik={formik} />
+      <FaAssetFormFields formik={formik} assetKindId={record.assetKindId} />
       <Card className="sticky bottom-0 z-20 mt-4 border border-border bg-primary-bg/95 px-4 py-3 backdrop-blur">
         <div className="flex justify-end gap-3">
           <Button icon={<X className="size-4" />} onClick={() => navigate("/main/fa/assets")}>{t("common.cancel")}</Button>

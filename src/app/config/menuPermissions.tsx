@@ -502,6 +502,13 @@ export const menuPermissions: MainMenu = {
           },
         },
         {
+          code: faAssetPermissions.view,
+          linkData: {
+            path: "intangibles",
+            title: "fa.entities.intangibles",
+          },
+        },
+        {
           code: faReceiptPermissions.view,
           linkData: {
             path: "receipts",

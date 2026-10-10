@@ -570,6 +570,17 @@
     "minArray": "{{field}} kamida {{min}} ta tanlanishi kerak"
   },
   "fa": {
+    "intangible": {
+      "asset": "Nomoddiy aktiv",
+      "group": "Nomoddiy aktiv guruhi",
+      "account": "Nomoddiy aktiv hisobvarag'i",
+      "assetNumber": "{{number}}-nomoddiy aktiv"
+    },
+    "kinds": {
+      "title": "Turi",
+      "fixed": "Asosiy vositalar",
+      "intangible": "Nomoddiy aktivlar"
+    },
     "modernization": {
       "title": "AV modernizatsiyasi",
       "new": "Yangi modernizatsiya",
@@ -604,6 +615,7 @@
     },
     "title": "Asosiy vositalar",
     "entities": {
+      "intangibles": "Nomoddiy aktivlar",
       "modernizations": "Modernizatsiya",
       "assets": "Asosiy vositalar",
       "receipts": "Kirim",

@@ -2,7 +2,7 @@ import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import { Alert, Button, Form, Popconfirm, Spin } from "antd";
 import { useMemo } from "react";
 import { setNestedObjectValues, useFormik } from "formik";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
@@ -25,12 +25,14 @@ import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import FaReceiptFormFields from "../components/FaReceiptFormFields";
 import FaReceiptReadonlyView from "../components/readonly/FaReceiptReadonlyView";
 import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
+import { faAssetKindFromParams, faAssetKinds } from "../../../shared/constants/assetKinds";
 
 /** 1C «Провести и закрыть»: the form closes into its journal, not to whatever page was open before. */
 const FA_RECEIPT_LIST_PATH = "/main/fa/receipts";
 
 const createDefaultValues = (): FaReceiptFormValues => ({
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
+  assetKindId: faAssetKinds.fixed,
   counterpartyId: null,
   // UZS, as every other document starts (CurrencyIdConst.UZS)
   currencyId: 1,
@@ -79,6 +81,7 @@ const toPayload = (
   values: FaReceiptFormValues,
 ): FaReceiptPayload => ({
   docDate: values.docDate,
+  assetKindId: values.assetKindId,
   counterpartyId: Number(values.counterpartyId),
   currencyId: Number(values.currencyId),
   receiptTypeId: Number(values.receiptTypeId),
@@ -98,7 +101,7 @@ const toPayload = (
       name: asset.name.trim(),
       initialCost: Number(asset.initialCost),
       faGroupId: Number(asset.faGroupId),
-      okofId: Number(asset.okofId),
+      okofId: asset.okofId == null ? null : Number(asset.okofId),
       assetAccountId: Number(asset.assetAccountId),
     })),
   })),
@@ -110,6 +113,8 @@ export default function FaReceiptFormPage() {
   const navigate = useNavigate();
   const isCreate = !id;
   const faDocumentTypeIds = useFaDocumentTypeIds();
+  const [searchParams] = useSearchParams();
+  const newKind = faAssetKindFromParams(searchParams);
 
   const { user } = useAppSelector((state) => state.auth);
   const permissions = user?.user.permissions ?? [];
@@ -134,6 +139,7 @@ export default function FaReceiptFormPage() {
   const initialValues = useMemo<FaReceiptFormValues>(
     () => ({
       docDate: record?.docDate ?? createDefaultValues().docDate,
+      assetKindId: record?.assetKindId ?? newKind,
       counterpartyId: record?.counterpartyId ?? createDefaultValues().counterpartyId,
       currencyId: record?.currencyId ?? createDefaultValues().currencyId,
       receiptTypeId: record?.receiptTypeId ?? createDefaultValues().receiptTypeId,
@@ -141,7 +147,7 @@ export default function FaReceiptFormPage() {
         record?.supplierAccountId ?? createDefaultValues().supplierAccountId,
       lines: record?.lines?.length ? record.lines : createDefaultValues().lines,
     }),
-    [record],
+    [record, newKind],
   );
 
   const vatPayer = useVatPayer();

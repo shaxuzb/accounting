@@ -18,6 +18,7 @@ import { ProcessStatusBadge } from "@/components/ui/status";
 import { isFaDraftStatus } from "../../../shared/constants/statuses";
 import FaListFilters from "../../../shared/components/FaListFilters";
 import FaListPagination from "../../../shared/components/FaListPagination";
+import { faAssetKindLabels, faAssetKinds } from "../../../shared/constants/assetKinds";
 
 export default function FaDisposalListPage() {
   const { t } = useTranslation();
@@ -74,6 +75,12 @@ export default function FaDisposalListPage() {
       minWidth: 240,
     },
     {
+      dataIndex: "assetKindId",
+      title: t("fa.kinds.title"),
+      width: 170,
+      render: (value: number | undefined) => t(faAssetKindLabels[value ?? faAssetKinds.fixed]),
+    },
+    {
       dataIndex: "statusName",
       title: t("settings.fields.status"),
       align: "center",
@@ -119,13 +126,13 @@ export default function FaDisposalListPage() {
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <FaListFilters>
+          <FaListFilters assetKind>
             <SelectFilter paramKey="disposalTypeId" placeholder="fa.fields.disposalType" path={selectListEndpoints.faDisposalTypesSelectList} width={180} />
           </FaListFilters>
         </div>
         <Space>
           <PermissionCard permission={faDisposalPermissions.create}>
-            <Link to="add">
+            <Link to={searchParams.get("assetKindId") ? `add?kind=${searchParams.get("assetKindId")}` : "add"}>
               <Button type="primary" icon={<Plus className="size-4" />}>
                 {t("common.add")}
               </Button>

@@ -16,6 +16,9 @@ import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import { formatDateWithOutTime } from "@/utils/helpers";
 import { numberSpacing } from "@/utils/utils";
 import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
+import { faKindLabel, faKindRole, type FaAssetKindId } from "../../../shared/constants/assetKinds";
+import FaAssetKindSwitch from "../../../shared/components/FaAssetKindSwitch";
+import useIntangibleSetup from "../../../shared/hooks/useIntangibleSetup";
 import { faDisposalTypeIds } from "../constants/disposalTypes";
 import type {
   FaDisposalFormValues,
@@ -53,6 +56,19 @@ export default function FaDisposalFormFields({
   const isSale = Number(formik.values.disposalTypeId) === faDisposalTypeIds.sale;
   const chargesVat = isSale && vatPayer.isVatPayer;
   const counterpartyId = formik.values.counterpartyId;
+  const assetKindId = formik.values.assetKindId;
+  const kindReady = useIntangibleSetup(assetKindId);
+  const accountsEnabled = Boolean(documentTypeId) && kindReady;
+  // another kind takes other assets and accounts
+  const handleKindChange = (kind: FaAssetKindId) => {
+    void formik.setFieldValue("assetKindId", kind);
+    void formik.setFieldValue("disposalAccountId", null);
+    void formik.setFieldValue("gainAccountId", null);
+    void formik.setFieldValue(
+      "lines",
+      formik.values.lines.map((line) => ({ ...line, faAssetId: null })),
+    );
+  };
 
   const handleAddLine = useCallback(() => {
     void formik.setFieldValue("lines", [
@@ -99,14 +115,14 @@ export default function FaDisposalFormFields({
         render: (index: number) => index + 1,
       },
       {
-        title: t("fa.fields.faAssetId"),
+        title: t(faKindLabel(assetKindId, "fa.fields.faAssetId")),
         dataIndex: "faAssetId",
         minWidth: 300,
         render: (_, row) => (
           <div className="[&_.ant-form-item]:mb-0!">
             <SelectCustom
               path={selectListEndpoints.faAssetsSelectList}
-              queryParams={{ statusId: 2 }}
+              queryParams={{ statusId: 2, assetKindId }}
               displayConfig={faDisposalAssetDisplayConfig}
               formik={formik}
               fieldName={`lines[${row.index}].faAssetId`}
@@ -185,12 +201,15 @@ export default function FaDisposalFormFields({
           ) : null,
       },
     ],
-    [chargesVat, formik, handleRemoveLine, isDraft, isSale, t],
+    [assetKindId, chargesVat, formik, handleRemoveLine, isDraft, isSale, t],
   );
 
   return (
     <div className="min-w-0 space-y-2">
       <Card className="p-3">
+        <div className="mb-3">
+          <FaAssetKindSwitch value={assetKindId} onChange={handleKindChange} disabled={!isDraft} />
+        </div>
         <Row gutter={[16, 0]}>
           <Col span={6}>
             <SelectDate
@@ -270,13 +289,13 @@ export default function FaDisposalFormFields({
             <Col key={fieldName} span={6}>
               <DocumentAccountSelect
                 documentTypeId={documentTypeId ?? 0}
-                documentRoleCode={roleCode}
+                documentRoleCode={faKindRole(assetKindId, roleCode)}
                 formik={formik}
                 fieldName={fieldName}
                 label={label}
                 search
                 required
-                enabled={Boolean(documentTypeId)}
+                enabled={accountsEnabled}
               />
             </Col>
           ))}

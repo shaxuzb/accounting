@@ -1,7 +1,7 @@
 import { Alert, Button, Form, Popconfirm, Spin } from "antd";
 import { useMemo } from "react";
 import { useFormik } from "formik";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
@@ -11,6 +11,7 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import FaDraftActionsBar from "../../../shared/components/FaDraftActionsBar";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
+import { faAssetKindFromParams, faAssetKinds } from "../../../shared/constants/assetKinds";
 import FaCommissioningFormFields from "../components/FaCommissioningFormFields";
 import FaCommissioningReadonlyView from "../components/readonly/FaCommissioningReadonlyView";
 import { faCommissioningPermissions } from "../constants/permissions";
@@ -27,6 +28,7 @@ import { faCommissioningSchema } from "../types/schema";
 
 const createDefaults = (): FaCommissioningFormValues => ({
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
+  assetKindId: faAssetKinds.fixed,
   note: "",
   lines: [
     {
@@ -51,6 +53,7 @@ const toPayload = (
   currentUserId: number | null,
 ): FaCommissioningPayload => ({
   docDate: values.docDate,
+  assetKindId: values.assetKindId,
   note: values.note.trim(),
   lines: values.lines.map((line) => ({
     faAssetId: Number(line.faAssetId),
@@ -96,9 +99,12 @@ export default function FaCommissioningFormPage() {
     ? permissions.includes(faCommissioningPermissions.create)
     : isDraft && permissions.includes(faCommissioningPermissions.update);
 
+  const [searchParams] = useSearchParams();
+  const newKind = faAssetKindFromParams(searchParams);
   const initialValues = useMemo<FaCommissioningFormValues>(
     () => ({
       docDate: record?.docDate ?? createDefaults().docDate,
+      assetKindId: record?.assetKindId ?? newKind,
       note: record?.note ?? "",
       lines: record?.lines?.length
         ? record.lines.map((line) => ({
@@ -109,9 +115,11 @@ export default function FaCommissioningFormPage() {
         : createDefaults().lines.map((line) => ({
             ...line,
             responsibleUserId: currentUserId,
+            // NSBU 7 item 46: an intangible asset whose life cannot be told takes five years
+            usefulLifeMonths: newKind === faAssetKinds.intangible ? 60 : line.usefulLifeMonths,
           })),
     }),
-    [currentUserId, record],
+    [currentUserId, record, newKind],
   );
   const persist = async (values: FaCommissioningFormValues) => {
     const payload = toPayload(values, currentUserId);

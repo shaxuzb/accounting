@@ -20,6 +20,8 @@ export interface FaRevaluationLineResponse extends FaRevaluationLine {
 
 export interface FaRevaluationPayload {
   revaluationDate: string;
+  /** 1 fixed assets, 2 intangible assets. */
+  assetKindId: number;
   reason: string;
   stateId: number;
   revaluationReserveAccountId: number;

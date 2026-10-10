@@ -13,6 +13,14 @@ import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import Card from "@/components/ui/card/Card";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
+import { faAssetKinds, faKindLabel, faKindRole, type FaAssetKindId } from "../../../shared/constants/assetKinds";
+import FaAssetKindSwitch from "../../../shared/components/FaAssetKindSwitch";
+import useIntangibleSetup from "../../../shared/hooks/useIntangibleSetup";
+import { $axiosPrivate } from "@/services/AxiosService";
+import {
+  documentAccountChartAccountsPath,
+  normalizeDocumentAccountOptions,
+} from "@/shared/documentAccounts/documentAccounts";
 import type {
   FaReceiptAssetValues,
   FaReceiptFormValues,
@@ -51,6 +59,51 @@ export default function FaReceiptFormFields({
 }: FaReceiptFormFieldsProps) {
   const { t } = useTranslation();
   const vatPayer = useVatPayer(formik.values.docDate);
+  const assetKindId = formik.values.assetKindId;
+  // the intangible accounts and groups exist once the server has set them up
+  const kindReady = useIntangibleSetup(assetKindId);
+  const accountsEnabled = Boolean(documentTypeId) && kindReady;
+
+  // 1C: an intangible asset's account follows its kind, the group 0420 takes the account 0420
+  const matchAccountToGroup = async (lineIndex: number, assetIndex: number, groupId: unknown) => {
+    if (assetKindId !== faAssetKinds.intangible || !groupId || !documentTypeId) return;
+    try {
+      const [groups, accounts] = await Promise.all([
+        $axiosPrivate.get<{ id: number; code?: string }[]>(selectListEndpoints.faGroupsSelectList, {
+          params: { assetKindId },
+        }),
+        $axiosPrivate.get<unknown>(documentAccountChartAccountsPath(documentTypeId), {
+          params: { documentRoleCode: faKindRole(assetKindId, faDocumentAccountRoleCodes.fixedAsset) },
+        }),
+      ]);
+      const code = groups.data.find((group) => group.id === Number(groupId))?.code;
+      const account = normalizeDocumentAccountOptions(accounts.data).find(
+        (option) => code && String(option.number) === code,
+      );
+      if (account)
+        void formik.setFieldValue(`lines[${lineIndex}].assets[${assetIndex}].assetAccountId`, account.id);
+    } catch {
+      // the account stays as picked: the user chooses it
+    }
+  };
+
+  // another kind takes other accounts and groups: the ones picked for the old kind go
+  const handleKindChange = (kind: FaAssetKindId) => {
+    void formik.setFieldValue("assetKindId", kind);
+    void formik.setFieldValue(
+      "lines",
+      formik.values.lines.map((line) => ({
+        ...line,
+        capitalInvestmentAccountId: null,
+        assets: line.assets.map((asset) => ({
+          ...asset,
+          faGroupId: null,
+          okofId: null,
+          assetAccountId: null,
+        })),
+      })),
+    );
+  };
   const [activeLineKeys, setActiveLineKeys] = useState<string[]>(["line-0"]);
   const [activeAssetKeys, setActiveAssetKeys] = useState<
     Record<number, string[]>
@@ -159,32 +212,37 @@ export default function FaReceiptFormFields({
         <Col span={6}>
           <SelectCustom
             path={selectListEndpoints.faGroupsSelectList}
+            queryParams={{ assetKindId }}
+            enabled={kindReady}
+            onChange={(value) => void matchAccountToGroup(lineIndex, assetIndex, value)}
             formik={formik}
             fieldName={`lines[${lineIndex}].assets[${assetIndex}].faGroupId`}
-            label="fa.fields.faGroupId"
+            label={faKindLabel(assetKindId, "fa.fields.faGroupId")}
             required
           />
         </Col>
-        <Col span={6}>
-          <SelectCustom
-            path={selectListEndpoints.okofsSelectList}
-            formik={formik}
-            fieldName={`lines[${lineIndex}].assets[${assetIndex}].okofId`}
-            label="fa.fields.okofId"
-            search
-            required
-          />
-        </Col>
+        {assetKindId !== faAssetKinds.intangible && (
+          <Col span={6}>
+            <SelectCustom
+              path={selectListEndpoints.okofsSelectList}
+              formik={formik}
+              fieldName={`lines[${lineIndex}].assets[${assetIndex}].okofId`}
+              label="fa.fields.okofId"
+              search
+              required
+            />
+          </Col>
+        )}
         <Col span={6}>
           <DocumentAccountSelect
             documentTypeId={documentTypeId ?? 0}
-            documentRoleCode={faDocumentAccountRoleCodes.fixedAsset}
+            documentRoleCode={faKindRole(assetKindId, faDocumentAccountRoleCodes.fixedAsset)}
             formik={formik}
             fieldName={`lines[${lineIndex}].assets[${assetIndex}].assetAccountId`}
-            label="fa.fields.assetAccount"
+            label={faKindLabel(assetKindId, "fa.fields.assetAccount")}
             search
             required
-            enabled={Boolean(documentTypeId)}
+            enabled={accountsEnabled}
           />
         </Col>
       </Row>
@@ -199,7 +257,7 @@ export default function FaReceiptFormFields({
           label: (
             <div className="flex min-w-0 items-center gap-3">
               <span className="shrink-0 font-semibold">
-                {t("fa.sections.assetNumber", { number: assetIndex + 1 })}
+                {t(faKindLabel(assetKindId, "fa.sections.assetNumber"), { number: assetIndex + 1 })}
               </span>
               <span className="truncate text-xs text-muted-foreground">
                 {asset.name}
@@ -296,15 +354,16 @@ export default function FaReceiptFormFields({
               <Col span={6}>
                 <DocumentAccountSelect
                   documentTypeId={documentTypeId ?? 0}
-                  documentRoleCode={
-                    faDocumentAccountRoleCodes.capitalInvestment
-                  }
+                  documentRoleCode={faKindRole(
+                    assetKindId,
+                    faDocumentAccountRoleCodes.capitalInvestment,
+                  )}
                   formik={formik}
                   fieldName={`lines[${lineIndex}].capitalInvestmentAccountId`}
                   label="fa.fields.capitalInvestmentAccount"
                   search
                   required
-                  enabled={Boolean(documentTypeId)}
+                  enabled={accountsEnabled}
                 />
               </Col>
               {vatPayer.isVatPayer && (
@@ -327,7 +386,7 @@ export default function FaReceiptFormFields({
             <div className="rounded-lg border border-border bg-background/40">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
                 <div className="font-semibold">
-                  {t("fa.entities.assets")}: {line.assets.length}
+                  {t(faKindLabel(assetKindId, "fa.entities.assets"))}: {line.assets.length}
                 </div>
                 {isDraft && (
                   <div className="flex flex-wrap gap-2">
@@ -368,6 +427,13 @@ export default function FaReceiptFormFields({
   return (
     <div className="space-y-2">
       <Card className="p-3">
+        <div className="mb-3">
+          <FaAssetKindSwitch
+            value={assetKindId}
+            onChange={handleKindChange}
+            disabled={!isDraft}
+          />
+        </div>
         <Row gutter={[16, 0]}>
           <Col span={4}>
             <SelectDate

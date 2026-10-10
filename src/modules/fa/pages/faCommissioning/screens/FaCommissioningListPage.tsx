@@ -15,6 +15,7 @@ import { isFaDraftStatus } from "../../../shared/constants/statuses";
 import { faCommissioningPermissions } from "../constants/permissions";
 import { useGetListFaCommissionings } from "../hooks";
 import type { FaCommissioning } from "../types/type";
+import { faAssetKindLabels, faAssetKinds } from "../../../shared/constants/assetKinds";
 
 export default function FaCommissioningListPage() {
   const { t } = useTranslation();
@@ -54,6 +55,12 @@ export default function FaCommissioningListPage() {
       render: (_, record) => record.assetCount ?? record.lines?.length ?? 0,
     },
     {
+      dataIndex: "assetKindId",
+      title: t("fa.kinds.title"),
+      width: 170,
+      render: (value: number | undefined) => t(faAssetKindLabels[value ?? faAssetKinds.fixed]),
+    },
+    {
       title: t("settings.fields.status"),
       dataIndex: "statusName",
       align: "center",
@@ -82,10 +89,10 @@ export default function FaCommissioningListPage() {
   return (
     <div className="w-full">
       <ListToolbar
-        filters={<FaListFilters />}
+        filters={<FaListFilters assetKind />}
         actions={
           <PermissionCard permission={faCommissioningPermissions.create}>
-            <Link to="add">
+            <Link to={searchParams.get("assetKindId") ? `add?kind=${searchParams.get("assetKindId")}` : "add"}>
               <Button type="primary" icon={<Plus className="size-4" />}>
                 {t("common.add")}
               </Button>

@@ -22,6 +22,7 @@ export interface FaDisposalLineItem {
 export interface FaDisposalResponse {
   id: number;
   disposalDate: string;
+  assetKindId?: number;
   disposalTypeId: number;
   disposalTypeName?: string;
   reason: string;
@@ -61,6 +62,8 @@ export interface FaDisposalResponse {
 
 export interface FaDisposalPayload {
   disposalDate: string;
+  /** 1 fixed assets, 2 intangible assets (1C «Списание / Передача НМА»). */
+  assetKindId: number;
   disposalTypeId: number;
   reason: string;
   counterpartyId: number | null;

@@ -8,6 +8,8 @@ export interface FaAsset {
   faGroupCode?: string | null;
   faGroupName?: string | null;
   okofId: number | null;
+  /** 1 fixed asset, 2 intangible asset. */
+  assetKindId?: number;
   okofCode?: string | null;
   okofName?: string | null;
   depreciationMethodId?: number | null;

@@ -568,6 +568,17 @@
     "minArray": "{{field}} must contain at least {{min}} selected item(s)"
   },
   "fa": {
+    "intangible": {
+      "asset": "Intangible asset",
+      "group": "Intangible asset group",
+      "account": "Intangible asset account",
+      "assetNumber": "Intangible asset {{number}}"
+    },
+    "kinds": {
+      "title": "Kind",
+      "fixed": "Fixed assets",
+      "intangible": "Intangible assets"
+    },
     "modernization": {
       "title": "Fixed asset modernization",
       "new": "New modernization",
@@ -602,6 +613,7 @@
     },
     "title": "Fixed Assets",
     "entities": {
+      "intangibles": "Intangible assets",
       "modernizations": "Modernization",
       "assets": "Assets",
       "receipts": "Receipts",

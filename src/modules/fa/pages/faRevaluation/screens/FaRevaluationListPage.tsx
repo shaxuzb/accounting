@@ -16,6 +16,7 @@ import type { FaRevaluation } from "../types/type";
 import { isFaDraftStatus } from "../../../shared/constants/statuses";
 import FaListFilters from "../../../shared/components/FaListFilters";
 import FaListPagination from "../../../shared/components/FaListPagination";
+import { faAssetKindLabels, faAssetKinds } from "../../../shared/constants/assetKinds";
 
 export default function FaRevaluationListPage() {
   const { t } = useTranslation();
@@ -52,6 +53,12 @@ export default function FaRevaluationListPage() {
       title: t("fa.fields.reason"),
       dataIndex: "reason",
       minWidth: 240,
+    },
+    {
+      dataIndex: "assetKindId",
+      title: t("fa.kinds.title"),
+      width: 170,
+      render: (value: number | undefined) => t(faAssetKindLabels[value ?? faAssetKinds.fixed]),
     },
     {
       dataIndex: "statusName",
@@ -94,10 +101,10 @@ export default function FaRevaluationListPage() {
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2"><FaListFilters /></div>
+        <div className="flex flex-wrap items-center gap-2"><FaListFilters assetKind /></div>
         <Space>
           <PermissionCard permission={faRevaluationPermissions.create}>
-            <Link to="add">
+            <Link to={searchParams.get("assetKindId") ? `add?kind=${searchParams.get("assetKindId")}` : "add"}>
               <Button type="primary" icon={<Plus className="size-4" />}>
                 {t("common.add")}
               </Button>

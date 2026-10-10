@@ -13,6 +13,9 @@ import Card from "@/components/ui/card/Card";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { faAssetStatusIds } from "../../../shared/constants/statuses";
 import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
+import { faKindLabel, faKindRole, type FaAssetKindId } from "../../../shared/constants/assetKinds";
+import FaAssetKindSwitch from "../../../shared/components/FaAssetKindSwitch";
+import useIntangibleSetup from "../../../shared/hooks/useIntangibleSetup";
 import type {
   FaRevaluationFormValues,
   FaRevaluationLineValues,
@@ -42,6 +45,18 @@ export default function FaRevaluationFormFields({
   documentTypeId,
 }: FaRevaluationFormFieldsProps) {
   const { t } = useTranslation();
+  const assetKindId = formik.values.assetKindId;
+  const kindReady = useIntangibleSetup(assetKindId);
+  const accountsEnabled = Boolean(documentTypeId) && kindReady;
+  // another kind takes other assets and accounts
+  const handleKindChange = (kind: FaAssetKindId) => {
+    void formik.setFieldValue("assetKindId", kind);
+    void formik.setFieldValue("revaluationReserveAccountId", null);
+    void formik.setFieldValue(
+      "lines",
+      formik.values.lines.map((line) => ({ ...line, faAssetId: null })),
+    );
+  };
 
   const handleAddLine = useCallback(() => {
     void formik.setFieldValue("lines", [
@@ -79,14 +94,14 @@ export default function FaRevaluationFormFields({
         render: (index: number) => index + 1,
       },
       {
-        title: t("fa.fields.faAssetId"),
+        title: t(faKindLabel(assetKindId, "fa.fields.faAssetId")),
         dataIndex: "faAssetId",
         minWidth: 300,
         render: (_, row) => (
           <div className="[&_.ant-form-item]:mb-0!">
             <SelectCustom
               path={selectListEndpoints.faAssetsSelectList}
-              queryParams={{ statusId: faAssetStatusIds.active }}
+              queryParams={{ statusId: faAssetStatusIds.active, assetKindId }}
               displayConfig={faRevaluationAssetDisplayConfig}
               formik={formik}
               fieldName={`lines[${row.index}].faAssetId`}
@@ -139,12 +154,15 @@ export default function FaRevaluationFormFields({
           ) : null,
       },
     ],
-    [formik, handleRemoveLine, isDraft, t],
+    [assetKindId, formik, handleRemoveLine, isDraft, t],
   );
 
   return (
     <div className="min-w-0 space-y-2">
       <Card className="p-3">
+        <div className="mb-3">
+          <FaAssetKindSwitch value={assetKindId} onChange={handleKindChange} disabled={!isDraft} />
+        </div>
         <Row gutter={[16, 0]}>
           <Col span={5}>
             <SelectDate
@@ -158,13 +176,13 @@ export default function FaRevaluationFormFields({
           <Col span={5}>
             <DocumentAccountSelect
               documentTypeId={documentTypeId ?? 0}
-              documentRoleCode={faDocumentAccountRoleCodes.revaluationReserve}
+              documentRoleCode={faKindRole(assetKindId, faDocumentAccountRoleCodes.revaluationReserve)}
               formik={formik}
               fieldName="revaluationReserveAccountId"
               label="fa.fields.revaluationReserveAccount"
               search
               required
-              enabled={Boolean(documentTypeId)}
+              enabled={accountsEnabled}
             />
           </Col>
           <Col span={5}>

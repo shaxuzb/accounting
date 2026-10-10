@@ -120,7 +120,7 @@ export default function FaMovementFormPage() {
           t(isCreate ? "settings.messages.created" : "settings.messages.updated"),
         );
 
-        navigate(-1);
+        navigate(exitPath);
       } catch (error: unknown) {
         errorHandlers(error);
       }
@@ -143,7 +143,7 @@ export default function FaMovementFormPage() {
       await persistMovement(formik.values);
       await confirmMutation.mutateAsync(id);
       toast.success(t("actions.confirmSuccess", { id }));
-      navigate(-1);
+      navigate(exitPath);
     } catch (error: unknown) {
       errorHandlers(error);
     }
@@ -153,7 +153,7 @@ export default function FaMovementFormPage() {
     try {
       await cancelMutation.mutateAsync();
       toast.success(t("actions.cancelSuccess", { id: record?.id ?? id }));
-      navigate(-1);
+      navigate(exitPath);
     } catch (error: unknown) {
       errorHandlers(error);
     }

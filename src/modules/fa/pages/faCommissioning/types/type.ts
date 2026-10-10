@@ -19,6 +19,8 @@ export interface FaCommissioningLine {
 
 export interface FaCommissioningPayload {
   docDate: string;
+  /** 1 fixed assets, 2 intangible assets (1C «Принятие к учету НМА»). */
+  assetKindId: number;
   note: string;
   lines: FaCommissioningLine[];
 }

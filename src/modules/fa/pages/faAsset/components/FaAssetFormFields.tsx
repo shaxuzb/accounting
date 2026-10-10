@@ -6,11 +6,15 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import Card from "@/components/ui/card/Card";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import type { FaAssetFormValues } from "../types/form";
+import { faAssetKinds, faKindLabel } from "../../../shared/constants/assetKinds";
 
 export default function FaAssetFormFields({
   formik,
+  assetKindId,
 }: {
   formik: FormikProps<FaAssetFormValues>;
+  /** The groups of the asset's kind only: a fixed asset stays in 01xx, an intangible one in 04xx. */
+  assetKindId?: number;
 }) {
   const { t } = useTranslation();
 
@@ -39,11 +43,13 @@ export default function FaAssetFormFields({
             <InputText formik={formik} fieldName="name" label="fa.fields.name" required />
           </Col>
           <Col xs={24} md={12} xl={6}>
-            <SelectCustom formik={formik} fieldName="faGroupId" label="fa.fields.faGroup" path={selectListEndpoints.faGroupsSelectList} search required />
+            <SelectCustom formik={formik} fieldName="faGroupId" label={faKindLabel(assetKindId, "fa.fields.faGroupId")} path={selectListEndpoints.faGroupsSelectList} queryParams={{ assetKindId: assetKindId ?? faAssetKinds.fixed }} search required />
           </Col>
-          <Col xs={24} md={12} xl={6}>
-            <SelectCustom formik={formik} fieldName="okofId" label="fa.fields.okof" path={selectListEndpoints.okofsSelectList} search required />
-          </Col>
+          {assetKindId !== faAssetKinds.intangible && (
+            <Col xs={24} md={12} xl={6}>
+              <SelectCustom formik={formik} fieldName="okofId" label="fa.fields.okof" path={selectListEndpoints.okofsSelectList} search required />
+            </Col>
+          )}
         </Row>
       </Card>
     </div>

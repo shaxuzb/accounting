@@ -1,7 +1,7 @@
 import { Alert, Button, Form, Popconfirm, Spin } from "antd";
 import { useMemo } from "react";
 import { setNestedObjectValues, useFormik } from "formik";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
@@ -22,11 +22,13 @@ import {
 import { faRevaluationPermissions } from "../constants/permissions";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
+import { faAssetKindFromParams, faAssetKinds } from "../../../shared/constants/assetKinds";
 import FaRevaluationFormFields from "../components/FaRevaluationFormFields";
 import FaRevaluationReadonlyView from "../components/FaRevaluationReadonlyView";
 
 const createDefaultValues = (): FaRevaluationFormValues => ({
   revaluationDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
+  assetKindId: faAssetKinds.fixed,
   reason: "",
   stateId: faDocumentStatusIds.draft,
   revaluationReserveAccountId: null,
@@ -42,6 +44,7 @@ const createDefaultValues = (): FaRevaluationFormValues => ({
 
 const toPayload = (values: FaRevaluationFormValues): FaRevaluationPayload => ({
   revaluationDate: values.revaluationDate,
+  assetKindId: values.assetKindId,
   reason: values.reason || "",
   stateId: values.stateId ?? faDocumentStatusIds.draft,
   revaluationReserveAccountId: Number(values.revaluationReserveAccountId),
@@ -82,10 +85,13 @@ export default function FaRevaluationFormPage() {
   const showEditor = isCreate || (isDraft && canSubmit);
   const listPath = canViewList ? "/main/fa/revaluations" : "/main";
 
+  const [searchParams] = useSearchParams();
+  const newKind = faAssetKindFromParams(searchParams);
   const initialValues = useMemo<FaRevaluationFormValues>(
     () => ({
       revaluationDate:
         record?.revaluationDate ?? createDefaultValues().revaluationDate,
+      assetKindId: record?.assetKindId ?? newKind,
       reason: record?.reason ?? "",
       stateId: record?.stateId ?? createDefaultValues().stateId,
       revaluationReserveAccountId:
@@ -99,7 +105,7 @@ export default function FaRevaluationFormPage() {
           }))
         : createDefaultValues().lines,
     }),
-    [record],
+    [record, newKind],
   );
 
   const persistRevaluation = async (
@@ -125,7 +131,7 @@ export default function FaRevaluationFormPage() {
           t(isCreate ? "settings.messages.created" : "settings.messages.updated"),
         );
 
-        navigate(-1);
+        navigate(listPath);
       } catch (error: unknown) {
         errorHandlers(error);
       }
@@ -148,7 +154,7 @@ export default function FaRevaluationFormPage() {
       await persistRevaluation(formik.values);
       await confirmMutation.mutateAsync(id);
       toast.success(t("actions.confirmSuccess", { id }));
-      navigate(-1);
+      navigate(listPath);
     } catch (error: unknown) {
       errorHandlers(error);
     }
@@ -158,7 +164,7 @@ export default function FaRevaluationFormPage() {
     try {
       await cancelMutation.mutateAsync();
       toast.success(t("actions.cancelSuccess", { id: record?.id ?? id }));
-      navigate(-1);
+      navigate(listPath);
     } catch (error: unknown) {
       errorHandlers(error);
     }

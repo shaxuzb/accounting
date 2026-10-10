@@ -62,7 +62,7 @@ export default function FaDepreciationFormPage() {
     try {
       await cancelMutation.mutateAsync();
       toast.success(t("common.cancel"));
-      navigate(-1);
+      navigate("/main/fa/depreciation");
     } catch (error) {
       errorHandlers(error);
     }

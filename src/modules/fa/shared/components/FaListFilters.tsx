@@ -26,12 +26,15 @@ const assetStatusOptions: readonly SelectFilterOption[] = [
 
 interface FaListFiltersProps {
   statusKind?: "document" | "asset" | "none";
+  /** Fixed assets / intangible assets: the lists of the documents that keep one kind. */
+  assetKind?: boolean;
   dateParamKeys?: [string, string] | null;
   children?: ReactNode;
 }
 
 export default function FaListFilters({
   statusKind = "document",
+  assetKind = false,
   dateParamKeys = ["dateFrom", "dateTo"],
   children,
 }: FaListFiltersProps) {
@@ -65,6 +68,7 @@ export default function FaListFilters({
   return (
     <>
       <SearchFilter />
+      {assetKind && <FaAssetKindFilter />}
       {statusKind !== "none" && (
         <SelectFilter
           paramKey="statusId"
@@ -100,6 +104,21 @@ export function FaGroupFilter() {
       path={selectListEndpoints.faGroupsSelectList}
       width={190}
       search
+    />
+  );
+}
+
+/** Fixed assets or intangible assets (`assetKindId`): the menu's «Nomoddiy aktivlar» opens the lists with 2. */
+export function FaAssetKindFilter() {
+  return (
+    <SelectFilter
+      paramKey="assetKindId"
+      placeholder="fa.kinds.title"
+      options={[
+        { value: 1, label: "fa.kinds.fixed" },
+        { value: 2, label: "fa.kinds.intangible" },
+      ]}
+      width={200}
     />
   );
 }

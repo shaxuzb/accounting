@@ -18,6 +18,7 @@ import type { FaReceiptResponse } from "../types/type";
 import { isFaDraftStatus } from "../../../shared/constants/statuses";
 import FaListFilters from "../../../shared/components/FaListFilters";
 import FaListPagination from "../../../shared/components/FaListPagination";
+import { faAssetKindLabels, faAssetKinds } from "../../../shared/constants/assetKinds";
 
 export default function FaReceiptListPage() {
   const { t } = useTranslation();
@@ -64,6 +65,12 @@ export default function FaReceiptListPage() {
         }`,
     },
     {
+      dataIndex: "assetKindId",
+      title: t("fa.kinds.title"),
+      width: 170,
+      render: (value: number | undefined) => t(faAssetKindLabels[value ?? faAssetKinds.fixed]),
+    },
+    {
       dataIndex: "statusName",
       title: t("settings.fields.status"),
       align: "center",
@@ -106,14 +113,14 @@ export default function FaReceiptListPage() {
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <FaListFilters>
+          <FaListFilters assetKind>
             <SelectFilter paramKey="counterpartyId" placeholder="fa.fields.counterpartyId" path={selectListEndpoints.counterpartiesSelectList} width={190} search />
             <SelectFilter paramKey="receiptTypeId" placeholder="fa.fields.receiptType" path={selectListEndpoints.faReceiptTypesSelectList} width={170} />
           </FaListFilters>
         </div>
         <Space>
           <PermissionCard permission={faReceiptPermissions.create}>
-            <Link to="add">
+            <Link to={searchParams.get("assetKindId") ? `add?kind=${searchParams.get("assetKindId")}` : "add"}>
               <Button type="primary" icon={<Plus className="size-4" />}>
                 {t("common.add")}
               </Button>

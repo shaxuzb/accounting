@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import type { RouteObject } from "react-router";
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { faAssetPermissions } from "./pages/faAsset/constants/permissions";
 import { faDisposalPermissions } from "./pages/faDisposal/constants/permissions";
@@ -41,6 +41,11 @@ export const faRoutes: RouteObject = {
   element: <Outlet />,
   handle: { title: "fa.title" },
   children: [
+    {
+      // 1C «Нематериальные активы»: the asset registry with the intangible ones
+      path: "intangibles",
+      element: <Navigate to="../assets?assetKindId=2" replace />,
+    },
     {
       path: "assets",
       handle: { title: "fa.entities.assets" },

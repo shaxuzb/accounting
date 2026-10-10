@@ -1,10 +1,9 @@
-import { Table } from "antd";
+import { Table, Tag } from "antd";
 import type { TableColumnsType, TableColumnType } from "antd";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import Card from "@/components/ui/card/Card";
-import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { useAppSelector } from "@/store/hooks";
 import { customDate, generateKeyTable, numberSpacing } from "@/utils/utils";
 import { stateStatus } from "@/utils/helpers/statusHelper";
@@ -15,6 +14,14 @@ import FaListPagination from "../../../shared/components/FaListPagination";
 import ListToolbar from "@/components/ui/filters/ListToolbar";
 import { useGetListFaAssets } from "../hooks";
 import type { FaAsset } from "../types/type";
+import { faAssetKindLabels, faAssetKinds } from "../../../shared/constants/assetKinds";
+
+const assetStatusTags: Record<number, { label: string; color: string }> = {
+  1: { label: "fa.assetStatuses.notCommissioned", color: "default" },
+  2: { label: "fa.assetStatuses.active", color: "green" },
+  3: { label: "fa.assetStatuses.conservation", color: "orange" },
+  4: { label: "fa.assetStatuses.disposed", color: "red" },
+};
 
 export default function FaAssetListPage() {
   const { t } = useTranslation();
@@ -70,15 +77,21 @@ export default function FaAssetListPage() {
       render: (_, record) => stateStatus(record.stateId, record.stateName),
     },
     {
+      dataIndex: "assetKindId",
+      title: t("fa.kinds.title"),
+      width: 170,
+      render: (value: number | undefined) => t(faAssetKindLabels[value ?? faAssetKinds.fixed]),
+    },
+    {
       dataIndex: "statusName",
       title: t("settings.fields.status"),
       align: "center",
-      render: (_, record) => (
-        <ProcessStatusBadge
-          statusId={record.statusId}
-          statusName={record.statusName}
-        />
-      ),
+      width: 230,
+      // the asset's own status (not a document's): not in use, in use, conserved, disposed
+      render: (_, record) => {
+        const status = assetStatusTags[record.statusId];
+        return status ? <Tag color={status.color}>{t(status.label)}</Tag> : record.statusName;
+      },
     },
   ];
 
@@ -113,7 +126,7 @@ export default function FaAssetListPage() {
   return (
     <div className="w-full">
       <ListToolbar
-        filters={<FaListFilters statusKind="asset" dateParamKeys={null}><FaGroupFilter /></FaListFilters>}
+        filters={<FaListFilters statusKind="asset" assetKind dateParamKeys={null}><FaGroupFilter /></FaListFilters>}
         onRefresh={() => void refetch()}
         refreshing={isFetching}
       />

@@ -1,7 +1,8 @@
 import * as Yup from "yup";
 import type { TFunction } from "i18next";
 
-export const faAssetSchema = (t: TFunction) =>
+// OKOF classifies fixed assets: an intangible asset has none
+export const faAssetSchema = (t: TFunction, intangible = false) =>
   Yup.object({
     inventoryNumber: Yup.string()
       .trim()
@@ -10,5 +11,7 @@ export const faAssetSchema = (t: TFunction) =>
     faGroupId: Yup.number()
       .nullable()
       .required(t("fa.validation.groupRequired")),
-    okofId: Yup.number().nullable().required(t("fa.validation.okofRequired")),
+    okofId: intangible
+      ? Yup.number().nullable()
+      : Yup.number().nullable().required(t("fa.validation.okofRequired")),
   });

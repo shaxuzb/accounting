@@ -2,7 +2,7 @@ export interface FaAssetUpdatePayload {
   inventoryNumber: string;
   name: string;
   faGroupId: number;
-  okofId: number;
+  okofId: number | null;
 }
 
 export interface FaAssetFormValues {

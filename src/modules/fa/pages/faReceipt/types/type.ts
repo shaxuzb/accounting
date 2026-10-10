@@ -2,7 +2,7 @@ export interface FaReceiptAsset {
   inventoryNumber: string;
   name: string;
   faGroupId: number;
-  okofId: number;
+  okofId: number | null;
   initialCost: number;
   assetAccountId: number;
   faGroupName?: string;
@@ -21,6 +21,8 @@ export interface FaReceiptLineItem {
 
 export interface FaReceiptPayload {
   docDate: string;
+  /** 1 fixed assets, 2 intangible assets (1C «Поступление НМА»). */
+  assetKindId: number;
   counterpartyId: number;
   currencyId: number;
   receiptTypeId: number;
