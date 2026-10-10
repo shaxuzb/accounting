@@ -48,6 +48,9 @@ const createDefaultValues = (): FaDisposalFormValues => ({
   ],
 });
 
+/** An account the disposal kind does not show stays empty instead of becoming 0. */
+const accountOrNull = (value: number | string | null | undefined) => (value ? Number(value) : null);
+
 const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => {
   // only a sale has a buyer, a price and output VAT
   const isSale = Number(values.disposalTypeId) === faDisposalTypeIds.sale;
@@ -58,11 +61,11 @@ const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => {
     counterpartyId: isSale ? (values.counterpartyId ?? null) : null,
     contractId: isSale ? (values.contractId ?? null) : null,
     stateId: values.stateId ?? faDocumentStatusIds.draft,
-    disposalAccountId: Number(values.disposalAccountId),
-    customerAccountId: Number(values.customerAccountId),
+    disposalAccountId: accountOrNull(values.disposalAccountId),
+    customerAccountId: isSale ? accountOrNull(values.customerAccountId) : null,
     vatAccountId: isSale ? (values.vatAccountId ?? null) : null,
-    gainAccountId: Number(values.gainAccountId),
-    lossAccountId: Number(values.lossAccountId),
+    gainAccountId: accountOrNull(values.gainAccountId),
+    lossAccountId: accountOrNull(values.lossAccountId),
     lines: values.lines.map((line) => ({
       faAssetId: Number(line.faAssetId),
       saleAmount: isSale ? Number(line.saleAmount) : 0,

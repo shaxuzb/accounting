@@ -49,9 +49,10 @@ export default function FaDepreciationFormPage() {
 
   const handleRun = async () => {
     try {
-      await runMutation.mutateAsync(period.format("YYYY-MM"));
+      const runId = await runMutation.mutateAsync(period.format("YYYY-MM"));
       toast.success(t("settings.messages.created"));
-      navigate(-1);
+      // the posted run opens with its lines, as 1C opens the document it made
+      navigate(`/main/fa/depreciation/${runId}`, { replace: true });
     } catch (error) {
       errorHandlers(error);
     }
