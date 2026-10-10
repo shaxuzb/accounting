@@ -38,6 +38,7 @@ import {
   createSalePricingLine,
   getLineTotal,
   getMarginBySalePrice,
+  getNetPrice,
   getSalePriceByMargin,
   getSalePriceByMarginAmount,
   getVatAmount,
@@ -61,6 +62,7 @@ interface SalePricingDraftLine {
   vatRateId: number | null;
   vatRateName?: string | null;
   marginPercent: number;
+  discountPercent?: number;
 }
 
 interface SaleConfirmAggregate extends Omit<SaleDocConfirmLineForm, "items"> {
@@ -103,12 +105,14 @@ export default function SalePricingEditor({
       ? Number(document.exchangeRate) || 1
       : 1;
   const updateLineAmounts = useCallback((line: SalePricingLine) => {
-    const vatAmount = getVatAmount(line.amount, line.quantity, line.vatRateName);
+    // the line is sold net of its discount
+    const net = getNetPrice(line.amount, line.discountPercent);
+    const vatAmount = getVatAmount(net, line.quantity, line.vatRateName);
 
     return {
       ...line,
       vatAmount,
-      totalAmount: getLineTotal(line.amount, line.quantity, line.vatRateName),
+      totalAmount: getLineTotal(net, line.quantity, line.vatRateName),
     };
   }, []);
   const draftLineByKey = useMemo(() => {
@@ -134,6 +138,7 @@ export default function SalePricingEditor({
           vatRateId: draftLine.vatRateId,
           vatRateName: draftLine.vatRateName ?? line.vatRateName,
           marginPercent: draftLine.marginPercent,
+          discountPercent: draftLine.discountPercent ?? line.discountPercent,
         });
       }),
     [draftLineByKey, rate, sourceLines, updateLineAmounts],
@@ -150,6 +155,7 @@ export default function SalePricingEditor({
         vatRateId: line.vatRateId,
         vatRateName: line.vatRateName,
         marginPercent: line.marginPercent,
+        discountPercent: line.discountPercent,
       })),
     );
   }, [editedLines, setDraftLines]);
@@ -220,6 +226,21 @@ export default function SalePricingEditor({
       ),
     [updateLineAmounts, updateLines],
   );
+  // a discount given at the sale (1C «% скидки»): the price stays, the line is sold net of it
+  const applyDiscount = useCallback(
+    (lineKeys: string[], discountPercent: number) =>
+      updateLines(lineKeys, (line) =>
+        updateLineAmounts({
+          ...line,
+          discountPercent: Math.min(99.99, Math.max(0, discountPercent)),
+        }),
+      ),
+    [updateLineAmounts, updateLines],
+  );
+  const changeLineDiscount = useCallback(
+    (lineKey: string, discountPercent: number) => applyDiscount([lineKey], discountPercent),
+    [applyDiscount],
+  );
   const changeLineMargin = useCallback(
     (lineKey: string, margin: number) => applyMargin([lineKey], margin),
     [applyMargin],
@@ -237,8 +258,9 @@ export default function SalePricingEditor({
     let totalQuantity = 0;
     lines.forEach((line) => {
       productIds.add(line.productId);
-      totalAmount += line.amount * line.quantity;
-      finalAmount += getLineTotal(line.amount, line.quantity, line.vatRateName);
+      const net = getNetPrice(line.amount, line.discountPercent);
+      totalAmount += net * line.quantity;
+      finalAmount += getLineTotal(net, line.quantity, line.vatRateName);
       totalQuantity += line.quantity;
     });
     return {
@@ -317,6 +339,7 @@ export default function SalePricingEditor({
           vatRateName: parentLine?.vatRateName || line.vatRateName,
           vatAmount: 0,
           totalAmount: 0,
+          discountPercent: line.discountPercent || 0,
           items: [],
         };
       }
@@ -378,10 +401,11 @@ export default function SalePricingEditor({
     return {
       // the VAT rate goes too: changed here, it used to show on screen and post the old one
       // marked units keep the price each was given, not the line's average
-      lines: payloadLines.map(({ id, costPrice, unitPrice, vatRateId, items }) => ({
+      lines: payloadLines.map(({ id, costPrice, unitPrice, vatRateId, items, discountPercent }) => ({
         id,
         costPrice,
         unitPrice,
+        discountPercent: discountPercent || 0,
         vatRateId: vatRateId || null,
         items: items
           .filter((item) => item.id > 0)
@@ -525,6 +549,8 @@ export default function SalePricingEditor({
           onApplyMarginAmount={applyMarginAmount}
           onApplySalePrice={applySalePrice}
           onApplyVat={applyVat}
+          onApplyDiscount={applyDiscount}
+          onLineDiscountChange={changeLineDiscount}
           onLineMarginChange={changeLineMargin}
           onLineSalePriceChange={changeLineSalePrice}
           vatPayer={vatPayer.isVatPayer}

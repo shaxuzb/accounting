@@ -21,6 +21,7 @@ const toLines = (
       quantity: product.quantity,
       unitId: product.unitId,
       unitPrice: roundMoney(product.unitPrice),
+      discountPercent: product.discountPercent || 0,
       costPrice: product.costPrice,
       amount: roundMoney(
         product.netAmount ?? product.quantity * product.unitPrice,

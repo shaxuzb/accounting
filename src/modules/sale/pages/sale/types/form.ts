@@ -99,6 +99,8 @@ export interface SaleDocConfirmLineForm {
   id: number;
   costPrice: number;
   unitPrice: number;
+  /** The discount given at the sale, percent: unitPrice and the units' prices are list prices. */
+  discountPercent?: number;
   /** The rate chosen on the pricing screen; the line keeps its own when absent. */
   vatRateId?: number | null;
   /** Marked units priced one by one (unit row id and its price). */
@@ -126,8 +128,9 @@ export type SaleDocWarehouseConfirmForm = SaleDocAssemblyLineForm[];
 export interface SaleProductGroupForm {
   vatRateId: number | null;
   vatRateName: string;
-  priceMode: "marginPercent" | "marginAmount" | "salePrice";
+  priceMode: "marginPercent" | "marginAmount" | "salePrice" | "discount";
   margin: number | null;
   marginAmount: number | null;
   salePrice: number | null;
+  discount: number | null;
 }

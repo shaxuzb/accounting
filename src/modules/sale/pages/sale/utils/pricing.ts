@@ -13,6 +13,10 @@ export const getSalePriceByMarginAmount = (
   marginAmount: number,
 ) => roundMoney(costPrice + marginAmount);
 
+/** The price net of the discount given at the sale (1C «% скидки»): what the line is sold at. */
+export const getNetPrice = (price: number, discountPercent?: number | null) =>
+  discountPercent ? roundMoney(price * (100 - discountPercent) / 100) : price;
+
 export const getMarginBySalePrice = (costPrice: number, salePrice: number) =>
   costPrice > 0 && salePrice > 0
     ? roundMoney(((salePrice - costPrice) / costPrice) * 100)
@@ -56,13 +60,16 @@ export const createSalePricingLine = (
 ): SalePricingLine => {
   const amount = roundMoney(line.amount || line.price || 0);
   const docCostPrice = toDocumentCost(line.costPrice, rate);
+  const discountPercent = line.discountPercent || 0;
+  const net = getNetPrice(amount, discountPercent);
 
   return {
     ...line,
     amount,
+    discountPercent,
     docCostPrice,
-    vatAmount: getVatAmount(amount, line.quantity, line.vatRateName),
-    totalAmount: getLineTotal(amount, line.quantity, line.vatRateName),
+    vatAmount: getVatAmount(net, line.quantity, line.vatRateName),
+    totalAmount: getLineTotal(net, line.quantity, line.vatRateName),
     rowKey: getPricingLineKey(line, index),
     marginPercent: getMarginBySalePrice(docCostPrice, amount),
   };

@@ -31,6 +31,8 @@ export interface RetailSaleLinePayload {
   quantity: number;
   unitId: number;
   unitPrice: number;
+  /** The discount given at the sale, percent: unitPrice is the price before it. */
+  discountPercent?: number;
   costPrice: number;
   amount: number;
   vatAmount: number;

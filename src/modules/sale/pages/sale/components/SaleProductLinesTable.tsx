@@ -3,7 +3,7 @@ import type { ColumnsType } from "antd/es/table";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import type { SalePricingLine } from "../types/type";
-import { getLineTotal, getVatAmount } from "../utils/pricing";
+import { getLineTotal, getNetPrice, getVatAmount } from "../utils/pricing";
 import SaleUnitMarkingCell from "./SaleUnitMarkingCell";
 import { useTranslation } from "react-i18next";
 
@@ -13,6 +13,7 @@ interface Props {
   vatRateName?: string | null;
   onMarginChange: (lineKey: string, margin: number) => void;
   onSalePriceChange: (lineKey: string, salePrice: number) => void;
+  onDiscountChange: (lineKey: string, discountPercent: number) => void;
   /** A non-payer sells «QQSsiz»: no VAT rate or amount columns. */
   vatPayer?: boolean;
 }
@@ -23,6 +24,7 @@ export default function SaleProductLinesTable({
   vatRateName,
   onMarginChange,
   onSalePriceChange,
+  onDiscountChange,
   vatPayer = true,
 }: Props) {
   const { t } = useTranslation();
@@ -106,6 +108,29 @@ export default function SaleProductLinesTable({
       ),
     },
     {
+      // a discount given at the sale (1C «% скидки»): the line is sold net of it
+      dataIndex: "discountPercent",
+      title: t("sale.fields.discount"),
+      width: 100,
+      render: (value: number | undefined, line) => (
+        <InputNumberFormat
+          standalone
+          min={0}
+          max={99.99}
+          precision={2}
+          value={value || null}
+          onValueChange={(discount) => onDiscountChange(line.rowKey, Number(discount ?? 0))}
+        />
+      ),
+    },
+    {
+      key: "netPrice",
+      title: t("sale.fields.netPrice"),
+      align: "right",
+      width: 120,
+      render: (_, line) => numberSpacing(getNetPrice(line.amount, line.discountPercent), undefined, true),
+    },
+    {
       dataIndex: "quantity",
       title: t("openingInventory.fields.quantity"),
       align: "center",
@@ -124,7 +149,7 @@ export default function SaleProductLinesTable({
       render: (_, line) =>
         numberSpacing(
           getVatAmount(
-            line.amount,
+            getNetPrice(line.amount, line.discountPercent),
             line.quantity,
             vatRateName || line.vatRateName,
           ),
@@ -139,7 +164,7 @@ export default function SaleProductLinesTable({
       render: (_, line) => (
         <span className="font-semibold">
           {numberSpacing(
-            getLineTotal(line.amount, line.quantity, vatRateName || line.vatRateName),
+            getLineTotal(getNetPrice(line.amount, line.discountPercent), line.quantity, vatRateName || line.vatRateName),
             undefined,
             true,
           )}{" "}

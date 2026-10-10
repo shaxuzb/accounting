@@ -1746,6 +1746,9 @@
   "sale": {
     "title": "Продажи",
     "fields": {
+      "discount": "Скидка %",
+      "netPrice": "Цена со скидкой",
+      "discountAmount": "Сумма скидки",
       "price": "Цена",
       "totalNoVatPayer": "Итого (без НДС — организация не плательщик НДС)",
       "product": "Товар",

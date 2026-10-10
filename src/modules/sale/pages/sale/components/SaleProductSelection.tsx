@@ -86,6 +86,8 @@ interface Props {
    * (1C «Без НДС»): no VAT columns, the price is simply the price.
    */
   vatPayer?: boolean;
+  /** A retail sale: lines take a discount off the price (1C «% скидки»). */
+  allowDiscount?: boolean;
 }
 
 /** Code-less units of the product left in stock, from the batches kept on the line. */
@@ -282,6 +284,7 @@ export default function SaleProductSelection({
   disabled = false,
   exchangeRate,
   vatPayer = true,
+  allowDiscount = false,
 }: Props) {
   const { t } = useTranslation();
   const costRate = Number(exchangeRate) > 1 ? Number(exchangeRate) : 1;
@@ -1406,6 +1409,32 @@ export default function SaleProductSelection({
         );
       },
     },
+    ...(allowDiscount
+      ? [
+          {
+            // the line is sold net of the discount; the price stays the shelf price
+            dataIndex: "discountPercent",
+            title: t("sale.fields.discount"),
+            width: 110,
+            render: (_: unknown, record: SaleSelectedProduct) => (
+              <InputNumberFormat
+                standalone
+                height={tableControlHeight}
+                min={0}
+                max={99.99}
+                precision={2}
+                value={record.discountPercent || null}
+                disabled={isNewRow(record.rowKey) || disabled}
+                onValueChange={(discount) =>
+                  updateLine(record.rowKey, (line) =>
+                    syncLineAmounts({ ...line, discountPercent: Number(discount ?? 0) }),
+                  )
+                }
+              />
+            ),
+          },
+        ]
+      : []),
     {
       dataIndex: "vatRateId",
       title: t("sale.fields.vatRateAndAmount"),

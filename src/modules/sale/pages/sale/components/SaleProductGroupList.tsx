@@ -16,6 +16,8 @@ interface Props {
     vatRateId: number | null,
     vatRateName?: string | null,
   ) => void;
+  onApplyDiscount: (lineKeys: string[], discountPercent: number) => void;
+  onLineDiscountChange: (lineKey: string, discountPercent: number) => void;
   onLineMarginChange: (lineKey: string, margin: number) => void;
   onLineSalePriceChange: (lineKey: string, salePrice: number) => void;
   vatPayer?: boolean;

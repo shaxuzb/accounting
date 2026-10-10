@@ -1746,6 +1746,9 @@
   "sale": {
     "title": "Sotuv",
     "fields": {
+      "discount": "Chegirma %",
+      "netPrice": "Chegirmadan keyingi narx",
+      "discountAmount": "Chegirma summasi",
       "price": "Narx",
       "totalNoVatPayer": "Jami (QQSsiz — tashkilot QQS to'lovchi emas)",
       "product": "Mahsulot",

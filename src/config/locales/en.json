@@ -1746,6 +1746,9 @@
   "sale": {
     "title": "Sales",
     "fields": {
+      "discount": "Discount %",
+      "netPrice": "Net price",
+      "discountAmount": "Discount amount",
       "price": "Price",
       "totalNoVatPayer": "Total (no VAT — the organization is not a VAT payer)",
       "product": "Product",

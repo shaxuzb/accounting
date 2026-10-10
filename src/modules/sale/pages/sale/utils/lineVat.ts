@@ -1,6 +1,6 @@
 import type { SaleProductPriceLayer, SaleSelectedProduct } from "../types/type";
 // @ts-expect-error Native Node test runner loads TypeScript source modules directly.
-import { roundMoney } from "./pricing.ts";
+import { getNetPrice, roundMoney } from "./pricing.ts";
 
 export interface VatRateOption {
   id: number;
@@ -46,9 +46,9 @@ export const getNetAmountFromGross = (
     : roundMoney(grossAmount);
 };
 
-/** Satrning QQSsiz summasi. */
+/** Satrning QQSsiz summasi (chegirma bo'lsa, chegirmadan keyingi narxda). */
 export const getLineAmount = (line: SaleSelectedProduct) =>
-  roundMoney(line.quantity * line.unitPrice);
+  roundMoney(line.quantity * getNetPrice(line.unitPrice, line.discountPercent));
 
 export const getLineNetAmount = (line: SaleSelectedProduct) =>
   getLineAmount(line);

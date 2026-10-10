@@ -8,7 +8,7 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { numberSpacing } from "@/utils/utils";
 import type { SaleProductGroupForm } from "../types/form";
 import type { SaleProductGroupData } from "../types/type";
-import { getLineTotal } from "../utils/pricing";
+import { getLineTotal, getNetPrice } from "../utils/pricing";
 import SaleProductLinesTable from "./SaleProductLinesTable";
 import { useTranslation } from "react-i18next";
 
@@ -23,6 +23,8 @@ interface Props {
     vatRateId: number | null,
     vatRateName?: string | null,
   ) => void;
+  onApplyDiscount: (lineKeys: string[], discountPercent: number) => void;
+  onLineDiscountChange: (lineKey: string, discountPercent: number) => void;
   onLineMarginChange: (lineKey: string, margin: number) => void;
   onLineSalePriceChange: (lineKey: string, salePrice: number) => void;
   vatPayer?: boolean;
@@ -35,6 +37,8 @@ function SaleProductGroup({
   onApplyMarginAmount,
   onApplySalePrice,
   onApplyVat,
+  onApplyDiscount,
+  onLineDiscountChange,
   onLineMarginChange,
   onLineSalePriceChange,
   vatPayer = true,
@@ -49,7 +53,8 @@ function SaleProductGroup({
     () =>
       group.lines.reduce(
         (total, line) =>
-          total + getLineTotal(line.amount, line.quantity, line.vatRateName),
+          total +
+          getLineTotal(getNetPrice(line.amount, line.discountPercent), line.quantity, line.vatRateName),
         0,
       ),
     [group.lines],
@@ -75,6 +80,7 @@ function SaleProductGroup({
       margin: null,
       marginAmount: null,
       salePrice: null,
+      discount: null,
     },
     onSubmit: (values, helpers) => {
       if (values.priceMode === "marginPercent" && values.margin !== null) {
@@ -86,15 +92,27 @@ function SaleProductGroup({
         onApplyMarginAmount(lineKeys, values.marginAmount);
       } else if (values.priceMode === "salePrice" && values.salePrice !== null) {
         onApplySalePrice(lineKeys, values.salePrice);
+      } else if (values.priceMode === "discount" && values.discount !== null) {
+        onApplyDiscount(lineKeys, values.discount);
       }
       helpers.setValues({
         ...values,
         margin: null,
         marginAmount: null,
         salePrice: null,
+        discount: null,
       });
     },
   });
+
+  // the ways a group is priced: by margin, margin amount, price, or a discount off the price
+  const modes = [
+    { value: "marginPercent", field: "margin", label: "sale.fields.margin", min: -100, max: 100000 },
+    { value: "marginAmount", field: "marginAmount", label: "sale.fields.marginAmount", min: 0, max: 100000 },
+    { value: "salePrice", field: "salePrice", label: "sale.fields.salePrice", min: 0, max: 100000 },
+    { value: "discount", field: "discount", label: "sale.fields.discount", min: 0, max: 99.99 },
+  ] as const;
+  const activeMode = modes.find((mode) => mode.value === formik.values.priceMode) ?? modes[0];
 
   useEffect(() => {
     if (previousVatRateId.current === formik.values.vatRateId) return;
@@ -154,7 +172,7 @@ function SaleProductGroup({
 
         <Form
           layout="vertical"
-          className="grid w-full gap-3 sm:grid-cols-2 xl:grid-cols-[280px_240px_190px_120px] xl:items-end 2xl:w-215"
+          className="grid w-full gap-3 sm:grid-cols-2 xl:grid-cols-[260px_330px_170px_120px] xl:items-end 2xl:w-235"
         >
           {vatPayer && (
             <div className="min-w-0 [&_.ant-form-item]:mb-0! [&_.ant-form-item-label]:pb-1! [&_.ant-select-selector]:h-9.5!">
@@ -173,63 +191,26 @@ function SaleProductGroup({
             <Segmented
               block
               value={formik.values.priceMode}
-              options={[
-                { label: t("sale.fields.margin"), value: "marginPercent" },
-                { label: t("sale.fields.marginAmount"), value: "marginAmount" },
-                { label: t("sale.fields.salePrice"), value: "salePrice" },
-              ]}
+              options={modes.map((mode) => ({ label: t(mode.label), value: mode.value }))}
               onChange={(value) => {
                 formik.setFieldValue("priceMode", value);
-                formik.setFieldValue("margin", null);
-                formik.setFieldValue("marginAmount", null);
-                formik.setFieldValue("salePrice", null);
+                for (const mode of modes) formik.setFieldValue(mode.field, null);
               }}
             />
           </div>
           <div className="min-w-0 [&_.ant-form-item]:mb-0! [&_.ant-form-item-label]:pb-1!">
             <InputNumberFormat
-              label={
-                formik.values.priceMode === "marginPercent"
-                  ? t("sale.fields.margin")
-                  : formik.values.priceMode === "marginAmount"
-                    ? t("sale.fields.marginAmount")
-                    : t("sale.fields.salePrice")
-              }
-              fieldName={
-                formik.values.priceMode === "marginPercent"
-                  ? "margin"
-                  : formik.values.priceMode === "marginAmount"
-                    ? "marginAmount"
-                    : "salePrice"
-              }
+              label={t(activeMode.label)}
+              fieldName={activeMode.field}
               formik={formik}
-              value={
-                formik.values.priceMode === "marginPercent"
-                  ? formik.values.margin
-                  : formik.values.priceMode === "marginAmount"
-                    ? formik.values.marginAmount
-                    : formik.values.salePrice
-              }
-              min={formik.values.priceMode === "marginPercent" ? -100 : 0}
-              max={100000}
+              value={formik.values[activeMode.field]}
+              min={activeMode.min}
+              max={activeMode.max}
               precision={2}
               onValueChange={(value) => {
-                if (formik.values.priceMode === "marginPercent") {
-                  formik.setFieldValue("margin", value);
-                } else if (formik.values.priceMode === "marginAmount") {
-                  formik.setFieldValue("marginAmount", value);
-                } else {
-                  formik.setFieldValue("salePrice", value);
-                }
-                if (formik.values.priceMode !== "marginPercent") {
-                  formik.setFieldValue("margin", null);
-                }
-                if (formik.values.priceMode !== "marginAmount") {
-                  formik.setFieldValue("marginAmount", null);
-                }
-                if (formik.values.priceMode !== "salePrice") {
-                  formik.setFieldValue("salePrice", null);
-                }
+                // only the chosen way of pricing holds a value
+                for (const mode of modes)
+                  formik.setFieldValue(mode.field, mode.field === activeMode.field ? value : null);
               }}
               onPressEnter={formik.handleSubmit}
             />
@@ -238,11 +219,7 @@ function SaleProductGroup({
             type="primary"
             size="large"
             icon={<Check size={16} />}
-            disabled={
-              formik.values.margin === null &&
-              formik.values.marginAmount === null &&
-              formik.values.salePrice === null
-            }
+            disabled={modes.every((mode) => formik.values[mode.field] === null)}
             onClick={() => formik.handleSubmit()}
           >
             {t("sale.actions.apply")}
@@ -257,6 +234,7 @@ function SaleProductGroup({
           vatRateName={formik.values.vatRateName}
           onMarginChange={onLineMarginChange}
           onSalePriceChange={onLineSalePriceChange}
+          onDiscountChange={onLineDiscountChange}
           vatPayer={vatPayer}
         />
       )}
@@ -277,6 +255,8 @@ const sameProductGroup = (previous: Props, next: Props) =>
   previous.onApplyMarginAmount === next.onApplyMarginAmount &&
   previous.onApplySalePrice === next.onApplySalePrice &&
   previous.onApplyVat === next.onApplyVat &&
+  previous.onApplyDiscount === next.onApplyDiscount &&
+  previous.onLineDiscountChange === next.onLineDiscountChange &&
   previous.onLineMarginChange === next.onLineMarginChange &&
   previous.onLineSalePriceChange === next.onLineSalePriceChange;
 

@@ -101,6 +101,10 @@ export interface SaleDocProductTable {
 export interface SaleDocTable {
   id: number;
   rowKey?: string;
+  /** The discount given at the sale, percent; amount is then the price before it. */
+  discountPercent?: number;
+  /** The price before the discount, as the server keeps it. */
+  listPrice?: number | null;
   ownerId: number;
   productTableId: number;
   productId: number;
@@ -229,6 +233,8 @@ export interface SaleSelectedProduct {
   vatAmount?: number;
   unitId: number;
   unitPrice: number;
+  /** A retail line's discount, percent (1C «% скидки»): unitPrice is the price before it. */
+  discountPercent?: number;
   inventoryAccountId: number | null;
   incomeAccountId: number | null;
   costAccountId: number | null;
@@ -311,6 +317,8 @@ export interface SaleDocumentLineGroup {
   unitName?: string;
   unitPrice: number;
   amount: number;
+  /** The discount given at the sale, percent; the prices are net of it. */
+  discountPercent?: number;
   vatRateName?: string | null;
   vatAmount: number;
   totalAmount: number;

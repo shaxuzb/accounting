@@ -1,7 +1,9 @@
 import type { SaleDocTable, SaleDocumentLineGroup } from "../types/type";
+import { getNetPrice } from "./pricing";
 
 const getLineTotal = (line: SaleDocTable) =>
-  line.totalAmount || line.amount * line.quantity + (line.vatAmount || 0);
+  line.totalAmount ||
+  getNetPrice(line.amount, line.discountPercent) * line.quantity + (line.vatAmount || 0);
 
 export const groupSaleDocumentLines = (
   lines: SaleDocTable[],
@@ -11,7 +13,8 @@ export const groupSaleDocumentLines = (
   lines.forEach((line) => {
     const groupKey = String(line.productId || line.rowKey);
     const quantity = Number(line.quantity) || 0;
-    const amount = (Number(line.amount) || 0) * quantity;
+    // a line's amount is its price before the discount; it was sold net of it
+    const amount = getNetPrice(Number(line.amount) || 0, line.discountPercent) * quantity;
     const vatAmount = Number(line.vatAmount) || 0;
     const totalAmount = getLineTotal(line);
     const group = groups.get(groupKey);
@@ -39,6 +42,7 @@ export const groupSaleDocumentLines = (
       unitPrice: quantity ? amount / quantity : 0,
       amount,
       vatRateName: line.vatRateName || "-",
+      discountPercent: line.discountPercent || 0,
       vatAmount,
       totalAmount,
       lines: [line],

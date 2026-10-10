@@ -100,6 +100,7 @@ const normalizeDocumentLine = (
   const detail = line as SaleDocLineDetail;
   const quantity = toNumber(detail.quantity, 1) || 1;
   const amount = firstPositiveNumber(
+    detail.listPrice,
     detail.unitPrice,
     detail.salePrice,
     detail.price,
@@ -136,12 +137,17 @@ const normalizeDocumentLineItem = (
 ): SaleDocTable => {
   const detail = line as SaleDocLineDetail;
   const itemDetail = item as SaleDocLineItemDetail;
-  const amount = firstPositiveNumber(
+  const discountPercent = toNumber(detail.discountPercent);
+  const netAmount = firstPositiveNumber(
     itemDetail.amount,
     detail.unitPrice,
     detail.amount,
     detail.price,
   );
+  // a unit's price is net of the line's discount: shown again as the price before it
+  const amount = discountPercent
+    ? Math.round((netAmount * 100 * 100) / (100 - discountPercent)) / 100
+    : netAmount;
   const markingNumber = getMarkingNumber(itemDetail);
   const serialNumber = getSerialNumber(itemDetail);
   const productTableId = toNumber(itemDetail.productTableId);
@@ -165,6 +171,7 @@ const normalizeDocumentLineItem = (
     costPrice: firstPositiveNumber(itemDetail.costPrice, detail.costPrice),
     price: amount,
     amount,
+    discountPercent,
     vatRateId: itemDetail.vatRateId ?? detail.vatRateId ?? null,
     vatRateName: itemDetail.vatRateName ?? detail.vatRateName ?? null,
     vatAmount: toNumber(itemDetail.vatAmount),

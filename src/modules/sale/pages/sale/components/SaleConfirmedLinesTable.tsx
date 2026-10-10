@@ -153,6 +153,17 @@ export default function SaleConfirmedLinesTable({
       align: "right",
       render: (value: number) => `${getNumber(value)} ${currency}`,
     },
+    ...(groups.some((group) => group.discountPercent)
+      ? [
+          {
+            title: t("sale.fields.discount"),
+            dataIndex: "discountPercent",
+            width: 110,
+            align: "center" as const,
+            render: (value?: number) => (value ? `${value} %` : "-"),
+          },
+        ]
+      : []),
     {
       title: t("openingInventory.fields.price"),
       dataIndex: "amount",

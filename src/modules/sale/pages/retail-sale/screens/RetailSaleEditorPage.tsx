@@ -134,7 +134,11 @@ export default function RetailSaleEditorPage() {
         costPrice: getNumber(line.costPrice ?? line.unitPrice),
         unitId: getNumber(line.unitId),
         unitName: line.unitName,
-        unitPrice: getNumber(line.unitPrice ?? ("price" in line ? line.price : 0)),
+        // the price before the discount, the discount itself: the line is shown as it was entered
+        unitPrice: getNumber(
+          ("listPrice" in line ? line.listPrice : null) ?? line.unitPrice ?? ("price" in line ? line.price : 0),
+        ),
+        discountPercent: getNumber("discountPercent" in line ? line.discountPercent : 0),
         vatRateId: line.vatRateId,
         inventoryAccountId: line.inventoryAccountId ?? null,
         incomeAccountId: line.incomeAccountId ?? null,
@@ -417,6 +421,7 @@ export default function RetailSaleEditorPage() {
           disabled={isSubmitting}
         />
         <SaleProductSelection
+          allowDiscount
           vatPayer={vatPayer.isVatPayer}
           warehouseId={formik.values.warehouseId}
           comment={formik.values.comment}
