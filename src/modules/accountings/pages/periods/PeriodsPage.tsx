@@ -20,6 +20,8 @@ import { useAppSelector } from "@/store/hooks";
 import { periodPermissions } from "./api";
 import {
   useCloseCheck,
+  useRestoreSequence,
+  useSequenceBoundary,
   useClosePeriod,
   usePeriods,
   useRecloseRequired,
@@ -50,6 +52,8 @@ export default function PeriodsPage() {
   const [year, setYear] = useState(dayjs().year());
   const { data = [], isLoading } = usePeriods(year);
   const { data: reclose = [] } = useRecloseRequired();
+  const { data: sequence } = useSequenceBoundary();
+  const restoreSequence = useRestoreSequence();
   const [closing, setClosing] = useState<number | null>(null);
   const [reopening, setReopening] = useState<number | null>(null);
   const userPermissions = useAppSelector((state) => state.auth.user?.user.permissions ?? []);
@@ -135,6 +139,32 @@ export default function PeriodsPage() {
         </Space>
         <span className="text-sm text-secondary-text">{t("periods.hint")}</span>
       </Card>
+      {sequence?.boundaryDate && (
+        <Alert
+          type="warning"
+          showIcon
+          message={t("periods.check.sequenceBroken", { date: dayjs(sequence.boundaryDate).format("DD.MM.YYYY HH:mm") })}
+          action={
+            <Button
+              size="small"
+              loading={restoreSequence.isPending}
+              onClick={() =>
+                void restoreSequence.mutateAsync().then((result) =>
+                  toast.success(
+                    t("periods.check.sequenceRestored", {
+                      issues: result.issueCount,
+                      documents: result.documentCount,
+                      difference: money(result.costAfter - result.costBefore),
+                    }),
+                  ),
+                )
+              }
+            >
+              {t("periods.check.restoreSequence")}
+            </Button>
+          }
+        />
+      )}
       {reclose.length > 0 && (
         <Alert
           type="warning"
@@ -242,6 +272,7 @@ function CloseMonthModal({
   const monthName = (month: number) => t(`periods.monthNames.${month}`);
   const { data: check, isLoading } = useCloseCheck(periodId);
   const close = useClosePeriod();
+  const restore = useRestoreSequence();
 
   const submit = async () => {
     const result = await close.mutateAsync(periodId);
@@ -434,6 +465,33 @@ function CloseMonthModal({
               {check.missingAccounts.length === 0
                 ? t("periods.check.accountsPresent")
                 : t("periods.check.accountsMissing", { accounts: check.missingAccounts.join(", ") })}
+            </CheckItem>
+            <CheckItem ok={!check.sequenceBoundary}>
+              {check.sequenceBoundary ? (
+                <>
+                  {t("periods.check.sequenceBroken", { date: dayjs(check.sequenceBoundary).format("DD.MM.YYYY HH:mm") })}{" "}
+                  <Button
+                    size="small"
+                    type="link"
+                    loading={restore.isPending}
+                    onClick={() =>
+                      void restore.mutateAsync().then((result) =>
+                        toast.success(
+                          t("periods.check.sequenceRestored", {
+                            issues: result.issueCount,
+                            documents: result.documentCount,
+                            difference: money(result.costAfter - result.costBefore),
+                          }),
+                        ),
+                      )
+                    }
+                  >
+                    {t("periods.check.restoreSequence")}
+                  </Button>
+                </>
+              ) : (
+                t("periods.check.sequenceOk")
+              )}
             </CheckItem>
             <CheckItem ok={(check.assetsAwaitingDepreciation ?? 0) === 0}>
               {(check.assetsAwaitingDepreciation ?? 0) === 0

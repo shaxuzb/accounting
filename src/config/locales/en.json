@@ -3697,6 +3697,10 @@
     "yearProfit": "Year end: the profit of {{amount}} goes to retained earnings Dt 9910 — Ct 8710.",
     "yearLoss": "Year end: the loss of {{amount}} goes to uncovered loss Dt 8710 — Ct 9910.",
     "check": {
+      "sequenceBroken": "The stock sequence is broken from {{date}} (a back-dated document): the issues must be given out again by FIFO.",
+      "sequenceOk": "The stock sequence is in order",
+      "restoreSequence": "Restore the sequence",
+      "sequenceRestored": "Sequence restored: {{issues}} issues, {{documents}} documents reposted, cost difference {{difference}}.",
       "depreciationDone": "Fixed-asset depreciation is posted (or not needed)",
       "depreciationMissing": "{{count}} fixed assets are not depreciated for the month — post the depreciation run first.",
       "monthOver": "The month is over",

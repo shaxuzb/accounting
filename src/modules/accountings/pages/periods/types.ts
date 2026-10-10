@@ -32,6 +32,8 @@ export interface MonthCloseCheck {
   draftDocumentCount: number;
   /** Assets in use not yet depreciated for the month: the month closes only after the run. */
   assetsAwaitingDepreciation?: number;
+  /** The stock sequence is broken from this moment (a back-dated document): restore it first. */
+  sequenceBoundary?: string | null;
   entriesMissingAnalytics?: number;
   rentAwaitingAccrual?: number;
   revaluationLineCount: number;
