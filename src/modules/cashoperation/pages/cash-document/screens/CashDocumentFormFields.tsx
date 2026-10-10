@@ -2,6 +2,7 @@ import type { FormikProps } from "formik";
 import { useState } from "react";
 import dayjs from "dayjs";
 import { Col, Form, Input, Row } from "antd";
+import { MoneyOperationKindSelect, useMoneyOperationKinds } from "@/shared/moneyOperationKinds";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCashBoxCurrency } from "@/modules/cashoperation/hooks/useCashBoxCurrency";
 import { useAccountKeptByEmployee } from "@/shared/hooks/useAccountKeptByEmployee";
@@ -43,6 +44,8 @@ export default function CashDocumentFormFields({
   const isExpense = documentTypeId === cashDocumentTypeIds.expense;
   // 1C «Передача в другую кассу»: an RKO to another cash box moves money between the boxes
   const isTransfer = isExpense && Boolean(formik.values.destinationCashBoxId);
+  const { data: kinds = [] } = useMoneyOperationKinds("cash", isExpense ? 2 : 1);
+  const kind = kinds.find((item) => item.id === Number(formik.values.operationKindId));
 
   // As in 1C's ПКО/РКО: the contract decides the settlement account (4010 with a customer,
   // 6010 with a supplier) and, with settlements per contract, which debt the money closes.
@@ -55,6 +58,7 @@ export default function CashDocumentFormFields({
     contractId: Number(formik.values.contractId) || null,
     directionId: documentTypeId,
     docDate: formik.values.docDate,
+    allowedPrefixes: kind?.offsetPrefixes,
   });
 
   useCashBoxCurrency(formik);
@@ -67,9 +71,28 @@ export default function CashDocumentFormFields({
     <>
       <Row gutter={[16, 0]}>
         <Col span={4}>
-          <Form.Item label={t("cash.fields.operationType")}>
-            <Input value={t(operationLabel)} readOnly />
-          </Form.Item>
+          {isTransfer ? (
+            <Form.Item label={t("cash.fields.operationType")}>
+              <Input value={t("moneyOperationKinds.transfer")} readOnly />
+            </Form.Item>
+          ) : (
+            <MoneyOperationKindSelect
+              channel="cash"
+              direction={isExpense ? 2 : 1}
+              value={formik.values.operationKindId}
+              onChange={(next) => {
+                formik.setFieldValue("operationKindId", next?.id ?? null, true);
+                // 1C fills the account from the kind; the user may still change it
+                if (next?.defaultOffsetAccount)
+                  formik.setFieldValue("offsetAccountId", next.defaultOffsetAccount.id, true);
+                if (next?.counterpartyMode === 0) {
+                  formik.setFieldValue("counterpartyId", null, false);
+                  formik.setFieldValue("contractId", null, false);
+                }
+              }}
+            />
+          )}
+          <div className="-mt-4 mb-2 text-xs text-secondary-text">{t(operationLabel)}</div>
         </Col>
 
         <Col span={4}>
@@ -130,6 +153,7 @@ export default function CashDocumentFormFields({
                 if (transfer === isTransfer) return;
                 formik.setFieldValue("offsetAccountId", null, false);
                 if (transfer) {
+                  formik.setFieldValue("operationKindId", null, false);
                   formik.setFieldValue("counterpartyId", null, false);
                   formik.setFieldValue("contractId", null, false);
                 }
@@ -137,7 +161,7 @@ export default function CashDocumentFormFields({
             />
           </Col>
         )}
-        {!isTransfer && offsetKeptByEmployee && (
+        {!isTransfer && (offsetKeptByEmployee || kind?.needsEmployee) && (
           <Col span={4}>
             <PayrollEmployeeSelect
               formik={formik}
@@ -147,7 +171,7 @@ export default function CashDocumentFormFields({
             />
           </Col>
         )}
-        {!isTransfer && (
+        {!isTransfer && kind?.counterpartyMode !== 0 && (
           <>
             <Col span={4}>
               <SelectCustom

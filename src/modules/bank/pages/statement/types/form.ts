@@ -4,6 +4,8 @@ export interface BankOperationCreatePayload {
   paymentTypeId?: number | null;
   bankChartAccountId?: number | null;
   offsetAccountId?: number | null;
+  /** The operation kind (1C «Вид операции»). */
+  operationKindId?: number | null;
   counterpartyId?: number | null;
   counterpartyBankAccountId?: number | null;
   bankDocumentNumber?: string | null;

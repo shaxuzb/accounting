@@ -31,4 +31,11 @@ export const cashDocumentSchema = (t: TFunction) =>
       .nullable()
       .required(t("cash.validation.exchangeRateRequired")),
     comment: Yup.string().nullable(),
+    // every receipt or payment says what it is; a transfer between boxes is one already
+    operationKindId: Yup.number()
+      .nullable()
+      .when("destinationCashBoxId", {
+        is: (value: unknown) => !value,
+        then: (schema) => schema.required(t("moneyOperationKinds.required")),
+      }),
   });

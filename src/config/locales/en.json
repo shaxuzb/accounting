@@ -1,4 +1,11 @@
 {
+  "moneyOperationKinds": {
+    "field": "Operation kind",
+    "placeholder": "Choose the kind",
+    "required": "Choose the operation kind",
+    "transfer": "Transfer between cash boxes",
+    "hint": "Like 1C «Вид операции»: the kind fills in the offset account (a customer's payment — 4010, a supplier's — 6010, a loan — 6810, an accountable person — 4220 ...) and asks for what it needs (counterparty, employee). Posting checks the account fits the kind."
+  },
   "units": {
     "new": "Add unit",
     "edit": "Unit of measure",
@@ -1457,6 +1464,7 @@
     "title": "Bank",
     "statementImport": "Bank statement import",
     "fields": {
+      "direction": "Direction",
       "employee": "Employee (accountable person)",
       "bankAccount": "Bank account",
       "operationType": "Operation type",

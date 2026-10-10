@@ -53,6 +53,7 @@ const createDefaultValues = (): CashDocumentForm => ({
   exchangeRate: 1,
   cashChartAccountId: null,
   offsetAccountId: null,
+  operationKindId: null,
   comment: "",
 });
 
@@ -96,6 +97,8 @@ export default function CashDocumentDetailPage() {
       cashChartAccountId:
         record?.cashChartAccountId ?? createDefaultValues().cashChartAccountId,
       offsetAccountId: record?.offsetAccountId ?? createDefaultValues().offsetAccountId,
+      operationKindId:
+        (record as { operationKindId?: number | null } | undefined)?.operationKindId ?? null,
     }),
     [record],
   );
@@ -144,6 +147,7 @@ export default function CashDocumentDetailPage() {
         comment: true,
         cashChartAccountId: true,
         offsetAccountId: true,
+        operationKindId: true,
       });
       toast.error(t("cash.messages.fillRequired"));
       return false;

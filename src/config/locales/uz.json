@@ -1,4 +1,11 @@
 {
+  "moneyOperationKinds": {
+    "field": "Operatsiya turi",
+    "placeholder": "Turni tanlang",
+    "required": "Operatsiya turini tanlang",
+    "transfer": "Kassalararo o'tkazma",
+    "hint": "1C dagi «Вид операции»: tanlangan turga qarab qarshi hisob avtomatik qo'yiladi (xaridordan to'lov — 4010, yetkazib beruvchiga — 6010, kredit — 6810, hisobdor — 4220 ...) va kerakli maydonlar (kontragent, xodim) so'raladi. O'tkazishda hisob shu tur ruxsat bergan hisoblardan bo'lishi tekshiriladi."
+  },
   "units": {
     "new": "Birlik qo'shish",
     "edit": "O'lchov birligi",
@@ -1459,6 +1466,7 @@
     "title": "Bank",
     "statementImport": "Bank ko'chirmasini import qilish",
     "fields": {
+      "direction": "Yo'nalish",
       "employee": "Xodim (hisobdor shaxs)",
       "bankAccount": "Bank hisobi",
       "operationType": "Operatsiya turi",

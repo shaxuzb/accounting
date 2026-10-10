@@ -21,6 +21,7 @@ import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import { useContractSettlementAccount } from "@/shared/hooks/useContractSettlementAccount";
+import { MoneyOperationKindSelect, useMoneyOperationKinds } from "@/shared/moneyOperationKinds";
 import InOutSelect from "@/components/fields/InOutSelect";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
@@ -73,6 +74,7 @@ type BankOperationForm = {
   bankAccountId: number | null;
   bankChartAccountId: number | null;
   offsetAccountId: number | null;
+  operationKindId: number | null;
   docDate: string;
   directionId: number | null;
   operationTypeId: number | null;
@@ -96,6 +98,7 @@ const createDefaultValues = (): BankOperationForm => ({
   directionId: 1,
   bankChartAccountId: null,
   offsetAccountId: null,
+  operationKindId: null,
   operationTypeId: 1,
   paymentTypeId: null,
   counterpartyId: null,
@@ -176,6 +179,8 @@ export default function BankOperationAddEditPage() {
         (record?.operationTypeId === 2 ? -1 : createDefaultValues().directionId),
       bankChartAccountId: record?.bankChartAccountId ?? null,
       offsetAccountId: record?.offsetAccountId ?? null,
+      operationKindId:
+        (record as { operationKindId?: number | null } | undefined)?.operationKindId ?? null,
       operationTypeId:
         record?.operationTypeId ??
         (record?.directionId === -1 ? 2 : createDefaultValues().operationTypeId),
@@ -213,6 +218,7 @@ export default function BankOperationAddEditPage() {
             (Number(values.operationTypeId) === 2 ? -1 : 1),
           bankChartAccountId: toPositiveNumber(values.bankChartAccountId),
           offsetAccountId: toPositiveNumber(values.offsetAccountId),
+          operationKindId: toPositiveNumber(values.operationKindId),
           paymentTypeId: toPositiveNumber(values.paymentTypeId),
           counterpartyId: toPositiveNumber(values.counterpartyId),
           employeeId: toPositiveNumber(values.employeeId),
@@ -314,6 +320,11 @@ export default function BankOperationAddEditPage() {
     errorHandlers(detailQuery.error);
   }, [detailQuery.error]);
 
+  // 1C «Вид операции»: a receipt's kinds or a payment's, by the operation's direction
+  const kindDirection = Number(formik.values.directionId) === -1 ? 2 : 1;
+  const { data: kinds = [] } = useMoneyOperationKinds("bank", kindDirection);
+  const kind = kinds.find((item) => item.id === Number(formik.values.operationKindId));
+
   useContractSettlementAccount({
     formik,
     offsetFieldName: "offsetAccountId",
@@ -323,6 +334,7 @@ export default function BankOperationAddEditPage() {
     contractId: toPositiveNumber(formik.values.contractId),
     directionId: formik.values.directionId,
     docDate: formik.values.docDate,
+    allowedPrefixes: kind?.offsetPrefixes,
   });
 
   const saveDraft = async () => {
@@ -490,13 +502,14 @@ export default function BankOperationAddEditPage() {
               <InOutSelect
                 formik={formik}
                 fieldName="directionId"
-                label="bank.fields.operationType"
+                label="bank.fields.direction"
                 required
                 disabled={isActionBusy}
                 resetFields={[
                   "bankChartAccountId",
                   "offsetAccountId",
                   "relatedDocumentId",
+                  "operationKindId",
                 ]}
                 onChange={(value) =>
                   formik.setFieldValue(
@@ -505,6 +518,25 @@ export default function BankOperationAddEditPage() {
                     false,
                   )
                 }
+              />
+            </Col>
+            <Col span={4}>
+              <MoneyOperationKindSelect
+                channel="bank"
+                direction={kindDirection}
+                value={formik.values.operationKindId}
+                disabled={isActionBusy}
+                onChange={(next) => {
+                  formik.setFieldValue("operationKindId", next?.id ?? null, true);
+                  // 1C fills the account from the kind; the user may still change it
+                  if (next?.defaultOffsetAccount)
+                    formik.setFieldValue("offsetAccountId", next.defaultOffsetAccount.id, true);
+                  if (next?.counterpartyMode === 0) {
+                    formik.setFieldValue("counterpartyId", null, false);
+                    formik.setFieldValue("counterpartyBankAccountId", null, false);
+                    formik.setFieldValue("contractId", null, false);
+                  }
+                }}
               />
             </Col>
             <Col span={4}>
@@ -559,7 +591,7 @@ export default function BankOperationAddEditPage() {
                 path={selectListEndpoints.paymentTypesSelectList}
               />
             </Col>
-            {offsetKeptByEmployee && (
+            {(offsetKeptByEmployee || kind?.needsEmployee) && (
               <Col span={4}>
                 <PayrollEmployeeSelect
                   formik={formik}

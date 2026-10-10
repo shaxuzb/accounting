@@ -35,6 +35,8 @@ interface Params<T extends object> {
   contractId: number | null;
   directionId: unknown;
   docDate: unknown;
+  /** The operation kind's account prefixes: a contract's settlement account outside them is not set. */
+  allowedPrefixes?: string[];
 }
 
 /**
@@ -50,6 +52,7 @@ export function useContractSettlementAccount<T extends object>({
   contractId,
   directionId,
   docDate,
+  allowedPrefixes,
 }: Params<T>) {
   const choosedDate = dayjs(docDate as string).format(formatDateWithOutTime);
   const { data: contracts } = useQuery({
@@ -95,6 +98,8 @@ export function useContractSettlementAccount<T extends object>({
 
     pendingRef.current = false;
     const number = SETTLEMENT_ACCOUNT_BY_CONTRACT[Number(contract.contractTypeId)];
+    // a loan or a capital contribution under a supplier's contract keeps the kind's account
+    if (number && allowedPrefixes?.length && !allowedPrefixes.some((prefix) => number.startsWith(prefix))) return;
     const account = role.accounts?.find(
       (item) => String(item.chartAccountNumber ?? "") === number,
     );
@@ -102,5 +107,5 @@ export function useContractSettlementAccount<T extends object>({
     if (account && values[offsetFieldName] !== account.chartAccountId) {
       formik.setFieldValue(offsetFieldName, account.chartAccountId, true);
     }
-  }, [contractId, contracts, directionId, formik, offsetFieldName, offsetRoleCode, settings.data]);
+  }, [allowedPrefixes, contractId, contracts, directionId, formik, offsetFieldName, offsetRoleCode, settings.data]);
 }

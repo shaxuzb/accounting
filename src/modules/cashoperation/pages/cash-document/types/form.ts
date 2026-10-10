@@ -14,4 +14,6 @@ export interface CashDocumentForm {
   comment: string;
   cashChartAccountId: number | null;
   offsetAccountId: number | null;
+  /** The operation kind (1C «Вид операции»); none on a transfer between boxes. */
+  operationKindId: number | null;
 }
