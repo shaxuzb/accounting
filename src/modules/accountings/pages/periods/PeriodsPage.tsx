@@ -363,7 +363,7 @@ function CloseMonthModal({
     {
       key: "entry",
       title: t("periods.entry"),
-      width: 170,
+      width: 230,
       render: (_, line) => (
         <Tag className="m-0">
           {line.amount >= 0
