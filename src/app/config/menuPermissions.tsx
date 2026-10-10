@@ -83,6 +83,7 @@ import {
   faReceiptPermissions,
   faRevaluationPermissions,
   faCommissioningPermissions,
+  faModernizationPermissions,
 } from "@/modules/fa";
 import { accountingReportPermissions } from "@/modules/accountings/pages/accounting-report/constants/permissions";
 import { ledgerPermissions } from "@/modules/accountings/pages/ledger/constants/permissions";
@@ -526,6 +527,13 @@ export const menuPermissions: MainMenu = {
           linkData: {
             path: "revaluations",
             title: "fa.entities.revaluations",
+          },
+        },
+        {
+          code: faModernizationPermissions.view,
+          linkData: {
+            path: "modernizations",
+            title: "fa.entities.modernizations",
           },
         },
         {

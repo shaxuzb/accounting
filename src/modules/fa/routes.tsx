@@ -9,6 +9,7 @@ import { faMovementPermissions } from "./pages/faMovement/constants/permissions"
 import { faReceiptPermissions } from "./pages/faReceipt/constants/permissions";
 import { faRevaluationPermissions } from "./pages/faRevaluation/constants/permissions";
 import { faCommissioningPermissions } from "./pages/faCommissioning/constants/permissions";
+import { faModernizationPermissions } from "./pages/faModernization/constants/permissions";
 const FaAssetListPage = lazy(() => import("./pages/faAsset/screens/FaAssetListPage"));
 const FaAssetFormPage = lazy(() => import("./pages/faAsset/screens/FaAssetFormPage"));
 const FaReceiptListPage = lazy(() => import("./pages/faReceipt/screens/FaReceiptListPage"));
@@ -23,6 +24,8 @@ const FaDepreciationListPage = lazy(() => import("./pages/faDepreciation/screens
 const FaDepreciationFormPage = lazy(() => import("./pages/faDepreciation/screens/FaDepreciationFormPage"));
 const FaCommissioningListPage = lazy(() => import("./pages/faCommissioning/screens/FaCommissioningListPage"));
 const FaCommissioningFormPage = lazy(() => import("./pages/faCommissioning/screens/FaCommissioningFormPage"));
+const FaModernizationListPage = lazy(() => import("./pages/faModernization/FaModernizationListPage"));
+const FaModernizationEditorPage = lazy(() => import("./pages/faModernization/FaModernizationEditorPage"));
 
 const withPermission = (
   element: React.ReactElement,
@@ -253,6 +256,26 @@ export const faRoutes: RouteObject = {
             showBack: true,
             backTo: "..",
           },
+        },
+      ],
+    },
+    {
+      path: "modernizations",
+      handle: { title: "fa.modernization.title" },
+      children: [
+        {
+          index: true,
+          element: withPermission(<FaModernizationListPage />, faModernizationPermissions.view),
+        },
+        {
+          path: "new",
+          element: withPermission(<FaModernizationEditorPage />, faModernizationPermissions.create),
+          handle: { title: "fa.modernization.new", showBack: true, backTo: ".." },
+        },
+        {
+          path: ":id",
+          element: withPermission(<FaModernizationEditorPage />, faModernizationPermissions.view),
+          handle: { title: "fa.modernization.title", showBack: true, backTo: ".." },
         },
       ],
     },
