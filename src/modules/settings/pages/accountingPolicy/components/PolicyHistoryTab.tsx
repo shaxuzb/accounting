@@ -45,6 +45,11 @@ export default function PolicyHistoryTab({
         ),
     },
     {
+      title: t("taxRegime.corporateField"),
+      dataIndex: "corporateTaxRegimeName",
+      render: (value?: string | null) => value ?? t("taxRegime.corporateNone"),
+    },
+    {
       title: t("taxRegime.field"),
       dataIndex: "payrollTaxRegimeName",
       render: (value?: string | null) => value ?? t("taxRegime.none"),

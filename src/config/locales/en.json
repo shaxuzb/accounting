@@ -104,10 +104,17 @@
     "nonResidentRate": "Non-resident",
     "period": "In force",
     "legalBasis": "Basis",
+    "corporateField": "Tax system",
+    "corporateNone": "Not chosen",
+    "corporateDefault": "(VAT payer — taken as the general regime)",
+    "corporateHint": "On the general regime the month close charges profit tax from the start of the year; on the simplified one the turnover tax on the month's total income (90xx, 93xx, 95xx): Dt 9810 — Cr 6430. The platform keeps the rates.",
+    "corporateNoRate": "This regime has no rate on {{date}}; the month will not close — ask the platform administrator",
     "kinds": {
       "NDFL": "Personal income tax",
       "INPS": "INPS (accumulative pension)",
-      "SOCIAL": "Social tax"
+      "SOCIAL": "Social tax",
+      "PROFIT": "Profit tax",
+      "TURNOVER": "Turnover tax"
     }
   },
   "saleServices": {
@@ -3496,6 +3503,10 @@
     "stepCosts": "3. Closing cost accounts (20/23/25/26 → 9130)",
     "stepResult": "5. Closing class 9 accounts to the financial result (→ 9910)",
     "stepProfitTax": "4. Profit tax (Dt 9810 — Cr 6430)",
+    "stepTurnoverTax": "4. Turnover tax (Dt 9810 — Cr 6430)",
+    "turnoverTaxBase": "Total income of the month (90xx, 93xx, 95xx)",
+    "turnoverTaxMonth": "Turnover tax for the month ({{rate}} %)",
+    "taxRateMissing": "The tax regime \"{{regime}}\" has no rate for this month; the month will not close. Ask the platform administrator.",
     "profitTaxBase": "Profit before tax, year to date",
     "profitTaxYear": "Tax for the year ({{rate}}%)",
     "profitTaxCharged": "Charged in earlier months",

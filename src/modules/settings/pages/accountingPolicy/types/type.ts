@@ -73,6 +73,9 @@ export interface AccountingPolicyCurrentDto {
   payrollTaxRegimeId?: number | null;
   /** The payroll tax regime in force on the date asked, with its rates then. */
   payrollTaxRegime?: PayrollTaxRegimeOnDate | null;
+  corporateTaxRegimeId?: number | null;
+  /** The tax system in force on the date asked (or the general regime of a VAT payer). */
+  corporateTaxRegime?: CorporateTaxRegimeOnDate | null;
   sourceStatus: SourceStatus;
   sourceEvidence?: string | null;
   requiresBusinessDecision: boolean;
@@ -90,6 +93,8 @@ export interface AccountingPolicyVersionDto {
   vatPayer: boolean | null;
   payrollTaxRegimeId?: number | null;
   payrollTaxRegimeName?: string | null;
+  corporateTaxRegimeId?: number | null;
+  corporateTaxRegimeName?: string | null;
   taxTypeId: number | null;
   vatTaxPeriod: string | null;
   vatBaseMoment: string | null;
@@ -125,6 +130,7 @@ export interface AccountingPolicyUpdateRequest {
   vatPayer: boolean;
   /** The payroll tax regime the organization is entitled to; null keeps its own tax rates. */
   payrollTaxRegimeId: number | null;
+  corporateTaxRegimeId: number | null;
   taxTypeId: number | null;
   vatTaxPeriod: "MONTH";
   vatBaseMoment: "SHIPMENT";
@@ -182,4 +188,15 @@ export interface PayrollTaxRegimeOnDate {
   name: string;
   legalBasis?: string | null;
   rates: PayrollTaxRegimeRate[];
+}
+
+export interface CorporateTaxRegimeOnDate {
+  id: number;
+  code: string;
+  name: string;
+  /** PROFIT or TURNOVER; null when the regime has no rate on the date. */
+  taxKind?: string | null;
+  rate?: number | null;
+  /** Taken from the VAT payer flag: no regime has been chosen. */
+  isDefault: boolean;
 }

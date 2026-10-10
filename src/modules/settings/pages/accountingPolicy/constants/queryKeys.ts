@@ -10,4 +10,5 @@ export const accountingPolicyQueryKeys = {
   vatRates: ["accounting-policy", "vat-rates"] as const,
   settlements: ["accounting-policy", "settlements"] as const,
   taxRegimes: ["accounting-policy", "tax-regimes"] as const,
+  corporateTaxRegimes: ["accounting-policy", "tax-regimes", "corporate"] as const,
 };

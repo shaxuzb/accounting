@@ -4,6 +4,17 @@ import { accountingPolicyEndpoints } from "../constants/endpoints";
 import { accountingPolicyQueryKeys } from "../constants/queryKeys";
 import type { PayrollTaxRegime } from "../types/type";
 
+/** The tax systems (profit / turnover tax) the platform offers the organization. */
+export const useCorporateTaxRegimes = () =>
+  useQuery({
+    queryKey: accountingPolicyQueryKeys.corporateTaxRegimes,
+    queryFn: () =>
+      $axiosPrivate
+        .get<PayrollTaxRegime[]>(accountingPolicyEndpoints.taxRegimes, { params: { scope: "CORPORATE" } })
+        .then((response) => response.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
 /** The payroll tax regimes the platform offers the organization. */
 export const usePayrollTaxRegimes = () =>
   useQuery({

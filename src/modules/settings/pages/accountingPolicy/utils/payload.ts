@@ -29,6 +29,7 @@ export const buildAccountingPolicyFormValues = (
   baseCurrencyId: 1,
   vatPayer: getFieldValue(policy.vat?.isVatPayer, policy.isVatPayer) ?? true,
   payrollTaxRegimeId: policy.payrollTaxRegimeId ?? null,
+  corporateTaxRegimeId: policy.corporateTaxRegimeId ?? null,
   taxTypeId: null,
   vatTaxPeriod: "MONTH",
   vatBaseMoment: "SHIPMENT",

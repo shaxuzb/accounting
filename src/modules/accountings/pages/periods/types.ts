@@ -48,6 +48,11 @@ export interface MonthCloseCheck {
   profitTaxYear?: number | null;
   profitTaxCharged?: number | null;
   profitTax?: number | null;
+  taxRegimeName?: string | null;
+  taxRateMissing?: boolean;
+  turnoverTaxBase?: number | null;
+  turnoverTaxRate?: number | null;
+  turnoverTax?: number | null;
   /** Deferred expenses written off for the month (Dt expense — Kt 31xx). */
   deferredLines?: MonthCloseDeferredLine[];
   /** 31xx balances with no write-off schedule (a warning). */

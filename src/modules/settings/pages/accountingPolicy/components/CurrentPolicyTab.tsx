@@ -60,6 +60,24 @@ export default function CurrentPolicyTab({
     { label: t("accountingPolicy.view.vatBase"), value: t("accountingPolicy.view.vatBaseShipment") },
     { label: t("accountingPolicy.view.closedPeriods"), value: t("accountingPolicy.view.closedProtected") },
     {
+      label: t("taxRegime.corporateField"),
+      value: data.corporateTaxRegime ? (
+        <span className="flex flex-wrap items-center justify-end gap-1">
+          <Tag color="purple">{data.corporateTaxRegime.name}</Tag>
+          {data.corporateTaxRegime.taxKind && data.corporateTaxRegime.rate != null && (
+            <span className="font-normal">
+              {t(`taxRegime.kinds.${data.corporateTaxRegime.taxKind}`)} {data.corporateTaxRegime.rate} %
+            </span>
+          )}
+          {data.corporateTaxRegime.isDefault && (
+            <span className="text-xs font-normal text-secondary-text">{t("taxRegime.corporateDefault")}</span>
+          )}
+        </span>
+      ) : (
+        <span className="font-normal text-secondary-text">{t("taxRegime.corporateNone")}</span>
+      ),
+    },
+    {
       label: t("taxRegime.field"),
       value: data.payrollTaxRegime ? (
         <Tag color="blue">{data.payrollTaxRegime.name}</Tag>

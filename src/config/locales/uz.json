@@ -104,10 +104,17 @@
     "nonResidentRate": "Norezident uchun",
     "period": "Amal qilish davri",
     "legalBasis": "Asos",
+    "corporateField": "Soliq tizimi",
+    "corporateNone": "Tanlanmagan",
+    "corporateDefault": "(QQS to'lovchi — umumiy rejim deb olinadi)",
+    "corporateHint": "Umumiy rejimda oy yopishda yil boshidan foyda solig'i, soddalashtirilgan rejimda oylik jami daromaddan (90xx, 93xx, 95xx) aylanma soliq hisoblanadi: Dt 9810 — Kt 6430. Stavkalarni platforma yuritadi.",
+    "corporateNoRate": "Bu rejimda {{date}} sanaga stavka kiritilmagan — oy yopilmaydi, platforma administratoriga murojaat qiling",
     "kinds": {
       "NDFL": "JShDS (jismoniy shaxslar daromad solig'i)",
       "INPS": "INPS (jamg'arib boriladigan pensiya badali)",
-      "SOCIAL": "Ijtimoiy soliq"
+      "SOCIAL": "Ijtimoiy soliq",
+      "PROFIT": "Foyda solig'i",
+      "TURNOVER": "Aylanma soliq"
     }
   },
   "saleServices": {
@@ -3496,6 +3503,10 @@
     "stepCosts": "3. Xarajat hisoblarini yopish (20/23/25/26 → 9130)",
     "stepResult": "5. 9-sinf hisoblarini moliyaviy natijaga yopish (→ 9910)",
     "stepProfitTax": "4. Foyda solig'i (Dt 9810 — Kt 6430)",
+    "stepTurnoverTax": "4. Aylanma soliq (Dt 9810 — Kt 6430)",
+    "turnoverTaxBase": "Oyning jami daromadi (90xx, 93xx, 95xx)",
+    "turnoverTaxMonth": "Oy uchun aylanma soliq ({{rate}} %)",
+    "taxRateMissing": "«{{regime}}» soliq rejimida shu oy uchun stavka yo'q — oy yopilmaydi. Platforma administratoriga murojaat qiling.",
     "profitTaxBase": "Yil boshidan soliqqa qadar foyda",
     "profitTaxYear": "Yil uchun soliq ({{rate}}%)",
     "profitTaxCharged": "Oldingi oylarda hisoblangan",
