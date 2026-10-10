@@ -7,6 +7,7 @@ import { accountingsRoutes } from "@/modules/accountings";
 import { saleRoutes } from "@/modules/sale";
 import { productsRoutes } from "@/modules/warehouse/pages/products/routes";
 import { warehouseRoutes } from "@/modules/warehouse";
+import { productionRoutes } from "@/modules/production/routes";
 import { bankRoutes } from "@/modules/bank";
 import { cashOperationRoutes } from "@/modules/cashoperation";
 import { accountingRoutes } from "@/modules/accounting/routes";
@@ -52,6 +53,7 @@ export const router = createBrowserRouter([
           accountingRoutes,
           settingsRoutes,
           warehouseRoutes,
+          productionRoutes,
           rentalRoutes,
           manualRoutes,
           // Layout ichida qoladi: sidebar va header saqlanadi.

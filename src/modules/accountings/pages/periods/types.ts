@@ -17,6 +17,8 @@ export interface MonthCloseLine {
   analytics?: string | null;
   /** Positive: income, negative: expense. */
   amount: number;
+  /** A cost account's closing: where it goes (9130; 2010 for overheads; 2810 / 9110 for production). */
+  targetAccountNumber?: string | null;
 }
 
 export interface MonthCloseCheck {

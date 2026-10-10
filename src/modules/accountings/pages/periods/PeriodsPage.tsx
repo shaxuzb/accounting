@@ -366,7 +366,9 @@ function CloseMonthModal({
       width: 170,
       render: (_, line) => (
         <Tag className="m-0">
-          {line.amount >= 0 ? `Dt 9130 — Kt ${line.accountNumber}` : `Dt ${line.accountNumber} — Kt 9130`}
+          {line.amount >= 0
+            ? `Dt ${line.targetAccountNumber ?? "9130"} — Kt ${line.accountNumber}`
+            : `Dt ${line.accountNumber} — Kt ${line.targetAccountNumber ?? "9130"}`}
         </Tag>
       ),
     },
@@ -492,7 +494,7 @@ function CloseMonthModal({
 
           <div className="font-semibold">{t("periods.stepCosts")}</div>
           <Table<MonthCloseLine>
-            rowKey={(line) => `${line.accountNumber}-${line.analytics ?? ""}`}
+            rowKey={(line) => `${line.accountNumber}-${line.analytics ?? ""}-${line.targetAccountNumber ?? ""}-${line.amount}`}
             size="small"
             columns={costColumns}
             dataSource={check.costLines}

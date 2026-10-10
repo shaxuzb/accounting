@@ -35,7 +35,9 @@ import {
   UserCheck,
   FileSignature,
   ChartColumnBig,
+  Factory,
 } from "lucide-react";
+import { productionDocs } from "@/modules/production/constants";
 import { salePermissions } from "@/modules/sale";
 import { retailSalePermissions } from "@/modules/sale/pages/retail-sale/constants/permissions";
 import { productPermissions } from "@/modules/warehouse/pages/products/constants/permissions";
@@ -236,6 +238,27 @@ export const menuPermissions: MainMenu = {
             path: "inventory-adjustments",
             title: "app.menu.adjustment",
           },
+        },
+      ],
+    },
+    {
+      // 1C «Производство»: materials to production, products out of it
+      code: "DROPDOWN",
+      iconName: <Factory className="size-5" />,
+      dropdown: true,
+      dropdownName: "production.title",
+      linkData: {
+        path: "production",
+        title: "production.title",
+      },
+      items: [
+        {
+          code: productionDocs.requisition.permissions.view,
+          linkData: { path: "requisitions", title: "production.requisition.title" },
+        },
+        {
+          code: productionDocs.report.permissions.view,
+          linkData: { path: "reports", title: "production.report.title" },
         },
       ],
     },
