@@ -15,7 +15,12 @@ const getInitialState = (): OrganizationState => {
   try {
     const stored = localStorage.getItem("org");
     if (stored) {
-      return JSON.parse(stored) as OrganizationState;
+      // the selector is locked only while a page that needs it is open; a lock saved when
+      // the tab was closed on such a page must not outlive it
+      return {
+        ...(JSON.parse(stored) as OrganizationState),
+        selectListType: "selectable",
+      };
     }
     const loginData = localStorage.getItem("login");
     if (loginData) {

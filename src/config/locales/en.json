@@ -2464,7 +2464,13 @@
         "PERCENT_OF_NET": "Percent of pay after tax",
         "PERCENT_OF_NET_HINT": "Deduction: percent of pay left after income tax (like alimony)",
         "AVERAGE_MATERNITY": "Average (maternity)",
-        "AVERAGE_MATERNITY_HINT": "Maternity benefit: 100% of average, tax-free"
+        "AVERAGE_MATERNITY_HINT": "Maternity benefit: 100% of average, tax-free",
+        "OVERTIME_HOURS": "Overtime hours",
+        "OVERTIME_HOURS_HINT": "Hourly rate (salary / norm hours) × overtime hours × percent (usually 200%)",
+        "NIGHT_HOURS": "Night hours",
+        "NIGHT_HOURS_HINT": "Hourly rate × night hours × surcharge percent (usually 50%)",
+        "HOLIDAY_HOURS": "Holidays and days off",
+        "HOLIDAY_HOURS_HINT": "Hourly rate × hours worked on holidays/days off × percent (usually 200%)"
       },
       "prorationBasis": {
         "DAYS": "By worked days",
@@ -3592,7 +3598,7 @@
       "3": "Choose a retail sale"
     },
     "hint": {
-      "1": "A return is made on a posted purchase: lines, prices, VAT and accounts come from it; enter the quantities only. The goods leave from that purchase's batch (Dt 6010 Ct 2910, VAT Dt 6010 Ct 4410).",
+      "1": "A return is made on a posted purchase: lines, prices, VAT and accounts come from it; enter the quantities only. The goods leave from that purchase's batch (Dt 6010 Ct 2910, VAT Dt 6010 Ct 4410). The debt falls by the purchase price; delivery, duty and other costs added to the batch do not come back and go to Dt 9430.",
       "2": "A return is made on a posted sale: lines, prices and VAT come from it; enter the quantities only. Revenue goes to 9040, the goods come back at their cost of sale (Dt 9040 Ct 4010, Dt 6410 Ct 4010, Dt 2910 Ct 9120).",
       "3": "A return is made on a retail sale: enter the quantities; the money goes back where it was paid."
     }

@@ -2464,7 +2464,13 @@
         "PERCENT_OF_NET": "Soliqdan keyin qolgan summadan foiz",
         "PERCENT_OF_NET_HINT": "Ushlanma: JShDS ushlangandan keyingi summadan foiz (aliment kabi)",
         "AVERAGE_MATERNITY": "O'rtacha (dekret)",
-        "AVERAGE_MATERNITY_HINT": "Homiladorlik va tug'ish nafaqasi: 100% o'rtacha, soliqdan ozod"
+        "AVERAGE_MATERNITY_HINT": "Homiladorlik va tug'ish nafaqasi: 100% o'rtacha, soliqdan ozod",
+        "OVERTIME_HOURS": "Ortiqcha soatlar",
+        "OVERTIME_HOURS_HINT": "Soatlik stavka (oklad / me'yor soat) × ortiqcha soatlar × foiz (odatda 200%)",
+        "NIGHT_HOURS": "Tungi soatlar",
+        "NIGHT_HOURS_HINT": "Soatlik stavka × tungi soatlar × ustama foizi (odatda 50%)",
+        "HOLIDAY_HOURS": "Bayram va dam olish kunlari",
+        "HOLIDAY_HOURS_HINT": "Soatlik stavka × bayram/dam olish kunlarida ishlangan soatlar × foiz (odatda 200%)"
       },
       "prorationBasis": {
         "DAYS": "Ishlangan kunlar bo'yicha",
@@ -3592,7 +3598,7 @@
       "3": "Chakana savdo chekini tanlang"
     },
     "hint": {
-      "1": "Qaytarish o'tkazilgan xarid asosida qilinadi: qatorlar, narx, QQS va hisoblar xariddan olinadi, faqat miqdorni kiriting. Tovar aynan o'sha xarid partiyasidan chiqadi (Dt 6010 Kt 2910, QQS Dt 6010 Kt 4410).",
+      "1": "Qaytarish o'tkazilgan xarid asosida qilinadi: qatorlar, narx, QQS va hisoblar xariddan olinadi, faqat miqdorni kiriting. Tovar aynan o'sha xarid partiyasidan chiqadi (Dt 6010 Kt 2910, QQS Dt 6010 Kt 4410). Qarz xarid narxida kamayadi; partiyaga qo'shilgan transport, boj kabi xarajatlar qaytmaydi va Dt 9430 ga yoziladi.",
       "2": "Qaytarish o'tkazilgan sotuv asosida qilinadi: qatorlar, narx va QQS sotuvdan olinadi, faqat miqdorni kiriting. Tushum 9040 ga, tovar sotilgandagi tannarx bilan omborga qaytadi (Dt 9040 Kt 4010, Dt 6410 Kt 4010, Dt 2910 Kt 9120).",
       "3": "Qaytarish chakana savdo cheki asosida qilinadi: faqat miqdorni kiriting, pul to'langan joyidan qaytariladi."
     }

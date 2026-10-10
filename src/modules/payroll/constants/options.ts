@@ -110,6 +110,9 @@ export const CALCULATION_METHODS = [
   "AVERAGE_SICK",
   "PERCENT_OF_NET",
   "AVERAGE_MATERNITY",
+  "OVERTIME_HOURS",
+  "NIGHT_HOURS",
+  "HOLIDAY_HOURS",
 ] as const;
 export type PayrollCalculationMethod = (typeof CALCULATION_METHODS)[number];
 
@@ -170,11 +173,34 @@ export const calculationMethodOptions: readonly StaticOption[] = [
     label: "payroll.enums.calculationMethod.PERCENT_OF_NET",
     description: "payroll.enums.calculationMethod.PERCENT_OF_NET_HINT",
   },
+  {
+    value: "OVERTIME_HOURS",
+    label: "payroll.enums.calculationMethod.OVERTIME_HOURS",
+    description: "payroll.enums.calculationMethod.OVERTIME_HOURS_HINT",
+  },
+  {
+    value: "NIGHT_HOURS",
+    label: "payroll.enums.calculationMethod.NIGHT_HOURS",
+    description: "payroll.enums.calculationMethod.NIGHT_HOURS_HINT",
+  },
+  {
+    value: "HOLIDAY_HOURS",
+    label: "payroll.enums.calculationMethod.HOLIDAY_HOURS",
+    description: "payroll.enums.calculationMethod.HOLIDAY_HOURS_HINT",
+  },
 ] as const;
 
-/** Foiz bilan hisoblanadigan usullar (bruttodan yoki soliqdan keyingi summadan). */
+/** Soatlik stavkaning foizi bilan to'lanadigan usullar (ortiqcha, tungi, bayram soatlari). */
+export const methodIsHourSurcharge = (method?: string | null) =>
+  method === "OVERTIME_HOURS" ||
+  method === "NIGHT_HOURS" ||
+  method === "HOLIDAY_HOURS";
+
+/** Foiz bilan hisoblanadigan usullar (bruttodan, soliqdan keyingi summadan yoki soatlik stavkadan). */
 export const methodIsPercent = (method?: string | null) =>
-  method === "PERCENT_OF_GROSS" || method === "PERCENT_OF_NET";
+  method === "PERCENT_OF_GROSS" ||
+  method === "PERCENT_OF_NET" ||
+  methodIsHourSurcharge(method);
 
 /** Qat'iy summa kiritiladigan usullar. */
 export const methodUsesAmount = (method?: string | null) => method === "FIXED";

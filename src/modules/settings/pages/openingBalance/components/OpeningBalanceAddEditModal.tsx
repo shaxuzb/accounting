@@ -4,9 +4,7 @@ import { Button, Col, Form, Modal, Row } from "antd";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import InputText from "@/components/fields/InputText";
-import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { useCreateOpeningBalance, useUpdateOpeningBalance } from "../hooks";
@@ -35,10 +33,10 @@ export default function OpeningBalanceAddEditModal({
     initialValues: {
       balanceDate: record?.balanceDate ?? dayjs().format("YYYY-MM-DD"),
       description: record?.description ?? "",
-      stateId: record?.stateId ?? (isEdit ? null : 1),
+      stateId: 1,
     },
     enableReinitialize: true,
-    validationSchema: openingBalanceHeaderSchema(t, isEdit),
+    validationSchema: openingBalanceHeaderSchema(t),
     onSubmit: async (values, helpers) => {
       try {
         if (record?.id) {
@@ -95,24 +93,13 @@ export default function OpeningBalanceAddEditModal({
             />
           </Col>
 
-          <Col xs={24} md={isEdit ? 12 : 24}>
+          <Col xs={24}>
             <InputText
               formik={formik}
               fieldName="description"
               label="openingBalance.fields.description"
             />
           </Col>
-          {isEdit && (
-            <Col xs={24} md={12}>
-              <SelectCustom
-                formik={formik}
-                fieldName="stateId"
-                label="settings.fields.status"
-                path={selectListEndpoints.statesSelectList}
-                required
-              />
-            </Col>
-          )}
         </Row>
 
         <Button
