@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useAppSelector } from "@/store/hooks";
 import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
 import CreateReturnButton from "@/modules/returns/CreateReturnButton";
+import CreateCorrectionButton from "@/modules/corrections/CreateCorrectionButton";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import { ProcessStatusBadge } from "@/components/ui/status";
 import { useTranslation } from "react-i18next";
@@ -51,6 +52,9 @@ export default function SaleDetailPage() {
         </AccountingEntriesButton>
         {document.statusId === 2 && (
           <CreateReturnButton kind={returnKind.fromCustomer} baseId={Number(document.id)} />
+        )}
+        {document.statusId === 2 && (
+          <CreateCorrectionButton kind="sale" baseId={Number(document.id)} />
         )}
         <DocumentContractButton
           kind="sale"

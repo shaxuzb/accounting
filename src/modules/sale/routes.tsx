@@ -9,6 +9,7 @@ const ContractListPage = lazy(() => import("../contract/screens/ContractListPage
 import { contractPermissions } from "../contract/constants/permissions";
 import { returnRoute } from "../returns/routes";
 import { returnKind } from "../returns/constants";
+import { correctionRoute } from "../corrections/routes";
 const RetailSaleDetailPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleDetailPage })));
 const RetailSaleEditorPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleEditorPage })));
 const RetailSaleListPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleListPage })));
@@ -52,6 +53,8 @@ export const saleRoutes: RouteObject = {
     // returns from customers (1C «Возврат товаров от покупателя», «… от розничного покупателя»)
     returnRoute(returnKind.fromCustomer, "sale-returns"),
     returnRoute(returnKind.fromRetail, "retail-returns"),
+    // the price of a posted sale agreed again, a discount after the sale (1C «Корректировка реализации»)
+    correctionRoute("sale", "corrections"),
     {
       path: "contracts",
       handle: { title: "contract.saleTitle" },

@@ -181,6 +181,10 @@ export const menuPermissions: MainMenu = {
           linkData: { path: "extra-costs", title: "extraCost.title" },
         },
         {
+          code: "CORRECTION_DOC_VIEW",
+          linkData: { path: "corrections", title: "correction.purchase.title" },
+        },
+        {
           code: "CUSTOMS_DECLARATION_VIEW",
           linkData: { path: "customs-declarations", title: "customs.title" },
         },
@@ -572,6 +576,10 @@ export const menuPermissions: MainMenu = {
         {
           code: "RETURN_DOC_VIEW",
           linkData: { path: "retail-returns", title: "returnDoc.kinds.fromRetail" },
+        },
+        {
+          code: "CORRECTION_DOC_VIEW",
+          linkData: { path: "corrections", title: "correction.sale.title" },
         },
 
         {

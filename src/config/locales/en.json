@@ -1,4 +1,59 @@
 {
+  "correction": {
+    "purchase": {
+      "title": "Purchase corrections",
+      "new": "New purchase correction",
+      "hint": "Enter the new price on the lines that changed. Batches in stock change their cost, goods sold go to 9120, services to their expense account, VAT 4410, against 6010."
+    },
+    "sale": {
+      "title": "Sale corrections",
+      "new": "New sale correction",
+      "hint": "Enter the new price on the lines that changed. The difference posts on the correction's date: revenue (9050 for a discount) and VAT against 4010. A lower quantity goes through a return."
+    },
+    "effects": {
+      "inStock": "Batch in stock",
+      "sold": "Sold (9120)"
+    },
+    "reasons": {
+      "price": "Price agreed again",
+      "discount": "Discount after the sale (9050)"
+    },
+    "date": "Date",
+    "baseSale": "Base sale",
+    "basePurchase": "Base purchase",
+    "basePlaceholder": "Choose the document",
+    "counterparty": "Counterparty",
+    "reason": "Reason",
+    "comment": "Comment",
+    "product": "Product",
+    "quantity": "Quantity",
+    "vatRate": "VAT",
+    "oldPrice": "Old price",
+    "newPrice": "New price",
+    "oldAmount": "Old amount",
+    "newAmount": "New amount",
+    "amountDelta": "Difference (net)",
+    "vatDelta": "VAT difference",
+    "totalDelta": "Total difference",
+    "amount": "Amount",
+    "batch": "Batch",
+    "effect": "Effect",
+    "unitCostAdded": "Unit cost change",
+    "lines": "Base document lines",
+    "effectsTitle": "Effect on batches",
+    "newNumber": "New",
+    "saved": "Saved",
+    "posted": "Posted",
+    "cancelled": "Cancelled",
+    "saveDraft": "Save",
+    "post": "Post",
+    "cancel": "Cancel",
+    "deleteConfirm": "Delete the draft?",
+    "cancelConfirm": "Cancel the correction? Entries and the debt are reversed.",
+    "entries": "Entries",
+    "previewFailed": "Could not compute; check the base document and the prices.",
+    "createFromBase": "Correction"
+  },
   "production": {
     "report": {
       "title": "Production reports",

@@ -1,4 +1,59 @@
 {
+  "correction": {
+    "purchase": {
+      "title": "Xaridni tuzatish",
+      "new": "Yangi xarid tuzatishi",
+      "hint": "Narxi o'zgargan qatorlarga yangi narx kiriting. Omborda qolgan tovar partiyasi tannarxi o'zgaradi, sotilganiga 9120, xizmatga xarajat hisobi, QQS 4410 — 6010 ga qarshi."
+    },
+    "sale": {
+      "title": "Sotuvni tuzatish",
+      "new": "Yangi sotuv tuzatishi",
+      "hint": "Narxi o'zgargan qatorlarga yangi narx kiriting. Farq tuzatish sanasida o'tadi: daromad (yoki chegirmada 9050) va QQS 4010 ga qarshi. Miqdor kamaysa — qaytarish hujjati."
+    },
+    "effects": {
+      "inStock": "Qoldiqdagi partiya",
+      "sold": "Sotilgan (9120)"
+    },
+    "reasons": {
+      "price": "Narx kelishuvi",
+      "discount": "Sotuvdan keyingi chegirma (9050)"
+    },
+    "date": "Sana",
+    "baseSale": "Asos sotuv",
+    "basePurchase": "Asos xarid",
+    "basePlaceholder": "Hujjatni tanlang",
+    "counterparty": "Kontragent",
+    "reason": "Sabab",
+    "comment": "Izoh",
+    "product": "Nomenklatura",
+    "quantity": "Miqdor",
+    "vatRate": "QQS",
+    "oldPrice": "Eski narx",
+    "newPrice": "Yangi narx",
+    "oldAmount": "Eski summa",
+    "newAmount": "Yangi summa",
+    "amountDelta": "Farq (QQSsiz)",
+    "vatDelta": "QQS farqi",
+    "totalDelta": "Jami farq",
+    "amount": "Summa",
+    "batch": "Partiya",
+    "effect": "Natija",
+    "unitCostAdded": "Birlik tannarxi o'zgarishi",
+    "lines": "Asos hujjat qatorlari",
+    "effectsTitle": "Partiyalarga ta'siri",
+    "newNumber": "Yangi",
+    "saved": "Saqlandi",
+    "posted": "O'tkazildi",
+    "cancelled": "Bekor qilindi",
+    "saveDraft": "Saqlash",
+    "post": "O'tkazish",
+    "cancel": "Bekor qilish",
+    "deleteConfirm": "Qoralama o'chirilsinmi?",
+    "cancelConfirm": "Tuzatish bekor qilinsinmi? Provodkalar va qarzdorlik qaytariladi.",
+    "entries": "Provodkalar",
+    "previewFailed": "Hisoblab bo'lmadi — asos hujjatni va narxlarni tekshiring.",
+    "createFromBase": "Tuzatish yaratish"
+  },
   "production": {
     "report": {
       "title": "Ishlab chiqarish hisobotlari",
