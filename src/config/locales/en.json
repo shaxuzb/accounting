@@ -1,4 +1,38 @@
 {
+  "productAccounts": {
+    "targets": {
+      "organization": "Whole organization",
+      "kind": "Kind",
+      "group": "Group",
+      "product": "Product"
+    },
+    "new": "Add rule",
+    "edit": "Account rule",
+    "save": "Save",
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "deleteConfirm": "Delete this rule? New document lines take the next rule or the kind's account.",
+    "hint": "Like 1C «Счета учета номенклатуры». Choosing a product puts its accounts on the document line: the product's own rule first, then its group (and the groups above), then its kind, then the organization-wide rule; with none, the kind's standard account, then the document account settings. Posted documents do not change.",
+    "kindsTitle": "Nomenclature kinds — standard accounts (from the chart)",
+    "rulesTitle": "Organization rules",
+    "empty": "No rules — accounts come from the nomenclature kind",
+    "kind": "Nomenclature kind",
+    "group": "Product group",
+    "product": "Product",
+    "service": "service",
+    "target": "Applies to",
+    "stockAccount": "Stock account",
+    "incomeAccount": "Sales revenue account",
+    "costAccount": "Cost of sales account",
+    "stockHint": "The account the item is kept on: 2910, 1010, 2810 ...",
+    "incomeHint": "Empty: the next rule or the document account settings",
+    "costHint": "Empty: the next rule or the document account settings",
+    "formHint": "An empty account comes from the next, more general rule. A change applies to new document lines only.",
+    "notInChart": "{{number}} — not in the chart (added when a product is saved)",
+    "fromDocumentSettings": "From the document account settings",
+    "objectRequired": "Choose a kind, group or product",
+    "accountRequired": "Choose at least one account"
+  },
   "manual": {
     "title": "User manual"
   },
@@ -691,6 +725,7 @@
       "counterpartySuccess": "Counterparty data found"
     },
     "entities": {
+      "productAccounts": "Nomenclature accounts",
       "role": "Role",
       "roles": "Roles",
       "user": "User",
@@ -721,6 +756,7 @@
       "openingInventory": "Opening inventory"
     },
     "descriptions": {
+      "productAccounts": "Which account keeps goods, materials and products, and which revenue and cost accounts their sale goes to.",
       "roles": "Manage system roles and permissions.",
       "users": "Manage users and their roles.",
       "organizations": "Manage organization data.",
@@ -1570,6 +1606,10 @@
       "services": "Services"
     },
     "fields": {
+      "productKind": "Nomenclature kind",
+      "productKindHint": "Sets the account the item is kept on: goods 2910, materials 1010, finished products 2810 (sold via 9010/9110), packaging 1060, supplies 1080. Specific accounts are changed in Settings → Nomenclature accounts.",
+      "productKindAccount": "Account: {{account}}",
+      "productKindAccountMissing": "Account {{number}} is not in the chart — it is added from the standard chart on save",
       "name": "Name",
       "productType": "Product type",
       "serviceType": "Service type",

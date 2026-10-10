@@ -1,4 +1,6 @@
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
+import { useQueryClient } from "@tanstack/react-query";
+import { resolveProductAccounts } from "@/shared/productAccounts";
 import { Button, Form, Spin } from "antd";
 import { useFormik } from "formik";
 import {
@@ -918,6 +920,34 @@ export const PurchaseEditor = ({
     [formik, isEdit, setExcelData],
   );
 
+  const queryClient = useQueryClient();
+  /**
+   * Puts each product's own stock account (1C «Счета учета номенклатуры»: a material on 1010,
+   * goods on 2910 ...) on the given rows, once it is known; a row whose product has changed
+   * since is left alone, and a product the nomenclature accounts say nothing about keeps the
+   * document setting's default.
+   */
+  const applyProductAccounts = useCallback(
+    async (targets: { rowIndex: number; productId: number }[]) => {
+      if (purchaseMode !== "goods" || targets.length === 0) return;
+      const accounts = await resolveProductAccounts(
+        queryClient,
+        targets.map((target) => target.productId),
+      );
+      let changed = false;
+      const nextRows = linesRef.current.map((row, index) => {
+        const target = targets.find((item) => item.rowIndex === index);
+        if (!target || Number(row.productId) !== target.productId) return row;
+        const stock = accounts.get(target.productId)?.stockAccount;
+        if (!stock || row.debitAccountId === stock.id) return row;
+        changed = true;
+        return { ...row, debitAccountId: stock.id, debitAccountName: stock.name };
+      });
+      if (changed) commitRows(nextRows);
+    },
+    [commitRows, purchaseMode, queryClient],
+  );
+
   const handleRowValueChange = useCallback(
     (rowIndex: number, patch: Partial<PurchaseImportRow>) => {
       const nextRows = linesRef.current.map((item, index) =>
@@ -991,14 +1021,22 @@ export const PurchaseEditor = ({
           currentRows[rowIndex]?.vatRateId ??
           selected?.defaultVatRateId ??
           null,
-        debitAccountId:
-          currentRows[rowIndex]?.debitAccountId ??
-          defaultAccounts.debitAccountId,
-        debitAccountName:
-          currentRows[rowIndex]?.debitAccountName ||
-          (currentRows[rowIndex]?.debitAccountId == null
-            ? defaultAccounts.debitAccountName
-            : ""),
+        ...(Number(currentRows[rowIndex]?.productId) !== value
+          ? {
+              // another product: its account, not the one the row had
+              debitAccountId: defaultAccounts.debitAccountId,
+              debitAccountName: defaultAccounts.debitAccountName,
+            }
+          : {
+              debitAccountId:
+                currentRows[rowIndex]?.debitAccountId ??
+                defaultAccounts.debitAccountId,
+              debitAccountName:
+                currentRows[rowIndex]?.debitAccountName ||
+                (currentRows[rowIndex]?.debitAccountId == null
+                  ? defaultAccounts.debitAccountName
+                  : ""),
+            }),
         vatAccountId:
           currentRows[rowIndex]?.vatAccountId ?? defaultAccounts.vatAccountId,
         vatAccountName:
@@ -1007,8 +1045,10 @@ export const PurchaseEditor = ({
             ? defaultAccounts.vatAccountName
             : ""),
       });
+      if (Number(currentRows[rowIndex]?.productId) !== value)
+        void applyProductAccounts([{ rowIndex, productId: value }]);
     },
-    [defaultAccounts, handleRowValueChange, itemOptions, purchaseMode],
+    [applyProductAccounts, defaultAccounts, handleRowValueChange, itemOptions, purchaseMode],
   );
 
   const openMarkingModal = useCallback(
@@ -1261,8 +1301,10 @@ export const PurchaseEditor = ({
 
       nextRows[rowIndex] = targetRow;
       commitRows(nextRows);
+      if (dataIndex === "mxik" && targetRow.productId)
+        void applyProductAccounts([{ rowIndex, productId: Number(targetRow.productId) }]);
     },
-    [commitRows, defaultAccounts, productByMxik, purchaseMode],
+    [applyProductAccounts, commitRows, defaultAccounts, productByMxik, purchaseMode],
   );
 
   const isMxikValid = useCallback(
@@ -1303,6 +1345,9 @@ export const PurchaseEditor = ({
   useEffect(() => {
     if (!linesRef.current.some((item) => item.productId)) return;
 
+    const withoutAccount = linesRef.current
+      .map((item, rowIndex) => ({ rowIndex, productId: Number(item.productId), debit: item.debitAccountId }))
+      .filter((item) => item.productId > 0 && item.debit == null);
     const updated = linesRef.current.map((item) => {
       if (!item.productId) return item;
 
@@ -1330,7 +1375,8 @@ export const PurchaseEditor = ({
     });
 
     if (changed) commitRows(updated);
-  }, [commitRows, defaultAccounts]);
+    void applyProductAccounts(withoutAccount);
+  }, [applyProductAccounts, commitRows, defaultAccounts]);
 
   useEffect(() => {
     const hasLoadedOptions = isSuccess && data;

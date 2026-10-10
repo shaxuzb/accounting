@@ -4,6 +4,7 @@ import type { FormikProps } from "formik";
 import { Edit, Trash } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useProductKinds } from "@/shared/productAccounts";
 import type { ProductItem, ProductTypeForm } from "../types/type";
 import ProductItemModal from "./ProductItemModal";
 
@@ -20,6 +21,9 @@ export default function ProductItemsTable({
 }: ProductItemsTableProps) {
   const { t } = useTranslation();
   const [editItem, setEditItem] = useState<ProductItem>();
+  const { data: kinds = [] } = useProductKinds();
+  const kindName = (record: ProductItem) =>
+    kinds.find((kind) => kind.id === (record.productKindId ?? (record.isService ? 7 : 1)))?.name ?? "";
 
   const handleDelete = (record: ProductItem) => {
     const nextProducts = record.new
@@ -57,6 +61,12 @@ export default function ProductItemsTable({
       dataIndex: "mxik",
       title: t("products.fields.mxik"),
       align: "center",
+    },
+    {
+      dataIndex: "productKindId",
+      title: t("products.fields.productKind"),
+      align: "center",
+      render: (_value, record) => <Tag>{kindName(record)}</Tag>,
     },
 
     {

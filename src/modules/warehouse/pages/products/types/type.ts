@@ -14,6 +14,8 @@ export interface ProductItem {
   mxik: string;
   description: string;
   isService: boolean;
+  /** inv_product_kind: goods, material, finished product ...; empty on old products (goods or a service). */
+  productKindId?: number | null;
   isPieceTracked?: boolean;
   isSold?: boolean;
   isPurchased?: boolean;

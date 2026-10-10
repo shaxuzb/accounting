@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { invalidateProductAccounts } from "@/shared/productAccounts";
 import { productService } from "../api";
 import { productKeys } from "../constants/queryKeys";
 import type { ProductTypeForm } from "../types/type";
@@ -17,6 +18,8 @@ export const useUpdateProduct = () => {
       productService.update(id, toUpdatePayload(payload)),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: productKeys.all });
+      // a changed kind changes the accounts new document lines take
+      invalidateProductAccounts(queryClient);
       queryClient.invalidateQueries({
         queryKey: productKeys.detail(variables.id),
       });

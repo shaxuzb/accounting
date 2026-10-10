@@ -32,6 +32,8 @@ export interface ProductListResponse {
 export interface OpeningInventoryRow {
   key: number;
   id: number;
+  /** UI only: the product whose nomenclature account the row has taken (not sent). */
+  productAccountsFor?: number;
   indexId: number;
   name?: string;
   counterpartyId: number | null;

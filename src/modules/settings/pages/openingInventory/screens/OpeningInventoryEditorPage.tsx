@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Form, Spin as AntdSpin } from "antd";
 import { useFormik } from "formik";
+import { useQueryClient } from "@tanstack/react-query";
+import { resolveProductAccounts } from "@/shared/productAccounts";
 import { useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -212,6 +214,43 @@ export default function OpeningInventoryEditorPage() {
     () => getOpeningInventoryTotals(lines),
     [lines],
   );
+
+  // A row takes its product's stock account (1C «Счета учета номенклатуры»): materials open on
+  // 1010, finished products on 2810. A row whose account was picked by hand keeps it.
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    const pending = lines.filter(
+      (row) =>
+        row.productId &&
+        row.productAccountsFor !== row.productId &&
+        (row.debitAccountId == null || row.debitAccountId === defaultAccounts.debitAccountId),
+    );
+    if (!pending.length) return;
+    let cancelled = false;
+    void resolveProductAccounts(
+      queryClient,
+      pending.map((row) => Number(row.productId)),
+    ).then((accounts) => {
+      if (cancelled) return;
+      commitLines((current) =>
+        current.map((row) => {
+          if (
+            !row.productId ||
+            row.productAccountsFor === row.productId ||
+            (row.debitAccountId != null && row.debitAccountId !== defaultAccounts.debitAccountId)
+          )
+            return row;
+          const stock = accounts.get(Number(row.productId))?.stockAccount;
+          return stock
+            ? { ...row, productAccountsFor: Number(row.productId), debitAccountId: stock.id, debitAccountName: stock.name }
+            : { ...row, productAccountsFor: Number(row.productId) };
+        }),
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [commitLines, defaultAccounts.debitAccountId, lines, queryClient]);
 
   const addManualRow = useCallback(() => {
     commitLines((prev) => {

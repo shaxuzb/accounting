@@ -1,4 +1,38 @@
 {
+  "productAccounts": {
+    "targets": {
+      "organization": "Butun tashkilot",
+      "kind": "Tur",
+      "group": "Guruh",
+      "product": "Mahsulot"
+    },
+    "new": "Hisob qoidasini qo'shish",
+    "edit": "Hisob qoidasi",
+    "save": "Saqlash",
+    "saved": "Saqlandi",
+    "deleted": "O'chirildi",
+    "deleteConfirm": "Bu qoidani o'chirasizmi? Yangi hujjat qatorlari keyingi qoida yoki tur hisobini oladi.",
+    "hint": "1C dagi «Счета учета номенклатуры». Mahsulot tanlanganda hujjat qatoriga hisob shu yerdan avtomatik qo'yiladi: avval mahsulotning o'z qoidasi, keyin guruhi (yuqori guruhlari bilan), keyin turi, keyin butun tashkilot qoidasi; hech biri bo'lmasa — turning standart hisobi, u ham bo'lmasa — Hujjat hisob sozlamalari. O'tkazilgan hujjatlar o'zgarmaydi.",
+    "kindsTitle": "Nomenklatura turlari — standart hisoblar (hisoblar rejasidan)",
+    "rulesTitle": "Tashkilot qoidalari",
+    "empty": "Qoida yo'q — hisoblar nomenklatura turidan olinadi",
+    "kind": "Nomenklatura turi",
+    "group": "Mahsulot guruhi",
+    "product": "Mahsulot",
+    "service": "xizmat",
+    "target": "Kim uchun",
+    "stockAccount": "Ombor (hisob) hisobi",
+    "incomeAccount": "Sotuv daromadi hisobi",
+    "costAccount": "Sotuv tannarxi hisobi",
+    "stockHint": "Mahsulot qaysi hisobda saqlanadi: 2910, 1010, 2810 ...",
+    "incomeHint": "Bo'sh — keyingi qoida yoki Hujjat hisob sozlamalari",
+    "costHint": "Bo'sh — keyingi qoida yoki Hujjat hisob sozlamalari",
+    "formHint": "Bo'sh qoldirilgan hisob keyingi, umumiyroq qoidadan olinadi. O'zgarish faqat yangi hujjat qatorlariga ta'sir qiladi.",
+    "notInChart": "{{number}} — hisoblar rejasida yo'q (mahsulot saqlanganda qo'shiladi)",
+    "fromDocumentSettings": "Hujjat hisob sozlamalaridan",
+    "objectRequired": "Tur, guruh yoki mahsulotni tanlang",
+    "accountRequired": "Kamida bitta hisobni tanlang"
+  },
   "manual": {
     "title": "Qo'llanma"
   },
@@ -693,6 +727,7 @@
       "counterpartySuccess": "Kontragent ma'lumotlari topildi"
     },
     "entities": {
+      "productAccounts": "Nomenklatura hisoblari",
       "role": "Rol",
       "roles": "Rollar",
       "user": "Foydalanuvchi",
@@ -723,6 +758,7 @@
       "accountingPolicy": "Buxgalteriya siyosati"
     },
     "descriptions": {
+      "productAccounts": "Tovar, material, tayyor mahsulot qaysi hisobda saqlanishi va sotuvi qaysi daromad/tannarx hisobiga yozilishi.",
       "roles": "Tizimdagi rollar va ularning huquqlarini boshqarish.",
       "users": "Foydalanuvchilar va ularning tizimdagi rollarini boshqarish.",
       "organizations": "Tashkilot ma'lumotlarini boshqarish.",
@@ -1570,6 +1606,10 @@
       "services": "Servislar"
     },
     "fields": {
+      "productKind": "Nomenklatura turi",
+      "productKindHint": "1C dagi «Вид номенклатуры»: qaysi hisobda saqlanishini belgilaydi — tovar 2910, material 1010, tayyor mahsulot 2810 (sotuvi 9010/9110), tara 1060, inventar 1080. Aniq hisoblarni Sozlamalar → Nomenklatura hisoblari'da o'zgartirish mumkin.",
+      "productKindAccount": "Hisob: {{account}}",
+      "productKindAccountMissing": "{{number}} hisobi hisoblar rejasida yo'q — saqlanganda standart rejadan qo'shiladi",
       "name": "Nomi",
       "productType": "Mahsulot turi",
       "serviceType": "Servis turi",

@@ -1,4 +1,4 @@
-import { Button, Col, Form, Modal, Row, Switch } from "antd";
+import { Button, Col, Form, Modal, Row, Select, Switch } from "antd";
 import { useFormik } from "formik";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
+import { accountLabel, useProductKinds } from "@/shared/productAccounts";
 import { productItemSchema } from "../types/schema";
 import type { ProductItem, ProductTypeForm } from "../types/type";
 import type { FormikProps } from "formik";
@@ -18,6 +19,10 @@ interface ProductItemModalProps {
   onClearEdit: () => void;
 }
 
+// inv_product_kind: goods and services, the kinds a product saved without one is read as
+const GOODS_KIND_ID = 1;
+const SERVICE_KIND_ID = 7;
+
 const emptyProductItem = (isService: boolean): ProductItem => ({
   // code: "",
   // sku: "",
@@ -26,6 +31,7 @@ const emptyProductItem = (isService: boolean): ProductItem => ({
   mxik: "",
   description: "",
   isService,
+  productKindId: isService ? SERVICE_KIND_ID : GOODS_KIND_ID,
   // Most goods sold here carry a marking; an unmarked item is switched off by hand.
   isPieceTracked: !isService,
   // Backend "sotiladi yoki xarid qilinadi"dan kamida bittasini talab qiladi.
@@ -48,6 +54,8 @@ export default function ProductItemModal({
 }: ProductItemModalProps) {
   const { t } = useTranslation();
   const isService = formik.values.isService;
+  const { data: kinds = [], isLoading: kindsLoading } = useProductKinds();
+  const stockKinds = kinds.filter((kind) => !kind.isService);
 
   const productFormik = useFormik<ProductItem>({
     initialValues: emptyProductItem(isService),
@@ -95,6 +103,8 @@ export default function ProductItemModal({
       handleClose();
     },
   });
+
+  const selectedKind = kinds.find((kind) => kind.id === (productFormik.values.productKindId ?? GOODS_KIND_ID));
 
   const handleClose = () => {
     productFormik.resetForm();
@@ -174,16 +184,30 @@ export default function ProductItemModal({
               clearable
             />
           </Col>
-          {/* <Col span={24} md={12}>
-            <SelectCustom
-              label="products.fields.productType"
-              path={selectListEndpoints.productTypesSelectList}
-              formik={productFormik}
-              fieldName="productTypeId"
-              queryParams={{ isService }}
-              clearable
-            />
-          </Col> */}
+          {/* The kind (1C «Вид номенклатуры») says which account keeps the item: goods 2910,
+              materials 1010, finished products 2810 ... A service is always a service. */}
+          {!isService && (
+            <Col span={24} md={12}>
+              <Form.Item
+                label={t("products.fields.productKind")}
+                tooltip={t("products.fields.productKindHint")}
+                extra={
+                  selectedKind?.stockAccount
+                    ? t("products.fields.productKindAccount", { account: accountLabel(selectedKind.stockAccount) })
+                    : selectedKind?.stockAccountNumber
+                      ? t("products.fields.productKindAccountMissing", { number: selectedKind.stockAccountNumber })
+                      : undefined
+                }
+              >
+                <Select
+                  loading={kindsLoading}
+                  value={productFormik.values.productKindId ?? GOODS_KIND_ID}
+                  onChange={(value: number) => productFormik.setFieldValue("productKindId", value)}
+                  options={stockKinds.map((kind) => ({ value: kind.id, label: kind.name }))}
+                />
+              </Form.Item>
+            </Col>
+          )}
 
           <Col span={24} md={12}>
             <SelectCustom

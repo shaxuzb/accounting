@@ -11,6 +11,7 @@ const DepartmentListPage = lazy(() => import("./pages/departments/screens/Depart
 const ChartAccountListPage = lazy(() => import("./pages/chartAccounts/screens/ChartAccountListPage"));
 const DocumentAccountSettingsListPage = lazy(() => import("./pages/documentAccountSettings/screens/DocumentAccountSettingsListPage"));
 const DocumentAccountSettingsDetailPage = lazy(() => import("./pages/documentAccountSettings/screens/DocumentAccountSettingsDetailPage"));
+const ProductAccountsPage = lazy(() => import("./pages/productAccounts/ProductAccountsPage"));
 const BranchListPage = lazy(() => import("./pages/branches/screens/BranchListPage"));
 const CounterpartyBankAccountListPage = lazy(() => import("./pages/counterpartybankaccount/screens/CounterpartyBankAccountListPage"));
 const SettingsBankListPage = lazy(() => import("./pages/bank/screens/SettingsBankListPage"));
@@ -362,6 +363,15 @@ export const settingsRoutes: RouteObject = {
         <AccountingPolicyPage />,
         accountingPolicyPermissions.view,
       ),
+    },
+    {
+      path: "product-accounts",
+      handle: {
+        title: "settings.entities.productAccounts",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(<ProductAccountsPage />, chartAccountsPermissions.view),
     },
     {
       path: "document-account-settings",

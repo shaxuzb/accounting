@@ -779,6 +779,15 @@ export const menuPermissions: MainMenu = {
       },
     },
     {
+      code: "CHART_ACCOUNT_VIEW",
+      iconName: <Boxes className="size-5" />,
+      linkData: {
+        path: "product-accounts",
+        title: "settings.entities.productAccounts",
+        description: "settings.descriptions.productAccounts",
+      },
+    },
+    {
       code: openingBalancePermissions.view,
       iconName: <Scale className="size-5" />,
       linkData: {

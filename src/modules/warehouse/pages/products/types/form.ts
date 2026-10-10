@@ -84,6 +84,7 @@ const toLinePayload = (p: ProductItem, isService: boolean) => ({
   unitId: p.unitId as number,
   isPieceTracked: Boolean(p.isPieceTracked),
   isService,
+  productKindId: isService ? 7 : (p.productKindId ?? 1),
   isSold: Boolean(p.isSold),
   isPurchased: Boolean(p.isPurchased),
   productGroupId: p.productGroupId ?? null,

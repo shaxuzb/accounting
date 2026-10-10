@@ -2,7 +2,8 @@ import { Button, Input, Select, Switch, Table, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import { Pencil, Plus, QrCode, Save, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { resolveProductAccounts } from "@/shared/productAccounts";
 import toast from "react-hot-toast";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import Card from "@/components/ui/card/Card";
@@ -469,6 +470,51 @@ export default function SaleProductSelection({
 
     if (hasChanges) onChange(nextProducts);
   }, [defaultAccounts, onChange, products]);
+
+  // A new line takes its product's accounts (1C «Счета учета номенклатуры»): a material is
+  // written off 1010, a finished product sold to 9010 / 9110; what they leave empty keeps the
+  // document setting. Saved lines and lines whose accounts were picked by hand stay as they are.
+  const queryClient = useQueryClient();
+  const productsRef = useRef(products);
+  useEffect(() => {
+    productsRef.current = products;
+  }, [products]);
+  useEffect(() => {
+    const pending = products.filter(
+      (line) => line.productId && !line.id && line.productAccountsFor !== line.productId,
+    );
+    if (!pending.length) return;
+    let cancelled = false;
+    void resolveProductAccounts(
+      queryClient,
+      pending.map((line) => line.productId),
+    ).then((accounts) => {
+      if (cancelled) return;
+      let hasChanges = false;
+      const nextProducts = productsRef.current.map((line) => {
+        if (!line.productId || line.id || line.productAccountsFor === line.productId) return line;
+        hasChanges = true;
+        const resolved = accounts.get(line.productId);
+        return {
+          ...line,
+          productAccountsFor: line.productId,
+          ...(resolved?.stockAccount
+            ? { inventoryAccountId: resolved.stockAccount.id, inventoryAccountName: resolved.stockAccount.name }
+            : {}),
+          ...(resolved?.incomeAccount
+            ? { incomeAccountId: resolved.incomeAccount.id, incomeAccountName: resolved.incomeAccount.name }
+            : {}),
+          ...(resolved?.costAccount
+            ? { costAccountId: resolved.costAccount.id, costAccountName: resolved.costAccount.name }
+            : {}),
+        };
+      });
+      if (hasChanges) onChange(nextProducts);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [onChange, products, queryClient]);
   const productOptions = useMemo(
     () =>
       stockProducts.map((item) => ({

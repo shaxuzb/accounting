@@ -216,6 +216,8 @@ export interface SaleSelectedProduct {
   id?: number | null;
   rowKey?: string;
   productId: number;
+  /** UI only: the product whose nomenclature accounts the line has taken (not sent). */
+  productAccountsFor?: number;
   productName: string;
   mxik?: string;
   quantity: number;
