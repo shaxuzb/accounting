@@ -873,6 +873,15 @@ export const menuPermissions: MainMenu = {
         description: "settings.descriptions.openingInventory",
       },
     },
+    {
+      code: openingBalancePermissions.view,
+      iconName: <Building2 className="size-5" />,
+      linkData: {
+        path: "opening-assets",
+        title: "settings.entities.openingAssets",
+        description: "settings.descriptions.openingAssets",
+      },
+    },
 
     {
       code: "COUNTERPARTY_BANK_ACCOUNT_VIEW",

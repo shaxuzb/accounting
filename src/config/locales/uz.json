@@ -570,6 +570,17 @@
     "minArray": "{{field}} kamida {{min}} ta tanlanishi kerak"
   },
   "fa": {
+    "opening": {
+      "title": "AV va NMA boshlang'ich qoldig'i",
+      "hint": "1C dagi «Boshlang'ich qoldiqlarni kiritish» kabi: foydalanishdagi asosiy vosita yoki nomoddiy aktiv kartasi, boshlang'ich qiymati va o'tish sanasigacha hisoblangan amortizatsiya. Boshlang'ich qoldiq sanasida 0000 hisobiga qarshi o'tkaziladi; amortizatsiya keyingi oydan davom etadi.",
+      "add": "Vosita qo'shish",
+      "account": "Hisob",
+      "accumulated": "Hisoblangan amortizatsiya",
+      "deprStartDate": "Amortizatsiya boshlangan sana (1C da)",
+      "deleteConfirm": "Boshlang'ich qoldiq bekor qilinsinmi? Provodkalar storno qilinadi va vosita o'chiriladi.",
+      "deleted": "O'chirildi",
+      "saved": "Kiritildi va o'tkazildi"
+    },
     "intangible": {
       "asset": "Nomoddiy aktiv",
       "group": "Nomoddiy aktiv guruhi",
@@ -896,6 +907,7 @@
       "counterpartySuccess": "Kontragent ma'lumotlari topildi"
     },
     "entities": {
+      "openingAssets": "AV va NMA boshlang'ich qoldig'i",
       "units": "O'lchov birliklari",
       "productAccounts": "Nomenklatura hisoblari",
       "role": "Rol",
@@ -928,6 +940,7 @@
       "accountingPolicy": "Buxgalteriya siyosati"
     },
     "descriptions": {
+      "openingAssets": "Foydalanishdagi asosiy vositalar va nomoddiy aktivlar: qiymat va hisoblangan amortizatsiya.",
       "units": "Platformaning umumiy birliklari va tashkilotning o'z birliklari (qop, blok, poddon ...).",
       "productAccounts": "Tovar, material, tayyor mahsulot qaysi hisobda saqlanishi va sotuvi qaysi daromad/tannarx hisobiga yozilishi.",
       "roles": "Tizimdagi rollar va ularning huquqlarini boshqarish.",

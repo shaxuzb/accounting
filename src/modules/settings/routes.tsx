@@ -47,6 +47,7 @@ const OpeningBalancePage = lazy(() => import("./pages/openingBalance/screens/Ope
 const OpeningBalanceAccountPage = lazy(() => import("./pages/openingBalance/screens/OpeningBalanceAccountPage"));
 import { openingBalancePermissions } from "./pages/openingBalance/constants/permissions";
 const OpeningInventoryListPage = lazy(() => import("./pages/openingInventory/screens/OpeningInventoryListPage"));
+const FaOpeningAssetPage = lazy(() => import("@/modules/fa/pages/faOpening/FaOpeningAssetPage"));
 const OpeningInventoryEditorPage = lazy(() => import("./pages/openingInventory/screens/OpeningInventoryEditorPage"));
 import { openingInventoryPermissions } from "./pages/openingInventory/constants/permissions";
 const EimzoProvider = lazy(() => import("@/features/eimzo").then((m) => ({ default: m.EimzoProvider })));
@@ -620,6 +621,16 @@ export const settingsRoutes: RouteObject = {
         <SaleConditionListPage />,
         saleConditionPermissions.view,
       ),
+    },
+    {
+      // 1C «Ввод начальных остатков» — ОС и НМА
+      path: "opening-assets",
+      handle: {
+        title: "settings.entities.openingAssets",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(<FaOpeningAssetPage />, openingBalancePermissions.view),
     },
     {
       path: "opening-inventory",

@@ -568,6 +568,17 @@
     "minArray": "{{field}} must contain at least {{min}} selected item(s)"
   },
   "fa": {
+    "opening": {
+      "title": "Fixed and intangible asset opening balances",
+      "hint": "As 1C «Opening balances»: the card of an asset in use, its cost and the depreciation charged until the cut-over, posted on the opening balance date against 0000; depreciation carries on from the next month.",
+      "add": "Add asset",
+      "account": "Account",
+      "accumulated": "Accumulated depreciation",
+      "deprStartDate": "Depreciation start (in 1C)",
+      "deleteConfirm": "Cancel the opening balance? Its entries are reversed and the asset removed.",
+      "deleted": "Deleted",
+      "saved": "Entered and posted"
+    },
     "intangible": {
       "asset": "Intangible asset",
       "group": "Intangible asset group",
@@ -894,6 +905,7 @@
       "counterpartySuccess": "Counterparty data found"
     },
     "entities": {
+      "openingAssets": "Fixed and intangible asset opening balances",
       "units": "Units of measure",
       "productAccounts": "Nomenclature accounts",
       "role": "Role",
@@ -926,6 +938,7 @@
       "openingInventory": "Opening inventory"
     },
     "descriptions": {
+      "openingAssets": "Assets in use: cost and depreciation to date.",
       "units": "The platform's shared units and the organization's own (a bag, a block, a pallet ...).",
       "productAccounts": "Which account keeps goods, materials and products, and which revenue and cost accounts their sale goes to.",
       "roles": "Manage system roles and permissions.",
