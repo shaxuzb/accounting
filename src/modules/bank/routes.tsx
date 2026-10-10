@@ -6,6 +6,8 @@ const BankStatementImportPage = lazy(() => import("./pages/statement/screens/Ban
 const BankOperationAddEditPage = lazy(() => import("./pages/statement/screens/BankOperationAddEditPage"));
 const BankOperationDetailPage = lazy(() => import("./pages/statement/screens/BankOperationDetailPage"));
 import { bankPermissions } from "./pages/statement/constants/permissions";
+import { contractPermissions } from "@/modules/contract/constants/permissions";
+const ContractListPage = lazy(() => import("../contract/screens/ContractListPage"));
 
 const withPermission = (
   element: React.ReactElement,
@@ -26,6 +28,12 @@ export const bankRoutes: RouteObject = {
         bankPermissions.view,
         "ROLE_VIEW",
       ]),
+    },
+    {
+      // credit and loan contracts (1C «Договоры» of credits and loans), kept by 68xx / 78xx
+      path: "loan-contracts",
+      handle: { title: "contract.loanTitle" },
+      element: withPermission(<ContractListPage />, contractPermissions.view),
     },
     {
       path: "import",

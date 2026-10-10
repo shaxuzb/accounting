@@ -1463,6 +1463,7 @@
     }
   },
   "bank": {
+    "operationsTitle": "Банковские операции",
     "title": "Банк",
     "statementImport": "Импорт банковской выписки",
     "fields": {
@@ -1590,6 +1591,7 @@
     }
   },
   "contract": {
+    "loanTitle": "Договоры кредитов и займов",
     "filters": {
       "dateFrom": "Дата с",
       "dateTo": "Дата по",
@@ -1608,6 +1610,7 @@
     "createTitle": "Создание договора",
     "editTitle": "Редактирование договора",
     "fields": {
+      "lenderName": "Кредитор (банк)",
       "counterpartyName": "Название контрагента",
       "customerName": "Покупатель",
       "supplierName": "Поставщик",

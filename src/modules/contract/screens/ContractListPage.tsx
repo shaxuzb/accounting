@@ -38,8 +38,14 @@ export default function ContractListPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [detailId, setDetailId] = useState<number | null>(null);
-  const contractTypeId = pathname.startsWith("/main/sales/contracts") ? 2 : 1;
+  // supplier contracts under purchases, customer ones under sales, credits and loans under the bank
+  const contractTypeId = pathname.startsWith("/main/sales/contracts")
+    ? 2
+    : pathname.startsWith("/main/bank/loan-contracts")
+      ? 3
+      : 1;
   const isSaleContract = contractTypeId === 2;
+  const isLoanContract = contractTypeId === 3;
   const newParams = useMemo(() => {
     const params = new URLSearchParams(searchParams);
     params.set("ContractTypeId", String(contractTypeId));
@@ -106,9 +112,11 @@ export default function ContractListPage() {
     },
     {
       title: t(
-        isSaleContract
-          ? "contract.fields.customerName"
-          : "contract.fields.supplierName",
+        isLoanContract
+          ? "contract.fields.lenderName"
+          : isSaleContract
+            ? "contract.fields.customerName"
+            : "contract.fields.supplierName",
       ),
       dataIndex: "counterpartyName",
     },

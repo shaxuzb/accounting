@@ -70,9 +70,12 @@ export default function ContractAddEditPage({
   const updateMutation = useUpdateContract();
   const isSaleContract = contractTypeId === 2;
   const counterpartyPath = selectListEndpoints.counterpartiesSelectList;
-  const counterpartyLabel = isSaleContract
-    ? "contract.fields.customerName"
-    : "contract.fields.supplierName";
+  const counterpartyLabel =
+    contractTypeId === 3
+      ? "contract.fields.lenderName"
+      : isSaleContract
+        ? "contract.fields.customerName"
+        : "contract.fields.supplierName";
 
   const formik = useFormik<ContractForm>({
     initialValues: {

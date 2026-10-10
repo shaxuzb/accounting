@@ -240,12 +240,25 @@ export const menuPermissions: MainMenu = {
       ],
     },
     {
-      code: "ROLE_VIEW",
+      code: "DROPDOWN",
+      dropdown: true,
+      dropdownName: "bank.title",
+      iconName: <Landmark className="size-5" />,
       linkData: {
         path: "bank",
         title: "bank.title",
       },
-      iconName: <Landmark className="size-5" />,
+      items: [
+        {
+          code: contractPermissions.view,
+          linkData: { path: "loan-contracts", title: "contract.loanTitle" },
+        },
+        {
+          // the bank operations are the section's own page (/main/bank)
+          code: "ROLE_VIEW",
+          linkData: { path: "", title: "bank.operationsTitle" },
+        },
+      ],
     },
     {
       code: "DROPDOWN",

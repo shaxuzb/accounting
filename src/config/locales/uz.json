@@ -1463,6 +1463,7 @@
     }
   },
   "bank": {
+    "operationsTitle": "Bank operatsiyalari",
     "title": "Bank",
     "statementImport": "Bank ko'chirmasini import qilish",
     "fields": {
@@ -1590,6 +1591,7 @@
     }
   },
   "contract": {
+    "loanTitle": "Kredit shartnomalari",
     "filters": {
       "dateFrom": "Sanadan",
       "dateTo": "Sanagacha",
@@ -1608,6 +1610,7 @@
     "createTitle": "Shartnoma yaratish",
     "editTitle": "Shartnomani tahrirlash",
     "fields": {
+      "lenderName": "Kredit beruvchi (bank)",
       "counterpartyName": "Kontragent nomi",
       "customerName": "Mijoz",
       "supplierName": "Yetkazib beruvchi",

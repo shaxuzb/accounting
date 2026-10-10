@@ -73,6 +73,11 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
       if (item.dropdown && item.items?.length) {
         for (const subItem of item.items) {
           const fullPath = `main/${basePath}/${subItem.linkData?.path}`;
+          // a section's own page ("" path) is selected on the section and its pages no other item has
+          if (!subItem.linkData?.path) {
+            if (pathname === `main/${basePath}` || pathname.startsWith(fullPath)) return fullPath;
+            continue;
+          }
           if (pathname.startsWith(fullPath)) {
             return fullPath;
           }
