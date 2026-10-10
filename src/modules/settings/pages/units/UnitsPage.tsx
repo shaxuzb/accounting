@@ -11,7 +11,7 @@ import ListToolbar from "@/components/ui/filters/ListToolbar";
 import { $axiosPrivate } from "@/services/AxiosService";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 
-const editPermission = "CHART_ACCOUNT_VIEW";
+const editPermission = "PRODUCT_UPDATE";
 const endpoint = "units";
 const queryKey = ["units"] as const;
 

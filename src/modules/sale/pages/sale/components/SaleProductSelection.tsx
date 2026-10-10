@@ -662,20 +662,26 @@ export default function SaleProductSelection({
         unitName: detail.unitName || product.unitName,
         unitPrice:
           salePriceBySelection === undefined ? unitPrice : salePriceBySelection,
-        inventoryAccountId:
-          existingLine?.inventoryAccountId ??
-          defaultAccounts.inventoryAccountId,
-        incomeAccountId:
-          existingLine?.incomeAccountId ?? defaultAccounts.incomeAccountId,
-        costAccountId:
-          existingLine?.costAccountId ?? defaultAccounts.costAccountId,
-        inventoryAccountName:
-          existingLine?.inventoryAccountName ??
-          defaultAccounts.inventoryAccountName,
-        incomeAccountName:
-          existingLine?.incomeAccountName ?? defaultAccounts.incomeAccountName,
-        costAccountName:
-          existingLine?.costAccountName ?? defaultAccounts.costAccountName,
+        // the same product keeps the line's accounts (picked by hand or from its nomenclature
+        // accounts); another product starts from the defaults and takes its own
+        ...(existingLine && existingLine.productId === productId
+          ? {
+              inventoryAccountId: existingLine.inventoryAccountId ?? defaultAccounts.inventoryAccountId,
+              incomeAccountId: existingLine.incomeAccountId ?? defaultAccounts.incomeAccountId,
+              costAccountId: existingLine.costAccountId ?? defaultAccounts.costAccountId,
+              inventoryAccountName: existingLine.inventoryAccountName ?? defaultAccounts.inventoryAccountName,
+              incomeAccountName: existingLine.incomeAccountName ?? defaultAccounts.incomeAccountName,
+              costAccountName: existingLine.costAccountName ?? defaultAccounts.costAccountName,
+              productAccountsFor: existingLine.productAccountsFor,
+            }
+          : {
+              inventoryAccountId: defaultAccounts.inventoryAccountId,
+              incomeAccountId: defaultAccounts.incomeAccountId,
+              costAccountId: defaultAccounts.costAccountId,
+              inventoryAccountName: defaultAccounts.inventoryAccountName,
+              incomeAccountName: defaultAccounts.incomeAccountName,
+              costAccountName: defaultAccounts.costAccountName,
+            }),
         vatRateId: existingLine?.vatRateId ?? saleCondition.vatRateId,
         markings:
           existingLine?.productId === productId
@@ -897,6 +903,8 @@ export default function SaleProductSelection({
               incomeAccountName: values.incomeAccountName,
               costAccountId: values.costAccountId,
               costAccountName: values.costAccountName,
+              // picked by hand: the product's accounts no longer replace them
+              productAccountsFor: item.productId,
             }
           : item,
       ),

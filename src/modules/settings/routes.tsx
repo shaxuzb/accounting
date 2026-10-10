@@ -372,7 +372,7 @@ export const settingsRoutes: RouteObject = {
         showBack: true,
         backTo: "..",
       },
-      element: withPermission(<UnitsPage />, chartAccountsPermissions.view),
+      element: withPermission(<UnitsPage />, "PRODUCT_VIEW"),
     },
     {
       path: "product-accounts",
@@ -381,7 +381,7 @@ export const settingsRoutes: RouteObject = {
         showBack: true,
         backTo: "..",
       },
-      element: withPermission(<ProductAccountsPage />, chartAccountsPermissions.view),
+      element: withPermission(<ProductAccountsPage />, "DOCUMENT_ACCOUNT_SETTING_VIEW"),
     },
     {
       path: "document-account-settings",

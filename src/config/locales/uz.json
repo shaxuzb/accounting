@@ -1627,7 +1627,7 @@
     },
     "fields": {
       "productKind": "Nomenklatura turi",
-      "productKindHint": "1C dagi «Вид номенклатуры»: qaysi hisobda saqlanishini belgilaydi — tovar 2910, material 1010, tayyor mahsulot 2810 (sotuvi 9010/9110), tara 1060, inventar 1080. Aniq hisoblarni Sozlamalar → Nomenklatura hisoblari'da o'zgartirish mumkin.",
+      "productKindHint": "1C dagi «Вид номенклатуры»: qaysi hisobda saqlanishini belgilaydi — tovar 2910, material 1010, tayyor mahsulot 2810 (sotuvi 9010/9110), tara 1060, inventar 1080. Material, tara va inventar sotuvi BHMS bo'yicha 9220 orqali o'tadi (oy yopishda natija 9320/9430 ga). Aniq hisoblarni Sozlamalar → Nomenklatura hisoblari'da o'zgartirish mumkin.",
       "productKindAccount": "Hisob: {{account}}",
       "productKindAccountMissing": "{{number}} hisobi hisoblar rejasida yo'q — saqlanganda standart rejadan qo'shiladi",
       "name": "Nomi",
@@ -2635,6 +2635,7 @@
       "employerHint": "Ish beruvchi solig'i xodimdan ushlanmaydi, ish haqi tushgan xarajat hisobvarag'iga qo'shiladi: Дт xarajat — Кт soliq hisobvarag'i."
     },
     "periods": {
+      "taxRegimeNone": "Tashkilotning soliq tizimi aniqlanmagan (QQS to'lamaydi va hisob siyosatida soliq tizimi tanlanmagan) — foyda solig'i ham, aylanma soliq ham hisoblanmaydi. Hisob siyosatida soliq tizimini tanlang.",
       "title": "Hisoblash davrlari",
       "create": "Davr ochish",
       "createTitle": "Yangi hisoblash davri",
@@ -3537,7 +3538,7 @@
     "recloseGo": "O'sha yilga o'tish",
     "reclosedMessage": "Oylar qayta yopildi: {{closed}}",
     "recloseStopped": "Yopildi: {{closed}}. {{month}} yopilmadi: {{reasons}}",
-    "stopReasons": {"MONTH_NOT_OVER": "oy hali tugamagan", "REVALUATION_REQUIRED": "valyuta qayta baholanishi kerak", "DEPRECIATION_REQUIRED": "asosiy vositalar amortizatsiyasi hisoblanmagan", "ACCOUNTS_MISSING": "hisoblar rejasida kerakli hisoblar yo'q", "OPENING_OFFSET": "0000 hisobida qoldiq bor", "PREVIOUS_OPEN": "oldingi oy yopilmagan", "CHECK_FAILED": "yopish tekshiruvi o'tmadi"},
+    "stopReasons": {"TAX_RATE_MISSING": "soliq tizimi stavkasi kiritilmagan", "MONTH_NOT_OVER": "oy hali tugamagan", "REVALUATION_REQUIRED": "valyuta qayta baholanishi kerak", "DEPRECIATION_REQUIRED": "asosiy vositalar amortizatsiyasi hisoblanmagan", "ACCOUNTS_MISSING": "hisoblar rejasida kerakli hisoblar yo'q", "OPENING_OFFSET": "0000 hisobida qoldiq bor", "PREVIOUS_OPEN": "oldingi oy yopilmagan", "CHECK_FAILED": "yopish tekshiruvi o'tmadi"},
     "title": "Hisob davrlari",
     "month": "Oy",
     "status": "Holati",

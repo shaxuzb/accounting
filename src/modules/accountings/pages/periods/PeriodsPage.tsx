@@ -504,6 +504,9 @@ function CloseMonthModal({
           {check.taxRateMissing && (
             <Alert type="error" showIcon message={t("periods.taxRateMissing", { regime: check.taxRegimeName ?? "" })} />
           )}
+          {!check.taxRegimeName && (
+            <Alert type="warning" showIcon message={t("periods.taxRegimeNone")} />
+          )}
 
           {check.turnoverTax != null && (
             <>

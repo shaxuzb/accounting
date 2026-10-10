@@ -219,9 +219,11 @@ export default function OpeningInventoryEditorPage() {
   // 1010, finished products on 2810. A row whose account was picked by hand keeps it.
   const queryClient = useQueryClient();
   useEffect(() => {
+    // saved rows (an id) keep the account they were saved with
     const pending = lines.filter(
       (row) =>
         row.productId &&
+        !(row.id > 0) &&
         row.productAccountsFor !== row.productId &&
         (row.debitAccountId == null || row.debitAccountId === defaultAccounts.debitAccountId),
     );
@@ -236,6 +238,7 @@ export default function OpeningInventoryEditorPage() {
         current.map((row) => {
           if (
             !row.productId ||
+            row.id > 0 ||
             row.productAccountsFor === row.productId ||
             (row.debitAccountId != null && row.debitAccountId !== defaultAccounts.debitAccountId)
           )

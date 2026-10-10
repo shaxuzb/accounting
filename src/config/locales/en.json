@@ -1627,7 +1627,7 @@
     },
     "fields": {
       "productKind": "Nomenclature kind",
-      "productKindHint": "Sets the account the item is kept on: goods 2910, materials 1010, finished products 2810 (sold via 9010/9110), packaging 1060, supplies 1080. Specific accounts are changed in Settings → Nomenclature accounts.",
+      "productKindHint": "Sets the account the item is kept on: goods 2910, materials 1010, finished products 2810 (sold via 9010/9110), packaging 1060, supplies 1080. Materials, packaging and supplies are sold through 9220 (NSBU), the month close moving the result to 9320/9430. Specific accounts are changed in Settings → Nomenclature accounts.",
       "productKindAccount": "Account: {{account}}",
       "productKindAccountMissing": "Account {{number}} is not in the chart — it is added from the standard chart on save",
       "name": "Name",
@@ -2635,6 +2635,7 @@
       "employerHint": "An employer tax is not withheld from the employee; it is charged to the same cost account the salary went to: Dr expense — Cr the tax account."
     },
     "periods": {
+      "taxRegimeNone": "The organization's tax system is not set (it does not pay VAT and its policy names no tax system) — neither profit nor turnover tax is charged. Choose it in the accounting policy.",
       "title": "Payroll periods",
       "create": "Open period",
       "createTitle": "New payroll period",
@@ -3537,7 +3538,7 @@
     "recloseGo": "Go to that year",
     "reclosedMessage": "Months closed again: {{closed}}",
     "recloseStopped": "Closed: {{closed}}. {{month}} was not closed: {{reasons}}",
-    "stopReasons": {"MONTH_NOT_OVER": "the month is not over", "REVALUATION_REQUIRED": "a currency revaluation is required", "DEPRECIATION_REQUIRED": "depreciation of fixed assets is not posted", "ACCOUNTS_MISSING": "accounts are missing from the chart", "OPENING_OFFSET": "account 0000 has a balance", "PREVIOUS_OPEN": "the previous month is open", "CHECK_FAILED": "the closing check failed"},
+    "stopReasons": {"TAX_RATE_MISSING": "the tax system has no rate", "MONTH_NOT_OVER": "the month is not over", "REVALUATION_REQUIRED": "a currency revaluation is required", "DEPRECIATION_REQUIRED": "depreciation of fixed assets is not posted", "ACCOUNTS_MISSING": "accounts are missing from the chart", "OPENING_OFFSET": "account 0000 has a balance", "PREVIOUS_OPEN": "the previous month is open", "CHECK_FAILED": "the closing check failed"},
     "title": "Accounting periods",
     "month": "Month",
     "status": "Status",

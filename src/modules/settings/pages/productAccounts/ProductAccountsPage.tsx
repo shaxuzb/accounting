@@ -20,7 +20,7 @@ import {
 } from "@/shared/productAccounts";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 
-const editPermission = "CHART_ACCOUNT_VIEW";
+const editPermission = "DOCUMENT_ACCOUNT_SETTING_SAVE";
 
 type Target = "organization" | "kind" | "group" | "product";
 
@@ -155,7 +155,7 @@ export default function ProductAccountsPage() {
       toast.error(t("productAccounts.accountRequired"));
       return;
     }
-    save.mutate(serviceOnly ? { ...draft, stockAccountId: null } : draft);
+    save.mutate(serviceOnly ? { ...draft, stockAccountId: null, costAccountId: null } : draft);
   };
 
   const kindColumns: TableColumnsType<ProductKind> = [
@@ -177,7 +177,11 @@ export default function ProductAccountsPage() {
         ) : (
           <AccountCell
             account={row.stockAccount}
-            fallback={row.stockAccountNumber ? t("productAccounts.notInChart", { number: row.stockAccountNumber }) : undefined}
+            fallback={
+              row.stockAccountNumber
+                ? t("productAccounts.notInChart", { number: row.stockAccountNumber })
+                : t("productAccounts.fromDocumentSettings")
+            }
           />
         ),
     },
@@ -198,16 +202,19 @@ export default function ProductAccountsPage() {
     {
       key: "cost",
       title: t("productAccounts.costAccount"),
-      render: (_, row) => (
-        <AccountCell
-          account={row.costAccount}
-          fallback={
-            row.costAccountNumber
-              ? t("productAccounts.notInChart", { number: row.costAccountNumber })
-              : t("productAccounts.fromDocumentSettings")
-          }
-        />
-      ),
+      render: (_, row) =>
+        row.isService ? (
+          "—"
+        ) : (
+          <AccountCell
+            account={row.costAccount}
+            fallback={
+              row.costAccountNumber
+                ? t("productAccounts.notInChart", { number: row.costAccountNumber })
+                : t("productAccounts.fromDocumentSettings")
+            }
+          />
+        ),
     },
   ];
 
@@ -374,7 +381,8 @@ export default function ProductAccountsPage() {
             {!serviceOnly &&
               accountSelect(t("productAccounts.stockAccount"), "stockAccountId", t("productAccounts.stockHint"))}
             {accountSelect(t("productAccounts.incomeAccount"), "incomeAccountId", t("productAccounts.incomeHint"))}
-            {accountSelect(t("productAccounts.costAccount"), "costAccountId", t("productAccounts.costHint"))}
+            {!serviceOnly &&
+              accountSelect(t("productAccounts.costAccount"), "costAccountId", t("productAccounts.costHint"))}
             <div className="text-xs text-secondary-text">{t("productAccounts.formHint")}</div>
           </div>
         )}

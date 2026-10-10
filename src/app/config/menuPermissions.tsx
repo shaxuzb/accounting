@@ -779,7 +779,7 @@ export const menuPermissions: MainMenu = {
       },
     },
     {
-      code: "CHART_ACCOUNT_VIEW",
+      code: "PRODUCT_VIEW",
       iconName: <Scale className="size-5" />,
       linkData: {
         path: "units",
@@ -788,7 +788,7 @@ export const menuPermissions: MainMenu = {
       },
     },
     {
-      code: "CHART_ACCOUNT_VIEW",
+      code: "DOCUMENT_ACCOUNT_SETTING_VIEW",
       iconName: <Boxes className="size-5" />,
       linkData: {
         path: "product-accounts",
