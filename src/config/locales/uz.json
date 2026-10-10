@@ -1,4 +1,22 @@
 {
+  "units": {
+    "new": "Birlik qo'shish",
+    "edit": "O'lchov birligi",
+    "save": "Saqlash",
+    "saved": "Saqlandi",
+    "deleted": "O'chirildi",
+    "deleteConfirm": "Bu birlikni o'chirasizmi?",
+    "required": "Qisqa va to'liq nomni kiriting",
+    "hint": "1C dagi «Классификатор единиц измерения». Umumiy birliklar barcha tashkilotlarga ko'rinadi va o'zgarmaydi; o'z birliklaringizni qo'shishingiz mumkin. Mahsulotlari bor birlik o'chirilmaydi.",
+    "code": "Qisqa nomi",
+    "name": "To'liq nomi",
+    "owner": "Turi",
+    "shared": "Umumiy",
+    "own": "Tashkilotniki",
+    "products": "Mahsulotlar",
+    "codePlaceholder": "masalan: qop",
+    "namePlaceholder": "masalan: Qop (50 kg)"
+  },
   "productAccounts": {
     "targets": {
       "organization": "Butun tashkilot",
@@ -727,6 +745,7 @@
       "counterpartySuccess": "Kontragent ma'lumotlari topildi"
     },
     "entities": {
+      "units": "O'lchov birliklari",
       "productAccounts": "Nomenklatura hisoblari",
       "role": "Rol",
       "roles": "Rollar",
@@ -758,6 +777,7 @@
       "accountingPolicy": "Buxgalteriya siyosati"
     },
     "descriptions": {
+      "units": "Platformaning umumiy birliklari va tashkilotning o'z birliklari (qop, blok, poddon ...).",
       "productAccounts": "Tovar, material, tayyor mahsulot qaysi hisobda saqlanishi va sotuvi qaysi daromad/tannarx hisobiga yozilishi.",
       "roles": "Tizimdagi rollar va ularning huquqlarini boshqarish.",
       "users": "Foydalanuvchilar va ularning tizimdagi rollarini boshqarish.",

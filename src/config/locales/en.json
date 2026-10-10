@@ -1,4 +1,22 @@
 {
+  "units": {
+    "new": "Add unit",
+    "edit": "Unit of measure",
+    "save": "Save",
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "deleteConfirm": "Delete this unit?",
+    "required": "Enter the short and the full name",
+    "hint": "Like 1C «Классификатор единиц измерения». Shared units are seen by every organization and do not change; you can add your own. A unit products are counted in cannot be removed.",
+    "code": "Short name",
+    "name": "Full name",
+    "owner": "Kind",
+    "shared": "Shared",
+    "own": "Own",
+    "products": "Products",
+    "codePlaceholder": "e.g. bag",
+    "namePlaceholder": "e.g. Bag (50 kg)"
+  },
   "productAccounts": {
     "targets": {
       "organization": "Whole organization",
@@ -725,6 +743,7 @@
       "counterpartySuccess": "Counterparty data found"
     },
     "entities": {
+      "units": "Units of measure",
       "productAccounts": "Nomenclature accounts",
       "role": "Role",
       "roles": "Roles",
@@ -756,6 +775,7 @@
       "openingInventory": "Opening inventory"
     },
     "descriptions": {
+      "units": "The platform's shared units and the organization's own (a bag, a block, a pallet ...).",
       "productAccounts": "Which account keeps goods, materials and products, and which revenue and cost accounts their sale goes to.",
       "roles": "Manage system roles and permissions.",
       "users": "Manage users and their roles.",

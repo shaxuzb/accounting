@@ -780,6 +780,15 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "CHART_ACCOUNT_VIEW",
+      iconName: <Scale className="size-5" />,
+      linkData: {
+        path: "units",
+        title: "settings.entities.units",
+        description: "settings.descriptions.units",
+      },
+    },
+    {
+      code: "CHART_ACCOUNT_VIEW",
       iconName: <Boxes className="size-5" />,
       linkData: {
         path: "product-accounts",
