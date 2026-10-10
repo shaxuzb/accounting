@@ -2646,6 +2646,7 @@
       "employerHint": "Ish beruvchi solig'i xodimdan ushlanmaydi, ish haqi tushgan xarajat hisobvarag'iga qo'shiladi: Дт xarajat — Кт soliq hisobvarag'i."
     },
     "periods": {
+      "turnoverTaxExcluded": "Bazadan chiqarilgan daromad (dividendlar va h.k.)",
       "taxRegimeNone": "Tashkilotning soliq tizimi aniqlanmagan (QQS to'lamaydi va hisob siyosatida soliq tizimi tanlanmagan) — foyda solig'i ham, aylanma soliq ham hisoblanmaydi. Hisob siyosatida soliq tizimini tanlang.",
       "title": "Hisoblash davrlari",
       "create": "Davr ochish",

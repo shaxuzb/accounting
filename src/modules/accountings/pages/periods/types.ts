@@ -53,6 +53,8 @@ export interface MonthCloseCheck {
   turnoverTaxBase?: number | null;
   turnoverTaxRate?: number | null;
   turnoverTax?: number | null;
+  /** Income the regime leaves out of the turnover base (dividends taxed at the source ...). */
+  turnoverTaxExcluded?: number | null;
   /** Deferred expenses written off for the month (Dt expense — Kt 31xx). */
   deferredLines?: MonthCloseDeferredLine[];
   /** 31xx balances with no write-off schedule (a warning). */

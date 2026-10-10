@@ -2646,6 +2646,7 @@
       "employerHint": "An employer tax is not withheld from the employee; it is charged to the same cost account the salary went to: Dr expense — Cr the tax account."
     },
     "periods": {
+      "turnoverTaxExcluded": "Left out of the base (dividends ...)",
       "taxRegimeNone": "The organization's tax system is not set (it does not pay VAT and its policy names no tax system) — neither profit nor turnover tax is charged. Choose it in the accounting policy.",
       "title": "Payroll periods",
       "create": "Open period",

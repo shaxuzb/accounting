@@ -514,6 +514,12 @@ function CloseMonthModal({
               <div className="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md border border-border p-3 md:grid-cols-3">
                 <span className="text-secondary-text">{t("periods.turnoverTaxBase")}</span>
                 <b className="text-right md:col-span-2 md:text-left">{money(check.turnoverTaxBase ?? 0)}</b>
+                {!!check.turnoverTaxExcluded && (
+                  <>
+                    <span className="text-secondary-text">{t("periods.turnoverTaxExcluded")}</span>
+                    <span className="text-right md:col-span-2 md:text-left">{money(check.turnoverTaxExcluded)}</span>
+                  </>
+                )}
                 <span className="text-secondary-text">{t("periods.turnoverTaxMonth", { rate: check.turnoverTaxRate })}</span>
                 <b className="text-right md:col-span-2 md:text-left">{money(check.turnoverTax)}</b>
               </div>
