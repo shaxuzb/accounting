@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import dayjs from "dayjs";
-import { Button, Col, Row, Table } from "antd";
+import { Alert, Button, Col, Row, Table } from "antd";
 import type { TableColumnsType } from "antd";
 import type { FormikProps } from "formik";
 import { Plus, Trash2 } from "lucide-react";
@@ -42,18 +42,23 @@ interface FaDisposalFormFieldsProps {
   formik: FormikProps<FaDisposalFormValues>;
   isDraft: boolean;
   documentTypeId?: number;
+  /** The number of the inventory the document books the shortage of. */
+  inventoryNumber?: string | null;
 }
 
 export default function FaDisposalFormFields({
   formik,
   isDraft,
   documentTypeId,
+  inventoryNumber,
 }: FaDisposalFormFieldsProps) {
   const { t } = useTranslation();
   const vatPayer = useVatPayer(formik.values.disposalDate);
   // 1C «Продажа ОС»: a sale has a buyer and a price (with output VAT for a payer);
   // a write-off has neither
   const isSale = Number(formik.values.disposalTypeId) === faDisposalTypeIds.sale;
+  const isShortage = Number(formik.values.disposalTypeId) === faDisposalTypeIds.shortage;
+  const fromInventory = Boolean(formik.values.inventoryDocId);
   const chargesVat = isSale && vatPayer.isVatPayer;
   const counterpartyId = formik.values.counterpartyId;
   const assetKindId = formik.values.assetKindId;
@@ -208,8 +213,17 @@ export default function FaDisposalFormFields({
     <div className="min-w-0 space-y-2">
       <Card className="p-3">
         <div className="mb-3">
-          <FaAssetKindSwitch value={assetKindId} onChange={handleKindChange} disabled={!isDraft} />
+          <FaAssetKindSwitch value={assetKindId} onChange={handleKindChange} disabled={!isDraft || fromInventory} />
         </div>
+        {fromInventory && (
+          <Alert
+            className="mb-3"
+            showIcon
+            type="info"
+            message={t("fa.inventory.basedOn", { id: inventoryNumber ?? formik.values.inventoryDocId })}
+            description={t("fa.inventory.shortageHint")}
+          />
+        )}
         <Row gutter={[16, 0]}>
           <Col span={6}>
             <SelectDate
@@ -226,6 +240,12 @@ export default function FaDisposalFormFields({
               fieldName="disposalTypeId"
               label="fa.fields.disposalType"
               required
+              disabled={fromInventory}
+              onChange={(value) => {
+                // a shortage goes to 5910, any other loss to 9430: the account is taken again
+                const shortageNow = Number(value) === faDisposalTypeIds.shortage;
+                if (shortageNow !== isShortage) void formik.setFieldValue("lossAccountId", null);
+              }}
             />
           </Col>
           <Col span={6}>
@@ -281,12 +301,14 @@ export default function FaDisposalFormFields({
               ["customerAccountId", "fa.fields.customerAccount", faDocumentAccountRoleCodes.customerSettlement, isSale],
               ["vatAccountId", "fa.fields.vatAccount", faDocumentAccountRoleCodes.saleVat, chargesVat],
               ["gainAccountId", "fa.fields.gainAccount", faDocumentAccountRoleCodes.disposalGain, isSale],
-              ["lossAccountId", "fa.fields.lossAccount", faDocumentAccountRoleCodes.disposalLoss, true],
+              isShortage
+                ? (["lossAccountId", "fa.fields.shortageAccount", faDocumentAccountRoleCodes.inventoryShortage, true] as const)
+                : (["lossAccountId", "fa.fields.lossAccount", faDocumentAccountRoleCodes.disposalLoss, true] as const),
             ] as const
           )
             .filter(([, , , shown]) => shown)
             .map(([fieldName, label, roleCode]) => (
-            <Col key={fieldName} span={6}>
+            <Col key={`${fieldName}-${roleCode}`} span={6}>
               <DocumentAccountSelect
                 documentTypeId={documentTypeId ?? 0}
                 documentRoleCode={faKindRole(assetKindId, roleCode)}

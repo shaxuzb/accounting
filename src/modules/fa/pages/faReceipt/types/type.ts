@@ -23,10 +23,13 @@ export interface FaReceiptPayload {
   docDate: string;
   /** 1 fixed assets, 2 intangible assets (1C «Поступление НМА»). */
   assetKindId: number;
-  counterpartyId: number;
+  /** The supplier; none for a surplus found at an inventory. */
+  counterpartyId: number | null;
   currencyId: number;
   receiptTypeId: number;
   supplierAccountId: number;
+  /** The inventory whose surplus the receipt books (type 4). */
+  inventoryDocId: number | null;
   lines: FaReceiptLineItem[];
 }
 
@@ -40,6 +43,7 @@ export interface FaReceiptResponse extends FaReceiptPayload {
   currencyName?: string;
   currencyCode?: string;
   receiptTypeName?: string;
+  inventoryDocNumber?: string | null;
   supplierAccountNumber?: string;
   supplierAccountName?: string;
   statusId: number;

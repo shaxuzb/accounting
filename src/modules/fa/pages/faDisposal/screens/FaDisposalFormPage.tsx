@@ -13,6 +13,7 @@ import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import { faDisposalTypeIds } from "../constants/disposalTypes";
 import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 import { faAssetKindFromParams, faAssetKinds } from "../../../shared/constants/assetKinds";
+import { useFaInventory } from "../../faInventory/api";
 import FaDisposalFormFields from "../components/FaDisposalFormFields";
 import FaDisposalReadonlyView from "../components/FaDisposalReadonlyView";
 import { faDisposalPermissions } from "../constants/permissions";
@@ -34,6 +35,7 @@ const createDefaultValues = (): FaDisposalFormValues => ({
   reason: "",
   counterpartyId: null,
   contractId: null,
+  inventoryDocId: null,
   stateId: faDocumentStatusIds.draft,
   disposalAccountId: null,
   customerAccountId: null,
@@ -63,6 +65,7 @@ const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => {
     reason: values.reason || "",
     counterpartyId: isSale ? (values.counterpartyId ?? null) : null,
     contractId: isSale ? (values.contractId ?? null) : null,
+    inventoryDocId: values.inventoryDocId ?? null,
     stateId: values.stateId ?? faDocumentStatusIds.draft,
     disposalAccountId: accountOrNull(values.disposalAccountId),
     customerAccountId: isSale ? accountOrNull(values.customerAccountId) : null,
@@ -109,14 +112,26 @@ export default function FaDisposalFormPage() {
 
   const [searchParams] = useSearchParams();
   const newKind = faAssetKindFromParams(searchParams);
+  // 1C «Создать на основании» an inventory: its shortage, of type «Inventarizatsiyada kamomad»
+  const inventoryId = isCreate ? Number(searchParams.get("inventoryId")) || null : null;
+  const inventoryQuery = useFaInventory(inventoryId);
+  const inventory = inventoryQuery.data;
   const initialValues = useMemo<FaDisposalFormValues>(
     () => ({
       disposalDate: record?.disposalDate ?? createDefaultValues().disposalDate,
-      assetKindId: record?.assetKindId ?? newKind,
-      disposalTypeId: record?.disposalTypeId ?? null,
-      reason: record?.reason ?? "",
+      assetKindId: record?.assetKindId ?? (inventory?.assetKindId as FaDisposalFormValues["assetKindId"] | undefined) ?? newKind,
+      disposalTypeId: record?.disposalTypeId ?? (inventory ? faDisposalTypeIds.shortage : null),
+      reason:
+        record?.reason ??
+        (inventory
+          ? t("fa.inventory.shortageReason", {
+              number: inventory.docNumber,
+              date: dayjs(inventory.docDate).format("DD.MM.YYYY"),
+            })
+          : ""),
       counterpartyId: record?.counterpartyId ?? null,
       contractId: record?.contractId ?? null,
+      inventoryDocId: record?.inventoryDocId ?? inventory?.id ?? null,
       stateId: record?.stateId ?? createDefaultValues().stateId,
       disposalAccountId: record?.disposalAccountId ?? null,
       customerAccountId: record?.customerAccountId ?? null,
@@ -130,9 +145,18 @@ export default function FaDisposalFormPage() {
             vatRateId: line.vatRateId ?? null,
             note: line.note ?? "",
           }))
-        : createDefaultValues().lines,
+        : inventory
+          ? inventory.lines
+              .filter((line) => line.isOnBooks && !line.isFound && line.faAssetId)
+              .map((line) => ({
+                faAssetId: Number(line.faAssetId),
+                saleAmount: 0,
+                vatRateId: null,
+                note: line.note ?? "",
+              }))
+          : createDefaultValues().lines,
     }),
-    [record, newKind],
+    [record, newKind, inventory, t],
   );
 
   const persistDisposal = async (
@@ -197,7 +221,7 @@ export default function FaDisposalFormPage() {
     }
   };
 
-  if (detailQuery.isLoading && !isCreate) {
+  if ((detailQuery.isLoading && !isCreate) || (inventoryId && inventoryQuery.isLoading)) {
     return (
       <div className="flex justify-center p-10">
         <Spin />
@@ -252,6 +276,7 @@ export default function FaDisposalFormPage() {
           formik={formik}
           isDraft={isDraft}
           documentTypeId={faDocumentTypeIds.disposal}
+          inventoryNumber={inventory?.docNumber ?? record?.inventoryDocNumber}
         />
       </fieldset>
 

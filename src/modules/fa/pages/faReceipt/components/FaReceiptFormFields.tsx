@@ -1,6 +1,6 @@
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
 import { useState } from "react";
-import { Button, Col, Collapse, Row } from "antd";
+import { Alert, Button, Col, Collapse, Row } from "antd";
 import type { CollapseProps } from "antd";
 import type { FormikProps } from "formik";
 import { useTranslation } from "react-i18next";
@@ -50,16 +50,22 @@ interface FaReceiptFormFieldsProps {
   formik: FormikProps<FaReceiptFormValues>;
   isDraft: boolean;
   documentTypeId?: number;
+  /** The number of the inventory the document receives the surplus of. */
+  inventoryNumber?: string | null;
 }
 
 export default function FaReceiptFormFields({
   formik,
   isDraft,
   documentTypeId,
+  inventoryNumber,
 }: FaReceiptFormFieldsProps) {
   const { t } = useTranslation();
   const vatPayer = useVatPayer(formik.values.docDate);
   const assetKindId = formik.values.assetKindId;
+  // a surplus found at an inventory: no supplier and no VAT, credited to other income (9390)
+  const isSurplus = Number(formik.values.receiptTypeId) === 4;
+  const fromInventory = Boolean(formik.values.inventoryDocId);
   // the intangible accounts and groups exist once the server has set them up
   const kindReady = useIntangibleSetup(assetKindId);
   const accountsEnabled = Boolean(documentTypeId) && kindReady;
@@ -338,6 +344,7 @@ export default function FaReceiptFormFields({
                   required
                 />
               </Col>
+              {!isSurplus && (
               <Col span={6}>
                 <SelectCustom
                   path={selectListEndpoints.vatRatesSelectList}
@@ -351,6 +358,7 @@ export default function FaReceiptFormFields({
                   clearable
                 />
               </Col>
+              )}
               <Col span={6}>
                 <DocumentAccountSelect
                   documentTypeId={documentTypeId ?? 0}
@@ -366,7 +374,7 @@ export default function FaReceiptFormFields({
                   enabled={accountsEnabled}
                 />
               </Col>
-              {vatPayer.isVatPayer && (
+              {vatPayer.isVatPayer && !isSurplus && (
                 <Col span={6}>
                   <DocumentAccountSelect
                     documentTypeId={documentTypeId ?? 0}
@@ -431,9 +439,18 @@ export default function FaReceiptFormFields({
           <FaAssetKindSwitch
             value={assetKindId}
             onChange={handleKindChange}
-            disabled={!isDraft}
+            disabled={!isDraft || fromInventory}
           />
         </div>
+        {fromInventory && (
+          <Alert
+            className="mb-3"
+            showIcon
+            type="info"
+            message={t("fa.inventory.basedOn", { id: inventoryNumber ?? formik.values.inventoryDocId })}
+            description={t("fa.inventory.surplusHint")}
+          />
+        )}
         <Row gutter={[16, 0]}>
           <Col span={4}>
             <SelectDate
@@ -443,6 +460,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
+          {!isSurplus && (
           <Col span={5}>
             <SelectCustom
               path={selectListEndpoints.counterpartiesSelectList}
@@ -453,6 +471,7 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
+          )}
           <Col span={5}>
             <SelectCustom
               path={selectListEndpoints.faReceiptTypesSelectList}
@@ -460,6 +479,15 @@ export default function FaReceiptFormFields({
               fieldName="receiptTypeId"
               label="fa.fields.receiptType"
               required
+              disabled={fromInventory}
+              onChange={(value) => {
+                // the credit account follows the type: the supplier's 6010 or other income 9390
+                const surplusNow = Number(value) === 4;
+                if (surplusNow !== isSurplus) {
+                  void formik.setFieldValue("supplierAccountId", null);
+                  if (surplusNow) void formik.setFieldValue("counterpartyId", null);
+                }
+              }}
             />
           </Col>
           <Col span={4}>
@@ -471,13 +499,17 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col span={6}>
+          <Col span={6} key={isSurplus ? "surplus" : "supplier"}>
             <DocumentAccountSelect
               documentTypeId={documentTypeId ?? 0}
-              documentRoleCode={faDocumentAccountRoleCodes.supplierSettlement}
+              documentRoleCode={
+                isSurplus
+                  ? faDocumentAccountRoleCodes.inventorySurplus
+                  : faDocumentAccountRoleCodes.supplierSettlement
+              }
               formik={formik}
               fieldName="supplierAccountId"
-              label="fa.fields.supplierAccount"
+              label={isSurplus ? "fa.fields.surplusAccount" : "fa.fields.supplierAccount"}
               search
               required
               enabled={Boolean(documentTypeId)}

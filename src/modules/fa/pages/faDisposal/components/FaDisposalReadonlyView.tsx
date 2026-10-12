@@ -9,12 +9,16 @@ import {
   FileText,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
+import InventoryShortageSettlement from "@/modules/warehouse/pages/inventory-adjustment/components/InventoryShortageSettlement";
+import { faDisposalTypeIds } from "../constants/disposalTypes";
 import Card from "@/components/ui/card/Card";
 import {
   DocumentSummary,
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import { FaAssetKindField } from "../../../shared/components/FaAssetKindTag";
 import { useAppSelector } from "@/store/hooks";
 import { customDate, numberSpacing } from "@/utils/utils";
 import type { FaDisposalLineItem, FaDisposalResponse } from "../types/type";
@@ -96,6 +100,8 @@ export default function FaDisposalReadonlyView({
     0,
   );
   const hasVat = rows.some((row) => row.vatAmount !== 0);
+  // only a sale has a price
+  const isSale = record.disposalTypeId === faDisposalTypeIds.sale;
   const hasReserve = rows.some((row) => row.reserveTransfer !== 0);
 
   const accountItems = [
@@ -124,7 +130,7 @@ export default function FaDisposalReadonlyView({
         lookups.accountLabel(record.gainAccountId),
     },
     {
-      label: t("fa.fields.lossAccount"),
+      label: t(record.disposalTypeId === faDisposalTypeIds.shortage ? "fa.fields.shortageAccount" : "fa.fields.lossAccount"),
       value:
         joinAccount(record.lossAccountNumber, record.lossAccountName) ||
         lookups.accountLabel(record.lossAccountId),
@@ -155,17 +161,21 @@ export default function FaDisposalReadonlyView({
         <span className="font-medium text-text">{value}</span>
       ),
     },
-    {
-      title: t("fa.fields.saleAmount"),
-      dataIndex: "saleAmount",
-      align: "center",
-      minWidth: 170,
-      render: (value: number) => (
-        <span className="font-semibold tabular-nums text-primary">
-          {numberSpacing(value)}
-        </span>
-      ),
-    },
+    ...(isSale
+      ? [
+          {
+            title: t("fa.fields.saleAmount"),
+            dataIndex: "saleAmount",
+            align: "center" as const,
+            minWidth: 170,
+            render: (value: number) => (
+              <span className="font-semibold tabular-nums text-primary">
+                {numberSpacing(value)}
+              </span>
+            ),
+          },
+        ]
+      : []),
     ...(hasVat
       ? [
           {
@@ -235,12 +245,14 @@ export default function FaDisposalReadonlyView({
           label={t("fa.disposal.assetCount")}
           value={t("fa.disposal.countValue", { count: rows.length })}
         />
-        <DocumentSummaryItem
-          icon={<CircleDollarSign size={24} strokeWidth={1.8} />}
-          label={t("fa.sections.totalSaleAmount")}
-          value={numberSpacing(totalSaleAmount)}
-          emphasized
-        />
+        {isSale && (
+          <DocumentSummaryItem
+            icon={<CircleDollarSign size={24} strokeWidth={1.8} />}
+            label={t("fa.sections.totalSaleAmount")}
+            value={numberSpacing(totalSaleAmount)}
+            emphasized
+          />
+        )}
       </DocumentSummary>
 
       <Card className="border border-border px-4 py-3">
@@ -254,6 +266,18 @@ export default function FaDisposalReadonlyView({
                 lookups.disposalTypeLabel(record.disposalTypeId)}
             </div>
           </div>
+          {record.inventoryDocId && (
+            <div className="min-w-40">
+              <div className="text-xs text-secondary-text">
+                {t("fa.inventory.title")}
+              </div>
+              <div className="mt-0.5 text-sm font-semibold">
+                <Link to={`/main/fa/inventories/${record.inventoryDocId}`}>
+                  № {record.inventoryDocNumber ?? record.inventoryDocId}
+                </Link>
+              </div>
+            </div>
+          )}
           {record.counterpartyName && (
             <div className="min-w-40">
               <div className="text-xs text-secondary-text">
@@ -273,6 +297,7 @@ export default function FaDisposalReadonlyView({
               {record.reason || record.comment || "-"}
             </div>
           </div>
+          <FaAssetKindField assetKindId={record.assetKindId} />
           <ProcessStatusBadge
             statusId={record.statusId ?? record.stateId}
             statusName={record.statusName ?? record.stateName}
@@ -311,6 +336,16 @@ export default function FaDisposalReadonlyView({
           scroll={{ x: "max-content" }}
         />
       </Card>
+
+      {record.disposalTypeId === faDisposalTypeIds.shortage && record.statusId === 2 && (
+        <div className="max-w-md">
+          <InventoryShortageSettlement
+            adjustmentId={record.id}
+            statusPath={`fa/disposals/${record.id}/shortage`}
+            settlePath={`fa/disposals/${record.id}/shortage/settle`}
+          />
+        </div>
+      )}
 
       {action && <div className="flex justify-end">{action}</div>}
     </div>

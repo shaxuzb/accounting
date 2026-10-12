@@ -37,8 +37,13 @@ const money = (value: number) =>
  */
 export default function InventoryShortageSettlement({
   adjustmentId,
+  statusPath,
+  settlePath,
 }: {
   adjustmentId: string | number;
+  /** Another document's shortage (a fixed asset disposal): its own endpoints. */
+  statusPath?: string;
+  settlePath?: string;
 }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -50,11 +55,11 @@ export default function InventoryShortageSettlement({
   const [amount, setAmount] = useState<number | null>(null);
 
   const statusQuery = useQuery({
-    queryKey: ["inventory-adjustment-shortage", String(adjustmentId)],
+    queryKey: ["inventory-adjustment-shortage", statusPath ?? String(adjustmentId)],
     queryFn: async () =>
       (
         await $axiosPrivate.get<ShortageStatus>(
-          inventoryAdjustmentEndpoints.shortage(adjustmentId),
+          statusPath ?? inventoryAdjustmentEndpoints.shortage(adjustmentId),
         )
       ).data,
   });
@@ -62,7 +67,7 @@ export default function InventoryShortageSettlement({
     mutationFn: async () =>
       (
         await $axiosPrivate.post<number>(
-          inventoryAdjustmentEndpoints.settleShortage(adjustmentId),
+          settlePath ?? inventoryAdjustmentEndpoints.settleShortage(adjustmentId),
           {
             target,
             employeeId: target === 2 ? employeeId : null,
@@ -74,7 +79,7 @@ export default function InventoryShortageSettlement({
       ).data,
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: ["inventory-adjustment-shortage", String(adjustmentId)],
+        queryKey: ["inventory-adjustment-shortage", statusPath ?? String(adjustmentId)],
       }),
   });
 

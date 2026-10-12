@@ -16,6 +16,7 @@ import {
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import { FaAssetKindField } from "../../../shared/components/FaAssetKindTag";
 import { useAppSelector } from "@/store/hooks";
 import { customDate } from "@/utils/utils";
 import type {
@@ -209,6 +210,7 @@ export default function FaRevaluationReadonlyView({
               {record.reason || record.comment || "-"}
             </div>
           </div>
+          <FaAssetKindField assetKindId={record.assetKindId} />
           <ProcessStatusBadge
             statusId={record.statusId ?? record.stateId}
             statusName={record.statusName ?? record.stateName}

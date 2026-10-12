@@ -30,6 +30,9 @@ export interface FaDisposalResponse {
   counterpartyName?: string;
   contractId?: number | null;
   contractNumber?: string;
+  /** The inventory whose shortage the disposal books. */
+  inventoryDocId?: number | null;
+  inventoryDocNumber?: string | null;
   totalVatAmount?: number;
   totalReserveTransfer?: number;
   stateId: number;
@@ -68,6 +71,7 @@ export interface FaDisposalPayload {
   reason: string;
   counterpartyId: number | null;
   contractId: number | null;
+  inventoryDocId: number | null;
   stateId: number;
   disposalAccountId: number | null;
   customerAccountId: number | null;

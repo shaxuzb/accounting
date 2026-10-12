@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 import {
   Building2,
   CalendarDays,
@@ -13,6 +14,7 @@ import {
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import { FaAssetKindField } from "../../../../shared/components/FaAssetKindTag";
 import { customDate } from "@/utils/utils";
 import type { FaReceiptResponse } from "../../types/type";
 import FaReceiptAssetsTable from "./FaReceiptAssetsTable";
@@ -92,6 +94,17 @@ export default function FaReceiptReadonlyView({
               {receiptType}
             </div>
           </div>
+          {record.inventoryDocId && (
+            <div className="min-w-40">
+              <div className="text-xs text-secondary-text">{t("fa.inventory.title")}</div>
+              <div className="mt-0.5 text-sm font-semibold">
+                <Link to={`/main/fa/inventories/${record.inventoryDocId}`}>
+                  № {record.inventoryDocNumber ?? record.inventoryDocId}
+                </Link>
+              </div>
+            </div>
+          )}
+          <FaAssetKindField assetKindId={record.assetKindId} />
           <ProcessStatusBadge
             statusId={record.statusId}
             statusName={record.statusName}

@@ -38,7 +38,12 @@ export const faReceiptSchema = (t: TFunction, vatPayer = true) =>
 const receiptSchema = (t: TFunction, vatPayer: boolean, intangible: boolean) =>
   yup.object({
     docDate: yup.string().required(t("fa.validation.dateRequired")),
-    counterpartyId: yup.number().nullable().required(t("fa.validation.counterpartyRequired")),
+    // a surplus found at an inventory has no supplier (Dt 08 Kt 9390)
+    counterpartyId: yup.number().nullable().when("receiptTypeId", {
+      is: (value: unknown) => Number(value) === 4,
+      then: (schema) => schema.nullable(),
+      otherwise: (schema) => schema.required(t("fa.validation.counterpartyRequired")),
+    }),
     currencyId: yup.number().nullable().required(t("fa.validation.currencyRequired")),
     receiptTypeId: yup.number().nullable().required(t("fa.validation.receiptTypeRequired")),
     supplierAccountId: yup.number().nullable().required(t("fa.validation.supplierAccountRequired")),

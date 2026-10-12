@@ -20,4 +20,7 @@ export const faDocumentAccountRoleCodes = {
   saleVat: "sale_vat",
   disposalGain: "disposal_gain",
   disposalLoss: "disposal_loss",
+  /** The results of an inventory: a shortage's residual value (5910), a surplus's market value (9390). */
+  inventoryShortage: "inventory_shortage",
+  inventorySurplus: "inventory_surplus",
 } as const;

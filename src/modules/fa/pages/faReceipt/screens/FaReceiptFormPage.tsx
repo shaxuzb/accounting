@@ -26,6 +26,8 @@ import FaReceiptFormFields from "../components/FaReceiptFormFields";
 import FaReceiptReadonlyView from "../components/readonly/FaReceiptReadonlyView";
 import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 import { faAssetKindFromParams, faAssetKinds } from "../../../shared/constants/assetKinds";
+import { useFaInventory } from "../../faInventory/api";
+import { faSurplusReceiptTypeId } from "../../faInventory/constants";
 
 /** 1C «Провести и закрыть»: the form closes into its journal, not to whatever page was open before. */
 const FA_RECEIPT_LIST_PATH = "/main/fa/receipts";
@@ -38,6 +40,7 @@ const createDefaultValues = (): FaReceiptFormValues => ({
   currencyId: 1,
   receiptTypeId: null,
   supplierAccountId: null,
+  inventoryDocId: null,
   lines: [
     {
       name: "",
@@ -79,21 +82,25 @@ const getFirstValidationError = (value: unknown): string | undefined => {
 
 const toPayload = (
   values: FaReceiptFormValues,
-): FaReceiptPayload => ({
+): FaReceiptPayload => {
+  // a surplus found at an inventory: no supplier, no VAT (Dt 08 Kt 9390)
+  const isSurplus = Number(values.receiptTypeId) === faSurplusReceiptTypeId;
+  return {
   docDate: values.docDate,
   assetKindId: values.assetKindId,
-  counterpartyId: Number(values.counterpartyId),
+  counterpartyId: isSurplus || values.counterpartyId == null ? null : Number(values.counterpartyId),
   currencyId: Number(values.currencyId),
   receiptTypeId: Number(values.receiptTypeId),
   supplierAccountId: Number(values.supplierAccountId),
+  inventoryDocId: values.inventoryDocId ?? null,
   lines: values.lines.map((line) => ({
     name: line.name.trim(),
     quantity: Number(line.quantity),
     price: Number(line.price),
-    vatRateId: line.vatRateId == null ? null : Number(line.vatRateId),
+    vatRateId: isSurplus || line.vatRateId == null ? null : Number(line.vatRateId),
     capitalInvestmentAccountId: Number(line.capitalInvestmentAccountId),
     vatAccountId:
-      line.vatRateId == null || line.vatAccountId == null
+      isSurplus || line.vatRateId == null || line.vatAccountId == null
         ? null
         : Number(line.vatAccountId),
     assets: line.assets.map((asset) => ({
@@ -105,7 +112,8 @@ const toPayload = (
       assetAccountId: Number(asset.assetAccountId),
     })),
   })),
-});
+  };
+};
 
 export default function FaReceiptFormPage() {
   const { t } = useTranslation();
@@ -136,18 +144,47 @@ export default function FaReceiptFormPage() {
   const canSubmit = isCreate ? canCreate : isDraft && canUpdate;
   const listPath = "/main/fa/receipts";
 
+  // 1C «Создать на основании» an inventory: its surplus at the market value
+  const inventoryId = isCreate ? Number(searchParams.get("inventoryId")) || null : null;
+  const inventoryQuery = useFaInventory(inventoryId);
+  const inventory = inventoryQuery.data;
+
   const initialValues = useMemo<FaReceiptFormValues>(
     () => ({
       docDate: record?.docDate ?? createDefaultValues().docDate,
-      assetKindId: record?.assetKindId ?? newKind,
+      assetKindId: record?.assetKindId ?? (inventory?.assetKindId as FaReceiptFormValues["assetKindId"] | undefined) ?? newKind,
       counterpartyId: record?.counterpartyId ?? createDefaultValues().counterpartyId,
       currencyId: record?.currencyId ?? createDefaultValues().currencyId,
-      receiptTypeId: record?.receiptTypeId ?? createDefaultValues().receiptTypeId,
+      receiptTypeId: record?.receiptTypeId ?? (inventory ? faSurplusReceiptTypeId : createDefaultValues().receiptTypeId),
       supplierAccountId:
         record?.supplierAccountId ?? createDefaultValues().supplierAccountId,
-      lines: record?.lines?.length ? record.lines : createDefaultValues().lines,
+      inventoryDocId: record?.inventoryDocId ?? inventory?.id ?? null,
+      lines: record?.lines?.length
+        ? record.lines
+        : inventory
+          ? inventory.lines
+              .filter((line) => !line.isOnBooks)
+              .map((line) => ({
+                name: line.name,
+                quantity: 1,
+                price: line.actualValue,
+                vatRateId: null,
+                capitalInvestmentAccountId: null,
+                vatAccountId: null,
+                assets: [
+                  {
+                    inventoryNumber: line.inventoryNumber ?? "",
+                    name: line.name,
+                    initialCost: line.actualValue,
+                    faGroupId: null,
+                    okofId: null,
+                    assetAccountId: null,
+                  },
+                ],
+              }))
+          : createDefaultValues().lines,
     }),
-    [record, newKind],
+    [record, newKind, inventory],
   );
 
   const vatPayer = useVatPayer();
@@ -214,7 +251,7 @@ export default function FaReceiptFormPage() {
     }
   };
 
-  if (detailQuery.isLoading && !isCreate) {
+  if ((detailQuery.isLoading && !isCreate) || (inventoryId && inventoryQuery.isLoading)) {
     return (
       <div className="flex justify-center p-10">
         <Spin />
@@ -276,6 +313,7 @@ export default function FaReceiptFormPage() {
             formik={formik}
             isDraft={isDraft}
             documentTypeId={faDocumentTypeIds.receipt}
+            inventoryNumber={inventory?.docNumber ?? record?.inventoryDocNumber}
           />
         </fieldset>
 

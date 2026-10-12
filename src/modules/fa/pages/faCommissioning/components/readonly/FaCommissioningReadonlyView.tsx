@@ -14,6 +14,7 @@ import {
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
+import FaAssetKindTag from "../../../../shared/components/FaAssetKindTag";
 import { useAppSelector } from "@/store/hooks";
 import { customDate } from "@/utils/utils";
 import type { FaCommissioning } from "../../types/type";
@@ -106,10 +107,13 @@ export default function FaCommissioningReadonlyView({
           icon={<CircleCheckBig size={24} strokeWidth={1.8} />}
           label={t("settings.fields.status")}
           value={
-            <ProcessStatusBadge
-              statusId={record.statusId}
-              statusName={record.statusName}
-            />
+            <span className="flex flex-wrap items-center gap-2">
+              <FaAssetKindTag assetKindId={record.assetKindId} />
+              <ProcessStatusBadge
+                statusId={record.statusId}
+                statusName={record.statusName}
+              />
+            </span>
           }
         />
       </DocumentSummary>

@@ -10,6 +10,7 @@ import { faReceiptPermissions } from "./pages/faReceipt/constants/permissions";
 import { faRevaluationPermissions } from "./pages/faRevaluation/constants/permissions";
 import { faCommissioningPermissions } from "./pages/faCommissioning/constants/permissions";
 import { faModernizationPermissions } from "./pages/faModernization/constants/permissions";
+import { faInventoryPermissions } from "./pages/faInventory/constants";
 const FaAssetListPage = lazy(() => import("./pages/faAsset/screens/FaAssetListPage"));
 const FaAssetFormPage = lazy(() => import("./pages/faAsset/screens/FaAssetFormPage"));
 const FaReceiptListPage = lazy(() => import("./pages/faReceipt/screens/FaReceiptListPage"));
@@ -26,6 +27,8 @@ const FaCommissioningListPage = lazy(() => import("./pages/faCommissioning/scree
 const FaCommissioningFormPage = lazy(() => import("./pages/faCommissioning/screens/FaCommissioningFormPage"));
 const FaModernizationListPage = lazy(() => import("./pages/faModernization/FaModernizationListPage"));
 const FaModernizationEditorPage = lazy(() => import("./pages/faModernization/FaModernizationEditorPage"));
+const FaInventoryListPage = lazy(() => import("./pages/faInventory/FaInventoryListPage"));
+const FaInventoryEditorPage = lazy(() => import("./pages/faInventory/FaInventoryEditorPage"));
 
 const withPermission = (
   element: React.ReactElement,
@@ -281,6 +284,27 @@ export const faRoutes: RouteObject = {
           path: ":id",
           element: withPermission(<FaModernizationEditorPage />, faModernizationPermissions.view),
           handle: { title: "fa.modernization.title", showBack: true, backTo: ".." },
+        },
+      ],
+    },
+    {
+      // 1C «Инвентаризация ОС» / «Инвентаризация НМА»
+      path: "inventories",
+      handle: { title: "fa.entities.inventories" },
+      children: [
+        {
+          index: true,
+          element: withPermission(<FaInventoryListPage />, faInventoryPermissions.view),
+        },
+        {
+          path: "new",
+          element: withPermission(<FaInventoryEditorPage />, faInventoryPermissions.create),
+          handle: { title: "fa.inventory.new", showBack: true, backTo: ".." },
+        },
+        {
+          path: ":id",
+          element: withPermission(<FaInventoryEditorPage />, faInventoryPermissions.view),
+          handle: { title: "fa.inventory.title", showBack: true, backTo: ".." },
         },
       ],
     },
