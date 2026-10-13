@@ -15,6 +15,7 @@ const PayrollPaymentListPage = lazy(() => import("./pages/payments/screens/Payro
 const PayrollPeriodListPage = lazy(() => import("./pages/periods/screens/PayrollPeriodListPage"));
 const PayrollPayslipReportPage = lazy(() => import("./pages/reports/screens/PayrollPayslipReportPage"));
 const PayrollRegisterReportPage = lazy(() => import("./pages/reports/screens/PayrollRegisterReportPage"));
+const PayrollTaxReportsPage = lazy(() => import("./pages/reports/screens/PayrollTaxReportsPage"));
 const PayrollTimesheetDetailPage = lazy(() => import("./pages/timesheets/screens/PayrollTimesheetDetailPage"));
 const PayrollTimesheetListPage = lazy(() => import("./pages/timesheets/screens/PayrollTimesheetListPage"));
 import "./styles.css";
@@ -152,6 +153,14 @@ export const payrollRoutes: RouteObject = {
           handle: { title: "payroll.reports.registerTitle" },
           element: withPermission(
             <PayrollRegisterReportPage />,
+            payrollReportPermissions.view,
+          ),
+        },
+        {
+          path: "tax",
+          handle: { title: "payroll.taxReports.title" },
+          element: withPermission(
+            <PayrollTaxReportsPage />,
             payrollReportPermissions.view,
           ),
         },

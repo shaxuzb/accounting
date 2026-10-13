@@ -2405,6 +2405,17 @@
     }
   },
   "hr": {
+    "staff": {
+      "title": "Staff list",
+      "hint": "Once lines exist, hires, transfers and pay changes must fit them (units and salary range).",
+      "units": "Units",
+      "occupied": "Occupied",
+      "free": "Free",
+      "salaryRange": "Salary range",
+      "salaryMin": "Salary from",
+      "salaryMax": "Salary to",
+      "anyDepartment": "Any department"
+    },
     "dismissalGrounds": {
       "AGREEMENT": "Agreement of the parties",
       "CONTRACT_EXPIRY": "Expiry of the employment contract",
@@ -2563,6 +2574,45 @@
     }
   },
   "payroll": {
+    "stats": {
+      "title": "1-T (labour)",
+      "hint": "Average listed number: each day's list over the days of the month (without maternity and child care leave); wage fund: pay for labour.",
+      "listedAtEnd": "Listed at month end",
+      "averageListed": "Average listed",
+      "averageOther": "Part-time, contract",
+      "hired": "Hired",
+      "dismissed": "Left",
+      "wageFund": "Wage fund",
+      "averageWage": "Average wage"
+    },
+    "taxReports": {
+      "title": "Tax and statistics reports",
+      "calculationTitle": "Income tax and social tax calculation",
+      "calculationHint": "From all posted payroll documents of the month; filed monthly by the 15th (art. 407).",
+      "statementTitle": "Income statement",
+      "pinfl": "PINFL",
+      "resident": "Resident",
+      "yes": "Yes",
+      "no": "No",
+      "income": "Income",
+      "exemptIncome": "Untaxed",
+      "privilege": "Privilege (art. 380)",
+      "incomeTaxBase": "Income tax base",
+      "incomeTax": "Income tax",
+      "toBudget": "Income tax to budget",
+      "socialTaxBase": "Social tax base",
+      "socialTax": "Social tax",
+      "chooseEmployee": "Choose an employee"
+    },
+    "records": {
+      "historyTitle": "Earlier earnings for the average",
+      "historyHint": "Months before the payroll was kept here: the average earnings take them where no payroll here covers the month.",
+      "periodsTitle": "Earlier periods of insurance record",
+      "periodsHint": "Work before the record date: the sick benefit's share counts the months of all periods.",
+      "empty": "No data",
+      "period": "Period",
+      "months": "Months"
+    },
     "positionAllowances": {
       "title": "Position allowances",
       "hint": "Every holder of the position gets them in the payroll (one assigned to the employee personally wins).",
@@ -2714,10 +2764,16 @@
       "12": "December"
     },
     "fields": {
+      "incomeTaxPrivilege": "Income tax privilege (Tax Code art. 380)",
+      "incomeTaxPrivilegeHint": "At the main job part of the income is untaxed each month: 1.41 or 3 minimum wages. Needs a supporting document.",
+      "privilegeFrom": "Privilege from",
+      "privilegeTo": "Privilege to",
+      "taxExemptKind": "Untaxed income (Tax Code art. 378)",
+      "taxExemptKindHint": "Material aid up to 4.22 minimum wages a year, aid on a death up to 4.22 per payment, gifts up to 2.11 a year are free of income tax.",
       "deductionLimit": "Deduction limit (art. 270)",
       "deductionLimitHint": "50 % of the pay after taxes (alimony 70 %); at the employee's written request — none (art. 271)",
-      "isWageIncome": "Pay for labour",
-      "isWageIncomeHint": "Subject to INPS and social tax and part of the average earnings. Other income (severance) bears only income tax.",
+      "isWageIncome": "Pay for labour (social tax, INPS)",
+      "isWageIncomeHint": "Subject to social tax and INPS and part of the average earnings (arts. 371, 403). Sick, maternity, severance pay and material aid are not pay for labour.",
       "taxKind": "Statutory tax",
       "nonResidentRate": "Non-resident rate (%)",
       "employee": "Employee",
@@ -2842,7 +2898,7 @@
       "minimumAmount": "Minimum amount",
       "maximumAmount": "Maximum amount",
       "dependsOnComponent": "Depends on component",
-      "isTaxable": "Taxable",
+      "isTaxable": "Subject to income tax",
       "debitAccount": "Debit account",
       "creditAccount": "Credit account",
       "bankOperation": "Bank operation",
@@ -2852,6 +2908,15 @@
       "quantity": "Quantity"
     },
     "enums": {
+      "taxExemptKind": {
+        "MATERIAL_AID": "Material aid (4.22 minimum wages a year)",
+        "BEREAVEMENT_AID": "Aid on a death (4.22 per payment)",
+        "GIFT": "Gifts in kind (2.11 a year)"
+      },
+      "incomeTaxPrivilege": {
+        "PRIVILEGED": "1.41 minimum wages — heroes, war veterans, single mothers etc. (pp. 1, 2, 4–7)",
+        "DISABLED": "3 minimum wages — disabled from childhood, groups I–II (p. 3)"
+      },
       "deductionLimit": {
         "GENERAL": "General — 50 %",
         "ALIMONY": "Alimony — 70 %",
@@ -3123,6 +3188,8 @@
       "notFound": "Document not found"
     },
     "payments": {
+      "bankRegistry": "Bank registry (Excel)",
+      "cardOrAccount": "Card / account",
       "title": "Payroll payments",
       "create": "Create payment",
       "createTitle": "New payment",

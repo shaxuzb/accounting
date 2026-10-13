@@ -62,6 +62,9 @@ export interface PayrollEmployee {
   annualLeaveDays?: number;
   openingLeaveDays?: number | null;
   openingLeaveDate?: string | null;
+  incomeTaxPrivilege?: string | null;
+  incomeTaxPrivilegeFrom?: string | null;
+  incomeTaxPrivilegeTo?: string | null;
   phoneNumber?: string | null;
   email?: string | null;
   bankAccountNumber?: string | null;

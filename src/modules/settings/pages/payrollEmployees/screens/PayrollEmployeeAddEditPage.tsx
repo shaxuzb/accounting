@@ -3,6 +3,8 @@ import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import InputText from "@/components/fields/InputText";
 import SearchInnField from "@/components/fields/SearchInnField";
 import SelectDate from "@/components/fields/SelectDate";
+import SelectStatic from "@/components/fields/SelectStatic";
+import { incomeTaxPrivilegeOptions } from "@/modules/payroll/constants/options";
 import SwitchField from "@/components/fields/SwitchField";
 import { emptyToNull, normalizePhone } from "@/modules/payroll/utils/format";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
@@ -42,6 +44,9 @@ const defaultValues: PayrollEmployeeForm = {
   annualLeaveDays: 21,
   openingLeaveDays: null,
   openingLeaveDate: null,
+  incomeTaxPrivilege: null,
+  incomeTaxPrivilegeFrom: null,
+  incomeTaxPrivilegeTo: null,
   employment: {
     departmentId: null,
     positionId: null,
@@ -118,6 +123,9 @@ export default function PayrollEmployeeAddEditPage({
         annualLeaveDays: Number(values.annualLeaveDays) || 21,
         openingLeaveDays: values.openingLeaveDate ? Number(values.openingLeaveDays ?? 0) : null,
         openingLeaveDate: values.openingLeaveDate || null,
+        incomeTaxPrivilege: values.incomeTaxPrivilege || null,
+        incomeTaxPrivilegeFrom: values.incomeTaxPrivilege ? values.incomeTaxPrivilegeFrom || null : null,
+        incomeTaxPrivilegeTo: values.incomeTaxPrivilege ? values.incomeTaxPrivilegeTo || null : null,
       };
 
       try {
@@ -166,6 +174,9 @@ export default function PayrollEmployeeAddEditPage({
         annualLeaveDays: employee.annualLeaveDays ?? 21,
         openingLeaveDays: employee.openingLeaveDays ?? null,
         openingLeaveDate: employee.openingLeaveDate ?? null,
+        incomeTaxPrivilege: employee.incomeTaxPrivilege ?? null,
+        incomeTaxPrivilegeFrom: employee.incomeTaxPrivilegeFrom ?? null,
+        incomeTaxPrivilegeTo: employee.incomeTaxPrivilegeTo ?? null,
       });
       return;
     }
@@ -384,6 +395,27 @@ export default function PayrollEmployeeAddEditPage({
                 {t("payroll.leave.openingHint")}
               </div>
             </Col>
+            <Col xs={24} md={8}>
+              <SelectStatic
+                formik={formik}
+                fieldName="incomeTaxPrivilege"
+                label="payroll.fields.incomeTaxPrivilege"
+                options={incomeTaxPrivilegeOptions}
+                clearable
+                marginBottom="mb-1"
+              />
+              <div className="mb-3 text-xs text-secondary-text">{t("payroll.fields.incomeTaxPrivilegeHint")}</div>
+            </Col>
+            {formik.values.incomeTaxPrivilege && (
+              <>
+                <Col xs={24} md={8}>
+                  <SelectDate formik={formik} fieldName="incomeTaxPrivilegeFrom" label="payroll.fields.privilegeFrom" valueFormat="YYYY-MM-DD" clearable />
+                </Col>
+                <Col xs={24} md={8}>
+                  <SelectDate formik={formik} fieldName="incomeTaxPrivilegeTo" label="payroll.fields.privilegeTo" valueFormat="YYYY-MM-DD" clearable />
+                </Col>
+              </>
+            )}
           </Row>
 
           {!isEdit && (

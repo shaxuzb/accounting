@@ -64,6 +64,9 @@ export interface PayrollEmployeeMainForm {
   /** Boshqa tizimdan (1C) olib kelingan foydalanilmagan ta'til kunlari va ularning sanasi. */
   openingLeaveDays: number | null;
   openingLeaveDate: string | null;
+  incomeTaxPrivilege: string | null;
+  incomeTaxPrivilegeFrom: string | null;
+  incomeTaxPrivilegeTo: string | null;
 }
 
 export interface PayrollEmployeeForm extends PayrollEmployeeMainForm {

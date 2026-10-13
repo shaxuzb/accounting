@@ -656,6 +656,14 @@ export const menuPermissions: MainMenu = {
             title: "hr.orders.title",
           },
         },
+        {
+          code: hrEmployeePermissions.view,
+          iconName: <ReceiptText className="size-4" />,
+          linkData: {
+            path: "staff-schedule",
+            title: "hr.staff.title",
+          },
+        },
       ],
     },
     {
@@ -701,6 +709,13 @@ export const menuPermissions: MainMenu = {
           linkData: {
             path: "reports/register",
             title: "payroll.reports.registerTitle",
+          },
+        },
+        {
+          code: payrollReportPermissions.view,
+          linkData: {
+            path: "reports/tax",
+            title: "payroll.taxReports.title",
           },
         },
         // A payslip is always one employee's row of the general register, so it is opened

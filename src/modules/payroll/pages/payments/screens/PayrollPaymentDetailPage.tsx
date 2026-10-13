@@ -38,6 +38,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
+import * as XLSX from "xlsx";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
@@ -504,6 +505,25 @@ export default function PayrollPaymentDetailPage() {
             )}
 
             <div className="flex flex-wrap justify-end gap-3">
+              {!isCreate && record?.sourceType === "BANK" && (record.lines?.length ?? 0) > 0 && (
+                <Button
+                  onClick={() => {
+                    // the bank's salary registry (Uzcard / Humo salary project): one row per card
+                    const rows = (record.lines ?? []).map((line, index) => ({
+                      "№": index + 1,
+                      [t("payroll.fields.employee")]: line.employeeName ?? "",
+                      [t("payroll.taxReports.pinfl")]: line.pinfl ?? "",
+                      [t("payroll.payments.cardOrAccount")]: line.bankAccountNumber ?? "",
+                      [t("payroll.fields.amount")]: line.amount,
+                    }));
+                    const book = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(book, XLSX.utils.json_to_sheet(rows), "Reestr");
+                    XLSX.writeFile(book, `bank-reestr-${record.docNumber ?? record.id}.xlsx`);
+                  }}
+                >
+                  {t("payroll.payments.bankRegistry")}
+                </Button>
+              )}
               {isCreate && (
                 <Button
                   icon={<X className="size-4" />}

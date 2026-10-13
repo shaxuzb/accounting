@@ -6,6 +6,7 @@ import {
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SectionCard from "@/components/ui/card/SectionCard";
 import EmployeeLeavePanel from "@/modules/payroll/leave/EmployeeLeavePanel";
+import EmployeeRecordsPanel from "@/modules/payroll/employeeRecords/EmployeeRecordsPanel";
 import EmployeeCalendarPanel from "@/modules/hr/pages/employees/components/EmployeeCalendarPanel";
 import EmployeeWorkSchedulesPanel from "@/modules/hr/pages/employees/components/EmployeeWorkSchedulesPanel";
 import {
@@ -318,6 +319,7 @@ export default function PayrollEmployeeDetailPage() {
       </DocumentSummary>
 
       <EmployeeLeavePanel employeeId={employee.id} active={employee.stateId !== 2} />
+      <EmployeeRecordsPanel employeeId={employee.id} canEdit={canUpdate} />
 
       <SectionCard
         title="payroll.employees.employmentsTitle"

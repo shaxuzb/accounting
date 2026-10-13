@@ -18,6 +18,7 @@ export interface PayrollComponentForm {
   isTaxable: boolean;
   isWageIncome: boolean;
   deductionLimit: string;
+  taxExemptKind: string | null;
   isMandatory: boolean;
   expenseAccountId: number | null;
   liabilityAccountId: number | null;

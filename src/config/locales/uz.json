@@ -2405,6 +2405,17 @@
     }
   },
   "hr": {
+    "staff": {
+      "title": "Shtat jadvali",
+      "hint": "Qatorlar bo'lsa, ishga qabul, o'tkazish va maosh o'zgarishi shu jadvalga mos bo'lishi kerak (birliklar va maosh oralig'i).",
+      "units": "Shtat birligi",
+      "occupied": "Band",
+      "free": "Bo'sh",
+      "salaryRange": "Maosh oralig'i",
+      "salaryMin": "Eng kam maosh",
+      "salaryMax": "Eng ko'p maosh",
+      "anyDepartment": "Barcha bo'limlar"
+    },
     "dismissalGrounds": {
       "AGREEMENT": "Taraflarning kelishuvi",
       "CONTRACT_EXPIRY": "Mehnat shartnomasi muddati tugashi",
@@ -2563,6 +2574,45 @@
     }
   },
   "payroll": {
+    "stats": {
+      "title": "1-T (mehnat)",
+      "hint": "O'rtacha ro'yxatdagi soni — har kungi ro'yxat / oy kunlari (dekret va bola parvarishidagilarsiz); ish haqi fondi — mehnatga haq.",
+      "listedAtEnd": "Oy oxirida ro'yxatda",
+      "averageListed": "O'rtacha ro'yxatdagi",
+      "averageOther": "O'rindoshlar, shartnoma",
+      "hired": "Qabul qilingan",
+      "dismissed": "Bo'shagan",
+      "wageFund": "Ish haqi fondi",
+      "averageWage": "O'rtacha ish haqi"
+    },
+    "taxReports": {
+      "title": "Soliq va statistika hisobotlari",
+      "calculationTitle": "JShDS va ijtimoiy soliq hisob-kitobi",
+      "calculationHint": "Oy bo'yicha o'tkazilgan barcha ish haqi hujjatlaridan; har oy keyingi oyning 15-sanasigacha topshiriladi (SK 407-m.).",
+      "statementTitle": "Daromad ma'lumotnomasi",
+      "pinfl": "JShShIR",
+      "resident": "Rezident",
+      "yes": "Ha",
+      "no": "Yo'q",
+      "income": "Daromad",
+      "exemptIncome": "Soliq solinmaydigan",
+      "privilege": "Imtiyoz (380-m.)",
+      "incomeTaxBase": "JShDS bazasi",
+      "incomeTax": "JShDS",
+      "toBudget": "Byudjetga JShDS",
+      "socialTaxBase": "Ijtimoiy soliq bazasi",
+      "socialTax": "Ijtimoiy soliq",
+      "chooseEmployee": "Xodimni tanlang"
+    },
+    "records": {
+      "historyTitle": "O'rtacha ish haqi uchun oldingi daromadlar",
+      "historyHint": "Tizimga o'tishdan oldingi oylar (1C «Данные для расчета среднего заработка»): o'rtacha ish haqi bu oylarni tizimdagi oylik bo'lmasa oladi.",
+      "periodsTitle": "Oldingi sug'urta staji davrlari",
+      "periodsHint": "Staj sanasidan oldingi ish davrlari: kasallik nafaqasi foizi barcha davrlarning oylari bo'yicha.",
+      "empty": "Ma'lumot yo'q",
+      "period": "Davr",
+      "months": "Oylar"
+    },
     "positionAllowances": {
       "title": "Lavozim ustamalari",
       "hint": "Lavozimdagi har bir xodimga oylik hisoblashda qo'shiladi (xodimga alohida biriktirilgan bo'lsa — o'shanisi).",
@@ -2714,10 +2764,16 @@
       "12": "Dekabr"
     },
     "fields": {
+      "incomeTaxPrivilege": "JShDS imtiyozi (SK 380-m.)",
+      "incomeTaxPrivilegeHint": "Asosiy ish joyida har oy daromadning bir qismi soliqqa tortilmaydi: 1,41 yoki 3 eng kam ish haqi. Hujjat bilan tasdiqlanadi.",
+      "privilegeFrom": "Imtiyoz boshlanishi",
+      "privilegeTo": "Imtiyoz tugashi",
+      "taxExemptKind": "Soliq solinmaydigan daromad (SK 378-m.)",
+      "taxExemptKindHint": "Moddiy yordam — yiliga 4,22 EKIH, vafot munosabati bilan — har safar 4,22 EKIH, sovg'a — yiliga 2,11 EKIH gacha JShDS olinmaydi.",
       "deductionLimit": "Ushlanma chegarasi (MK 270)",
       "deductionLimitHint": "Soliqdan keyingi summaning 50 % i (aliment — 70 %); xodimning yozma arizasi bilan — chegarasiz (MK 271)",
-      "isWageIncome": "Mehnatga haq to'lash",
-      "isWageIncomeHint": "INPS, ijtimoiy soliq va o'rtacha ish haqiga kiradi. Nafaqa kabi «boshqa daromad»dan faqat JShDS olinadi.",
+      "isWageIncome": "Mehnatga haq (ijtimoiy soliq, INPS)",
+      "isWageIncomeHint": "Ijtimoiy soliq, INPS va o'rtacha ish haqiga kiradi (SK 371, 403-m.). Kasallik, dekret nafaqasi, bo'shatish nafaqasi, moddiy yordam — mehnatga haq emas.",
       "taxKind": "Qonuniy soliq turi",
       "nonResidentRate": "Norezident uchun stavka (%)",
       "employee": "Xodim",
@@ -2844,7 +2900,7 @@
       "minimumAmount": "Eng kam summa",
       "maximumAmount": "Eng ko'p summa",
       "dependsOnComponent": "Bog'liq komponent",
-      "isTaxable": "Soliqqa tortiladi",
+      "isTaxable": "JShDS'ga tortiladi",
       "bankOperation": "Bank operatsiyasi",
       "cashOperation": "Kassa operatsiyasi",
       "cashOperationIncome": "Kassa kirimi",
@@ -2852,6 +2908,15 @@
       "quantity": "Miqdor"
     },
     "enums": {
+      "taxExemptKind": {
+        "MATERIAL_AID": "Moddiy yordam (yiliga 4,22 EKIH)",
+        "BEREAVEMENT_AID": "Vafot munosabati bilan yordam (har safar 4,22 EKIH)",
+        "GIFT": "Sovg'a, natura shaklida (yiliga 2,11 EKIH)"
+      },
+      "incomeTaxPrivilege": {
+        "PRIVILEGED": "1,41 EKIH — qahramonlar, urush qatnashchilari, yolg'iz onalar va b. (1, 2, 4–7-b.)",
+        "DISABLED": "3 EKIH — bolalikdan, I–II guruh nogironligi (3-b.)"
+      },
       "deductionLimit": {
         "GENERAL": "Umumiy — 50 %",
         "ALIMONY": "Aliment — 70 %",
@@ -3113,6 +3178,8 @@
       "notFound": "Hujjat topilmadi"
     },
     "payments": {
+      "bankRegistry": "Bank reestri (Excel)",
+      "cardOrAccount": "Karta / hisob raqami",
       "title": "Maosh to'lovlari",
       "create": "To'lov yaratish",
       "createTitle": "Yangi to'lov",

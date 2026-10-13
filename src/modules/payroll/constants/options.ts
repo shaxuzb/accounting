@@ -274,6 +274,19 @@ export const dismissalGroundOptions: readonly StaticOption[] = DISMISSAL_GROUNDS
 export const dismissalGroundArticle = (code?: string | null) =>
   DISMISSAL_GROUNDS.find((ground) => ground.code === code)?.article ?? null;
 
+/** JShDS imtiyozi (Soliq kodeksi 380-m.). */
+export const incomeTaxPrivilegeOptions: readonly StaticOption[] = [
+  { value: "PRIVILEGED", label: "payroll.enums.incomeTaxPrivilege.PRIVILEGED" },
+  { value: "DISABLED", label: "payroll.enums.incomeTaxPrivilege.DISABLED" },
+] as const;
+
+/** Soliq solinmaydigan daromad turi (Soliq kodeksi 378-m.). */
+export const taxExemptKindOptions: readonly StaticOption[] = [
+  { value: "MATERIAL_AID", label: "payroll.enums.taxExemptKind.MATERIAL_AID" },
+  { value: "BEREAVEMENT_AID", label: "payroll.enums.taxExemptKind.BEREAVEMENT_AID" },
+  { value: "GIFT", label: "payroll.enums.taxExemptKind.GIFT" },
+] as const;
+
 /** Ushlanma chegarasi (MK 270, 271). */
 export const deductionLimitOptions: readonly StaticOption[] = [
   { value: "GENERAL", label: "payroll.enums.deductionLimit.GENERAL" },

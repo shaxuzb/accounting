@@ -10,6 +10,7 @@ export interface PayrollPaymentLine {
   employeeNumber?: string | null;
   departmentName?: string | null;
   bankAccountNumber?: string | null;
+  pinfl?: string | null;
   payableAmount?: number | null;
   paidAmount?: number | null;
   amount: number;
