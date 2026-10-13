@@ -94,6 +94,19 @@ export const componentTypeOptions: readonly StaticOption[] = [
   },
 ] as const;
 
+/**
+ * 1C ЗУП «Виды расчета»: accruals («Начисления») and deductions («Удержания»). Employer taxes come
+ * from the tax regime, so the older EMPLOYER_TAX / RECLASSIFICATION types are offered only to the
+ * components that already have them.
+ */
+export const calculationTypeOptions = (current?: string | null): readonly StaticOption[] =>
+  componentTypeOptions.filter(
+    (option) =>
+      option.value === "EARNING" ||
+      option.value === "DEDUCTION" ||
+      option.value === current,
+  );
+
 export const componentTypeColor: Record<PayrollComponentType, string> = {
   EARNING: "green",
   DEDUCTION: "red",

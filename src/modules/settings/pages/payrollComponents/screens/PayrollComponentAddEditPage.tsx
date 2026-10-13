@@ -9,7 +9,7 @@ import PayrollComponentSelect from "@/modules/payroll/components/PayrollComponen
 import {
   calculationMethodOptions,
   methodIsPercent,
-  componentTypeOptions,
+  calculationTypeOptions,
   methodUsesAmount,
   methodUsesRate,
   prorationBasisOptions,
@@ -218,7 +218,7 @@ export default function PayrollComponentAddEditPage({
                 formik={formik}
                 fieldName="componentType"
                 label="payroll.fields.componentType"
-                options={componentTypeOptions}
+                options={calculationTypeOptions(isEdit ? component?.componentType : null)}
                 required
                 marginBottom="mb-4"
               />

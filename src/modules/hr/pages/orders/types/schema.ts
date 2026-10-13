@@ -32,6 +32,7 @@ export const hrOrderSchema = Yup.object({
     monthlySalary?: number | null;
     currencyId?: number | null;
     employmentType?: string | null;
+    components?: { componentId?: number | null }[];
   } | undefined;
   if (!data) return true;
   const hasOrgTarget = Boolean(data.departmentId || data.positionId);
@@ -41,7 +42,11 @@ export const hrOrderSchema = Yup.object({
   if (data.orderType === "HIRE" && (!hasOrgTarget || data.monthlySalary == null || !data.currencyId || !data.employmentType)) {
     return this.createError({ path: "positionId", message: tMessage("payroll.messages.orderHireFieldsRequired") });
   }
-  if (data.orderType === "PAY_CHANGE" && (data.monthlySalary == null || data.monthlySalary < 0)) {
+  if (data.orderType !== "DISMISSAL" && (data.components ?? []).some((line) => !line.componentId)) {
+    return this.createError({ path: "components", message: tMessage("hr.orderLines.componentRequired") });
+  }
+  // 1C «Изменение оплаты труда»: a new salary, or the planned accruals alone
+  if (data.orderType === "PAY_CHANGE" && (data.components ?? []).length === 0 && (data.monthlySalary == null || data.monthlySalary < 0)) {
     return this.createError({ path: "monthlySalary", message: tMessage("payroll.messages.monthlySalaryRequired") });
   }
   return true;

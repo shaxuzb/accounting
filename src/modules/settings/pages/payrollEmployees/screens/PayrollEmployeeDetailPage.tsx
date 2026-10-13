@@ -3,7 +3,6 @@ import {
   DocumentSummary,
   DocumentSummaryItem,
 } from "@/components/ui/card/DocumentSummary";
-import PermissionCard from "@/components/ui/card/PermissionCard";
 import SectionCard from "@/components/ui/card/SectionCard";
 import EmployeeLeavePanel from "@/modules/payroll/leave/EmployeeLeavePanel";
 import EmployeeRecordsPanel from "@/modules/payroll/employeeRecords/EmployeeRecordsPanel";
@@ -14,9 +13,9 @@ import {
   methodUsesRate,
 } from "@/modules/payroll/constants/options";
 import { displayDate, money } from "@/modules/payroll/utils/format";
+import { hrOrderPermissions } from "@/modules/hr/constants/permissions";
 import { useAppSelector } from "@/store/hooks";
-import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { App, Button, Empty, Spin, Table, Tabs, Tag } from "antd";
+import { Button, Empty, Spin, Table, Tabs, Tag } from "antd";
 import type { TableColumnsType } from "antd";
 import {
   Banknote,
@@ -24,22 +23,17 @@ import {
   Building2,
   CalendarClock,
   CalendarDays,
+  FilePlus2,
   IdCard,
   Pencil,
-  Plus,
-  Trash2,
 } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router";
-import EmployeeComponentModal from "../components/EmployeeComponentModal";
-import EmployeeEmploymentModal from "../components/EmployeeEmploymentModal";
+import { useNavigate, useParams } from "react-router";
 import { payrollEmployeePermissions } from "../constants/permissions";
 import {
   useGetDetailPayrollEmployee,
   useGetPayrollEmployeeHistory,
-  useRemovePayrollComponent,
 } from "../hooks";
 import PayrollEmployeeAddEditPage from "./PayrollEmployeeAddEditPage";
 import type {
@@ -50,7 +44,7 @@ import type {
 export default function PayrollEmployeeDetailPage() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
-  const { modal } = App.useApp();
+  const navigate = useNavigate();
   const permissions = useAppSelector(
     (state) => state.auth.user?.user.permissions ?? [],
   );
@@ -58,13 +52,9 @@ export default function PayrollEmployeeDetailPage() {
 
   const { data: employee, isLoading } = useGetDetailPayrollEmployee(id);
   const { data: history } = useGetPayrollEmployeeHistory(id);
-  const removeComponent = useRemovePayrollComponent(id);
 
   const [isMainOpen, setIsMainOpen] = useState(false);
-  const [isEmploymentOpen, setIsEmploymentOpen] = useState(false);
-  const [isComponentOpen, setIsComponentOpen] = useState(false);
-  const [activeEmployment, setActiveEmployment] =
-    useState<PayrollEmployment | null>(null);
+  const canOrder = permissions.includes(hrOrderPermissions.create);
 
   const employments = employee?.employments ?? [];
   const employmentHistory = history ?? employments;
@@ -73,31 +63,17 @@ export default function PayrollEmployeeDetailPage() {
     employments.find((item) => item.isActive) ??
     employments.find((item) => !item.endDate) ??
     employments[0];
-
-  const handleRemoveComponent = (record: PayrollEmployeeComponent) => {
-    modal.confirm({
-      title: t("payroll.employees.removeComponentTitle"),
-      content: record.componentName,
-      okText: t("common.delete"),
-      cancelText: t("common.cancel"),
-      okButtonProps: { danger: true, type: "primary" },
-      onOk: async () => {
-        try {
-          await removeComponent.mutateAsync(record.id);
-          toast.success(t("payroll.messages.componentRemoved"));
-        } catch (error) {
-          errorHandlers(error);
-        }
-      },
-    });
-  };
+  // 1C: the personnel changes are documents — the card only opens a new HR order
+  const isEmployed = employments.some((item) => !item.endDate);
+  const openOrder = (type: string) =>
+    navigate(`/main/hr/orders/add?type=${type}&employeeId=${id}`);
 
   const employmentColumns: TableColumnsType<PayrollEmployment> = [
     {
       dataIndex: "actionType",
       title: t("payroll.fields.actionType", { defaultValue: "Amal" }),
       align: "center",
-      render: (value: string | null) => value ? <Tag className="m-0!" color="purple">{value}</Tag> : "—",
+      render: (value: string | null) => value ? <Tag className="m-0!" color="purple">{t(`payroll.enums.hrOrderType.${value}`, { defaultValue: value })}</Tag> : "—",
     },
     {
       dataIndex: "startDate",
@@ -228,23 +204,6 @@ export default function PayrollEmployeeDetailPage() {
     },
   ];
 
-  if (canUpdate) {
-    componentColumns.push({
-      dataIndex: "actions",
-      title: t("common.actions"),
-      align: "center",
-      fixed: "right",
-      render: (_, record) => (
-        <Button
-          type="text"
-          danger
-          icon={<Trash2 className="size-4" />}
-          onClick={() => handleRemoveComponent(record)}
-        />
-      ),
-    });
-  }
-
   if (isLoading) {
     return (
       <div className="flex justify-center p-10">
@@ -326,45 +285,35 @@ export default function PayrollEmployeeDetailPage() {
         description="payroll.employees.employmentsHint"
         bodyClassName="p-0!"
         extra={
-          <PermissionCard permission={payrollEmployeePermissions.update}>
-            <Button
-              type="dashed"
-              icon={<Plus className="size-4" />}
-              onClick={() => {
-                setActiveEmployment(null);
-                setIsEmploymentOpen(true);
-              }}
-            >
-              {t("payroll.employments.add")}
-            </Button>
-          </PermissionCard>
+          <div className="flex flex-wrap gap-2">
+            {canUpdate && (
+              <Button icon={<Pencil className="size-4" />} onClick={() => setIsMainOpen(true)}>
+                {t("payroll.employees.editPersonal")}
+              </Button>
+            )}
+            {canOrder && employee.stateId !== 2 && !isEmployed && (
+              <Button type="primary" icon={<FilePlus2 className="size-4" />} onClick={() => openOrder("HIRE")}>
+                {t("payroll.employees.orderHire")}
+              </Button>
+            )}
+            {canOrder && isEmployed && (
+              <>
+                <Button icon={<FilePlus2 className="size-4" />} onClick={() => openOrder("TRANSFER")}>
+                  {t("payroll.employees.orderTransfer")}
+                </Button>
+                <Button icon={<FilePlus2 className="size-4" />} onClick={() => openOrder("PAY_CHANGE")}>
+                  {t("payroll.employees.orderPayChange")}
+                </Button>
+                <Button danger icon={<FilePlus2 className="size-4" />} onClick={() => openOrder("DISMISSAL")}>
+                  {t("payroll.employees.orderDismissal")}
+                </Button>
+              </>
+            )}
+          </div>
         }
       >
         <Table<PayrollEmployment>
-          columns={
-            canUpdate
-              ? [
-                  ...employmentColumns,
-                  {
-                    dataIndex: "actions",
-                    title: t("common.actions"),
-                    align: "center",
-                    width: 80,
-                    fixed: "right",
-                    render: (_, record) => (
-                      <Button
-                        type="text"
-                        icon={<Pencil className="size-4" />}
-                        onClick={() => {
-                          setActiveEmployment(record);
-                          setIsEmploymentOpen(true);
-                        }}
-                      />
-                    ),
-                  },
-                ]
-              : employmentColumns
-          }
+          columns={employmentColumns}
           dataSource={employmentHistory.map((item) => ({ ...item, key: item.id }))}
           pagination={false}
           size="middle"
@@ -381,17 +330,6 @@ export default function PayrollEmployeeDetailPage() {
         title="payroll.employees.componentsTitle"
         description="payroll.employees.componentsHint"
         bodyClassName="p-0!"
-        extra={
-          <PermissionCard permission={payrollEmployeePermissions.update}>
-            <Button
-              type="dashed"
-              icon={<Plus className="size-4" />}
-              onClick={() => setIsComponentOpen(true)}
-            >
-              {t("payroll.employees.assignComponent")}
-            </Button>
-          </PermissionCard>
-        }
       >
         <Table<PayrollEmployeeComponent>
           columns={componentColumns}
@@ -434,20 +372,6 @@ export default function PayrollEmployeeDetailPage() {
         open={isMainOpen}
         id={employee.id}
         onClose={() => setIsMainOpen(false)}
-      />
-      <EmployeeEmploymentModal
-        open={isEmploymentOpen}
-        employeeId={employee.id}
-        employment={activeEmployment}
-        onClose={() => {
-          setIsEmploymentOpen(false);
-          setActiveEmployment(null);
-        }}
-      />
-      <EmployeeComponentModal
-        open={isComponentOpen}
-        employeeId={employee.id}
-        onClose={() => setIsComponentOpen(false)}
       />
     </div>
   );

@@ -27,12 +27,15 @@ import { getHrOrderFieldConfig } from "../utils/order";
 import { useCancelHrOrder, useConfirmHrOrder, useCreateHrOrder, useDeleteHrOrder, useHrOrderDetail, useHrOrderPrint, useUpdateHrOrder } from "../hooks";
 import type { PayrollHrOrderForm } from "../types/form";
 import { hrOrderSchema } from "../types/schema";
+import HrOrderComponentLines from "./HrOrderComponentLines";
 
 const LIST_PATH = "/main/hr/orders";
-const createDefaultValues = (): PayrollHrOrderForm => ({
+const ORDER_TYPES = ["HIRE", "TRANSFER", "PAY_CHANGE", "DISMISSAL"] as const;
+// the employee card opens a new order with its type and employee (1C: documents from the card)
+const createDefaultValues = (params?: URLSearchParams): PayrollHrOrderForm => ({
   orderDate: dayjs().format("YYYY-MM-DD"),
-  orderType: "HIRE",
-  employeeId: null,
+  orderType: ORDER_TYPES.find((type) => type === params?.get("type")) ?? "HIRE",
+  employeeId: Number(params?.get("employeeId")) || null,
   effectiveDate: dayjs().format("YYYY-MM-DD"),
   basis: null,
   note: null,
@@ -47,6 +50,7 @@ const createDefaultValues = (): PayrollHrOrderForm => ({
   expenseAccountId: null,
   advanceMethod: "PERCENT",
   advanceValue: 0,
+  components: [],
 });
 
 const toPayload = (values: PayrollHrOrderForm): PayrollHrOrderForm => {
@@ -55,6 +59,8 @@ const toPayload = (values: PayrollHrOrderForm): PayrollHrOrderForm => {
     basis: values.basis || null,
     note: values.note || null,
     dismissalGround: values.orderType === "DISMISSAL" ? values.dismissalGround || null : null,
+    // a dismissal ends the planned accruals by itself
+    components: values.orderType === "DISMISSAL" ? [] : values.components,
   };
   if (values.orderType === "DISMISSAL") return { ...base, departmentId: null, positionId: null, employmentType: null, monthlySalary: null, employmentRate: null, weeklyHours: null, currencyId: null, expenseAccountId: null, advanceMethod: "PERCENT", advanceValue: null };
   if (values.orderType === "PAY_CHANGE") return { ...base, departmentId: null, positionId: null, employmentType: null, weeklyHours: null, currencyId: null, expenseAccountId: null, advanceMethod: "PERCENT", advanceValue: null };
@@ -82,7 +88,7 @@ export default function HrOrderDetailPage() {
   const { data: printData, isFetching: isPrintFetching } = useHrOrderPrint(printOpen ? id : null);
 
   const initialValues = useMemo<PayrollHrOrderForm>(() => {
-    if (!record) return createDefaultValues();
+    if (!record) return createDefaultValues(searchParams);
     return {
       orderDate: record.orderDate,
       orderType: record.orderType,
@@ -101,7 +107,15 @@ export default function HrOrderDetailPage() {
       expenseAccountId: record.expenseAccountId ?? null,
       advanceMethod: record.advanceMethod ?? "PERCENT",
       advanceValue: record.advanceValue ?? 0,
+      components: (record.components ?? []).map((line) => ({
+        componentId: line.componentId,
+        action: line.action,
+        amount: line.amount ?? null,
+        rate: line.rate ?? null,
+      })),
     };
+    // the search params are read once, for a new order
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [record]);
 
   const formik = useFormik<PayrollHrOrderForm>({
@@ -152,7 +166,7 @@ export default function HrOrderDetailPage() {
             {fields.showDepartment && <Col xs={24} md={6}><SelectCustom formik={formik} fieldName="departmentId" label="payroll.fields.department" path={selectListEndpoints.departmentsSelectList} search clearable disabled={readOnly} marginBottom="mb-4" /></Col>}
             {fields.showPosition && <Col xs={24} md={6}><SelectCustom formik={formik} fieldName="positionId" label="payroll.fields.position" path={selectListEndpoints.positionsSelectList} search clearable disabled={readOnly} marginBottom="mb-4" /></Col>}
             {fields.showEmployment && <Col xs={24} md={6}><SelectStatic formik={formik} fieldName="employmentType" label="payroll.fields.employmentType" options={employmentTypeOptions} required disabled={readOnly} marginBottom="mb-4" /></Col>}
-            {fields.showSalary && <Col xs={24} md={6}><InputNumber formik={formik} fieldName="monthlySalary" label="payroll.fields.monthlySalary" min={0} precision={2} required disabled={readOnly} /></Col>}
+            {fields.showSalary && <Col xs={24} md={6}><InputNumber formik={formik} fieldName="monthlySalary" label="payroll.fields.monthlySalary" min={0} precision={2} required={formik.values.orderType !== "PAY_CHANGE" || formik.values.components.length === 0} disabled={readOnly} /></Col>}
             {fields.showRate && <Col xs={24} md={6}><InputNumber formik={formik} fieldName="employmentRate" label="payroll.fields.employmentRate" min={0} max={2} precision={2} disabled={readOnly} /></Col>}
             {fields.showWeeklyHours && <Col xs={24} md={6}><InputNumber formik={formik} fieldName="weeklyHours" label="payroll.fields.weeklyHours" min={0} max={168} precision={1} disabled={readOnly} /></Col>}
             {fields.showCurrency && <Col xs={24} md={6}><SelectCustom formik={formik} fieldName="currencyId" label="payroll.fields.currency" path={selectListEndpoints.currenciesSelectList} required disabled={readOnly} marginBottom="mb-4" /></Col>}
@@ -163,6 +177,18 @@ export default function HrOrderDetailPage() {
             <Col xs={24} md={12}><InputTextArea formik={formik} fieldName="note" label="payroll.fields.note" rows={2} disabled={readOnly} /></Col>
           </Row>
           {formik.errors.positionId && (formik.values.orderType === "HIRE" || formik.values.orderType === "TRANSFER") && <div className="mb-3 text-sm text-red-500">{String(formik.errors.positionId)}</div>}
+          {(formik.values.orderType !== "DISMISSAL" || (record?.components?.length ?? 0) > 0) && (
+            <div className="mb-4">
+              <HrOrderComponentLines
+                orderType={formik.values.orderType}
+                lines={formik.values.components}
+                onChange={(lines) => void formik.setFieldValue("components", lines)}
+                readOnly={readOnly}
+                saved={record?.components}
+              />
+              {typeof formik.errors.components === "string" && formik.submitCount > 0 && <div className="mt-2 text-sm text-red-500">{formik.errors.components}</div>}
+            </div>
+          )}
           {!readOnly && <div className="flex justify-end"><Button type="primary" htmlType="submit" icon={<Save className="size-4" />} loading={createMutation.isPending || updateMutation.isPending}>{t("common.save")}</Button></div>}
         </Form>
       </SectionCard>

@@ -4,6 +4,19 @@ import type {
   PayrollHrOrderType,
 } from "@/modules/payroll/constants/options";
 
+export interface PayrollHrOrderComponent {
+  componentId: number;
+  action: "ASSIGN" | "END";
+  amount?: number | null;
+  rate?: number | null;
+  componentCode?: string | null;
+  componentName?: string | null;
+  componentType?: string | null;
+  calculationMethod?: string | null;
+  appliedAssignmentId?: number | null;
+  closedAssignmentId?: number | null;
+}
+
 export interface PayrollHrOrder {
   id: number;
   orderNumber: string;
@@ -31,6 +44,7 @@ export interface PayrollHrOrder {
   advanceMethod?: PayrollAdvanceMethod | null;
   advanceValue?: number | null;
   employmentId?: number | null;
+  components?: PayrollHrOrderComponent[];
   createdDate?: string | null;
   updatedDate?: string | null;
   confirmedDate?: string | null;

@@ -8,12 +8,12 @@ import { incomeTaxPrivilegeOptions } from "@/modules/payroll/constants/options";
 import SwitchField from "@/components/fields/SwitchField";
 import { emptyToNull, normalizePhone } from "@/modules/payroll/utils/format";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { Alert, Button, Col, Divider, Form, Modal, Row, Spin } from "antd";
+import { Alert, Button, Col, Form, Modal, Row, Spin } from "antd";
 import { useFormik } from "formik";
 import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import EmploymentFormFields from "../components/EmploymentFormFields";
+import { useNavigate } from "react-router";
 import {
   useCreatePayrollEmployee,
   useGetDetailPayrollEmployee,
@@ -24,7 +24,7 @@ import type {
   PayrollEmployeeForm,
   PayrollEmployeeMainForm,
 } from "../types/form";
-import { employeeCreateSchema, employeeMainSchema } from "../types/schema";
+import { employeeMainSchema } from "../types/schema";
 import { mergeLookupValues } from "@/modules/settings/shared/taxpayerLookup";
 
 const defaultValues: PayrollEmployeeForm = {
@@ -47,21 +47,6 @@ const defaultValues: PayrollEmployeeForm = {
   incomeTaxPrivilege: null,
   incomeTaxPrivilegeFrom: null,
   incomeTaxPrivilegeTo: null,
-  employment: {
-    departmentId: null,
-    positionId: null,
-    employmentType: "PRIMARY",
-    startDate: "",
-    endDate: null,
-    monthlySalary: null,
-    employmentRate: 1,
-    weeklyHours: 40,
-    currencyId: null,
-    expenseAccountId: null,
-    advanceMethod: "PERCENT",
-    advanceValue: 0,
-    note: null,
-  },
 };
 
 const emptyLookupValues: Partial<PayrollEmployeeForm> = {
@@ -82,9 +67,8 @@ interface Props {
 }
 
 /**
- * Xodim kartochkasi.
- * Yaratishda birinchi ish sharti ham shu oynada to'ldiriladi,
- * tahrirlashda esa faqat asosiy ma'lumotlar yangilanadi.
+ * Xodim kartochkasi — faqat shaxsiy ma'lumotlar (1C «Сотрудник»). Ishga qabul, lavozim, maosh va
+ * rejali hisoblashlar kadr buyrug'i bilan rasmiylashtiriladi (1C «Прием на работу»).
  */
 export default function PayrollEmployeeAddEditPage({
   open,
@@ -99,12 +83,13 @@ export default function PayrollEmployeeAddEditPage({
   const createMutation = useCreatePayrollEmployee();
   const updateMutation = useUpdatePayrollEmployee();
   const lookupMutation = useLookupEmployee();
+  const navigate = useNavigate();
   const previousLookupValues = useRef<Partial<PayrollEmployeeForm>>({});
 
   const formik = useFormik<PayrollEmployeeForm>({
     initialValues: defaultValues,
     enableReinitialize: false,
-    validationSchema: isEdit ? employeeMainSchema : employeeCreateSchema,
+    validationSchema: employeeMainSchema,
     onSubmit: async (values, helpers) => {
       const main: PayrollEmployeeMainForm = {
         employeeNumber: values.employeeNumber.trim(),
@@ -133,14 +118,14 @@ export default function PayrollEmployeeAddEditPage({
           await updateMutation.mutateAsync({ id: editId, payload: main });
           toast.success(t("settings.messages.updated"));
         } else {
-          await createMutation.mutateAsync({
-            ...main,
-            employment: {
-              ...values.employment,
-              endDate: values.employment.endDate || null,
-            },
-          });
+          const created = await createMutation.mutateAsync(main);
           toast.success(t("settings.messages.created"));
+          // 1C: the person is hired by the «Прием на работу» document — open it for the new employee
+          const createdId = typeof created === "number" ? created : Number((created as { id?: number })?.id);
+          if (createdId > 0) {
+            toast(t("payroll.employees.hirePromptText"), { icon: "📄" });
+            navigate(`/main/hr/orders/add?type=HIRE&employeeId=${createdId}`);
+          }
         }
         helpers.resetForm({ values: defaultValues });
         previousLookupValues.current = {};
@@ -418,28 +403,11 @@ export default function PayrollEmployeeAddEditPage({
             )}
           </Row>
 
-          {!isEdit && (
-            <>
-              <Divider titlePlacement="start" className="text-sm!">
-                {t("payroll.employees.employmentSection")}
-              </Divider>
-              {/* <Alert
-                type="info"
-                showIcon
-                className="mb-4"
-                message={t("payroll.employees.employmentHint")}
-              /> */}
-              <EmploymentFormFields formik={formik} prefix="employment." />
-            </>
-          )}
-
-          {isEdit && (
-            <Alert
-              type="info"
-              showIcon
-              message={t("payroll.employees.editEmploymentHint")}
-            />
-          )}
+          <Alert
+            type="info"
+            showIcon
+            message={t("payroll.employees.employmentByOrderHint")}
+          />
 
           <div className="flex justify-end gap-2 mt-3">
             <Button onClick={handleClose} size="large" className="h-10!">

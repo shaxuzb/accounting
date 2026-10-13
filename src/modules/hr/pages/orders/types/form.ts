@@ -4,6 +4,14 @@ import type {
   PayrollHrOrderType,
 } from "@/modules/payroll/constants/options";
 
+/** A planned accrual line of the order (1C «Плановые начисления»). */
+export interface PayrollHrOrderComponentLine {
+  componentId: number | null;
+  action: "ASSIGN" | "END";
+  amount: number | null;
+  rate: number | null;
+}
+
 export interface PayrollHrOrderForm {
   orderDate: string;
   orderType: PayrollHrOrderType;
@@ -23,4 +31,5 @@ export interface PayrollHrOrderForm {
   expenseAccountId: number | null;
   advanceMethod: PayrollAdvanceMethod;
   advanceValue: number | null;
+  components: PayrollHrOrderComponentLine[];
 }
