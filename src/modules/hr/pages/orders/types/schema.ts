@@ -8,6 +8,12 @@ export const hrOrderSchema = Yup.object({
   effectiveDate: requiredString("payroll.fields.effectiveDate"),
   basis: Yup.string().nullable(),
   note: Yup.string().nullable(),
+  dismissalGround: Yup.string()
+    .nullable()
+    .when("orderType", {
+      is: "DISMISSAL",
+      then: (schema) => schema.required(() => tMessage("payroll.messages.dismissalGroundRequired")),
+    }),
   departmentId: Yup.number().nullable(),
   positionId: Yup.number().nullable(),
   employmentType: Yup.string().nullable(),

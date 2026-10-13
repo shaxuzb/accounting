@@ -2405,6 +2405,33 @@
     }
   },
   "hr": {
+    "dismissalGrounds": {
+      "AGREEMENT": "Agreement of the parties",
+      "CONTRACT_EXPIRY": "Expiry of the employment contract",
+      "EMPLOYEE_INITIATIVE": "Employee's initiative (resignation)",
+      "LIQUIDATION": "Liquidation of the organization",
+      "STAFF_REDUCTION": "Change in headcount or staff",
+      "INSUFFICIENT_QUALIFICATION": "Unfit for the position for lack of qualification",
+      "SYSTEMATIC_BREACH": "Systematic breach of duties",
+      "GROSS_BREACH": "Single gross breach of duties",
+      "EMPLOYER_OTHER": "Employer's initiative — other grounds",
+      "OWNER_CHANGE_REFUSAL": "Refusal to continue after a change of owner or reorganization",
+      "NEW_CONDITIONS_REFUSAL": "Refusal to work under new conditions",
+      "RELOCATION_REFUSAL": "Refusal to relocate with the employer",
+      "MEDICAL_TRANSFER_REFUSAL": "Refusal of a medically indicated transfer",
+      "MILITARY_SERVICE": "Call-up for military or alternative service",
+      "PREDECESSOR_REINSTATED": "Reinstatement of the previous holder of the job",
+      "COURT_SENTENCE": "Court sentence in force",
+      "HIRING_RULES_BREACH": "Breach of hiring rules",
+      "LEGAL_IMPEDIMENT": "Circumstances preventing the employment",
+      "COURT_LIQUIDATION": "Liquidation by court decision",
+      "REINSTATEMENT_REVERSED": "Reinstatement decision reversed",
+      "DEATH": "Death of the employee",
+      "DEPUTY_RETURN": "Return of a deputy or senator to the former job",
+      "NOT_ELECTED": "Not elected or failed the competition",
+      "CONTRACT_GROUNDS": "Ground stated in the employment contract",
+      "OTHER": "Other ground provided by law"
+    },
     "title": "Human resources",
     "description": "Employees, work schedules and absences",
     "employees": {
@@ -2450,6 +2477,7 @@
       "title": "Employee calendar",
       "empty": "No calendar data for the selected month",
       "status": {
+        "CHILD_CARE_LEAVE": "Child care leave",
         "WORKED": "Worked",
         "PLANNED_WORK": "Planned work",
         "DAY_OFF": "Day off",
@@ -2463,6 +2491,7 @@
         "OTHER_ABSENCE": "Other absence"
       },
       "statusShort": {
+        "CHILD_CARE_LEAVE": "Child",
         "WORKED": "Worked",
         "PLANNED_WORK": "Plan",
         "DAY_OFF": "Day off",
@@ -2477,6 +2506,7 @@
       }
     },
     "fields": {
+      "dismissalGround": "Dismissal ground (Labour Code article)",
       "employee": "Employee",
       "absenceType": "Absence type",
       "dateFrom": "Start date",
@@ -2534,6 +2564,21 @@
   },
   "payroll": {
     "leave": {
+      "leavePart": "Leave",
+      "severance": "Severance pay (art. 173)",
+      "dismissalGround": "Dismissal ground",
+      "severanceByLaw": "the law grants severance",
+      "severanceNotByLaw": "the law grants no severance",
+      "paySeverance": "Pay severance",
+      "serviceYears": "Years with the employer",
+      "severancePercent": "Percent of the monthly average",
+      "severanceMin": "legal minimum {{percent}} %",
+      "monthlyAverage": "Average monthly earnings (daily × 25.3)",
+      "severanceAmount": "Severance",
+      "settlementTotal": "Settlement total",
+      "severanceTaxHint": "Severance is other income (Tax Code art. 377 p. 9): only personal income tax is withheld, no social tax or INPS; it is left out of later averages.",
+      "excludedDays": "Days out of service",
+      "excludedText": "{{count}} days out of the leave service (art. 226)",
       "vacations": "Vacations",
       "newVacation": "Grant leave",
       "createVacation": "Create the vacation document",
@@ -2648,6 +2693,8 @@
       "12": "December"
     },
     "fields": {
+      "isWageIncome": "Pay for labour",
+      "isWageIncomeHint": "Subject to INPS and social tax and part of the average earnings. Other income (severance) bears only income tax.",
       "taxKind": "Statutory tax",
       "nonResidentRate": "Non-resident rate (%)",
       "employee": "Employee",
@@ -2815,6 +2862,10 @@
         "NET_HINT": "Total earnings minus component deductions"
       },
       "calculationMethod": {
+        "LEAVE_COMPENSATION": "Leave compensation / recovery",
+        "LEAVE_COMPENSATION_HINT": "Dismissal settlement only: unused leave (art. 234) or leave taken in advance recovered (art. 269)",
+        "SEVERANCE_PAY": "Severance pay",
+        "SEVERANCE_PAY_HINT": "Dismissal settlement only: average monthly × percent by service (art. 173)",
         "SALARY_PRORATED": "Prorated by worked time",
         "SALARY_PRORATED_HINT": "Salary split across worked days/hours",
         "FIXED": "Fixed amount",
@@ -3083,6 +3134,7 @@
       "noData": "No data found"
     },
     "messages": {
+      "dismissalGroundRequired": "Choose the dismissal ground",
       "taxKindRegimeHint": "When the accounting policy names a tax regime, this tax is charged at the regime's rate; the rate here applies only without one.",
       "regimeRateHint": "Rate of the «{{regime}}» regime; own rate {{own}} %",
       "notNegative": "The value cannot be negative",

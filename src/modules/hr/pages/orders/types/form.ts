@@ -11,6 +11,8 @@ export interface PayrollHrOrderForm {
   effectiveDate: string;
   basis: string | null;
   note: string | null;
+  /** DISMISSAL: the ground (MK article), required to confirm */
+  dismissalGround: string | null;
   departmentId: number | null;
   positionId: number | null;
   employmentType: PayrollEmploymentType | null;

@@ -13,6 +13,15 @@ interface LeaveDetails {
   balance?: LeaveBalance | null;
   holidays?: number;
   recovery?: boolean;
+  severance?: {
+    ground?: string | null;
+    article?: string | null;
+    serviceYears: number;
+    percent: number;
+    minPercent: number;
+    monthlyAverage: number;
+    amount: number;
+  } | null;
 }
 
 /** The leave of a vacation or a dismissal settlement document: its days, the average and how it was found. */
@@ -57,9 +66,11 @@ export default function LeaveDocumentInfo({ record }: { record: PayrollDocument 
             </Descriptions.Item>
           </>
         ) : (
-          <Descriptions.Item label={t(recovery ? "payroll.leave.advanceDays" : "payroll.leave.unusedDays")}>
-            {days(Math.abs(Number(record.leaveCalendarDays ?? 0)))}
-          </Descriptions.Item>
+          Number(record.leaveCalendarDays ?? 0) !== 0 && (
+            <Descriptions.Item label={t(recovery ? "payroll.leave.advanceDays" : "payroll.leave.unusedDays")}>
+              {days(Math.abs(Number(record.leaveCalendarDays ?? 0)))}
+            </Descriptions.Item>
+          )
         )}
         <Descriptions.Item label={t("payroll.leave.paidDays")}>{days(Math.abs(Number(record.leavePaidDays ?? 0)))}</Descriptions.Item>
         <Descriptions.Item label={t("payroll.leave.dailyAverage")}>{money(record.averageDaily)}</Descriptions.Item>
@@ -70,9 +81,34 @@ export default function LeaveDocumentInfo({ record }: { record: PayrollDocument 
               used: days(details.balance.usedDays),
               months: details.balance.serviceMonths,
             })}
+            {Number(details.balance.excludedDays ?? 0) > 0 && (
+              <div className="text-xs text-secondary-text">
+                {t("payroll.leave.excludedText", { count: details.balance.excludedDays })}
+              </div>
+            )}
           </Descriptions.Item>
         )}
       </Descriptions>
+      {details.severance && (
+        <Descriptions size="small" bordered column={{ xs: 1, md: 2 }} title={t("payroll.leave.severance")}>
+          <Descriptions.Item label={t("payroll.leave.dismissalGround")} span={2}>
+            {details.severance.ground
+              ? `${t(`hr.dismissalGrounds.${details.severance.ground}`)} (MK ${details.severance.article})`
+              : "—"}
+          </Descriptions.Item>
+          <Descriptions.Item label={t("payroll.leave.serviceYears")}>{days(details.severance.serviceYears)}</Descriptions.Item>
+          <Descriptions.Item label={t("payroll.leave.severancePercent")}>
+            {days(details.severance.percent)} %
+            <span className="ml-1 text-xs text-secondary-text">
+              ({t("payroll.leave.severanceMin", { percent: details.severance.minPercent })})
+            </span>
+          </Descriptions.Item>
+          <Descriptions.Item label={t("payroll.leave.monthlyAverage")}>{money(details.severance.monthlyAverage)}</Descriptions.Item>
+          <Descriptions.Item label={t("payroll.leave.severanceAmount")}>
+            <b>{money(details.severance.amount)}</b>
+          </Descriptions.Item>
+        </Descriptions>
+      )}
       {details.average && <LeaveAverageTable average={details.average} />}
       {vacation && <div className="text-xs text-secondary-text">{t("payroll.leave.vacationPostHint")}</div>}
     </Card>

@@ -2405,6 +2405,33 @@
     }
   },
   "hr": {
+    "dismissalGrounds": {
+      "AGREEMENT": "Taraflarning kelishuvi",
+      "CONTRACT_EXPIRY": "Mehnat shartnomasi muddati tugashi",
+      "EMPLOYEE_INITIATIVE": "Xodimning tashabbusi (o'z xohishi)",
+      "LIQUIDATION": "Tashkilotning tugatilishi",
+      "STAFF_REDUCTION": "Xodimlar soni yoki shtatining o'zgarishi",
+      "INSUFFICIENT_QUALIFICATION": "Malakasi yetarli emasligi sababli lavozimga nomuvofiqlik",
+      "SYSTEMATIC_BREACH": "Mehnat majburiyatlarini muntazam buzish",
+      "GROSS_BREACH": "Mehnat majburiyatlarini bir marta qo'pol buzish",
+      "EMPLOYER_OTHER": "Ish beruvchi tashabbusi bilan — boshqa asoslar",
+      "OWNER_CHANGE_REFUSAL": "Mulkdor almashgani, qayta tashkil etilgani sababli ishni davom ettirishdan bosh tortish",
+      "NEW_CONDITIONS_REFUSAL": "Yangi mehnat sharoitlarida ishlashdan bosh tortish",
+      "RELOCATION_REFUSAL": "Ish beruvchi bilan boshqa joyga ko'chishdan bosh tortish",
+      "MEDICAL_TRANSFER_REFUSAL": "Tibbiy xulosa bo'yicha boshqa ishga o'tkazishdan bosh tortish",
+      "MILITARY_SERVICE": "Harbiy yoki muqobil xizmatga chaqirilish",
+      "PREDECESSOR_REINSTATED": "Avval bu ishni bajargan xodimning ishga tiklanishi",
+      "COURT_SENTENCE": "Sud hukmi qonuniy kuchga kirishi",
+      "HIRING_RULES_BREACH": "Ishga qabul qilish qoidalari buzilganligi",
+      "LEGAL_IMPEDIMENT": "Mehnat munosabatlarini davom ettirishga to'sqinlik qiluvchi holatlar",
+      "COURT_LIQUIDATION": "Sud qarori bilan tashkilotning tugatilishi",
+      "REINSTATEMENT_REVERSED": "Ishga tiklash to'g'risidagi qarorning bekor qilinishi",
+      "DEATH": "Xodimning vafoti",
+      "DEPUTY_RETURN": "Deputat yoki senatorning avvalgi ishiga qaytishi",
+      "NOT_ELECTED": "Saylanmaslik yoki tanlovdan o'tmaslik",
+      "CONTRACT_GROUNDS": "Mehnat shartnomasida nazarda tutilgan asos",
+      "OTHER": "Qonunda nazarda tutilgan boshqa asos"
+    },
     "title": "Kadrlar",
     "description": "Xodimlar, ish grafiklari va yo'qliklarni boshqarish",
     "employees": {
@@ -2450,6 +2477,7 @@
       "title": "Xodim kalendari",
       "empty": "Tanlangan oy uchun kalendar ma'lumoti yo'q",
       "status": {
+        "CHILD_CARE_LEAVE": "Bola parvarishi ta'tili",
         "WORKED": "Ishlangan",
         "PLANNED_WORK": "Rejadagi ish",
         "DAY_OFF": "Dam olish",
@@ -2463,6 +2491,7 @@
         "OTHER_ABSENCE": "Boshqa yo'qlik"
       },
       "statusShort": {
+        "CHILD_CARE_LEAVE": "Bola",
         "WORKED": "Ish",
         "PLANNED_WORK": "Reja",
         "DAY_OFF": "Dam",
@@ -2477,6 +2506,7 @@
       }
     },
     "fields": {
+      "dismissalGround": "Bo'shatish asosi (MK moddasi)",
       "employee": "Xodim",
       "absenceType": "Yo'qlik turi",
       "dateFrom": "Boshlanish sanasi",
@@ -2534,6 +2564,21 @@
   },
   "payroll": {
     "leave": {
+      "leavePart": "Ta'til",
+      "severance": "Ishdan bo'shatish nafaqasi (MK 173-m.)",
+      "dismissalGround": "Bo'shatish asosi",
+      "severanceByLaw": "qonun bo'yicha nafaqa beriladi",
+      "severanceNotByLaw": "qonun bo'yicha nafaqa berilmaydi",
+      "paySeverance": "Nafaqa to'lash",
+      "serviceYears": "Shu ish beruvchidagi staj (yil)",
+      "severancePercent": "O'rtacha oylikdan foiz",
+      "severanceMin": "qonundagi eng kami {{percent}} %",
+      "monthlyAverage": "O'rtacha oylik ish haqi (kunlik × 25,3)",
+      "severanceAmount": "Nafaqa",
+      "settlementTotal": "Jami hisob-kitob",
+      "severanceTaxHint": "Nafaqa — «boshqa daromad» (Soliq kodeksi 377-m. 9-b.): faqat JShDS ushlanadi, ijtimoiy soliq va INPS olinmaydi; keyingi o'rtacha ish haqiga kirmaydi.",
+      "excludedDays": "Stajga kirmagan kunlar",
+      "excludedText": "stajga kirmagan {{count}} kun (MK 226-m.)",
       "vacations": "Ta'tillar",
       "newVacation": "Ta'til berish",
       "createVacation": "Ta'til hujjatini yaratish",
@@ -2648,6 +2693,8 @@
       "12": "Dekabr"
     },
     "fields": {
+      "isWageIncome": "Mehnatga haq to'lash",
+      "isWageIncomeHint": "INPS, ijtimoiy soliq va o'rtacha ish haqiga kiradi. Nafaqa kabi «boshqa daromad»dan faqat JShDS olinadi.",
       "taxKind": "Qonuniy soliq turi",
       "nonResidentRate": "Norezident uchun stavka (%)",
       "employee": "Xodim",
@@ -2815,6 +2862,10 @@
         "NET_HINT": "Jami hisoblangan minus komponent ushlanmalari"
       },
       "calculationMethod": {
+        "LEAVE_COMPENSATION": "Ta'til kompensatsiyasi / ushlanma",
+        "LEAVE_COMPENSATION_HINT": "Faqat ishdan bo'shatish hisob-kitobida: foydalanilmagan ta'til (MK 234) yoki avansga olingan ta'til ushlanmasi (MK 269)",
+        "SEVERANCE_PAY": "Ishdan bo'shatish nafaqasi",
+        "SEVERANCE_PAY_HINT": "Faqat ishdan bo'shatish hisob-kitobida: o'rtacha oylik × stajga qarab foiz (MK 173)",
         "SALARY_PRORATED": "Ishlangan vaqtga mutanosib",
         "SALARY_PRORATED_HINT": "Oylik ishlangan kun/soatga bo'lib hisoblanadi",
         "FIXED": "Qat'iy summa",
@@ -3073,6 +3124,7 @@
       "noData": "Ma'lumot topilmadi"
     },
     "messages": {
+      "dismissalGroundRequired": "Bo'shatish asosini tanlang",
       "taxKindRegimeHint": "Tashkilot hisob siyosatida soliq rejimi tanlangan bo'lsa, bu soliq rejim stavkasi bilan hisoblanadi; bu yerdagi stavka faqat rejim bo'lmaganda ishlatiladi.",
       "regimeRateHint": "«{{regime}}» rejimi stavkasi; o'z stavkasi {{own}} %",
       "notNegative": "Qiymat manfiy bo'lmasligi kerak",

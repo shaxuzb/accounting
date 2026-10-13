@@ -5,7 +5,8 @@ export type HrCalendarStatusCode =
   | "ANNUAL_LEAVE"
   | "SICK_LEAVE"
   | "UNPAID_LEAVE"
-  | "UNEXCUSED_ABSENCE";
+  | "UNEXCUSED_ABSENCE"
+  | "CHILD_CARE_LEAVE";
 
 export interface HrWorkScheduleDay {
   dayOfWeek: number;

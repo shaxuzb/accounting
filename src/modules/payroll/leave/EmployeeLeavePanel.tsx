@@ -39,6 +39,9 @@ export default function EmployeeLeavePanel({ employeeId, active }: { employeeId:
             <Descriptions.Item label={t("payroll.leave.serviceMonths")}>{data.serviceMonths}</Descriptions.Item>
             <Descriptions.Item label={t("payroll.leave.accrued")}>{days(data.accruedDays)}</Descriptions.Item>
             <Descriptions.Item label={t("payroll.leave.used")}>{days(data.usedDays)}</Descriptions.Item>
+            {data.excludedDays > 0 && (
+              <Descriptions.Item label={t("payroll.leave.excludedDays")}>{data.excludedDays}</Descriptions.Item>
+            )}
             <Descriptions.Item label={t("payroll.leave.balance")}>
               <b className={data.balanceDays < 0 ? "text-red-600" : "text-primary"}>{days(data.balanceDays)}</b>
             </Descriptions.Item>

@@ -55,6 +55,7 @@ const STATUS_ORDER: PayrollTimesheetAttendanceStatus[] = [
   "UNEXCUSED_ABSENCE",
   "MATERNITY_LEAVE",
   "STUDY_LEAVE",
+  "CHILD_CARE_LEAVE",
   "OTHER_ABSENCE",
 ];
 
@@ -101,6 +102,10 @@ const STATUS_STYLES: Record<
   STUDY_LEAVE: {
     cell: "border-indigo-200 bg-indigo-50 text-indigo-700",
     dot: "bg-indigo-500",
+  },
+  CHILD_CARE_LEAVE: {
+    cell: "border-pink-200 bg-pink-50 text-pink-700",
+    dot: "bg-pink-500",
   },
   OTHER_ABSENCE: {
     cell: "border-gray-200 bg-gray-50 text-gray-700",

@@ -113,6 +113,8 @@ export const CALCULATION_METHODS = [
   "OVERTIME_HOURS",
   "NIGHT_HOURS",
   "HOLIDAY_HOURS",
+  "LEAVE_COMPENSATION",
+  "SEVERANCE_PAY",
 ] as const;
 export type PayrollCalculationMethod = (typeof CALCULATION_METHODS)[number];
 
@@ -188,6 +190,16 @@ export const calculationMethodOptions: readonly StaticOption[] = [
     label: "payroll.enums.calculationMethod.HOLIDAY_HOURS",
     description: "payroll.enums.calculationMethod.HOLIDAY_HOURS_HINT",
   },
+  {
+    value: "LEAVE_COMPENSATION",
+    label: "payroll.enums.calculationMethod.LEAVE_COMPENSATION",
+    description: "payroll.enums.calculationMethod.LEAVE_COMPENSATION_HINT",
+  },
+  {
+    value: "SEVERANCE_PAY",
+    label: "payroll.enums.calculationMethod.SEVERANCE_PAY",
+    description: "payroll.enums.calculationMethod.SEVERANCE_PAY_HINT",
+  },
 ] as const;
 
 /** Soatlik stavkaning foizi bilan to'lanadigan usullar (ortiqcha, tungi, bayram soatlari). */
@@ -220,6 +232,47 @@ export const HR_ORDER_TYPES = [
   "DISMISSAL",
 ] as const;
 export type PayrollHrOrderType = (typeof HR_ORDER_TYPES)[number];
+
+/**
+ * Ishdan bo'shatish asoslari (1C «Основание увольнения»): Mehnat kodeksi moddasi va 173-modda
+ * 2-qismi bo'yicha nafaqa beriladimi (backend PayrollDismissalGroundConst bilan bir xil).
+ */
+export const DISMISSAL_GROUNDS = [
+  { code: "AGREEMENT", article: "155-m. 1-q. 1-b., 157-m.", severance: false },
+  { code: "CONTRACT_EXPIRY", article: "155-m. 1-q. 2-b., 158-m.", severance: false },
+  { code: "EMPLOYEE_INITIATIVE", article: "155-m. 1-q. 3-b., 160-m.", severance: false },
+  { code: "LIQUIDATION", article: "161-m. 2-q. 1-b.", severance: true },
+  { code: "STAFF_REDUCTION", article: "161-m. 2-q. 2-b.", severance: true },
+  { code: "INSUFFICIENT_QUALIFICATION", article: "161-m. 2-q. 3-b.", severance: true },
+  { code: "SYSTEMATIC_BREACH", article: "161-m. 2-q. 4-b.", severance: false },
+  { code: "GROSS_BREACH", article: "161-m. 2-q. 5-b.", severance: false },
+  { code: "EMPLOYER_OTHER", article: "161-m. 2-q. 6-b.", severance: true },
+  { code: "OWNER_CHANGE_REFUSAL", article: "155-m. 1-q. 5-b.", severance: true },
+  { code: "NEW_CONDITIONS_REFUSAL", article: "155-m. 1-q. 6-b., 137-m. 4-q.", severance: true },
+  { code: "RELOCATION_REFUSAL", article: "155-m. 1-q. 7-b., 146-m. 5-q.", severance: true },
+  { code: "MEDICAL_TRANSFER_REFUSAL", article: "155-m. 1-q. 8-b.", severance: true },
+  { code: "MILITARY_SERVICE", article: "168-m. 1-q. 1-b.", severance: true },
+  { code: "PREDECESSOR_REINSTATED", article: "168-m. 1-q. 2-b.", severance: true },
+  { code: "COURT_SENTENCE", article: "168-m. 1-q. 3-b.", severance: false },
+  { code: "HIRING_RULES_BREACH", article: "168-m. 1-q. 4-b.", severance: true },
+  { code: "LEGAL_IMPEDIMENT", article: "168-m. 1-q. 5-b.", severance: true },
+  { code: "COURT_LIQUIDATION", article: "168-m. 1-q. 6-b.", severance: true },
+  { code: "REINSTATEMENT_REVERSED", article: "168-m. 1-q. 7-b.", severance: false },
+  { code: "DEATH", article: "168-m. 1-q. 8-b.", severance: false },
+  { code: "DEPUTY_RETURN", article: "168-m. 1-q. 9-b.", severance: true },
+  { code: "NOT_ELECTED", article: "155-m. 1-q. 10-b., 169-m.", severance: false },
+  { code: "CONTRACT_GROUNDS", article: "155-m. 1-q. 11-b.", severance: false },
+  { code: "OTHER", article: "155-m. 2-q.", severance: false },
+] as const;
+
+export const dismissalGroundOptions: readonly StaticOption[] = DISMISSAL_GROUNDS.map((ground) => ({
+  value: ground.code,
+  label: `hr.dismissalGrounds.${ground.code}`,
+  description: `MK ${ground.article}${ground.severance ? " · nafaqa" : ""}`,
+}));
+
+export const dismissalGroundArticle = (code?: string | null) =>
+  DISMISSAL_GROUNDS.find((ground) => ground.code === code)?.article ?? null;
 
 export const hrOrderTypeOptions: readonly StaticOption[] = [
   { value: "HIRE", label: "payroll.enums.hrOrderType.HIRE" },

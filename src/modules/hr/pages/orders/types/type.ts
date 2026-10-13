@@ -14,6 +14,7 @@ export interface PayrollHrOrder {
   effectiveDate: string;
   statusId: number;
   basis?: string | null;
+  dismissalGround?: string | null;
   note?: string | null;
   departmentId?: number | null;
   departmentName?: string | null;
@@ -59,6 +60,7 @@ export interface PayrollHrOrderPrint {
   effectiveDate: string;
   statusId: number;
   basis?: string | null;
+  dismissalGround?: string | null;
   note?: string | null;
   organizationName: string;
   employeeId: number;

@@ -8,6 +8,8 @@ export interface LeaveBalance {
   hireDate?: string | null;
   countedFrom?: string | null;
   openingDays: number;
+  /** Calendar days left out of the leave service (MK 226). */
+  excludedDays: number;
   serviceMonths: number;
   accruedDays: number;
   usedDays: number;
@@ -64,6 +66,10 @@ export interface SettlementRequest {
   employeeId: number;
   dismissalDate?: string | null;
   noRecovery: boolean;
+  /** null: by the dismissal ground */
+  paySeverance?: boolean | null;
+  /** null: the least by the service */
+  severancePercent?: number | null;
   note?: string | null;
 }
 
@@ -79,6 +85,16 @@ export interface SettlementPreview {
   amount: number;
   recovery: boolean;
   noRecovery: boolean;
+  dismissalGround?: string | null;
+  dismissalArticle?: string | null;
+  severanceByLaw: boolean;
+  paySeverance: boolean;
+  serviceYears: number;
+  severanceMinPercent: number;
+  severancePercent: number;
+  monthlyAverage: number;
+  severanceAmount: number;
+  total: number;
   periodId?: number | null;
   periodName?: string | null;
   warnings: string[];

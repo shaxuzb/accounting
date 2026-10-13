@@ -18,6 +18,7 @@ const statusColors: Record<HrCalendarStatusCode, string> = {
   SICK_LEAVE: "red",
   UNPAID_LEAVE: "gold",
   UNEXCUSED_ABSENCE: "volcano",
+  CHILD_CARE_LEAVE: "magenta",
 };
 
 export default function EmployeeCalendarPanel({ employeeId }: Props) {

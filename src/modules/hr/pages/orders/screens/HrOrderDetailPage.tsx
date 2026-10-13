@@ -8,7 +8,7 @@ import Card from "@/components/ui/card/Card";
 import SectionCard from "@/components/ui/card/SectionCard";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeSelect";
-import { advanceMethodOptions, employmentTypeOptions, hrOrderTypeOptions } from "@/modules/payroll/constants/options";
+import { advanceMethodOptions, dismissalGroundArticle, dismissalGroundOptions, employmentTypeOptions, hrOrderTypeOptions } from "@/modules/payroll/constants/options";
 import { displayDate, money } from "@/modules/payroll/utils/format";
 import { chartAccountSelectDisplayConfig, selectListEndpoints } from "@/shared/constants/selectLists";
 import { useAppSelector } from "@/store/hooks";
@@ -36,6 +36,7 @@ const createDefaultValues = (): PayrollHrOrderForm => ({
   effectiveDate: dayjs().format("YYYY-MM-DD"),
   basis: null,
   note: null,
+  dismissalGround: null,
   departmentId: null,
   positionId: null,
   employmentType: "PRIMARY",
@@ -49,7 +50,12 @@ const createDefaultValues = (): PayrollHrOrderForm => ({
 });
 
 const toPayload = (values: PayrollHrOrderForm): PayrollHrOrderForm => {
-  const base = { ...values, basis: values.basis || null, note: values.note || null };
+  const base = {
+    ...values,
+    basis: values.basis || null,
+    note: values.note || null,
+    dismissalGround: values.orderType === "DISMISSAL" ? values.dismissalGround || null : null,
+  };
   if (values.orderType === "DISMISSAL") return { ...base, departmentId: null, positionId: null, employmentType: null, monthlySalary: null, employmentRate: null, weeklyHours: null, currencyId: null, expenseAccountId: null, advanceMethod: "PERCENT", advanceValue: null };
   if (values.orderType === "PAY_CHANGE") return { ...base, departmentId: null, positionId: null, employmentType: null, weeklyHours: null, currencyId: null, expenseAccountId: null, advanceMethod: "PERCENT", advanceValue: null };
   if (values.orderType === "TRANSFER") return { ...base, monthlySalary: null, employmentRate: null, weeklyHours: null, currencyId: null, expenseAccountId: null, advanceMethod: "PERCENT", advanceValue: null };
@@ -84,6 +90,7 @@ export default function HrOrderDetailPage() {
       effectiveDate: record.effectiveDate,
       basis: record.basis ?? null,
       note: record.note ?? null,
+      dismissalGround: record.dismissalGround ?? null,
       departmentId: record.departmentId ?? null,
       positionId: record.positionId ?? null,
       employmentType: record.employmentType ?? null,
@@ -151,17 +158,18 @@ export default function HrOrderDetailPage() {
             {fields.showCurrency && <Col xs={24} md={6}><SelectCustom formik={formik} fieldName="currencyId" label="payroll.fields.currency" path={selectListEndpoints.currenciesSelectList} required disabled={readOnly} marginBottom="mb-4" /></Col>}
             {fields.showExpenseAccount && <Col xs={24} md={6}><SelectCustom formik={formik} fieldName="expenseAccountId" label="payroll.fields.expenseAccountOverride" path={selectListEndpoints.chartAccountsSelectList} displayConfig={chartAccountSelectDisplayConfig} search clearable disabled={readOnly} marginBottom="mb-4" /></Col>}
             {fields.showAdvance && <><Col xs={24} md={6}><SelectStatic formik={formik} fieldName="advanceMethod" label="payroll.fields.advanceMethod" options={advanceMethodOptions} disabled={readOnly} marginBottom="mb-4" /></Col><Col xs={24} md={6}><InputNumber formik={formik} fieldName="advanceValue" label={formik.values.advanceMethod === "PERCENT" ? "payroll.fields.advancePercent" : "payroll.fields.advanceAmount"} min={0} max={formik.values.advanceMethod === "PERCENT" ? 100 : undefined} precision={2} disabled={readOnly} /></Col></>}
+            {formik.values.orderType === "DISMISSAL" && <Col xs={24} md={12}><SelectStatic formik={formik} fieldName="dismissalGround" label="hr.fields.dismissalGround" options={dismissalGroundOptions} required disabled={readOnly} marginBottom="mb-4" /></Col>}
             <Col xs={24} md={12}><InputTextArea formik={formik} fieldName="basis" label="payroll.fields.basis" rows={2} disabled={readOnly} /></Col>
             <Col xs={24} md={12}><InputTextArea formik={formik} fieldName="note" label="payroll.fields.note" rows={2} disabled={readOnly} /></Col>
           </Row>
-          {formik.errors.positionId && <div className="mb-3 text-sm text-red-500">{String(formik.errors.positionId)}</div>}
+          {formik.errors.positionId && (formik.values.orderType === "HIRE" || formik.values.orderType === "TRANSFER") && <div className="mb-3 text-sm text-red-500">{String(formik.errors.positionId)}</div>}
           {!readOnly && <div className="flex justify-end"><Button type="primary" htmlType="submit" icon={<Save className="size-4" />} loading={createMutation.isPending || updateMutation.isPending}>{t("common.save")}</Button></div>}
         </Form>
       </SectionCard>
       {!isCreate && record && <Card className="sticky bottom-0 z-20 border border-border bg-primary-bg/95 px-4 py-3 shadow-sm"><div className="flex flex-wrap justify-end gap-2">{isDraft && permissions.includes(hrOrderPermissions.confirm) && <Button type="primary" icon={<CheckCircle2 className="size-4" />} loading={confirmMutation.isPending} disabled={isBusy} onClick={() => ask(t("payroll.hrOrders.confirmTitle", { defaultValue: "Buyruqni tasdiqlaysizmi?" }), () => confirmMutation.mutateAsync(id), "payroll.messages.hrOrderConfirmed")}>{t("payroll.actions.confirm")}</Button>}{isDraft && permissions.includes(hrOrderPermissions.delete) && <Button danger icon={<Trash2 className="size-4" />} loading={deleteMutation.isPending} disabled={isBusy} onClick={() => ask(t("payroll.hrOrders.deleteTitle", { defaultValue: "Buyruqni o'chirasizmi?" }), () => deleteMutation.mutateAsync(id), "payroll.messages.hrOrderDeleted", true)}>{t("common.delete")}</Button>}{!isDraft && permissions.includes(hrOrderPermissions.view) && <Button icon={<Printer className="size-4" />} onClick={() => setPrintOpen(true)}>{t("payroll.hrOrders.print", { defaultValue: "Chop etish" })}</Button>}{statusId === 2 && record?.orderType === "DISMISSAL" && permissions.includes(payrollDocumentPermissions.calculate) && <Button icon={<HandCoins className="size-4" />} onClick={() => setSettlementOpen(true)}>{t("payroll.leave.settlement")}</Button>}{statusId === 2 && permissions.includes(hrOrderPermissions.cancel) && <Button danger icon={<CircleX className="size-4" />} loading={cancelMutation.isPending} disabled={isBusy} onClick={() => ask(t("payroll.hrOrders.cancelTitle", { defaultValue: "Buyruqni bekor qilasizmi?" }), () => cancelMutation.mutateAsync(id), "payroll.messages.hrOrderCancelled")}>{t("payroll.actions.cancel")}</Button>}</div></Card>}
       {settlementOpen && record && <SettlementModal open employeeId={record.employeeId} employeeName={record.employeeName} dismissalDate={record.effectiveDate} onClose={() => setSettlementOpen(false)} />}
       <Modal open={printOpen} onCancel={() => setPrintOpen(false)} footer={<Button onClick={() => window.print()} icon={<Printer className="size-4" />}>{t("payroll.hrOrders.print", { defaultValue: "Chop etish" })}</Button>} title={t("payroll.hrOrders.printTitle", { defaultValue: "Kadr buyrug'i" })} width={760}>
-        <Spin spinning={isPrintFetching}>{printData ? <div className="space-y-4 text-sm"><div className="text-center text-lg font-semibold">{printData.organizationName}</div><div className="grid grid-cols-2 gap-2"><span>{t("payroll.fields.orderNumber", { defaultValue: "Buyruq raqami" })}: <b>{printData.orderNumber}</b></span><span>{t("payroll.fields.orderDate", { defaultValue: "Buyruq sanasi" })}: <b>{displayDate(printData.orderDate)}</b></span><span>{t("payroll.fields.employee")}: <b>{printData.employeeName}</b></span><span>{t("payroll.fields.effectiveDate", { defaultValue: "Amal qilish sanasi" })}: <b>{displayDate(printData.effectiveDate)}</b></span></div><Table pagination={false} size="small" dataSource={[{ key: 1, label: t("payroll.hrOrders.from", { defaultValue: "Eski" }), department: printData.fromDepartmentName ?? "—", position: printData.fromPositionName ?? "—", salary: printData.fromMonthlySalary }, { key: 2, label: t("payroll.hrOrders.to", { defaultValue: "Yangi" }), department: printData.toDepartmentName ?? "—", position: printData.toPositionName ?? "—", salary: printData.toMonthlySalary }]} columns={[{ title: "", dataIndex: "label" }, { title: t("payroll.fields.department"), dataIndex: "department" }, { title: t("payroll.fields.position"), dataIndex: "position" }, { title: t("payroll.fields.monthlySalary"), dataIndex: "salary", render: (value: number | null) => value == null ? "—" : money(value) }]} /></div> : <Alert type="info" message={t("payroll.hrOrders.printUnavailable", { defaultValue: "Bosma ma'lumotlari mavjud emas" })} />}</Spin>
+        <Spin spinning={isPrintFetching}>{printData ? <div className="space-y-4 text-sm"><div className="text-center text-lg font-semibold">{printData.organizationName}</div><div className="grid grid-cols-2 gap-2"><span>{t("payroll.fields.orderNumber", { defaultValue: "Buyruq raqami" })}: <b>{printData.orderNumber}</b></span><span>{t("payroll.fields.orderDate", { defaultValue: "Buyruq sanasi" })}: <b>{displayDate(printData.orderDate)}</b></span><span>{t("payroll.fields.employee")}: <b>{printData.employeeName}</b></span><span>{t("payroll.fields.effectiveDate", { defaultValue: "Amal qilish sanasi" })}: <b>{displayDate(printData.effectiveDate)}</b></span></div>{printData.dismissalGround && <div>{t("hr.fields.dismissalGround")}: <b>{t(`hr.dismissalGrounds.${printData.dismissalGround}`)}</b> (Mehnat kodeksi {dismissalGroundArticle(printData.dismissalGround)})</div>}{printData.basis && <div>{t("payroll.fields.basis")}: {printData.basis}</div>}<Table pagination={false} size="small" dataSource={[{ key: 1, label: t("payroll.hrOrders.from", { defaultValue: "Eski" }), department: printData.fromDepartmentName ?? "—", position: printData.fromPositionName ?? "—", salary: printData.fromMonthlySalary }, { key: 2, label: t("payroll.hrOrders.to", { defaultValue: "Yangi" }), department: printData.toDepartmentName ?? "—", position: printData.toPositionName ?? "—", salary: printData.toMonthlySalary }]} columns={[{ title: "", dataIndex: "label" }, { title: t("payroll.fields.department"), dataIndex: "department" }, { title: t("payroll.fields.position"), dataIndex: "position" }, { title: t("payroll.fields.monthlySalary"), dataIndex: "salary", render: (value: number | null) => value == null ? "—" : money(value) }]} /></div> : <Alert type="info" message={t("payroll.hrOrders.printUnavailable", { defaultValue: "Bosma ma'lumotlari mavjud emas" })} />}</Spin>
       </Modal>
     </div>
   );

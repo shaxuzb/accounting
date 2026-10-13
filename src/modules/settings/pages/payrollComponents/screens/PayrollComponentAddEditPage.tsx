@@ -57,6 +57,7 @@ const defaultValues: PayrollComponentForm = {
   minimumAmount: null,
   maximumAmount: null,
   isTaxable: true,
+  isWageIncome: true,
   isMandatory: false,
   expenseAccountId: null,
   liabilityAccountId: null,
@@ -136,6 +137,7 @@ export default function PayrollComponentAddEditPage({
         minimumAmount: component.minimumAmount ?? null,
         maximumAmount: component.maximumAmount ?? null,
         isTaxable: component.isTaxable ?? true,
+        isWageIncome: component.isWageIncome ?? true,
         isMandatory: Boolean(component.isMandatory),
         expenseAccountId: component.expenseAccountId ?? null,
         liabilityAccountId: component.liabilityAccountId ?? null,
@@ -399,6 +401,17 @@ export default function PayrollComponentAddEditPage({
                 marginBottom="mb-4"
               />
             </Col>
+            {componentType === "EARNING" && (
+              <Col xs={24} md={12}>
+                <SwitchField
+                  formik={formik}
+                  fieldName="isWageIncome"
+                  label="payroll.fields.isWageIncome"
+                  description="payroll.fields.isWageIncomeHint"
+                  marginBottom="mb-4"
+                />
+              </Col>
+            )}
           </Row>
 
           {componentType === "EMPLOYER_TAX" && (
