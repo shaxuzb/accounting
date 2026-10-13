@@ -274,6 +274,20 @@ export const dismissalGroundOptions: readonly StaticOption[] = DISMISSAL_GROUNDS
 export const dismissalGroundArticle = (code?: string | null) =>
   DISMISSAL_GROUNDS.find((ground) => ground.code === code)?.article ?? null;
 
+/** Ushlanma chegarasi (MK 270, 271). */
+export const deductionLimitOptions: readonly StaticOption[] = [
+  { value: "GENERAL", label: "payroll.enums.deductionLimit.GENERAL" },
+  { value: "ALIMONY", label: "payroll.enums.deductionLimit.ALIMONY" },
+  { value: "NONE", label: "payroll.enums.deductionLimit.NONE" },
+] as const;
+
+/** Mukofotni taqsimlash usullari (1C «Премия»). */
+export const bonusModeOptions: readonly StaticOption[] = [
+  { value: "EQUAL", label: "payroll.bonus.EQUAL" },
+  { value: "PERCENT_OF_SALARY", label: "payroll.bonus.PERCENT_OF_SALARY" },
+  { value: "FUND", label: "payroll.bonus.FUND" },
+] as const;
+
 export const hrOrderTypeOptions: readonly StaticOption[] = [
   { value: "HIRE", label: "payroll.enums.hrOrderType.HIRE" },
   { value: "TRANSFER", label: "payroll.enums.hrOrderType.TRANSFER" },

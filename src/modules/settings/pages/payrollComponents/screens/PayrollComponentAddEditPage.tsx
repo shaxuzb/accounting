@@ -13,6 +13,7 @@ import {
   methodUsesAmount,
   methodUsesRate,
   prorationBasisOptions,
+  deductionLimitOptions,
 } from "@/modules/payroll/constants/options";
 import {
   chartAccountSelectDisplayConfig,
@@ -58,6 +59,7 @@ const defaultValues: PayrollComponentForm = {
   maximumAmount: null,
   isTaxable: true,
   isWageIncome: true,
+  deductionLimit: "GENERAL",
   isMandatory: false,
   expenseAccountId: null,
   liabilityAccountId: null,
@@ -138,6 +140,7 @@ export default function PayrollComponentAddEditPage({
         maximumAmount: component.maximumAmount ?? null,
         isTaxable: component.isTaxable ?? true,
         isWageIncome: component.isWageIncome ?? true,
+        deductionLimit: component.deductionLimit ?? "GENERAL",
         isMandatory: Boolean(component.isMandatory),
         expenseAccountId: component.expenseAccountId ?? null,
         liabilityAccountId: component.liabilityAccountId ?? null,
@@ -401,6 +404,18 @@ export default function PayrollComponentAddEditPage({
                 marginBottom="mb-4"
               />
             </Col>
+            {componentType === "DEDUCTION" && (
+              <Col xs={24} md={12}>
+                <SelectStatic
+                  formik={formik}
+                  fieldName="deductionLimit"
+                  label="payroll.fields.deductionLimit"
+                  options={deductionLimitOptions}
+                  marginBottom="mb-1"
+                />
+                <div className="mb-4 text-xs text-secondary-text">{t("payroll.fields.deductionLimitHint")}</div>
+              </Col>
+            )}
             {componentType === "EARNING" && (
               <Col xs={24} md={12}>
                 <SwitchField

@@ -2563,7 +2563,28 @@
     }
   },
   "payroll": {
+    "positionAllowances": {
+      "title": "Lavozim ustamalari",
+      "hint": "Lavozimdagi har bir xodimga oylik hisoblashda qo'shiladi (xodimga alohida biriktirilgan bo'lsa — o'shanisi).",
+      "add": "Ustama qo'shish",
+      "empty": "Ustama yo'q",
+      "onlyEdit": "Ustamalarni lavozim saqlangandan keyin qo'shing."
+    },
+    "bonus": {
+      "title": "Mukofot",
+      "hint": "Tanlangan hisoblash turi bo'yicha xodimlarga summa qo'shiladi; hujjatda qo'lda kiritilgan summa bo'lib turadi.",
+      "component": "Mukofot hisoblash turi",
+      "mode": "Taqsimlash usuli",
+      "value": "Qiymat",
+      "employees": "Xodimlar (bo'sh — hammasi)",
+      "EQUAL": "Har biriga teng summa",
+      "PERCENT_OF_SALARY": "Okladdan foiz",
+      "FUND": "Fondni oklad va ishlangan vaqtga mutanosib",
+      "add": "Mukofot qo'shish",
+      "remove": "Mukofotni olib tashlash"
+    },
     "leave": {
+      "noRecoveryByGround": "bo'shatish asosi bo'yicha belgilandi (MK 269-m. 3-q.)",
       "leavePart": "Ta'til",
       "severance": "Ishdan bo'shatish nafaqasi (MK 173-m.)",
       "dismissalGround": "Bo'shatish asosi",
@@ -2693,6 +2714,8 @@
       "12": "Dekabr"
     },
     "fields": {
+      "deductionLimit": "Ushlanma chegarasi (MK 270)",
+      "deductionLimitHint": "Soliqdan keyingi summaning 50 % i (aliment — 70 %); xodimning yozma arizasi bilan — chegarasiz (MK 271)",
       "isWageIncome": "Mehnatga haq to'lash",
       "isWageIncomeHint": "INPS, ijtimoiy soliq va o'rtacha ish haqiga kiradi. Nafaqa kabi «boshqa daromad»dan faqat JShDS olinadi.",
       "taxKind": "Qonuniy soliq turi",
@@ -2705,8 +2728,8 @@
       "birthDate": "Tug'ilgan sana",
       "experienceSince": "Mehnat staji boshlangan sana",
       "experienceSinceHint": "Kasallik nafaqasi: 8 yilgacha 60%, 8 yildan 80%",
-      "sickBenefitFull": "Kasallik nafaqasi 100%",
-      "sickBenefitFullHint": "Stajdan qat'i nazar (3 va undan ortiq bola, faxriylar va h.k.)",
+      "sickBenefitFull": "Kasallik nafaqasi imtiyozi",
+      "sickBenefitFullHint": "2026-07-01 gacha: stajdan qat'i nazar 100%. Undan keyin (VMQ 796, 19-b.): I–II guruh nogironligi, 18 yoshgacha 4 va undan ortiq farzand yoki nogironligi bo'lgan farzand — foiz 20 bandga oshadi",
       "isTaxResident": "Soliq rezidenti",
       "isTaxResidentHint": "Norezident: JShDS 20%, INPS ushlanmaydi",
       "bankAccountNumber": "Hisob raqami / karta",
@@ -2829,6 +2852,11 @@
       "quantity": "Miqdor"
     },
     "enums": {
+      "deductionLimit": {
+        "GENERAL": "Umumiy — 50 %",
+        "ALIMONY": "Aliment — 70 %",
+        "NONE": "Xodim arizasi bilan — chegarasiz"
+      },
       "employmentType": {
         "PRIMARY": "Asosiy ish joyi",
         "PRIMARY_HINT": "To'liq stavkadagi asosiy xodim",

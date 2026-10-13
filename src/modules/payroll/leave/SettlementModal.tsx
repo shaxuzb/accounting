@@ -27,7 +27,8 @@ export default function SettlementModal({ open, onClose, employeeId, employeeNam
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [date, setDate] = useState<Dayjs | null>(dismissalDate ? dayjs(dismissalDate) : null);
-  const [noRecovery, setNoRecovery] = useState(false);
+  // null: the dismissal ground decides (art. 269 part 3)
+  const [noRecovery, setNoRecovery] = useState<boolean | null>(null);
   const [paySeverance, setPaySeverance] = useState<boolean | null>(null);
   const [severancePercent, setSeverancePercent] = useState<number | null>(null);
   // typed here, sent to the preview once the field is left: a preview per keystroke overwrote the typing
@@ -80,9 +81,17 @@ export default function SettlementModal({ open, onClose, employeeId, employeeNam
           <DatePicker className="w-full" format="DD.MM.YYYY" value={date} onChange={setDate} />
         </div>
         <div className="flex items-end">
-          <Checkbox checked={noRecovery} onChange={(event) => setNoRecovery(event.target.checked)}>
-            {t("payroll.leave.noRecovery")}
-          </Checkbox>
+          <div>
+            <Checkbox
+              checked={noRecovery ?? preview.data?.noRecovery ?? false}
+              onChange={(event) => setNoRecovery(event.target.checked)}
+            >
+              {t("payroll.leave.noRecovery")}
+            </Checkbox>
+            {noRecovery === null && preview.data?.noRecovery && (
+              <div className="ml-6 text-xs text-secondary-text">{t("payroll.leave.noRecoveryByGround")}</div>
+            )}
+          </div>
         </div>
       </div>
 

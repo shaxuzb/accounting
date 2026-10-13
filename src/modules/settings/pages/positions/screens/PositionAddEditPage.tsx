@@ -12,6 +12,7 @@ import { useGetDetailPositions } from "../hooks";
 import { useCreatePositions } from "../hooks";
 import { useUpdatePositions } from "../hooks";
 import { positionsSchema } from "../types/schema";
+import PositionAllowances from "../components/PositionAllowances";
 
 
 const defaultValues: PositionsForm = {
@@ -86,7 +87,7 @@ export default function PositionAddEditPage({
       }}
       footer={null}
       centered
-      width={450}
+      width={isEdit ? 760 : 450}
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
@@ -118,6 +119,11 @@ export default function PositionAddEditPage({
             loading={isSubmitting}
           >{t("common.submit")}</Button>
         </Form>
+        {isEdit && editId ? (
+          <PositionAllowances positionId={Number(editId)} />
+        ) : (
+          <div className="mt-3 text-xs text-secondary-text">{t("payroll.positionAllowances.onlyEdit")}</div>
+        )}
       </Spin>
     </Modal>
   );

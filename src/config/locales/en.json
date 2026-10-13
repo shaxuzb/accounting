@@ -2563,7 +2563,28 @@
     }
   },
   "payroll": {
+    "positionAllowances": {
+      "title": "Position allowances",
+      "hint": "Every holder of the position gets them in the payroll (one assigned to the employee personally wins).",
+      "add": "Add an allowance",
+      "empty": "No allowances",
+      "onlyEdit": "Add allowances once the position is saved."
+    },
+    "bonus": {
+      "title": "Bonus",
+      "hint": "The amounts are added to the employees under the chosen accrual; in the document they are manual amounts.",
+      "component": "Bonus accrual",
+      "mode": "Distribution",
+      "value": "Value",
+      "employees": "Employees (empty — all)",
+      "EQUAL": "The same amount to each",
+      "PERCENT_OF_SALARY": "Percent of salary",
+      "FUND": "Fund by salary and time worked",
+      "add": "Add a bonus",
+      "remove": "Remove the bonus"
+    },
     "leave": {
+      "noRecoveryByGround": "set by the dismissal ground (art. 269 part 3)",
       "leavePart": "Leave",
       "severance": "Severance pay (art. 173)",
       "dismissalGround": "Dismissal ground",
@@ -2693,6 +2714,8 @@
       "12": "December"
     },
     "fields": {
+      "deductionLimit": "Deduction limit (art. 270)",
+      "deductionLimitHint": "50 % of the pay after taxes (alimony 70 %); at the employee's written request — none (art. 271)",
       "isWageIncome": "Pay for labour",
       "isWageIncomeHint": "Subject to INPS and social tax and part of the average earnings. Other income (severance) bears only income tax.",
       "taxKind": "Statutory tax",
@@ -2705,8 +2728,8 @@
       "birthDate": "Birth date",
       "experienceSince": "Insurance record since",
       "experienceSinceHint": "Sick pay: under 8 years 60%, from 8 years 80%",
-      "sickBenefitFull": "Sick pay 100%",
-      "sickBenefitFullHint": "Whatever the record (3+ children, veterans, etc.)",
+      "sickBenefitFull": "Sick pay privilege",
+      "sickBenefitFullHint": "Before 1 July 2026: 100% whatever the record. After (resolution 796 p. 19): group I–II disability, 4+ children under 18 or a disabled child — twenty points more",
       "isTaxResident": "Tax resident",
       "isTaxResidentHint": "Non-resident: income tax 20%, no INPS",
       "bankAccountNumber": "Account / card number",
@@ -2829,6 +2852,11 @@
       "quantity": "Quantity"
     },
     "enums": {
+      "deductionLimit": {
+        "GENERAL": "General — 50 %",
+        "ALIMONY": "Alimony — 70 %",
+        "NONE": "At the employee's request — no limit"
+      },
       "employmentType": {
         "PRIMARY": "Primary employment",
         "PRIMARY_HINT": "Full-rate primary employee",

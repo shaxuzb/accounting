@@ -22,6 +22,16 @@ export const payrollCalculateSchema = Yup.object({
   salaryExpenseAccountId: Yup.number().nullable(),
   salaryPayableAccountId: Yup.number().nullable(),
   note: Yup.string().nullable(),
+  bonus: Yup.object({
+    componentId: requiredNumber("payroll.bonus.component"),
+    mode: requiredString("payroll.bonus.mode"),
+    value: Yup.number()
+      .nullable()
+      .required(() => tMessage("payroll.bonus.value"))
+      .moreThan(0, () => tMessage("payroll.messages.notNegative")),
+  })
+    .nullable()
+    .default(null),
   adjustments: Yup.array().of(
     Yup.object({
       employeeId: requiredNumber("payroll.fields.employee"),

@@ -44,4 +44,14 @@ export interface PayrollCalculateForm {
   salaryPayableAccountId: number | null;
   note: string | null;
   adjustments: PayrollDocumentAdjustmentForm[];
+  /** A bonus spread over the regular run (1C «Премия»); null: none. */
+  bonus: PayrollBonusForm | null;
+}
+
+export interface PayrollBonusForm {
+  componentId: number | null;
+  mode: "EQUAL" | "PERCENT_OF_SALARY" | "FUND";
+  value: number | null;
+  employeeIds: number[] | null;
+  note: string | null;
 }

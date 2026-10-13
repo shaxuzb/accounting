@@ -22,6 +22,7 @@ export interface PayrollComponent {
   maximumAmount?: number | null;
   isTaxable?: boolean;
   isWageIncome?: boolean;
+  deductionLimit?: string;
   isMandatory: boolean;
   expenseAccountId?: number | null;
   expenseAccountName?: string | null;

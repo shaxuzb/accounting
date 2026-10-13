@@ -65,7 +65,8 @@ export interface VacationPreview {
 export interface SettlementRequest {
   employeeId: number;
   dismissalDate?: string | null;
-  noRecovery: boolean;
+  /** null: by the dismissal ground (MK 269 part 3) */
+  noRecovery?: boolean | null;
   /** null: by the dismissal ground */
   paySeverance?: boolean | null;
   /** null: the least by the service */

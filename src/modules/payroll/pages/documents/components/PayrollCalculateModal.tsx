@@ -14,6 +14,8 @@ import { DATE_TIME_FORMAT } from "@/modules/payroll/utils/format";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { Button, Col, Empty, Form, Modal, Row, Select } from "antd";
+import { usePayrollEmployeeLookup } from "@/modules/payroll/hooks/usePayrollEmployeeLookup";
+import { bonusModeOptions } from "@/modules/payroll/constants/options";
 import dayjs from "dayjs";
 import { useFormik } from "formik";
 import { Plus, Trash2 } from "lucide-react";
@@ -43,6 +45,7 @@ const createDefaultValues = (): PayrollCalculateForm => ({
   salaryPayableAccountId: null,
   note: null,
   adjustments: [],
+  bonus: null,
 });
 
 interface Props {
@@ -84,6 +87,13 @@ export default function PayrollCalculateModal({
                   note: item.note,
                 }))
               : [],
+          bonus:
+            values.documentKind === "REGULAR" && values.bonus
+              ? {
+                  ...values.bonus,
+                  employeeIds: values.bonus.employeeIds?.length ? values.bonus.employeeIds : null,
+                }
+              : null,
         });
         toast.success(t("payroll.messages.documentCalculated"));
         helpers.resetForm({ values: createDefaultValues() });
@@ -99,6 +109,7 @@ export default function PayrollCalculateModal({
 
   const { resetForm, setFieldValue, values } = formik;
   const isCorrection = values.documentKind === "CORRECTION";
+  const { data: employeeLookup } = usePayrollEmployeeLookup();
 
   const { data: postedDocuments, isFetching: isDocumentsFetching } =
     usePayrollDocumentLookup(isCorrection ? values.periodId : null);
@@ -281,6 +292,77 @@ export default function PayrollCalculateModal({
             ))}
           </Row>
         </div>
+
+        {values.documentKind === "REGULAR" && (
+          <div className="mb-4 rounded-xl border border-border p-3">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold">{t("payroll.bonus.title")}</div>
+                <div className="text-xs text-secondary-text">{t("payroll.bonus.hint")}</div>
+              </div>
+              <Button
+                type="dashed"
+                icon={values.bonus ? <Trash2 className="size-4" /> : <Plus className="size-4" />}
+                danger={Boolean(values.bonus)}
+                onClick={() =>
+                  setFieldValue(
+                    "bonus",
+                    values.bonus
+                      ? null
+                      : { componentId: null, mode: "EQUAL", value: null, employeeIds: [], note: null },
+                    false,
+                  )
+                }
+              >
+                {t(values.bonus ? "payroll.bonus.remove" : "payroll.bonus.add")}
+              </Button>
+            </div>
+            {values.bonus && (
+              <Row gutter={[12, 0]}>
+                <Col xs={24} md={8}>
+                  <PayrollComponentSelect
+                    formik={formik}
+                    fieldName="bonus.componentId"
+                    label="payroll.bonus.component"
+                    componentType="EARNING"
+                    marginBottom="mb-3"
+                  />
+                </Col>
+                <Col xs={24} md={9}>
+                  <SelectStatic
+                    formik={formik}
+                    fieldName="bonus.mode"
+                    label="payroll.bonus.mode"
+                    options={bonusModeOptions}
+                    marginBottom="mb-3"
+                  />
+                </Col>
+                <Col xs={24} md={7}>
+                  <InputNumber
+                    formik={formik}
+                    fieldName="bonus.value"
+                    label={values.bonus.mode === "PERCENT_OF_SALARY" ? "payroll.fields.rate" : "payroll.fields.amount"}
+                    min={0}
+                    precision={2}
+                  />
+                </Col>
+                <Col xs={24}>
+                  <Form.Item label={t("payroll.bonus.employees")} className="mb-3">
+                    <Select
+                      mode="multiple"
+                      allowClear
+                      showSearch
+                      optionFilterProp="label"
+                      value={values.bonus.employeeIds ?? []}
+                      onChange={(ids: number[]) => setFieldValue("bonus.employeeIds", ids, false)}
+                      options={(employeeLookup ?? []).map((employee) => ({ value: employee.id, label: employee.label }))}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            )}
+          </div>
+        )}
 
         {isCorrection && (
           <div className="mb-4 rounded-xl border border-border p-3">

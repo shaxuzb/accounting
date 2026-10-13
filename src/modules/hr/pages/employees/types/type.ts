@@ -6,6 +6,8 @@ export type HrCalendarStatusCode =
   | "SICK_LEAVE"
   | "UNPAID_LEAVE"
   | "UNEXCUSED_ABSENCE"
+  | "MATERNITY_LEAVE"
+  | "STUDY_LEAVE"
   | "CHILD_CARE_LEAVE";
 
 export interface HrWorkScheduleDay {
@@ -28,4 +30,6 @@ export interface HrEmployeeCalendarDay {
   workHours?: number | null;
   absenceId?: number | null;
   note?: string | null;
+  /** a day off inside a leave or a sick list: the absence shown on it (calendar days) */
+  coveringAbsenceCode?: HrCalendarStatusCode | null;
 }

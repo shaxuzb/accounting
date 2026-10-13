@@ -18,6 +18,8 @@ const statusColors: Record<HrCalendarStatusCode, string> = {
   SICK_LEAVE: "red",
   UNPAID_LEAVE: "gold",
   UNEXCUSED_ABSENCE: "volcano",
+  MATERNITY_LEAVE: "purple",
+  STUDY_LEAVE: "geekblue",
   CHILD_CARE_LEAVE: "magenta",
 };
 
@@ -41,6 +43,19 @@ export default function EmployeeCalendarPanel({ employeeId }: Props) {
     if (info.type !== "date") return info.originNode;
     const item = daysByDate.get(date.format("YYYY-MM-DD"));
     if (!item) return info.originNode;
+    // leave and sick lists run in calendar days: a day off inside one shows it, faded
+    if (item.statusCode === "DAY_OFF" && item.coveringAbsenceCode) {
+      return (
+        <div className="mt-1 opacity-60">
+          <Tag
+            color={statusColors[item.coveringAbsenceCode] ?? "default"}
+            className="m-0! max-w-full truncate text-[10px]!"
+          >
+            {t(`hr.calendar.status.${item.coveringAbsenceCode}`)}
+          </Tag>
+        </div>
+      );
+    }
     return (
       <div className="mt-1">
         <Tag
