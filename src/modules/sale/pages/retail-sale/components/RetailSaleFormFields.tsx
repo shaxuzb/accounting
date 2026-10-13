@@ -44,7 +44,7 @@ export default function RetailSaleFormFields({
         <SelectCustom
           label={t("retailSale.fields.warehouse")}
           fieldName="warehouseId"
-          path={selectListEndpoints.warehousesSelectList}
+          path={selectListEndpoints.warehousesSelectList} createWith="warehouse"
           formik={formik}
           required
         />

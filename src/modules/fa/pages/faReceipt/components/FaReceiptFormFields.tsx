@@ -8,6 +8,7 @@ import { Copy, Plus, Trash2 } from "lucide-react";
 import InputNumber from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
+import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import SelectDate from "@/components/fields/SelectDate";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import Card from "@/components/ui/card/Card";
@@ -462,12 +463,11 @@ export default function FaReceiptFormFields({
           </Col>
           {!isSurplus && (
           <Col span={5}>
-            <SelectCustom
-              path={selectListEndpoints.counterpartiesSelectList}
+            <CounterpartySelect
+              kind="supplier"
               formik={formik}
               fieldName="counterpartyId"
               label="fa.fields.counterpartyId"
-              search
               required
             />
           </Col>

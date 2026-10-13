@@ -297,7 +297,7 @@ function ProductionDocEditor({ kind, id, data }: { kind: ProductionDocKind; id: 
             <div className="min-w-64 flex-1">
               <SelectCustom
                 label={isReport ? "production.receiveWarehouse" : "production.issueWarehouse"}
-                path={selectListEndpoints.warehousesSelectList}
+                path={selectListEndpoints.warehousesSelectList} createWith="warehouse"
                 marginBottom="mb-0!"
                 value={warehouseId}
                 disabled={readOnly}

@@ -829,6 +829,7 @@ export default function BankOperationAddEditPage() {
       <ContractAddEditPage
         open={contractCreateOpen}
         initialCounterpartyId={formik.values.counterpartyId}
+        initialContractDate={formik.values.docDate ? dayjs(formik.values.docDate).format("YYYY-MM-DDTHH:mm:ss") : undefined}
         onCreated={handleContractCreated}
         onClose={() => setContractCreateOpen(false)}
       />

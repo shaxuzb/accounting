@@ -2,11 +2,12 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import { useAppSelector } from "@/store/hooks";
 import { getLocalizedLabel } from "@/shared/utils/localizedLabel";
 import { normalizeDocumentAccountOptions } from "@/shared/documentAccounts";
-import { useQuery } from "@tanstack/react-query";
-import { Button, Divider, Form, type FormProps, Select } from "antd";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button, Form, type FormProps, Select, Tooltip } from "antd";
 import { type FormikProps, getIn } from "formik";
 import { Plus } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
+import { inlineCreateForms, type InlineCreateKind } from "./inlineCreate";
 import { useTranslation } from "react-i18next";
 
 type FormValues = object;
@@ -66,6 +67,8 @@ interface SelectCustomProps {
     permissionCode: string;
     onClick: () => void;
   };
+  /** Makes the record on the spot in its own modal form and picks it (see inlineCreate). */
+  createWith?: InlineCreateKind;
   getFieldNames?: string[] | null;
   getCustomValue?: number | string;
   isOrganizationId?: boolean;
@@ -141,6 +144,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
       onClick: () => {},
     },
     disabled = false,
+    createWith,
     allowedIds,
     mode,
     onChange,
@@ -149,6 +153,8 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     autoSelectKeys = ["id"],
   } = props;
 
+  const [createOpen, setCreateOpen] = useState(false);
+  const queryClient = useQueryClient();
   const optionLabel = legacyOptionLabel ?? displayConfig?.optionLabel;
   const selectedLabel = legacySelectedLabel ?? displayConfig?.selectedLabel;
   const searchFields = displayConfig?.searchFields ?? defaultSearchFields;
@@ -325,6 +331,17 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     autoSelectValue,
     autoSelectKeys,
   ]);
+  // a new record is made where it is chosen, in a modal (1C: «Создать» beside the field)
+  const inlineForm = createWith && !addOption.bool ? inlineCreateForms[createWith] : undefined;
+  const addAction = inlineForm
+    ? { bool: true, permissionCode: inlineForm.permission, onClick: () => setCreateOpen(true) }
+    : addOption;
+  const canAdd =
+    addAction.bool &&
+    !readOnly &&
+    Boolean(user?.user?.permissions?.includes(addAction.permissionCode));
+  const InlineForm = inlineForm?.Form;
+
   return (
     <Form.Item<FormProps>
       className={`flex! flex-col! ${marginBottom}`}
@@ -346,6 +363,8 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
       }
       rules={[{ required, message: t("validation.required", { field: t(label) }) }]}
     >
+      <div className="flex w-full items-stretch gap-1">
+      <div className="min-w-0 flex-1">
       <Select
         value={currentValue as SelectValue}
         mode={mode}
@@ -416,28 +435,6 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
           formik?.setFieldValue(fieldName, nextValue, true);
           onChange?.(nextValue);
         }}
-        popupRender={
-          addOption.bool &&
-          user?.user?.permissions?.includes(addOption.permissionCode)
-            ? (menu) => (
-                <>
-                  {menu}
-                  <Divider style={{ margin: "4px 0" }} />
-                  <div>
-                    <Button
-                      type="primary"
-                      size="small"
-                      className="flex px-2! py-3! w-full"
-                      onClick={addOption.onClick}
-                    >
-                      <Plus className="size-4.5" />
-                      {t("common.add")}
-                    </Button>
-                  </div>
-                </>
-              )
-            : undefined
-        }
         placeholder={placeholder ? t(placeholder) : ""}
         options={selectOptions.map((item) => ({
           ...item,
@@ -448,6 +445,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         disabled={disabled}
         style={{
           backgroundColor: "transparent",
+          width: "100%",
           height: mode === "multiple" ? "" : height,
           marginBottom: "0px",
         }}
@@ -461,6 +459,35 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
           optionLabel ? (option) => getOptionLabel(option.data) : undefined
         }
       />
+      </div>
+      {canAdd && (
+        <Tooltip title={t("common.add")}>
+          <Button
+            icon={<Plus className="size-4" />}
+            onClick={addAction.onClick}
+            disabled={disabled}
+            aria-label={t("common.add")}
+            style={{ height: mode === "multiple" ? undefined : height, width: height }}
+          />
+        </Tooltip>
+      )}
+      </div>
+      {InlineForm && createOpen && (
+        <Suspense fallback={null}>
+          <InlineForm
+            open={createOpen}
+            onClose={() => setCreateOpen(false)}
+            onCreated={(id) => {
+              formik?.setFieldValue(fieldName, id, true);
+              onChange?.(id);
+              void queryClient.invalidateQueries({
+                predicate: (query) =>
+                  query.queryKey[0] === "selectlist" && query.queryKey.includes(path),
+              });
+            }}
+          />
+        </Suspense>
+      )}
     </Form.Item>
   );
 };

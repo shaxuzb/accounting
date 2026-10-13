@@ -238,7 +238,7 @@ export default function FaCommissioningFormFields({
             </Col>
             <Col span={5}>
               <SelectCustom
-                path={selectListEndpoints.departmentsSelectList}
+                path={selectListEndpoints.departmentsSelectList} createWith="department"
                 formik={formik}
                 fieldName={`lines[${lineIndex}].departmentId`}
                 label="fa.fields.department"

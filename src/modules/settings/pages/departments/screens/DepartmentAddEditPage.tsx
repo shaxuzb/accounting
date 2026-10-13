@@ -24,12 +24,15 @@ const defaultValues: DepartmentsForm = {
 interface DepartmentAddEditPageProps {
   open: boolean;
   onClose: () => void;
+  /** Called with the new record's id, so a field it was made from can pick it. */
+  onCreated?: (id: number) => void;
   id?: number | null;
 }
 
 export default function DepartmentAddEditPage({
   open,
   onClose,
+  onCreated,
   id,
 }: DepartmentAddEditPageProps) {
   const { t } = useTranslation();
@@ -53,7 +56,10 @@ export default function DepartmentAddEditPage({
           await updateMutation.mutateAsync({ id: editId, payload: values });
           toast.success(t("settings.messages.updated"));
         } else {
-          await createMutation.mutateAsync(values);
+          const created: unknown = await createMutation.mutateAsync(values);
+          const createdId =
+            typeof created === "number" ? created : Number((created as { id?: number } | null)?.id);
+          if (createdId > 0) onCreated?.(createdId);
           toast.success(t("settings.messages.created"));
         }
         helpers.resetForm();

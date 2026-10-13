@@ -15,7 +15,7 @@ import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQu
 import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 import type { Contract } from "@/modules/contract/types/type";
-import { formatDateWithOutTime } from "@/utils/helpers";
+import { formatDate, formatDateWithOutTime } from "@/utils/helpers";
 import type { SaleDocForm } from "../types/form";
 import { Col, Row } from "antd";
 import Card from "@/components/ui/card/Card";
@@ -116,7 +116,7 @@ export default function SaleDocumentFormFields({
           <SelectCustom
             label={t("menu.warehouse")}
             fieldName="warehouseId"
-            path={selectListEndpoints.warehousesSelectList}
+            path={selectListEndpoints.warehousesSelectList} createWith="warehouse"
             formik={formik}
             required
             // the lines' stock and batches belong to this warehouse
@@ -185,6 +185,7 @@ export default function SaleDocumentFormFields({
           open={contractCreateOpen}
           contractTypeId={2}
           initialCounterpartyId={formik.values.counterpartyId}
+        initialContractDate={formik.values.docDate ? dayjs(formik.values.docDate).format(formatDate) : undefined}
           onCreated={handleContractCreated}
           onClose={() => {
             setContractCreateOpen(false);

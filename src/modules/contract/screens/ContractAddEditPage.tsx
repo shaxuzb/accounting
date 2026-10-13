@@ -106,7 +106,12 @@ export default function ContractAddEditPage({
           await updateMutation.mutateAsync({ id: editId, payload });
           toast.success(t("settings.messages.updated"));
         } else {
-          const createdContract = await createMutation.mutateAsync(payload);
+          // the API answers with the new contract's id
+          const created: Contract | number = await createMutation.mutateAsync(payload);
+          const createdContract =
+            typeof created === "number"
+              ? ({ ...payload, id: created } as unknown as Contract)
+              : created;
           onCreated?.(createdContract);
           toast.success(t("settings.messages.created"));
         }

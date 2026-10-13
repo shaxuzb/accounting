@@ -158,8 +158,8 @@ export default function HrStaffSchedulePage() {
         destroyOnHidden
       >
         <Form layout="vertical">
-          <SelectCustom formik={formik} fieldName="departmentId" label="payroll.fields.department" path={selectListEndpoints.departmentsSelectList} search clearable marginBottom="mb-4" />
-          <SelectCustom formik={formik} fieldName="positionId" label="payroll.fields.position" path={selectListEndpoints.positionsSelectList} search required marginBottom="mb-4" />
+          <SelectCustom formik={formik} fieldName="departmentId" label="payroll.fields.department" path={selectListEndpoints.departmentsSelectList} createWith="department" search clearable marginBottom="mb-4" />
+          <SelectCustom formik={formik} fieldName="positionId" label="payroll.fields.position" path={selectListEndpoints.positionsSelectList} createWith="position" search required marginBottom="mb-4" />
           <div className="grid grid-cols-3 gap-3">
             <InputNumber formik={formik} fieldName="units" label="hr.staff.units" min={0.25} precision={2} required />
             <InputNumber formik={formik} fieldName="salaryMin" label="hr.staff.salaryMin" min={0} precision={2} />

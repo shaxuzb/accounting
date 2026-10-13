@@ -14,7 +14,7 @@ import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import Card from "@/components/ui/card/Card";
 import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
-import { formatDateWithOutTime } from "@/utils/helpers";
+import { formatDate, formatDateWithOutTime } from "@/utils/helpers";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import type { PurchaseImportForm } from "../types/form";
 import type { PurchaseMode } from "../types/type";
@@ -151,7 +151,7 @@ export default function PurchaseImportHeader({
 
           <Col span={24} sm={12} lg={8} xl={4}>
             <SelectCustom
-              path={selectListEndpoints.warehousesSelectList}
+              path={selectListEndpoints.warehousesSelectList} createWith="warehouse"
               label="purchase.fields.warehouse"
               fieldName="warehouseId"
               formik={formik}
@@ -244,6 +244,7 @@ export default function PurchaseImportHeader({
         open={contractCreateOpen}
         contractTypeId={1}
         initialCounterpartyId={formik.values.counterpartyId}
+        initialContractDate={formik.values.docDate ? dayjs(formik.values.docDate).format(formatDate) : undefined}
         onCreated={handleContractCreated}
         onClose={() => {
           setContractCreateOpen(false);

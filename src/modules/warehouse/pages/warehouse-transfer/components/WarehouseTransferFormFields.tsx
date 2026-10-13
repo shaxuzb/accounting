@@ -36,7 +36,7 @@ export default function WarehouseTransferFormFields({
               formik={formik}
               fieldName="sourceWarehouseId"
               label={t("warehouse.fields.sourceWarehouse")}
-              path={selectListEndpoints.warehousesSelectList}
+              path={selectListEndpoints.warehousesSelectList} createWith="warehouse"
               disabled={disabled}
             />
           </Col>
@@ -45,7 +45,7 @@ export default function WarehouseTransferFormFields({
               formik={formik}
               fieldName="destinationWarehouseId"
               label={t("warehouse.fields.destinationWarehouse")}
-              path={selectListEndpoints.warehousesSelectList}
+              path={selectListEndpoints.warehousesSelectList} createWith="warehouse"
               disabled={disabled}
             />
           </Col>

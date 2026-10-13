@@ -49,7 +49,7 @@ export default function InventoryAdjustmentFormFields({
           formik={formik}
           fieldName="warehouseId"
           label="settings.entities.warehouse"
-          path={selectListEndpoints.warehousesSelectList}
+          path={selectListEndpoints.warehousesSelectList} createWith="warehouse"
           disabled={disabled}
         />
         <div>

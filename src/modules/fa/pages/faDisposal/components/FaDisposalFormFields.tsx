@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from "react";
-import dayjs from "dayjs";
 import { Alert, Button, Col, Row, Table } from "antd";
 import type { TableColumnsType } from "antd";
 import type { FormikProps } from "formik";
@@ -8,12 +7,13 @@ import { useTranslation } from "react-i18next";
 import InputNumber from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
+import CounterpartySelect from "@/components/fields/CounterpartySelect";
+import ContractSelect from "@/components/fields/ContractSelect";
 import SelectDate from "@/components/fields/SelectDate";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import Card from "@/components/ui/card/Card";
-import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
+import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
-import { formatDateWithOutTime } from "@/utils/helpers";
 import { numberSpacing } from "@/utils/utils";
 import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
 import { faKindLabel, faKindRole, type FaAssetKindId } from "../../../shared/constants/assetKinds";
@@ -260,12 +260,11 @@ export default function FaDisposalFormFields({
           {isSale && (
             <>
               <Col span={6}>
-                <SelectCustom
-                  path={selectListEndpoints.counterpartiesSelectList}
+                <CounterpartySelect
+                  kind="client"
                   formik={formik}
                   fieldName="counterpartyId"
                   label="fa.fields.buyer"
-                  search
                   required
                   autoSelectSingle={false}
                   onChange={(value) => {
@@ -275,20 +274,13 @@ export default function FaDisposalFormFields({
                 />
               </Col>
               <Col span={6}>
-                <SelectCustom
-                  path={selectListEndpoints.contractsSelectList}
+                <ContractSelect
                   formik={formik}
                   fieldName="contractId"
                   label="fa.fields.contract"
-                  queryParams={{
-                    choosedDate: dayjs(formik.values.disposalDate).format(
-                      formatDateWithOutTime,
-                    ),
-                    [filterIds.counterparty]: counterpartyId,
-                  }}
-                  enabled={Boolean(counterpartyId)}
-                  refetchSync={`${counterpartyId ?? ""}${formik.values.disposalDate ?? ""}`}
-                  disabled={!counterpartyId}
+                  counterpartyId={counterpartyId}
+                  date={formik.values.disposalDate}
+                  contractTypeId={2}
                   clearable
                 />
               </Col>

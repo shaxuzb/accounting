@@ -13,9 +13,11 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
+import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
+import { contractPermissions } from "@/modules/contract/constants/permissions";
 import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
 import { useContractSettlementAccount } from "@/shared/hooks/useContractSettlementAccount";
-import { formatDateWithOutTime } from "@/utils/helpers";
+import { formatDate, formatDateWithOutTime } from "@/utils/helpers";
 import { invalidateSelectListQuery } from "@/shared/utils/invalidateSelectListQuery";
 import {
   cashDocumentAccountRoleCodes,
@@ -35,6 +37,7 @@ export default function CashDocumentFormFields({
 }: CashDocumentFormFieldsProps) {
   const { t } = useTranslation();
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
+  const [contractCreateOpen, setContractCreateOpen] = useState(false);
   const queryClient = useQueryClient();
   const operationLabel =
     documentTypeId === cashDocumentTypeIds.expense
@@ -205,6 +208,11 @@ export default function CashDocumentFormFields({
                 enabled={Boolean(counterpartyId)}
                 refetchSync={`${counterpartyId ?? ""}${formik.values.docDate ?? ""}`}
                 disabled={!counterpartyId}
+                addOption={{
+                  bool: true,
+                  permissionCode: contractPermissions.create,
+                  onClick: () => setContractCreateOpen(true),
+                }}
               />
             </Col>
           </>
@@ -257,6 +265,20 @@ export default function CashDocumentFormFields({
           );
         }}
         onClose={() => setCounterpartyCreateOpen(false)}
+      />
+      <ContractAddEditPage
+        open={contractCreateOpen}
+        initialCounterpartyId={counterpartyId}
+        initialContractDate={formik.values.docDate ? dayjs(formik.values.docDate).format(formatDate) : undefined}
+        onCreated={(contract) => {
+          formik.setFieldValue("contractId", contract.id, true);
+          invalidateSelectListQuery(
+            queryClient,
+            "contractId",
+            selectListEndpoints.contractsSelectList,
+          );
+        }}
+        onClose={() => setContractCreateOpen(false)}
       />
     </>
   );
