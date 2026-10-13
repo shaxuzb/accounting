@@ -10,6 +10,8 @@ import {
   hrViewPermissions,
 } from "./constants/permissions";
 const HrAbsenceListPage = lazy(() => import("./pages/absences/screens/HrAbsenceListPage"));
+const HrVacationListPage = lazy(() => import("./pages/vacations/HrVacationListPage"));
+import { payrollDocumentPermissions } from "@/modules/payroll/constants/permissions";
 const HrOrderDetailPage = lazy(() => import("./pages/orders").then((m) => ({ default: m.HrOrderDetailPage })));
 const HrOrderListPage = lazy(() => import("./pages/orders").then((m) => ({ default: m.HrOrderListPage })));
 
@@ -70,6 +72,12 @@ export const hrRoutes: RouteObject = {
         <HrAbsenceListPage />,
         hrAbsencePermissions.view,
       ),
+    },
+    {
+      // 1C «Отпуска»
+      path: "vacations",
+      handle: { title: "payroll.leave.vacations" },
+      element: withPermission(<HrVacationListPage />, payrollDocumentPermissions.view),
     },
     {
       path: "orders",

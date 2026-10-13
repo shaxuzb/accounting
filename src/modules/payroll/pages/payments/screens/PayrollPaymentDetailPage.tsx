@@ -316,9 +316,17 @@ export default function PayrollPaymentDetailPage() {
                         placeholder={t("payroll.placeholders.selectDocument")}
                         options={filterDocumentsForFinalPayment(postedDocuments ?? []).map((document) => ({
                           value: document.id,
-                          label: `${document.docNumber ?? document.id} · ${money(
-                            document.outstandingAmount ?? document.payableAmount,
-                          )}`,
+                          label: [
+                            document.docNumber ?? document.id,
+                            document.documentKind && document.documentKind !== "REGULAR"
+                              ? `${t(`payroll.enums.documentKind.${document.documentKind}`)}${
+                                  document.employeeName ? ` (${document.employeeName})` : ""
+                                }`
+                              : null,
+                            money(document.outstandingAmount ?? document.payableAmount),
+                          ]
+                            .filter(Boolean)
+                            .join(" · "),
                         }))}
                         style={{ height: 38, width: "100%" }}
                       />

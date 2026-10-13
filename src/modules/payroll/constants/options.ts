@@ -252,7 +252,8 @@ export const monthOptions: readonly StaticOption[] = Array.from(
 /* Hisoblash hujjati                                                    */
 /* ------------------------------------------------------------------ */
 
-export const DOCUMENT_KINDS = ["REGULAR", "CORRECTION"] as const;
+/** VACATION and DISMISSAL are made by the leave pages, not by «Hisoblash». */
+export const DOCUMENT_KINDS = ["REGULAR", "CORRECTION", "VACATION", "DISMISSAL"] as const;
 export type PayrollDocumentKind = (typeof DOCUMENT_KINDS)[number];
 
 export const documentKindOptions: readonly StaticOption[] = [

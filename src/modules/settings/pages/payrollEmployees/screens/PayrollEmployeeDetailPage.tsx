@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/card/DocumentSummary";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SectionCard from "@/components/ui/card/SectionCard";
+import EmployeeLeavePanel from "@/modules/payroll/leave/EmployeeLeavePanel";
 import EmployeeCalendarPanel from "@/modules/hr/pages/employees/components/EmployeeCalendarPanel";
 import EmployeeWorkSchedulesPanel from "@/modules/hr/pages/employees/components/EmployeeWorkSchedulesPanel";
 import {
@@ -315,6 +316,8 @@ export default function PayrollEmployeeDetailPage() {
           value={employee.pinfl ?? "—"}
         />
       </DocumentSummary>
+
+      <EmployeeLeavePanel employeeId={employee.id} active={employee.stateId !== 2} />
 
       <SectionCard
         title="payroll.employees.employmentsTitle"

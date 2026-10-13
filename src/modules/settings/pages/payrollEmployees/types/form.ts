@@ -59,6 +59,11 @@ export interface PayrollEmployeeMainForm {
   /** Kasallik nafaqasi stajdan qat'i nazar 100% (3+ bola, faxriylar ...). */
   sickBenefitFull: boolean;
   isTaxResident: boolean;
+  /** Yillik ta'til, kalendar kun (MK 217-modda: kamida 21). */
+  annualLeaveDays: number;
+  /** Boshqa tizimdan (1C) olib kelingan foydalanilmagan ta'til kunlari va ularning sanasi. */
+  openingLeaveDays: number | null;
+  openingLeaveDate: string | null;
 }
 
 export interface PayrollEmployeeForm extends PayrollEmployeeMainForm {

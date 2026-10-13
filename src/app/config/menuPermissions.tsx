@@ -641,6 +641,14 @@ export const menuPermissions: MainMenu = {
           },
         },
         {
+          code: payrollDocumentPermissions.view,
+          iconName: <CalendarOff className="size-4" />,
+          linkData: {
+            path: "vacations",
+            title: "payroll.leave.vacations",
+          },
+        },
+        {
           code: hrOrderPermissions.view,
           iconName: <ReceiptText className="size-4" />,
           linkData: {

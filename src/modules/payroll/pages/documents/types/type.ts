@@ -103,6 +103,17 @@ export interface PayrollDocument {
   correctionOfDocId?: number | null;
   correctionOfDocNumber?: string | null;
   correctionPayoutMode?: "WITH_SALARY" | "WITH_ADVANCE" | "SEPARATE" | null;
+  /** A vacation or a dismissal settlement: its employee and leave. */
+  employeeId?: number | null;
+  employeeName?: string | null;
+  leaveStart?: string | null;
+  leaveEnd?: string | null;
+  leaveCalendarDays?: number | null;
+  leavePaidDays?: number | null;
+  averageDaily?: number | null;
+  leaveDetails?: string | null;
+  settlementNoRecovery?: boolean;
+  absenceId?: number | null;
   salaryExpenseAccountId?: number | null;
   salaryPayableAccountId?: number | null;
   currencyId?: number | null;

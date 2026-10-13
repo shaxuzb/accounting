@@ -1,4 +1,5 @@
 import { payrollPeriodText } from "../../../utils/format";
+import LeaveDocumentInfo from "@/modules/payroll/leave/LeaveDocumentInfo";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import Card from "@/components/ui/card/Card";
 import {
@@ -302,7 +303,7 @@ export default function PayrollDocumentDetailPage() {
             <dd className="mt-1">
               <Tag
                 className="m-0!"
-                color={record.documentKind === "CORRECTION" ? "purple" : "blue"}
+                color={record.documentKind === "CORRECTION" ? "purple" : record.documentKind === "VACATION" ? "green" : record.documentKind === "DISMISSAL" ? "orange" : "blue"}
               >
                 {t(`payroll.enums.documentKind.${record.documentKind}`, {
                   defaultValue: record.documentKind,
@@ -338,6 +339,10 @@ export default function PayrollDocumentDetailPage() {
           )}
         </dl>
       </SectionCard>
+
+      {(record.documentKind === "VACATION" || record.documentKind === "DISMISSAL") && (
+        <LeaveDocumentInfo record={record} />
+      )}
 
       {record.documentKind === "CORRECTION" && record.correctionOfDocNumber && (
         <Alert

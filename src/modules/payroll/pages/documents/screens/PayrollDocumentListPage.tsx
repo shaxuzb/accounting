@@ -76,7 +76,7 @@ export default function PayrollDocumentListPage() {
       render: (_, record) => (
         <Tag
           className="m-0!"
-          color={record.documentKind === "CORRECTION" ? "purple" : "blue"}
+          color={record.documentKind === "CORRECTION" ? "purple" : record.documentKind === "VACATION" ? "green" : record.documentKind === "DISMISSAL" ? "orange" : "blue"}
         >
           {t(`payroll.enums.documentKind.${record.documentKind}`, {
             defaultValue: record.documentKind,

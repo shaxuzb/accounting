@@ -1,3 +1,4 @@
+import InputNumber from "@/components/fields/InputNumber";
 import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
 import InputText from "@/components/fields/InputText";
 import SearchInnField from "@/components/fields/SearchInnField";
@@ -38,6 +39,9 @@ const defaultValues: PayrollEmployeeForm = {
   experienceSince: null,
   sickBenefitFull: false,
   isTaxResident: true,
+  annualLeaveDays: 21,
+  openingLeaveDays: null,
+  openingLeaveDate: null,
   employment: {
     departmentId: null,
     positionId: null,
@@ -111,6 +115,9 @@ export default function PayrollEmployeeAddEditPage({
         experienceSince: values.experienceSince || null,
         sickBenefitFull: values.sickBenefitFull,
         isTaxResident: values.isTaxResident,
+        annualLeaveDays: Number(values.annualLeaveDays) || 21,
+        openingLeaveDays: values.openingLeaveDate ? Number(values.openingLeaveDays ?? 0) : null,
+        openingLeaveDate: values.openingLeaveDate || null,
       };
 
       try {
@@ -156,6 +163,9 @@ export default function PayrollEmployeeAddEditPage({
         experienceSince: employee.experienceSince ?? null,
         sickBenefitFull: Boolean(employee.sickBenefitFull),
         isTaxResident: employee.isTaxResident ?? true,
+        annualLeaveDays: employee.annualLeaveDays ?? 21,
+        openingLeaveDays: employee.openingLeaveDays ?? null,
+        openingLeaveDate: employee.openingLeaveDate ?? null,
       });
       return;
     }
@@ -339,6 +349,40 @@ export default function PayrollEmployeeAddEditPage({
                 description="payroll.fields.isTaxResidentHint"
                 marginBottom="mb-4"
               />
+            </Col>
+
+            <Col xs={24} md={8}>
+              <InputNumber
+                formik={formik}
+                fieldName="annualLeaveDays"
+                label="payroll.leave.annualDays"
+                min={0}
+                max={366}
+              />
+              <div className="-mt-3 mb-3 text-xs text-secondary-text">
+                {t("payroll.leave.annualDaysHint")}
+              </div>
+            </Col>
+            <Col xs={24} md={8}>
+              <SelectDate
+                formik={formik}
+                fieldName="openingLeaveDate"
+                label="payroll.leave.openingDate"
+                valueFormat="YYYY-MM-DD"
+                clearable
+              />
+            </Col>
+            <Col xs={24} md={8}>
+              <InputNumber
+                formik={formik}
+                fieldName="openingLeaveDays"
+                label="payroll.leave.openingDays"
+                min={-366}
+                max={1000}
+              />
+              <div className="-mt-3 mb-3 text-xs text-secondary-text">
+                {t("payroll.leave.openingHint")}
+              </div>
             </Col>
           </Row>
 
