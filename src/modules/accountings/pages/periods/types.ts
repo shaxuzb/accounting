@@ -29,6 +29,8 @@ export interface MonthCloseCheck {
   isYearEnd: boolean;
   monthIsOver: boolean;
   previousPeriodsOpen: boolean;
+  /** January: the previous year's result not yet reformed to 8710. */
+  priorYearResultLeft?: number;
   draftDocumentCount: number;
   /** Assets in use not yet depreciated for the month: the month closes only after the run. */
   assetsAwaitingDepreciation?: number;

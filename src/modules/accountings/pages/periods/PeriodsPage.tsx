@@ -441,6 +441,13 @@ function CloseMonthModal({
             <CheckItem ok={!check.previousPeriodsOpen}>
               {t(check.previousPeriodsOpen ? "periods.check.previousOpen" : "periods.check.previousClosed")}
             </CheckItem>
+            {check.month === 1 && (
+              <CheckItem ok={(check.priorYearResultLeft ?? 0) === 0}>
+                {(check.priorYearResultLeft ?? 0) === 0
+                  ? t("periods.check.priorYearReformed")
+                  : t("periods.check.priorYearNotReformed", { amount: money(check.priorYearResultLeft) })}
+              </CheckItem>
+            )}
             <CheckItem ok={check.revaluationLineCount === 0 && !check.revaluationError}>
               {check.revaluationError ? (
                 check.revaluationError

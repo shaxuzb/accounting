@@ -22,6 +22,9 @@ const JournalPage = lazy(() => import("./pages").then((m) => ({ default: m.Journ
 const LedgerPage = lazy(() => import("./pages").then((m) => ({ default: m.LedgerPage })));
 const RepostPage = lazy(() => import("./pages").then((m) => ({ default: m.RepostPage })));
 const TrialBalancePage = lazy(() => import("./pages/trial-balance/screens/TrialBalancePage"));
+const RegulatedBalancePage = lazy(() => import("./pages/regulated-forms/RegulatedBalancePage"));
+const RegulatedResultsPage = lazy(() => import("./pages/regulated-forms/RegulatedResultsPage"));
+const ExpressCheckPage = lazy(() => import("./pages/regulated-forms/ExpressCheckPage"));
 const ManualEntriesPage = lazy(() => import("./pages/manual-entries/ManualEntriesPage"));
 const ManualEntryEditorPage = lazy(() => import("./pages/manual-entries/ManualEntryEditorPage"));
 const PeriodsPage = lazy(() => import("./pages/periods/PeriodsPage"));
@@ -56,6 +59,21 @@ export const accountingsRoutes: RouteObject = {
             <BalanceSheetPage />,
             accountingReportPermissions.balanceSheet,
           ),
+        },
+        {
+          path: "form-1",
+          handle: { title: "app.regulatedForms.form1" },
+          element: withAccess(<RegulatedBalancePage />, accountingReportPermissions.balanceSheet),
+        },
+        {
+          path: "form-2",
+          handle: { title: "app.regulatedForms.form2" },
+          element: withAccess(<RegulatedResultsPage />, accountingReportPermissions.incomeStatement),
+        },
+        {
+          path: "express-check",
+          handle: { title: "app.regulatedForms.expressCheck" },
+          element: withAccess(<ExpressCheckPage />, accountingReportPermissions.balanceSheet),
         },
         {
           path: "income-statement",

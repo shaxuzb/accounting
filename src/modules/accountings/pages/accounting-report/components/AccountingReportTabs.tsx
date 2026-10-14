@@ -3,6 +3,9 @@ import { useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 
 const tabs = [
+  { key: "form-1", labelKey: "app.regulatedForms.form1" },
+  { key: "form-2", labelKey: "app.regulatedForms.form2" },
+  { key: "express-check", labelKey: "app.regulatedForms.expressCheck" },
   { key: "balance-sheet", labelKey: "app.reports.balance.title" },
   { key: "income-statement", labelKey: "app.reports.income.title" },
   { key: "cash-flow", labelKey: "app.reports.cashFlow.title" },
