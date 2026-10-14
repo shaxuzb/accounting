@@ -1,6 +1,7 @@
 import { Button, DatePicker, Popconfirm, Spin, Table } from "antd";
 import type { TableColumnsType } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
@@ -21,6 +22,9 @@ import type { FaDepreciationRunLine } from "../types/type";
 import { formatMoney } from "../utils/formatMoney";
 import { faDocumentStatusIds } from "../../../shared/constants/statuses";
 import dayjs from "@/config/dayjs";
+import { faDepreciationService } from "../api";
+import FaAssetOutputTable from "../components/FaAssetOutputTable";
+import type { FaAssetOutputRow } from "../types/type";
 
 /** The register's document type of a depreciation run. */
 const FA_DEPRECIATION_DOCUMENT_TYPE_ID = 13;
@@ -40,7 +44,20 @@ export default function FaDepreciationFormPage() {
   const statusId = detail?.statusId ?? faDocumentStatusIds.posted;
   const isPosted = isEdit && statusId === faDocumentStatusIds.posted;
 
-  const isSubmitting = runMutation.isPending || cancelMutation.isPending;
+  // units of production: the month's output is entered before the run (1C «Выработка ОС»)
+  const periodKey = period.format("YYYY-MM");
+  const outputQuery = useQuery({
+    queryKey: ["fa", "depreciation", "output", periodKey],
+    queryFn: () => faDepreciationService.output(periodKey),
+    enabled: !isEdit,
+  });
+  const [outputRows, setOutputRows] = useState<FaAssetOutputRow[]>([]);
+  useEffect(() => {
+    setOutputRows(outputQuery.data?.rows ?? []);
+  }, [outputQuery.data]);
+  const [savingOutput, setSavingOutput] = useState(false);
+
+  const isSubmitting = runMutation.isPending || cancelMutation.isPending || savingOutput;
 
   const canCancel = permissions.includes(faDepreciationPermissions.cancel);
   const canRun = permissions.includes(faDepreciationPermissions.create);
@@ -49,6 +66,17 @@ export default function FaDepreciationFormPage() {
 
   const handleRun = async () => {
     try {
+      if (outputRows.length > 0 && !outputQuery.data?.locked) {
+        setSavingOutput(true);
+        try {
+          await faDepreciationService.saveOutput(
+            periodKey,
+            outputRows.map((row) => ({ faAssetId: row.faAssetId, units: row.units })),
+          );
+        } finally {
+          setSavingOutput(false);
+        }
+      }
       const runId = await runMutation.mutateAsync(period.format("YYYY-MM"));
       toast.success(t("settings.messages.created"));
       // the posted run opens with its lines, as 1C opens the document it made
@@ -110,6 +138,18 @@ export default function FaDepreciationFormPage() {
             className="h-[38px] w-full"
           />
         </div>
+      )}
+
+      {!isEdit && (
+        <FaAssetOutputTable
+          rows={outputRows}
+          locked={Boolean(outputQuery.data?.locked)}
+          onChange={(faAssetId, units) =>
+            setOutputRows((rows) =>
+              rows.map((row) => (row.faAssetId === faAssetId ? { ...row, units } : row)),
+            )
+          }
+        />
       )}
 
       {isEdit && detail && (

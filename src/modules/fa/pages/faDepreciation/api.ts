@@ -2,7 +2,7 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { endpoints } from "./constants/endpoints";
-import type { FaDepreciationRun } from "./types/type";
+import type { FaAssetOutput, FaAssetOutputSaveRow, FaDepreciationRun } from "./types/type";
 
 export const faDepreciationService = {
   list: (searchParams?: QueryParams) =>
@@ -22,4 +22,14 @@ export const faDepreciationService = {
 
   cancel: (id: string | number) =>
     $axiosPrivate.put<void>(endpoints.cancel(id)),
+
+  output: (period: string) =>
+    $axiosPrivate
+      .get<FaAssetOutput>(endpoints.output, { params: { period } })
+      .then((res) => res.data),
+
+  saveOutput: (period: string, rows: FaAssetOutputSaveRow[]) =>
+    $axiosPrivate
+      .put<FaAssetOutput>(endpoints.output, rows, { params: { period } })
+      .then((res) => res.data),
 };

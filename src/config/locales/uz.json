@@ -570,6 +570,14 @@
     "minArray": "{{field}} kamida {{min}} ta tanlanishi kerak"
   },
   "fa": {
+    "output": {
+      "title": "Ishlab chiqarish hajmi (oy uchun)",
+      "hint": "Mahsulot hajmiga mutanosib usuldagi vositalar: amortizatsiya = qolgan qiymat × oy hajmi / rejadan qolgan hajm (5-sonli BHMS, 1C «Выработка ОС»). Hajm kiritilmagan oyda amortizatsiya hisoblanmaydi.",
+      "planned": "Reja (jami)",
+      "before": "Oldingi oylarda",
+      "month": "Shu oyda",
+      "locked": "Bu yoki keyingi oy amortizatsiyasi hisoblangan — hajmni o'zgartirish uchun avval uni bekor qiling."
+    },
     "inventory": {
       "title": "Inventarizatsiya",
       "new": "Yangi inventarizatsiya",
@@ -1842,6 +1850,9 @@
     "createTitle": "Shartnoma yaratish",
     "editTitle": "Shartnomani tahrirlash",
     "fields": {
+      "contractNumberHint": "Qog'ozdagi shartnoma raqami; bo'sh qolsa, tizim raqam beradi.",
+      "currency": "Hisob-kitob valyutasi",
+      "currencyHint": "Bo'sh — so'm. Tanlansa, hujjatlar faqat shu valyutada bo'ladi; hujjatlari bor shartnomada o'zgarmaydi.",
       "lenderName": "Kredit beruvchi (bank)",
       "counterpartyName": "Kontragent nomi",
       "customerName": "Mijoz",

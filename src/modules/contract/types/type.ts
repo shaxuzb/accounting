@@ -18,6 +18,8 @@ export interface Contract {
   createdDate: string;
   comment: string;
   priceIncludesVat?: boolean;
+  currencyId?: number | null;
+  currencyCode?: string | null;
 }
 
 /** Shartnoma uchun mas'ul shaxs — xodimlar ma'lumotnomasidan mustaqil ro'yxat. */

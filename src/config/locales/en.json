@@ -568,6 +568,14 @@
     "minArray": "{{field}} must contain at least {{min}} selected item(s)"
   },
   "fa": {
+    "output": {
+      "title": "Output for the month",
+      "hint": "Assets depreciated by units of production: depreciation = value left × month's output / planned output left (NSBU 5, 1C «Выработка ОС»). No output, no depreciation.",
+      "planned": "Planned (total)",
+      "before": "Earlier months",
+      "month": "This month",
+      "locked": "Depreciation for this or a later month is posted — cancel it to change the output."
+    },
     "inventory": {
       "title": "Inventory",
       "new": "New inventory",
@@ -1842,6 +1850,9 @@
     "createTitle": "Create contract",
     "editTitle": "Edit contract",
     "fields": {
+      "contractNumberHint": "The number on the paper contract; left empty, the system numbers it.",
+      "currency": "Settlement currency",
+      "currencyHint": "Empty means UZS. When set, documents under the contract must be in it; it cannot change once documents use the contract.",
       "lenderName": "Lender (bank)",
       "counterpartyName": "Counterparty name",
       "customerName": "Customer",

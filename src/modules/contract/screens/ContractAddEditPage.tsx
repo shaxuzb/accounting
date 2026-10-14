@@ -26,6 +26,8 @@ const createDefaultValues = (): ContractForm => ({
   organizationId: null,
   counterpartyId: null,
   contractTypeId: null,
+  contractNumber: "",
+  currencyId: null,
   responsiblePersonId: null,
   contractDate: dayjs().format(formatDate),
   startDate: dayjs().format(formatDate),
@@ -93,6 +95,8 @@ export default function ContractAddEditPage({
       const payload = {
         ...values,
         endDate: values.endDate?.trim() || null,
+        contractNumber: values.contractNumber?.trim() || null,
+        currencyId: values.currencyId ?? null,
         // Mas'ul shaxs ixtiyoriy: tozalanganda backendga aniq null ketishi kerak,
         // aks holda tanlov olib tashlanmaydi.
         responsiblePersonId: values.responsiblePersonId ?? null,
@@ -129,6 +133,8 @@ export default function ContractAddEditPage({
         organizationId: Contract.organizationId ?? null,
         counterpartyId: Contract.counterpartyId ?? null,
         contractTypeId: Contract.contractTypeId ?? null,
+        contractNumber: Contract.contractNumber ?? "",
+        currencyId: Contract.currencyId ?? null,
         responsiblePersonId: Contract.responsiblePersonId ?? null,
         contractDate: Contract.contractDate ?? "",
         startDate: Contract.startDate ?? "",
@@ -210,6 +216,30 @@ export default function ContractAddEditPage({
                   onClick: () => setIsResponsiblePersonOpen(true),
                 }}
               />
+            </Col>
+            <Col span={12}>
+              <InputText
+                formik={formik}
+                fieldName="contractNumber"
+                label="contract.fields.contractNumber"
+              />
+              <div className="-mt-4 mb-2 text-xs text-secondary-text">
+                {t("contract.fields.contractNumberHint")}
+              </div>
+            </Col>
+            <Col span={12}>
+              <SelectCustom
+                formik={formik}
+                fieldName="currencyId"
+                label="contract.fields.currency"
+                path={selectListEndpoints.currenciesSelectList}
+                clearable
+                optional
+                autoSelectSingle={false}
+              />
+              <div className="-mt-4 mb-2 text-xs text-secondary-text">
+                {t("contract.fields.currencyHint")}
+              </div>
             </Col>
             <Col span={12}>
               <SelectDate
