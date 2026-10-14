@@ -234,7 +234,8 @@ export default function InventoryAdjustmentLinesEditor({
                   fieldName={`lines[${index}].unitId`}
                   label={t("purchase.fields.unit")}
                   path={selectListEndpoints.unitsSelectList}
-                  disabled={disabled}
+                  // stock is kept in the product's own unit: the product brings it
+                  disabled={disabled || Boolean(line.productId && line.unitId)}
                   getFieldName={`lines[${index}].unitName`}
                 />
 
