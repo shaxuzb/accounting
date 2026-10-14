@@ -5,6 +5,7 @@ import {
   ChevronRight,
   CircleCheck,
   CircleX,
+  CircleArrowRight,
   Lock,
   LockOpen,
   TriangleAlert,
@@ -238,16 +239,30 @@ function ReopenMonthModal({ periodId, onClose }: { periodId: number; onClose: ()
             />
           )}
           <p className="text-sm text-secondary-text">{t("periods.reopenAfter")}</p>
+          <p className="text-sm text-secondary-text">{t("periods.check.closeStepsNote")}</p>
         </div>
       </Spin>
     </Modal>
   );
 }
 
-function CheckItem({ ok, warning, children }: { ok: boolean; warning?: boolean; children: ReactNode }) {
+function CheckItem({
+  ok,
+  warning,
+  step,
+  children,
+}: {
+  ok: boolean;
+  warning?: boolean;
+  /** Done by the close itself (1C «Закрытие месяца» regulated operations). */
+  step?: boolean;
+  children: ReactNode;
+}) {
   return (
     <div className="flex items-start gap-2 py-1">
-      {ok ? (
+      {step ? (
+        <CircleArrowRight className="mt-0.5 size-4 shrink-0 text-blue-600" />
+      ) : ok ? (
         <CircleCheck className="mt-0.5 size-4 shrink-0 text-green-600" />
       ) : warning ? (
         <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-500" />
@@ -448,17 +463,17 @@ function CloseMonthModal({
                   : t("periods.check.priorYearNotReformed", { amount: money(check.priorYearResultLeft) })}
               </CheckItem>
             )}
-            <CheckItem ok={check.revaluationLineCount === 0 && !check.revaluationError}>
+            <CheckItem
+              ok={!check.revaluationError}
+              step={!check.revaluationError && check.revaluationLineCount > 0}
+            >
               {check.revaluationError ? (
                 check.revaluationError
               ) : check.revaluationLineCount > 0 ? (
-                <>
-                  {t("periods.check.revaluationNeeded", {
-                    count: check.revaluationLineCount,
-                    amount: money(check.revaluationDifference),
-                  })}{" "}
-                  <Link to="/main/accountings/currency-revaluation">{t("periods.check.goRevaluation")}</Link>
-                </>
+                t("periods.check.revaluationOnClose", {
+                  count: check.revaluationLineCount,
+                  amount: money(check.revaluationDifference),
+                })
               ) : (
                 t("periods.check.revaluationDone")
               )}
@@ -500,10 +515,10 @@ function CloseMonthModal({
                 t("periods.check.sequenceOk")
               )}
             </CheckItem>
-            <CheckItem ok={(check.assetsAwaitingDepreciation ?? 0) === 0}>
+            <CheckItem ok step={(check.assetsAwaitingDepreciation ?? 0) > 0}>
               {(check.assetsAwaitingDepreciation ?? 0) === 0
                 ? t("periods.check.depreciationDone")
-                : t("periods.check.depreciationMissing", { count: check.assetsAwaitingDepreciation })}
+                : t("periods.check.depreciationOnClose", { count: check.assetsAwaitingDepreciation })}
             </CheckItem>
             <CheckItem ok={check.draftDocumentCount === 0} warning>
               {check.draftDocumentCount === 0

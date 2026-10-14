@@ -4129,6 +4129,9 @@
     "yearProfit": "Year end: the profit of {{amount}} goes to retained earnings Dt 9910 — Ct 8710.",
     "yearLoss": "Year end: the loss of {{amount}} goes to uncovered loss Dt 8710 — Ct 9910.",
     "check": {
+      "revaluationOnClose": "Closing revalues the currency balances to the month-end rate: {{count}} balances, difference {{amount}}.",
+      "depreciationOnClose": "Closing charges this month's depreciation for {{count}} fixed assets.",
+      "closeStepsNote": "Reopening the month cancels the revaluation and depreciation the close made; closing it again computes them anew.",
       "sequenceBroken": "The stock sequence is broken from {{date}} (a back-dated document): the issues must be given out again by the accounting policy's method.",
       "sequenceOk": "The stock sequence is in order",
       "restoreSequence": "Restore the sequence",
