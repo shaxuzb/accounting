@@ -2,6 +2,9 @@ import { lazy } from "react";
 import type { RouteObject } from "react-router";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 const SettingsListPage = lazy(() => import("./pages/SettingsListPage"));
+const SettingsGroupPage = lazy(() => import("./pages/SettingsGroupPage"));
+import SettingsSectionLayout from "./components/SettingsSectionLayout";
+import { groupKeyByPath, settingsGroupDefinitions } from "./catalog";
 const RoleListPage = lazy(() => import("./pages/role/screens/RoleListPage"));
 const RoleAddEditPage = lazy(() => import("./pages/role/screens/RoleAddEditPage"));
 const UserListPage = lazy(() => import("./pages/users/screens/UserListPage"));
@@ -140,14 +143,7 @@ const withEdoSession = (
   <EdoSessionGuard requireSession={requireSession}>{element}</EdoSessionGuard>
 );
 
-export const settingsRoutes: RouteObject = {
-  path: "settings",
-  handle: { title: "settings.title" },
-  children: [
-    {
-      index: true,
-      element: withPermission(<SettingsListPage />, settingsPermissions),
-    },
+const sectionRoutes: RouteObject[] = [
     {
       path: "integrations",
       handle: {
@@ -682,6 +678,40 @@ export const settingsRoutes: RouteObject = {
           ),
         },
       ],
+    },
+];
+
+/** A section's back arrow leads to its subject's page when the subject has more than one section. */
+const withGroupBack = (route: RouteObject): RouteObject => {
+  const groupKey = route.path ? groupKeyByPath.get(route.path) : undefined;
+  const group = settingsGroupDefinitions.find((item) => item.key === groupKey);
+  const handle = route.handle as { backTo?: string } | undefined;
+  if (!group || group.paths.length < 2 || handle?.backTo !== "..") return route;
+  return { ...route, handle: { ...handle, backTo: `../groups/${group.key}` } };
+};
+
+export const settingsRoutes: RouteObject = {
+  path: "settings",
+  handle: { title: "settings.title" },
+  children: [
+    {
+      index: true,
+      handle: { title: "settings.title", hideNavbarTitle: true },
+      element: withPermission(<SettingsListPage />, settingsPermissions),
+    },
+    {
+      path: "groups/:groupKey",
+      handle: {
+        title: (params: Record<string, string | undefined>) => `settings.groups.${params.groupKey}.title`,
+        showBack: true,
+        backTo: "../..",
+        tabSuffix: false,
+      },
+      element: withPermission(<SettingsGroupPage />, settingsPermissions),
+    },
+    {
+      element: <SettingsSectionLayout />,
+      children: sectionRoutes.map(withGroupBack),
     },
   ],
 };

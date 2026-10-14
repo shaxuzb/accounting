@@ -1002,7 +1002,7 @@
       "branches": "Branches",
       "chartAccounts": "Chart of accounts",
       "banks": "Banks",
-      "bankAccounts": "Bank accounts",
+      "bankAccounts": "Counterparty bank accounts",
       "orgBankAccounts": "Organization bank accounts",
       "positions": "Positions",
       "productGroups": "Product groups",
@@ -1530,6 +1530,59 @@
       "prefix": "Prefix",
       "length": "Number length",
       "example": "Example"
+    },
+    "hub": {
+      "subtitle": "All system settings by subject — find one in its group or with the search",
+      "searchPlaceholder": "Search settings...",
+      "sectionsCount": "Sections: {{count}}",
+      "quick": "Quick settings",
+      "recent": "Recently opened",
+      "results": "Found: {{count}}",
+      "noResults": "No such setting",
+      "hideNav": "Hide the section list",
+      "showNav": "Show the section list"
+    },
+    "groups": {
+      "organization": {
+        "title": "Organization and structure",
+        "description": "Organization card, branches, departments and positions"
+      },
+      "access": {
+        "title": "Users and rights",
+        "description": "Users, roles and their permissions"
+      },
+      "accounting": {
+        "title": "Accounting and taxes",
+        "description": "Accounting policy, chart of accounts, document and item accounts, obligations, numbering"
+      },
+      "opening": {
+        "title": "Opening balances",
+        "description": "Balances on the accounting start date: accounts, goods, fixed assets"
+      },
+      "finance": {
+        "title": "Banks and cash desks",
+        "description": "Banks, bank accounts, cash desks and fiscal registers"
+      },
+      "partners": {
+        "title": "Counterparties and contracts",
+        "description": "Counterparties, contacts, contract templates and responsible persons"
+      },
+      "trade": {
+        "title": "Trade and warehouse",
+        "description": "Warehouses, product groups, units, pricing and sale conditions"
+      },
+      "payroll": {
+        "title": "Payroll",
+        "description": "Accrual and deduction types, payroll taxes"
+      },
+      "integrations": {
+        "title": "Integrations",
+        "description": "Electronic document exchange (Didox, Edocs) and Asl Belgi"
+      },
+      "other": {
+        "title": "Other",
+        "description": "Other settings"
+      }
     }
   },
   "openingBalance": {

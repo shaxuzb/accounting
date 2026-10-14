@@ -1008,7 +1008,7 @@
       "openingBalance": "Boshlang'ich balans",
       "openingInventory": "Boshlang'ich qoldiq",
       "banks": "Banklar",
-      "bankAccounts": "Bank hisoblari",
+      "bankAccounts": "Kontragent bank hisoblari",
       "orgBankAccounts": "Tashkilot bank hisoblari",
       "positions": "Lavozimlar",
       "productGroups": "Mahsulot guruhlari",
@@ -1532,6 +1532,59 @@
       "prefix": "Prefiks",
       "length": "Raqam uzunligi",
       "example": "Namuna"
+    },
+    "hub": {
+      "subtitle": "Tizimning barcha sozlamalari mavzular bo'yicha — keraklisini guruhdan yoki qidiruvdan toping",
+      "searchPlaceholder": "Sozlamalarda qidirish...",
+      "sectionsCount": "{{count}} ta bo'lim",
+      "quick": "Tezkor sozlamalar",
+      "recent": "So'nggi ochilganlar",
+      "results": "Topildi: {{count}}",
+      "noResults": "Bunday sozlama topilmadi",
+      "hideNav": "Bo'limlar ro'yxatini yashirish",
+      "showNav": "Bo'limlar ro'yxatini ko'rsatish"
+    },
+    "groups": {
+      "organization": {
+        "title": "Tashkilot va tuzilma",
+        "description": "Tashkilot kartasi, filiallar, bo'limlar va lavozimlar"
+      },
+      "access": {
+        "title": "Foydalanuvchilar va huquqlar",
+        "description": "Foydalanuvchilar, rollar va ularning ruxsatlari"
+      },
+      "accounting": {
+        "title": "Buxgalteriya va soliqlar",
+        "description": "Hisob siyosati, hisobvaraqlar rejasi, hujjat va nomenklatura hisoblari, majburiyatlar, hujjat raqamlari"
+      },
+      "opening": {
+        "title": "Boshlang'ich qoldiqlar",
+        "description": "Dasturda hisob boshlanadigan kundagi qoldiqlar: hisobvaraqlar, tovarlar, asosiy vositalar"
+      },
+      "finance": {
+        "title": "Bank va kassalar",
+        "description": "Banklar, hisob raqamlari, kassalar va fiskal apparatlar"
+      },
+      "partners": {
+        "title": "Hamkorlar va shartnomalar",
+        "description": "Kontragentlar, kontaktlar, shartnoma shablonlari va mas'ul shaxslar"
+      },
+      "trade": {
+        "title": "Savdo va ombor",
+        "description": "Omborlar, mahsulot guruhlari, o'lchov birliklari, narxlash va sotuv shartlari"
+      },
+      "payroll": {
+        "title": "Ish haqi",
+        "description": "Hisoblash va ushlanma turlari, ish haqi soliqlari"
+      },
+      "integrations": {
+        "title": "Integratsiyalar",
+        "description": "Elektron hujjat almashinuvi (Didox, Edocs) va Asl Belgi"
+      },
+      "other": {
+        "title": "Boshqa",
+        "description": "Boshqa sozlamalar"
+      }
     }
   },
   "openingBalance": {

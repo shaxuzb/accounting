@@ -37,6 +37,10 @@ import {
   ChartColumnBig,
   Factory,
   Hash,
+  FolderTree,
+  Ruler,
+  Printer,
+  ListTree,
 } from "lucide-react";
 import { productionDocs } from "@/modules/production/constants";
 import { salePermissions } from "@/modules/sale";
@@ -848,7 +852,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "CHART_ACCOUNT_VIEW",
-      iconName: <ReceiptText className="size-5" />,
+      iconName: <ListTree className="size-5" />,
       linkData: {
         path: "chart-accounts",
         title: "settings.entities.chartAccounts",
@@ -894,7 +898,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "PRODUCT_VIEW",
-      iconName: <Scale className="size-5" />,
+      iconName: <Ruler className="size-5" />,
       linkData: {
         path: "units",
         title: "settings.entities.units",
@@ -930,7 +934,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: openingBalancePermissions.view,
-      iconName: <Building2 className="size-5" />,
+      iconName: <Factory className="size-5" />,
       linkData: {
         path: "opening-assets",
         title: "settings.entities.openingAssets",
@@ -970,7 +974,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: "PRODUCT_GROUP_VIEW",
-      iconName: <Building2 className="size-5" />,
+      iconName: <FolderTree className="size-5" />,
       linkData: {
         path: "product-groups",
         title: "settings.entities.productGroups",
@@ -990,7 +994,7 @@ export const menuPermissions: MainMenu = {
     },
     {
       code: fiscalCashRegisterPermissions.view,
-      iconName: <ReceiptText className="size-5" />,
+      iconName: <Printer className="size-5" />,
       linkData: {
         path: "fiscal-cash-registers",
         title: "settings.entities.fiscalCashRegisters",

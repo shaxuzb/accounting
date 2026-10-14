@@ -28,7 +28,8 @@ type WorkspaceHandle = {
   showBack?: boolean;
   backTo?: string;
   hideNavbarTitle?: boolean;
-  tabSuffix?: string;
+  /** false: the tab shows the title alone, without a route parameter */
+  tabSuffix?: string | false;
   workspace?: {
     type?: "root" | "document" | "page" | (string & {});
     tabBehavior?: "manual" | "auto" | (string & {});
@@ -115,6 +116,10 @@ const resolveTabSuffix = (
   params: Record<string, string | undefined>,
   search: string,
 ): string | undefined => {
+  if (handle.tabSuffix === false) {
+    return undefined;
+  }
+
   if (handle.tabSuffix) {
     const searchParams = new URLSearchParams(search);
     const querySuffix = searchParams.get(handle.tabSuffix);
