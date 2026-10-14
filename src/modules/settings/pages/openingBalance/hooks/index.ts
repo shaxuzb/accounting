@@ -6,10 +6,10 @@ import type {
   OpeningBalanceHeaderForm,
 } from "../types/form";
 
-export const useGetOpeningBalance = () =>
+export const useGetOpeningBalance = (id?: number | null) =>
   useQuery({
-    queryKey: openingBalanceKeys.current(),
-    queryFn: openingBalanceService.current,
+    queryKey: openingBalanceKeys.current(id),
+    queryFn: () => openingBalanceService.current(id),
     retry: false,
   });
 

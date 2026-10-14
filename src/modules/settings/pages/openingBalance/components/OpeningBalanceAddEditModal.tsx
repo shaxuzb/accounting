@@ -16,12 +16,15 @@ interface OpeningBalanceAddEditModalProps {
   open: boolean;
   onClose: () => void;
   record?: OpeningBalance | null;
+  /** A further section: its date is the first section's and cannot change. */
+  sectionDate?: string | null;
 }
 
 export default function OpeningBalanceAddEditModal({
   open,
   onClose,
   record,
+  sectionDate,
 }: OpeningBalanceAddEditModalProps) {
   const { t } = useTranslation();
   const organization = useAppSelector((state) => state.organization);
@@ -31,7 +34,7 @@ export default function OpeningBalanceAddEditModal({
 
   const formik = useFormik<OpeningBalanceHeaderForm>({
     initialValues: {
-      balanceDate: record?.balanceDate ?? dayjs().format("YYYY-MM-DD"),
+      balanceDate: record?.balanceDate ?? sectionDate ?? dayjs().format("YYYY-MM-DD"),
       description: record?.description ?? "",
       stateId: 1,
     },
@@ -65,7 +68,9 @@ export default function OpeningBalanceAddEditModal({
       title={
         isEdit
           ? t("openingBalance.form.editTitle")
-          : t("openingBalance.form.createTitle")
+          : sectionDate
+            ? t("openingBalance.sections.createTitle")
+            : t("openingBalance.form.createTitle")
       }
       open={open}
       onCancel={handleClose}
@@ -90,6 +95,7 @@ export default function OpeningBalanceAddEditModal({
               fieldName="balanceDate"
               label="openingBalance.fields.balanceDate"
               required
+              disabled={Boolean(sectionDate)}
             />
           </Col>
 

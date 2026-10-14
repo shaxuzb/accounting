@@ -13,6 +13,7 @@ const DocumentAccountSettingsListPage = lazy(() => import("./pages/documentAccou
 const DocumentAccountSettingsDetailPage = lazy(() => import("./pages/documentAccountSettings/screens/DocumentAccountSettingsDetailPage"));
 const ProductAccountsPage = lazy(() => import("./pages/productAccounts/ProductAccountsPage"));
 const UnitsPage = lazy(() => import("./pages/units/UnitsPage"));
+const DocumentNumberSettingsPage = lazy(() => import("./pages/documentNumbers/DocumentNumberSettingsPage"));
 const BranchListPage = lazy(() => import("./pages/branches/screens/BranchListPage"));
 const CounterpartyBankAccountListPage = lazy(() => import("./pages/counterpartybankaccount/screens/CounterpartyBankAccountListPage"));
 const SettingsBankListPage = lazy(() => import("./pages/bank/screens/SettingsBankListPage"));
@@ -365,6 +366,15 @@ export const settingsRoutes: RouteObject = {
         <AccountingPolicyPage />,
         accountingPolicyPermissions.view,
       ),
+    },
+    {
+      path: "document-numbers",
+      handle: {
+        title: "settings.entities.documentNumbers",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(<DocumentNumberSettingsPage />, organizationsPermissions.update),
     },
     {
       path: "units",

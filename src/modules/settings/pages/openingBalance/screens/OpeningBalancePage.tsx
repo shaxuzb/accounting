@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Alert, App, Button, Spin } from "antd";
+import { Alert, App, Button, Segmented, Spin } from "antd";
 import {
   CheckCircle2,
   Pencil,
@@ -40,13 +40,16 @@ export default function OpeningBalancePage() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<OpeningBalance | null>(null);
+  // the section shown (1C: several «Ввод начальных остатков», one per section)
+  const [sectionId, setSectionId] = useState<number | null>(null);
+  const [newSection, setNewSection] = useState(false);
   const {
     data,
     isLoading,
     isFetching,
     isError,
     refetch,
-  } = useGetOpeningBalance();
+  } = useGetOpeningBalance(sectionId);
   const deleteMutation = useDeleteOpeningBalance(data?.id);
   const postMutation = usePostOpeningBalance(data?.id);
   const unpostMutation = useUnpostOpeningBalance(data?.id);
@@ -68,6 +71,13 @@ export default function OpeningBalancePage() {
 
   const openCreateModal = () => {
     setEditRecord(null);
+    setNewSection(false);
+    setIsModalOpen(true);
+  };
+
+  const openSectionModal = () => {
+    setEditRecord(null);
+    setNewSection(true);
     setIsModalOpen(true);
   };
 
@@ -89,6 +99,7 @@ export default function OpeningBalancePage() {
       onOk: async () => {
         try {
           await deleteMutation.mutateAsync();
+          setSectionId(null);
           toast.success(t("openingBalance.messages.deleted"));
         } catch (error: unknown) {
           errorHandlers(error);
@@ -225,6 +236,22 @@ export default function OpeningBalancePage() {
 
       {data && (
         <>
+          <div className="flex flex-wrap items-center gap-2">
+            <Segmented
+              value={data.id}
+              onChange={(value) => setSectionId(Number(value))}
+              options={(data.sections ?? []).map((section, index) => ({
+                value: section.id,
+                label: `${section.description || t("openingBalance.sections.name", { index: index + 1 })} (${section.accountCount})${section.statusId === 2 ? " ✓" : ""}`,
+              }))}
+            />
+            <PermissionCard permission={openingBalancePermissions.create}>
+              <Button icon={<Plus className="size-4" />} onClick={openSectionModal}>
+                {t("openingBalance.sections.add")}
+              </Button>
+            </PermissionCard>
+          </div>
+
           <OpeningBalanceDocumentHeader
             data={data}
             totalDebit={totals.debit}
@@ -337,9 +364,11 @@ export default function OpeningBalancePage() {
       <OpeningBalanceAddEditModal
         open={isModalOpen}
         record={editRecord}
+        sectionDate={newSection ? data?.balanceDate : null}
         onClose={() => {
           setIsModalOpen(false);
           setEditRecord(null);
+          setNewSection(false);
         }}
       />
     </div>

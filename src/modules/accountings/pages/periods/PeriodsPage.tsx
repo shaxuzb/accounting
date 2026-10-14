@@ -19,6 +19,7 @@ import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import { useAppSelector } from "@/store/hooks";
 import { periodPermissions } from "./api";
+import EditLockCard from "./EditLockCard";
 import {
   useCloseCheck,
   useRestoreSequence,
@@ -140,6 +141,7 @@ export default function PeriodsPage() {
         </Space>
         <span className="text-sm text-secondary-text">{t("periods.hint")}</span>
       </Card>
+      <EditLockCard canEdit={canClose} />
       {sequence?.boundaryDate && (
         <Alert
           type="warning"

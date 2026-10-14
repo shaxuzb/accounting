@@ -17,10 +17,11 @@ const normalizeHeaderPayload = (payload: OpeningBalanceHeaderForm) => ({
 });
 
 export const openingBalanceService = {
-  current: async () => {
+  current: async (id?: number | null) => {
     try {
       const response = await $axiosPrivate.get<OpeningBalance | null>(
         openingBalanceEndpoints.current,
+        { params: id ? { id } : undefined },
       );
       return response.data ?? null;
     } catch (error: unknown) {

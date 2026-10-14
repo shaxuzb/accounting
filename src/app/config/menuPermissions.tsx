@@ -36,6 +36,7 @@ import {
   FileSignature,
   ChartColumnBig,
   Factory,
+  Hash,
 } from "lucide-react";
 import { productionDocs } from "@/modules/production/constants";
 import { salePermissions } from "@/modules/sale";
@@ -873,6 +874,15 @@ export const menuPermissions: MainMenu = {
         path: "document-account-settings",
         title: "settings.entities.documentAccountSettings",
         description: "settings.descriptions.documentAccountSettings",
+      },
+    },
+    {
+      code: "ORGANIZATION_UPDATE",
+      iconName: <Hash className="size-5" />,
+      linkData: {
+        path: "document-numbers",
+        title: "settings.entities.documentNumbers",
+        description: "settings.descriptions.documentNumbers",
       },
     },
     {

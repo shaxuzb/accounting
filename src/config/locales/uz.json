@@ -1021,7 +1021,8 @@
       "pricingConditions": "Narxlash shartlari",
       "saleConditions": "Sotuv shartlari",
       "integrations": "Integratsiyalar",
-      "accountingPolicy": "Buxgalteriya siyosati"
+      "accountingPolicy": "Buxgalteriya siyosati",
+      "documentNumbers": "Hujjat raqamlari"
     },
     "descriptions": {
       "openingAssets": "Foydalanishdagi asosiy vositalar va nomoddiy aktivlar: qiymat va hisoblangan amortizatsiya.",
@@ -1052,7 +1053,8 @@
       "pricingConditions": "Narxlash usuli va yaxlitlash shartlarini boshqarish.",
       "saleConditions": "Sotuv tannarx va QQS shartlarini boshqarish.",
       "integrations": "Didox, Edocs va Asl Belgi integratsiyalarini boshqarish.",
-      "accountingPolicy": "Tashkilotning buxgalteriya hisoblash qoidalarini boshqarish."
+      "accountingPolicy": "Tashkilotning buxgalteriya hisoblash qoidalarini boshqarish.",
+      "documentNumbers": "Hujjat raqamining prefiksi va uzunligi (tashkilot bo'yicha yoki hujjat turi bo'yicha)."
     },
     "fields": {
       "accountNumber": "Hisob raqami",
@@ -1520,6 +1522,14 @@
       "add": "Qo'shish",
       "empty": "Hali yozuv yo'q",
       "saveFirst": "Mas'ul shaxslarni tashkilot saqlangandan keyin kiriting"
+    },
+    "numbers": {
+      "hint": "Prefiks keyingi hujjatlarga qo'llanadi; avvalgi raqamlar o'zgarmaydi. «Barcha hujjatlar» qatori — tashkilot prefiksi, turdagi qator uni almashtiradi.",
+      "allDocuments": "Barcha hujjatlar (tashkilot prefiksi)",
+      "documentType": "Hujjat turi",
+      "prefix": "Prefiks",
+      "length": "Raqam uzunligi",
+      "example": "Namuna"
     }
   },
   "openingBalance": {
@@ -1611,6 +1621,11 @@
       "confirmTitle": "Farqni 8710 ga yopish",
       "confirmDescription": "0000 dagi {{amount}} farq taqsimlanmagan foyda (8710) qatoriga yoziladi va hujjat qayta o'tkaziladi. Avval qoldiqlarni tekshiring: 1C da ham farq xato topilmagandagina 84 (bizda 8710) ga o'tkaziladi.",
       "closed": "0000 yopildi: 8710 ga {{side}} {{amount}}"
+    },
+    "sections": {
+      "add": "Bo'lim qo'shish",
+      "createTitle": "Yangi bo'lim (qoldiq sanasi umumiy)",
+      "name": "Bo'lim {{index}}"
     }
   },
   "purchase": {
@@ -4210,6 +4225,15 @@
       "10": "Oktabr",
       "11": "Noyabr",
       "12": "Dekabr"
+    },
+    "editLock": {
+      "title": "Tahrir taqiqi sanasi",
+      "hint": "Shu sanagacha bo'lgan hujjatlarni o'zgartirib bo'lmaydi (oy yopilmagan bo'lsa ham). Istisno qilingan foydalanuvchining o'z sanasi bo'ladi yoki cheklovsiz ishlaydi.",
+      "none": "Taqiq yo'q",
+      "exceptions": "Foydalanuvchi bo'yicha istisnolar",
+      "unlimited": "Cheklovsiz",
+      "addUser": "Foydalanuvchi qo'shish",
+      "saved": "Tahrir taqiqi saqlandi"
     }
   },
   "expenseReport": {

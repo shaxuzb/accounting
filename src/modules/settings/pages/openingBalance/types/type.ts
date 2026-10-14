@@ -25,6 +25,15 @@ export interface OpeningBalance {
   organizationName: string;
   stateName: string;
   accounts: OpeningBalanceAccountSummary[];
+  /** Every opening balance document (section) of the organization, on one date. */
+  sections?: OpeningBalanceSection[];
+}
+
+export interface OpeningBalanceSection {
+  id: number;
+  description?: string | null;
+  statusId: number;
+  accountCount: number;
 }
 
 export interface OpeningBalanceSubkonto {

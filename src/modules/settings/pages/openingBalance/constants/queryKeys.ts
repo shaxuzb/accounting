@@ -1,6 +1,6 @@
 export const openingBalanceKeys = {
   all: ["opening-balances"] as const,
-  current: () => [...openingBalanceKeys.all, "current"] as const,
+  current: (id?: number | null) => [...openingBalanceKeys.all, "current", id ?? null] as const,
   account: (openingBalanceId: string | number, accountId: string | number) =>
     [
       ...openingBalanceKeys.all,
