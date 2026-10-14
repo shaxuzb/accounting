@@ -4,21 +4,27 @@ import type { TableColumnsType } from "antd";
 import type { FormikProps } from "formik";
 import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import Card from "@/components/ui/card/Card";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
+import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
 import { faAssetStatusIds } from "../../../shared/constants/statuses";
+import useFaDocumentTypeIds from "../../../shared/hooks/useFaDocumentTypeIds";
 import type { FaMovementFormValues, FaMovementLineValues } from "../types/form";
 import FaMovementRouteCard from "./FaMovementRouteCard";
 import useFaMovementLookups, { faMovementAssetDisplayConfig } from "./useFaMovementLookups";
+
 
 const emptyLine = (): FaMovementLineValues => ({ faAssetId: null, note: "" });
 interface RowValue extends FaMovementLineValues { key: number; index: number }
 
 export default function FaMovementFormFields({ formik, isDraft }: { formik: FormikProps<FaMovementFormValues>; isDraft: boolean }) {
   const { t } = useTranslation();
+  // the expense accounts the depreciation runs offer (the movement sets the asset's one)
+  const faDocumentTypeIds = useFaDocumentTypeIds();
   const { getAsset, departmentLabel, userLabel } = useFaMovementLookups();
   const addLine = () => void formik.setFieldValue("lines", [...formik.values.lines, emptyLine()]);
   const removeLine = useCallback((index: number) => void formik.setFieldValue("lines", formik.values.lines.filter((_, i) => i !== index)), [formik]);
@@ -32,7 +38,7 @@ export default function FaMovementFormFields({ formik, isDraft }: { formik: Form
     { dataIndex: "actions", width: 64, align: "center", render: (_, row) => isDraft && rows.length > 1 ? <Button type="text" danger icon={<Trash2 className="size-4" />} onClick={() => removeLine(row.index)} /> : null },
   ], [departmentLabel, formik, getAsset, isDraft, removeLine, rows.length, t, userLabel]);
   return <div className="space-y-3">
-    <Card className="p-4"><Row gutter={[16, 0]}><Col xs={24} md={8}><SelectDate formik={formik} fieldName="docDate" label="fa.fields.docDate" required /></Col><Col xs={24} md={8}><SelectCustom path={selectListEndpoints.departmentsSelectList} createWith="department" formik={formik} fieldName="toDepartmentId" label="fa.fields.toDepartmentId" search clearable /></Col><Col xs={24} md={8}><SelectCustom path={selectListEndpoints.usersSelectList} formik={formik} fieldName="toResponsibleUserId" label="fa.fields.toResponsibleUserId" search clearable /></Col><Col span={24}><InputText formik={formik} fieldName="note" label="fa.movement.generalNote" /></Col></Row>{typeof formik.errors === "string" && <div className="text-sm text-red-500">{formik.errors}</div>}</Card>
+    <Card className="p-4"><Row gutter={[16, 0]}><Col xs={24} md={8}><SelectDate formik={formik} fieldName="docDate" label="fa.fields.docDate" required /></Col><Col xs={24} md={8}><SelectCustom path={selectListEndpoints.departmentsSelectList} createWith="department" formik={formik} fieldName="toDepartmentId" label="fa.fields.toDepartmentId" search clearable /></Col><Col xs={24} md={8}><SelectCustom path={selectListEndpoints.usersSelectList} formik={formik} fieldName="toResponsibleUserId" label="fa.fields.toResponsibleUserId" search clearable /></Col><Col xs={24} md={8}><DocumentAccountSelect documentTypeId={faDocumentTypeIds.depreciation ?? 0} enabled={Boolean(faDocumentTypeIds.depreciation)} documentRoleCode={faDocumentAccountRoleCodes.depreciationExpense} formik={formik} fieldName="toDepreciationExpenseAccountId" label="fa.movement.newExpenseAccount" search clearable optional allowUserSelection /><div className="-mt-4 mb-2 text-xs text-secondary-text">{t("fa.movement.newExpenseAccountHint")}</div></Col><Col xs={24} md={16}><InputText formik={formik} fieldName="note" label="fa.movement.generalNote" /></Col></Row>{typeof formik.errors === "string" && <div className="text-sm text-red-500">{formik.errors}</div>}</Card>
     <FaMovementRouteCard previousLocation="" previousTitle={t("fa.movement.currentLocations")} destinationDepartment={departmentLabel(formik.values.toDepartmentId)} destinationUser={userLabel(formik.values.toResponsibleUserId)} />
     <Card className="overflow-hidden border border-border"><div className="flex items-start justify-between border-b border-border px-4 py-4"><div><div className="font-semibold text-heading">{t("fa.movement.assetsToMove")}</div><div className="mt-1 text-sm text-secondary-text">{t("fa.movement.assetsToMoveDescription")}</div></div>{isDraft && <Button type="primary" ghost icon={<Plus className="size-4" />} onClick={addLine}>{t("fa.actions.addAsset")}</Button>}</div><Table columns={columns} dataSource={rows} pagination={false} scroll={{ x: "max-content" }} /></Card>
   </div>;

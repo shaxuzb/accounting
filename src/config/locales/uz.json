@@ -894,6 +894,8 @@
       "chooseSaveMode": "Hujjatni qanday saqlamoqchisiz?"
     },
     "movement": {
+      "newExpenseAccount": "Amortizatsiya xarajat hisobi (yangi)",
+      "newExpenseAccountHint": "Bo'sh — o'zgarmaydi. Tanlansa, vositalar amortizatsiyasi ko'chirish sanasidan shu hisobga yoziladi (masalan 2010 → 9420), bekor qilinsa eskisi qaytadi.",
       "newLocation": "Yangi joylashuv",
       "previousLocation": "Oldingi joylashuv",
       "currentLocations": "Joriy joylashuvlar",

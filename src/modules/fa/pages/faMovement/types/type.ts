@@ -22,6 +22,8 @@ export interface FaMovementPayload {
   docDate: string;
   toDepartmentId: number | null;
   toResponsibleUserId: number | null;
+  toDepreciationExpenseAccountId?: number | null;
+  toDepreciationExpenseAccountNumber?: string | null;
   note: string;
   lines: FaMovementAssetLine[];
 }

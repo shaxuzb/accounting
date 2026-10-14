@@ -5,6 +5,7 @@ export const faMovementSchema = (t: TFunction) => yup.object({
   docDate: yup.string().required(t("fa.validation.dateRequired")),
   toDepartmentId: yup.number().nullable(),
   toResponsibleUserId: yup.number().nullable(),
+  toDepreciationExpenseAccountId: yup.number().nullable(),
   note: yup.string(),
   lines: yup.array().of(yup.object({
     faAssetId: yup.number().nullable().required(t("fa.validation.assetRequired")),
@@ -14,5 +15,5 @@ export const faMovementSchema = (t: TFunction) => yup.object({
     return new Set(ids).size === ids.length;
   }),
 }).test("destination", t("fa.validation.movementDestinationRequired"), (values) =>
-  Boolean(values?.toDepartmentId || values?.toResponsibleUserId),
+  Boolean(values?.toDepartmentId || values?.toResponsibleUserId || values?.toDepreciationExpenseAccountId),
 );

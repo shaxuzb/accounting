@@ -30,6 +30,7 @@ const createDefaultValues = (): FaMovementFormValues => ({
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   toDepartmentId: null,
   toResponsibleUserId: null,
+  toDepreciationExpenseAccountId: null,
   note: "",
   lines: [
     {
@@ -45,6 +46,8 @@ const toPayload = (
   docDate: values.docDate,
   toDepartmentId: values.toDepartmentId == null ? null : Number(values.toDepartmentId),
   toResponsibleUserId: values.toResponsibleUserId == null ? null : Number(values.toResponsibleUserId),
+  toDepreciationExpenseAccountId:
+    values.toDepreciationExpenseAccountId == null ? null : Number(values.toDepreciationExpenseAccountId),
   note: values.note,
   lines: values.lines.map((line) => ({
     faAssetId: Number(line.faAssetId),
@@ -85,6 +88,7 @@ export default function FaMovementFormPage() {
       toDepartmentId: record?.toDepartmentId ?? createDefaultValues().toDepartmentId,
       toResponsibleUserId:
         record?.toResponsibleUserId ?? createDefaultValues().toResponsibleUserId,
+      toDepreciationExpenseAccountId: record?.toDepreciationExpenseAccountId ?? null,
       note: record?.note ?? "",
       lines: record?.lines?.length
         ? record.lines.map((line) => ({

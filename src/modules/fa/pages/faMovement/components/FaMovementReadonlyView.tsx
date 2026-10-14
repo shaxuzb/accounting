@@ -232,6 +232,16 @@ export default function FaMovementReadonlyView({
               {destinationResponsible}
             </div>
           </div>
+          {record.toDepreciationExpenseAccountNumber && (
+            <div className="min-w-40">
+              <div className="text-xs text-secondary-text">
+                {t("fa.movement.newExpenseAccount")}
+              </div>
+              <div className="mt-0.5 text-sm font-semibold text-text">
+                {record.toDepreciationExpenseAccountNumber}
+              </div>
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <div className="text-xs text-secondary-text">
               {t("fa.fields.note")}

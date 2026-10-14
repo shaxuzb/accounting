@@ -892,6 +892,8 @@
       "chooseSaveMode": "How would you like to save the document?"
     },
     "movement": {
+      "newExpenseAccount": "Depreciation expense account (new)",
+      "newExpenseAccountHint": "Empty keeps it. When chosen, the assets' depreciation goes to this account from the movement on (e.g. 2010 → 9420); a cancel puts the old one back.",
       "newLocation": "New location",
       "previousLocation": "Previous location",
       "currentLocations": "Current locations",
