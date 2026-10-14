@@ -16,6 +16,9 @@ export interface TrialBalanceItem {
   periodCredit: number;
   closingDebit: number;
   closingCredit: number;
+  /** A group account's line (5010): its subaccounts' sums, not in the totals again. */
+  isGroup?: boolean;
+  parentAccountId?: number | null;
 }
 
 export interface TrialBalanceResult {

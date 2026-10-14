@@ -296,6 +296,7 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
         loading={loading}
         columns={columns}
         dataSource={rows}
+        rowClassName={(record) => (record.isGroup ? "bg-surface-muted font-semibold" : "")}
         size="middle"
         scroll={{ x: 1400 }}
         locale={{
