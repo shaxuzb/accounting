@@ -3,6 +3,8 @@ export interface InventoryAdjustmentForm {
   warehouseId: number | null;
   adjustmentType: string;
   comment: string;
+  /** Write-off / surplus account (1C «Счет списания» / «Счет доходов»); empty — the setting's. */
+  offsetAccountId: number | null;
   lines: InventoryAdjustmentLineForm[];
 }
 

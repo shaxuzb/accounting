@@ -14,6 +14,7 @@ export interface InventoryAdjustmentLine {
   quantity: number | null;
   unitCost?: number | null;
   comment?: string | null;
+  offsetAccountId?: number | null;
   items: InventoryAdjustmentItem[];
 }
 
@@ -25,6 +26,7 @@ export interface InventoryAdjustmentDocument {
   warehouseName?: string | null;
   adjustmentType: string;
   comment?: string | null;
+  offsetAccountId?: number | null;
   statusId?: number | null;
   statusName?: string | null;
   stateId?: number | null;

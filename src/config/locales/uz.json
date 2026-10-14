@@ -719,7 +719,6 @@
     },
     "fields": {
       "shortageAccount": "Kamomad hisobi",
-      "surplusAccount": "Ortiqcha daromadi hisobi",
       "vatRateIntoCost": "QQS stavkasi (tannarxga qo'shiladi)",
       "documentNumber": "Hujjat raqami",
       "documentDate": "Hujjat sanasi",
@@ -2321,6 +2320,7 @@
         "transactionsCount": "{{count}} ta harakat"
       },
       "fields": {
+        "surplusAccount": "Daromad hisobi",
         "account": "Hisobvaraq",
         "periodId": "Davr ID",
         "dateFrom": "Boshlanish sanasi",
@@ -3447,6 +3447,9 @@
   },
   "warehouse": {
     "fields": {
+      "writeOffAccount": "Hisobdan chiqarish hisobi",
+      "surplusAccount": "Ortiqcha daromadi hisobi",
+      "offsetAccountHint": "Bo'sh — sozlamadagi (5910 / 9390). Masalan buzilgan tovar 9430 ga, sexga berilgan material 2010 ga.",
       "documentNumber": "Hujjat raqami",
       "documentDate": "Hujjat sanasi",
       "createdDate": "Yaratilgan sana",

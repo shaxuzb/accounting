@@ -48,6 +48,7 @@ export const createDefaultAdjustmentForm = (): InventoryAdjustmentForm => ({
   // Ma'lumotnomadagi kodlardan biri tanlanadi; "Decrease" backendda yo'q edi.
   adjustmentType: "",
   comment: "",
+  offsetAccountId: null,
   lines: [createDefaultAdjustmentLine()],
 });
 
@@ -58,6 +59,7 @@ export const mapAdjustmentDetailToForm = (
   warehouseId: record?.warehouseId ?? null,
   adjustmentType: record?.adjustmentType ?? "",
   comment: record?.comment ?? "",
+  offsetAccountId: record?.offsetAccountId ?? null,
   lines:
     record?.lines?.map((line) => ({
       productId: line.productId ?? null,
@@ -120,6 +122,7 @@ export const toInventoryAdjustmentPayload = (form: InventoryAdjustmentForm) => (
   warehouseId: form.warehouseId,
   adjustmentType: form.adjustmentType,
   comment: form.comment,
+  offsetAccountId: form.offsetAccountId ?? null,
   lines: form.lines.map((line) => ({
     productId: line.productId,
     unitId: line.unitId,

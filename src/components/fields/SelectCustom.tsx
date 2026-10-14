@@ -74,6 +74,8 @@ interface SelectCustomProps {
   isOrganizationId?: boolean;
   isPossibleBorrow?: boolean;
   allowedIds?: (number | string)[];
+  /** Keeps only the options it accepts (e.g. accounts of a few classes). */
+  filterOption?: (item: SelectOptionItem) => boolean;
   onChange?: (value: unknown) => void;
   height?: string;
 }
@@ -146,6 +148,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     disabled = false,
     createWith,
     allowedIds,
+    filterOption: keepOption,
     mode,
     onChange,
     value,
@@ -203,11 +206,11 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
       : false,
   });
   const selectOptions = React.useMemo(() => {
-    const options = data ?? [];
+    const options = keepOption ? (data ?? []).filter(keepOption) : (data ?? []);
     if (!allowedIds?.length) return options;
     const allowedSet = new Set(allowedIds.map(String));
     return options.filter((item) => allowedSet.has(String(item.id)));
-  }, [allowedIds, data]);
+  }, [allowedIds, data, keepOption]);
 
   const getOptionLabel = React.useCallback(
     (item: SelectOptionItem) =>

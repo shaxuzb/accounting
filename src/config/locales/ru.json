@@ -719,7 +719,6 @@
     },
     "fields": {
       "shortageAccount": "Счёт недостач",
-      "surplusAccount": "Счёт дохода от излишков",
       "vatRateIntoCost": "Ставка НДС (включается в стоимость)",
       "documentNumber": "Номер документа",
       "documentDate": "Дата документа",
@@ -2321,6 +2320,7 @@
         "transactionsCount": "Операций: {{count}}"
       },
       "fields": {
+        "surplusAccount": "Счёт доходов",
         "account": "Счёт",
         "periodId": "ID периода",
         "dateFrom": "Дата с",
@@ -3447,6 +3447,9 @@
   },
   "warehouse": {
     "fields": {
+      "writeOffAccount": "Счёт списания",
+      "surplusAccount": "Счёт дохода от излишков",
+      "offsetAccountHint": "Пусто — из настроек (5910 / 9390). Например, порча — на 9430, материалы в цех — на 2010.",
       "documentNumber": "Номер документа",
       "documentDate": "Дата документа",
       "createdDate": "Дата создания",

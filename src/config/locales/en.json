@@ -717,7 +717,6 @@
     },
     "fields": {
       "shortageAccount": "Shortage account",
-      "surplusAccount": "Surplus income account",
       "vatRateIntoCost": "VAT rate (added to cost)",
       "documentNumber": "Document number",
       "documentDate": "Document date",
@@ -2321,6 +2320,7 @@
         "transactionsCount": "{{count}} transactions"
       },
       "fields": {
+        "surplusAccount": "Income account",
         "account": "Account",
         "periodId": "Period ID",
         "dateFrom": "Date from",
@@ -3447,6 +3447,9 @@
   },
   "warehouse": {
     "fields": {
+      "writeOffAccount": "Write-off account",
+      "surplusAccount": "Surplus income account",
+      "offsetAccountHint": "Empty uses the setting (5910 / 9390). E.g. spoilage to 9430, materials to the workshop to 2010.",
       "documentNumber": "Document number",
       "documentDate": "Document date",
       "createdDate": "Created date",
