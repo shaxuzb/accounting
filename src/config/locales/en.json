@@ -1052,7 +1052,8 @@
       "openingInventory": "Manage opening inventory.",
       "integrations": "Manage dDocs and Asl Belgisi integrations.",
       "accountingPolicy": "Manage the organization’s accounting rules.",
-      "documentNumbers": "The prefix and length of document numbers (for the organization or per document type)."
+      "documentNumbers": "The prefix and length of document numbers (for the organization or per document type).",
+      "retailStore": "Goods in the store stand at sale prices: cost on 2920.2, the markup (sale price − cost) on 2980.2. The price is the fixed sale price or the pricing condition. A price change is entered by a retail revaluation. The kind changes only while the store is empty."
     },
     "fields": {
       "accountNumber": "Account number",
@@ -1147,7 +1148,8 @@
       "vatRegistrationCode": "VAT registration code",
       "actualAddress": "Actual address",
       "legalAddress": "Legal address",
-      "isMainAccount": "Main account"
+      "isMainAccount": "Main account",
+      "isRetailStore": "Retail store — goods at sale prices (2920.2, markup 2980.2)"
     },
     "form": {
       "createTitle": "Add new record",
@@ -4382,5 +4384,29 @@
     "postedHint": "A posted entry is not changed: cancel it and enter a new one if needed.",
     "currencyNeeded": "A currency account is chosen: give the currency and the amount in it.",
     "offBalanceSide": "Off-balance account — the other side stays empty"
+  },
+  "retailRevaluation": {
+    "title": "Retail revaluation",
+    "hint": "The goods of a retail store kept at sale prices take the new price: the difference on 2920.2 / 2980.2, the fixed sale price changes from the date.",
+    "date": "Date",
+    "store": "Retail store",
+    "comment": "Comment",
+    "total": "Revaluation",
+    "status": "Status",
+    "draft": "Draft",
+    "posted": "Posted",
+    "cancelled": "Cancelled",
+    "product": "Product",
+    "newPrice": "New sale price",
+    "quantity": "Quantity",
+    "amount": "Difference",
+    "addLine": "Add a line",
+    "saveDraft": "Save draft",
+    "post": "Save and post",
+    "cancel": "Cancel (storno)",
+    "cancelConfirm": "Cancel the revaluation? The batches return to their old price.",
+    "saved": "Saved",
+    "postedMessage": "The revaluation is posted",
+    "cancelledMessage": "The revaluation is cancelled"
   }
 }

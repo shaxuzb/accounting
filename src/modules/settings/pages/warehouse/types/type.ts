@@ -11,4 +11,9 @@ export interface Warehouse {
   stateId: number;
   stateName: string;
   createdDate: string;
+  isMain?: boolean;
+  address?: string | null;
+  isRetail?: boolean;
+  retailStockAccountId?: number | null;
+  markupAccountId?: number | null;
 }

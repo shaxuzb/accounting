@@ -14,6 +14,13 @@ import { warehouseTransferPermissions } from "./pages/warehouse-transfer/constan
 const WarehouseTransferDetailPage = lazy(() => import("./pages/warehouse-transfer/screens/WarehouseTransferDetailPage"));
 const WarehouseTransferListPage = lazy(() => import("./pages/warehouse-transfer/screens/WarehouseTransferListPage"));
 
+const RetailRevaluationListPage = lazy(() =>
+  import("./pages/retail-revaluation/RetailRevaluationPages").then((m) => ({ default: m.RetailRevaluationListPage })),
+);
+const RetailRevaluationEditorPage = lazy(() =>
+  import("./pages/retail-revaluation/RetailRevaluationPages").then((m) => ({ default: m.RetailRevaluationEditorPage })),
+);
+
 const withPermission = (element: React.ReactElement, permission: string) => (
   <PermissionCard permission={permission} mode="redirect">
     {element}
@@ -79,6 +86,24 @@ export const warehouseRoutes: RouteObject = {
             showBack: true,
             backTo: "..",
           },
+        },
+      ],
+    },
+    {
+      // 1C «Переоценка товаров в рознице»
+      path: "retail-revaluations",
+      handle: { title: "retailRevaluation.title" },
+      children: [
+        { index: true, element: withPermission(<RetailRevaluationListPage />, "RETAIL_REVALUATION_VIEW") },
+        {
+          path: "add",
+          element: withPermission(<RetailRevaluationEditorPage />, "RETAIL_REVALUATION_CREATE"),
+          handle: { title: "retailRevaluation.title", showBack: true, backTo: ".." },
+        },
+        {
+          path: ":id",
+          element: withPermission(<RetailRevaluationEditorPage />, "RETAIL_REVALUATION_VIEW"),
+          handle: { title: "retailRevaluation.title", showBack: true, backTo: ".." },
         },
       ],
     },

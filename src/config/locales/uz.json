@@ -1054,7 +1054,8 @@
       "saleConditions": "Sotuv tannarx va QQS shartlarini boshqarish.",
       "integrations": "Didox, Edocs va Asl Belgi integratsiyalarini boshqarish.",
       "accountingPolicy": "Tashkilotning buxgalteriya hisoblash qoidalarini boshqarish.",
-      "documentNumbers": "Hujjat raqamining prefiksi va uzunligi (tashkilot bo'yicha yoki hujjat turi bo'yicha)."
+      "documentNumbers": "Hujjat raqamining prefiksi va uzunligi (tashkilot bo'yicha yoki hujjat turi bo'yicha).",
+      "retailStore": "Omborga kirgan tovar sotuv narxida turadi: tannarx 2920.2 da, ustama (sotuv narxi − tannarx) 2980.2 da. Narx — qat'iy sotuv narxi yoki narx belgilash sharti. Narx o'zgarsa «Chakana narxlarni qayta baholash» hujjati kiritiladi. Tur faqat bo'sh omborda o'zgaradi."
     },
     "fields": {
       "accountNumber": "Hisob raqami",
@@ -1149,7 +1150,8 @@
       "vatRegistrationCode": "QQS to'lovchisi reg. kodi",
       "actualAddress": "Haqiqiy manzil",
       "legalAddress": "Yuridik manzil",
-      "isMainAccount": "Asosiy hisob"
+      "isMainAccount": "Asosiy hisob",
+      "isRetailStore": "Chakana do'kon — tovar sotuv narxida (2920.2, ustama 2980.2)"
     },
     "form": {
       "createTitle": "Yangi ma'lumot qo'shish",
@@ -4382,5 +4384,29 @@
     "postedHint": "O'tkazilgan provodka o'zgartirilmaydi: kerak bo'lsa, bekor qilib, yangisini kiriting.",
     "currencyNeeded": "Valyuta hisobi tanlandi: valyutani va valyutadagi summani kiriting.",
     "offBalanceSide": "Balansdan tashqari hisob — ikkinchi tomon bo'sh qoladi"
+  },
+  "retailRevaluation": {
+    "title": "Chakana narxlarni qayta baholash",
+    "hint": "Sotuv narxida yuritiladigan chakana do'kondagi tovarlar yangi narxga o'tadi: farq 2920.2 / 2980.2 ga, tovarning qat'iy sotuv narxi shu sanadan o'zgaradi.",
+    "date": "Sana",
+    "store": "Chakana ombor",
+    "comment": "Izoh",
+    "total": "Qayta baholash summasi",
+    "status": "Holati",
+    "draft": "Qoralama",
+    "posted": "O'tkazilgan",
+    "cancelled": "Bekor qilingan",
+    "product": "Tovar",
+    "newPrice": "Yangi sotuv narxi",
+    "quantity": "Qoldiq miqdori",
+    "amount": "Farq",
+    "addLine": "Qator qo'shish",
+    "saveDraft": "Qoralama saqlash",
+    "post": "Saqlash va o'tkazish",
+    "cancel": "Bekor qilish (storno)",
+    "cancelConfirm": "Qayta baholash bekor qilinsinmi? Partiyalar eski narxga qaytadi.",
+    "saved": "Saqlandi",
+    "postedMessage": "Qayta baholash o'tkazildi",
+    "cancelledMessage": "Qayta baholash bekor qilindi"
   }
 }

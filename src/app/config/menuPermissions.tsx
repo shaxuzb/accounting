@@ -246,6 +246,13 @@ export const menuPermissions: MainMenu = {
             title: "app.menu.adjustment",
           },
         },
+        {
+          code: "RETAIL_REVALUATION_VIEW",
+          linkData: {
+            path: "retail-revaluations",
+            title: "retailRevaluation.title",
+          },
+        },
       ],
     },
     {

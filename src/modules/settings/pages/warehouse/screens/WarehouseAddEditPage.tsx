@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
-import { Button, Col, Form, Modal, Row, Spin } from "antd";
+import { Alert, Button, Checkbox, Col, Form, Modal, Row, Spin } from "antd";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -20,6 +20,11 @@ const defaultValues: WarehouseForm = {
   name: "",
   responsibleUserId: null,
   stateId: null,
+  isMain: false,
+  address: null,
+  isRetail: false,
+  retailStockAccountId: null,
+  markupAccountId: null,
 };
 
 interface WarehouseAddEditPageProps {
@@ -80,6 +85,11 @@ export default function WarehouseAddEditPage({
         name: Warehouses.name ?? "",
         responsibleUserId: Warehouses.responsibleUserId ?? null,
         stateId: Warehouses.stateId ?? null,
+        isMain: Warehouses.isMain ?? false,
+        address: Warehouses.address ?? null,
+        isRetail: Warehouses.isRetail ?? false,
+        retailStockAccountId: Warehouses.retailStockAccountId ?? null,
+        markupAccountId: Warehouses.markupAccountId ?? null,
       });
     }
     // formik is a new object every render: the values are set once per loaded record
@@ -144,6 +154,28 @@ export default function WarehouseAddEditPage({
               />
             </Col>
 
+            <Col span={24}>
+              <Checkbox
+                checked={Boolean(formik.values.isRetail)}
+                onChange={(event) => {
+                  formik.setFieldValue("isRetail", event.target.checked);
+                  if (!event.target.checked) {
+                    formik.setFieldValue("retailStockAccountId", null);
+                    formik.setFieldValue("markupAccountId", null);
+                  }
+                }}
+              >
+                {t("settings.fields.isRetailStore")}
+              </Checkbox>
+              {formik.values.isRetail && (
+                <Alert
+                  className="my-2"
+                  type="info"
+                  showIcon
+                  message={t("settings.descriptions.retailStore")}
+                />
+              )}
+            </Col>
             {isEdit && (
               <Col span={12}>
                 <SelectCustom
