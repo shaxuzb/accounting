@@ -385,6 +385,13 @@ export const menuPermissions: MainMenu = {
           },
         },
         {
+          code: accountingReportPermissions.incomeStatement,
+          linkData: {
+            path: "tax-reports/vat-return",
+            title: "app.taxReports.title",
+          },
+        },
+        {
           code: "MANUAL_ENTRY_VIEW",
           linkData: {
             path: "manual-entries",

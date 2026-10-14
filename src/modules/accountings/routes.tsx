@@ -25,6 +25,10 @@ const TrialBalancePage = lazy(() => import("./pages/trial-balance/screens/TrialB
 const RegulatedBalancePage = lazy(() => import("./pages/regulated-forms/RegulatedBalancePage"));
 const RegulatedResultsPage = lazy(() => import("./pages/regulated-forms/RegulatedResultsPage"));
 const ExpressCheckPage = lazy(() => import("./pages/regulated-forms/ExpressCheckPage"));
+const VatReturnPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.VatReturnPage })));
+const TurnoverTaxPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.TurnoverTaxPage })));
+const ProfitTaxPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.ProfitTaxPage })));
+const VatRegisterPage = lazy(() => import("./pages/tax-reports/VatRegisterPage"));
 const ManualEntriesPage = lazy(() => import("./pages/manual-entries/ManualEntriesPage"));
 const ManualEntryEditorPage = lazy(() => import("./pages/manual-entries/ManualEntryEditorPage"));
 const PeriodsPage = lazy(() => import("./pages/periods/PeriodsPage"));
@@ -121,6 +125,18 @@ export const accountingsRoutes: RouteObject = {
       path: "ledger",
       handle: { title: "app.accounting.ledger" },
       element: withAccess(<LedgerPage />, ledgerPermissions.view),
+    },
+    {
+      path: "tax-reports",
+      handle: { title: "app.taxReports.title" },
+      element: <Outlet />,
+      children: [
+        { index: true, element: <Navigate to="vat-return" replace /> },
+        { path: "vat-return", handle: { title: "app.taxReports.vatReturn" }, element: withAccess(<VatReturnPage />, accountingReportPermissions.incomeStatement) },
+        { path: "vat-register", handle: { title: "app.taxReports.vatRegister" }, element: withAccess(<VatRegisterPage />, accountingReportPermissions.incomeStatement) },
+        { path: "turnover-tax", handle: { title: "app.taxReports.turnoverTax" }, element: withAccess(<TurnoverTaxPage />, accountingReportPermissions.incomeStatement) },
+        { path: "profit-tax", handle: { title: "app.taxReports.profitTax" }, element: withAccess(<ProfitTaxPage />, accountingReportPermissions.incomeStatement) },
+      ],
     },
     {
       path: "trial-balance",
