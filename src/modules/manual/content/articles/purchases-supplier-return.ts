@@ -255,7 +255,7 @@ export const supplierReturnArticle: ManualArticle = {
           n: 17,
           name: "Kredit 2910 analitikasi",
           enter: "Nomenklatura, partiya (asos xarid) va ombor.",
-          affects: "Tovar FIFO bo'yicha emas, aynan xarid partiyasidan, o'sha partiya tannarxida chiqadi.",
+          affects: "FIFO usulida tovar aynan xarid partiyasidan, o'sha partiya tannarxida chiqadi; o'rtacha usulda — ombordagi o'rtacha tannarxda, xarid narxidan farqi 9390/9430 ga.",
         },
         {
           n: 18,

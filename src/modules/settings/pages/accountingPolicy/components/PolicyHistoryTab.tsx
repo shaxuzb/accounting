@@ -54,7 +54,16 @@ export default function PolicyHistoryTab({
       dataIndex: "payrollTaxRegimeName",
       render: (value?: string | null) => value ?? t("taxRegime.none"),
     },
-    { title: t("accountingPolicy.view.valuation"), dataIndex: "inventoryValuationMethod", render: (value) => value ?? "—" },
+    {
+      title: t("accountingPolicy.view.valuation"),
+      dataIndex: "inventoryValuationMethod",
+      render: (value?: string | null) =>
+        value === "average"
+          ? t("accountingPolicy.form.valuationAverage")
+          : value
+            ? t("accountingPolicy.form.valuationFifo")
+            : "—",
+    },
   ];
 
   return (

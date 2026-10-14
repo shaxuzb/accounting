@@ -65,7 +65,7 @@
       "title": "Material requisitions",
       "new": "New material requisition",
       "lines": "Materials",
-      "hint": "Materials leave the warehouse at FIFO cost: Dt the cost account (2010 by product group and cost item) Kt 1010/2910 (the account each batch came in on)."
+      "hint": "Materials leave the warehouse at the cost the accounting policy gives (FIFO or the average): Dt the cost account (2010 by product group and cost item) Kt 1010/2910 (the account each batch came in on)."
     },
     "title": "Production",
     "date": "Date",
@@ -76,7 +76,7 @@
     "productionAccount": "Production account",
     "productGroup": "Product group",
     "costItem": "Cost item",
-    "costAmount": "Cost (FIFO)",
+    "costAmount": "Cost",
     "plannedAmount": "Planned amount",
     "plannedCost": "Planned unit cost",
     "comment": "Comment",
@@ -1148,7 +1148,7 @@
       "viewRegulatedObligationSetting": "Obligation setting"
     },
     "messages": {
-      "costingIsFifo": "Goods are written off FIFO (accounting policy): the cost comes from the oldest batches. The sale condition only sets the VAT rate of new lines.",
+      "costingIsFifo": "Goods are written off by the accounting policy: FIFO from the oldest batches, the average as a share of every batch. The sale condition only sets the VAT rate of new lines.",
       "created": "Record created successfully",
       "updated": "Record updated successfully",
       "userCreated": "User created successfully",
@@ -4112,7 +4112,7 @@
     "yearProfit": "Year end: the profit of {{amount}} goes to retained earnings Dt 9910 — Ct 8710.",
     "yearLoss": "Year end: the loss of {{amount}} goes to uncovered loss Dt 8710 — Ct 9910.",
     "check": {
-      "sequenceBroken": "The stock sequence is broken from {{date}} (a back-dated document): the issues must be given out again by FIFO.",
+      "sequenceBroken": "The stock sequence is broken from {{date}} (a back-dated document): the issues must be given out again by the accounting policy's method.",
       "sequenceOk": "The stock sequence is in order",
       "restoreSequence": "Restore the sequence",
       "sequenceRestored": "Sequence restored: {{issues}} issues, {{documents}} documents reposted, cost difference {{difference}}.",
@@ -4235,14 +4235,18 @@
       "version": "Version"
     },
     "form": {
+      "valuationMethod": "Inventory valuation method",
+      "valuationFifo": "FIFO",
+      "valuationAverage": "Weighted average",
+      "valuationHint": "Under NSBU 1 the method changes only from 1 January. On a change, the issues from that date are revalued by the new method through «Restore sequence». Under the average each issue takes a share of every batch in stock (NSBU 4, para. 65); marked goods leave their own batch.",
       "title": "New accounting policy version",
       "vatPayer": "VAT payer",
       "vatPayerHint": "When off: input VAT goes into the cost of purchases and fixed assets (not 4410) and sales carry no VAT.",
       "effectiveFrom": "Effective from",
       "effectiveTo": "Effective to",
-      "fixedRules": "Fixed rules: stock valued by FIFO, base currency UZS, monthly VAT period, VAT on shipment, closed periods protected.",
+      "fixedRules": "Fixed rules: base currency UZS, monthly VAT period, VAT on shipment, closed periods protected.",
       "confirmTitle": "Save the new version?",
-      "confirmText": "The new rules apply from the chosen date; the previous version ends the day before. Posted documents are not recalculated.",
+      "confirmText": "The new rules apply from the chosen date; the previous version ends the day before. Posted documents are not recalculated. If the valuation method changes, the issues from that date are revalued by the new method through «Restore sequence».",
       "saved": "Accounting policy saved"
     }
   },

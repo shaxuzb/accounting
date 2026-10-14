@@ -132,7 +132,7 @@ export const stockArticle: ManualArticle = {
           name: "Tannarx",
           enter: "Bir birlikning o'rtacha tannarxi: qoldiq partiyalari qiymati ÷ miqdor.",
           affects:
-            "Qo'shimcha xarajat va bojxona deklaratsiyasi partiya tannarxini oshiradi; tovar FIFO bo'yicha — eng eski partiyadan chiqadi.",
+            "Qo'shimcha xarajat va bojxona deklaratsiyasi partiya tannarxini oshiradi; tovar hisob siyosatidagi usulda chiqadi: FIFO — eng eski partiyadan, o'rtacha — har partiyadan qoldiq ulushiga mutanosib (o'rtacha tannarxda).",
         },
         {
           n: 9,

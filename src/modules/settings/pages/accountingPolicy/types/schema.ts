@@ -2,8 +2,8 @@ import * as Yup from "yup";
 import dayjs from "dayjs";
 
 export const accountingPolicySchema = Yup.object({
-    inventoryValuationMethod: Yup.mixed<"FIFO">()
-      .oneOf(["FIFO"])
+    inventoryValuationMethod: Yup.mixed<"fifo" | "average">()
+      .oneOf(["fifo", "average"])
       .required(),
     baseCurrencyId: Yup.number().oneOf([1]).required(),
     vatPayer: Yup.boolean().required(),

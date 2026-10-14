@@ -124,8 +124,11 @@ export interface AccountingPolicyImpactDto {
   implementationDependency?: string | null;
 }
 
+/** NSBU 4: FIFO or the weighted average (the server keeps them lower-case). */
+export type InventoryValuationMethod = "fifo" | "average";
+
 export interface AccountingPolicyUpdateRequest {
-  inventoryValuationMethod: "FIFO";
+  inventoryValuationMethod: InventoryValuationMethod;
   baseCurrencyId: 1;
   vatPayer: boolean;
   /** The payroll tax regime the organization is entitled to; null keeps its own tax rates. */

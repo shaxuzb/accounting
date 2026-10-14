@@ -15,6 +15,7 @@ import {
 } from "@/shared/persistence/usePersistedState";
 import { useGetNowSaleCondition } from "@/modules/settings/pages/saleCondition/hooks";
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
+import { useInventoryValuation } from "@/shared/hooks/useInventoryValuation";
 import { COSTING_METHOD } from "../../sale/utils/salePricingDetails";
 import DocumentProcessingModeModal from "@/components/ui/DocumentProcessingModeModal";
 import SaleProductSelection from "../../sale/components/SaleProductSelection";
@@ -194,8 +195,9 @@ export default function RetailSaleEditorPage() {
   const [markingModeChoice, setMarkingMode] = useState<boolean | null>(null);
   const markingMode = markingModeChoice ?? !savedWithoutMarking;
   const vatPayer = useVatPayer();
-  // the server writes stock off FIFO (accounting policy), so the cost and margin
-  // previews follow the same order whatever an old sale condition still says
+  // the server writes stock off by the accounting policy (FIFO or the average), so the
+  // cost and margin previews follow it whatever an old sale condition still says
+  const valuation = useInventoryValuation();
   const baseSaleCondition = {
     ...(saleCondition ?? {
       id: 0,
@@ -203,7 +205,7 @@ export default function RetailSaleEditorPage() {
       startDate: "",
       endDate: null,
     }),
-    costingMethodId: COSTING_METHOD.FIFO,
+    costingMethodId: valuation.isAverage ? COSTING_METHOD.AVERAGE : COSTING_METHOD.FIFO,
   };
   // a non-payer sells «QQSsiz» (1C «Без НДС»): new lines take that rate
   const activeSaleCondition =

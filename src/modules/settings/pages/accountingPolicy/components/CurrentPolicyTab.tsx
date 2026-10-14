@@ -54,7 +54,13 @@ export default function CurrentPolicyTab({
       label: t("accountingPolicy.view.accountingStart"),
       value: formatDay(data.accountingStartDate) ?? "—",
     },
-    { label: t("accountingPolicy.view.valuation"), value: "FIFO" },
+    {
+      label: t("accountingPolicy.view.valuation"),
+      value:
+        data.inventoryValuationMethod === "average"
+          ? t("accountingPolicy.form.valuationAverage")
+          : t("accountingPolicy.form.valuationFifo"),
+    },
     { label: t("accountingPolicy.view.baseCurrency"), value: data.baseCurrencyCode ?? "UZS" },
     { label: t("accountingPolicy.view.vatPeriod"), value: t("accountingPolicy.view.vatPeriodMonth") },
     { label: t("accountingPolicy.view.vatBase"), value: t("accountingPolicy.view.vatBaseShipment") },

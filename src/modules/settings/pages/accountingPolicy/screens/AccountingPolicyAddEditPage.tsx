@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
-import { Button, Col, Form, Modal, Row, Spin } from "antd";
+import { Button, Col, Form, Modal, Row, Select, Spin } from "antd";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import PermissionCard from "@/components/ui/card/PermissionCard";
@@ -23,7 +23,7 @@ import PayrollTaxRegimeField from "../components/PayrollTaxRegimeField";
 import CorporateTaxRegimeField from "../components/CorporateTaxRegimeField";
 
 const createDefaultValues = (): AccountingPolicyForm => ({
-  inventoryValuationMethod: "FIFO",
+  inventoryValuationMethod: "fifo",
   baseCurrencyId: 1,
   vatPayer: true,
   payrollTaxRegimeId: null,
@@ -135,6 +135,21 @@ export default function AccountingPolicyAddEditPage({
                 onChange={(value) => void formik.setFieldValue("payrollTaxRegimeId", value)}
                 date={formik.values.effectiveFrom || dayjs().format("YYYY-MM-DD")}
               />
+            </Col>
+            <Col span={24}>
+              <Form.Item label={t("accountingPolicy.form.valuationMethod")} className="mb-1">
+                <Select
+                  value={formik.values.inventoryValuationMethod}
+                  onChange={(value) => void formik.setFieldValue("inventoryValuationMethod", value)}
+                  options={[
+                    { value: "fifo", label: t("accountingPolicy.form.valuationFifo") },
+                    { value: "average", label: t("accountingPolicy.form.valuationAverage") },
+                  ]}
+                />
+              </Form.Item>
+              <div className="mb-3 text-xs text-secondary-text">
+                {t("accountingPolicy.form.valuationHint")}
+              </div>
             </Col>
             <Col span={12}>
               <SelectDate

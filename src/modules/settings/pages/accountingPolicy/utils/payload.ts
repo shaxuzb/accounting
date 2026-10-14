@@ -18,14 +18,14 @@ export const buildAccountingPolicyUpdatePayload = (
 
 /**
  * A new policy version: the VAT payer as it stands now, starting today. Only what the server
- * takes is in the form: the valuation (FIFO), base currency (UZS), VAT period and moment are
+ * takes is in the form: the valuation method as it stands; base currency (UZS), VAT period and moment are
  * fixed by the approved policy and sent as such; the rest is out of scope and sent empty.
  */
 export const buildAccountingPolicyFormValues = (
   policy: AccountingPolicyCurrentDto,
   today: string,
 ): AccountingPolicyFormValues => ({
-  inventoryValuationMethod: "FIFO",
+  inventoryValuationMethod: policy.inventoryValuationMethod === "average" ? "average" : "fifo",
   baseCurrencyId: 1,
   vatPayer: getFieldValue(policy.vat?.isVatPayer, policy.isVatPayer) ?? true,
   payrollTaxRegimeId: policy.payrollTaxRegimeId ?? null,

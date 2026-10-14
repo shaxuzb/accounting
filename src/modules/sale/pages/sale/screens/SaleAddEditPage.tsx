@@ -10,6 +10,7 @@ import { formatDate } from "@/utils/helpers";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { useGetNowSaleCondition } from "@/modules/settings/pages/saleCondition/hooks";
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
+import { useInventoryValuation } from "@/shared/hooks/useInventoryValuation";
 import { COSTING_METHOD } from "../utils/salePricingDetails";
 import { SaleDocumentFormFields, SaleProductSelection } from "../components";
 import SaleServiceLines from "../components/SaleServiceLines";
@@ -162,8 +163,9 @@ export default function SaleAddEditPage() {
   const vatPayerFlag = useVatPayer().isVatPayer;
   const serviceLines = services.map((line) => serviceToSaleLine(line, serviceVatRates, vatPayerFlag));
   const vatPayer = useVatPayer();
-  // the server writes stock off FIFO (accounting policy), so the cost and margin
-  // previews follow the same order whatever an old sale condition still says
+  // the server writes stock off by the accounting policy (FIFO or the average), so the
+  // cost and margin previews follow it whatever an old sale condition still says
+  const valuation = useInventoryValuation();
   const baseSaleCondition = {
     ...(saleCondition ?? {
       id: 0,
@@ -171,7 +173,7 @@ export default function SaleAddEditPage() {
       startDate: "",
       endDate: null,
     }),
-    costingMethodId: COSTING_METHOD.FIFO,
+    costingMethodId: valuation.isAverage ? COSTING_METHOD.AVERAGE : COSTING_METHOD.FIFO,
   };
   // a non-payer sells «QQSsiz» (1C «Без НДС»): new lines take that rate
   const activeSaleCondition =
