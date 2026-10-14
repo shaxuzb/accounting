@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef } from "react";
 import { useFormik } from "formik";
-import { Button, Checkbox, Col, Form, Modal, Row, Spin } from "antd";
+import { Button, Checkbox, Col, Form, Modal, Row, Select, Spin } from "antd";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { counterpartySchema } from "../types/schema";
@@ -18,6 +18,15 @@ import DistrictSelect from "@/components/fields/DistrictSelect";
 import SearchInnField from "@/components/fields/SearchInnField";
 import { mergeLookupValues } from "@/modules/settings/shared/taxpayerLookup";
 import { useLookupCounterparty } from "../hooks/useLookupCounterparty";
+import { counterpartyService } from "../api";
+import { normalizeLookupPhone } from "@/modules/settings/shared/taxpayerLookup/utils/normalizeLookupPhone";
+
+const KIND_LEGAL = 1;
+const kindOptions = [
+  { value: 1, label: "settings.fields.kindLegal" },
+  { value: 2, label: "settings.fields.kindIndividual" },
+  { value: 3, label: "settings.fields.kindEntrepreneur" },
+];
 
 const defaultValues: CounterpartyForm = {
   code: "",
@@ -25,6 +34,9 @@ const defaultValues: CounterpartyForm = {
   shortName: "",
   fullName: "",
   inn: "",
+  kindId: KIND_LEGAL,
+  isResident: true,
+  pinfl: "",
   phoneNumber: "",
   regionId: null,
   districtId: null,
@@ -36,6 +48,7 @@ const emptyLookupValues: Partial<CounterpartyForm> = {
   shortName: "",
   fullName: "",
   inn: "",
+  pinfl: "",
   phoneNumber: "",
   regionId: null,
   districtId: null,
@@ -70,6 +83,7 @@ export default function CounterpartyAddEditPage({
     enableReinitialize: true,
     validationSchema: counterpartySchema(isEdit),
     onSubmit: async (values) => {
+      if (!(await confirmUniqueIdentifier(values))) return;
       try {
         if (isEdit && editId) {
           await updateMutation.mutateAsync({ id: editId, payload: values });
@@ -97,15 +111,52 @@ export default function CounterpartyAddEditPage({
         shortName: counterpartyDetail.shortName ?? "",
         fullName: counterpartyDetail.fullName ?? "",
         inn: counterpartyDetail.inn ?? "",
-        phoneNumber: counterpartyDetail.phoneNumber ?? "",
+        kindId: counterpartyDetail.kindId ?? KIND_LEGAL,
+        isResident: counterpartyDetail.isResident ?? true,
+        pinfl: counterpartyDetail.pinfl ?? "",
+        phoneNumber: normalizeLookupPhone(counterpartyDetail.phoneNumber ?? ""),
         regionId: counterpartyDetail.regionId ?? null,
         districtId: counterpartyDetail.districtId ?? null,
         address: counterpartyDetail.address ?? "",
         stateId: counterpartyDetail.stateId ?? null,
       });
     }
-  }, [counterpartyDetail, formik, isEdit]);
+    // formik is a new object every render: the values are set once per loaded record
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [counterpartyDetail, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
+
+  // 1C warns when another card has the same STIR / PINFL; the user may still save
+  async function confirmUniqueIdentifier(values: CounterpartyForm) {
+    const identifiers = [values.inn, values.pinfl]
+      .map((value) => value?.trim())
+      .filter((value): value is string => Boolean(value));
+    for (const identifier of identifiers) {
+      const found = await counterpartyService
+        .list({ search: identifier, page: 1, pageSize: 20 })
+        .catch(() => null);
+      const twin = found?.items?.find(
+        (item) =>
+          item.id !== editId &&
+          (item.inn === identifier || item.pinfl === identifier),
+      );
+      if (twin) {
+        return new Promise<boolean>((resolve) =>
+          Modal.confirm({
+            title: t("settings.messages.duplicateInnTitle"),
+            content: t("settings.messages.duplicateInnText", {
+              name: twin.shortName,
+              inn: identifier,
+            }),
+            okText: t("common.submit"),
+            onOk: () => resolve(true),
+            onCancel: () => resolve(false),
+          }),
+        );
+      }
+    }
+    return true;
+  }
 
   const handleLookupIdentifierChange = (value: string) => {
     if (Object.keys(previousLookupValues.current).length > 0) {
@@ -219,12 +270,44 @@ export default function CounterpartyAddEditPage({
               )}
             </Col>
             <Col span={12}>
-              <InputText
-                formik={formik}
-                fieldName="code"
-                label="settings.fields.code"
-              />
+              <Form.Item label={t("settings.fields.counterpartyKind")}>
+                <Select
+                  value={formik.values.kindId}
+                  options={kindOptions.map((option) => ({
+                    value: option.value,
+                    label: t(option.label),
+                  }))}
+                  onChange={(value: number) => {
+                    formik.setFieldValue("kindId", value);
+                    if (value === KIND_LEGAL) formik.setFieldValue("pinfl", "");
+                  }}
+                />
+              </Form.Item>
             </Col>
+            <Col span={12}>
+              {formik.values.kindId !== KIND_LEGAL ? (
+                <InputText
+                  formik={formik}
+                  fieldName="pinfl"
+                  label="settings.fields.pinfl"
+                />
+              ) : (
+                <InputText
+                  formik={formik}
+                  fieldName="code"
+                  label="settings.fields.code"
+                />
+              )}
+            </Col>
+            {formik.values.kindId !== KIND_LEGAL && (
+              <Col span={12}>
+                <InputText
+                  formik={formik}
+                  fieldName="code"
+                  label="settings.fields.code"
+                />
+              </Col>
+            )}
             <Col span={12}>
               <InputPhoneNumber
                 formik={formik}
@@ -240,6 +323,14 @@ export default function CounterpartyAddEditPage({
                 }
               >
                 {t("settings.fields.isVatPayer")}
+              </Checkbox>
+              <Checkbox
+                checked={formik.values.isResident}
+                onChange={(event) =>
+                  formik.setFieldValue("isResident", event.target.checked)
+                }
+              >
+                {t("settings.fields.isResident")}
               </Checkbox>
             </Col>
             {isEdit ? (

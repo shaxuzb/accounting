@@ -6,6 +6,7 @@ export interface TaxFormHeader {
   inn?: string | null;
   address?: string | null;
   director?: string | null;
+  chiefAccountant?: string | null;
   regimeName?: string | null;
   rate?: number | null;
 }

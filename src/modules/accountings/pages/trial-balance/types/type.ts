@@ -19,6 +19,8 @@ export interface TrialBalanceItem {
   /** A group account's line (5010): its subaccounts' sums, not in the totals again. */
   isGroup?: boolean;
   parentAccountId?: number | null;
+  /** An off-balance account (001–009): listed after the totals, not in them (1C). */
+  isOffBalance?: boolean;
 }
 
 export interface TrialBalanceResult {

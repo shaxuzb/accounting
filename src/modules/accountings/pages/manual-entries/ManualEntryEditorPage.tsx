@@ -9,7 +9,7 @@ import {
   Tag,
 } from "antd";
 import { Ban, Plus, Save, Send, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
@@ -114,7 +114,13 @@ function ManualEntryEditor({
   const body = () => ({
     docDate: docDate.format("YYYY-MM-DDTHH:mm:ss"),
     comment: comment || null,
-    lines: lines.map((line) => ({ ...line, amount: Number(line.amount) || 0 })),
+    lines: lines.map((line) => ({
+      ...line,
+      // an off-balance line leaves one side empty
+      debitAccountId: line.debitAccountId || null,
+      creditAccountId: line.creditAccountId || null,
+      amount: Number(line.amount) || 0,
+    })),
   });
 
   const saveDraft = async () => {
@@ -295,6 +301,23 @@ function LineCard({
   const needsCurrency = Boolean(
     debit.account?.isCurrency || credit.account?.isCurrency,
   );
+  // an off-balance account (001–009) corresponds with nothing: the other side stays empty (1C)
+  const debitOffBalance = Boolean(debit.account?.isOffBalance);
+  const creditOffBalance = Boolean(credit.account?.isOffBalance);
+  useEffect(() => {
+    if (readOnly) return;
+    if (debitOffBalance && line.creditAccountId)
+      onChange({ creditAccountId: 0, creditSubkontos: [] });
+    else if (creditOffBalance && line.debitAccountId)
+      onChange({ debitAccountId: 0, debitSubkontos: [] });
+    // the side picked last decides; the other one is emptied once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debitOffBalance, creditOffBalance]);
+  const offBalanceHint = (
+    <div className="flex min-h-16 items-center rounded-md border border-dashed border-border px-3 text-sm text-secondary-text">
+      {t("manualEntries.offBalanceSide")}
+    </div>
+  );
   const foreign = line.currencyId !== UZS;
 
   return (
@@ -314,28 +337,36 @@ function LineCard({
           )}
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
-          <AccountSide
-            label={t("manualEntries.debit")}
-            accountId={line.debitAccountId || null}
-            subkontos={line.debitSubkontos}
-            disabled={readOnly}
-            onAccountChange={(accountId) =>
-              onChange({ debitAccountId: accountId ?? 0, debitSubkontos: [] })
-            }
-            onSubkontosChange={(debitSubkontos) => onChange({ debitSubkontos })}
-          />
-          <AccountSide
-            label={t("manualEntries.credit")}
-            accountId={line.creditAccountId || null}
-            subkontos={line.creditSubkontos}
-            disabled={readOnly}
-            onAccountChange={(accountId) =>
-              onChange({ creditAccountId: accountId ?? 0, creditSubkontos: [] })
-            }
-            onSubkontosChange={(creditSubkontos) =>
-              onChange({ creditSubkontos })
-            }
-          />
+          {creditOffBalance && !line.debitAccountId ? (
+            offBalanceHint
+          ) : (
+            <AccountSide
+              label={t("manualEntries.debit")}
+              accountId={line.debitAccountId || null}
+              subkontos={line.debitSubkontos}
+              disabled={readOnly}
+              onAccountChange={(accountId) =>
+                onChange({ debitAccountId: accountId ?? 0, debitSubkontos: [] })
+              }
+              onSubkontosChange={(debitSubkontos) => onChange({ debitSubkontos })}
+            />
+          )}
+          {debitOffBalance && !line.creditAccountId ? (
+            offBalanceHint
+          ) : (
+            <AccountSide
+              label={t("manualEntries.credit")}
+              accountId={line.creditAccountId || null}
+              subkontos={line.creditSubkontos}
+              disabled={readOnly}
+              onAccountChange={(accountId) =>
+                onChange({ creditAccountId: accountId ?? 0, creditSubkontos: [] })
+              }
+              onSubkontosChange={(creditSubkontos) =>
+                onChange({ creditSubkontos })
+              }
+            />
+          )}
         </div>
         <div className="mt-3 grid gap-4 md:grid-cols-4">
           <div>

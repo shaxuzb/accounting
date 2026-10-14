@@ -1136,7 +1136,18 @@
       "rate": "Stavka (%)",
       "chartAccount": "Hisobvaraq",
       "effectiveFrom": "Amal qilish boshlanishi",
-      "effectiveTo": "Amal qilish tugashi"
+      "effectiveTo": "Amal qilish tugashi",
+      "counterpartyKind": "Kontragent turi",
+      "kindLegal": "Yuridik shaxs",
+      "kindIndividual": "Jismoniy shaxs",
+      "kindEntrepreneur": "Yakka tartibdagi tadbirkor (YaTT)",
+      "isResident": "Rezident",
+      "pinfl": "JShShIR",
+      "legalForm": "Tashkiliy-huquqiy shakl",
+      "vatRegistrationCode": "QQS to'lovchisi reg. kodi",
+      "actualAddress": "Haqiqiy manzil",
+      "legalAddress": "Yuridik manzil",
+      "isMainAccount": "Asosiy hisob"
     },
     "form": {
       "createTitle": "Yangi ma'lumot qo'shish",
@@ -1165,7 +1176,9 @@
       "userCreated": "Foydalanuvchi muvaffaqiyatli yaratildi",
       "userUpdated": "Foydalanuvchi muvaffaqiyatli o'zgartirildi",
       "roleCreated": "Rol muvaffaqiyatli yaratildi",
-      "roleUpdated": "Rol muvaffaqiyatli o'zgartirildi"
+      "roleUpdated": "Rol muvaffaqiyatli o'zgartirildi",
+      "duplicateInnTitle": "Bu STIR bilan kontragent bor",
+      "duplicateInnText": "«{{name}}» kontragentida ham shu STIR/JShShIR ({{inn}}) bor. Baribir saqlansinmi?"
     },
     "regulatedObligations": {
       "detail": "Majburiyat sozlamasi tafsilotlari",
@@ -1184,7 +1197,12 @@
       }
     },
     "validation": {
-      "effectiveToBeforeFrom": "Tugash sanasi boshlanish sanasidan oldin bo'lishi mumkin emas"
+      "effectiveToBeforeFrom": "Tugash sanasi boshlanish sanasidan oldin bo'lishi mumkin emas",
+      "inn9": "STIR 9 ta raqamdan iborat bo'lishi kerak",
+      "pinfl14": "JShShIR 14 ta raqamdan iborat bo'lishi kerak",
+      "innOrPinfl": "STIR yoki JShShIR kiriting",
+      "account20": "Hisob raqami 20 ta raqamdan iborat bo'lishi kerak",
+      "digitsOnly": "Faqat raqamlar"
     },
     "role": {
       "selectAll": "Hammasini belgilash",
@@ -1488,6 +1506,20 @@
       "byCounterpartyHint": "Qarz va avanslar kontragent bo'yicha yuritiladi: to'lov kontragentning istalgan qarzini yopadi, sotuv va xarid uning istalgan avansini hisobga oladi.",
       "byContractHint": "Qarz va avanslar shartnoma bo'yicha yuritiladi (1C dagi «Договор» kabi): to'lov faqat o'z shartnomasi qarzini yopadi, ortig'i shu shartnoma avansi bo'ladi; sotuv va xarid faqat o'z shartnomasidagi avansni hisobga oladi. Shartnomasiz hujjatlar shartnomasiz qoldiqlar bilan hisoblashadi.",
       "saved": "Hisob-kitob tartibi saqlandi. U bundan keyin o'tkaziladigan hujjatlarga qo'llanadi."
+    },
+    "responsible": {
+      "title": "Mas'ul shaxslar (imzolovchilar)",
+      "hint": "Har bir lavozim sanadan boshlab yoziladi: hujjat o'z sanasida lavozimda bo'lgan shaxs nomidan imzolanadi.",
+      "role": "Lavozim turi",
+      "director": "Rahbar (direktor)",
+      "chiefAccountant": "Bosh hisobchi",
+      "cashier": "Kassir",
+      "fullName": "F.I.Sh.",
+      "position": "Lavozimi",
+      "startDate": "Qaysi sanadan",
+      "add": "Qo'shish",
+      "empty": "Hali yozuv yo'q",
+      "saveFirst": "Mas'ul shaxslarni tashkilot saqlangandan keyin kiriting"
     }
   },
   "openingBalance": {
@@ -2236,7 +2268,9 @@
       "runCheck": "Tekshirish",
       "entries": "ta yozuv",
       "checkSummary": "{{total}} ta tekshiruv: xato {{errors}}, ogohlantirish {{warnings}}",
-      "status": {"OK": "To'g'ri", "WARNING": "Ogohlantirish", "ERROR": "Xato"}
+      "status": {"OK": "To'g'ri", "WARNING": "Ogohlantirish", "ERROR": "Xato"},
+      "director": "Rahbar",
+      "chiefAccountant": "Bosh hisobchi"
     },
     "accounting": {
       "title": "Buxgalteriya",
@@ -2393,7 +2427,8 @@
       "closingCredit": "Yakuniy kredit",
       "accountCode": "Hisob kodi",
       "accountName": "Hisob nomi",
-      "accountNumber": "Hisobvaraq raqami"
+      "accountNumber": "Hisobvaraq raqami",
+      "offBalance": "Balansdan tashqari hisoblar (jamiga kirmaydi)"
     },
     "menu": {
       "warehouseGroup": "Ombor",
@@ -4321,6 +4356,7 @@
     "cancelled": "Bekor qilindi",
     "deleteConfirm": "Qoralama o'chirilsinmi?",
     "postedHint": "O'tkazilgan provodka o'zgartirilmaydi: kerak bo'lsa, bekor qilib, yangisini kiriting.",
-    "currencyNeeded": "Valyuta hisobi tanlandi: valyutani va valyutadagi summani kiriting."
+    "currencyNeeded": "Valyuta hisobi tanlandi: valyutani va valyutadagi summani kiriting.",
+    "offBalanceSide": "Balansdan tashqari hisob — ikkinchi tomon bo'sh qoladi"
   }
 }

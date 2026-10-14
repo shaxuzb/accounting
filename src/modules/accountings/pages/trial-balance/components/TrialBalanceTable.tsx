@@ -195,6 +195,10 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
     );
   }, [result?.items, search]);
 
+  // off-balance accounts stand after the totals and outside them, as in 1C
+  const balanceRows = rows.filter((item) => !item.isOffBalance);
+  const offBalanceRows = rows.filter((item) => item.isOffBalance);
+
   const totals: Record<FinancialColumnKey, number> = {
     openingDebit: result?.openingDebitTotal ?? 0,
     openingCredit: result?.openingCreditTotal ?? 0,
@@ -295,7 +299,7 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
         rowKey="accountId"
         loading={loading}
         columns={columns}
-        dataSource={rows}
+        dataSource={balanceRows}
         rowClassName={(record) => (record.isGroup ? "bg-surface-muted font-semibold" : "")}
         size="middle"
         scroll={{ x: 1400 }}
@@ -303,7 +307,7 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
           emptyText: <Empty description={t("app.trial.resultEmpty")} />,
         }}
         pagination={
-          rows.length > 10
+          balanceRows.length > 10
             ? {
                 defaultPageSize: 10,
                 showSizeChanger: true,
@@ -314,6 +318,7 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
         }
         summary={() =>
           result && rows.length ? (
+            <>
             <Table.Summary.Row className="bg-surface-muted font-semibold">
               <Table.Summary.Cell index={0} colSpan={baseColumnCount}>
                 {t("common.total")}
@@ -332,6 +337,36 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
                 </Table.Summary.Cell>
               ))}
             </Table.Summary.Row>
+            {offBalanceRows.length > 0 && (
+              <Table.Summary.Row>
+                <Table.Summary.Cell
+                  index={0}
+                  colSpan={baseColumnCount + visibleTotalKeys.length}
+                >
+                  <span className="text-secondary-text">{t("app.trial.offBalance")}</span>
+                </Table.Summary.Cell>
+              </Table.Summary.Row>
+            )}
+            {offBalanceRows.map((item) => (
+              <Table.Summary.Row
+                key={item.accountId}
+                className={item.isGroup ? "font-semibold" : undefined}
+              >
+                <Table.Summary.Cell index={0} colSpan={baseColumnCount}>
+                  {item.accountNumber} {item.accountName}
+                </Table.Summary.Cell>
+                {visibleTotalKeys.map((key, index) => (
+                  <Table.Summary.Cell
+                    key={key}
+                    index={index + baseColumnCount}
+                    align="right"
+                  >
+                    <span className="tabular-nums">{item[key] ? money(item[key]) : ""}</span>
+                  </Table.Summary.Cell>
+                ))}
+              </Table.Summary.Row>
+            ))}
+            </>
           ) : null
         }
       />

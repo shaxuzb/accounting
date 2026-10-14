@@ -14,9 +14,14 @@ export const mapTaxpayerToCounterparty = (
 
   if (meaningful(taxpayer.CompanyInn)) {
     mapped.inn = taxpayer.CompanyInn.trim();
+    mapped.kindId = 1;
   } else if (meaningful(taxpayer.Pinfl)) {
-    mapped.inn = taxpayer.Pinfl.trim();
+    // a person found by PINFL: the PINFL has its own field, the card is a person's
+    mapped.inn = "";
+    mapped.pinfl = taxpayer.Pinfl.trim();
+    mapped.kindId = 2;
   }
+  mapped.isVatPayer = meaningful(taxpayer.VatCode);
   if (meaningful(taxpayer.CompanyName)) {
     const name = taxpayer.CompanyName.trim();
     mapped.fullName = name;

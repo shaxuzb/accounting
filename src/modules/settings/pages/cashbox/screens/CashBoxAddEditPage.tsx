@@ -76,7 +76,9 @@ export default function CashBoxAddEditPage({
         stateId: CashBox.stateId ?? null,
       });
     }
-  }, [CashBox, formik, isEdit]);
+    // formik is a new object every render: the values are set once per loaded record
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [CashBox, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (

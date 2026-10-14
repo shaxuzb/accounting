@@ -1,4 +1,11 @@
 export interface organizationCreate {
+  legalFormId?: number | null;
+  pinfl?: string | null;
+  vatRegistrationCode?: string | null;
+  actualAddress?: string | null;
+  email?: string | null;
+  website?: string | null;
+  oked?: string | null;
   shortName: string;
   fullName: string;
   inn: string;
@@ -13,6 +20,13 @@ export interface organizationCreate {
 }
 
 export interface organizationUpdate {
+  legalFormId?: number | null;
+  pinfl?: string | null;
+  vatRegistrationCode?: string | null;
+  actualAddress?: string | null;
+  email?: string | null;
+  website?: string | null;
+  oked?: string | null;
   shortName: string;
   fullName: string;
   inn: string;

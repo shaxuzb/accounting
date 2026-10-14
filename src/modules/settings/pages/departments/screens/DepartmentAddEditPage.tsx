@@ -80,7 +80,9 @@ export default function DepartmentAddEditPage({
         stateId: Departments.stateId ?? null,
       });
     }
-  }, [Departments, formik, isEdit]);
+    // formik is a new object every render: the values are set once per loaded record
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [Departments, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (

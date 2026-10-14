@@ -4,6 +4,9 @@ export interface CounterpartyForm {
   shortName: string;
   fullName: string;
   inn: string;
+  kindId: number;
+  isResident: boolean;
+  pinfl?: string | null;
   phoneNumber: string;
   regionId: number;
   districtId: number;

@@ -82,7 +82,9 @@ export default function WarehouseAddEditPage({
         stateId: Warehouses.stateId ?? null,
       });
     }
-  }, [Warehouses, formik, isEdit]);
+    // formik is a new object every render: the values are set once per loaded record
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [Warehouses, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (

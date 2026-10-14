@@ -80,7 +80,9 @@ export default function PositionAddEditPage({
         stateId: Positions.stateId ?? null,
       });
     }
-  }, [Positions, formik, isEdit]);
+    // formik is a new object every render: the values are set once per loaded record
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [Positions, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (

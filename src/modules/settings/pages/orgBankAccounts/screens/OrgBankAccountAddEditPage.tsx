@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
-import { Button, Form, Modal, Spin } from "antd";
+import { Button, Form, Modal, Spin, Checkbox } from "antd";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -19,7 +19,7 @@ const defaultValues: OrgBankAccountsForm = {
   bankBranchId: null,
   accountNumber: null,
   currencyId: null,
-  isMain: true,
+  isMain: false,
   stateId: null,
 };
 
@@ -46,7 +46,7 @@ export default function OrgBankAccountAddEditPage({
     initialValues: {
       ...defaultValues,
       stateId: isEdit ? null : 1,
-      isMain: true,
+      isMain: false,
     },
     enableReinitialize: true,
     validationSchema: orgBankAccountsSchema(isEdit),
@@ -75,11 +75,13 @@ export default function OrgBankAccountAddEditPage({
         bankBranchId: OrgBankAccounts.bankBranchId ?? null,
         accountNumber: OrgBankAccounts.accountNumber ?? null,
         currencyId: OrgBankAccounts.currencyId ?? null,
-        isMain: OrgBankAccounts.isMain ?? true,
+        isMain: OrgBankAccounts.isMain ?? false,
         stateId: OrgBankAccounts.stateId ?? null,
       });
     }
-  }, [OrgBankAccounts, formik, isEdit]);
+    // formik is a new object every render: the values are set once per loaded record
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [OrgBankAccounts, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -145,6 +147,15 @@ export default function OrgBankAccountAddEditPage({
                 label="settings.fields.currency"
                 path={selectListEndpoints.currenciesSelectList}
               />
+              {/* one main account (1C «Основной банковский счет»): marking this one takes the mark from the old one */}
+              <Checkbox
+                className="mb-4"
+                checked={Boolean(formik.values.isMain)}
+                onChange={(event) => formik.setFieldValue("isMain", event.target.checked)}
+              >
+                {t("settings.fields.isMainAccount")}
+              </Checkbox>
+
      
 
             {isEdit && (

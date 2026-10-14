@@ -227,9 +227,10 @@ export default function DocumentAccountSettingsDetailPage() {
         const response = await $axiosPrivate.get<ChartAccountResponse>(
           selectListEndpoints.chartAccountsSelectList,
         );
+        // a document posts to a leaf account only, as in 1C
         return normalizeDocumentAccountOptions<DocumentAccountChartAccount>(
           response.data,
-        );
+        ).filter((account) => !account.isGroup);
       },
       enabled: Boolean(organizationId),
     });

@@ -1,7 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef } from "react";
 import { useFormik } from "formik";
-import { Button, Col, Form, Modal, Row, Spin } from "antd";
+import { Button, Col, Divider, Form, Modal, Row, Select, Spin } from "antd";
+import { useQuery } from "@tanstack/react-query";
+import { $axiosPrivate } from "@/services/AxiosService";
+import ResponsiblePersons from "../components/ResponsiblePersons";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { organizationsSchema } from "../types/schema";
@@ -17,8 +20,18 @@ import DistrictSelect from "@/components/fields/DistrictSelect";
 import SearchInnField from "@/components/fields/SearchInnField";
 import { mergeLookupValues } from "@/modules/settings/shared/taxpayerLookup";
 import { useLookupOrganization } from "../hooks/useLookupOrganization";
+import { normalizeLookupPhone } from "@/modules/settings/shared/taxpayerLookup/utils/normalizeLookupPhone";
+
+const LEGAL_FORM_ENTREPRENEUR = 7;
 
 const defaultValues: organizationCreate = {
+  legalFormId: null,
+  pinfl: "",
+  vatRegistrationCode: "",
+  actualAddress: "",
+  email: null,
+  website: null,
+  oked: null,
   shortName: "",
   fullName: "",
   inn: "",
@@ -66,6 +79,12 @@ export default function OrganizationAddEditPage({
   const updateMutation = useUpdateOrganizations();
   const lookupMutation = useLookupOrganization();
   const previousLookupValues = useRef<Partial<organizationCreate>>({});
+  const { data: legalForms = [] } = useQuery({
+    queryKey: ["organization-legal-forms"],
+    queryFn: async () =>
+      (await $axiosPrivate.get<{ id: number; name: string }[]>("/organizations/legal-forms")).data,
+    enabled: open,
+  });
 
   const formik = useFormik<organizationCreate>({
     initialValues: { ...defaultValues, stateId: isEdit ? null : 1 },
@@ -90,7 +109,8 @@ export default function OrganizationAddEditPage({
         shortName: organizations.shortName ?? "",
         fullName: organizations.fullName ?? "",
         inn: organizations.inn ?? "",
-        phoneNumber: organizations.phoneNumber ?? "",
+        // the setup wizard keeps the phone as bare digits; the form shows it masked
+        phoneNumber: normalizeLookupPhone(organizations.phoneNumber ?? ""),
         address: organizations.address ?? "",
         director: organizations.director ?? "",
         isParent: organizations.isParent ?? false,
@@ -98,9 +118,18 @@ export default function OrganizationAddEditPage({
         regionId: organizations.regionId ?? null,
         districtId: organizations.districtId ?? null,
         stateId: organizations.stateId ?? null,
+        legalFormId: organizations.legalFormId ?? null,
+        pinfl: organizations.pinfl ?? "",
+        vatRegistrationCode: organizations.vatRegistrationCode ?? "",
+        actualAddress: organizations.actualAddress ?? "",
+        email: organizations.email ?? null,
+        website: organizations.website ?? null,
+        oked: organizations.oked ?? null,
       });
     }
-  }, [formik, isEdit, isSuccess, organizations]);
+    // formik is a new object every render: the values are set once per loaded record
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEdit, isSuccess, organizations]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   const handleLookupIdentifierChange = (value: string) => {
@@ -165,7 +194,7 @@ export default function OrganizationAddEditPage({
       onCancel={handleClose}
       footer={null}
       centered
-      width={650}
+      width={isEdit ? 860 : 650}
     >
       <Spin spinning={isOrgonizationsLoading}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
@@ -238,10 +267,44 @@ export default function OrganizationAddEditPage({
               />
             </Col>
             <Col span={12}>
+              {/* once the signers are kept, the director comes from them */}
               <InputText
                 formik={formik}
                 fieldName="director"
                 label="settings.fields.director"
+                disabled={isEdit}
+              />
+            </Col>
+            <Col span={12}>
+              <Form.Item label={t("settings.fields.legalForm")}>
+                <Select
+                  allowClear
+                  value={formik.values.legalFormId ?? undefined}
+                  options={legalForms.map((form) => ({ value: form.id, label: form.name }))}
+                  onChange={(value?: number) => {
+                    formik.setFieldValue("legalFormId", value ?? null);
+                    if (value !== LEGAL_FORM_ENTREPRENEUR) formik.setFieldValue("pinfl", "");
+                  }}
+                />
+              </Form.Item>
+            </Col>
+            {formik.values.legalFormId === LEGAL_FORM_ENTREPRENEUR && (
+              <Col span={12}>
+                <InputText formik={formik} fieldName="pinfl" label="settings.fields.pinfl" />
+              </Col>
+            )}
+            <Col span={12}>
+              <InputText
+                formik={formik}
+                fieldName="vatRegistrationCode"
+                label="settings.fields.vatRegistrationCode"
+              />
+            </Col>
+            <Col span={24}>
+              <InputText
+                formik={formik}
+                fieldName="actualAddress"
+                label="settings.fields.actualAddress"
               />
             </Col>
             {isEdit ? (
@@ -272,6 +335,14 @@ export default function OrganizationAddEditPage({
               </Col>
             )}
           </Row>
+
+          {isEdit && editId ? (
+            <>
+              <Divider className="my-3" />
+              <ResponsiblePersons organizationId={Number(editId)} />
+              <Divider className="my-3" />
+            </>
+          ) : null}
 
           <Button
             type="primary"

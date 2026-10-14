@@ -29,6 +29,13 @@ export interface organizationDetail {
   districtName: string;
   address: string;
   director: string;
+  legalFormId?: number | null;
+  pinfl?: string | null;
+  vatRegistrationCode?: string | null;
+  actualAddress?: string | null;
+  email?: string | null;
+  website?: string | null;
+  oked?: string | null;
   isParent: true;
   stateId: number;
   stateName: string;
@@ -38,6 +45,13 @@ export interface organizationDetail {
 }
 
 export interface organizationUpdate {
+  legalFormId?: number | null;
+  pinfl?: string | null;
+  vatRegistrationCode?: string | null;
+  actualAddress?: string | null;
+  email?: string | null;
+  website?: string | null;
+  oked?: string | null;
   shortName: string;
   fullName: string;
   inn: string;
@@ -52,6 +66,13 @@ export interface organizationUpdate {
 }
 
 export interface organizationCreate {
+  legalFormId?: number | null;
+  pinfl?: string | null;
+  vatRegistrationCode?: string | null;
+  actualAddress?: string | null;
+  email?: string | null;
+  website?: string | null;
+  oked?: string | null;
   shortName: string;
   fullName: string;
   inn: string;

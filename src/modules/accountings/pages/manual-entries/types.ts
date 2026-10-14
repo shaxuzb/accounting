@@ -6,11 +6,12 @@ export interface ManualEntrySubkonto {
 
 export interface ManualEntryLine {
   id?: number | null;
-  debitAccountId: number;
+  /** Empty (0 / null) on the other side of an off-balance account (001–009). */
+  debitAccountId: number | null;
   debitAccountNumber?: string | null;
   debitAccountName?: string | null;
   debitSubkontos: ManualEntrySubkonto[];
-  creditAccountId: number;
+  creditAccountId: number | null;
   creditAccountNumber?: string | null;
   creditAccountName?: string | null;
   creditSubkontos: ManualEntrySubkonto[];

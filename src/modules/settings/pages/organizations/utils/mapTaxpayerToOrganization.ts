@@ -40,6 +40,9 @@ export const mapTaxpayerToOrganization = (
   if (meaningful(taxpayer.DirectorName)) {
     mapped.director = taxpayer.DirectorName.trim();
   }
+  if (meaningful(taxpayer.VatCode)) {
+    mapped.vatRegistrationCode = String(taxpayer.VatCode).trim();
+  }
   if (location?.regionId !== null && location?.regionId !== undefined) {
     mapped.regionId = location.regionId;
   }

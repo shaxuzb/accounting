@@ -12,6 +12,7 @@ export interface DocumentAccountChartAccount {
   number?: string | number;
   name?: string;
   code?: string | null;
+  isGroup?: boolean;
 }
 
 export interface DocumentAccountSettingRole {

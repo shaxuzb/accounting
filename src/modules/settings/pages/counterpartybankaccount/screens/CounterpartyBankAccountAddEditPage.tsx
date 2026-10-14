@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
-import { Button, Col, Form, Modal, Row, Spin } from "antd";
+import { Button, Checkbox, Col, Form, Modal, Row, Spin } from "antd";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -21,7 +21,7 @@ const defaultValues: CounterpartybankaccountForm = {
   bankBranchId: null,
   accountNumber: null,
   currencyId: null,
-  isMain: null,
+  isMain: false,
   stateId: null,
 };
 
@@ -59,7 +59,7 @@ export default function CounterpartyBankAccountAddEditPage({
       organizationId: initialOrganizationId ?? null,
       accountNumber: initialAccountNumber ?? null,
       stateId: isEdit ? null : 1,
-      isMain: true,
+      isMain: false,
     },
     enableReinitialize: true,
     validationSchema: counterpartybankaccountSchema(isEdit),
@@ -90,11 +90,13 @@ export default function CounterpartyBankAccountAddEditPage({
         bankBranchId: counterpartybankaccount.bankBranchId ?? null,
         accountNumber: counterpartybankaccount.accountNumber ?? null,
         currencyId: counterpartybankaccount.currencyId ?? null,
-        isMain: counterpartybankaccount.isMain ?? true,
+        isMain: counterpartybankaccount.isMain ?? false,
         stateId: counterpartybankaccount.stateId ?? null,
       });
     }
-  }, [counterpartybankaccount, formik, isEdit]);
+    // formik is a new object every render: the values are set once per loaded record
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [counterpartybankaccount, isEdit]);
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -174,6 +176,16 @@ export default function CounterpartyBankAccountAddEditPage({
                 label="settings.fields.currency"
                 path={selectListEndpoints.currenciesSelectList}
               />
+            </Col>
+            <Col span={24}>
+              {/* one main account per counterparty (1C «Основной банковский счет») */}
+              <Checkbox
+                className="mb-4"
+                checked={Boolean(formik.values.isMain)}
+                onChange={(event) => formik.setFieldValue("isMain", event.target.checked)}
+              >
+                {t("settings.fields.isMainAccount")}
+              </Checkbox>
             </Col>
 
             {isEdit && (

@@ -1134,7 +1134,18 @@
       "rate": "Rate (%)",
       "chartAccount": "Chart account",
       "effectiveFrom": "Effective from",
-      "effectiveTo": "Effective to"
+      "effectiveTo": "Effective to",
+      "counterpartyKind": "Counterparty kind",
+      "kindLegal": "Legal entity",
+      "kindIndividual": "Individual",
+      "kindEntrepreneur": "Individual entrepreneur",
+      "isResident": "Resident",
+      "pinfl": "PINFL",
+      "legalForm": "Legal form",
+      "vatRegistrationCode": "VAT registration code",
+      "actualAddress": "Actual address",
+      "legalAddress": "Legal address",
+      "isMainAccount": "Main account"
     },
     "form": {
       "createTitle": "Add new record",
@@ -1163,7 +1174,9 @@
       "userCreated": "User created successfully",
       "userUpdated": "User updated successfully",
       "roleCreated": "Role created successfully",
-      "roleUpdated": "Role updated successfully"
+      "roleUpdated": "Role updated successfully",
+      "duplicateInnTitle": "A counterparty with this TIN exists",
+      "duplicateInnText": "Counterparty «{{name}}» has the same TIN/PINFL ({{inn}}). Save anyway?"
     },
     "regulatedObligations": {
       "detail": "Obligation setting details",
@@ -1182,7 +1195,12 @@
       }
     },
     "validation": {
-      "effectiveToBeforeFrom": "The end date cannot be earlier than the start date"
+      "effectiveToBeforeFrom": "The end date cannot be earlier than the start date",
+      "inn9": "The TIN must be 9 digits",
+      "pinfl14": "The PINFL must be 14 digits",
+      "innOrPinfl": "Enter the TIN or PINFL",
+      "account20": "The account number must be 20 digits",
+      "digitsOnly": "Digits only"
     },
     "role": {
       "selectAll": "Select all",
@@ -1486,6 +1504,20 @@
       "byCounterpartyHint": "Debt and advances are kept per counterparty: a payment settles any of its debt, and a sale or purchase offsets any of its advances.",
       "byContractHint": "Debt and advances are kept per contract (like the contract analytics in 1C): a payment settles only the debt of its contract and the rest is an advance under it; a sale or purchase offsets only the advances of its contract. Documents without a contract settle the balances without one.",
       "saved": "Settlement policy saved. It applies to documents posted from now on."
+    },
+    "responsible": {
+      "title": "Responsible persons (signers)",
+      "hint": "Each post is kept from a date: a document is signed by whoever held the post on its date.",
+      "role": "Role",
+      "director": "Director",
+      "chiefAccountant": "Chief accountant",
+      "cashier": "Cashier",
+      "fullName": "Full name",
+      "position": "Position",
+      "startDate": "From",
+      "add": "Add",
+      "empty": "No records yet",
+      "saveFirst": "Responsible persons can be entered after the organization is saved"
     }
   },
   "openingBalance": {
@@ -2236,7 +2268,9 @@
       "runCheck": "Check",
       "entries": "entries",
       "checkSummary": "{{total}} checks: {{errors}} errors, {{warnings}} warnings",
-      "status": {"OK": "OK", "WARNING": "Warning", "ERROR": "Error"}
+      "status": {"OK": "OK", "WARNING": "Warning", "ERROR": "Error"},
+      "director": "Director",
+      "chiefAccountant": "Chief accountant"
     },
     "accounting": {
       "title": "Accounting",
@@ -2393,7 +2427,8 @@
       "closingCredit": "Closing credit",
       "accountCode": "Account code",
       "accountName": "Account name",
-      "accountNumber": "Account number"
+      "accountNumber": "Account number",
+      "offBalance": "Off-balance accounts (not in the totals)"
     },
     "menu": {
       "warehouseGroup": "Warehouse",
@@ -4321,6 +4356,7 @@
     "cancelled": "Cancelled",
     "deleteConfirm": "Delete the draft?",
     "postedHint": "A posted entry is not changed: cancel it and enter a new one if needed.",
-    "currencyNeeded": "A currency account is chosen: give the currency and the amount in it."
+    "currencyNeeded": "A currency account is chosen: give the currency and the amount in it.",
+    "offBalanceSide": "Off-balance account — the other side stays empty"
   }
 }

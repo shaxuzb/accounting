@@ -7,6 +7,7 @@ export interface RegulatedFormHeader {
   oked?: string | null;
   address?: string | null;
   director?: string | null;
+  chiefAccountant?: string | null;
 }
 
 export interface RegulatedBalanceLine {

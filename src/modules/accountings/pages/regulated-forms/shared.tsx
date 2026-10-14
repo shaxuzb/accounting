@@ -54,6 +54,19 @@ export function FormHeader({ header, title, subtitle }: { header?: RegulatedForm
               {header.address}
             </span>
           )}
+          {/* the statements are signed by the director and the chief accountant */}
+          {header.director && (
+            <span>
+              <span className="text-secondary-text">{t("app.regulatedForms.director")}: </span>
+              {header.director}
+            </span>
+          )}
+          {header.chiefAccountant && (
+            <span>
+              <span className="text-secondary-text">{t("app.regulatedForms.chiefAccountant")}: </span>
+              {header.chiefAccountant}
+            </span>
+          )}
         </div>
       )}
     </div>
