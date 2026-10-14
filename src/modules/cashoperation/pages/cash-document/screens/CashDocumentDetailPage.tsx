@@ -1,6 +1,7 @@
-import { Button, Form, Input, Spin } from "antd";
+import { Button, Form, Input, Popconfirm, Spin } from "antd";
 import { useFormik } from "formik";
 import {
+  Ban,
   Building2,
   CalendarDays,
   CheckCircle2,
@@ -32,6 +33,7 @@ import {
 import { resolveCashDocumentKind } from "../utils/kind";
 import CashDocumentFormFields from "./CashDocumentFormFields";
 import { cashDocumentTypeIds } from "@/modules/cashoperation/constants/documentAccount";
+import { cashDocumentPermissions } from "../constants/permissions";
 import {
   DocumentSummary,
   DocumentSummaryItem,
@@ -62,6 +64,9 @@ export default function CashDocumentDetailPage() {
   const { id = "", kind: rawKind } = useParams();
   const navigate = useNavigate();
   const organizationName = useAppSelector((state) => state.organization.name);
+  const permissions = useAppSelector(
+    (state) => state.auth.user?.user.permissions ?? [],
+  );
   const kind = resolveCashDocumentKind(rawKind);
   const isCreate = !id;
   const detailQuery = useGetDetailCashDocument(kind, id);
@@ -357,7 +362,48 @@ export default function CashDocumentDetailPage() {
           </div>
         </>
       ) : (
-        record && <CashReadonlyDetailsCard record={record} />
+        record && (
+          <div className="space-y-2">
+            {/* a posted order is taken back by storno (1C «Отмена проведения»): its
+                entries, the money movement and the counterparty's debt or advance */}
+            {record.statusId === 2 &&
+              permissions.includes(cashDocumentPermissions.cancel) && (
+                <div className="flex justify-end">
+                  <Popconfirm
+                    title={t("bank.actions.cancelPosted")}
+                    description={
+                      <div className="max-w-80">
+                        {t("bank.messages.cancelPostedConfirm")}
+                      </div>
+                    }
+                    okText={t("bank.actions.cancelPosted")}
+                    okButtonProps={{
+                      danger: true,
+                      loading: cancelMutation.isPending,
+                    }}
+                    cancelText={t("common.close")}
+                    onConfirm={async () => {
+                      try {
+                        await cancelMutation.mutateAsync();
+                        toast.success(t("cash.messages.documentCancelled"));
+                      } catch (error) {
+                        errorHandlers(error);
+                      }
+                    }}
+                  >
+                    <Button
+                      danger
+                      icon={<Ban className="size-4" />}
+                      loading={cancelMutation.isPending}
+                    >
+                      {t("bank.actions.cancelPosted")}
+                    </Button>
+                  </Popconfirm>
+                </div>
+              )}
+            <CashReadonlyDetailsCard record={record} />
+          </div>
+        )
       )}
     </div>
   );
