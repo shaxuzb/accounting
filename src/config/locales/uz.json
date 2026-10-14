@@ -3751,6 +3751,8 @@
       "bankChartAccount": "Bank hisobvarag'i"
     },
     "paymentAcceptancePointOperation": {
+      "commission": "Ekvayring komissiyasi",
+      "commissionAccount": "Komissiya hisobi (94xx/96xx)",
       "title": "To'lovni qabul qilish nuqtasi operatsiyalari",
       "create": "Nuqta operatsiyasini yaratish",
       "created": "Operatsiya yaratildi",

@@ -3751,6 +3751,8 @@
       "bankChartAccount": "Bank ledger account"
     },
     "paymentAcceptancePointOperation": {
+      "commission": "Acquiring commission",
+      "commissionAccount": "Commission account (94xx/96xx)",
       "title": "Payment acceptance point operations",
       "create": "Create point operation",
       "created": "Operation created",

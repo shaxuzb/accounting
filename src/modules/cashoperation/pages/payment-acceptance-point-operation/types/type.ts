@@ -22,6 +22,12 @@ export interface PaymentAcceptancePointOperation {
   comment?: string | null;
   pointAccountId?: number | null;
   offsetAccountId?: number | null;
+  counterpartyId?: number | null;
+  counterpartyName?: string | null;
+  contractId?: number | null;
+  contractNumber?: string | null;
+  commissionAmount?: number;
+  commissionAccountId?: number | null;
 }
 
 export interface PaymentAcceptancePointBalance {

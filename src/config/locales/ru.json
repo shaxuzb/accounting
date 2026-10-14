@@ -3751,6 +3751,8 @@
       "bankChartAccount": "Банковский счет"
     },
     "paymentAcceptancePointOperation": {
+      "commission": "Комиссия эквайринга",
+      "commissionAccount": "Счёт комиссии (94xx/96xx)",
       "title": "Операции точек приема платежей",
       "create": "Создать операцию точки",
       "created": "Операция создана",

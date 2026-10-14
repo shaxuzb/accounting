@@ -14,4 +14,8 @@ export const toPaymentAcceptancePointOperationPayload = (
   comment: values.comment.trim() || "",
   pointAccountId: values.pointAccountId ? Number(values.pointAccountId) : null,
   offsetAccountId: values.offsetAccountId ? Number(values.offsetAccountId) : null,
+  counterpartyId: values.counterpartyId ? Number(values.counterpartyId) : null,
+  contractId: values.contractId ? Number(values.contractId) : null,
+  commissionAmount: Number(values.commissionAmount || 0),
+  commissionAccountId: values.commissionAccountId ? Number(values.commissionAccountId) : null,
 });

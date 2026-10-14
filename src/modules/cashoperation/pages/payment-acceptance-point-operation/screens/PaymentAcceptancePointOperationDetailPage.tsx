@@ -26,8 +26,10 @@ import InputNumberFormat from "@/components/fields/InputNumber";
 import PaymentAcceptancePointOperationReadonlyDetailsCard from "@/modules/cashoperation/components/PaymentAcceptancePointOperationReadonlyDetailsCard";
 import {
   chartAccountSelectDisplayConfig,
+  filterIds,
   selectListEndpoints,
 } from "@/shared/constants/selectLists";
+import { formatDateWithOutTime } from "@/utils/helpers";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { customDate, numberSpacing } from "@/utils/utils";
 import {
@@ -59,6 +61,10 @@ const createDefaultValues = (): PaymentAcceptancePointOperationForm => ({
   comment: "",
   pointAccountId: null,
   offsetAccountId: null,
+  counterpartyId: null,
+  contractId: null,
+  commissionAmount: null,
+  commissionAccountId: null,
 });
 
 /** The register's document type of a payment acceptance point operation. */
@@ -80,6 +86,10 @@ const buildTouched = () => ({
   comment: true,
   pointAccountId: true,
   offsetAccountId: true,
+  counterpartyId: true,
+  contractId: true,
+  commissionAmount: true,
+  commissionAccountId: true,
 });
 
 export default function PaymentAcceptancePointOperationDetailPage() {
@@ -117,6 +127,10 @@ export default function PaymentAcceptancePointOperationDetailPage() {
       comment: record?.comment ?? createDefaultValues().comment,
       pointAccountId: record?.pointAccountId ?? null,
       offsetAccountId: record?.offsetAccountId ?? null,
+      counterpartyId: record?.counterpartyId ?? null,
+      contractId: record?.contractId ?? null,
+      commissionAmount: record?.commissionAmount ?? null,
+      commissionAccountId: record?.commissionAccountId ?? null,
     }),
     [record],
   );
@@ -358,6 +372,57 @@ export default function PaymentAcceptancePointOperationDetailPage() {
                 disabled={!isDraft}
               />
             </Col>
+            <Col span={4}>
+              {/* a customer's debt or advance (40xx / 63xx) is kept by counterparty */}
+              <SelectCustom
+                formik={formik}
+                fieldName="counterpartyId"
+                label="bank.fields.counterparty"
+                path={selectListEndpoints.counterpartiesSelectList}
+                search
+                disabled={!isDraft}
+              />
+            </Col>
+            <Col span={4}>
+              <SelectCustom
+                formik={formik}
+                fieldName="contractId"
+                label="bank.fields.contract"
+                path={selectListEndpoints.contractsSelectList}
+                queryParams={{
+                  choosedDate: dayjs(formik.values.docDate).format(formatDateWithOutTime),
+                  [filterIds.counterparty]: formik.values.counterpartyId,
+                }}
+                enabled={Boolean(formik.values.counterpartyId)}
+                refetchSync={`${formik.values.counterpartyId ?? ""}${formik.values.docDate ?? ""}`}
+                disabled={!isDraft || !formik.values.counterpartyId}
+              />
+            </Col>
+            {formik.values.directionId === -1 && (
+              <>
+                <Col span={4}>
+                  {/* the acquirer passes the money to the bank less its commission */}
+                  <InputNumberFormat
+                    formik={formik}
+                    fieldName="commissionAmount"
+                    label="cash.paymentAcceptancePointOperation.commission"
+                    min={0}
+                    precision={2}
+                  />
+                </Col>
+                <Col span={4}>
+                  <SelectCustom
+                    formik={formik}
+                    fieldName="commissionAccountId"
+                    label="cash.paymentAcceptancePointOperation.commissionAccount"
+                    path={selectListEndpoints.chartAccountsSelectList}
+                    displayConfig={chartAccountSelectDisplayConfig}
+                    search
+                    disabled={!isDraft || !Number(formik.values.commissionAmount)}
+                  />
+                </Col>
+              </>
+            )}
             <Col span={4}>
               <InputNumberFormat
                 formik={formik}

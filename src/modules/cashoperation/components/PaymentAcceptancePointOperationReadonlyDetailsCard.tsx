@@ -38,6 +38,18 @@ export default function PaymentAcceptancePointOperationReadonlyDetailsCard({
           value: record.exchangeRate,
         },
         {
+          label: t("bank.fields.counterparty"),
+          value: record.counterpartyName,
+        },
+        {
+          label: t("bank.fields.contract"),
+          value: record.contractNumber,
+        },
+        {
+          label: t("cash.paymentAcceptancePointOperation.commission"),
+          value: record.commissionAmount ? record.commissionAmount : null,
+        },
+        {
           label: t("documents.relatedDocument"),
           value: record.relatedDocumentNumber ?? record.relatedDocumentId,
         },
