@@ -13,6 +13,7 @@ export const normalizeRentalDate = (value: unknown): string | null => {
 
 const buildLessorPayload = (lessor: RentalLessorForm) => ({
   lessorKindCode: lessor.lessorKindCode,
+  sharePercent: lessor.sharePercent == null ? null : Number(lessor.sharePercent),
   fullName: lessor.fullName.trim(),
   inn: lessor.inn?.trim() || null,
   pinfl: lessor.pinfl?.trim() || null,

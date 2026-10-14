@@ -3,6 +3,7 @@ import type { RentalContractDetail } from "../types/type";
 
 const emptyLessorValue = {
   lessorKindCode: "INDIVIDUAL" as const,
+  sharePercent: null,
   fullName: "",
   inn: null,
   pinfl: null,
@@ -19,6 +20,7 @@ export const mapRentalContractToForm = (
     lessorKindCode: lessor.lessorKindCode === "LEGAL_ENTITY"
       ? ("LEGAL_ENTITY" as const)
       : ("INDIVIDUAL" as const),
+    sharePercent: lessor.sharePercent ?? null,
     fullName: lessor.fullName ?? "",
     inn: lessor.inn ?? null,
     pinfl: lessor.pinfl ?? null,

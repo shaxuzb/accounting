@@ -2,6 +2,7 @@ import type { RentalContractForm } from "../types/form";
 
 export const emptyLessor = () => ({
   lessorKindCode: "INDIVIDUAL" as const,
+  sharePercent: null,
   fullName: "",
   inn: null,
   pinfl: null,

@@ -3792,6 +3792,7 @@
       "generateTitle": "Hisob-kitoblarni yaratish"
     },
     "fields": {
+      "sharePercent": "Ulush, %",
       "lessorFullName": "Ijaraga beruvchi F.I.Sh.",
       "lessors": "Ijaraga beruvchilar",
       "lessorKind": "Ijaraga beruvchi turi",

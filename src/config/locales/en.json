@@ -3792,6 +3792,7 @@
       "generateTitle": "Generate accruals"
     },
     "fields": {
+      "sharePercent": "Share, %",
       "lessorFullName": "Lessor full name",
       "lessors": "Lessors",
       "lessorKind": "Lessor type",

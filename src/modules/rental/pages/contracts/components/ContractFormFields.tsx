@@ -24,6 +24,7 @@ import {
   type RentalPaidValues,
 } from "../utils/mode";
 import InputPhoneNumber from "@/components/fields/InputPhoneNumber";
+import InputNumber from "@/components/fields/InputNumber";
 
 interface ContractFormFieldsProps {
   formik: FormikProps<RentalContractForm>;
@@ -313,7 +314,15 @@ export default function ContractFormFields({
                         disabled={disabled}
                       />
                     </Col>
-                    <Col span={11}>
+                    <Col span={3}>
+                      <InputNumber
+                        formik={formik}
+                        fieldName={`lessors[${lessorIndex}].sharePercent`}
+                        label="rental.fields.sharePercent"
+                        disabled={disabled}
+                      />
+                    </Col>
+                    <Col span={9}>
                       <InputText
                         formik={formik}
                         fieldName={`lessors[${lessorIndex}].residentialAddress`}

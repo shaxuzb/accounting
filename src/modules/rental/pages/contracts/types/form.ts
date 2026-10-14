@@ -5,6 +5,8 @@ import type {
 
 export interface RentalLessorForm {
   lessorKindCode: RentalLessorKindCode;
+  /** Co-owners' share of the rent, %; empty for all — equal shares. */
+  sharePercent: number | null;
   fullName: string;
   inn: string | null;
   pinfl: string | null;

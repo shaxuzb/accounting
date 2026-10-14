@@ -3792,6 +3792,7 @@
       "generateTitle": "Создание начислений"
     },
     "fields": {
+      "sharePercent": "Доля, %",
       "lessorFullName": "Ф.И.О. арендодателя",
       "lessors": "Арендодатели",
       "lessorKind": "Тип арендодателя",

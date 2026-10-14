@@ -4,6 +4,7 @@ export type RentalUtilityPayerCode = "LESSOR" | "LESSEE";
 export interface RentalLessor {
   id?: number;
   lessorKindCode: RentalLessorKindCode | string;
+  sharePercent?: number | null;
   counterpartyId?: number | null;
   fullName: string;
   inn?: string | null;
