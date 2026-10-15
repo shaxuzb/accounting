@@ -43,6 +43,8 @@ export interface InventoryCountDocument {
   isCountCompleted?: boolean;
   positiveAdjustmentDocId?: number | null;
   negativeAdjustmentDocId?: number | null;
+  positiveAdjustmentDocNumber?: string | null;
+  negativeAdjustmentDocNumber?: string | null;
   statusId?: number | null;
   statusName?: string | null;
   stateId?: number | null;

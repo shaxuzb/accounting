@@ -3677,8 +3677,8 @@
       "missingProductTableIds": "Missing product table IDs",
       "postingBatches": "Postings",
       "saveDraft": "Save draft",
-      "positiveWithId": "Positive: {{id}}",
-      "negativeWithId": "Negative: {{id}}"
+      "positiveWithId": "Surplus (receipt) No. {{id}}",
+      "negativeWithId": "Shortage (write-off) No. {{id}}"
     },
     "actions": {
       "cancelPosted": "Cancel transfer"
@@ -3699,7 +3699,9 @@
       "counterparty": "Counterparty",
       "amount": "Amount",
       "settled": "Shortage settled, a manual entry was created and posted"
-    }
+    },
+    "stockOnDate": "On date",
+    "stockOnDateHint": "The stock and its book value at the end of that day (from the ledger)"
   },
   "notifications": {
     "title": "Notifications",

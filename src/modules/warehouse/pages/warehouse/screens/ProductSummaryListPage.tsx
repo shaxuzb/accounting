@@ -1,4 +1,5 @@
-import { Button, Select, Space, Table } from "antd";
+import { Button, DatePicker, Select, Space, Table, Tooltip } from "antd";
+import dayjs from "dayjs";
 import type { TableColumnsType } from "antd";
 import { RefreshCw } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
@@ -36,19 +37,26 @@ export default function ProductSummaryListPage() {
     queryKey: [selectListKeys.warehouse],
     queryFn: fetchWarehouses,
   });
+  // the date asked for covers the whole day
+  const groupParams = new URLSearchParams(searchParams);
+  if (groupParams.get("onDate"))
+    groupParams.set("onDate", `${groupParams.get("onDate")}T23:59:59`);
   const { data, isLoading, isFetching, refetch } =
-    useGetListWarehouse(searchParams);
+    useGetListWarehouse(groupParams);
   const items = data?.items ?? [];
 
   const warehouseId = searchParams.get(filterIds.warehouse);
   const selectedWarehouseId = warehouseId ? Number(warehouseId) : undefined;
   // matches the group name or a product in the group (name, MXIK)
   const search = searchParams.get("search") || undefined;
+  // 1C «Остатки товаров на дату»: the stock and its book value as they stood then
+  const onDate = searchParams.get("onDate") || undefined;
+  const onDateParam = onDate ? `${onDate}T23:59:59` : undefined;
 
   // Group rows open onto their products. While searching, the groups found open by
   // themselves and show only the matching products; with no search they start closed.
   // A row opened or closed by hand stays so until the search or the warehouse changes.
-  const expandContext = `${search ?? ""}|${warehouseId ?? ""}`;
+  const expandContext = `${search ?? ""}|${warehouseId ?? ""}|${onDate ?? ""}`;
   const [manualExpand, setManualExpand] = useState<{
     context: string;
     keys: React.Key[];
@@ -123,6 +131,20 @@ export default function ProductSummaryListPage() {
           <SearchFilter />
         </div>
         <Space>
+          <Tooltip title={t("warehouse.stockOnDateHint")}>
+            <DatePicker
+              allowClear
+              format="DD.MM.YYYY"
+              placeholder={t("warehouse.stockOnDate")}
+              value={onDate ? dayjs(onDate) : null}
+              onChange={(value) => {
+                const next = new URLSearchParams(searchParams);
+                if (value) next.set("onDate", value.format("YYYY-MM-DD"));
+                else next.delete("onDate");
+                setSearchParams(next, { replace: true });
+              }}
+            />
+          </Tooltip>
           <Select
             allowClear
             loading={isWarehousesLoading}
@@ -157,6 +179,7 @@ export default function ProductSummaryListPage() {
                 groupId={record.id}
                 warehouseId={selectedWarehouseId ?? null}
                 search={search}
+                onDate={onDateParam}
               />
             ),
           }}

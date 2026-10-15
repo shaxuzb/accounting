@@ -31,6 +31,8 @@ import SelectDate from "@/components/fields/SelectDate";
 import ProcessStatusBadge from "@/components/ui/status/ProcessStatusBadge";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
+import { useAppSelector } from "@/store/hooks";
+import { inventoryCountPermissions } from "../constants/permissions";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import InventoryCountLinesEditor from "@/modules/warehouse/pages/components/InventoryCountLinesEditor";
 import {
@@ -147,21 +149,28 @@ export default function InventoryCountDetailPage() {
   const cancelMutation = useCancelInventoryCount(queryId);
 
   const record = detailQuery.data;
+  const permissions = useAppSelector((state) => state.auth.user?.user.permissions ?? []);
+  const can = (code: string) => permissions.includes(code);
 
   const isPosted = Boolean(record?.postedAt);
   const isCancelled = Boolean(record?.cancelledAt);
   // only a draft is edited: a finished count (PENDING) waits for confirmation as it is,
   // the server refuses any change to it
   const canEdit =
-    isCreate ||
-    (isEditMode && !isPosted && !isCancelled && !record?.isCountCompleted);
+    (isCreate
+      ? can(inventoryCountPermissions.create)
+      : can(inventoryCountPermissions.update)) &&
+    (isCreate ||
+      (isEditMode && !isPosted && !isCancelled && !record?.isCountCompleted));
   const canConfirm =
+    can(inventoryCountPermissions.confirm) &&
     Boolean(record?.isCountCompleted) &&
     !isPosted &&
     !isCancelled &&
     !isCreate;
   // a posted count is cancelled too: its two adjustments are reversed with it
-  const canCancel = !isCancelled && !isCreate;
+  const canCancel =
+    can(inventoryCountPermissions.cancel) && !isCancelled && !isCreate;
 
   const initialValues = useMemo<InventoryCountForm>(() => {
     if (isCreate || !record) {
@@ -729,7 +738,9 @@ export default function InventoryCountDetailPage() {
                 >
                   <Button block>
                     {t("warehouse.count.positiveWithId", {
-                      id: record.positiveAdjustmentDocId,
+                      id:
+                        record.positiveAdjustmentDocNumber ??
+                        record.positiveAdjustmentDocId,
                     })}
                   </Button>
                 </Link>
@@ -744,7 +755,9 @@ export default function InventoryCountDetailPage() {
                 >
                   <Button block>
                     {t("warehouse.count.negativeWithId", {
-                      id: record.negativeAdjustmentDocId,
+                      id:
+                        record.negativeAdjustmentDocNumber ??
+                        record.negativeAdjustmentDocId,
                     })}
                   </Button>
                 </Link>

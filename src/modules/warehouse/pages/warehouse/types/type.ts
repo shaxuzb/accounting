@@ -47,6 +47,8 @@ export interface ProductStock {
   quantity: number;
   /** What may be taken: today's free stock, or on a date what later issues left of it. */
   availableQuantity?: number;
+  /** With a date asked for: the stock's book value then, from the ledger. */
+  costAmountOnDate?: number | null;
   price?: number;
   salePrice?: number;
   costPrice?: number;

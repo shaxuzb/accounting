@@ -3677,8 +3677,8 @@
       "missingProductTableIds": "ID недостающих товарных позиций",
       "postingBatches": "Проводки",
       "saveDraft": "Сохранить черновик",
-      "positiveWithId": "Положительная: {{id}}",
-      "negativeWithId": "Отрицательная: {{id}}"
+      "positiveWithId": "Излишек (оприходование) №{{id}}",
+      "negativeWithId": "Недостача (списание) №{{id}}"
     },
     "actions": {
       "cancelPosted": "Отменить перемещение"
@@ -3699,7 +3699,9 @@
       "counterparty": "Контрагент",
       "amount": "Сумма",
       "settled": "Недостача списана, ручная операция создана и проведена"
-    }
+    },
+    "stockOnDate": "На дату",
+    "stockOnDateHint": "Остаток и его стоимость на конец этого дня (по главной книге)"
   },
   "notifications": {
     "title": "Уведомления",

@@ -17,6 +17,13 @@ const getProductName = (record?: ProductStock | null) =>
  * batches, so the average cost and the total are taken from them.
  */
 const withBatchCost = (item: ProductStock): ProductStock => {
+  // a stock asked for at a date carries its book value then; the batches are today's
+  if (item.costAmountOnDate != null)
+    return {
+      ...item,
+      totalAmount: item.costAmountOnDate,
+      costPrice: item.quantity > 0 ? item.costAmountOnDate / item.quantity : 0,
+    };
   const batches = item.batches ?? [];
   if (batches.length === 0) return item;
 

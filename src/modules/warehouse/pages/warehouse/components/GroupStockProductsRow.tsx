@@ -7,6 +7,8 @@ interface GroupStockProductsRowProps {
   groupId: number;
   warehouseId: number | null;
   search?: string;
+  /** The stock as it stood at this moment; today's when empty. */
+  onDate?: string;
 }
 
 /**
@@ -18,11 +20,13 @@ export default function GroupStockProductsRow({
   groupId,
   warehouseId,
   search,
+  onDate,
 }: GroupStockProductsRowProps) {
   const params = {
     productGroupId: groupId,
     warehouseId,
     search,
+    onDate,
     page: 1,
     pageSize: 1000,
   };

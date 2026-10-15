@@ -3677,8 +3677,8 @@
       "missingProductTableIds": "Yetishmayotgan mahsulot jadvali IDlari",
       "postingBatches": "Provodkalar",
       "saveDraft": "Qoralama saqlash",
-      "positiveWithId": "Musbat: {{id}}",
-      "negativeWithId": "Manfiy: {{id}}"
+      "positiveWithId": "Ortiqcha (kirim) №{{id}}",
+      "negativeWithId": "Kamomad (chiqim) №{{id}}"
     },
     "actions": {
       "cancelPosted": "Ko'chirishni bekor qilish"
@@ -3699,7 +3699,9 @@
       "counterparty": "Kontragent",
       "amount": "Summa",
       "settled": "Kamomad yopildi, qo'lda provodka yaratib o'tkazildi"
-    }
+    },
+    "stockOnDate": "Sanaga",
+    "stockOnDateHint": "Qoldiq va uning qiymati shu kun oxiridagi holatda (bosh kitob bo'yicha)"
   },
   "notifications": {
     "title": "Bildirishnomalar",
