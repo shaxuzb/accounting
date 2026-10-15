@@ -487,7 +487,7 @@ export default function BankStatementImportPage() {
   const uploadProps: UploadProps = {
     name: "file",
     multiple: false,
-    accept: ".xlsx,.xls",
+    accept: ".xlsx,.xlsm,.xls",
     showUploadList: false,
     beforeUpload: (file) => {
       if (!selectedBankId) return false;

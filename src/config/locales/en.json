@@ -1883,7 +1883,7 @@
       "bankTypePlaceholder": "Select bank type",
       "bankTypeHint": "Select a bank type first. You can upload a file after that.",
       "uploadText": "Click to upload a file or drag it here",
-      "uploadHint": "XLS and XLSX bank statements are supported.",
+      "uploadHint": "XLSX, XLSM and XLS bank statements are supported.",
       "statements": "Bank statements",
       "transactions": "Operations",
       "operationStatus": "Status",

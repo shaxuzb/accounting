@@ -1885,7 +1885,7 @@
       "bankTypePlaceholder": "Bank turini tanlang",
       "bankTypeHint": "Avval bank turini tanlang. Shundan keyin fayl yuklash mumkin.",
       "uploadText": "Faylni yuklash uchun bosing yoki uni shu yerga olib keling",
-      "uploadHint": "XLS yoki XLSX formatidagi bank ko'chirmalari qo'llab-quvvatlanadi.",
+      "uploadHint": "XLSX, XLSM yoki XLS formatidagi bank ko'chirmalari qo'llab-quvvatlanadi.",
       "statements": "Bank ko'chirmalari",
       "transactions": "Operatsiyalar",
       "operationStatus": "Holat",
