@@ -51,8 +51,14 @@ export default function TaxSummaryWidget({ summary }: { summary: TaxSummary }) {
               className="flex items-center justify-between gap-3 rounded-lg bg-(--theme-bg-muted) px-3 py-2.5 text-sm"
             >
               <span className="text-(--theme-text-secondary)">
-                {item.documentType || "—"} · {formatDashboardCount(item.count)}{" "}
-                ta
+                {t(
+                  item.documentType === "SALE"
+                    ? "dashboard.tax.charged"
+                    : item.documentType === "PURCHASE"
+                      ? "dashboard.tax.recoverable"
+                      : item.documentType || "—",
+                )}{" "}
+                · {formatDashboardCount(item.count)} {t("dashboard.tax.documents")}
               </span>
               <span className="font-medium text-heading">
                 {formatDashboardAmount(item.vatAmount, "")}

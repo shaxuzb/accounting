@@ -469,12 +469,15 @@
     },
     "tax": {
       "title": "Soliq ko'rsatkichlari",
-      "description": "Sotuv va xarid hujjatlaridan hisoblangan VAT.",
-      "total": "Jami VAT",
+      "description": "Bosh kitobdan: hisoblangan va hisobga olinadigan QQS (chakana, qaytarish, bojxona, tuzatish bilan).",
+      "total": "To'lanadigan QQS",
       "vatPayer": "VAT to'lovchisi",
       "yes": "Ha",
       "no": "Yo'q",
-      "empty": "Soliq ma'lumotlari mavjud emas"
+      "empty": "Soliq ma'lumotlari mavjud emas",
+      "charged": "Hisoblangan QQS (6410)",
+      "recoverable": "Hisobga olinadigan QQS (4410)",
+      "documents": "hujjat"
     },
     "documents": {
       "title": "Elektron hujjatlar",

@@ -467,12 +467,15 @@
     },
     "tax": {
       "title": "Tax indicators",
-      "description": "VAT from sale and purchase documents.",
-      "total": "Total VAT",
+      "description": "From the general ledger: VAT charged and recoverable (retail, returns, customs, corrections included).",
+      "total": "VAT payable",
       "vatPayer": "VAT payer",
       "yes": "Yes",
       "no": "No",
-      "empty": "No tax data available"
+      "empty": "No tax data available",
+      "charged": "VAT charged (6410)",
+      "recoverable": "Recoverable VAT (4410)",
+      "documents": "docs"
     },
     "documents": {
       "title": "Electronic documents",
