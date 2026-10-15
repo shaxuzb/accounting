@@ -3598,7 +3598,9 @@
       "marking": "Markirovka",
       "selectMarking": "Markirovkani tanlash",
       "pieces": "{{count}} dona",
-      "noStock": "Omborda qoldiq yo'q"
+      "noStock": "Omborda qoldiq yo'q",
+      "transferable": "Ko'chirish mumkin",
+      "transferableHint": "Hujjat sanasidagi qoldiqdan keyingi kunlarda chiqib ketgan qismi ayirilgan: orqa sana bilan ko'chirish keyingi kunlarni minusga tushirmasligi kerak."
     },
     "messages": {
       "cancelPostedTitle": "Tasdiqlangan hujjatni bekor qilasizmi?",

@@ -3598,7 +3598,9 @@
       "marking": "Marking",
       "selectMarking": "Select markings",
       "pieces": "{{count}} pcs",
-      "noStock": "No stock in this warehouse"
+      "noStock": "No stock in this warehouse",
+      "transferable": "Can be moved",
+      "transferableHint": "The stock at the document's date less what later days took out: a back-dated move must not leave a later day short."
     },
     "messages": {
       "cancelPostedTitle": "Cancel the posted document?",

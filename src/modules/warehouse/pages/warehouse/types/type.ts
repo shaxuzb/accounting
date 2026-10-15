@@ -45,6 +45,8 @@ export interface ProductStock {
   isPieceTracked?: boolean;
   productGroupName?: string;
   quantity: number;
+  /** What may be taken: today's free stock, or on a date what later issues left of it. */
+  availableQuantity?: number;
   price?: number;
   salePrice?: number;
   costPrice?: number;

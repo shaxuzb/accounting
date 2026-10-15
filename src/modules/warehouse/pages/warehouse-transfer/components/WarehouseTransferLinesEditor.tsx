@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Button, Col, Empty, Form, Row, Select, Tag } from "antd";
+import { Button, Col, Empty, Form, Row, Select, Tag, Tooltip } from "antd";
 import type { FormikProps } from "formik";
 import { Plus, Trash2 } from "lucide-react";
 import Card from "@/components/ui/card/Card";
@@ -189,6 +189,11 @@ export default function WarehouseTransferLinesEditor({
             : undefined;
           const selectedMarkings = toMarkingList(line.items);
           const totalStock = stock?.quantity ?? 0;
+          // what the transfer may take at its date: the stock less what later issues took of it
+          const transferable = Math.min(
+            totalStock,
+            stock?.availableQuantity ?? totalStock,
+          );
           const isPieceTracked = Boolean(
             line.productId &&
               manualProductMap.get(line.productId)?.isPieceTracked,
@@ -254,7 +259,11 @@ export default function WarehouseTransferLinesEditor({
                             selectedManual?.unitName?.trim() ||
                             line.unitName ||
                             null,
-                          quantity: selectedStock?.quantity ? 1 : null,
+                          quantity:
+                            (selectedStock?.availableQuantity ??
+                              selectedStock?.quantity)
+                              ? 1
+                              : null,
                           items: [createDefaultTransferItem()],
                         });
                         setSelectedRowKeys([]);
@@ -299,6 +308,14 @@ export default function WarehouseTransferLinesEditor({
                 <Tag color="blue">
                   {t("warehouse.lines.stock")}: {numberSpacing(totalStock, undefined, true)}
                 </Tag>
+                {transferable < totalStock && (
+                  <Tooltip title={t("warehouse.lines.transferableHint")}>
+                    <Tag color="orange">
+                      {t("warehouse.lines.transferable")}:{" "}
+                      {numberSpacing(Math.max(0, transferable), undefined, true)}
+                    </Tag>
+                  </Tooltip>
+                )}
                 <Tag color={selectedMarkings.length ? "green" : "default"}>
                   {t("warehouse.lines.marking")}: {selectedMarkings.length}
                 </Tag>
