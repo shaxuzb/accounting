@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Empty,
@@ -46,6 +46,9 @@ import type {
   BankStatementTransaction,
 } from "../types/type";
 import { getMissingCounterpartyKey } from "../utils/missingCounterpartyKey";
+import { useMoneyOperationKinds } from "@/shared/moneyOperationKinds";
+import { applyDefaultOffsets, kindForChosenAccount } from "../utils/bankOffsetDefaults";
+import { bankDocumentTypeIds } from "../constants/endpoints";
 import { normalizeBankStatements } from "../utils/normalizeBankStatement";
 import {
   createBankStatementImportDraft,
@@ -188,6 +191,31 @@ export default function BankStatementImportPage() {
     offsetAccountOptionsByDocumentType,
     isLoading: chartAccountLoading,
   } = useGetBankDocumentAccountOptions();
+  const { data: incomeKinds } = useMoneyOperationKinds("bank", 1);
+  const { data: expenseKinds } = useMoneyOperationKinds("bank", 2);
+  const bankKinds = useMemo(
+    () => [...(incomeKinds ?? []), ...(expenseKinds ?? [])],
+    [incomeKinds, expenseKinds],
+  );
+  // 1C takes a row's settlement account from its «Вид операции»; rows nobody touched get it here
+  useEffect(() => {
+    const next = applyDefaultOffsets(
+      cards,
+      bankKinds,
+      {
+        income: offsetAccountOptionsByDocumentType[bankDocumentTypeIds.income] ?? [],
+        expense: offsetAccountOptionsByDocumentType[bankDocumentTypeIds.expense] ?? [],
+      },
+      bankAccountOptionsByDocumentType[bankDocumentTypeIds.income] ?? [],
+    );
+    if (next !== cards) setCards(next);
+  }, [
+    cards,
+    bankKinds,
+    offsetAccountOptionsByDocumentType,
+    bankAccountOptionsByDocumentType,
+    setCards,
+  ]);
   const getTransactionOperationTypeId = useCallback(
     (card: BankStatementCardData, transaction: BankStatementTransaction) => {
       return (
@@ -377,6 +405,7 @@ export default function BankStatementImportPage() {
         directionId,
         bankChartAccountId,
         offsetAccountId,
+        operationKindId: toValidNumber(transaction.operationKindId),
         counterpartyId,
         counterpartyBankAccountId,
         bankDocumentNumber: transaction.bankDocumentNumber ?? null,
@@ -610,9 +639,19 @@ export default function BankStatementImportPage() {
   ) => {
     setCards((prev) =>
       prev.map((card) =>
-        card.id === cardId ? { ...card, bankChartAccountId } : card,
+        card.id === cardId
+          ? { ...card, bankChartAccountId, bankChartAutoFilled: false }
+          : card,
       ),
     );
+  };
+
+  const offsetAccountNumber = (accountId: number | null) => {
+    if (!accountId) return null;
+    const option = Object.values(offsetAccountOptionsByDocumentType)
+      .flat()
+      .find((item) => item.id === accountId);
+    return option?.number != null ? String(option.number) : null;
   };
 
   const handleOffsetAccountChange = (
@@ -627,7 +666,16 @@ export default function BankStatementImportPage() {
               ...card,
               transactions: card.transactions.map((transaction, index) =>
                 index === transactionIndex
-                  ? { ...transaction, offsetAccountId }
+                  ? {
+                      ...transaction,
+                      offsetAccountId,
+                      offsetAutoFilled: false,
+                      operationKindId: kindForChosenAccount(
+                        transaction.operationKindId,
+                        offsetAccountNumber(offsetAccountId),
+                        bankKinds,
+                      ),
+                    }
                   : transaction,
               ),
             }
@@ -724,6 +772,14 @@ export default function BankStatementImportPage() {
                       classificationRuleId: null,
                       classificationRuleCode: null,
                       relatedDocumentId: null,
+                      // an account the kind gave follows the new classification; one the user chose stays
+                      ...(transaction.offsetAutoFilled === false
+                        ? {}
+                        : {
+                            offsetAccountId: null,
+                            operationKindId: null,
+                            offsetAutoFilled: undefined,
+                          }),
                       ...(canMapBankCounterparty(classification.code)
                         ? {}
                         : {

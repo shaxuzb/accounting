@@ -18,6 +18,10 @@ export interface BankStatementTransaction {
   currencyId?: number;
   currencyName?: string;
   offsetAccountId?: number | null;
+  /** The operation kind (1C «Вид операции») the account was taken from. */
+  operationKindId?: number | null;
+  /** true: the account came from the kind; false: the user chose it; unset: not filled yet. */
+  offsetAutoFilled?: boolean;
   contractId?: number | null;
   counterpartyBankAccountId?: number | null;
   classificationCategoryId?: number | null;
@@ -40,6 +44,8 @@ export interface BankStatementCardData {
   id: string;
   fileName?: string;
   title: string;
+  /** true: the bank's account (5110) was put by default; false: the user chose it. */
+  bankChartAutoFilled?: boolean;
   bankAccountId?: number | null;
   bankId?: number | null;
   bankBranchId?: number | null;
