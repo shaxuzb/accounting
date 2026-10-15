@@ -306,11 +306,31 @@
       "adjustment": "Qoldiqni tuzatish",
       "faReceipt": "AV kirimi",
       "faCommissioning": "AV foydalanishga topshirish",
-      "fiscalTransfer": "Fiskal kassadan o'tkazma"
+      "fiscalTransfer": "Fiskal kassadan o'tkazma",
+      "manualEntry": "Qo'lda provodka",
+      "purchaseReturn": "Qaytarish",
+      "purchaseExtraCost": "Qo'shimcha xarajatlar",
+      "customs": "Bojxona deklaratsiyasi",
+      "saleCorrection": "Sotuvni tuzatish",
+      "purchaseCorrection": "Xaridni tuzatish",
+      "materialRequisition": "Talabnoma-nakladnoy",
+      "productionReport": "Ishlab chiqarish hisoboti",
+      "faDepreciation": "AV amortizatsiyasi",
+      "faDisposal": "AV hisobdan chiqarish",
+      "faRevaluation": "AV qayta baholash",
+      "faModernization": "AV modernizatsiyasi",
+      "currencyRevaluation": "Valyuta qayta baholash",
+      "cashCollection": "Inkassatsiya",
+      "paymentAcceptancePoint": "To'lov qabul qilish nuqtasi",
+      "rentalAccrual": "Ijara hisoblash"
     },
     "date": "Sana",
     "hint": "Tanlangan davrdagi o'tkazilgan hujjatlar sana tartibida joriy qoidalar va hisob sozlamalari bo'yicha qayta o'tkaziladi (1C «Перепроведение»). Hujjat holati va ombor qoldig'i o'zgarmaydi; yopilgan oy qayta yozilmaydi.",
-    "done": "{{count}} ta hujjat qayta o'tkazildi"
+    "done": "{{count}} ta hujjat qayta o'tkazildi",
+    "document": "Hujjat",
+    "documentPlaceholder": "Raqami bo'yicha qidiring",
+    "chooseTypeFirst": "Avval hujjat turini tanlang",
+    "noDocuments": "O'tkazilgan hujjat topilmadi"
   },
   "common": {
     "add": "Qo'shish",

@@ -306,11 +306,31 @@
       "adjustment": "Корректировка остатков",
       "faReceipt": "Поступление ОС",
       "faCommissioning": "Принятие к учёту ОС",
-      "fiscalTransfer": "Перевод из фискальной кассы"
+      "fiscalTransfer": "Перевод из фискальной кассы",
+      "manualEntry": "Операция (вручную)",
+      "purchaseReturn": "Возврат",
+      "purchaseExtraCost": "Поступление доп. расходов",
+      "customs": "Таможенная декларация",
+      "saleCorrection": "Корректировка реализации",
+      "purchaseCorrection": "Корректировка поступления",
+      "materialRequisition": "Требование-накладная",
+      "productionReport": "Отчёт производства",
+      "faDepreciation": "Амортизация ОС",
+      "faDisposal": "Списание ОС",
+      "faRevaluation": "Переоценка ОС",
+      "faModernization": "Модернизация ОС",
+      "currencyRevaluation": "Переоценка валюты",
+      "cashCollection": "Инкассация",
+      "paymentAcceptancePoint": "Эквайринг",
+      "rentalAccrual": "Начисление аренды"
     },
     "date": "Дата",
     "hint": "Проведённые документы периода перепроводятся в порядке дат по текущим правилам и настройкам счетов (1С «Перепроведение»). Статус и складские остатки не меняются; закрытый месяц не перезаписывается.",
-    "done": "Перепроведено документов: {{count}}"
+    "done": "Перепроведено документов: {{count}}",
+    "document": "Документ",
+    "documentPlaceholder": "Поиск по номеру",
+    "chooseTypeFirst": "Сначала выберите вид документа",
+    "noDocuments": "Проведённых документов не найдено"
   },
   "common": {
     "selected": "Выбрано",
