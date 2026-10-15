@@ -371,9 +371,9 @@ function LineCard({
         <div className="mt-3 grid gap-4 md:grid-cols-4">
           <div>
             <div className="mb-1 text-sm">{t("manualEntries.amount")}</div>
+            {/* a negative amount is a red reversal (1C «красное сторно») */}
             <InputNumberFormat
               standalone
-              min={0}
               precision={2}
               value={line.amount || null}
               disabled={readOnly}
@@ -403,7 +403,6 @@ function LineCard({
               </div>
               <InputNumberFormat
                 standalone
-                min={0}
                 precision={2}
                 value={line.currencyAmount ?? null}
                 disabled={readOnly}
