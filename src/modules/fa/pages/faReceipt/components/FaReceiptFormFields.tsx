@@ -12,7 +12,9 @@ import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import SelectDate from "@/components/fields/SelectDate";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import Card from "@/components/ui/card/Card";
-import { selectListEndpoints } from "@/shared/constants/selectLists";
+import { filterIds, selectListEndpoints } from "@/shared/constants/selectLists";
+import { formatDateWithOutTime } from "@/utils/helpers";
+import dayjs from "dayjs";
 import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAccounts";
 import { faAssetKinds, faKindLabel, faKindRole, type FaAssetKindId } from "../../../shared/constants/assetKinds";
 import FaAssetKindSwitch from "../../../shared/components/FaAssetKindSwitch";
@@ -469,6 +471,28 @@ export default function FaReceiptFormFields({
               fieldName="counterpartyId"
               label="fa.fields.counterpartyId"
               required
+              onChange={() => {
+                // a contract belongs to its counterparty
+                if (formik.values.contractId != null) void formik.setFieldValue("contractId", null, false);
+              }}
+            />
+          </Col>
+          )}
+          {!isSurplus && (
+          <Col span={5}>
+            <SelectCustom
+              path={selectListEndpoints.contractsSelectList}
+              queryParams={{
+                choosedDate: dayjs(formik.values.docDate).format(formatDateWithOutTime),
+                [filterIds.counterparty]: formik.values.counterpartyId,
+              }}
+              enabled={Boolean(formik.values.counterpartyId)}
+              disabled={!formik.values.counterpartyId}
+              label="fa.fields.contractId"
+              fieldName="contractId"
+              formik={formik}
+              getFirst
+              required
             />
           </Col>
           )}
@@ -485,7 +509,10 @@ export default function FaReceiptFormFields({
                 const surplusNow = Number(value) === 4;
                 if (surplusNow !== isSurplus) {
                   void formik.setFieldValue("supplierAccountId", null);
-                  if (surplusNow) void formik.setFieldValue("counterpartyId", null);
+                  if (surplusNow) {
+                    void formik.setFieldValue("counterpartyId", null);
+                    void formik.setFieldValue("contractId", null);
+                  }
                 }
               }}
             />

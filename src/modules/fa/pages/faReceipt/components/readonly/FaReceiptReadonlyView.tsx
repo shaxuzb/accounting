@@ -61,6 +61,13 @@ export default function FaReceiptReadonlyView({
           label={t("products.fields.supplier")}
           value={counterparty}
         />
+        {getApiText(record, "contractNumber") && (
+          <DocumentSummaryItem
+            icon={<FileText size={24} strokeWidth={1.8} />}
+            label={t("fa.fields.contractId")}
+            value={getApiText(record, "contractNumber")}
+          />
+        )}
         <DocumentSummaryItem
           icon={<FileText size={24} strokeWidth={1.8} />}
           label={t("fa.fields.documentNumber")}

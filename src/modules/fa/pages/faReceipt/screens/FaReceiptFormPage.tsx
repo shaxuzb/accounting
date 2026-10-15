@@ -36,6 +36,7 @@ const createDefaultValues = (): FaReceiptFormValues => ({
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
   assetKindId: faAssetKinds.fixed,
   counterpartyId: null,
+  contractId: null,
   // UZS, as every other document starts (CurrencyIdConst.UZS)
   currencyId: 1,
   receiptTypeId: null,
@@ -89,6 +90,7 @@ const toPayload = (
   docDate: values.docDate,
   assetKindId: values.assetKindId,
   counterpartyId: isSurplus || values.counterpartyId == null ? null : Number(values.counterpartyId),
+  contractId: isSurplus || values.contractId == null ? null : Number(values.contractId),
   currencyId: Number(values.currencyId),
   receiptTypeId: Number(values.receiptTypeId),
   supplierAccountId: Number(values.supplierAccountId),
@@ -154,6 +156,7 @@ export default function FaReceiptFormPage() {
       docDate: record?.docDate ?? createDefaultValues().docDate,
       assetKindId: record?.assetKindId ?? (inventory?.assetKindId as FaReceiptFormValues["assetKindId"] | undefined) ?? newKind,
       counterpartyId: record?.counterpartyId ?? createDefaultValues().counterpartyId,
+      contractId: record?.contractId ?? createDefaultValues().contractId,
       currencyId: record?.currencyId ?? createDefaultValues().currencyId,
       receiptTypeId: record?.receiptTypeId ?? (inventory ? faSurplusReceiptTypeId : createDefaultValues().receiptTypeId),
       supplierAccountId:

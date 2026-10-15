@@ -779,7 +779,8 @@
       "contract": "Contract",
       "saleAmountWithVat": "Sale amount (VAT included)",
       "vatAmount": "VAT amount",
-      "reserveTransfer": "Revaluation reserve (to 8710)"
+      "reserveTransfer": "Revaluation reserve (to 8710)",
+      "contractId": "Contract"
     },
     "form": {
       "create": "Create fixed asset document",
@@ -860,7 +861,8 @@
       "assetQuantityMismatch": "The number of assets must equal the quantity",
       "movementDestinationRequired": "Select at least a destination department or responsible person",
       "saleAmountForSaleRequired": "For a sale, at least one asset must have a sale amount greater than zero",
-      "buyerRequired": "Choose the buyer of the sale"
+      "buyerRequired": "Choose the buyer of the sale",
+      "contractRequired": "Select the contract"
     },
     "sections": {
       "disposalDetails": "Disposal details",

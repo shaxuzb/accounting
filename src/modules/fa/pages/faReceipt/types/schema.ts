@@ -44,6 +44,12 @@ const receiptSchema = (t: TFunction, vatPayer: boolean, intangible: boolean) =>
       then: (schema) => schema.nullable(),
       otherwise: (schema) => schema.required(t("fa.validation.counterpartyRequired")),
     }),
+    // 1C «Поступление ОС» names the supplier's contract (6010 is kept by it)
+    contractId: yup.number().nullable().when("receiptTypeId", {
+      is: (value: unknown) => Number(value) === 4,
+      then: (schema) => schema.nullable(),
+      otherwise: (schema) => schema.required(t("fa.validation.contractRequired")),
+    }),
     currencyId: yup.number().nullable().required(t("fa.validation.currencyRequired")),
     receiptTypeId: yup.number().nullable().required(t("fa.validation.receiptTypeRequired")),
     supplierAccountId: yup.number().nullable().required(t("fa.validation.supplierAccountRequired")),

@@ -781,7 +781,8 @@
       "contract": "Shartnoma",
       "saleAmountWithVat": "Sotish summasi (QQS bilan)",
       "vatAmount": "QQS summasi",
-      "reserveTransfer": "Qayta baholash zaxirasi (8710 ga)"
+      "reserveTransfer": "Qayta baholash zaxirasi (8710 ga)",
+      "contractId": "Shartnoma"
     },
     "form": {
       "create": "Asosiy vosita yaratish",
@@ -862,7 +863,8 @@
       "assetQuantityMismatch": "Vositalar soni miqdorga teng bo'lishi kerak",
       "movementDestinationRequired": "Yangi bo'lim yoki mas'ul shaxsdan kamida bittasini tanlang",
       "saleAmountForSaleRequired": "Sotish turida kamida bitta vosita summasi noldan katta bo'lishi kerak",
-      "buyerRequired": "Sotishda xaridorni tanlang"
+      "buyerRequired": "Sotishda xaridorni tanlang",
+      "contractRequired": "Shartnomani tanlang"
     },
     "sections": {
       "disposalDetails": "Hisobdan chiqarish tafsilotlari",

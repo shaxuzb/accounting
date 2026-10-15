@@ -25,6 +25,8 @@ export interface FaReceiptPayload {
   assetKindId: number;
   /** The supplier; none for a surplus found at an inventory. */
   counterpartyId: number | null;
+  /** The supplier's contract the debt (6010) is kept by. */
+  contractId?: number | null;
   currencyId: number;
   receiptTypeId: number;
   supplierAccountId: number;

@@ -781,7 +781,8 @@
       "contract": "Договор",
       "saleAmountWithVat": "Сумма продажи (с НДС)",
       "vatAmount": "Сумма НДС",
-      "reserveTransfer": "Резерв переоценки (на 8710)"
+      "reserveTransfer": "Резерв переоценки (на 8710)",
+      "contractId": "Договор"
     },
     "form": {
       "create": "Создать документ ОФ",
@@ -862,7 +863,8 @@
       "assetQuantityMismatch": "Количество основных средств должно совпадать с количеством в строке",
       "movementDestinationRequired": "Выберите хотя бы новый отдел или ответственное лицо",
       "saleAmountForSaleRequired": "Для продажи сумма хотя бы по одному основному средству должна быть больше нуля",
-      "buyerRequired": "Укажите покупателя для продажи"
+      "buyerRequired": "Укажите покупателя для продажи",
+      "contractRequired": "Выберите договор"
     },
     "sections": {
       "disposalDetails": "Детали выбытия",
