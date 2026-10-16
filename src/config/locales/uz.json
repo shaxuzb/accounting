@@ -1208,7 +1208,9 @@
       "roleCreated": "Rol muvaffaqiyatli yaratildi",
       "roleUpdated": "Rol muvaffaqiyatli o'zgartirildi",
       "duplicateInnTitle": "Bu STIR bilan kontragent bor",
-      "duplicateInnText": "«{{name}}» kontragentida ham shu STIR/JShShIR ({{inn}}) bor. Baribir saqlansinmi?"
+      "duplicateInnText": "«{{name}}» kontragentida ham shu STIR/JShShIR ({{inn}}) bor. Baribir saqlansinmi?",
+      "bankAccountOpeningBalance": "Hisobdagi qoldiq bosh kitobdan olinadi. Boshlang'ich qoldiqni 5110 (valyuta — 5210) hisobiga shu bank hisobi bilan kiriting:",
+      "cashBoxOpeningBalance": "Kassadagi qoldiq bosh kitobdan olinadi. Boshlang'ich qoldiqni 5010 hisobiga shu kassa bilan kiriting:"
     },
     "regulatedObligations": {
       "detail": "Majburiyat sozlamasi tafsilotlari",

@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
-import { Button, Col, Form, Modal, Row, Spin } from "antd";
+import { Alert, Button, Col, Form, Modal, Row, Spin } from "antd";
+import { Link } from "react-router";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -137,6 +138,19 @@ export default function CashBoxAddEditPage({
               )}
             </Col>
           </Row>
+
+          {/* 1C keeps no balance on the card: it opens in the ledger («Ввод начальных остатков») */}
+          <Alert
+            showIcon
+            type="info"
+            className="mb-4"
+            message={
+              <span>
+                {t("settings.messages.cashBoxOpeningBalance")}{" "}
+                <Link to="/main/settings/opening-balances">{t("openingBalance.title")}</Link>
+              </span>
+            }
+          />
 
           <Button
             type="primary"

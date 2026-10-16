@@ -1206,7 +1206,9 @@
       "roleCreated": "Role created successfully",
       "roleUpdated": "Role updated successfully",
       "duplicateInnTitle": "A counterparty with this TIN exists",
-      "duplicateInnText": "Counterparty «{{name}}» has the same TIN/PINFL ({{inn}}). Save anyway?"
+      "duplicateInnText": "Counterparty «{{name}}» has the same TIN/PINFL ({{inn}}). Save anyway?",
+      "bankAccountOpeningBalance": "The account's balance comes from the ledger. Enter its opening balance on 5110 (currency: 5210) with this bank account:",
+      "cashBoxOpeningBalance": "The cash desk's balance comes from the ledger. Enter its opening balance on 5010 with this cash desk:"
     },
     "regulatedObligations": {
       "detail": "Obligation setting details",
