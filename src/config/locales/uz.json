@@ -2523,7 +2523,9 @@
       "accountCode": "Hisob kodi",
       "accountName": "Hisob nomi",
       "accountNumber": "Hisobvaraq raqami",
-      "offBalance": "Balansdan tashqari hisoblar (jamiga kirmaydi)"
+      "offBalance": "Balansdan tashqari hisoblar (jamiga kirmaydi)",
+      "expandAll": "Subhisoblar bo'yicha yoyish",
+      "collapseAll": "Subhisoblarni yig'ish"
     },
     "menu": {
       "warehouseGroup": "Ombor",

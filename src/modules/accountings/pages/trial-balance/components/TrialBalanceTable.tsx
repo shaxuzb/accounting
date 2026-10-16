@@ -1,7 +1,7 @@
 import { Button, Checkbox, Empty, Input, Popover, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { FileSpreadsheet, Search, SlidersHorizontal } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 import Card from "@/components/ui/card/Card";
@@ -42,6 +42,8 @@ const financialColumnKeys: FinancialColumnKey[] = [
 ];
 
 const money = (value: number) => numberSpacing(value, undefined, true);
+
+type TreeRow = TrialBalanceItem & { children?: TreeRow[] };
 const exportDate = (value?: string | null) => value?.split("T")[0] ?? "all";
 
 export default function TrialBalanceTable({ result, filters, loading }: Props) {
@@ -61,12 +63,14 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
     storage: "session",
     debounceMs: 0,
   });
+  // 1C «Развернуть по субсчетам»: a group's subaccounts under it, all open at first
+  const [collapsed, setCollapsed] = useState<number[] | null>(null);
   const visibleFinancialColumns = financialColumnKeys.filter((key) =>
     visibleColumns.includes(key),
   );
 
   const financialColumns = useMemo<
-    Record<FinancialColumnKey, ColumnsType<TrialBalanceItem>[number]>
+    Record<FinancialColumnKey, ColumnsType<TreeRow>[number]>
   >(
     () => ({
       openingDebit: {
@@ -143,14 +147,60 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
     [t],
   );
 
-  const columns = useMemo<ColumnsType<TrialBalanceItem>>(
+  const rows = useMemo(() => {
+    const items = result?.items ?? [];
+    const normalizedSearch = search.trim().toLocaleLowerCase();
+    if (!normalizedSearch) return items;
+
+    return items.filter((item) =>
+      [item.accountNumber, item.accountName].some((value) =>
+        String(value ?? "")
+          .toLocaleLowerCase()
+          .includes(normalizedSearch),
+      ),
+    );
+  }, [result?.items, search]);
+
+  // off-balance accounts stand after the totals and outside them, as in 1C
+  const flatBalanceRows = rows.filter((item) => !item.isOffBalance);
+  // the chart's hierarchy: a subaccount under its group (a search shows the matches flat)
+  const balanceRows = useMemo<TreeRow[]>(() => {
+    if (search.trim()) return flatBalanceRows;
+    const present = new Set(flatBalanceRows.map((item) => item.accountId));
+    const childrenOf = new Map<number, TreeRow[]>();
+    for (const item of flatBalanceRows)
+      if (item.parentAccountId && present.has(item.parentAccountId)) {
+        const list = childrenOf.get(item.parentAccountId) ?? [];
+        list.push({ ...item });
+        childrenOf.set(item.parentAccountId, list);
+      }
+    const attach = (item: TreeRow): TreeRow => {
+      const children = childrenOf.get(item.accountId);
+      return children ? { ...item, children: children.map(attach) } : item;
+    };
+    return flatBalanceRows
+      .filter((item) => !item.parentAccountId || !present.has(item.parentAccountId))
+      .map(attach);
+  }, [flatBalanceRows, search]);
+  const groupIds = useMemo(
+    () => flatBalanceRows.filter((item) => item.isGroup).map((item) => item.accountId),
+    [flatBalanceRows],
+  );
+  const expandedKeys = groupIds.filter((id) => !(collapsed ?? []).includes(id));
+  const rowNumbers = useMemo(() => {
+    const numbers = new Map<number, number>();
+    balanceRows.forEach((item, index) => numbers.set(item.accountId, index + 1));
+    return numbers;
+  }, [balanceRows]);
+
+  const columns = useMemo<ColumnsType<TreeRow>>(
     () => [
       {
         title: t("common.rowNumber"),
         align: "center",
         fixed: "left",
         width: 70,
-        render: (_value, _record, index) => index + 1,
+        render: (_value, record) => (record.parentAccountId && !search.trim() ? "" : (rowNumbers.get(record.accountId) ?? "")),
       },
       {
         title: t("app.trial.accountCode"),
@@ -178,25 +228,9 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
         .filter((key) => visibleFinancialColumns.includes(key))
         .map((key) => financialColumns[key]),
     ],
-    [financialColumns, t, visibleColumns, visibleFinancialColumns],
+    [financialColumns, t, visibleColumns, visibleFinancialColumns, search, rowNumbers],
   );
 
-  const rows = useMemo(() => {
-    const items = result?.items ?? [];
-    const normalizedSearch = search.trim().toLocaleLowerCase();
-    if (!normalizedSearch) return items;
-
-    return items.filter((item) =>
-      [item.accountNumber, item.accountName].some((value) =>
-        String(value ?? "")
-          .toLocaleLowerCase()
-          .includes(normalizedSearch),
-      ),
-    );
-  }, [result?.items, search]);
-
-  // off-balance accounts stand after the totals and outside them, as in 1C
-  const balanceRows = rows.filter((item) => !item.isOffBalance);
   const offBalanceRows = rows.filter((item) => item.isOffBalance);
 
   const totals: Record<FinancialColumnKey, number> = {
@@ -256,6 +290,15 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
             className="w-full! sm:w-64!"
           />
           <div className="flex items-center gap-2">
+            {groupIds.length > 0 && !search.trim() && (
+              <Button
+                onClick={() =>
+                  setCollapsed(expandedKeys.length > 0 ? groupIds : [])
+                }
+              >
+                {t(expandedKeys.length > 0 ? "app.trial.collapseAll" : "app.trial.expandAll")}
+              </Button>
+            )}
             <Popover
               trigger="click"
               placement="bottomRight"
@@ -295,27 +338,29 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
         </div>
       </div>
 
-      <Table<TrialBalanceItem>
+      <Table<TreeRow>
         rowKey="accountId"
         loading={loading}
         columns={columns}
         dataSource={balanceRows}
+        expandable={{
+          expandedRowKeys: expandedKeys,
+          onExpand: (expanded, record) =>
+            setCollapsed((current) => {
+              const list = current ?? [];
+              return expanded
+                ? list.filter((id) => id !== record.accountId)
+                : [...list, record.accountId];
+            }),
+        }}
         rowClassName={(record) => (record.isGroup ? "bg-surface-muted font-semibold" : "")}
         size="middle"
         scroll={{ x: 1400 }}
         locale={{
           emptyText: <Empty description={t("app.trial.resultEmpty")} />,
         }}
-        pagination={
-          balanceRows.length > 10
-            ? {
-                defaultPageSize: 10,
-                showSizeChanger: true,
-                showTotal: (total) =>
-                  t("app.reports.turnover.accountsCount", { count: total }),
-              }
-            : false
-        }
+        // the whole chart on one sheet, as 1C prints it
+        pagination={false}
         summary={() =>
           result && rows.length ? (
             <>

@@ -2523,7 +2523,9 @@
       "accountCode": "Код счета",
       "accountName": "Название счета",
       "accountNumber": "Номер счёта",
-      "offBalance": "Забалансовые счета (в итог не входят)"
+      "offBalance": "Забалансовые счета (в итог не входят)",
+      "expandAll": "Развернуть по субсчетам",
+      "collapseAll": "Свернуть субсчета"
     },
     "menu": {
       "warehouseGroup": "Склад",

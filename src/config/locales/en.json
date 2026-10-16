@@ -2523,7 +2523,9 @@
       "accountCode": "Account code",
       "accountName": "Account name",
       "accountNumber": "Account number",
-      "offBalance": "Off-balance accounts (not in the totals)"
+      "offBalance": "Off-balance accounts (not in the totals)",
+      "expandAll": "Expand subaccounts",
+      "collapseAll": "Collapse subaccounts"
     },
     "menu": {
       "warehouseGroup": "Warehouse",
