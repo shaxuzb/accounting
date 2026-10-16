@@ -2259,7 +2259,8 @@
       "savedAsDraft": "Hujjat qoralama sifatida saqlandi",
       "cancelPostedConfirm": "Provodkalar storno qilinadi, tovar va markirovkali donalar omborga qaytadi, mijoz qarzi kamayadi. Hujjat «Bekor qilingan» bo'lib qoladi.",
       "unmarkedUnitShort": "kodsiz qabul qilingan",
-      "unmarkedUnitReason": "Bu dona omborga markirovka kodisiz kirim qilingan (masalan, markirovka majburiy bo'lishidan oldin olingan eski tovar), shuning uchun kodsiz sotilgan."
+      "unmarkedUnitReason": "Bu dona omborga markirovka kodisiz kirim qilingan (masalan, markirovka majburiy bo'lishidan oldin olingan eski tovar), shuning uchun kodsiz sotilgan.",
+      "belowCost": "Tannarxdan past (tannarx {{cost}})"
     },
     "warehouse": {
       "goodsToDispatch": "Ombordan chiqariladigan tovarlar",

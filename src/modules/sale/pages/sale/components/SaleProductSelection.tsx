@@ -38,7 +38,7 @@ import {
 } from "../utils/salePricingDetails";
 import { saleDocumentTypeId } from "../constants/documentAccount";
 // import { getLayerCostValidationError } from "../utils/saleCostingValidation";
-import { roundMoney } from "../utils/pricing";
+import { getNetPrice, roundMoney } from "../utils/pricing";
 import {
   getLayerSaleAmount,
   getLayerTotal,
@@ -1340,72 +1340,84 @@ export default function SaleProductSelection({
           priceInputKey,
         );
 
+        // 1C «Контроль продажи ниже себестоимости»: a warning, not a stop
+        const netPrice = getNetPrice(roundMoney(record.unitPrice), record.discountPercent);
+        const cost = docCost(record.costPrice);
+        const belowCost = netPrice > 0 && cost > 0 && netPrice < cost;
+
         return (
-          <InputNumberFormat
-            standalone
-            height={tableControlHeight}
-            emptyZero
-            min={0}
-            precision={2}
-            value={
-              hasManualSalePrice
-                ? manualSalePriceValues[priceInputKey]
-                : hasManualTotal
-                  ? getNetUnitPriceFromTotal(
-                      manualTotalValues[priceInputKey],
-                      record.quantity,
-                      record.vatRateId,
-                      vatRateOptions,
-                    )
-                  : roundMoney(record.unitPrice)
-            }
-            disabled={isNewRow(record.rowKey) || disabled}
-            onValueChange={(salePrice) => {
-              clearManualTotal(record.rowKey);
-              manualSalePriceValuesRef.current = {
-                ...manualSalePriceValuesRef.current,
-                [priceInputKey]: salePrice,
-              };
-              setManualSalePriceValues((current) => ({
-                ...current,
-                [priceInputKey]: salePrice,
-              }));
-            }}
-            onBlur={() => {
-              // Foydalanuvchi hech narsa yozmasdan maydondan chiqsa, narx 0 ga
-              // tushib ketmasligi kerak.
-              if (
-                !Object.prototype.hasOwnProperty.call(
-                  manualSalePriceValuesRef.current,
-                  priceInputKey,
-                )
-              ) {
-                return;
+          <div>
+            <InputNumberFormat
+              standalone
+              height={tableControlHeight}
+              emptyZero
+              min={0}
+              precision={2}
+              value={
+                hasManualSalePrice
+                  ? manualSalePriceValues[priceInputKey]
+                  : hasManualTotal
+                    ? getNetUnitPriceFromTotal(
+                        manualTotalValues[priceInputKey],
+                        record.quantity,
+                        record.vatRateId,
+                        vatRateOptions,
+                      )
+                    : roundMoney(record.unitPrice)
               }
+              disabled={isNewRow(record.rowKey) || disabled}
+              onValueChange={(salePrice) => {
+                clearManualTotal(record.rowKey);
+                manualSalePriceValuesRef.current = {
+                  ...manualSalePriceValuesRef.current,
+                  [priceInputKey]: salePrice,
+                };
+                setManualSalePriceValues((current) => ({
+                  ...current,
+                  [priceInputKey]: salePrice,
+                }));
+              }}
+              onBlur={() => {
+                // Foydalanuvchi hech narsa yozmasdan maydondan chiqsa, narx 0 ga
+                // tushib ketmasligi kerak.
+                if (
+                  !Object.prototype.hasOwnProperty.call(
+                    manualSalePriceValuesRef.current,
+                    priceInputKey,
+                  )
+                ) {
+                  return;
+                }
 
-              const netSalePrice =
-                manualSalePriceValuesRef.current[priceInputKey];
-              clearManualTotal(record.rowKey);
-              clearManualSalePrice(record.rowKey);
-              updateLine(record.rowKey, (line) => {
-                const nextSalePrice = roundMoney(Number(netSalePrice ?? 0));
+                const netSalePrice =
+                  manualSalePriceValuesRef.current[priceInputKey];
+                clearManualTotal(record.rowKey);
+                clearManualSalePrice(record.rowKey);
+                updateLine(record.rowKey, (line) => {
+                  const nextSalePrice = roundMoney(Number(netSalePrice ?? 0));
 
-                return recalculateLine({
-                  line: {
-                    ...line,
-                    priceType: "manual",
-                    markupPercent: getMarkupPercent(
-                      docCost(line.costPrice),
-                      nextSalePrice,
-                    ),
-                  },
-                  unitPrice: nextSalePrice,
-                  costingMethodId: saleCondition.costingMethodId,
-                  costRate,
+                  return recalculateLine({
+                    line: {
+                      ...line,
+                      priceType: "manual",
+                      markupPercent: getMarkupPercent(
+                        docCost(line.costPrice),
+                        nextSalePrice,
+                      ),
+                    },
+                    unitPrice: nextSalePrice,
+                    costingMethodId: saleCondition.costingMethodId,
+                    costRate,
+                  });
                 });
-              });
-            }}
-          />
+              }}
+            />
+            {belowCost && (
+              <div className="mt-0.5 text-xs text-red-600 dark:text-red-400">
+                {t("sale.messages.belowCost", { cost: numberSpacing(cost, undefined, true) })}
+              </div>
+            )}
+          </div>
         );
       },
     },

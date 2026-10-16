@@ -2259,7 +2259,8 @@
       "savedAsDraft": "The document was saved as a draft",
       "cancelPostedConfirm": "The entries are reversed, the goods and marked units return to stock and the customer's debt is reduced. The document stays as cancelled.",
       "unmarkedUnitShort": "received without a code",
-      "unmarkedUnitReason": "This unit was received without a marking code (for example old stock bought before marking was mandatory), so it was sold without one."
+      "unmarkedUnitReason": "This unit was received without a marking code (for example old stock bought before marking was mandatory), so it was sold without one.",
+      "belowCost": "Below cost ({{cost}})"
     },
     "warehouse": {
       "goodsToDispatch": "Goods to dispatch from warehouse",
