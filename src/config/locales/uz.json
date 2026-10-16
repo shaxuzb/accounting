@@ -1204,7 +1204,8 @@
       "actualAddress": "Haqiqiy manzil",
       "legalAddress": "Yuridik manzil",
       "isMainAccount": "Asosiy hisob",
-      "isRetailStore": "Chakana do'kon — tovar sotuv narxida (2920.2, ustama 2980.2)"
+      "isRetailStore": "Chakana do'kon — tovar sotuv narxida (2920.2, ustama 2980.2)",
+      "moneyChartAccount": "Hisobvaraq (pul hisobi)"
     },
     "form": {
       "createTitle": "Yangi ma'lumot qo'shish",

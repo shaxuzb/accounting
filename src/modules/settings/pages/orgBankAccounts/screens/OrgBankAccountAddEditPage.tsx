@@ -13,6 +13,8 @@ import { useGetDetailOrgBankAccounts } from "../hooks";
 import { useUpdateOrgBankAccounts } from "../hooks";
 import { useCreateOrgBankAccounts } from "../hooks";
 import { orgBankAccountsSchema } from "../types/schema";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
+import { bankDocumentAccountRoleCodes, bankDocumentTypeIds } from "@/modules/bank/pages/statement/constants/endpoints";
 
 const defaultValues: OrgBankAccountsForm = {
   organizationId: null,
@@ -21,6 +23,7 @@ const defaultValues: OrgBankAccountsForm = {
   accountNumber: null,
   currencyId: null,
   isMain: false,
+  chartAccountId: null,
   stateId: null,
 };
 
@@ -77,6 +80,7 @@ export default function OrgBankAccountAddEditPage({
         accountNumber: OrgBankAccounts.accountNumber ?? null,
         currencyId: OrgBankAccounts.currencyId ?? null,
         isMain: OrgBankAccounts.isMain ?? false,
+        chartAccountId: OrgBankAccounts.chartAccountId ?? null,
         stateId: OrgBankAccounts.stateId ?? null,
       });
     }
@@ -147,6 +151,13 @@ export default function OrgBankAccountAddEditPage({
                 fieldName="currencyId"
                 label="settings.fields.currency"
                 path={selectListEndpoints.currenciesSelectList}
+              />
+              <DocumentAccountSelect
+                formik={formik}
+                fieldName="chartAccountId"
+                label="settings.fields.moneyChartAccount"
+                documentTypeId={bankDocumentTypeIds.income}
+                documentRoleCode={bankDocumentAccountRoleCodes.bankAccount}
               />
               {/* one main account (1C «Основной банковский счет»): marking this one takes the mark from the old one */}
               <Checkbox

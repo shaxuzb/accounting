@@ -10,6 +10,7 @@ export interface OrgBankAccounts {
   currencyId: number;
   currencyName: string;
   isMain: boolean;
+  chartAccountId?: number | null;
   stateId: number;
   stateName: string;
   createdDate: string;

@@ -1202,7 +1202,8 @@
       "actualAddress": "Actual address",
       "legalAddress": "Legal address",
       "isMainAccount": "Main account",
-      "isRetailStore": "Retail store — goods at sale prices (2920.2, markup 2980.2)"
+      "isRetailStore": "Retail store — goods at sale prices (2920.2, markup 2980.2)",
+      "moneyChartAccount": "Money account (chart)"
     },
     "form": {
       "createTitle": "Add new record",

@@ -10,6 +10,8 @@ import { selectListEndpoints } from "@/shared/constants/selectLists";
 import type { CashBoxForm } from "../types/form";
 import InputText from "@/components/fields/InputText";
 import { cashBoxSchema } from "../types/schema";
+import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
+import { cashDocumentAccountRoleCodes, cashDocumentTypeIds } from "@/modules/cashoperation/constants/documentAccount";
 import { useUpdateCashBox } from "../hooks/useUpdateCashBox";
 import { useCreateCashBox } from "../hooks/useCreateCashBox";
 import { useGetDetailCashBox } from "../hooks/useGetDetailCashBox";
@@ -21,6 +23,9 @@ const defaultValues: CashBoxForm = {
   name: "",
   currencyId: null,
   stateId: null,
+  isMain: false,
+  responsibleUserId: null,
+  chartAccountId: null,
 };
 
 interface CashBoxAddEditPageProps {
@@ -75,6 +80,9 @@ export default function CashBoxAddEditPage({
         name: CashBox.name ?? "",
         currencyId: CashBox.currencyId ?? null,
         stateId: CashBox.stateId ?? null,
+        isMain: CashBox.isMain ?? false,
+        responsibleUserId: CashBox.responsibleUserId ?? null,
+        chartAccountId: CashBox.chartAccountId ?? null,
       });
     }
     // formik is a new object every render: the values are set once per loaded record
@@ -125,6 +133,15 @@ export default function CashBoxAddEditPage({
                 fieldName="currencyId"
                 label="settings.fields.currency"
                 path={selectListEndpoints.currenciesSelectList}
+              />
+            </Col>
+            <Col span={12}>
+              <DocumentAccountSelect
+                formik={formik}
+                fieldName="chartAccountId"
+                label="settings.fields.moneyChartAccount"
+                documentTypeId={cashDocumentTypeIds.income}
+                documentRoleCode={cashDocumentAccountRoleCodes.cashAccount}
               />
             </Col>
             <Col span={12}>

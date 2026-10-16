@@ -8,6 +8,9 @@ export interface CashBox {
   name: string;
   currencyId: number;
   currencyName: string;
+  isMain?: boolean;
+  responsibleUserId?: number | null;
+  chartAccountId?: number | null;
   stateId: number;
   stateName: string;
   createdDate: string;

@@ -21,6 +21,7 @@ import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import { useContractSettlementAccount } from "@/shared/hooks/useContractSettlementAccount";
+import { useMoneyCardAccount } from "@/shared/hooks/useMoneyCardAccount";
 import { MoneyOperationKindSelect, useMoneyOperationKinds } from "@/shared/moneyOperationKinds";
 import InOutSelect from "@/components/fields/InOutSelect";
 import InputNumberFormat from "@/components/fields/InputNumber";
@@ -344,6 +345,8 @@ export default function BankOperationAddEditPage() {
   const kindDirection = Number(formik.values.directionId) === -1 ? 2 : 1;
   const { data: kinds = [] } = useMoneyOperationKinds("bank", kindDirection);
   const kind = kinds.find((item) => item.id === Number(formik.values.operationKindId));
+  // the bank account card's own account (5110.x / 5210 / 55xx) goes on the statement
+  useMoneyCardAccount(formik, "bankAccountId", "bankChartAccountId", selectListEndpoints.orgBankAccountsSelectList);
 
   useContractSettlementAccount({
     formik,

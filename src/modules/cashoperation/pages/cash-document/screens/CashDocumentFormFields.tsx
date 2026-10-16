@@ -26,6 +26,7 @@ import {
 } from "@/modules/cashoperation/constants/documentAccount";
 import type { CashDocumentForm } from "../types/form";
 import { useTranslation } from "react-i18next";
+import { useMoneyCardAccount } from "@/shared/hooks/useMoneyCardAccount";
 
 /** cmn_document_type: a cash operation (its entries are excluded from the debts it settles). */
 const CASH_OPERATION_DOCUMENT_TYPE_ID = 4;
@@ -54,6 +55,9 @@ export default function CashDocumentFormFields({
   const isExpense = documentTypeId === cashDocumentTypeIds.expense;
   // 1C «Передача в другую кассу»: an RKO to another cash box moves money between the boxes
   const isTransfer = isExpense && Boolean(formik.values.destinationCashBoxId);
+  // the desks' own cash accounts (cash box card): the order's side and, to another desk, the receiving one
+  useMoneyCardAccount(formik, "cashBoxId", "cashChartAccountId", selectListEndpoints.cashBoxesSelectList);
+  useMoneyCardAccount(formik, "destinationCashBoxId", "offsetAccountId", selectListEndpoints.cashBoxesSelectList);
   const { data: kinds = [] } = useMoneyOperationKinds("cash", isExpense ? 2 : 1);
   const kind = kinds.find((item) => item.id === Number(formik.values.operationKindId));
 
