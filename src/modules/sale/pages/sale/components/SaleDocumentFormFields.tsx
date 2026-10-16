@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { contractTypeIds, takeMainOrOnlyContract } from "@/shared/constants/contractSelect";
+import { useContractPriceIncludesVatDefault } from "@/shared/hooks/useContractDefaults";
 import type { FormikProps } from "formik";
 import dayjs from "dayjs";
 import { useQueryClient } from "@tanstack/react-query";
@@ -40,6 +41,8 @@ export default function SaleDocumentFormFields({
   vatPayer = true,
 }: Props) {
   const rate = useAutoExchangeRate(formik);
+  // 1C «Валюта взаиморасчетов»: a contract that names its currency puts it on the sale and fixes it
+  const { contractCurrencyId } = useContractPriceIncludesVatDefault(formik, true);
   const { t } = useTranslation();
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
@@ -166,6 +169,7 @@ export default function SaleDocumentFormFields({
             formik={formik}
             getFirst
             required
+            disabled={Boolean(contractCurrencyId)}
           />
         </Col>
         {rate.isForeign && (
