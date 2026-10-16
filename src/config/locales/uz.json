@@ -1431,7 +1431,9 @@
           "signUnavailable": "Joriy holatda hujjatni imzolash mumkin emas",
           "fromSale": "№{{number}} sotuvdan to'ldirildi. ESF dan oldin tekshiring:",
           "esfExists": "Bu sotuv uchun ESF bor: №{{number}}, holati — {{status}}.",
-          "openEsf": "ESF ni ochish"
+          "openEsf": "ESF ni ochish",
+          "additional": "Qo'shimcha ESF (qaytarish, chegirma, narx yoki miqdor o'zgarishi): summalar plyus yoki minus bilan.",
+          "additionalOf": "Qo'shimcha ESF — asl ESF №{{number}} ({{date}}) ga tuzatish; summalar plyus yoki minus bilan."
         },
         "sections": {
           "document": "Hujjat ma’lumotlari",
@@ -2286,7 +2288,8 @@
     },
     "esf": {
       "create": "ESF yaratish",
-      "open": "ESF"
+      "open": "ESF",
+      "createAdditional": "Qo'shimcha ESF"
     }
   },
   "retailSale": {

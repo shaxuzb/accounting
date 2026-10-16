@@ -1429,7 +1429,9 @@
           "signUnavailable": "The document cannot be signed in its current state",
           "fromSale": "Filled from sale No. {{number}}. Check before sending:",
           "esfExists": "This sale already has an ESF: No. {{number}}, {{status}}.",
-          "openEsf": "Open the ESF"
+          "openEsf": "Open the ESF",
+          "additional": "Additional ESF (a return, a discount, a change of price or quantity): amounts in plus or minus.",
+          "additionalOf": "Additional ESF to ESF No. {{number}} of {{date}}; amounts in plus or minus."
         },
         "sections": {
           "document": "Document information",
@@ -2286,7 +2288,8 @@
     },
     "esf": {
       "create": "Make an ESF",
-      "open": "ESF"
+      "open": "ESF",
+      "createAdditional": "Additional ESF"
     }
   },
   "retailSale": {

@@ -5,7 +5,7 @@ import { useAppSelector } from "@/store/hooks";
 import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
 import CreateReturnButton from "@/modules/returns/CreateReturnButton";
 import CreateCorrectionButton from "@/modules/corrections/CreateCorrectionButton";
-import SaleEsfButton, { type EdoSourceMetadata } from "../components/SaleEsfButton";
+import DocumentEsfButton from "@/modules/settings/pages/integrations/edo/components/DocumentEsfButton";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import { ProcessStatusBadge } from "@/components/ui/status";
 import { useTranslation } from "react-i18next";
@@ -59,10 +59,7 @@ export default function SaleDetailPage() {
         )}
         {/* the ESF of a posted sale (1C «Счет-фактура выданный») */}
         {document.statusId === 2 && (
-          <SaleEsfButton
-            saleId={Number(document.id)}
-            edoSource={(document as { edoSource?: EdoSourceMetadata | null }).edoSource}
-          />
+          <DocumentEsfButton kind="sale" documentId={Number(document.id)} />
         )}
         <DocumentContractButton
           kind="sale"

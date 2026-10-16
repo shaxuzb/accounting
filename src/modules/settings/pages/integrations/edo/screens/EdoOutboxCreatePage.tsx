@@ -96,6 +96,7 @@ const requiredPartyFields: (keyof EdoPartyDto)[] = ["name", "taxIdentifier"];
 function validateFactura(
   values: EdoOutboxFacturaCreateRequestDto,
   providerCode?: string,
+  additional = false,
 ) {
   if (!values.internalDocumentId || !values.internalDocumentType.trim())
     return false;
@@ -109,7 +110,10 @@ function validateFactura(
   if (
     !values.lines.length ||
     values.lines.some(
-      (line) => !line.name.trim() || line.quantity <= 0 || line.amount < 0,
+      // an additional ESF changes quantities and costs in plus or minus
+      (line) =>
+        !line.name.trim() ||
+        (additional ? line.quantity === 0 : line.quantity <= 0 || line.amount < 0),
     )
   )
     return false;
@@ -261,20 +265,25 @@ export default function EdoOutboxCreatePage() {
     "CreateFactura",
     capabilitiesQuery.data,
   );
-  // «ESF» from a sale (1C «Счет-фактура на основании реализации»): the form starts from the sale
+  // «ESF» from a document (1C «Счет-фактура на основании»): the form starts from the sale, or
+  // from a return / sale correction for its additional ESF
   const [searchParams] = useSearchParams();
-  const saleId = Number(searchParams.get("sale")) || null;
+  const source = (["sale", "return", "correction"] as const)
+    .map((kind) => ({ kind, id: Number(searchParams.get(kind)) || null }))
+    .find((item) => item.id);
+  const saleId = source?.id ?? null;
   const draftQuery = useQuery({
-    queryKey: ["esf-draft", "sale", saleId],
-    queryFn: () => getJson<EsfDraftDto>(`/edo/esf-drafts/sale/${saleId}`),
-    enabled: Boolean(saleId),
+    queryKey: ["esf-draft", source?.kind, saleId],
+    queryFn: () => getJson<EsfDraftDto>(`/edo/esf-drafts/${source?.kind}/${saleId}`),
+    enabled: Boolean(source),
     staleTime: 0,
   });
+  const isAdditional = (draftQuery.data?.request.facturaType ?? 0) === 1;
   const draft = draftQuery.data;
   const formik = useFormik<EdoOutboxFacturaCreateRequestDto>({
     initialValues: createInitialValues(),
     onSubmit: async (values) => {
-      if (!validateFactura(values, provider?.code)) {
+      if (!validateFactura(values, provider?.code, isAdditional)) {
         toast.error(t("common.requiredFields"));
         return;
       }
@@ -368,6 +377,20 @@ export default function EdoOutboxCreatePage() {
             <Button size="small" onClick={() => navigate(`../${draft.existing?.edoDocumentId}`)}>
               {t("settings.integrations.edo.outbox.openEsf")}
             </Button>
+          }
+        />
+      )}
+      {isAdditional && (
+        <Alert
+          type="info"
+          showIcon
+          message={
+            draft?.request.oldFactura
+              ? t("settings.integrations.edo.outbox.additionalOf", {
+                  number: draft.request.oldFactura.number,
+                  date: dayjs(draft.request.oldFactura.date).format("DD.MM.YYYY"),
+                })
+              : t("settings.integrations.edo.outbox.additional")
           }
         />
       )}
@@ -586,7 +609,7 @@ export default function EdoOutboxCreatePage() {
                         formik={formik}
                         fieldName={`lines[${index}].quantity`}
                         label="settings.integrations.edo.fields.quantity"
-                        min={0.000001}
+                        min={isAdditional ? undefined : 0.000001}
                         required
                       />
                     </Col>

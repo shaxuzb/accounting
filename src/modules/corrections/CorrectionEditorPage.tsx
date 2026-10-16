@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
+import DocumentEsfButton from "@/modules/settings/pages/integrations/edo/components/DocumentEsfButton";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
@@ -285,6 +286,8 @@ function CorrectionEditor({ kind, id, data }: { kind: CorrectionKind; id: number
               {t("correction.entries")}
             </AccountingEntriesButton>
           )}
+          {/* a sale correction: the additional ESF of the change of price (Tax Code 257) */}
+          {id && statusId === 2 && kind === "sale" && <DocumentEsfButton kind="correction" documentId={id} />}
         </Space>
       </Card>
 

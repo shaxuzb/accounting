@@ -13,6 +13,7 @@ import Card from "@/components/ui/card/Card";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
+import DocumentEsfButton from "@/modules/settings/pages/integrations/edo/components/DocumentEsfButton";
 import {
   useCancelReturn,
   useConfirmReturn,
@@ -409,6 +410,10 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
             <AccountingEntriesButton documentId={id} documentTypeId={returnDocumentTypeId(kind)} statusId={statusId}>
               {t("returnDoc.entries")}
             </AccountingEntriesButton>
+          )}
+          {/* a return from a customer: the additional ESF in minus (Tax Code 257) */}
+          {id && statusId === 2 && kind === returnKind.fromCustomer && (
+            <DocumentEsfButton kind="return" documentId={id} />
           )}
         </Space>
       </Card>
