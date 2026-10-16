@@ -69,10 +69,9 @@ export default function BalanceSheetPage() {
     (section) => section.code === "LIABILITIES",
   );
   const equity = data?.sections.find((section) => section.code === "EQUITY");
-  const difference = data
-    ? data.totalAssets - data.totalLiabilitiesAndEquity
-    : 0;
-  const isBalanced = Math.abs(difference) < 0.01;
+  // the server decides whether the balance sheet agrees
+  const difference = data?.difference ?? 0;
+  const isBalanced = data?.isBalanced ?? true;
 
   return (
     <AccountingReportPageShell>

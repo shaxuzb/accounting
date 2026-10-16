@@ -25,6 +25,9 @@ export interface BalanceSheetResponse {
   totalLiabilities: number;
   totalEquity: number;
   totalLiabilitiesAndEquity: number;
+  /** Assets less liabilities and equity, and whether they agree — decided by the server. */
+  difference: number;
+  isBalanced: boolean;
   /** What is left on 0000, the account opening balances are entered against. */
   openingOffsetBalance?: number;
   sections: ReportSection<BalanceSheetRow>[];

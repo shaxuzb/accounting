@@ -27,6 +27,8 @@ export interface RegulatedBalance {
   endDate: string;
   unit: number;
   lines: RegulatedBalanceLine[];
+  /** 400 = 780 at both dates, checked by the server. */
+  isBalanced: boolean;
   startOffset: number;
   endOffset: number;
   unmappedAccounts: string[];

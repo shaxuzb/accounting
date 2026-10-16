@@ -21,9 +21,8 @@ export default function RegulatedBalancePage() {
   const data = query.data;
   const startLabel = data ? dayjs(data.startDate).format("DD.MM.YYYY") : "";
   const endLabel = data ? dayjs(data.endDate).format("DD.MM.YYYY") : "";
-  const assets = data?.lines.find((x) => x.code === "400");
-  const passive = data?.lines.find((x) => x.code === "780");
-  const balanced = !data || (assets?.end === passive?.end && assets?.start === passive?.start);
+  // 400 = 780 at both dates, as the server checks it
+  const balanced = !data || data.isBalanced;
 
   const columns: ColumnsType<RegulatedBalanceLine> = [
     {
