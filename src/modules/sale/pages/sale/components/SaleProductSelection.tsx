@@ -1303,14 +1303,14 @@ export default function SaleProductSelection({
     },
     {
       dataIndex: "costPrice",
-      title: t("warehouse.fields.costPrice"),
+      title: t("sale.fields.estimatedCost"),
       align: "center",
       width: 160,
       // Shown, not typed: the server writes off the batches and the cost of goods
       // sold follows from what they gave up, so a hand-entered figure would only
       // disagree with the ledger.
       render: (value) => (
-        <Tooltip title={t("sale.messages.costPriceFromBatches")}>
+        <Tooltip title={t("sale.fields.estimatedCostHint")}>
           <div className="px-2 text-right text-secondary-text">
             {numberSpacing(Number(value ?? 0), undefined, true)}
           </div>

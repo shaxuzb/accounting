@@ -2121,7 +2121,14 @@
       "selected": "Tanlangan",
       "ungrouped": "Guruhsiz",
       "unmarkedQuantity": "Markirovkasiz dona",
-      "unmarkedUnit": "Markirovkasiz"
+      "unmarkedUnit": "Markirovkasiz",
+      "estimatedCost": "Tannarx (taxminiy)",
+      "estimatedMargin": "Ustama (taxminiy), %",
+      "estimatedCostHint": "Ombordagi partiyalardan hisob siyosatidagi usul (FIFO yoki o'rtacha) bo'yicha oldindan hisoblangan. O'tkazishda haqiqiy partiya qiymati olinadi (Dt 9120 Kt 2910) va hujjatda shu ko'rsatiladi.",
+      "actualCost": "Tannarx (haqiqiy)",
+      "actualCostHint": "O'tkazishda partiyalardan chiqqan qiymat — 9120 hisobiga yozilgan summa",
+      "grossProfit": "Yalpi foyda",
+      "grossProfitHint": "QQSsiz tushum (so'mda) minus haqiqiy tannarx; qavsda — tannarxga nisbatan ustama"
     },
     "new": "Yangi savdo",
     "edit": "Savdoni o'zgartirish",

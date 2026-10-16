@@ -2121,7 +2121,14 @@
       "selected": "Selected",
       "ungrouped": "Ungrouped",
       "unmarkedQuantity": "Units without code",
-      "unmarkedUnit": "No code"
+      "unmarkedUnit": "No code",
+      "estimatedCost": "Cost (estimate)",
+      "estimatedMargin": "Markup (estimate), %",
+      "estimatedCostHint": "Previewed from the stock batches by the accounting policy's method (FIFO or average). Posting takes the batches' actual value (Dr 9120 Cr 2910), which the document then shows.",
+      "actualCost": "Cost (actual)",
+      "actualCostHint": "The value taken off the batches when posted — the amount debited to 9120",
+      "grossProfit": "Gross profit",
+      "grossProfitHint": "Revenue without VAT (UZS) less the actual cost; in brackets, the markup on cost"
     },
     "new": "New sale",
     "edit": "Edit sale",

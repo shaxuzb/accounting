@@ -1,4 +1,4 @@
-import { Table } from "antd";
+import { Table, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
@@ -57,7 +57,8 @@ export default function SaleProductLinesTable({
     },
     {
       dataIndex: "costPrice",
-      title: t("warehouse.fields.costPrice"),
+      // the batches are only taken when the sale is posted: until then this is a preview
+      title: <Tooltip title={t("sale.fields.estimatedCostHint")}>{t("sale.fields.estimatedCost")}</Tooltip>,
       // the stock cost is in UZS; in a foreign-currency sale it is shown in that
       // currency too, the one the margin is counted in
       render: (value: number, line) =>
@@ -76,7 +77,7 @@ export default function SaleProductLinesTable({
     },
     {
       dataIndex: "marginPercent",
-      title: t("sale.fields.margin"),
+      title: <Tooltip title={t("sale.fields.estimatedCostHint")}>{t("sale.fields.estimatedMargin")}</Tooltip>,
       width: 120,
       render: (value, line) => (
         <InputNumberFormat

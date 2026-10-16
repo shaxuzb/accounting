@@ -1,4 +1,4 @@
-import { Button, Table } from "antd";
+import { Button, Table, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import { Menu } from "lucide-react";
 import type { Key } from "react";
@@ -20,6 +20,11 @@ interface Props {
   currency: string;
   /** The document's date: a non-payer's «QQSsiz» sale shows no VAT columns. */
   docDate?: string | null;
+  /**
+   * A posted document: its cost is what the batches gave (FIFO / average), the figure 9120 was
+   * debited with, so the cost and gross profit are shown. Rate: UZS for one unit of the currency.
+   */
+  actualCost?: { exchangeRate?: number | null } | null;
 }
 
 const getNumber = (value: number) => numberSpacing(value, undefined, true);
@@ -29,6 +34,7 @@ export default function SaleConfirmedLinesTable({
   loading,
   currency,
   docDate,
+  actualCost,
 }: Props) {
   const { t } = useTranslation();
   const vatPayer = useVatPayer(docDate);
@@ -44,6 +50,11 @@ export default function SaleConfirmedLinesTable({
       : list;
   const [expandedRowKeys, setExpandedRowKeys] = useState<Key[]>([]);
   const groups = useMemo(() => groupSaleDocumentLines(lines), [lines]);
+  const rate = actualCost?.exchangeRate && actualCost.exchangeRate > 1 ? actualCost.exchangeRate : 1;
+  const showCost = Boolean(actualCost) && groups.some((group) => group.costAmount > 0);
+  // net revenue in UZS less the cost: 1C «Валовая прибыль» (9010 − 9120)
+  const grossProfit = (group: SaleDocumentLineGroup) =>
+    Math.round((group.amount * rate - group.costAmount) * 100) / 100;
 
   const toggleExpanded = (key: Key) => {
     setExpandedRowKeys((current) =>
@@ -171,6 +182,37 @@ export default function SaleConfirmedLinesTable({
       align: "right",
       render: (value: number) => `${getNumber(value)} ${currency}`,
     },
+    ...(showCost
+      ? ([
+          {
+            title: (
+              <Tooltip title={t("sale.fields.actualCostHint")}>{t("sale.fields.actualCost")}</Tooltip>
+            ),
+            dataIndex: "costAmount",
+            width: 170,
+            align: "right",
+            render: (value: number) => `${getNumber(value)} UZS`,
+          },
+          {
+            title: (
+              <Tooltip title={t("sale.fields.grossProfitHint")}>{t("sale.fields.grossProfit")}</Tooltip>
+            ),
+            key: "grossProfit",
+            width: 190,
+            align: "right",
+            render: (_: unknown, group: SaleDocumentLineGroup) => {
+              const profit = grossProfit(group);
+              const percent = group.costAmount > 0 ? (profit / group.costAmount) * 100 : null;
+              return (
+                <span className={profit < 0 ? "text-red-600 dark:text-red-400" : "text-green-700 dark:text-green-400"}>
+                  {getNumber(profit)} UZS
+                  {percent != null && <span className="ml-1 text-xs">({getNumber(Math.round(percent * 100) / 100)} %)</span>}
+                </span>
+              );
+            },
+          },
+        ] as TableColumnsType<SaleDocumentLineGroup>)
+      : []),
     {
       title: t("settings.fields.vatRate"),
       dataIndex: "vatRateName",

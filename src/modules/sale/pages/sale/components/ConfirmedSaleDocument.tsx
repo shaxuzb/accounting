@@ -89,6 +89,7 @@ export default function ConfirmedSaleDocument({
           loading={loading}
           currency={currency}
           docDate={document.docDate}
+          actualCost={document.statusId === 2 ? { exchangeRate: document.exchangeRate } : null}
         />
       </Card>
     </div>

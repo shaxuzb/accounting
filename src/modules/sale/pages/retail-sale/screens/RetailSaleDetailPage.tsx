@@ -202,6 +202,7 @@ export default function RetailSaleDetailPage() {
           loading={documentQuery.isFetching}
           currency={document.currencyCode || "UZS"}
           docDate={document.docDate}
+          actualCost={document.statusId === 2 ? { exchangeRate: document.exchangeRate } : null}
         />
       </Card>
       <RetailSalePaymentDetails

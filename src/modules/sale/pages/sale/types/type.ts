@@ -322,5 +322,7 @@ export interface SaleDocumentLineGroup {
   vatRateName?: string | null;
   vatAmount: number;
   totalAmount: number;
+  /** What the goods cost (UZS): on a posted document the value taken off the batches. */
+  costAmount: number;
   lines: SaleDocTable[];
 }

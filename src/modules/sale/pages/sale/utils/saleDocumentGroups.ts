@@ -17,6 +17,7 @@ export const groupSaleDocumentLines = (
     const amount = getNetPrice(Number(line.amount) || 0, line.discountPercent) * quantity;
     const vatAmount = Number(line.vatAmount) || 0;
     const totalAmount = getLineTotal(line);
+    const costAmount = (Number(line.costPrice) || 0) * quantity;
     const group = groups.get(groupKey);
 
     if (group) {
@@ -24,6 +25,7 @@ export const groupSaleDocumentLines = (
       group.amount += amount;
       group.vatAmount += vatAmount;
       group.totalAmount += totalAmount;
+      group.costAmount += costAmount;
       group.lines.push(line);
       group.unitPrice = group.quantity ? group.amount / group.quantity : 0;
       if (group.vatRateName !== line.vatRateName) {
@@ -45,6 +47,7 @@ export const groupSaleDocumentLines = (
       discountPercent: line.discountPercent || 0,
       vatAmount,
       totalAmount,
+      costAmount,
       lines: [line],
     });
   });
