@@ -111,6 +111,10 @@ export default function RentalUtilityServiceCards({
               defaultValue: "Kerakli kommunal xizmatlarni tanlang",
             })}
           </div>
+          {/* who pays is recorded here; the bills themselves are posted as a purchase of services */}
+          <div className="mt-0.5 text-xs text-secondary-text">
+            {t("rental.messages.utilityPostingHint")}
+          </div>
         </div>
         <span className="text-xs text-secondary-text">
           {selectedUtilities.length} / {services.length || 4}

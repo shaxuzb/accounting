@@ -3519,7 +3519,8 @@
       "recalculationQueued": "Recalculation queued",
       "paymentCreated": "Payment created",
       "paymentConfirmed": "Payment confirmed",
-      "paymentCancelled": "Payment cancelled"
+      "paymentCancelled": "Payment cancelled",
+      "salaryForSchedule": "The salary is the employee's actual pay for this schedule (weekly hours). The hours set the norm and the timesheet and do not reduce it; for part-time work enter the reduced salary."
     },
     "employments": {
       "createTitle": "Add employment",
@@ -4082,7 +4083,8 @@
       "generated": "{{count}} accrual document(s) created",
       "documentIds": "Created documents: {{ids}}",
       "lessorFound": "Lessor data found",
-      "accountsRequired": "Select all accounts for paid rental"
+      "accountsRequired": "Select all accounts for paid rental",
+      "utilityPostingHint": "Only who pays is recorded here. Utility bills the organization pays are posted as a purchase of services from the supplier's invoice; they are not part of the rent accrual."
     }
   },
   "reports": {

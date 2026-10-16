@@ -3519,7 +3519,8 @@
       "recalculationQueued": "Qayta hisoblash navbatga qo'shildi",
       "paymentCreated": "To'lov yaratildi",
       "paymentConfirmed": "To'lov tasdiqlandi",
-      "paymentCancelled": "To'lov bekor qilindi"
+      "paymentCancelled": "To'lov bekor qilindi",
+      "salaryForSchedule": "Maosh — xodimning shu grafikdagi (haftalik soatdagi) haqiqiy maoshi. Haftalik soatlar ish vaqti me'yori va tabel uchun, maoshni kamaytirmaydi; to'liq bo'lmagan ish vaqtida qisqargan maoshni kiriting."
     },
     "employments": {
       "createTitle": "Ishga qabul qilish",
@@ -4082,7 +4083,8 @@
       "generated": "{{count}} ta hisob-kitob hujjati yaratildi",
       "documentIds": "Yaratilgan hujjatlar: {{ids}}",
       "lessorFound": "Ijaraga beruvchi ma'lumotlari topildi",
-      "accountsRequired": "Pullik ijara uchun barcha hisobvaraqlarni tanlang"
+      "accountsRequired": "Pullik ijara uchun barcha hisobvaraqlarni tanlang",
+      "utilityPostingHint": "Bu yerda faqat kim to'lashi belgilanadi. Tashkilot to'laydigan kommunal hisoblari yetkazib beruvchi hisobi bo'yicha «Xizmat xaridi» orqali o'tkaziladi; ijara hisoblashiga kirmaydi."
     }
   },
   "reports": {
