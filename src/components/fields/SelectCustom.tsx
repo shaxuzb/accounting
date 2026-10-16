@@ -60,6 +60,11 @@ interface SelectCustomProps {
   disabledValue?: string | number | null;
   getFirst?: boolean;
   getFirstOnlyWhenSingle?: boolean;
+  /**
+   * When set, an empty field takes the first option only if this says so (e.g. 1C «основной
+   * договор»: the list puts the main one first, taken when it is main or the only one).
+   */
+  getFirstWhen?: (first: SelectOptionItem, options: SelectOptionItem[]) => boolean;
   autoSelectSingle?: boolean;
   marginBottom?: string;
   addOption?: {
@@ -136,6 +141,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     refetchSync,
     getFirst = false,
     getFirstOnlyWhenSingle = false,
+    getFirstWhen,
     autoSelectSingle = true,
     path,
     enabled = true,
@@ -269,6 +275,8 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     const firstOption = autoSelectedOption ?? selectOptions[0];
     const shouldAutoSelect = autoSelectedOption
         ? true
+      : getFirstWhen
+        ? Boolean(firstOption) && getFirstWhen(firstOption, selectOptions)
       : formik
         ? autoSelectSingle && (selectOptions.length < 2 || getFirst)
         : getFirstOnlyWhenSingle
@@ -328,6 +336,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
     getOptionLabel,
     getFirst,
     getFirstOnlyWhenSingle,
+    getFirstWhen,
     autoSelectSingle,
     currentValue,
     onChange,

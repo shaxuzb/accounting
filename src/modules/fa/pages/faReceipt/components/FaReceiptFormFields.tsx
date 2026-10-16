@@ -1,4 +1,5 @@
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
+import { contractTypeIds, takeMainOrOnlyContract } from "@/shared/constants/contractSelect";
 import { useContractPriceIncludesVatDefault } from "@/shared/hooks/useContractDefaults";
 import SwitchField from "@/components/fields/SwitchField";
 import { useQuery } from "@tanstack/react-query";
@@ -511,13 +512,15 @@ export default function FaReceiptFormFields({
               queryParams={{
                 choosedDate: dayjs(formik.values.docDate).format(formatDateWithOutTime),
                 [filterIds.counterparty]: formik.values.counterpartyId,
+                // an asset is bought under a contract with a supplier (1C «Вид договора»)
+                [filterIds.contractType]: contractTypeIds.supplier,
               }}
               enabled={Boolean(formik.values.counterpartyId)}
               disabled={!formik.values.counterpartyId}
               label="fa.fields.contractId"
               fieldName="contractId"
               formik={formik}
-              getFirst
+              getFirstWhen={takeMainOrOnlyContract}
               required
             />
           </Col>

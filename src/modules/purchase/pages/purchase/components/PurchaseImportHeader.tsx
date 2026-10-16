@@ -1,4 +1,5 @@
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
+import { contractTypeIds, takeMainOrOnlyContract } from "@/shared/constants/contractSelect";
 import { Alert, Col, Row } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -140,13 +141,15 @@ export default function PurchaseImportHeader({
                   formatDateWithOutTime,
                 ),
                 [filterIds.counterparty]: formik.values.counterpartyId,
+                // a purchase is entered under a contract with a supplier (1C «Вид договора»)
+                [filterIds.contractType]: contractTypeIds.supplier,
               }}
               enabled={hasCounterparty}
               disabled={!hasCounterparty || disabled}
               label="purchase.fields.contract"
               fieldName="contractId"
               formik={formik}
-              getFirst={allowCreateOptions}
+              getFirstWhen={allowCreateOptions ? takeMainOrOnlyContract : undefined}
               required
               addOption={{
                 bool: allowCreateOptions,

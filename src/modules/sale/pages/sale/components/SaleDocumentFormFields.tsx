@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { contractTypeIds, takeMainOrOnlyContract } from "@/shared/constants/contractSelect";
 import type { FormikProps } from "formik";
 import dayjs from "dayjs";
 import { useQueryClient } from "@tanstack/react-query";
@@ -101,10 +102,13 @@ export default function SaleDocumentFormFields({
                 formatDateWithOutTime,
               ),
               [filterIds.counterparty]: formik.values.counterpartyId,
+              // a sale is entered under a contract with a customer (1C «Вид договора»)
+              [filterIds.contractType]: contractTypeIds.customer,
             }}
             label={t("purchase.fields.contract")}
             fieldName="contractId"
             formik={formik}
+            getFirstWhen={takeMainOrOnlyContract}
             enabled={Boolean(formik.values.counterpartyId)}
             disabled={!formik.values.counterpartyId}
             required
