@@ -1,1 +1,1 @@
-export { useGetAuditLogs } from "./useGetAuditLogs";
+export { useGetAuditLogs, useGetAuditLogTables } from "./useGetAuditLogs";
