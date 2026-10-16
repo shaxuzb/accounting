@@ -30,6 +30,10 @@ export interface PurchaseDocumentPayload {
   exchangeRate: number;
   comment: string | null;
   contractId: number | null;
+  /** How the advances are offset (1C «Способ зачета аванса»): 1 automatic, 2 by document, 3 none. */
+  advanceOffsetMode?: number;
+  /** The advance offset when by document (a cmn_document_registry id). */
+  advanceDocumentId?: number | null;
   supplierAccountId: number;
   /** The unit prices already contain VAT: it is extracted from them, not added on top. */
   priceIncludesVat: boolean;
@@ -44,6 +48,10 @@ export interface PurchaseImportForm {
   currencyId: number | null;
   exchangeRate: number;
   contractId: number | null;
+  /** How the advances are offset (1C «Способ зачета аванса»): 1 automatic, 2 by document, 3 none. */
+  advanceOffsetMode?: number;
+  /** The advance offset when by document (a cmn_document_registry id). */
+  advanceDocumentId?: number | null;
   warehouseId: number | null;
   supplierAccountId: number | null;
   comment: string;

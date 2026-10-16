@@ -20,6 +20,8 @@ export interface BankOperationCreatePayload {
   /** The employee the money settles with (an accountable person, 4220 ...). */
   employeeId?: number | null;
   relatedDocumentId?: number | null;
+  /** How the money settles the debt (1C «Погашение задолженности»): 1 automatic, 2 by document, 3 none. */
+  debtSettlementMode?: number;
   stateId?: number | null;
 }
 

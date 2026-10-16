@@ -3,6 +3,10 @@ export interface SaleDocForm {
   exchangeRate?: number | null;
   counterpartyId: number | null;
   contractId: number | null;
+  /** How the advances are offset (1C «Способ зачета аванса»): 1 automatic, 2 by document, 3 none. */
+  advanceOffsetMode?: number;
+  /** The advance offset when by document (a cmn_document_registry id). */
+  advanceDocumentId?: number | null;
   warehouseId: number | null;
   currencyId: number | null;
   customerAccountId: number | null;
@@ -51,6 +55,10 @@ export interface SaleDocCreateForm {
   warehouseId: number;
   currencyId: number;
   contractId: number | null;
+  /** How the advances are offset (1C «Способ зачета аванса»): 1 automatic, 2 by document, 3 none. */
+  advanceOffsetMode?: number;
+  /** The advance offset when by document (a cmn_document_registry id). */
+  advanceDocumentId?: number | null;
   customerAccountId: number;
   /** Empty for a non-payer: «QQSsiz» posts no output VAT. */
   vatAccountId: number | null;
@@ -68,6 +76,10 @@ export interface SaleDocUpdateForm {
   warehouseId: number;
   currencyId: number;
   contractId: number | null;
+  /** How the advances are offset (1C «Способ зачета аванса»): 1 automatic, 2 by document, 3 none. */
+  advanceOffsetMode?: number;
+  /** The advance offset when by document (a cmn_document_registry id). */
+  advanceDocumentId?: number | null;
   customerAccountId: number | null;
   vatAccountId: number | null;
   comment: string | null;

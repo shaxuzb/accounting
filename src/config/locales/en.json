@@ -2,9 +2,27 @@
   "settlementDocuments": {
     "field": "Settlement document",
     "hint": "As 1C «Документ расчетов»: the payment settles this document's debt and the rest is an advance. Left empty, the oldest debts are settled first.",
-    "automatic": "Automatic (oldest debts first)",
     "none": "No documents with an open debt",
-    "debt": "Debt"
+    "debt": "Debt",
+    "choose": "Choose a document",
+    "debtMode": "Debt settlement",
+    "debtModeHint": "As 1C «Погашение задолженности»: automatic — the oldest debts first; by document — the chosen document's debt alone, the rest an advance; none — the whole amount is an advance.",
+    "debtModes": {
+      "automatic": "Automatic",
+      "byDocument": "By document",
+      "none": "None (all advance)"
+    },
+    "advanceMode": "Advance offset",
+    "advanceModeHint": "As 1C «Способ зачета аванса»: automatic — the oldest advances first; by document — the chosen payment's advance alone; none — the debt stays open.",
+    "advanceModes": {
+      "automatic": "Automatic",
+      "byDocument": "By document",
+      "none": "Do not offset"
+    },
+    "advanceField": "Advance document",
+    "advanceHint": "As 1C «Документ аванса»: this payment's advance is offset against the document's debt, as far as it goes.",
+    "advanceAmount": "Advance",
+    "noAdvance": "No open advances"
   },
   "correction": {
     "purchase": {

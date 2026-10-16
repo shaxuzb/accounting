@@ -2,9 +2,27 @@
   "settlementDocuments": {
     "field": "Hisob-kitob hujjati",
     "hint": "1C dagi «Документ расчетов»: to'lov shu hujjat qarzini yopadi, ortig'i avans bo'ladi. Bo'sh qolsa, eng eski qarzlar birinchi yopiladi.",
-    "automatic": "Avtomatik (eng eski qarzlar)",
     "none": "Ochiq qarzi bor hujjat yo'q",
-    "debt": "Qarz"
+    "debt": "Qarz",
+    "choose": "Hujjatni tanlang",
+    "debtMode": "Qarzni yopish",
+    "debtModeHint": "1C dagi «Погашение задолженности»: avtomatik — eng eski qarzlar birinchi; hujjat bo'yicha — faqat tanlangan hujjat qarzi, ortig'i avans; yopmaslik — butun summa avans.",
+    "debtModes": {
+      "automatic": "Avtomatik",
+      "byDocument": "Hujjat bo'yicha",
+      "none": "Yopmaslik (hammasi avans)"
+    },
+    "advanceMode": "Avansni hisobga olish",
+    "advanceModeHint": "1C dagi «Способ зачета аванса»: avtomatik — eng eski avanslar birinchi; hujjat bo'yicha — faqat tanlangan to'lov avansi; hisobga olmaslik — qarz ochiq qoladi.",
+    "advanceModes": {
+      "automatic": "Avtomatik",
+      "byDocument": "Hujjat bo'yicha",
+      "none": "Hisobga olmaslik"
+    },
+    "advanceField": "Avans hujjati",
+    "advanceHint": "1C dagi «Документ аванса»: shu to'lovning avansi hujjat qarziga hisobga olinadi (qancha bo'lsa, shuncha).",
+    "advanceAmount": "Avans",
+    "noAdvance": "Ochiq avans yo'q"
   },
   "correction": {
     "purchase": {

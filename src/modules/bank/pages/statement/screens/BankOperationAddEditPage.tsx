@@ -92,6 +92,8 @@ type BankOperationForm = {
   contractId: number | null;
   employeeId: number | null;
   relatedDocumentId: number | null;
+  /** How the money settles the debt (1C «Погашение задолженности»): 1 automatic, 2 by document, 3 none. */
+  debtSettlementMode: number;
   exchangeRate: number | null;
   bankDocumentNumber: string;
   classificationCategoryId: number | null;
@@ -120,6 +122,7 @@ const createDefaultValues = (): BankOperationForm => ({
   classificationCategoryId: null,
   classificationRuleId: null,
   relatedDocumentId: null,
+  debtSettlementMode: 1,
 });
 
 const toPositiveNumber = (value: unknown) => {
@@ -206,6 +209,7 @@ export default function BankOperationAddEditPage() {
       classificationCategoryId: record?.classificationCategoryId ?? null,
       classificationRuleId: record?.classificationRuleId ?? null,
       relatedDocumentId: record?.relatedDocumentId ?? null,
+      debtSettlementMode: (record as { debtSettlementMode?: number } | undefined)?.debtSettlementMode ?? 1,
     }),
     [record],
   );
@@ -236,6 +240,7 @@ export default function BankOperationAddEditPage() {
           ),
           classificationRuleId: toPositiveNumber(values.classificationRuleId),
           relatedDocumentId: toPositiveNumber(values.relatedDocumentId),
+          debtSettlementMode: values.debtSettlementMode ?? 1,
           docDate: dayjs(values.docDate).format("YYYY-MM-DDTHH:mm:ss"),
           currencyId: Number(values.currencyId),
           amount: Number(values.amount),
@@ -303,12 +308,11 @@ export default function BankOperationAddEditPage() {
     documentTypeCode,
     { directionId: formik.values.directionId },
   );
-  // with settlements kept by document a counterparty's payment names its settlement document
-  // (1C «Документ расчетов») from the documents it still owes on; a cash collection or a
-  // payment point operation stays a plain link
+  // a counterparty's payment says how it settles the debt (1C «Погашение задолженности») and,
+  // with settlements kept by document, which document it settles (1C «Документ расчетов»);
+  // a cash collection or a payment point operation stays a plain link
   const settlementsByDocument = useGetSettlementPolicy().data?.settlementsByDocument ?? false;
   const namesSettlementDocument =
-    settlementsByDocument &&
     Boolean(counterpartyId) &&
     relatedDocumentTypeCode !== "cash_collection" &&
     relatedDocumentTypeCode !== "payment_acceptance_point_operation";

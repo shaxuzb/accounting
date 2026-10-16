@@ -561,6 +561,8 @@ export const PurchaseEditor = ({
               "contractId" in detailData
                 ? (detailData.contractId as number | null)
                 : null,
+            advanceOffsetMode: Number((detailData as { advanceOffsetMode?: number }).advanceOffsetMode) || 1,
+            advanceDocumentId: (detailData as { advanceDocumentId?: number | null }).advanceDocumentId ?? null,
             warehouseId: detailData.warehouseId ?? null,
             supplierAccountId: detailData.supplierAccountId ?? null,
             comment: detailData.comment ?? "",

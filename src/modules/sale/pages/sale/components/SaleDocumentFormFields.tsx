@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import SettlementDocumentSelect from "@/components/fields/SettlementDocumentSelect";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAutoExchangeRate";
 import CounterpartySelect from "@/components/fields/CounterpartySelect";
@@ -46,6 +47,10 @@ export default function SaleDocumentFormFields({
   const clearContract = () => {
     if (formik.values.contractId !== null) {
       formik.setFieldValue("contractId", null, false);
+    }
+    // another customer's (or contract's) advance is no advance of this sale
+    if (formik.values.advanceDocumentId) {
+      formik.setFieldValue("advanceDocumentId", null, false);
     }
   };
 
@@ -170,6 +175,16 @@ export default function SaleDocumentFormFields({
             />
           </Col>
         )}
+        <SettlementDocumentSelect
+          formik={formik}
+          kind="advance"
+          colSpan={4}
+          counterpartyId={formik.values.counterpartyId}
+          contractId={formik.values.contractId}
+          directionId={1}
+          currencyId={Number(formik.values.currencyId) || null}
+          date={formik.values.docDate}
+        />
         <CounterpartyAddEditPage
           open={counterpartyCreateOpen}
           onClose={() => {

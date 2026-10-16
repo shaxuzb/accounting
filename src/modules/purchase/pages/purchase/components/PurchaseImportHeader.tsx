@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import type { FormikProps } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
 import SelectDate from "@/components/fields/SelectDate";
+import SettlementDocumentSelect from "@/components/fields/SettlementDocumentSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAutoExchangeRate";
@@ -68,6 +69,10 @@ export default function PurchaseImportHeader({
   const clearContract = () => {
     if (formik.values.contractId !== null) {
       formik.setFieldValue("contractId", null, false);
+    }
+    // another supplier's (or contract's) advance is no advance of this purchase
+    if (formik.values.advanceDocumentId) {
+      formik.setFieldValue("advanceDocumentId", null, false);
     }
   };
 
@@ -204,6 +209,19 @@ export default function PurchaseImportHeader({
               />
             </Col>
           ) : null}
+          {showSupplierAccount && (
+            <SettlementDocumentSelect
+              formik={formik}
+              kind="advance"
+              colSpan={4}
+              counterpartyId={formik.values.counterpartyId}
+              contractId={formik.values.contractId}
+              directionId={-1}
+              currencyId={Number(formik.values.currencyId) || null}
+              date={formik.values.docDate}
+              disabled={disabled}
+            />
+          )}
 
           {/* Whether the typed prices already contain VAT. Invoices come both ways:
               with it, the VAT is taken out of the amount; without it, it is added on
