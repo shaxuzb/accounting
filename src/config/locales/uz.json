@@ -1048,7 +1048,8 @@
       "saleConditions": "Sotuv shartlari",
       "integrations": "Integratsiyalar",
       "accountingPolicy": "Buxgalteriya siyosati",
-      "documentNumbers": "Hujjat raqamlari"
+      "documentNumbers": "Hujjat raqamlari",
+      "faGroups": "AV guruhlari"
     },
     "descriptions": {
       "openingAssets": "Foydalanishdagi asosiy vositalar va nomoddiy aktivlar: qiymat va hisoblangan amortizatsiya.",
@@ -1081,7 +1082,8 @@
       "integrations": "Didox, Edocs va Asl Belgi integratsiyalarini boshqarish.",
       "accountingPolicy": "Tashkilotning buxgalteriya hisoblash qoidalarini boshqarish.",
       "documentNumbers": "Hujjat raqamining prefiksi va uzunligi (tashkilot bo'yicha yoki hujjat turi bo'yicha).",
-      "retailStore": "Omborga kirgan tovar sotuv narxida turadi: tannarx 2920.2 da, ustama (sotuv narxi − tannarx) 2980.2 da. Narx — qat'iy sotuv narxi yoki narx belgilash sharti. Narx o'zgarsa «Chakana narxlarni qayta baholash» hujjati kiritiladi. Tur faqat bo'sh omborda o'zgaradi."
+      "retailStore": "Omborga kirgan tovar sotuv narxida turadi: tannarx 2920.2 da, ustama (sotuv narxi − tannarx) 2980.2 da. Narx — qat'iy sotuv narxi yoki narx belgilash sharti. Narx o'zgarsa «Chakana narxlarni qayta baholash» hujjati kiritiladi. Tur faqat bo'sh omborda o'zgaradi.",
+      "faGroups": "Soliq amortizatsiya guruhi (SK 306-m.) va standart foydalanish muddati"
     },
     "fields": {
       "accountNumber": "Hisob raqami",
@@ -4568,5 +4570,21 @@
     "saved": "Saqlandi",
     "postedMessage": "Qayta baholash o'tkazildi",
     "cancelledMessage": "Qayta baholash bekor qilindi"
+  },
+  "faGroups": {
+    "code": "Kod",
+    "name": "Nomi",
+    "taxGroup": "Soliq amortizatsiya guruhi (SK 306-m.)",
+    "taxGroupPlaceholder": "Guruhni tanlang",
+    "maxRate": "Eng yuqori me'yor",
+    "usefulLife": "Foydalanish muddati, oy",
+    "months": "oy",
+    "years": "{{years}} yil",
+    "notDepreciated": "Yer amortizatsiya qilinmaydi",
+    "save": "Saqlash",
+    "saved": "AV guruhi saqlandi",
+    "hint": "Soliq kodeksi 306-moddasi: vosita ishga tushirilgan kuni amortizatsiya guruhiga kiritiladi va soliqda yiliga guruh me'yoridan ko'p bo'lmagan amortizatsiya chegiriladi. Ortig'i foyda solig'i hisob-kitobida 2-ilovaning «chegirilmaydigan» ustuniga tushadi. Foydalanish muddati — buxgalteriya muddati (BHMS 5); vosita ishga tushirilganda shu taklif qilinadi.",
+    "taxLife": "Soliq me'yori bo'yicha eng qisqa muddat: {{months}} oy",
+    "fasterThanTax": "Bu muddatda buxgalteriya amortizatsiyasi soliq me'yoridan tez — farq foyda solig'ida chegirilmaydi."
   }
 }

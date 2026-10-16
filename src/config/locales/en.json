@@ -1046,7 +1046,8 @@
       "regulatedObligationSettings": "Regulated obligations",
       "openingBalance": "Opening balance",
       "openingInventory": "Opening inventory",
-      "documentNumbers": "Document numbering"
+      "documentNumbers": "Document numbering",
+      "faGroups": "Asset groups"
     },
     "descriptions": {
       "openingAssets": "Assets in use: cost and depreciation to date.",
@@ -1079,7 +1080,8 @@
       "integrations": "Manage dDocs and Asl Belgisi integrations.",
       "accountingPolicy": "Manage the organization’s accounting rules.",
       "documentNumbers": "The prefix and length of document numbers (for the organization or per document type).",
-      "retailStore": "Goods in the store stand at sale prices: cost on 2920.2, the markup (sale price − cost) on 2980.2. The price is the fixed sale price or the pricing condition. A price change is entered by a retail revaluation. The kind changes only while the store is empty."
+      "retailStore": "Goods in the store stand at sale prices: cost on 2920.2, the markup (sale price − cost) on 2980.2. The price is the fixed sale price or the pricing condition. A price change is entered by a retail revaluation. The kind changes only while the store is empty.",
+      "faGroups": "Tax depreciation group (Tax Code art. 306) and default useful life"
     },
     "fields": {
       "accountNumber": "Account number",
@@ -4568,5 +4570,21 @@
     "saved": "Saved",
     "postedMessage": "The revaluation is posted",
     "cancelledMessage": "The revaluation is cancelled"
+  },
+  "faGroups": {
+    "code": "Code",
+    "name": "Name",
+    "taxGroup": "Tax depreciation group (art. 306)",
+    "taxGroupPlaceholder": "Choose a group",
+    "maxRate": "Highest rate",
+    "usefulLife": "Useful life, months",
+    "months": "months",
+    "years": "{{years}} years",
+    "notDepreciated": "Land is not depreciated",
+    "save": "Save",
+    "saved": "Asset group saved",
+    "hint": "Tax Code art. 306: an asset is put into a depreciation group when put into use, and the tax deducts depreciation up to the group's yearly rate. The excess goes to the «non-deductible» column of appendix 2 of the profit tax return. The useful life is the accounting one (NSBU 5), offered when an asset is put into use.",
+    "taxLife": "Shortest life at the tax rate: {{months}} months",
+    "fasterThanTax": "With this life the book depreciation is faster than the tax rate — the difference is not deducted for profit tax."
   }
 }

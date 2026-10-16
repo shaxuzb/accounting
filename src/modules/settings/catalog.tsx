@@ -105,6 +105,7 @@ export const settingsGroupDefinitions: SettingsGroupDefinition[] = [
       "chart-accounts",
       "document-account-settings",
       "product-accounts",
+      "fa-groups",
       "regulated-obligation-settings",
       "document-numbers",
     ],

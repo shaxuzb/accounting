@@ -90,6 +90,22 @@ export default function FaCommissioningFormFields({
     }
   };
 
+  // the asset's group offers the useful life the organization usually sets (Settings → asset
+  // groups); a life already entered stays
+  const offerGroupUsefulLife = async (lineIndex: number, assetId: unknown) => {
+    if (!assetId || Number(formik.values.lines[lineIndex]?.usefulLifeMonths) > 1) return;
+    try {
+      const assets = await $axiosPrivate.get<{ id: number; defaultUsefulLifeMonths?: number | null }[]>(
+        selectListEndpoints.faAssetsSelectList,
+        { params: { assetKindId } },
+      );
+      const months = assets.data.find((asset) => asset.id === Number(assetId))?.defaultUsefulLifeMonths;
+      if (months) void formik.setFieldValue(`lines[${lineIndex}].usefulLifeMonths`, months);
+    } catch {
+      // the life stays as entered
+    }
+  };
+
   // a line's asset picked or changed (by hand or as the only one): its amortization account
   // follows; a draft opened again keeps the accounts it was saved with
   const assetIdsKey = formik.values.lines.map((line) => line.faAssetId ?? "").join(",");
@@ -100,8 +116,10 @@ export default function FaCommissioningFormFields({
     previousAssetIds.current = current;
     if (previous === null) return;
     current.forEach((assetId, lineIndex) => {
-      if (assetId && assetId !== previous[lineIndex])
+      if (assetId && assetId !== previous[lineIndex]) {
         void matchAmortizationAccount(lineIndex, assetId);
+        void offerGroupUsefulLife(lineIndex, assetId);
+      }
     });
     // the match runs on a change of the assets only
     // eslint-disable-next-line react-hooks/exhaustive-deps

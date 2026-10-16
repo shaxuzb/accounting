@@ -15,6 +15,7 @@ const ChartAccountListPage = lazy(() => import("./pages/chartAccounts/screens/Ch
 const DocumentAccountSettingsListPage = lazy(() => import("./pages/documentAccountSettings/screens/DocumentAccountSettingsListPage"));
 const DocumentAccountSettingsDetailPage = lazy(() => import("./pages/documentAccountSettings/screens/DocumentAccountSettingsDetailPage"));
 const ProductAccountsPage = lazy(() => import("./pages/productAccounts/ProductAccountsPage"));
+const FaGroupsPage = lazy(() => import("./pages/faGroups/FaGroupsPage"));
 const UnitsPage = lazy(() => import("./pages/units/UnitsPage"));
 const DocumentNumberSettingsPage = lazy(() => import("./pages/documentNumbers/DocumentNumberSettingsPage"));
 const BranchListPage = lazy(() => import("./pages/branches/screens/BranchListPage"));
@@ -389,6 +390,15 @@ const sectionRoutes: RouteObject[] = [
         backTo: "..",
       },
       element: withPermission(<ProductAccountsPage />, "DOCUMENT_ACCOUNT_SETTING_VIEW"),
+    },
+    {
+      path: "fa-groups",
+      handle: {
+        title: "settings.entities.faGroups",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(<FaGroupsPage />, "FA_ASSET_VIEW"),
     },
     {
       path: "document-account-settings",

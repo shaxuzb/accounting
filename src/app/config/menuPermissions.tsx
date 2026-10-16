@@ -915,6 +915,15 @@ export const menuPermissions: MainMenu = {
       },
     },
     {
+      code: "FA_ASSET_VIEW",
+      iconName: <FolderTree className="size-5" />,
+      linkData: {
+        path: "fa-groups",
+        title: "settings.entities.faGroups",
+        description: "settings.descriptions.faGroups",
+      },
+    },
+    {
       code: openingBalancePermissions.view,
       iconName: <Scale className="size-5" />,
       linkData: {
