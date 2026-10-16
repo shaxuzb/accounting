@@ -1754,7 +1754,8 @@
       "goods": "Tovar",
       "service": "Xizmat",
       "accounts": "Hisobvaraqlar",
-      "priceIncludesVat": "Narx QQS bilan"
+      "priceIncludesVat": "Narx QQS bilan",
+      "currency": "Valyuta"
     },
     "messages": {
       "nonVatPayerHint": "Tashkilot QQS to'lovchi emas: yetkazib beruvchi QQSi tovar tannarxiga qo'shiladi (4410 ga yozilmaydi), QQS hisobvarag'i kerak emas (1C: «НДС включается в стоимость»).",

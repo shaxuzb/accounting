@@ -1752,7 +1752,8 @@
       "goods": "Product",
       "service": "Service",
       "accounts": "Accounts",
-      "priceIncludesVat": "Price includes VAT"
+      "priceIncludesVat": "Price includes VAT",
+      "currency": "Currency"
     },
     "messages": {
       "nonVatPayerHint": "The organization is not a VAT payer: the supplier's VAT is added to the cost of goods (not 4410); no VAT account is needed.",

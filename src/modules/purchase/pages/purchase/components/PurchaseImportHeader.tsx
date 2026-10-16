@@ -44,7 +44,7 @@ export default function PurchaseImportHeader({
   formik,
   purchaseMode,
   readOnlyDate = false,
-  showCurrency = false,
+  showCurrency = true,
   showExchangeRate = true,
   showSupplierAccount = true,
   allowCreateOptions = true,
@@ -57,7 +57,11 @@ export default function PurchaseImportHeader({
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
   const queryClient = useQueryClient();
   const hasCounterparty = Boolean(formik.values.counterpartyId);
-  useContractPriceIncludesVatDefault(formik, showPriceIncludesVat && !disabled);
+  // the contract brings its «Narx QQS bilan» and its settlement currency (1C)
+  const { contractCurrencyId } = useContractPriceIncludesVatDefault(
+    formik,
+    showPriceIncludesVat && !disabled,
+  );
   // a purchase in another currency is posted at this rate (CBU on the date, editable)
   const rate = useAutoExchangeRate(formik);
 
@@ -163,10 +167,11 @@ export default function PurchaseImportHeader({
             <Col span={24} sm={12} lg={8} xl={4}>
               <SelectCustom
                 path={selectListEndpoints.currenciesSelectList}
-                label="Valuta"
+                label="purchase.fields.currency"
                 fieldName="currencyId"
                 formik={formik}
-                disabled={disabled}
+                // a contract with a settlement currency fixes it, as in 1C
+                disabled={disabled || Boolean(contractCurrencyId)}
                 getFirst={allowCreateOptions}
                 required
               />

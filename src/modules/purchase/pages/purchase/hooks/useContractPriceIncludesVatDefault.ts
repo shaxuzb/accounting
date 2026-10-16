@@ -10,13 +10,16 @@ import type { PurchaseImportForm } from "../types/form";
 interface ContractVatOption {
   id: number;
   priceIncludesVat?: boolean;
+  /** The settlement currency (1C «Валюта взаиморасчетов»); none — any. */
+  currencyId?: number | null;
 }
 
 /**
  * Like 1C, a document's «Narx QQS bilan» starts from its contract: when the user
  * (or the first-option auto select) picks a contract, the flag takes the contract's
  * value. It stays editable, and loading a saved document never overrides what was
- * saved with it.
+ * saved with it. The contract's settlement currency becomes the document's the same way,
+ * and the currency is then fixed by it (returned for the form to lock the field).
  */
 export function useContractPriceIncludesVatDefault(
   formik: FormikProps<PurchaseImportForm>,
@@ -72,5 +75,13 @@ export function useContractPriceIncludesVatDefault(
     if (nextValue !== Boolean(formik.values.priceIncludesVat)) {
       formik.setFieldValue("priceIncludesVat", nextValue, false);
     }
+    if (contract.currencyId && contract.currencyId !== Number(formik.values.currencyId)) {
+      formik.setFieldValue("currencyId", contract.currencyId, false);
+    }
   }, [contractId, contracts, enabled, formik]);
+
+  return {
+    contractCurrencyId:
+      contracts?.find((item) => item.id === contractId)?.currencyId ?? null,
+  };
 }
