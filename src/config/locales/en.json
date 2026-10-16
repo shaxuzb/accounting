@@ -4134,7 +4134,9 @@
       "bank": "Bank operations",
       "cash": "Cash operations",
       "receivable": "Accounts receivable",
-      "payable": "Accounts payable"
+      "payable": "Accounts payable",
+      "receivableAging": "Customer debts by age",
+      "payableAging": "Supplier debts by age"
     },
     "actions": {
       "export": "Export",
@@ -4198,6 +4200,22 @@
       "pageIncome": "Page inflow",
       "pageExpense": "Page outflow",
       "pageScopeNote": "The total covers the current page only. Use export for the full figure."
+    },
+    "aging": {
+      "hint": "Open debts at the document's date: a payment settles its named document, the rest the oldest debts. The term is the contract's payment term.",
+      "asOf": "As of",
+      "counterparty": "Counterparty",
+      "debt": "Debt",
+      "overdue": "Overdue",
+      "days": "{{range}} days",
+      "document": "Document",
+      "contract": "Contract",
+      "docDate": "Date",
+      "dueDate": "Due date",
+      "noTerm": "No term",
+      "ageDays": "Age, days",
+      "overdueDays": "Overdue, days",
+      "empty": "No open debts"
     }
   },
   "contractTemplates": {

@@ -481,6 +481,14 @@ export const menuPermissions: MainMenu = {
           linkData: { path: "payable", title: "reports.pages.payable" },
         },
         {
+          code: operationalReportPermissions.receivable.view,
+          linkData: { path: "receivable-aging", title: "reports.pages.receivableAging" },
+        },
+        {
+          code: operationalReportPermissions.payable.view,
+          linkData: { path: "payable-aging", title: "reports.pages.payableAging" },
+        },
+        {
           code: operationalReportPermissions.bank.view,
           linkData: { path: "bank", title: "reports.pages.bank" },
         },

@@ -1,4 +1,5 @@
 import { lazy } from "react";
+import DebtAgingReportPage from "./screens/DebtAgingReportPage";
 import type { ReactElement } from "react";
 import type { RouteObject } from "react-router";
 import { Navigate, Outlet } from "react-router";
@@ -91,6 +92,23 @@ export const reportsRoutes: RouteObject = {
       handle: { title: "reports.pages.payable" },
       element: withAccess(
         <PayableReportPage />,
+        operationalReportPermissions.payable.view,
+      ),
+    },
+    // 1C «Задолженность по срокам долга»
+    {
+      path: "receivable-aging",
+      handle: { title: "reports.pages.receivableAging" },
+      element: withAccess(
+        <DebtAgingReportPage side="receivable" />,
+        operationalReportPermissions.receivable.view,
+      ),
+    },
+    {
+      path: "payable-aging",
+      handle: { title: "reports.pages.payableAging" },
+      element: withAccess(
+        <DebtAgingReportPage side="payable" />,
         operationalReportPermissions.payable.view,
       ),
     },

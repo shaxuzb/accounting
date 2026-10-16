@@ -4134,7 +4134,9 @@
       "bank": "Bank operatsiyalari",
       "cash": "Kassa operatsiyalari",
       "receivable": "Debitor qarzlar",
-      "payable": "Kreditor qarzlar"
+      "payable": "Kreditor qarzlar",
+      "receivableAging": "Xaridorlar qarzi muddati bo'yicha",
+      "payableAging": "Yetkazib beruvchilarga qarz muddati bo'yicha"
     },
     "actions": {
       "export": "Eksport",
@@ -4198,6 +4200,22 @@
       "pageIncome": "Sahifa kirimi",
       "pageExpense": "Sahifa chiqimi",
       "pageScopeNote": "Yig'indi joriy sahifadagi satrlar bo'yicha. To'liq summa uchun eksportdan foydalaning."
+    },
+    "aging": {
+      "hint": "Ochiq qarzlar hujjat sanasi bo'yicha: to'lov tanlangan hujjatni, qolgani eng eski qarzlarni yopadi. Muddat — shartnomadagi to'lov muddati.",
+      "asOf": "Sanaga",
+      "counterparty": "Kontragent",
+      "debt": "Qarz",
+      "overdue": "Muddati o'tgan",
+      "days": "{{range}} kun",
+      "document": "Hujjat",
+      "contract": "Shartnoma",
+      "docDate": "Sana",
+      "dueDate": "To'lov muddati",
+      "noTerm": "Muddatsiz",
+      "ageDays": "Qarz yoshi, kun",
+      "overdueDays": "Kechikish, kun",
+      "empty": "Ochiq qarz yo'q"
     }
   },
   "contractTemplates": {
