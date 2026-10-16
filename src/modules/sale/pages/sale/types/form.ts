@@ -67,6 +67,8 @@ export interface SaleDocCreateForm {
   comment: string | null;
   processingMode: SaleProcessingMode;
   lines: SaleDocCreateLineForm[];
+  /** The invoice for payment the sale is made from (1C «на основании счета»). */
+  saleInvoiceId?: number | null;
 }
 
 export interface SaleDocUpdateForm {

@@ -606,6 +606,10 @@ export const menuPermissions: MainMenu = {
       },
       items: [
         {
+          code: "SALE_INVOICE_VIEW",
+          linkData: { path: "invoices", title: "saleInvoice.title" },
+        },
+        {
           code: salePermissions.view,
           linkData: {
             path: "sale",

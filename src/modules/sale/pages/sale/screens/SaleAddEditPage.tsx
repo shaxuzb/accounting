@@ -1,8 +1,9 @@
-import { App, Form, Spin } from "antd";
+import { Alert, App, Form, Spin } from "antd";
 import dayjs from "dayjs";
 import { useFormik } from "formik";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams, useSearchParams } from "react-router";
+import { useSaleInvoice } from "@/modules/saleInvoice/api";
 import toast from "react-hot-toast";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useAppSelector } from "@/store/hooks";
@@ -73,6 +74,10 @@ export default function SaleAddEditPage() {
   const navigate = useNavigate();
   const { id = "" } = useParams();
   const isEdit = Boolean(id);
+  // «Sotuv yaratish» from an invoice for payment (1C «Реализация на основании счета»)
+  const [searchParams] = useSearchParams();
+  const invoiceId = isEdit ? null : Number(searchParams.get("invoice")) || null;
+  const { data: invoice } = useSaleInvoice(invoiceId);
   const organizationId = useAppSelector((state) => state.organization.id);
   const [initialDraft] = useState(() =>
     isEdit ? null : getSaleDraft(organizationId),
@@ -287,11 +292,10 @@ export default function SaleAddEditPage() {
           );
           await updateSale.mutateAsync({ id: document.id, payload });
         } else {
-          const payload: SaleDocCreateForm = toSaleCreatePayload(
-            values,
-            allLines,
-            mode,
-          );
+          const payload: SaleDocCreateForm = {
+            ...toSaleCreatePayload(values, allLines, mode),
+            saleInvoiceId: invoiceId,
+          };
           await createSale.mutateAsync(payload);
           clearSaleDraft(organizationId);
           if (mode !== processingMode) toast.success(t("sale.messages.savedAsDraft"));
@@ -302,6 +306,22 @@ export default function SaleAddEditPage() {
       }
     },
   });
+
+  // the invoice's customer, contract and currency, put on the new sale once
+  const invoiceApplied = useRef(false);
+  useEffect(() => {
+    // after the draft is settled: settling it may reset the form to the defaults
+    if (!invoice || invoiceApplied.current || !isDraftSynced) return;
+    invoiceApplied.current = true;
+    void formik.setValues({
+      ...formik.values,
+      counterpartyId: invoice.counterpartyId,
+      contractId: invoice.contractId ?? null,
+      currencyId: invoice.currencyId,
+    });
+    // formik is a new object every render: applied once per loaded invoice
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [invoice, isDraftSynced]);
 
   const counterpartyId = useMemo(
     () => toPositiveNumber(formik.values.counterpartyId),
@@ -455,6 +475,22 @@ export default function SaleAddEditPage() {
           isEdit={isEdit}
           vatPayer={vatPayer.isVatPayer}
         />
+        {invoice && (
+          <Alert
+            showIcon
+            type="info"
+            message={t("saleInvoice.fromInvoice", { number: invoice.docNumber })}
+            description={
+              <ul className="mb-0 list-disc pl-5">
+                {invoice.lines.map((line) => (
+                  <li key={line.id}>
+                    {line.productName} — {line.quantity} {line.unitName ?? ""} × {line.price}
+                  </li>
+                ))}
+              </ul>
+            }
+          />
+        )}
         <SaleProductSelection
           vatPayer={vatPayer.isVatPayer}
           warehouseId={warehouseId}

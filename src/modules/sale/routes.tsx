@@ -14,6 +14,10 @@ const RetailSaleDetailPage = lazy(() => import("./pages/retail-sale").then((m) =
 const RetailSaleEditorPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleEditorPage })));
 const RetailSaleListPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleListPage })));
 import { retailSalePermissions } from "./pages/retail-sale/constants/permissions";
+const SaleInvoiceListPage = lazy(() => import("../saleInvoice/SaleInvoiceListPage"));
+const SaleInvoiceEditorPage = lazy(() => import("../saleInvoice/SaleInvoiceEditorPage"));
+const SaleInvoicePrintPage = lazy(() => import("../saleInvoice/SaleInvoicePrintPage"));
+import { saleInvoicePermissions } from "../saleInvoice/api";
 
 const withPermission = (element: React.ReactElement, permission: string) => (
   <PermissionCard permission={permission} mode="redirect">
@@ -47,6 +51,29 @@ export const saleRoutes: RouteObject = {
           path: ":id",
           element: withPermission(<SaleDetailPage />, salePermissions.detail),
           handle: { title: "sale.document", showBack: true, backTo: ".." },
+        },
+      ],
+    },
+    // invoices for payment (1C «Счет на оплату покупателю»)
+    {
+      path: "invoices",
+      handle: { title: "saleInvoice.title" },
+      children: [
+        { index: true, element: withPermission(<SaleInvoiceListPage />, saleInvoicePermissions.view) },
+        {
+          path: "new",
+          handle: { title: "saleInvoice.new", showBack: true, backTo: ".." },
+          element: withPermission(<SaleInvoiceEditorPage />, saleInvoicePermissions.create),
+        },
+        {
+          path: ":id",
+          handle: { title: "saleInvoice.document", showBack: true, backTo: ".." },
+          element: withPermission(<SaleInvoiceEditorPage />, saleInvoicePermissions.view),
+        },
+        {
+          path: ":id/print",
+          handle: { title: "saleInvoice.print", showBack: true, backTo: ".." },
+          element: withPermission(<SaleInvoicePrintPage />, saleInvoicePermissions.view),
         },
       ],
     },
