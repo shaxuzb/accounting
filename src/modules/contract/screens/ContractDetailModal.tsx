@@ -79,6 +79,23 @@ export default function ContractDetailModal({
               label: t("contract.fields.stateName"),
               children: data ? stateStatus(data.stateId, data.stateName) : "-",
             },
+            ...(data && data.contractTypeId !== 3
+              ? [
+                  {
+                    key: "isDefault",
+                    label: t("contract.fields.isDefault"),
+                    children: t(data.isDefault ? "app.common.yes" : "app.common.no"),
+                  },
+                  {
+                    key: "paymentTermDays",
+                    label: t("contract.fields.paymentTermDays"),
+                    children:
+                      data.paymentTermDays != null
+                        ? data.paymentTermDays
+                        : t("contract.messages.paymentTermPlaceholder"),
+                  },
+                ]
+              : []),
             ...(data && !isSaleContract
               ? [
                   {

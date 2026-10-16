@@ -2028,10 +2028,14 @@
       "endDate": "Tugash sanasi",
       "contractDate": "Shartnoma sanasi",
       "responsiblePerson": "Mas'ul shaxs",
-      "priceIncludesVat": "Narxlar QQS bilan"
+      "priceIncludesVat": "Narxlar QQS bilan",
+      "paymentTermDays": "To'lov muddati, kun",
+      "isDefault": "Asosiy shartnoma"
     },
     "messages": {
-      "priceIncludesVatHint": "Yoqilsa, shu shartnoma bo'yicha xaridda «Narx QQS bilan» o'zi yoqiladi (hujjatda o'zgartirish mumkin)."
+      "priceIncludesVatHint": "Yoqilsa, shu shartnoma bo'yicha xaridda «Narx QQS bilan» o'zi yoqiladi (hujjatda o'zgartirish mumkin).",
+      "paymentTermPlaceholder": "Muddat yo'q",
+      "isDefaultHint": "Kontragent tanlanganda hujjatga shu shartnoma o'zi qo'yiladi (shu turdagi bittasi)"
     }
   },
   "products": {

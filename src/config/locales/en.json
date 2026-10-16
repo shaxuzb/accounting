@@ -2028,10 +2028,14 @@
       "endDate": "End date",
       "contractDate": "Contract date",
       "responsiblePerson": "Responsible person",
-      "priceIncludesVat": "Prices include VAT"
+      "priceIncludesVat": "Prices include VAT",
+      "paymentTermDays": "Payment term, days",
+      "isDefault": "Main contract"
     },
     "messages": {
-      "priceIncludesVatHint": "When on, purchases under this contract start with «Price includes VAT» switched on (it can be changed on the document)."
+      "priceIncludesVatHint": "When on, purchases under this contract start with «Price includes VAT» switched on (it can be changed on the document).",
+      "paymentTermPlaceholder": "No term",
+      "isDefaultHint": "Documents take it when the counterparty is picked (one per kind)"
     }
   },
   "products": {

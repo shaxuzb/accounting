@@ -18,6 +18,8 @@ export interface Contract {
   createdDate: string;
   comment: string;
   priceIncludesVat?: boolean;
+  isDefault?: boolean;
+  paymentTermDays?: number | null;
   currencyId?: number | null;
   currencyCode?: string | null;
 }

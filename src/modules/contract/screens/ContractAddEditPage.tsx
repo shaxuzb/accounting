@@ -9,6 +9,7 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import InputText from "@/components/fields/InputText";
 import SwitchField from "@/components/fields/SwitchField";
+import InputNumberFormat from "@/components/fields/InputNumber";
 import type { ContractForm } from "../types/form";
 import { useGetDetailContract } from "../hooks/useGetDetailContract";
 import { useCreateContract } from "../hooks/useCreateContract";
@@ -34,11 +35,15 @@ const createDefaultValues = (): ContractForm => ({
   endDate: "",
   comment: "",
   priceIncludesVat: false,
+  isDefault: false,
+  paymentTermDays: null,
   stateId: null,
 });
 
 /** «Yetkazib beruvchi bilan shartnoma» (cmn_contract_type). */
 const supplierContractTypeId = 1;
+/** «Qarz (kredit) shartnomasi»: no main contract or payment term for documents. */
+const loanContractTypeId = 3;
 
 interface ContractAddEditPageProps {
   open: boolean;
@@ -104,6 +109,7 @@ export default function ContractAddEditPage({
         priceIncludesVat:
           values.contractTypeId === supplierContractTypeId &&
           values.priceIncludesVat,
+        paymentTermDays: values.paymentTermDays ?? null,
       };
       try {
         if (isEdit && editId) {
@@ -141,6 +147,8 @@ export default function ContractAddEditPage({
         endDate: Contract.endDate ?? null,
         comment: Contract.comment ?? "",
         priceIncludesVat: Boolean(Contract.priceIncludesVat),
+        isDefault: Boolean(Contract.isDefault),
+        paymentTermDays: Contract.paymentTermDays ?? null,
         stateId: Contract.stateId ?? null,
       });
     }
@@ -279,6 +287,31 @@ export default function ContractAddEditPage({
                 label="contract.fields.comment"
               />
             </Col>
+            {/* 1C: the counterparty's main contract of its kind and the term a debt falls due in */}
+            {formik.values.contractTypeId !== loanContractTypeId && (
+              <>
+                <Col span={12}>
+                  <InputNumberFormat
+                    formik={formik}
+                    fieldName="paymentTermDays"
+                    label="contract.fields.paymentTermDays"
+                    min={0}
+                    max={3650}
+                    precision={0}
+                    placeholder={t("contract.messages.paymentTermPlaceholder")}
+                  />
+                </Col>
+                <Col span={12}>
+                  <SwitchField
+                    formik={formik}
+                    fieldName="isDefault"
+                    label="contract.fields.isDefault"
+                    description="contract.messages.isDefaultHint"
+                    marginBottom="mb-2"
+                  />
+                </Col>
+              </>
+            )}
             {formik.values.contractTypeId === supplierContractTypeId && (
               <Col span={24}>
                 <SwitchField

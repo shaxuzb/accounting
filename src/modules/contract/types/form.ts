@@ -14,6 +14,10 @@ export interface ContractForm {
   comment: string;
   /** Yetkazib beruvchi narxlari QQS bilanmi — xaridda «Narx QQS bilan» shundan boshlanadi. */
   priceIncludesVat: boolean;
+  /** Kontragentning shu turdagi asosiy shartnomasi (1C «Использовать как основной»). */
+  isDefault: boolean;
+  /** To'lov muddati, kun (1C «Срок оплаты»); bo'sh — muddat yo'q. */
+  paymentTermDays: number | null;
   stateId?: number | null;
 }
 
