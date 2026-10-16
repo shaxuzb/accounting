@@ -27,6 +27,8 @@ export interface FaReceiptPayload {
   counterpartyId: number | null;
   /** The supplier's contract the debt (6010) is kept by. */
   contractId?: number | null;
+  /** The prices hold the VAT: it is taken out of them (from the contract, 1C). */
+  priceIncludesVat?: boolean;
   currencyId: number;
   receiptTypeId: number;
   supplierAccountId: number;

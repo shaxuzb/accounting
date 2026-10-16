@@ -23,6 +23,7 @@ export interface FaReceiptFormValues
   extends Omit<FaReceiptPayload, "counterpartyId" | "currencyId" | "receiptTypeId" | "supplierAccountId" | "lines"> {
   counterpartyId: number | null;
   contractId: number | null;
+  priceIncludesVat: boolean;
   currencyId: number | null;
   receiptTypeId: number | null;
   supplierAccountId: number | null;

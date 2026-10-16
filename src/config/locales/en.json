@@ -913,7 +913,8 @@
       "saveDraft": "Save draft"
     },
     "messages": {
-      "chooseSaveMode": "How would you like to save the document?"
+      "chooseSaveMode": "How would you like to save the document?",
+      "lineNetAmount": "Amount without VAT: {{amount}} — the assets' initial costs must add up to it"
     },
     "movement": {
       "newExpenseAccount": "Depreciation expense account (new)",

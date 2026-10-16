@@ -915,7 +915,8 @@
       "saveDraft": "Qoralama saqlash"
     },
     "messages": {
-      "chooseSaveMode": "Hujjatni qanday saqlamoqchisiz?"
+      "chooseSaveMode": "Hujjatni qanday saqlamoqchisiz?",
+      "lineNetAmount": "QQSsiz summa: {{amount}} — aktivlarning boshlang'ich qiymati shunga teng bo'lishi kerak"
     },
     "movement": {
       "newExpenseAccount": "Amortizatsiya xarajat hisobi (yangi)",

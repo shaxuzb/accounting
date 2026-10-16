@@ -37,6 +37,7 @@ const createDefaultValues = (): FaReceiptFormValues => ({
   assetKindId: faAssetKinds.fixed,
   counterpartyId: null,
   contractId: null,
+  priceIncludesVat: false,
   // UZS, as every other document starts (CurrencyIdConst.UZS)
   currencyId: 1,
   receiptTypeId: null,
@@ -91,6 +92,7 @@ const toPayload = (
   assetKindId: values.assetKindId,
   counterpartyId: isSurplus || values.counterpartyId == null ? null : Number(values.counterpartyId),
   contractId: isSurplus || values.contractId == null ? null : Number(values.contractId),
+  priceIncludesVat: isSurplus ? false : Boolean(values.priceIncludesVat),
   currencyId: Number(values.currencyId),
   receiptTypeId: Number(values.receiptTypeId),
   supplierAccountId: Number(values.supplierAccountId),
@@ -157,6 +159,7 @@ export default function FaReceiptFormPage() {
       assetKindId: record?.assetKindId ?? (inventory?.assetKindId as FaReceiptFormValues["assetKindId"] | undefined) ?? newKind,
       counterpartyId: record?.counterpartyId ?? createDefaultValues().counterpartyId,
       contractId: record?.contractId ?? createDefaultValues().contractId,
+      priceIncludesVat: record?.priceIncludesVat ?? createDefaultValues().priceIncludesVat,
       currencyId: record?.currencyId ?? createDefaultValues().currencyId,
       receiptTypeId: record?.receiptTypeId ?? (inventory ? faSurplusReceiptTypeId : createDefaultValues().receiptTypeId),
       supplierAccountId:

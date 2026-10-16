@@ -1,4 +1,7 @@
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
+import { useContractPriceIncludesVatDefault } from "@/shared/hooks/useContractDefaults";
+import SwitchField from "@/components/fields/SwitchField";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, Button, Col, Collapse, Row } from "antd";
 import type { CollapseProps } from "antd";
@@ -69,6 +72,22 @@ export default function FaReceiptFormFields({
   // a surplus found at an inventory: no supplier and no VAT, credited to other income (9390)
   const isSurplus = Number(formik.values.receiptTypeId) === 4;
   const fromInventory = Boolean(formik.values.inventoryDocId);
+  // the contract brings its «Narx QQS bilan» and settlement currency, as on a purchase (1C)
+  useContractPriceIncludesVatDefault(formik, !isSurplus);
+  const { data: vatRates = [] } = useQuery({
+    queryKey: ["fa-receipt", "vat-rates"],
+    queryFn: async () =>
+      (await $axiosPrivate.get<{ id: number; name: string }[]>(selectListEndpoints.vatRatesSelectList)).data,
+    staleTime: 5 * 60 * 1000,
+  });
+  /** The line's sum without VAT: what its assets' initial costs add up to. */
+  const lineNetAmount = (price: number, quantity: number, vatRateId: number | null) => {
+    const gross = (Number(price) || 0) * (Number(quantity) || 0);
+    if (!formik.values.priceIncludesVat || !vatRateId) return gross;
+    const name = vatRates.find((rate) => rate.id === Number(vatRateId))?.name ?? "";
+    const percent = Number(name.match(/(\d+(?:[.,]\d+)?)/)?.[1]?.replace(",", ".") ?? 0);
+    return Math.round((gross / (1 + percent / 100)) * 100) / 100;
+  };
   // the intangible accounts and groups exist once the server has set them up
   const kindReady = useIntangibleSetup(assetKindId);
   const accountsEnabled = Boolean(documentTypeId) && kindReady;
@@ -394,6 +413,13 @@ export default function FaReceiptFormFields({
               )}
             </Row>
 
+            {!isSurplus && formik.values.priceIncludesVat && line.vatRateId ? (
+              <div className="mb-3 text-sm text-secondary-text">
+                {t("fa.messages.lineNetAmount", {
+                  amount: lineNetAmount(line.price, line.quantity, line.vatRateId).toLocaleString("ru-RU"),
+                })}
+              </div>
+            ) : null}
             <div className="rounded-lg border border-border bg-background/40">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
                 <div className="font-semibold">
@@ -542,6 +568,21 @@ export default function FaReceiptFormFields({
               enabled={Boolean(documentTypeId)}
             />
           </Col>
+          {!isSurplus && (
+            <Col span={6}>
+              <SwitchField
+                formik={formik}
+                fieldName="priceIncludesVat"
+                label="purchase.fields.priceIncludesVat"
+                description={
+                  formik.values.priceIncludesVat
+                    ? "purchase.messages.priceIncludesVatOn"
+                    : "purchase.messages.priceIncludesVatOff"
+                }
+                marginBottom="mb-4"
+              />
+            </Col>
+          )}
         </Row>
       </Card>
 
