@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePriceTypes } from "@/modules/priceType/api";
 import { contractTypeIds, takeMainOrOnlyContract } from "@/shared/constants/contractSelect";
 import { useContractPriceIncludesVatDefault } from "@/shared/hooks/useContractDefaults";
 import type { FormikProps } from "formik";
@@ -20,7 +21,7 @@ import { contractPermissions } from "@/modules/contract/constants/permissions";
 import type { Contract } from "@/modules/contract/types/type";
 import { formatDate, formatDateWithOutTime } from "@/utils/helpers";
 import type { SaleDocForm } from "../types/form";
-import { Col, Row } from "antd";
+import { Col, Form, Row, Select } from "antd";
 import Card from "@/components/ui/card/Card";
 import {
   saleDocumentAccountRoleCodes,
@@ -33,16 +34,54 @@ interface Props {
   isEdit: boolean;
   /** A non-payer posts no output VAT, so it needs no VAT account (1C «Без НДС»). */
   vatPayer?: boolean;
+  /** The price type changed (by hand or with the contract): the lines' prices may be refilled. */
+  onPriceTypeChanged?: (name: string) => void;
 }
 
 export default function SaleDocumentFormFields({
   formik,
   isEdit,
   vatPayer = true,
+  onPriceTypeChanged,
 }: Props) {
   const rate = useAutoExchangeRate(formik);
   // 1C «Валюта взаиморасчетов»: a contract that names its currency puts it on the sale and fixes it
-  const { contractCurrencyId } = useContractPriceIncludesVatDefault(formik, true);
+  const { contractCurrencyId, contractPriceTypeId } = useContractPriceIncludesVatDefault(formik, true);
+  const { data: priceTypes = [] } = usePriceTypes();
+  const defaultPriceTypeId = priceTypes.find((type) => type.isDefault)?.id ?? null;
+
+  const changePriceType = (priceTypeId: number | null) => {
+    if ((formik.values.priceTypeId ?? null) === priceTypeId) return;
+    formik.setFieldValue("priceTypeId", priceTypeId, false);
+    const type = priceTypes.find((item) => item.id === priceTypeId);
+    if (type) onPriceTypeChanged?.(type.name);
+  };
+
+  // 1C: the contract's price type, else the default one, comes onto the sale when the contract
+  // is picked; a loaded document keeps the type it was saved with
+  const initialValuesRef = useRef(formik.initialValues);
+  const appliedContractRef = useRef<number | null | undefined>(formik.values.contractId);
+  useEffect(() => {
+    if (initialValuesRef.current !== formik.initialValues) {
+      initialValuesRef.current = formik.initialValues;
+      appliedContractRef.current = formik.values.contractId;
+      return;
+    }
+    if (priceTypes.length === 0) return;
+    const contractId = formik.values.contractId ?? null;
+    if (formik.values.priceTypeId === undefined && !contractId) {
+      formik.setFieldValue("priceTypeId", defaultPriceTypeId, false);
+      appliedContractRef.current = contractId;
+      return;
+    }
+    if (appliedContractRef.current === contractId) return;
+    if (contractId && contractPriceTypeId === undefined) return; // the contract is loading
+    appliedContractRef.current = contractId;
+    // a contract without a type keeps the one chosen on the sale
+    changePriceType(contractPriceTypeId ?? formik.values.priceTypeId ?? defaultPriceTypeId);
+    // formik is a new object every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.initialValues, formik.values.contractId, formik.values.priceTypeId, contractPriceTypeId, priceTypes, defaultPriceTypeId]);
   const { t } = useTranslation();
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
   const [contractCreateOpen, setContractCreateOpen] = useState(false);
@@ -172,6 +211,22 @@ export default function SaleDocumentFormFields({
             disabled={Boolean(contractCurrencyId)}
           />
         </Col>
+        {priceTypes.length > 0 && (
+          <Col span={24} sm={12} lg={8} xl={4}>
+            <Form.Item label={t("priceType.salePriceType")} className="mb-2">
+              <Select
+                allowClear
+                className="w-full"
+                value={formik.values.priceTypeId ?? null}
+                placeholder={t("priceType.saleNoType")}
+                // as the other selects of the form (SelectCustom): no filled background
+                style={{ backgroundColor: "transparent" }}
+                onChange={(value?: number) => changePriceType(value ?? null)}
+                options={priceTypes.map((type) => ({ value: type.id, label: type.name }))}
+              />
+            </Form.Item>
+          </Col>
+        )}
         {rate.isForeign && (
           <Col span={24} sm={12} lg={8} xl={4}>
             <InputNumberFormat

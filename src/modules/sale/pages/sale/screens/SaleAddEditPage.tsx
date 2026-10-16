@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useNavigate, useParams, useSearchParams } from "react-router";
 import { useSaleInvoice } from "@/modules/saleInvoice/api";
+import { usePriceTypePrices } from "@/modules/priceType/api";
 import toast from "react-hot-toast";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useAppSelector } from "@/store/hooks";
@@ -188,6 +189,7 @@ export default function SaleAddEditPage() {
       ? { ...baseSaleCondition, vatRateId: vatPayer.noVatRateId }
       : baseSaleCondition;
 
+  const [refillToken, setRefillToken] = useState(0);
   const formik = useFormik<SaleDocForm>({
     initialValues: document
       ? {
@@ -195,6 +197,7 @@ export default function SaleAddEditPage() {
           exchangeRate: document.exchangeRate ?? 0,
           counterpartyId: document.counterpartyId,
           contractId: document.contractId ?? null,
+          priceTypeId: document.priceTypeId ?? null,
           advanceOffsetMode: document.advanceOffsetMode ?? 1,
           advanceDocumentId: document.advanceDocumentId ?? null,
           warehouseId: document.warehouseId,
@@ -306,6 +309,28 @@ export default function SaleAddEditPage() {
       }
     },
   });
+
+  // 1C «Тип цен»: the type's prices on the sale's date, in its currency
+  const typePricesQuery = usePriceTypePrices(
+    formik.values.priceTypeId,
+    formik.values.docDate ? dayjs(formik.values.docDate).format("YYYY-MM-DD") : null,
+    formik.values.currencyId,
+  );
+  const typePrices = useMemo(
+    () =>
+      formik.values.priceTypeId && typePricesQuery.data && !typePricesQuery.isFetching
+        ? new Map(
+            typePricesQuery.data.map((item) => [
+              item.productId,
+              { price: item.price, priceIncludesVat: item.priceIncludesVat },
+            ]),
+          )
+        : undefined,
+    [formik.values.priceTypeId, typePricesQuery.data, typePricesQuery.isFetching],
+  );
+  useEffect(() => {
+    if (typePricesQuery.error) errorHandlers(typePricesQuery.error);
+  }, [typePricesQuery.error]);
 
   // the invoice's customer, contract and currency, put on the new sale once
   const invoiceApplied = useRef(false);
@@ -474,6 +499,15 @@ export default function SaleAddEditPage() {
           formik={formik}
           isEdit={isEdit}
           vatPayer={vatPayer.isVatPayer}
+          onPriceTypeChanged={(name) => {
+            // 1C «Перезаполнить цены?» when the price type changes under filled lines
+            if (!products.length) return;
+            modal.confirm({
+              title: t("priceType.refillTitle"),
+              content: t("priceType.refillConfirm", { name }),
+              onOk: () => setRefillToken((value) => value + 1),
+            });
+          }}
         />
         {invoice && (
           <Alert
@@ -492,6 +526,8 @@ export default function SaleAddEditPage() {
           />
         )}
         <SaleProductSelection
+          typePrices={typePrices}
+          refillToken={refillToken}
           vatPayer={vatPayer.isVatPayer}
           warehouseId={warehouseId}
           exchangeRate={Number(formik.values.currencyId) > 1 ? formik.values.exchangeRate : 1}

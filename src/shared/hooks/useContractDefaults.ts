@@ -11,6 +11,8 @@ interface ContractVatOption {
   priceIncludesVat?: boolean;
   /** The settlement currency (1C «Валюта взаиморасчетов»); none — any. */
   currencyId?: number | null;
+  /** The price type the contract's sales are priced by (1C «Тип цен»). */
+  priceTypeId?: number | null;
 }
 
 /**
@@ -87,8 +89,10 @@ export function useContractPriceIncludesVatDefault<T extends ContractDefaultsFor
     }
   }, [contractId, contracts, enabled, formik]);
 
+  const contract = contracts?.find((item) => item.id === contractId);
   return {
-    contractCurrencyId:
-      contracts?.find((item) => item.id === contractId)?.currencyId ?? null,
+    contractCurrencyId: contract?.currencyId ?? null,
+    /** Undefined until the contract is loaded; null — it names no price type. */
+    contractPriceTypeId: contract ? (contract.priceTypeId ?? null) : undefined,
   };
 }

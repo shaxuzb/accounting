@@ -2,7 +2,7 @@ import { useAppSelector } from "@/store/hooks";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { Button, Col, Form, Modal, Row, Spin } from "antd";
+import { Button, Col, Form, Modal, Row, Select, Spin } from "antd";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
@@ -22,6 +22,7 @@ import type { Contract } from "../types/type";
 import { contractEndpoints } from "../constants/endpoints";
 import { contractPermissions } from "../constants/permissions";
 import ContractResponsiblePersonAddEditModal from "./ContractResponsiblePersonAddEditModal";
+import { usePriceTypes } from "@/modules/priceType/api";
 
 const createDefaultValues = (): ContractForm => ({
   organizationId: null,
@@ -37,6 +38,7 @@ const createDefaultValues = (): ContractForm => ({
   priceIncludesVat: false,
   isDefault: false,
   paymentTermDays: null,
+  priceTypeId: null,
   stateId: null,
 });
 
@@ -67,6 +69,7 @@ export default function ContractAddEditPage({
   // Taken once when the form opens; the factory reads the clock.
   const [openedDefaults] = useState(createDefaultValues);
   const { t } = useTranslation();
+  const { data: priceTypes = [] } = usePriceTypes();
   // a contract always belongs to the organization in work (the server takes it from there)
   const currentOrganizationId = useAppSelector((state) => state.organization.id);
   const editId = id ?? null;
@@ -110,6 +113,8 @@ export default function ContractAddEditPage({
           values.contractTypeId === supplierContractTypeId &&
           values.priceIncludesVat,
         paymentTermDays: values.paymentTermDays ?? null,
+        // 1C «Тип цен»: only a customer's contract prices its sales
+        priceTypeId: values.contractTypeId === 2 ? (values.priceTypeId ?? null) : null,
       };
       try {
         if (isEdit && editId) {
@@ -149,6 +154,7 @@ export default function ContractAddEditPage({
         priceIncludesVat: Boolean(Contract.priceIncludesVat),
         isDefault: Boolean(Contract.isDefault),
         paymentTermDays: Contract.paymentTermDays ?? null,
+        priceTypeId: Contract.priceTypeId ?? null,
         stateId: Contract.stateId ?? null,
       });
     }
@@ -311,6 +317,25 @@ export default function ContractAddEditPage({
                   />
                 </Col>
               </>
+            )}
+            {formik.values.contractTypeId === 2 && (
+              <Col span={12}>
+                <Form.Item
+                  label={t("contract.fields.priceType")}
+                  extra={t("contract.messages.priceTypeHint")}
+                >
+                  <Select
+                    allowClear
+                    className="w-full"
+                    value={formik.values.priceTypeId ?? null}
+                    placeholder={t("priceType.saleNoType")}
+                    // as the other selects of the form (SelectCustom): no filled background
+                    style={{ backgroundColor: "transparent" }}
+                    onChange={(value?: number) => formik.setFieldValue("priceTypeId", value ?? null)}
+                    options={priceTypes.map((type) => ({ value: type.id, label: type.name }))}
+                  />
+                </Form.Item>
+              </Col>
             )}
             {formik.values.contractTypeId === supplierContractTypeId && (
               <Col span={24}>

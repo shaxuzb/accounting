@@ -14,6 +14,13 @@ import { warehouseTransferPermissions } from "./pages/warehouse-transfer/constan
 const WarehouseTransferDetailPage = lazy(() => import("./pages/warehouse-transfer/screens/WarehouseTransferDetailPage"));
 const WarehouseTransferListPage = lazy(() => import("./pages/warehouse-transfer/screens/WarehouseTransferListPage"));
 
+const PriceTypeListPage = lazy(() => import("../priceType/PriceTypeListPage"));
+const PriceSettingListPage = lazy(() =>
+  import("../priceType/PriceSettingPages").then((m) => ({ default: m.PriceSettingListPage })),
+);
+const PriceSettingEditorPage = lazy(() =>
+  import("../priceType/PriceSettingPages").then((m) => ({ default: m.PriceSettingEditorPage })),
+);
 const RetailRevaluationListPage = lazy(() =>
   import("./pages/retail-revaluation/RetailRevaluationPages").then((m) => ({ default: m.RetailRevaluationListPage })),
 );
@@ -86,6 +93,30 @@ export const warehouseRoutes: RouteObject = {
             showBack: true,
             backTo: "..",
           },
+        },
+      ],
+    },
+    {
+      // 1C «Типы цен номенклатуры»
+      path: "price-types",
+      handle: { title: "priceType.title" },
+      element: withPermission(<PriceTypeListPage />, "PRICE_TYPE_VIEW"),
+    },
+    {
+      // 1C «Установка цен номенклатуры»
+      path: "price-settings",
+      handle: { title: "priceSetting.title" },
+      children: [
+        { index: true, element: withPermission(<PriceSettingListPage />, "PRICE_SETTING_VIEW") },
+        {
+          path: "new",
+          element: withPermission(<PriceSettingEditorPage />, "PRICE_SETTING_CREATE"),
+          handle: { title: "priceSetting.new", showBack: true, backTo: ".." },
+        },
+        {
+          path: ":id",
+          element: withPermission(<PriceSettingEditorPage />, "PRICE_SETTING_VIEW"),
+          handle: { title: "priceSetting.document", showBack: true, backTo: ".." },
         },
       ],
     },

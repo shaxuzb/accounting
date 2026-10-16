@@ -18,6 +18,8 @@ export interface ContractForm {
   isDefault: boolean;
   /** To'lov muddati, kun (1C «Срок оплаты»); bo'sh — muddat yo'q. */
   paymentTermDays: number | null;
+  /** 1C «Тип цен»: the type a customer's sales are priced by. */
+  priceTypeId?: number | null;
   stateId?: number | null;
 }
 

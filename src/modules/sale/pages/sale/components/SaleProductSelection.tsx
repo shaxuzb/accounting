@@ -88,6 +88,13 @@ interface Props {
   vatPayer?: boolean;
   /** A retail sale: lines take a discount off the price (1C «% скидки»). */
   allowDiscount?: boolean;
+  /**
+   * The prices of the document's price type (1C «Тип цен»), in its currency; undefined while they
+   * load or when the document has no type. A new line takes the product's price from here.
+   */
+  typePrices?: Map<number, { price: number; priceIncludesVat: boolean }>;
+  /** Raised to refill the lines' prices from {@link typePrices} (1C «Перезаполнить цены»). */
+  refillToken?: number;
 }
 
 /** Code-less units of the product left in stock, from the batches kept on the line. */
@@ -285,6 +292,8 @@ export default function SaleProductSelection({
   exchangeRate,
   vatPayer = true,
   allowDiscount = false,
+  typePrices,
+  refillToken = 0,
 }: Props) {
   const { t } = useTranslation();
   const costRate = Number(exchangeRate) > 1 ? Number(exchangeRate) : 1;
@@ -333,7 +342,42 @@ export default function SaleProductSelection({
     },
     Boolean(warehouseId),
   );
-  const stockProducts = productStockData?.items ?? EMPTY_STOCK_PRODUCTS;
+  const { data: vatRateData } = useQuery<VatRateOption[]>({
+    queryKey: ["selectlist", selectListKeys.vatRate],
+    queryFn: async () => {
+      const { data } = await $axiosPrivate.get<VatRateOption[]>(
+        selectListEndpoints.vatRatesSelectList,
+      );
+      return data ?? [];
+    },
+  });
+  const vatRateOptions = vatRateData ?? EMPTY_VAT_RATE_OPTIONS;
+  // the price of the document's price type (1C «Тип цен»), without VAT, in the document currency
+  const getTypeNetPrice = useCallback(
+    (productId: number, vatRateId?: number | null) => {
+      const entry = typePrices?.get(productId);
+      if (!entry) return undefined;
+      const vatPercent = vatPayer
+        ? getVatPercent(vatRateId ?? saleCondition.vatRateId, vatRateOptions)
+        : 0;
+      return entry.priceIncludesVat && vatPercent
+        ? roundMoney(entry.price / (1 + vatPercent / 100))
+        : roundMoney(entry.price);
+    },
+    [saleCondition.vatRateId, typePrices, vatPayer, vatRateOptions],
+  );
+  const rawStockProducts = productStockData?.items ?? EMPTY_STOCK_PRODUCTS;
+  // a product priced by the type offers that price, in the picker and on a new line
+  const stockProducts = useMemo(
+    () =>
+      typePrices
+        ? rawStockProducts.map((product) => {
+            const typePrice = getTypeNetPrice(getStockProductId(product));
+            return typePrice === undefined ? product : { ...product, salePrice: typePrice };
+          })
+        : rawStockProducts,
+    [getTypeNetPrice, rawStockProducts, typePrices],
+  );
   // A draft holds nothing back, so a saved line may take up to what the warehouse has
   // now, not only the quantity it was saved with.
   const stockByProductId = useMemo(
@@ -382,16 +426,6 @@ export default function SaleProductSelection({
 
     if (hasChanges) onChange(nextProducts);
   }, [onChange, productById, products, stockProducts.length]);
-  const { data: vatRateData } = useQuery<VatRateOption[]>({
-    queryKey: ["selectlist", selectListKeys.vatRate],
-    queryFn: async () => {
-      const { data } = await $axiosPrivate.get<VatRateOption[]>(
-        selectListEndpoints.vatRatesSelectList,
-      );
-      return data ?? [];
-    },
-  });
-  const vatRateOptions = vatRateData ?? EMPTY_VAT_RATE_OPTIONS;
   const syncLineAmounts = useCallback(
     (line: SaleSelectedProduct): SaleSelectedProduct => ({
       ...line,
@@ -423,6 +457,34 @@ export default function SaleProductSelection({
 
     if (hasChanges) onChange(nextProducts);
   }, [onChange, products, syncLineAmounts, vatRateOptions]);
+
+  const refilledTokenRef = useRef(refillToken);
+  useEffect(() => {
+    if (refillToken === refilledTokenRef.current || !typePrices) return;
+    refilledTokenRef.current = refillToken;
+    let refilled = 0;
+    const nextProducts = products.map((line) => {
+      const typePrice = getTypeNetPrice(line.productId, line.vatRateId);
+      if (!line.productId || typePrice === undefined) return line;
+      refilled += 1;
+      return syncLineAmounts(
+        recalculateLine({
+          line: {
+            ...line,
+            priceType: "manual",
+            markupPercent: getMarkupPercent(docCost(line.costPrice), typePrice),
+          },
+          unitPrice: typePrice,
+          costingMethodId: saleCondition.costingMethodId,
+          costRate,
+        }),
+      );
+    });
+    if (refilled) onChange(nextProducts);
+    toast.success(t("priceType.refillDone", { count: refilled }));
+    // only a new token refills; the lines are read as they are then
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refillToken, typePrices]);
 
   const { chartAccounts, defaultAccounts } = useGetSaleDocumentAccountOptions(
     documentTypeId ?? saleDocumentTypeId,
@@ -577,6 +639,7 @@ export default function SaleProductSelection({
             : undefined;
       const salePriceBySelection =
         overrideSalePrice === undefined ? undefined : Number(overrideSalePrice);
+      const typePrice = getTypeNetPrice(productId, existingLine?.vatRateId);
       const priceLayers = aggregateStockMode ? [] : detail.layers;
       const allocatedLayers = aggregateStockMode
         ? []
@@ -620,7 +683,7 @@ export default function SaleProductSelection({
         costingMethodId: saleCondition.costingMethodId,
         defaultCostPrice: stockCostPrice || detail.costPrice,
         defaultSalePrice:
-          salePriceBySelection ?? existingLine?.unitPrice ?? detail.salePrice,
+          salePriceBySelection ?? existingLine?.unitPrice ?? typePrice ?? detail.salePrice,
         layers: allocatedLayers,
       });
       const unitId = detail.unitId || product.unitId || 0;
@@ -631,6 +694,7 @@ export default function SaleProductSelection({
       const selectedSalePrice =
         salePriceBySelection ??
         existingLine?.unitPrice ??
+        typePrice ??
         detail.salePrice ??
         prices.unitPrice ??
         prices.costPrice ??
@@ -639,6 +703,7 @@ export default function SaleProductSelection({
         costRate > 1
           ? (salePriceBySelection ??
             existingLine?.unitPrice ??
+            typePrice ??
             docCost(prices.costPrice))
           : allocatedLayers.length
             ? prices.unitPrice || selectedSalePrice || prices.costPrice
@@ -698,8 +763,9 @@ export default function SaleProductSelection({
           salePriceBySelection === undefined
             ? getMarkupPercent(docCost(prices.costPrice), unitPrice)
             : nextMarkupPercent,
+        // a price chosen or taken from the price type stays as it is when the quantity changes
         priceType:
-          salePriceBySelection === undefined
+          salePriceBySelection === undefined && typePrice === undefined
             ? (existingLine?.priceType ?? "costPlusPercent")
             : "manual",
         isPieceTracked: Boolean(product.isPieceTracked),

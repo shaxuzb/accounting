@@ -20,6 +20,7 @@ export interface Contract {
   priceIncludesVat?: boolean;
   isDefault?: boolean;
   paymentTermDays?: number | null;
+  priceTypeId?: number | null;
   currencyId?: number | null;
   currencyCode?: string | null;
 }

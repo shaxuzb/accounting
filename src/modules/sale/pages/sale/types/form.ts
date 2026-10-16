@@ -3,6 +3,8 @@ export interface SaleDocForm {
   exchangeRate?: number | null;
   counterpartyId: number | null;
   contractId: number | null;
+  /** The price type the sale is priced by (1C «Тип цен»); undefined — not chosen yet. */
+  priceTypeId?: number | null;
   /** How the advances are offset (1C «Способ зачета аванса»): 1 automatic, 2 by document, 3 none. */
   advanceOffsetMode?: number;
   /** The advance offset when by document (a cmn_document_registry id). */
@@ -69,6 +71,7 @@ export interface SaleDocCreateForm {
   lines: SaleDocCreateLineForm[];
   /** The invoice for payment the sale is made from (1C «на основании счета»). */
   saleInvoiceId?: number | null;
+  priceTypeId?: number | null;
 }
 
 export interface SaleDocUpdateForm {
@@ -78,6 +81,7 @@ export interface SaleDocUpdateForm {
   warehouseId: number;
   currencyId: number;
   contractId: number | null;
+  priceTypeId?: number | null;
   /** How the advances are offset (1C «Способ зачета аванса»): 1 automatic, 2 by document, 3 none. */
   advanceOffsetMode?: number;
   /** The advance offset when by document (a cmn_document_registry id). */

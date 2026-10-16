@@ -251,6 +251,14 @@ export const menuPermissions: MainMenu = {
           },
         },
         {
+          code: "PRICE_TYPE_VIEW",
+          linkData: { path: "price-types", title: "priceType.title" },
+        },
+        {
+          code: "PRICE_SETTING_VIEW",
+          linkData: { path: "price-settings", title: "priceSetting.title" },
+        },
+        {
           code: "RETAIL_REVALUATION_VIEW",
           linkData: {
             path: "retail-revaluations",

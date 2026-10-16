@@ -5,6 +5,7 @@ export interface SaleDoc {
   counterpartyId: number;
   counterpartyName: string;
   contractId?: number | null;
+  priceTypeId?: number | null;
   advanceOffsetMode?: number;
   advanceDocumentId?: number | null;
   contractName?: string | null;
