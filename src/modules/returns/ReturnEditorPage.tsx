@@ -1,5 +1,5 @@
 import { useVatPayer } from "@/shared/hooks/useVatPayer";
-import { Alert, Button, DatePicker, Input, InputNumber, Popconfirm, Select, Space, Table } from "antd";
+import { Alert, Button, DatePicker, Input, InputNumber, Popconfirm, Select, Space, Table, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import { Ban, Save, Send, Trash2, Undo2 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -107,6 +107,26 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
     "UZS";
 
   const total = lines.reduce((sum, line) => sum + (readOnly ? line.totalAmount : line.amount), 0);
+
+  // 1C «Возврат товаров поставщику»: the debt falls by the price, the goods leave at the value
+  // their batch holds, and the gap goes to 9390 (a gain) or 9430 (a loss) — shown before posting
+  const toSupplier = kind === returnKind.toSupplier;
+  const exchangeRate = baseDocument?.exchangeRate ?? data?.exchangeRate ?? 1;
+  const batchValue = (line: ReturnLine) =>
+    readOnly
+      ? (line.costAmount ?? null)
+      : line.unitCost == null
+        ? null
+        : Math.round(line.unitCost * line.quantity * 100) / 100;
+  const priceUzs = (line: ReturnLine) => {
+    const price = readOnly && !vatPayer.isVatPayer ? line.totalAmount : line.amount;
+    return currencyId === 1 ? price : Math.round(price * exchangeRate * 100) / 100;
+  };
+  const differences = lines.map((line) => {
+    const value = batchValue(line);
+    return value == null || !line.quantity ? null : Math.round((priceUzs(line) - value) * 100) / 100;
+  });
+  const differenceTotal = differences.reduce<number>((sum, value) => sum + (value ?? 0), 0);
 
   const baseOptions = useMemo(() => {
     const options = baseDocuments.map((item) => ({
@@ -223,6 +243,44 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
       width: 160,
       render: (value: number) => money(value),
     },
+    ...(toSupplier
+      ? ([
+          {
+            key: "batchValue",
+            title: (
+              <Tooltip title={t(readOnly ? "returnDoc.batchValueHint" : "returnDoc.batchValueDraftHint")}>
+                {t("returnDoc.batchValue")}
+              </Tooltip>
+            ),
+            align: "right",
+            width: 170,
+            render: (_: unknown, line: ReturnLine) => {
+              const value = batchValue(line);
+              if (value == null || !line.quantity) return "—";
+              return `${readOnly ? "" : "≈ "}${money(value)}`;
+            },
+          },
+          {
+            key: "difference",
+            title: (
+              <Tooltip title={t("returnDoc.differenceHint")}>{t("returnDoc.difference")}</Tooltip>
+            ),
+            align: "right",
+            width: 170,
+            render: (_: unknown, line: ReturnLine) => {
+              const value = differences[lines.indexOf(line)];
+              if (value == null) return "—";
+              if (value === 0) return money(0);
+              return (
+                <span className={value > 0 ? "text-green-700 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
+                  {value > 0 ? "+" : "−"}
+                  {money(Math.abs(value))} <span className="text-xs">({value > 0 ? "9390" : "9430"})</span>
+                </span>
+              );
+            },
+          },
+        ] as TableColumnsType<ReturnLine>)
+      : []),
   ];
 
   return (
@@ -367,6 +425,15 @@ function ReturnEditor({ kind, id, data }: { kind: ReturnKind; id: number | null;
           footer={() => (
             <div className="text-right">
               {readOnly || !vatPayer.isVatPayer ? t("returnDoc.total") : t("returnDoc.amountNet")}: <b>{money(total)} {currencyCode}</b>
+              {toSupplier && differences.some((value) => value != null && value !== 0) && (
+                <span className="ml-6">
+                  {t("returnDoc.difference")}:{" "}
+                  <b className={differenceTotal >= 0 ? "text-green-700 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
+                    {differenceTotal >= 0 ? "+" : "−"}
+                    {money(Math.abs(differenceTotal))} UZS
+                  </b>
+                </span>
+              )}
             </div>
           )}
         />

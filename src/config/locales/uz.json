@@ -4432,10 +4432,15 @@
       "3": "Chakana savdo chekini tanlang"
     },
     "hint": {
-      "1": "Qaytarish o'tkazilgan xarid asosida qilinadi: qatorlar, narx, QQS va hisoblar xariddan olinadi, faqat miqdorni kiriting. Tovar aynan o'sha xarid partiyasidan chiqadi (Dt 6010 Kt 2910, QQS Dt 6010 Kt 4410). Qarz xarid narxida kamayadi; partiyaga qo'shilgan transport, boj kabi xarajatlar qaytmaydi va Dt 9430 ga yoziladi.",
+      "1": "Qaytarish o'tkazilgan xarid asosida qilinadi: qatorlar, narx, QQS va hisoblar xariddan olinadi, faqat miqdorni kiriting. Tovar aynan o'sha xarid partiyasidan chiqadi (Dt 6010 Kt 2910, QQS Dt 6010 Kt 4410). Qarz xarid narxida kamayadi; partiyaga qo'shilgan transport, boj kabi xarajatlar qaytmaydi va Dt 9430 ga yoziladi. Partiya narxdan arzon bo'lsa, farq boshqa daromadga o'tadi (Dt 6010 Kt 9390). Jadvalda har qatorning partiya qiymati va farqi oldindan ko'rsatiladi.",
       "2": "Qaytarish o'tkazilgan sotuv asosida qilinadi: qatorlar, narx va QQS sotuvdan olinadi, faqat miqdorni kiriting. Tushum 9040 ga, tovar sotilgandagi tannarx bilan omborga qaytadi (Dt 9040 Kt 4010, Dt 6410 Kt 4010, Dt 2910 Kt 9120).",
       "3": "Qaytarish chakana savdo cheki asosida qilinadi: faqat miqdorni kiriting, pul to'langan joyidan qaytariladi."
-    }
+    },
+    "batchValue": "Partiya qiymati (so'm)",
+    "batchValueHint": "Tovar ombordan shu qiymatda chiqdi (Kt 2910)",
+    "batchValueDraftHint": "Xarid partiyasining hozirgi qiymati (transport, boj bilan) — o'tkazishda aynan shu partiyadan chiqadi",
+    "difference": "Farq",
+    "differenceHint": "Qaytarish narxi minus partiya qiymati: musbati boshqa daromad (Dt 6010 Kt 9390), manfiysi boshqa xarajat (Dt 9430 Kt 2910)"
   },
   "accountingPolicy": {
     "view": {

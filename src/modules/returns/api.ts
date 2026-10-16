@@ -17,6 +17,8 @@ export interface ReturnLine {
   vatAmount: number;
   totalAmount: number;
   costAmount?: number;
+  /** A supplier return not yet posted: what one unit of the purchase batch holds now (UZS). */
+  unitCost?: number | null;
   /** Goods kept by marking code: they come back by code. */
   isPieceTracked?: boolean;
   /** The units chosen to come back. */
@@ -57,6 +59,7 @@ export interface ReturnDocument {
   counterpartyName?: string | null;
   warehouseName?: string | null;
   currencyId: number;
+  exchangeRate?: number;
   amount: number;
   vatAmount: number;
   finalAmount: number;
@@ -72,6 +75,7 @@ export interface ReturnBaseDocument {
   counterpartyName?: string | null;
   warehouseName?: string | null;
   currencyId: number;
+  exchangeRate?: number;
   finalAmount: number;
   lines: ReturnLine[];
 }

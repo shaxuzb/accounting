@@ -4432,10 +4432,15 @@
       "3": "Choose a retail sale"
     },
     "hint": {
-      "1": "A return is made on a posted purchase: lines, prices, VAT and accounts come from it; enter the quantities only. The goods leave from that purchase's batch (Dt 6010 Ct 2910, VAT Dt 6010 Ct 4410). The debt falls by the purchase price; delivery, duty and other costs added to the batch do not come back and go to Dt 9430.",
+      "1": "A return is made on a posted purchase: lines, prices, VAT and accounts come from it; enter the quantities only. The goods leave from that purchase's batch (Dt 6010 Ct 2910, VAT Dt 6010 Ct 4410). The debt falls by the purchase price; delivery, duty and other costs added to the batch do not come back and go to Dt 9430. If the batch holds less than the price, the gap is other income (Dr 6010 Cr 9390). The table shows each line's batch value and difference beforehand.",
       "2": "A return is made on a posted sale: lines, prices and VAT come from it; enter the quantities only. Revenue goes to 9040, the goods come back at their cost of sale (Dt 9040 Ct 4010, Dt 6410 Ct 4010, Dt 2910 Ct 9120).",
       "3": "A return is made on a retail sale: enter the quantities; the money goes back where it was paid."
-    }
+    },
+    "batchValue": "Batch value (UZS)",
+    "batchValueHint": "The goods left the warehouse at this value (Cr 2910)",
+    "batchValueDraftHint": "The purchase batch's current value (delivery and customs included) — posting takes the goods from it",
+    "difference": "Difference",
+    "differenceHint": "Return price less batch value: a gain goes to other income (Dr 6010 Cr 9390), a loss to other expenses (Dr 9430 Cr 2910)"
   },
   "accountingPolicy": {
     "view": {
