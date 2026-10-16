@@ -76,7 +76,7 @@ function CustomsEditor({ id, data }: { id: number | null; data?: CustomsDocument
   const [edited, setEdited] = useState<CustomsLine[] | null>(data?.lines ?? null);
 
   const { data: purchases = [], isFetching: searching } = useCustomsPurchases(search, !readOnly);
-  const { data: base } = useCustomsBase(!readOnly && !edited ? purchaseId : null);
+  const { data: base } = useCustomsBase(!readOnly && !edited ? purchaseId : null, docDate.format("YYYY-MM-DD"));
   const { data: defaults } = useCustomsDefaults(docDate.format("YYYY-MM-DD"));
   const vatRates = defaults?.vatRates ?? [];
   const percentOf = (rateId?: number | null) => vatRates.find((x) => x.id === rateId)?.rate ?? 0;

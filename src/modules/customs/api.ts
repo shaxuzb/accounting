@@ -117,10 +117,11 @@ export const useCustomsPurchases = (search: string, enabled: boolean) =>
     enabled,
   });
 
-export const useCustomsBase = (purchaseId: number | null) =>
+// the customs value is counted at the Central Bank rate of the declaration's date (Customs Code art. 326)
+export const useCustomsBase = (purchaseId: number | null, date: string) =>
   useQuery({
-    queryKey: ["customs-declarations", "base", purchaseId],
-    queryFn: () => getJson<CustomsBase>(`${base}/base/${purchaseId}`),
+    queryKey: ["customs-declarations", "base", purchaseId, date],
+    queryFn: () => getJson<CustomsBase>(`${base}/base/${purchaseId}`, { date }),
     enabled: Boolean(purchaseId),
   });
 
