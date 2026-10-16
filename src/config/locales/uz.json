@@ -1428,7 +1428,10 @@
           "document": "Chiquvchi EDO hujjat #{{id}}",
           "detailDescription": "Provider holatini tekshirish va hujjatni E-IMZO bilan imzolash.",
           "sign": "Hujjatni imzolash",
-          "signUnavailable": "Joriy holatda hujjatni imzolash mumkin emas"
+          "signUnavailable": "Joriy holatda hujjatni imzolash mumkin emas",
+          "fromSale": "№{{number}} sotuvdan to'ldirildi. ESF dan oldin tekshiring:",
+          "esfExists": "Bu sotuv uchun ESF bor: №{{number}}, holati — {{status}}.",
+          "openEsf": "ESF ni ochish"
         },
         "sections": {
           "document": "Hujjat ma’lumotlari",
@@ -1491,7 +1494,9 @@
           "providerStatus": "Provider holati",
           "checkedAt": "Tekshirilgan vaqt",
           "reason": "Sabab",
-          "preparedPkcs7": "Tayyor PKCS#7"
+          "preparedPkcs7": "Tayyor PKCS#7",
+          "vatRegistrationCode": "QQS ro'yxat kodi",
+          "price": "Narx (QQSsiz)"
         },
         "status": {
           "reconciliation": "Provider va ichki holatni qo‘lda muvofiqlashtirish talab qilinadi"
@@ -2076,7 +2081,9 @@
       "notSold": "Sotilmaydi",
       "purchased": "Xarid qilinadi",
       "notPurchased": "Xarid qilinmaydi",
-      "pieceTracked": "Markirovkali"
+      "pieceTracked": "Markirovkali",
+      "packageCode": "Qadoq kodi (IKPU)",
+      "packageName": "Qadoq nomi"
     },
     "actions": {
       "noChanges": "Saqlanmagan o'zgarish yo'q",
@@ -2109,6 +2116,9 @@
       "serviceItemUpdated": "Servis ro'yxatda o'zgartirildi — saqlash uchun «Saqlash» tugmasini bosing",
       "pieceTrackedOn": "Har bir dona o'z markirovkasi bilan hisobga olinadi",
       "pieceTrackedOff": "Markirovkasiz — miqdor bo'yicha hisobga olinadi"
+    },
+    "hints": {
+      "packageCode": "ESF uchun: tasnif.soliq.uz da IKPU kodining qadoq (o'lchov) kodi"
     }
   },
   "sale": {
@@ -2273,6 +2283,10 @@
       "selectedProduct": "Tanlangan mahsulot",
       "totalCost": "Jami tannarx",
       "totalSale": "Jami sotuv"
+    },
+    "esf": {
+      "create": "ESF yaratish",
+      "open": "ESF"
     }
   },
   "retailSale": {

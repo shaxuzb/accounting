@@ -16,6 +16,8 @@ export interface ProductGroupCreateDto {
     name: string;
     barcode: string | null;
     mxik?: string | null;
+    packageCode?: string | null;
+    packageName?: string | null;
     description: string;
     unitId: number;
     isPieceTracked: boolean;
@@ -45,6 +47,8 @@ export interface ProductGroupUpdateDto {
     name: string;
     barcode: string | null;
     mxik?: string | null;
+    packageCode?: string | null;
+    packageName?: string | null;
     description: string;
     unitId: number;
     isPieceTracked: boolean;
@@ -80,6 +84,8 @@ const toLinePayload = (p: ProductItem, isService: boolean) => ({
   name: p.name,
   barcode: p.barcode || null,
   mxik: p.mxik || null,
+  packageCode: optionalText(p.packageCode),
+  packageName: optionalText(p.packageName),
   description: p.description ?? "",
   unitId: p.unitId as number,
   isPieceTracked: Boolean(p.isPieceTracked),

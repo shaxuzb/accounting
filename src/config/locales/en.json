@@ -1426,7 +1426,10 @@
           "document": "Outgoing EDO document #{{id}}",
           "detailDescription": "Check provider status and sign the document with E-IMZO.",
           "sign": "Sign document",
-          "signUnavailable": "The document cannot be signed in its current state"
+          "signUnavailable": "The document cannot be signed in its current state",
+          "fromSale": "Filled from sale No. {{number}}. Check before sending:",
+          "esfExists": "This sale already has an ESF: No. {{number}}, {{status}}.",
+          "openEsf": "Open the ESF"
         },
         "sections": {
           "document": "Document information",
@@ -1489,7 +1492,9 @@
           "providerStatus": "Provider status",
           "checkedAt": "Checked at",
           "reason": "Reason",
-          "preparedPkcs7": "Prepared PKCS#7"
+          "preparedPkcs7": "Prepared PKCS#7",
+          "vatRegistrationCode": "VAT registration code",
+          "price": "Price without VAT"
         },
         "status": {
           "reconciliation": "Provider and local state require manual reconciliation"
@@ -2076,7 +2081,9 @@
       "notSold": "Not sold",
       "purchased": "Purchased",
       "notPurchased": "Not purchased",
-      "pieceTracked": "Marked goods"
+      "pieceTracked": "Marked goods",
+      "packageCode": "Package code (MXIK)",
+      "packageName": "Package name"
     },
     "actions": {
       "noChanges": "No unsaved changes",
@@ -2109,6 +2116,9 @@
       "serviceItemUpdated": "Service changed in the list — press Save to store it",
       "pieceTrackedOn": "Every unit is tracked by its own marking",
       "pieceTrackedOff": "Unmarked — tracked by quantity"
+    },
+    "hints": {
+      "packageCode": "For the ESF: the MXIK package code from tasnif.soliq.uz"
     }
   },
   "sale": {
@@ -2273,6 +2283,10 @@
       "selectedProduct": "Selected product",
       "totalCost": "Total cost",
       "totalSale": "Total sale"
+    },
+    "esf": {
+      "create": "Make an ESF",
+      "open": "ESF"
     }
   },
   "retailSale": {

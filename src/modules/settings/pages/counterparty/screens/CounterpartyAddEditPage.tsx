@@ -37,6 +37,7 @@ const defaultValues: CounterpartyForm = {
   kindId: KIND_LEGAL,
   isResident: true,
   pinfl: "",
+  vatRegistrationCode: "",
   phoneNumber: "",
   regionId: null,
   districtId: null,
@@ -114,6 +115,7 @@ export default function CounterpartyAddEditPage({
         kindId: counterpartyDetail.kindId ?? KIND_LEGAL,
         isResident: counterpartyDetail.isResident ?? true,
         pinfl: counterpartyDetail.pinfl ?? "",
+        vatRegistrationCode: counterpartyDetail.vatRegistrationCode ?? "",
         phoneNumber: normalizeLookupPhone(counterpartyDetail.phoneNumber ?? ""),
         regionId: counterpartyDetail.regionId ?? null,
         districtId: counterpartyDetail.districtId ?? null,
@@ -333,6 +335,16 @@ export default function CounterpartyAddEditPage({
                 {t("settings.fields.isResident")}
               </Checkbox>
             </Col>
+            {/* 1C «Регистрационный код плательщика НДС»: the ESF buyer's VatRegCode */}
+            {formik.values.isVatPayer && (
+              <Col span={12}>
+                <InputText
+                  formik={formik}
+                  fieldName="vatRegistrationCode"
+                  label="settings.fields.vatRegistrationCode"
+                />
+              </Col>
+            )}
             {isEdit ? (
               <>
                 <Col span={12}>

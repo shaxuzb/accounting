@@ -1,7 +1,10 @@
 import { Alert, Button, Checkbox, Col, Form, Input, Row } from "antd";
 import { Plus, Send, Trash2 } from "lucide-react";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router";
+import { useEffect, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getJson } from "@/modules/accountings/services/request";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import dayjs from "@/config/dayjs";
@@ -19,6 +22,7 @@ import type {
   EdoFacturaLineDto,
   EdoOutboxFacturaCreateRequestDto,
   EdoPartyDto,
+  EsfDraftDto,
 } from "../types/type";
 import { hasSupportedCapability } from "../utils/capabilities";
 import {
@@ -38,8 +42,20 @@ const emptyParty = (): EdoPartyDto => ({
   directorName: "",
   accountantName: "",
   vatRegistrationStatus: "",
+  vatRegistrationCode: "",
   districtId: null,
 });
+
+/** The form's text fields take "" where the draft has none. */
+const partyFromDraft = (party: EdoPartyDto): EdoPartyDto => {
+  const empty = emptyParty();
+  return Object.fromEntries(
+    Object.entries({ ...empty, ...party }).map(([key, value]) => [
+      key,
+      value ?? (key === "districtId" ? null : ""),
+    ]),
+  ) as unknown as EdoPartyDto;
+};
 
 const emptyLine = (number: number): EdoFacturaLineDto => ({
   number,
@@ -58,7 +74,7 @@ const emptyLine = (number: number): EdoFacturaLineDto => ({
 
 const createInitialValues = (): EdoOutboxFacturaCreateRequestDto => ({
   internalDocumentId: 0,
-  internalDocumentType: "SALE",
+  internalDocumentType: "sale_doc",
   seller: emptyParty(),
   buyer: emptyParty(),
   documentNumber: "",
@@ -208,6 +224,15 @@ function PartyFields({
             />
           </Col>
         )}
+        {providerCode === "DIDOX" && (
+          <Col xs={24} md={12}>
+            <InputText
+              formik={formik}
+              fieldName={`${prefix}.vatRegistrationCode`}
+              label="settings.integrations.edo.fields.vatRegistrationCode"
+            />
+          </Col>
+        )}
         {providerCode === "EDOCS" && (
           <Col xs={24} md={12}>
             <InputNumber
@@ -236,6 +261,16 @@ export default function EdoOutboxCreatePage() {
     "CreateFactura",
     capabilitiesQuery.data,
   );
+  // «ESF» from a sale (1C «Счет-фактура на основании реализации»): the form starts from the sale
+  const [searchParams] = useSearchParams();
+  const saleId = Number(searchParams.get("sale")) || null;
+  const draftQuery = useQuery({
+    queryKey: ["esf-draft", "sale", saleId],
+    queryFn: () => getJson<EsfDraftDto>(`/edo/esf-drafts/sale/${saleId}`),
+    enabled: Boolean(saleId),
+    staleTime: 0,
+  });
+  const draft = draftQuery.data;
   const formik = useFormik<EdoOutboxFacturaCreateRequestDto>({
     initialValues: createInitialValues(),
     onSubmit: async (values) => {
@@ -270,6 +305,32 @@ export default function EdoOutboxCreatePage() {
     },
   });
 
+  const draftApplied = useRef(false);
+  useEffect(() => {
+    if (!draft || draftApplied.current) return;
+    draftApplied.current = true;
+    const base = createInitialValues();
+    void formik.setValues({
+      ...base,
+      ...draft.request,
+      seller: partyFromDraft(draft.request.seller),
+      buyer: partyFromDraft(draft.request.buyer),
+      contractNumber: draft.request.contractNumber ?? "",
+      lines: draft.request.lines.map((line) => ({
+        ...line,
+        catalogCode: line.catalogCode ?? "",
+        catalogName: line.catalogName ?? "",
+        unitCode: line.unitCode ?? "",
+        unitName: line.unitName ?? "",
+      })),
+      // the power of attorney is the buyer's agent's: entered here
+      empowerment: base.empowerment,
+      idempotencyKey: "",
+    });
+    // formik is a new object every render: applied once per loaded draft
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft]);
+
   const addLine = () =>
     formik.setFieldValue("lines", [
       ...formik.values.lines,
@@ -293,6 +354,37 @@ export default function EdoOutboxCreatePage() {
           {t("settings.integrations.edo.outbox.createDescription")}
         </p>
       </div>
+      {draft?.existing && (
+        <Alert
+          type="warning"
+          showIcon
+          message={t("settings.integrations.edo.outbox.esfExists", {
+            number: draft.existing.documentNumber ?? "",
+            status: t(`settings.integrations.edo.statuses.${draft.existing.status}`, {
+              defaultValue: draft.existing.status,
+            }),
+          })}
+          action={
+            <Button size="small" onClick={() => navigate(`../${draft.existing?.edoDocumentId}`)}>
+              {t("settings.integrations.edo.outbox.openEsf")}
+            </Button>
+          }
+        />
+      )}
+      {draft && draft.problems.length > 0 && (
+        <Alert
+          type="info"
+          showIcon
+          message={t("settings.integrations.edo.outbox.fromSale", { number: draft.request.documentNumber })}
+          description={
+            <ul className="mb-0 list-disc pl-5">
+              {draft.problems.map((problem) => (
+                <li key={problem}>{problem}</li>
+              ))}
+            </ul>
+          }
+        />
+      )}
       {!canCreate && !activeProviderQuery.isLoading && (
         <Alert
           type="warning"
@@ -318,6 +410,7 @@ export default function EdoOutboxCreatePage() {
                   label="settings.integrations.edo.fields.internalDocumentId"
                   min={1}
                   required
+                  disabled={Boolean(saleId)}
                 />
               </Col>
               <Col xs={24} md={12} xl={6}>
@@ -326,6 +419,7 @@ export default function EdoOutboxCreatePage() {
                   fieldName="internalDocumentType"
                   label="settings.integrations.edo.fields.internalDocumentType"
                   required
+                  disabled={Boolean(saleId)}
                 />
               </Col>
               <Col xs={24} md={12} xl={6}>
@@ -499,9 +593,15 @@ export default function EdoOutboxCreatePage() {
                     <Col xs={24} md={12} xl={6}>
                       <InputNumber
                         formik={formik}
+                        fieldName={`lines[${index}].price`}
+                        label="settings.integrations.edo.fields.price"
+                      />
+                    </Col>
+                    <Col xs={24} md={12} xl={6}>
+                      <InputNumber
+                        formik={formik}
                         fieldName={`lines[${index}].amount`}
                         label="settings.integrations.edo.fields.amount"
-                        min={0}
                         required
                       />
                     </Col>

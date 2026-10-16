@@ -29,6 +29,8 @@ const emptyProductItem = (isService: boolean): ProductItem => ({
   // article: "",
   name: "",
   mxik: "",
+  packageCode: "",
+  packageName: "",
   description: "",
   isService,
   productKindId: isService ? SERVICE_KIND_ID : GOODS_KIND_ID,
@@ -165,6 +167,20 @@ export default function ProductItemModal({
               label="products.fields.mxik"
               formik={productFormik}
               fieldName="mxik"
+            />
+          </Col>
+          <Col span={24} md={6}>
+            <InputText
+              label="products.fields.packageCode"
+              formik={productFormik}
+              fieldName="packageCode"
+            />
+          </Col>
+          <Col span={24} md={6}>
+            <InputText
+              label="products.fields.packageName"
+              formik={productFormik}
+              fieldName="packageName"
             />
           </Col>
           {/* <Col span={24} md={12}>

@@ -10,6 +10,7 @@ export interface Counterparty {
   kindId?: number;
   isResident?: boolean;
   pinfl?: string | null;
+  vatRegistrationCode?: string | null;
   phoneNumber: string;
   regionId: number;
   regionName: string;

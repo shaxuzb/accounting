@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { appEvents } from "@/shared/constants/appEvents";
@@ -23,6 +23,7 @@ export default function EdoSessionGuard({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const providerQuery = useEdoActiveProvider();
   const providerCode = providerQuery.data?.code;
@@ -48,9 +49,14 @@ export default function EdoSessionGuard({
         id: "edo-session-ended",
       });
 
-      if (requireSession) navigate(edoWorkspacePath, { replace: true });
+      // after signing in, back to the page that needed the session (an ESF form filled from a sale)
+      if (requireSession)
+        navigate(
+          `${edoWorkspacePath}?returnTo=${encodeURIComponent(location.pathname + location.search)}`,
+          { replace: true },
+        );
     },
-    [navigate, providerCode, queryClient, requireSession, t],
+    [location.pathname, location.search, navigate, providerCode, queryClient, requireSession, t],
   );
 
   useEffect(() => {

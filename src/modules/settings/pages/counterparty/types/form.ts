@@ -7,6 +7,7 @@ export interface CounterpartyForm {
   kindId: number;
   isResident: boolean;
   pinfl?: string | null;
+  vatRegistrationCode?: string | null;
   phoneNumber: string;
   regionId: number;
   districtId: number;

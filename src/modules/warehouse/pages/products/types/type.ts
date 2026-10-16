@@ -12,6 +12,9 @@ export interface ProductItem {
   name: string;
   unitId: number | null;
   mxik: string;
+  /** The MXIK package code and name (1C «Код упаковки»), for the ESF. */
+  packageCode?: string | null;
+  packageName?: string | null;
   description: string;
   isService: boolean;
   /** inv_product_kind: goods, material, finished product ...; empty on old products (goods or a service). */

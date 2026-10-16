@@ -151,6 +151,8 @@ export interface EdoPartyDto {
   directorName?: string | null;
   accountantName?: string | null;
   vatRegistrationStatus?: string | null;
+  /** The VAT registration code (not the TIN); a non-payer has none. */
+  vatRegistrationCode?: string | null;
   districtId?: number | string | null;
 }
 
@@ -174,6 +176,10 @@ export interface EdoFacturaLineDto {
   taxAmount?: number | null;
   isTaxFree: boolean;
   markingCodeIds: number[];
+  /** The unit price without VAT; empty — the amount over the quantity. */
+  price?: number | null;
+  /** The amount with VAT; empty — amount plus VAT. */
+  totalAmount?: number | null;
 }
 
 export interface EdoOutboxFacturaCreateRequestDto {
@@ -188,6 +194,21 @@ export interface EdoOutboxFacturaCreateRequestDto {
   empowerment?: EdoEmpowermentDto | null;
   lines: EdoFacturaLineDto[];
   idempotencyKey: string;
+  /** ESF type: 0 standard, 1 additional, 4 corrected. */
+  facturaType?: number;
+  /** The ESF an additional or corrected one adjusts. */
+  oldFactura?: { providerDocumentId: string; number: string; date: string } | null;
+}
+
+/** The ESF a document gives (GET api/edo/esf-drafts/...). */
+export interface EsfDraftDto {
+  request: EdoOutboxFacturaCreateRequestDto;
+  problems: string[];
+  existing?: {
+    edoDocumentId: number;
+    documentNumber?: string | null;
+    status: string;
+  } | null;
 }
 
 export type EdoDocumentStatusCode =

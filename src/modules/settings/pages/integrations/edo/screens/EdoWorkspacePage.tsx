@@ -1,6 +1,6 @@
 import { Button, Card as AntCard, Statistic, Tooltip } from "antd";
 import { DatabaseZap, Inbox } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import EdoProviderPanel from "../components/EdoProviderPanel";
 import EdoAuthenticationPanel from "../components/EdoAuthenticationPanel";
@@ -16,6 +16,10 @@ import { hasSupportedCapability } from "../utils/capabilities";
 export default function EdoWorkspacePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // only a page of the app: no address from outside is followed
+  const returnTo = searchParams.get("returnTo");
+  const safeReturnTo = returnTo && returnTo.startsWith("/main/") ? returnTo : null;
   const providerQuery = useEdoActiveProvider();
   const capabilitiesQuery = useEdoCapabilities(providerQuery.data?.code);
   const session = useEdoAuthSession(providerQuery.data?.code);
@@ -95,7 +99,7 @@ export default function EdoWorkspacePage() {
       )}
 
       <EdoProviderPanel />
-      <EdoAuthenticationPanel onAuthenticated={() => navigate("inbox")} />
+      <EdoAuthenticationPanel onAuthenticated={() => navigate(safeReturnTo ?? "inbox")} />
     </div>
   );
 }
