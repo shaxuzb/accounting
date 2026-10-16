@@ -1,4 +1,11 @@
 {
+  "settlementDocuments": {
+    "field": "Settlement document",
+    "hint": "As 1C «Документ расчетов»: the payment settles this document's debt and the rest is an advance. Left empty, the oldest debts are settled first.",
+    "automatic": "Automatic (oldest debts first)",
+    "none": "No documents with an open debt",
+    "debt": "Debt"
+  },
   "correction": {
     "purchase": {
       "title": "Purchase corrections",
@@ -1537,6 +1544,9 @@
       "byContract": "Per contract",
       "byCounterpartyHint": "Debt and advances are kept per counterparty: a payment settles any of its debt, and a sale or purchase offsets any of its advances.",
       "byContractHint": "Debt and advances are kept per contract (like the contract analytics in 1C): a payment settles only the debt of its contract and the rest is an advance under it; a sale or purchase offsets only the advances of its contract. Documents without a contract settle the balances without one.",
+      "byDocument": "By document",
+      "byDocumentHint": "Debt and advances are kept by document too (like 1C settlements by document): each sale and purchase is a debt of its own; a bank or cash payment that names a settlement document settles that document only and the rest is an advance; without one the oldest debts are settled first. An advance's document is the payment itself. Balances from before the switch have no document and are settled first.",
+      "withoutDocumentHint": "Turn on settlements by document to have a payment settle a specific sale or purchase and see each document's balance on the account card.",
       "saved": "Settlement policy saved. It applies to documents posted from now on."
     },
     "responsible": {
@@ -3810,7 +3820,9 @@
       "movements": "Account movements",
       "transactionsCount": "{{count}} transactions",
       "columns": "Columns",
-      "exportExcel": "Excel"
+      "exportExcel": "Excel",
+      "settlementDocument": "Settlement document",
+      "settlementDocumentFilter": "Show this document only"
     },
     "audit": {
       "title": "Change history",

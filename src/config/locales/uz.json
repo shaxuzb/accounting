@@ -1,4 +1,11 @@
 {
+  "settlementDocuments": {
+    "field": "Hisob-kitob hujjati",
+    "hint": "1C dagi «Документ расчетов»: to'lov shu hujjat qarzini yopadi, ortig'i avans bo'ladi. Bo'sh qolsa, eng eski qarzlar birinchi yopiladi.",
+    "automatic": "Avtomatik (eng eski qarzlar)",
+    "none": "Ochiq qarzi bor hujjat yo'q",
+    "debt": "Qarz"
+  },
   "correction": {
     "purchase": {
       "title": "Xaridni tuzatish",
@@ -1539,6 +1546,9 @@
       "byContract": "Shartnoma bo'yicha",
       "byCounterpartyHint": "Qarz va avanslar kontragent bo'yicha yuritiladi: to'lov kontragentning istalgan qarzini yopadi, sotuv va xarid uning istalgan avansini hisobga oladi.",
       "byContractHint": "Qarz va avanslar shartnoma bo'yicha yuritiladi (1C dagi «Договор» kabi): to'lov faqat o'z shartnomasi qarzini yopadi, ortig'i shu shartnoma avansi bo'ladi; sotuv va xarid faqat o'z shartnomasidagi avansni hisobga oladi. Shartnomasiz hujjatlar shartnomasiz qoldiqlar bilan hisoblashadi.",
+      "byDocument": "Hujjatlar bo'yicha",
+      "byDocumentHint": "Qarz va avanslar hujjatlar bo'yicha ham yuritiladi (1C dagi «Учет расчетов по документам»): har bir sotuv va xarid alohida qarz; bank yoki kassa to'lovida «Hisob-kitob hujjati» tanlansa, faqat shu hujjat qarzi yopiladi, ortig'i avans bo'ladi; tanlanmasa, eng eski qarzlar birinchi yopiladi. Avans hujjati — to'lovning o'zi. Yoqishdan oldingi qoldiqlar hujjatsiz qoladi va birinchi yopiladi.",
+      "withoutDocumentHint": "Hujjatlar bo'yicha yoqilsa, to'lov aniq sotuv yoki xarid qarzini yopadi va kartochkada har bir hujjat qoldig'i ko'rinadi.",
       "saved": "Hisob-kitob tartibi saqlandi. U bundan keyin o'tkaziladigan hujjatlarga qo'llanadi."
     },
     "responsible": {
@@ -3810,7 +3820,9 @@
       "movements": "Hisobvaraq harakatlari",
       "transactionsCount": "{{count}} ta operatsiya",
       "columns": "Ustunlar",
-      "exportExcel": "Excel"
+      "exportExcel": "Excel",
+      "settlementDocument": "Hisob-kitob hujjati",
+      "settlementDocumentFilter": "Faqat shu hujjat bo'yicha ko'rsatish"
     },
     "audit": {
       "title": "O'zgarishlar tarixi",

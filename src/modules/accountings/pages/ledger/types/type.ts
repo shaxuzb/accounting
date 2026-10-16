@@ -6,6 +6,10 @@ export interface LedgerQuery {
   currencyId?: number | null;
   counterpartyId?: number | null;
   warehouseId?: number | null;
+  /** The settlement document (a cmn_document_registry id), as 1C «Карточка счета» by «Документ расчетов». */
+  settlementDocumentId?: number | null;
+  /** Its name, for the filter tag only. */
+  settlementDocumentName?: string | null;
   page?: number | null;
   pageSize?: number | null;
 }
@@ -30,6 +34,9 @@ export interface LedgerTransaction {
   counterparty: string | null;
   warehouseId: number | null;
   warehouse: string | null;
+  /** The settlement document of the account's own side and its name. */
+  settlementDocumentId: number | null;
+  settlementDocument: string | null;
 }
 
 export interface LedgerResult {

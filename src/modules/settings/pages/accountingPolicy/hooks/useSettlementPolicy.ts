@@ -7,6 +7,8 @@ import { accountingPolicyQueryKeys } from "../constants/queryKeys";
 export interface SettlementPolicy {
   /** Debt and advances are kept per contract rather than per counterparty. */
   settlementsByContract: boolean;
+  /** Debt and advances are kept per settlement document too (1C «Учет расчетов по документам»). */
+  settlementsByDocument: boolean;
 }
 
 export const useGetSettlementPolicy = () => {

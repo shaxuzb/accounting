@@ -1,4 +1,4 @@
-import { Button, Checkbox, Empty, Input, Popover, Table } from "antd";
+import { Button, Checkbox, Empty, Input, Popover, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { FileSpreadsheet, Search, SlidersHorizontal } from "lucide-react";
 import { useMemo } from "react";
@@ -21,6 +21,8 @@ interface Props {
   filters?: LedgerQuery;
   loading: boolean;
   onPageChange: (page: number, pageSize: number) => void;
+  /** Shows the card of one settlement document (1C «Карточка счета» by «Документ расчетов»); null shows them all. */
+  onSettlementDocumentChange?: (id: number | null, name: string | null) => void;
 }
 
 type DetailColumnKey =
@@ -30,7 +32,8 @@ type DetailColumnKey =
   | "description"
   | "currency"
   | "organization"
-  | "counterparty";
+  | "counterparty"
+  | "settlementDocument";
 
 const detailColumnKeys: DetailColumnKey[] = [
   "accountName",
@@ -40,6 +43,7 @@ const detailColumnKeys: DetailColumnKey[] = [
   "currency",
   "organization",
   "counterparty",
+  "settlementDocument",
 ];
 
 const leadingDetailKeys: DetailColumnKey[] = [
@@ -53,6 +57,7 @@ const trailingDetailKeys: DetailColumnKey[] = [
   "currency",
   "organization",
   "counterparty",
+  "settlementDocument",
 ];
 
 const money = (value: number) => numberSpacing(value, undefined, true);
@@ -63,6 +68,7 @@ export default function LedgerTable({
   filters,
   loading,
   onPageChange,
+  onSettlementDocumentChange,
 }: Props) {
   const { t } = useTranslation();
   const searchKey = useScopedStorageKey("report-table", "ledger:search");
@@ -157,8 +163,31 @@ export default function LedgerTable({
           render: (value) => value || "-",
         },
       },
+      {
+        key: "settlementDocument",
+        label: t("accountings.ledger.settlementDocument"),
+        column: {
+          title: t("accountings.ledger.settlementDocument"),
+          dataIndex: "settlementDocument",
+          width: 260,
+          render: (value: string | null, item) =>
+            value && item.settlementDocumentId && onSettlementDocumentChange ? (
+              <Button
+                type="link"
+                size="small"
+                className="h-auto! p-0! whitespace-normal! text-left!"
+                title={t("accountings.ledger.settlementDocumentFilter")}
+                onClick={() => onSettlementDocumentChange(item.settlementDocumentId, value)}
+              >
+                {value}
+              </Button>
+            ) : (
+              value || "-"
+            ),
+        },
+      },
     ],
-    [accountName, t],
+    [accountName, onSettlementDocumentChange, t],
   );
 
   const columns = useMemo<ColumnsType<LedgerTransaction>>(
@@ -232,6 +261,7 @@ export default function LedgerTable({
         item.currency,
         item.organization,
         item.counterparty,
+        item.settlementDocument,
       ].some((value) =>
         String(value ?? "")
           .toLocaleLowerCase()
@@ -261,6 +291,7 @@ export default function LedgerTable({
       [t("app.reports.fields.currency")]: item.currency,
       [t("app.reports.fields.organization")]: item.organization,
       [t("app.reports.fields.counterparty")]: item.counterparty,
+      [t("accountings.ledger.settlementDocument")]: item.settlementDocument,
     }));
     const sheet = XLSX.utils.json_to_sheet(exportRows);
     const book = XLSX.utils.book_new();
@@ -295,6 +326,17 @@ export default function LedgerTable({
                 count: result.totalCount,
               })}
             </div>
+          )}
+          {filters?.settlementDocumentId && onSettlementDocumentChange && (
+            <Tag
+              closable
+              color="blue"
+              className="mt-1"
+              onClose={() => onSettlementDocumentChange(null, null)}
+            >
+              {t("accountings.ledger.settlementDocument")}:{" "}
+              {filters.settlementDocumentName ?? filters.settlementDocumentId}
+            </Tag>
           )}
         </div>
 

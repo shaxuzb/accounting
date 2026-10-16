@@ -84,6 +84,13 @@ export default function LedgerPage() {
             current ? { ...current, page, pageSize } : current,
           )
         }
+        onSettlementDocumentChange={(settlementDocumentId, settlementDocumentName) =>
+          setFilters((current) =>
+            current
+              ? { ...current, settlementDocumentId, settlementDocumentName, page: 1 }
+              : current,
+          )
+        }
       />
     </div>
   );

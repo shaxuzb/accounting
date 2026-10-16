@@ -1,3 +1,4 @@
+import { Button, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useFormik } from "formik";
 import {
@@ -116,8 +117,35 @@ export default function AccountCardPage() {
         width: 230,
         render: (value) => value || "-",
       },
+      {
+        // 1C «Карточка счета» by «Документ расчетов»: a click shows that document alone
+        title: t("accountings.ledger.settlementDocument"),
+        dataIndex: "settlementDocument",
+        width: 240,
+        render: (value: string | null, item) =>
+          value && item.settlementDocumentId ? (
+            <Button
+              type="link"
+              size="small"
+              className="h-auto! p-0! whitespace-normal! text-left!"
+              title={t("accountings.ledger.settlementDocumentFilter")}
+              onClick={() =>
+                setFilters((current) => ({
+                  ...current,
+                  settlementDocumentId: item.settlementDocumentId,
+                  settlementDocumentName: value,
+                  page: 1,
+                }))
+              }
+            >
+              {value}
+            </Button>
+          ) : (
+            "-"
+          ),
+      },
     ],
-    [t],
+    [setFilters, t],
   );
 
   const data = query.data;
@@ -163,6 +191,23 @@ export default function AccountCardPage() {
             }}
           />
         </div>
+        {filters.settlementDocumentId && (
+          <Tag
+            closable
+            color="blue"
+            onClose={() =>
+              setFilters((current) => ({
+                ...current,
+                settlementDocumentId: null,
+                settlementDocumentName: null,
+                page: 1,
+              }))
+            }
+          >
+            {t("accountings.ledger.settlementDocument")}:{" "}
+            {filters.settlementDocumentName ?? filters.settlementDocumentId}
+          </Tag>
+        )}
       </AccountingReportFilterBar>
 
       {data && (

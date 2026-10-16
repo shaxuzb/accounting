@@ -11,6 +11,7 @@ import InputNumberFormat from "@/components/fields/InputNumber";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import SettlementDocumentSelect from "@/components/fields/SettlementDocumentSelect";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
 import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
@@ -26,14 +27,20 @@ import {
 import type { CashDocumentForm } from "../types/form";
 import { useTranslation } from "react-i18next";
 
+/** cmn_document_type: a cash operation (its entries are excluded from the debts it settles). */
+const CASH_OPERATION_DOCUMENT_TYPE_ID = 4;
+
 interface CashDocumentFormFieldsProps {
   formik: FormikProps<CashDocumentForm>;
   documentTypeId: number;
+  /** The order being edited (its own settlement does not count against the debts). */
+  documentId?: number | null;
 }
 
 export default function CashDocumentFormFields({
   formik,
   documentTypeId,
+  documentId = null,
 }: CashDocumentFormFieldsProps) {
   const { t } = useTranslation();
   const [counterpartyCreateOpen, setCounterpartyCreateOpen] = useState(false);
@@ -183,8 +190,10 @@ export default function CashDocumentFormFields({
                 label="bank.fields.counterparty"
                 path={selectListEndpoints.counterpartiesSelectList}
                 onChange={(value) => {
-                  if (Number(value) !== Number(formik.values.counterpartyId))
+                  if (Number(value) !== Number(formik.values.counterpartyId)) {
                     formik.setFieldValue("contractId", null, false);
+                    formik.setFieldValue("relatedDocumentId", null, false);
+                  }
                 }}
                 addOption={{
                   bool: true,
@@ -215,6 +224,17 @@ export default function CashDocumentFormFields({
                 }}
               />
             </Col>
+            <SettlementDocumentSelect
+              formik={formik}
+              colSpan={4}
+              counterpartyId={counterpartyId}
+              contractId={Number(formik.values.contractId) || null}
+              directionId={isExpense ? -1 : 1}
+              currencyId={Number(formik.values.currencyId) || null}
+              date={formik.values.docDate}
+              excludeDocumentTypeId={CASH_OPERATION_DOCUMENT_TYPE_ID}
+              excludeDocumentId={documentId}
+            />
           </>
         )}
 

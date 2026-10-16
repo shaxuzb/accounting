@@ -69,6 +69,11 @@ import { DocumentSummary, DocumentSummaryItem } from "@/components/ui/card/Docum
 import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAutoExchangeRate";
 import { useAccountKeptByEmployee } from "@/shared/hooks/useAccountKeptByEmployee";
 import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeSelect";
+import SettlementDocumentSelect from "@/components/fields/SettlementDocumentSelect";
+import { useGetSettlementPolicy } from "@/modules/settings/pages/accountingPolicy/hooks/useSettlementPolicy";
+
+/** cmn_document_type: a bank operation (its entries are excluded from the debts it settles). */
+const BANK_OPERATION_DOCUMENT_TYPE_ID = 3;
 
 type BankOperationForm = {
   bankAccountId: number | null;
@@ -298,6 +303,15 @@ export default function BankOperationAddEditPage() {
     documentTypeCode,
     { directionId: formik.values.directionId },
   );
+  // with settlements kept by document a counterparty's payment names its settlement document
+  // (1C «Документ расчетов») from the documents it still owes on; a cash collection or a
+  // payment point operation stays a plain link
+  const settlementsByDocument = useGetSettlementPolicy().data?.settlementsByDocument ?? false;
+  const namesSettlementDocument =
+    settlementsByDocument &&
+    Boolean(counterpartyId) &&
+    relatedDocumentTypeCode !== "cash_collection" &&
+    relatedDocumentTypeCode !== "payment_acceptance_point_operation";
   const isActionBusy =
     createMutation.isPending ||
     updateMutation.isPending ||
@@ -311,9 +325,11 @@ export default function BankOperationAddEditPage() {
     ) {
       formik.setFieldValue("counterpartyBankAccountId", null, false);
       formik.setFieldValue("contractId", null, false);
+      // another counterparty's document is no settlement of this one
+      if (settlementsByDocument) formik.setFieldValue("relatedDocumentId", null, false);
     }
     previousCounterpartyId.current = counterpartyId;
-  }, [counterpartyId, formik]);
+  }, [counterpartyId, formik, settlementsByDocument]);
 
   useEffect(() => {
     if (!detailQuery.error) return;
@@ -548,7 +564,20 @@ export default function BankOperationAddEditPage() {
                 search
               />
             </Col>
-            {relatedDocumentTypeCode && (
+            {namesSettlementDocument && (
+              <SettlementDocumentSelect
+                formik={formik}
+                colSpan={4}
+                counterpartyId={counterpartyId}
+                contractId={toPositiveNumber(formik.values.contractId)}
+                directionId={Number(formik.values.directionId) || null}
+                currencyId={toPositiveNumber(formik.values.currencyId)}
+                date={formik.values.docDate}
+                excludeDocumentTypeId={BANK_OPERATION_DOCUMENT_TYPE_ID}
+                excludeDocumentId={isCreate ? null : Number(id)}
+              />
+            )}
+            {relatedDocumentTypeCode && !namesSettlementDocument && (
               <Col span={4}>
                 <SelectCustom
                   formik={formik}

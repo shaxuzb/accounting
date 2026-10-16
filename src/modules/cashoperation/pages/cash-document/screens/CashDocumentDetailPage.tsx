@@ -47,6 +47,7 @@ const createDefaultValues = (): CashDocumentForm => ({
   paymentTypeId: 1,
   counterpartyId: null,
   contractId: null,
+  relatedDocumentId: null,
   destinationCashBoxId: null,
   employeeId: null,
   docDate: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
@@ -88,6 +89,8 @@ export default function CashDocumentDetailPage() {
       paymentTypeId: record?.paymentTypeId ?? createDefaultValues().paymentTypeId,
       counterpartyId: record?.counterpartyId ?? createDefaultValues().counterpartyId,
       contractId: record?.contractId ?? createDefaultValues().contractId,
+      relatedDocumentId:
+        (record as { relatedDocumentId?: number | null } | undefined)?.relatedDocumentId ?? null,
       destinationCashBoxId:
         (record as { destinationCashBoxId?: number | null } | undefined)
           ?.destinationCashBoxId ?? null,
@@ -260,6 +263,7 @@ export default function CashDocumentDetailPage() {
             </h2>
             <Form layout="vertical" onFinish={formik.handleSubmit}>
               <CashDocumentFormFields
+                documentId={record?.id ?? null}
                 formik={formik}
                 documentTypeId={
                   kind === "rko"
