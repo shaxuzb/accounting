@@ -61,6 +61,7 @@ const createDefaultValues = (): CashDocumentForm => ({
   operationKindId: null,
   cashFlowItemId: null,
   budgetPaymentKindId: null,
+  incomeExpenseItemId: null,
   personName: "",
   basis: "",
   attachment: "",
@@ -122,11 +123,12 @@ export default function CashDocumentDetailPage() {
         (record as { operationKindId?: number | null } | undefined)?.operationKindId ?? null,
       ...(() => {
         const own = record as
-          | { cashFlowItemId?: number | null; budgetPaymentKindId?: number | null; personName?: string | null; basis?: string | null; attachment?: string | null; idDocument?: string | null }
+          | { cashFlowItemId?: number | null; budgetPaymentKindId?: number | null; incomeExpenseItemId?: number | null; personName?: string | null; basis?: string | null; attachment?: string | null; idDocument?: string | null }
           | undefined;
         return {
           cashFlowItemId: own?.cashFlowItemId ?? null,
           budgetPaymentKindId: own?.budgetPaymentKindId ?? null,
+          incomeExpenseItemId: own?.incomeExpenseItemId ?? null,
           personName: own?.personName ?? "",
           basis: own?.basis ?? "",
           attachment: own?.attachment ?? "",

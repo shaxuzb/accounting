@@ -24,6 +24,8 @@ export interface CashDocumentForm {
   cashFlowItemId: number | null;
   /** 1C «Вид платежа в бюджет» of a tax payment (64xx, 65xx); empty — the tax itself. */
   budgetPaymentKindId: number | null;
+  /** 1C «Статья прочих доходов и расходов» of a 9xxx correspondent account. */
+  incomeExpenseItemId: number | null;
   /** PKO «Принято от» / RKO «Выдать». */
   personName: string;
   /** 1C «Основание». */

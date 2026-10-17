@@ -105,6 +105,7 @@ type BankOperationForm = {
   cashFlowItemId: number | null;
   /** 1C «Вид платежа в бюджет» (64xx, 65xx); empty — the tax itself. */
   budgetPaymentKindId: number | null;
+  incomeExpenseItemId: number | null;
 };
 
 const createDefaultValues = (): BankOperationForm => ({
@@ -115,6 +116,7 @@ const createDefaultValues = (): BankOperationForm => ({
   operationKindId: null,
   cashFlowItemId: null,
   budgetPaymentKindId: null,
+  incomeExpenseItemId: null,
   operationTypeId: 1,
   paymentTypeId: null,
   counterpartyId: null,
@@ -221,6 +223,7 @@ export default function BankOperationAddEditPage() {
       debtSettlementMode: (record as { debtSettlementMode?: number } | undefined)?.debtSettlementMode ?? 1,
       cashFlowItemId: (record as { cashFlowItemId?: number | null } | undefined)?.cashFlowItemId ?? null,
       budgetPaymentKindId: (record as { budgetPaymentKindId?: number | null } | undefined)?.budgetPaymentKindId ?? null,
+      incomeExpenseItemId: (record as { incomeExpenseItemId?: number | null } | undefined)?.incomeExpenseItemId ?? null,
     }),
     [record],
   );
@@ -260,6 +263,7 @@ export default function BankOperationAddEditPage() {
           comment: values.comment.trim() || null,
           cashFlowItemId: toPositiveNumber(values.cashFlowItemId),
           budgetPaymentKindId: toPositiveNumber(values.budgetPaymentKindId),
+          incomeExpenseItemId: toPositiveNumber(values.incomeExpenseItemId),
         };
 
         if (isCreate) {

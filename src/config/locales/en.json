@@ -5142,7 +5142,9 @@
     "cashFlowItem": "Cash flow item",
     "automatic": "Automatic (by account)",
     "budgetPaymentKind": "Budget payment kind",
-    "taxItself": "Tax (principal)"
+    "taxItself": "Tax (principal)",
+    "incomeExpenseItem": "Other income/expense item",
+    "incomeExpenseItemAuto": "Choose (bank fee — automatic)"
   },
   "cashPrint": {
     "print": "Print",

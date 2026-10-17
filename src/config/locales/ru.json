@@ -5142,7 +5142,9 @@
     "cashFlowItem": "Статья ДДС",
     "automatic": "Автоматически (по счету)",
     "budgetPaymentKind": "Вид платежа в бюджет",
-    "taxItself": "Налог (основной долг)"
+    "taxItself": "Налог (основной долг)",
+    "incomeExpenseItem": "Статья прочих доходов и расходов",
+    "incomeExpenseItemAuto": "Выберите (услуги банка — автоматически)"
   },
   "cashPrint": {
     "print": "Печать",

@@ -10,6 +10,7 @@ export interface BankOperationCreatePayload {
   cashFlowItemId?: number | null;
   /** 1C «Вид платежа в бюджет»; empty — the tax itself. */
   budgetPaymentKindId?: number | null;
+  incomeExpenseItemId?: number | null;
   counterpartyId?: number | null;
   counterpartyBankAccountId?: number | null;
   bankDocumentNumber?: string | null;
