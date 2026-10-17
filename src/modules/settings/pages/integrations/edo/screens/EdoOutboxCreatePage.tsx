@@ -380,6 +380,16 @@ export default function EdoOutboxCreatePage() {
           }
         />
       )}
+      {draft?.request.committent && (
+        <Alert
+          type="info"
+          showIcon
+          message={t("settings.integrations.edo.outbox.committent", {
+            name: draft.request.committent.name,
+            tin: draft.request.committent.taxIdentifier,
+          })}
+        />
+      )}
       {isAdditional && (
         <Alert
           type="info"

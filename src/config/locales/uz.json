@@ -1437,7 +1437,8 @@
           "esfExists": "Bu sotuv uchun ESF bor: №{{number}}, holati — {{status}}.",
           "openEsf": "ESF ni ochish",
           "additional": "Qo'shimcha ESF (qaytarish, chegirma, narx yoki miqdor o'zgarishi): summalar plyus yoki minus bilan.",
-          "additionalOf": "Qo'shimcha ESF — asl ESF №{{number}} ({{date}}) ga tuzatish; summalar plyus yoki minus bilan."
+          "additionalOf": "Qo'shimcha ESF — asl ESF №{{number}} ({{date}}) ga tuzatish; summalar plyus yoki minus bilan.",
+          "committent": "Komitent tovari (SK 250-modda): ESF da tovar egasi — {{name}}, STIR {{tin}}; QQS uning stavkasida."
         },
         "sections": {
           "document": "Hujjat ma’lumotlari",

@@ -198,6 +198,8 @@ export interface EdoOutboxFacturaCreateRequestDto {
   facturaType?: number;
   /** The ESF an additional or corrected one adjusts. */
   oldFactura?: { providerDocumentId: string; number: string; date: string } | null;
+  /** A commission agent's ESF for a committent's goods: whose they are (Didox «HasCommittent»). */
+  committent?: EdoPartyDto | null;
 }
 
 /** The ESF a document gives (GET api/edo/esf-drafts/...). */

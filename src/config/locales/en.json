@@ -1435,7 +1435,8 @@
           "esfExists": "This sale already has an ESF: No. {{number}}, {{status}}.",
           "openEsf": "Open the ESF",
           "additional": "Additional ESF (a return, a discount, a change of price or quantity): amounts in plus or minus.",
-          "additionalOf": "Additional ESF to ESF No. {{number}} of {{date}}; amounts in plus or minus."
+          "additionalOf": "Additional ESF to ESF No. {{number}} of {{date}}; amounts in plus or minus.",
+          "committent": "A committent's goods (Tax Code art. 250): the ESF names their owner — {{name}}, TIN {{tin}}; the VAT is at its rate."
         },
         "sections": {
           "document": "Document information",
