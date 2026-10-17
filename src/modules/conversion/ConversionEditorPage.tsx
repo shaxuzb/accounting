@@ -99,6 +99,7 @@ function fromLines(data?: Conversion) {
           productName: x.productName,
           quantity: x.quantity,
           costShare: x.costShare,
+          accountId: data.kind === conversionKinds.disassembly ? x.inventoryAccountId : null,
           outAmount: x.amount,
           inAmount: x.amount,
           outAccount: x.inventoryAccountNumber,
@@ -211,7 +212,7 @@ function ConversionEditor({ journal, id, data }: { journal: ConversionJournal; i
           productId: row.productId,
           quantity: row.quantity,
           costShare: assembly ? null : (row.costShare ?? null),
-          inventoryAccountId: null,
+          inventoryAccountId: assembly ? null : (row.accountId ?? null),
         });
     } else
       rows
@@ -225,7 +226,7 @@ function ConversionEditor({ journal, id, data }: { journal: ConversionJournal; i
             productId: transfer ? row.productId : (row.inProductId ?? 0),
             quantity: transfer ? row.quantity : (row.inQuantity ?? 0),
             costShare: null,
-            inventoryAccountId: transfer ? (row.accountId ?? null) : null,
+            inventoryAccountId: row.accountId ?? null,
           });
         });
     return { kind, docDate: docDate.format("YYYY-MM-DDTHH:mm:ss"), warehouseId: warehouseId ?? 0, comment: comment || null, lines };
@@ -244,6 +245,21 @@ function ConversionEditor({ journal, id, data }: { journal: ConversionJournal; i
     posted ? [{ title, dataIndex: field, width: 140, align: "right" as const, render: (value?: number) => money(value) }] : [];
   const accountColumn = (field: "inAccount" | "outAccount", title: string) =>
     posted ? [{ title, dataIndex: field, width: 110, render: (value?: string | null) => value ?? "-" }] : [];
+  const inAccountColumn = (title: string) =>
+    readOnly
+      ? []
+      : [
+          {
+            title,
+            dataIndex: "accountId",
+            width: 220,
+            render: (value: number | null | undefined, row: Row) => (
+              <Select className="w-full" allowClear showSearch optionFilterProp="label" placeholder={t("conversion.itemAccount")}
+                value={value ?? null} options={accountOptions} style={{ backgroundColor: "transparent" }}
+                onChange={(next?: number) => updateRow(row.key, { accountId: next ?? null })} />
+            ),
+          },
+        ];
   const removeColumn = readOnly
     ? []
     : [
@@ -280,6 +296,7 @@ function ConversionEditor({ journal, id, data }: { journal: ConversionJournal; i
               },
             ]
           : []),
+        ...(kind === conversionKinds.disassembly ? inAccountColumn(t("conversion.account")) : []),
         ...accountColumn(kind === conversionKinds.assembly ? "outAccount" : "inAccount", t("conversion.account")),
         ...amountColumn(kind === conversionKinds.assembly ? "outAmount" : "inAmount", t("conversion.amount")),
         ...removeColumn,
@@ -290,6 +307,8 @@ function ConversionEditor({ journal, id, data }: { journal: ConversionJournal; i
           { title: t("conversion.quantity"), dataIndex: "quantity", width: 120, render: (value: number, row) => quantityInput(value, (next) => updateRow(row.key, { quantity: next })) },
           { title: t("conversion.inProduct"), dataIndex: "inProductId", render: (value: number, row) => productSelect(value, false, (next) => updateRow(row.key, { inProductId: next }), row.inProductName) },
           { title: t("conversion.quantity"), dataIndex: "inQuantity", width: 120, render: (value: number, row) => quantityInput(value, (next) => updateRow(row.key, { inQuantity: next })) },
+          ...inAccountColumn(t("conversion.account")),
+          ...accountColumn("inAccount", t("conversion.account")),
           ...amountColumn("outAmount", t("conversion.amount")),
           ...removeColumn,
         ]

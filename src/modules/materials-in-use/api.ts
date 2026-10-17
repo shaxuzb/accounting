@@ -53,6 +53,10 @@ export interface MaterialsInUseLine {
   sourceDocDate?: string | null;
   inventoryAccountId?: number | null;
   inventoryAccountNumber?: string | null;
+  /** The line's own expense account (1C «Способ отражения расходов»); none — the document's. */
+  expenseAccountId?: number | null;
+  expenseAccountNumber?: string | null;
+  expenseSubkontos?: ManualEntrySubkonto[];
   amount: number;
   inUseAmount: number;
   comment?: string | null;
@@ -92,6 +96,8 @@ export interface MaterialsInUseSave {
     inUseAccountId: number | null;
     sourceDocId: number | null;
     amount: number | null;
+    expenseAccountId: number | null;
+    expenseSubkontos: ManualEntrySubkonto[];
     comment: string | null;
   }[];
 }

@@ -1,4 +1,4 @@
-import { Alert, Button, DatePicker, Form, Input, InputNumber, Popconfirm, Select, Space, Table } from "antd";
+import { Alert, Button, DatePicker, Form, Input, InputNumber, Modal, Popconfirm, Select, Space, Table } from "antd";
 import type { TableColumnsType } from "antd";
 import { Ban, Plus, Save, Send, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -131,6 +131,9 @@ function MaterialsInUseEditor({ kind, id, data }: { kind: MaterialsInUseKind; id
   const balanceOptions = balance.map((x) => ({ value: balanceKey(x), label: balanceLabel(x) }));
   const accountOptions = (defaults?.inUseAccounts ?? []).map((x) => ({ value: x.id, label: `${x.number} ${x.name}` }));
 
+  // the line whose own expense account is being chosen
+  const [expenseRow, setExpenseRow] = useState<{ key: string; accountId: number | null; subkontos: ManualEntrySubkonto[] } | null>(null);
+
   const updateRow = (key: string, patch: Partial<Row>) => setRows((current) => current.map((x) => (x.key === key ? { ...x, ...patch } : x)));
   const quantityInput = (row: Row) =>
     readOnly ? row.quantity : (
@@ -155,6 +158,8 @@ function MaterialsInUseEditor({ kind, id, data }: { kind: MaterialsInUseKind; id
         inUseAccountId: x.inUseAccountId ?? null,
         sourceDocId: transfer ? null : (x.sourceDocId ?? null),
         amount: isReturn ? x.amount : null,
+        expenseAccountId: transfer ? (x.expenseAccountId ?? null) : null,
+        expenseSubkontos: transfer && x.expenseAccountId ? (x.expenseSubkontos ?? []) : [],
         comment: x.comment ?? null,
       })),
   });
@@ -209,6 +214,24 @@ function MaterialsInUseEditor({ kind, id, data }: { kind: MaterialsInUseKind; id
         readOnly ? (row.inUseAccountNumber ?? "-") : (
           <Select className="w-full" value={value ?? null} options={accountOptions} onChange={(next: number) => updateRow(row.key, { inUseAccountId: next })} />
         ),
+    },
+    {
+      // 1C «Способ отражения расходов» of the line: its own account, else the document's
+      title: t("materialsInUse.lineExpense"),
+      key: "expense",
+      width: 170,
+      render: (_: unknown, row: Row) => {
+        const label = row.expenseAccountId
+          ? [row.expenseAccountNumber, ...(row.expenseSubkontos ?? []).map((x) => x.displayValue)].filter(Boolean).join(" · ") ||
+            t("materialsInUse.ownExpense")
+          : t("materialsInUse.docExpense");
+        return readOnly ? label : (
+          <Button size="small" type={row.expenseAccountId ? "default" : "dashed"} className="max-w-full truncate"
+            onClick={() => setExpenseRow({ key: row.key, accountId: row.expenseAccountId ?? null, subkontos: row.expenseSubkontos ?? [] })}>
+            {label}
+          </Button>
+        );
+      },
     },
     ...(posted
       ? [
@@ -379,6 +402,36 @@ function MaterialsInUseEditor({ kind, id, data }: { kind: MaterialsInUseKind; id
         </div>
         <Table<Row> rowKey="key" size="middle" columns={transfer ? transferColumns : fromUseColumns} dataSource={rows} pagination={false} />
       </Card>
+
+      <Modal open={Boolean(expenseRow)} title={t("materialsInUse.lineExpense")} okText={t("materialsInUse.apply")}
+        onCancel={() => setExpenseRow(null)}
+        onOk={() => {
+          if (expenseRow)
+            updateRow(expenseRow.key, {
+              expenseAccountId: expenseRow.accountId,
+              expenseAccountNumber: null,
+              expenseSubkontos: expenseRow.accountId ? expenseRow.subkontos : [],
+            });
+          setExpenseRow(null);
+        }}
+        footer={(_, { OkBtn, CancelBtn }) => (
+          <Space>
+            <Button onClick={() => setExpenseRow((current) => (current ? { ...current, accountId: null, subkontos: [] } : current))}>
+              {t("materialsInUse.useDocExpense")}
+            </Button>
+            <CancelBtn />
+            <OkBtn />
+          </Space>
+        )}>
+        <div className="mb-3 text-sm text-secondary-text">{t("materialsInUse.lineExpenseHint")}</div>
+        {expenseRow && (
+          <Form layout="vertical" component={false}>
+            <AccountSide label={t("materialsInUse.expenseAccount")} accountId={expenseRow.accountId} subkontos={expenseRow.subkontos}
+              onAccountChange={(accountId) => setExpenseRow({ ...expenseRow, accountId, subkontos: [] })}
+              onSubkontosChange={(subkontos) => setExpenseRow({ ...expenseRow, subkontos })} />
+          </Form>
+        )}
+      </Modal>
     </div>
   );
 }

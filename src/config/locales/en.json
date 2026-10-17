@@ -5103,6 +5103,12 @@
     "entries": "Entries",
     "search": "Item or person",
     "balanceEmpty": "Nothing in use",
-    "total": "Total"
+    "total": "Total",
+    "lineExpense": "Line expense",
+    "docExpense": "As in the document",
+    "ownExpense": "Own account",
+    "useDocExpense": "Use the document's",
+    "apply": "Apply",
+    "lineExpenseHint": "As in 1C: a line's cost may go to its own expense account (another department's, say); without one the document's is used."
   }
 }

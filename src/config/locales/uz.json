@@ -5103,6 +5103,12 @@
     "entries": "Provodkalar",
     "search": "Buyum yoki xodim",
     "balanceEmpty": "Foydalanishda buyum yo'q",
-    "total": "Jami"
+    "total": "Jami",
+    "lineExpense": "Qator xarajati",
+    "docExpense": "Hujjatdagi hisob",
+    "ownExpense": "O'z hisobi",
+    "useDocExpense": "Hujjatdagi hisobni olish",
+    "apply": "Qo'llash",
+    "lineExpenseHint": "1C kabi: qator xarajati alohida hisobga (masalan boshqa bo'lim xarajati) yozilishi mumkin; tanlanmasa hujjatdagi xarajat hisobi olinadi."
   }
 }
