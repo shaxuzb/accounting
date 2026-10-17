@@ -47,7 +47,7 @@ import type {
 } from "../types/type";
 import { getMissingCounterpartyKey } from "../utils/missingCounterpartyKey";
 import { useMoneyOperationKinds } from "@/shared/moneyOperationKinds";
-import { applyDefaultOffsets, kindForChosenAccount } from "../utils/bankOffsetDefaults";
+import { applyDefaultOffsets, kindForChosenAccount, otherKindId } from "../utils/bankOffsetDefaults";
 import { bankDocumentTypeIds } from "../constants/endpoints";
 import { normalizeBankStatements } from "../utils/normalizeBankStatement";
 import {
@@ -405,7 +405,10 @@ export default function BankStatementImportPage() {
         directionId,
         bankChartAccountId,
         offsetAccountId,
-        operationKindId: toValidNumber(transaction.operationKindId),
+        // every operation has its kind (1C «Вид операции»): a row left without one is an other receipt / payment
+        operationKindId:
+          toValidNumber(transaction.operationKindId) ??
+          toValidNumber(otherKindId(directionId === 1 ? (incomeKinds ?? []) : (expenseKinds ?? []), directionId)),
         counterpartyId,
         counterpartyBankAccountId,
         bankDocumentNumber: transaction.bankDocumentNumber ?? null,
@@ -420,7 +423,7 @@ export default function BankStatementImportPage() {
         comment: transaction.purpose || null,
       };
     },
-    [getTransactionOperationTypeId],
+    [getTransactionOperationTypeId, incomeKinds, expenseKinds],
   );
 
   const totalTransactions = useMemo(

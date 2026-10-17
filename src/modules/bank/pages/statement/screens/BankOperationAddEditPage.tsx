@@ -27,6 +27,7 @@ import InOutSelect from "@/components/fields/InOutSelect";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import InputText from "@/components/fields/InputText";
 import SelectCustom from "@/components/fields/SelectCustom";
+import MoneyDocumentAnalytics from "@/components/fields/MoneyDocumentAnalytics";
 import SelectDate from "@/components/fields/SelectDate";
 import BankReadonlyDetailsCard from "@/modules/bank/components/BankReadonlyDetailsCard";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
@@ -99,6 +100,10 @@ type BankOperationForm = {
   bankDocumentNumber: string;
   classificationCategoryId: number | null;
   classificationRuleId: number | null;
+  /** 1C «Статья ДДС»; empty — picked from the correspondent account. */
+  cashFlowItemId: number | null;
+  /** 1C «Вид платежа в бюджет» (64xx, 65xx); empty — the tax itself. */
+  budgetPaymentKindId: number | null;
 };
 
 const createDefaultValues = (): BankOperationForm => ({
@@ -107,6 +112,8 @@ const createDefaultValues = (): BankOperationForm => ({
   bankChartAccountId: null,
   offsetAccountId: null,
   operationKindId: null,
+  cashFlowItemId: null,
+  budgetPaymentKindId: null,
   operationTypeId: 1,
   paymentTypeId: null,
   counterpartyId: null,
@@ -211,6 +218,8 @@ export default function BankOperationAddEditPage() {
       classificationRuleId: record?.classificationRuleId ?? null,
       relatedDocumentId: record?.relatedDocumentId ?? null,
       debtSettlementMode: (record as { debtSettlementMode?: number } | undefined)?.debtSettlementMode ?? 1,
+      cashFlowItemId: (record as { cashFlowItemId?: number | null } | undefined)?.cashFlowItemId ?? null,
+      budgetPaymentKindId: (record as { budgetPaymentKindId?: number | null } | undefined)?.budgetPaymentKindId ?? null,
     }),
     [record],
   );
@@ -248,6 +257,8 @@ export default function BankOperationAddEditPage() {
           exchangeRate: Number(values.exchangeRate) || 1,
           contractId: toPositiveNumber(values.contractId),
           comment: values.comment.trim() || null,
+          cashFlowItemId: toPositiveNumber(values.cashFlowItemId),
+          budgetPaymentKindId: toPositiveNumber(values.budgetPaymentKindId),
         };
 
         if (isCreate) {
@@ -745,6 +756,7 @@ export default function BankOperationAddEditPage() {
                 }}
               />
             </Col>
+            <MoneyDocumentAnalytics formik={formik} offsetAccountId={toPositiveNumber(formik.values.offsetAccountId)} />
           </Row>
         </Form>
       </Card>

@@ -12,6 +12,8 @@ import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import SettlementDocumentSelect from "@/components/fields/SettlementDocumentSelect";
+import MoneyDocumentAnalytics from "@/components/fields/MoneyDocumentAnalytics";
+import InputText from "@/components/fields/InputText";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
 import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
@@ -277,6 +279,26 @@ export default function CashDocumentFormFields({
             precision={2}
           />
         </Col>
+        {!isTransfer && (
+          <MoneyDocumentAnalytics formik={formik} offsetAccountId={Number(formik.values.offsetAccountId) || null} />
+        )}
+      </Row>
+      {/* the order's own lines, as KO-1 / KO-2 print them (1C «Принято от» / «Выдать», «Основание», «Приложение») */}
+      <Row gutter={[16, 0]}>
+        <Col span={6}>
+          <InputText formik={formik} fieldName="personName" label={isExpense ? "cash.fields.issueTo" : "cash.fields.receivedFrom"} />
+        </Col>
+        <Col span={6}>
+          <InputText formik={formik} fieldName="basis" label="cash.fields.basis" />
+        </Col>
+        <Col span={6}>
+          <InputText formik={formik} fieldName="attachment" label="cash.fields.attachment" />
+        </Col>
+        {isExpense && (
+          <Col span={6}>
+            <InputText formik={formik} fieldName="idDocument" label="cash.fields.idDocument" />
+          </Col>
+        )}
       </Row>
       <CounterpartyAddEditPage
         open={counterpartyCreateOpen}

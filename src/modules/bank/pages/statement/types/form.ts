@@ -6,6 +6,10 @@ export interface BankOperationCreatePayload {
   offsetAccountId?: number | null;
   /** The operation kind (1C «Вид операции»). */
   operationKindId?: number | null;
+  /** 1C «Статья ДДС»; empty — picked from the correspondent account. */
+  cashFlowItemId?: number | null;
+  /** 1C «Вид платежа в бюджет»; empty — the tax itself. */
+  budgetPaymentKindId?: number | null;
   counterpartyId?: number | null;
   counterpartyBankAccountId?: number | null;
   bankDocumentNumber?: string | null;

@@ -19,15 +19,12 @@ const KIND_BY_CLASSIFICATION: Record<string, { in?: string; out?: string }> = {
   BANK_SERVICE: { out: "BANK_COMMISSION" },
   CAPITAL_CONTRIBUTION: { in: "CAPITAL_CONTRIBUTION" },
   CASH_COLLECTION: { in: "CASH_DEPOSIT" },
+  // the money a terminal's acquirer passes on comes off the transfers in transit (5710), as cash handed in
+  ACQUIRING: { in: "CASH_DEPOSIT" },
 };
 
-/**
- * Rows with no kind of their own: the money a terminal's acquirer passes on comes off the clearing
- * account the retail acquiring settlement uses (its document account setting, 5710).
- */
-const ACCOUNT_BY_CLASSIFICATION: Record<string, { in?: string; out?: string }> = {
-  ACQUIRING: { in: "5710" },
-};
+/** Rows whose classification fixes the account but no kind (none now: every row gets a kind). */
+const ACCOUNT_BY_CLASSIFICATION: Record<string, { in?: string; out?: string }> = {};
 
 /** A payment to the budget carries the tax payer's id in its purpose. */
 const TAX_PAYMENT_MARKER = "$TAX_ID$";
@@ -82,6 +79,10 @@ const kindCodeOf = (transaction: BankStatementTransaction) => {
   return (direction === 1 ? byDirection?.in : byDirection?.out) ?? null;
 };
 
+/** 1C «Прочее поступление» / «Прочее списание»: the kind of a row no other kind fits. */
+export const otherKindId = (kinds: readonly MoneyOperationKind[], direction: number | null) =>
+  direction ? kinds.find((item) => item.code === (direction === 1 ? "OTHER_IN" : "OTHER_OUT"))?.id : undefined;
+
 /** The kind and the account a row gets by default; none when its classification gives none. */
 export const resolveDefaultOffset = (
   transaction: BankStatementTransaction,
@@ -99,10 +100,11 @@ export const resolveDefaultOffset = (
   const code = kindCodeOf(transaction);
   const kind = code ? kinds.find((item) => item.code === code) : undefined;
   if (!kind) return null;
-  // a kind that needs a counterparty is kept only where the row can carry one, else its account alone
+  // a kind that needs a counterparty is kept only where the row can carry one, else its account
+  // goes as an other receipt / payment (1C «Прочее поступление / списание»)
   const keepsKind = kind.counterpartyMode !== 2 || canMapBankCounterparty(transaction.classificationCode);
   return {
-    operationKindId: keepsKind ? kind.id : null,
+    operationKindId: keepsKind ? kind.id : (otherKindId(kinds, direction) ?? null),
     offsetAccountId:
       kind.defaultOffsetAccount?.id ??
       (kind.code === "TAX_PAYMENT" ? taxAccountId(transaction.purpose ?? "", offsetOptions.expense) : null),

@@ -3990,7 +3990,12 @@
       "balance": "Qoldiq",
       "status": "Holati",
       "currentStatus": "Joriy holat",
-      "direction": "Yo'nalish"
+      "direction": "Yo'nalish",
+      "receivedFrom": "Kimdan qabul qilindi",
+      "issueTo": "Kimga berilsin",
+      "basis": "Asos",
+      "attachment": "Ilova",
+      "idDocument": "Hujjat (pasport)"
     },
     "book": {
       "cashBoxWithId": "Kassa #{{id}}",
@@ -5110,5 +5115,11 @@
     "useDocExpense": "Hujjatdagi hisobni olish",
     "apply": "Qo'llash",
     "lineExpenseHint": "1C kabi: qator xarajati alohida hisobga (masalan boshqa bo'lim xarajati) yozilishi mumkin; tanlanmasa hujjatdagi xarajat hisobi olinadi."
+  },
+  "moneyDocument": {
+    "cashFlowItem": "Pul oqimi (DDS) moddasi",
+    "automatic": "Avtomatik (hisobdan)",
+    "budgetPaymentKind": "Byudjetga to'lov turi",
+    "taxItself": "Soliq (asosiy qarz)"
   }
 }

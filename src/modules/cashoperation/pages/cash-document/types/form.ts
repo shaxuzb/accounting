@@ -20,4 +20,16 @@ export interface CashDocumentForm {
   offsetAccountId: number | null;
   /** The operation kind (1C «Вид операции»); none on a transfer between boxes. */
   operationKindId: number | null;
+  /** 1C «Статья ДДС»; empty — picked from the correspondent account. */
+  cashFlowItemId: number | null;
+  /** 1C «Вид платежа в бюджет» of a tax payment (64xx, 65xx); empty — the tax itself. */
+  budgetPaymentKindId: number | null;
+  /** PKO «Принято от» / RKO «Выдать». */
+  personName: string;
+  /** 1C «Основание». */
+  basis: string;
+  /** 1C «Приложение». */
+  attachment: string;
+  /** RKO «По документу». */
+  idDocument: string;
 }

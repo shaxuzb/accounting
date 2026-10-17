@@ -3990,7 +3990,12 @@
       "balance": "Balance",
       "status": "Status",
       "currentStatus": "Current status",
-      "direction": "Direction"
+      "direction": "Direction",
+      "receivedFrom": "Received from",
+      "issueTo": "Issue to",
+      "basis": "Basis",
+      "attachment": "Attachment",
+      "idDocument": "Identity document"
     },
     "book": {
       "cashBoxWithId": "Cash register #{{id}}",
@@ -5110,5 +5115,11 @@
     "useDocExpense": "Use the document's",
     "apply": "Apply",
     "lineExpenseHint": "As in 1C: a line's cost may go to its own expense account (another department's, say); without one the document's is used."
+  },
+  "moneyDocument": {
+    "cashFlowItem": "Cash flow item",
+    "automatic": "Automatic (by account)",
+    "budgetPaymentKind": "Budget payment kind",
+    "taxItself": "Tax (principal)"
   }
 }

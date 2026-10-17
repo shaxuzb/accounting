@@ -58,6 +58,12 @@ const createDefaultValues = (): CashDocumentForm => ({
   cashChartAccountId: null,
   offsetAccountId: null,
   operationKindId: null,
+  cashFlowItemId: null,
+  budgetPaymentKindId: null,
+  personName: "",
+  basis: "",
+  attachment: "",
+  idDocument: "",
   comment: "",
 });
 
@@ -110,6 +116,19 @@ export default function CashDocumentDetailPage() {
       offsetAccountId: record?.offsetAccountId ?? createDefaultValues().offsetAccountId,
       operationKindId:
         (record as { operationKindId?: number | null } | undefined)?.operationKindId ?? null,
+      ...(() => {
+        const own = record as
+          | { cashFlowItemId?: number | null; budgetPaymentKindId?: number | null; personName?: string | null; basis?: string | null; attachment?: string | null; idDocument?: string | null }
+          | undefined;
+        return {
+          cashFlowItemId: own?.cashFlowItemId ?? null,
+          budgetPaymentKindId: own?.budgetPaymentKindId ?? null,
+          personName: own?.personName ?? "",
+          basis: own?.basis ?? "",
+          attachment: own?.attachment ?? "",
+          idDocument: own?.idDocument ?? "",
+        };
+      })(),
     }),
     [record],
   );
