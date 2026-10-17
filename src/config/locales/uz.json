@@ -351,7 +351,9 @@
       "currencyRevaluation": "Valyuta qayta baholash",
       "cashCollection": "Inkassatsiya",
       "paymentAcceptancePoint": "To'lov qabul qilish nuqtasi",
-      "rentalAccrual": "Ijara hisoblash"
+      "rentalAccrual": "Ijara hisoblash",
+      "conversion": "Komplektatsiya va qayta navlash",
+      "commissionReport": "Komissiya hisoboti (haq)"
     },
     "date": "Sana",
     "hint": "Tanlangan davrdagi o'tkazilgan hujjatlar sana tartibida joriy qoidalar va hisob sozlamalari bo'yicha qayta o'tkaziladi (1C «Перепроведение»). Hujjat holati va ombor qoldig'i o'zgarmaydi; yopilgan oy qayta yozilmaydi.",
@@ -4952,5 +4954,91 @@
     "empty": "Hisobot yo'q",
     "fromAgentHint": "Komissioner sotgan tovarlar — «Komissionerdagi tovarlarimiz» omboridan komissionerga sotuv (daromad, QQS, tannarx 2960.1 dan). Bu hujjat davr uchun uning vositachilik haqini yozadi: Dt 9410 Kt 4010, QQS Dt 4410 Kt 4010 — komissioner qarzi kamayadi.",
     "toCommittentHint": "Komitent tovarlarini sotish — «Komitent tovarlari» omboridan sotuv (Dt 4010 Kt 6990). Bu hujjat davr uchun bizning vositachilik haqimizni yozadi: Dt 6990 Kt 9030.1, QQS Dt 6990 Kt 6410.1 — komitentga qarzimiz kamayadi; qolganini komitentga to'laymiz."
+  },
+  "conversion": {
+    "assembly": {
+      "title": "Komplektatsiya",
+      "hint": "Komplektatsiya: butlovchilar ombordan chiqadi, to'plam ularning tannarxida kiradi (Dt to'plam hisobi Kt butlovchilar hisobi). Razukomplektatsiya: to'plam chiqadi, uning tannarxi butlovchilarga qiymat ulushi (yo'q bo'lsa miqdor) bo'yicha taqsimlanadi."
+    },
+    "regrading": {
+      "title": "Qayta navlash",
+      "hint": "Qayta navlash (1C «Пересортица»): har juftda bir tovar hisobdan chiqadi va uning o'rniga boshqa tovar o'sha tannarxda kirim qilinadi — bir navdagi kamomad boshqa navdagi ortiqcha bilan yopiladi."
+    },
+    "accounts": {
+      "title": "Hisoblar orasida ko'chirish",
+      "hint": "Tovar o'sha omborda boshqa hisobga o'tkaziladi (masalan 1010 → 2910, 2910 → 2920): tannarx partiyalar bo'yicha o'zgarmaydi."
+    },
+    "kindHints": {
+      "1": "To'plam (kirim) va butlovchilarni (chiqim) kiriting. To'plam hisobi tanlanmasa, tovarning o'z hisobi olinadi.",
+      "2": "To'plam (chiqim) va butlovchilarni (kirim) kiriting. Qiymat ulushi bo'sh bo'lsa, tannarx miqdor bo'yicha taqsimlanadi.",
+      "3": "Har qatorda: chiqadigan tovar va miqdori, kiradigan tovar va miqdori.",
+      "4": "Har qatorda: tovar, miqdor va qabul qiluvchi hisob."
+    },
+    "kinds": {
+      "1": "Komplektatsiya",
+      "2": "Razukomplektatsiya",
+      "3": "Qayta navlash",
+      "4": "Hisoblar orasida"
+    },
+    "status": {
+      "1": "Qoralama",
+      "2": "O'tkazilgan",
+      "3": "Bekor qilingan"
+    },
+    "new": "Yangi hujjat",
+    "newNumber": "Yangi",
+    "date": "Sana",
+    "kind": "Operatsiya",
+    "warehouse": "Ombor",
+    "summary": "Kirim qilingan",
+    "amount": "Summa",
+    "state": "Holati",
+    "empty": "Hujjat yo'q",
+    "set": "To'plam",
+    "setAccount": "To'plam hisobi",
+    "itemAccount": "Tovarning o'z hisobi",
+    "component": "Butlovchi",
+    "components": "Butlovchilar",
+    "pairs": "Qatorlar",
+    "product": "Tovar",
+    "outProduct": "Chiqadigan tovar",
+    "inProduct": "Kiradigan tovar",
+    "quantity": "Miqdor",
+    "costShare": "Qiymat ulushi",
+    "byQuantity": "miqdor bo'yicha",
+    "account": "Hisob",
+    "fromAccount": "Qaysi hisobdan",
+    "toAccount": "Qaysi hisobga",
+    "comment": "Izoh",
+    "productPlaceholder": "Tovarni tanlang",
+    "warehouseFirst": "Avval omborni tanlang",
+    "addLine": "Qator qo'shish",
+    "saveDraft": "Saqlash",
+    "post": "Saqlash va o'tkazish",
+    "cancel": "O'tkazishni bekor qilish",
+    "cancelConfirm": "Hujjat provodkalari va ombor harakatlari bekor qilinsinmi?",
+    "deleteConfirm": "Hujjat o'chirilsinmi?",
+    "saved": "Saqlandi",
+    "posted": "Hujjat o'tkazildi",
+    "cancelled": "O'tkazish bekor qilindi",
+    "entries": "Provodkalar"
+  },
+  "stockTurnover": {
+    "title": "Tovarlar aylanma vedomosti",
+    "hint": "Bosh kitobdan: ombor va tovar bo'yicha davr boshidagi qoldiq, kirim, chiqim va oxirgi qoldiq, miqdor va summada. Ombor qatori — balansdagi tovarlar jami; komitent tovarlari (004) alohida belgilangan.",
+    "item": "Ombor / tovar",
+    "account": "Hisob",
+    "opening": "Davr boshiga",
+    "in": "Kirim",
+    "out": "Chiqim",
+    "closing": "Davr oxiriga",
+    "quantity": "Miqdor",
+    "sum": "Summa",
+    "total": "Jami",
+    "offBalance": "balansdan tashqari",
+    "search": "Tovar nomi yoki kodi",
+    "empty": "Davrda harakat va qoldiq yo'q",
+    "allWarehouses": "Barcha omborlar",
+    "allGroups": "Barcha guruhlar"
   }
 }

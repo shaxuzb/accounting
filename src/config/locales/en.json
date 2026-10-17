@@ -351,7 +351,9 @@
       "currencyRevaluation": "Currency revaluation",
       "cashCollection": "Cash collection",
       "paymentAcceptancePoint": "Payment acceptance point",
-      "rentalAccrual": "Rental accrual"
+      "rentalAccrual": "Rental accrual",
+      "conversion": "Assembly and re-grading",
+      "commissionReport": "Commission report (fee)"
     },
     "date": "Date",
     "hint": "Posted documents of the range are posted again in date order with the current rules and account settings. Status and stock stay as they are; a closed month is never rewritten.",
@@ -4952,5 +4954,91 @@
     "empty": "No reports",
     "fromAgentHint": "The goods the agent sold are a sale to it from the «Our goods at a commission agent» warehouse (revenue, VAT, cost from 2960.1). This document books its fee for the period: Dt 9410 Kt 4010, VAT Dt 4410 Kt 4010 — the agent owes us less.",
     "toCommittentHint": "Selling a committent's goods is a sale from the «A committent's goods» warehouse (Dt 4010 Kt 6990). This document books our fee for the period: Dt 6990 Kt 9030.1, VAT Dt 6990 Kt 6410.1 — we owe the committent less; the rest is paid to it."
+  },
+  "conversion": {
+    "assembly": {
+      "title": "Assembly",
+      "hint": "Assembly: the components leave the warehouse, the set comes in at their cost (Dt the set's account Kt the components'). Disassembly: the set leaves, its cost goes to the components by their cost shares (or by quantity)."
+    },
+    "regrading": {
+      "title": "Re-grading",
+      "hint": "Re-grading: each pair writes one item off and takes another in its place at the same cost — a shortage of one grade made up by a surplus of another."
+    },
+    "accounts": {
+      "title": "Transfer between accounts",
+      "hint": "The item is moved to another stock account in the same warehouse (e.g. 1010 → 2910, 2910 → 2920) at its batches' cost."
+    },
+    "kindHints": {
+      "1": "Enter the set (coming in) and its components (going out). Without an account chosen the set takes its item's own.",
+      "2": "Enter the set (going out) and its components (coming in). Without cost shares the cost goes by quantity.",
+      "3": "Each row: the item going out and its quantity, the item coming in and its quantity.",
+      "4": "Each row: the item, the quantity and the account it moves to."
+    },
+    "kinds": {
+      "1": "Assembly",
+      "2": "Disassembly",
+      "3": "Re-grading",
+      "4": "Between accounts"
+    },
+    "status": {
+      "1": "Draft",
+      "2": "Posted",
+      "3": "Cancelled"
+    },
+    "new": "New document",
+    "newNumber": "New",
+    "date": "Date",
+    "kind": "Operation",
+    "warehouse": "Warehouse",
+    "summary": "Taken in",
+    "amount": "Amount",
+    "state": "State",
+    "empty": "No documents",
+    "set": "Set",
+    "setAccount": "The set's account",
+    "itemAccount": "The item's own account",
+    "component": "Component",
+    "components": "Components",
+    "pairs": "Rows",
+    "product": "Item",
+    "outProduct": "Goes out",
+    "inProduct": "Comes in",
+    "quantity": "Quantity",
+    "costShare": "Cost share",
+    "byQuantity": "by quantity",
+    "account": "Account",
+    "fromAccount": "From account",
+    "toAccount": "To account",
+    "comment": "Comment",
+    "productPlaceholder": "Choose an item",
+    "warehouseFirst": "Choose the warehouse first",
+    "addLine": "Add a row",
+    "saveDraft": "Save",
+    "post": "Save and post",
+    "cancel": "Cancel posting",
+    "cancelConfirm": "Cancel the document's entries and movements?",
+    "deleteConfirm": "Delete the document?",
+    "saved": "Saved",
+    "posted": "The document is posted",
+    "cancelled": "Posting cancelled",
+    "entries": "Entries"
+  },
+  "stockTurnover": {
+    "title": "Stock turnover",
+    "hint": "From the general ledger: by warehouse and item the opening balance, in, out and closing, in quantity and sum. A warehouse row totals the balance-sheet goods; a committent's goods (004) are marked apart.",
+    "item": "Warehouse / item",
+    "account": "Account",
+    "opening": "Opening",
+    "in": "In",
+    "out": "Out",
+    "closing": "Closing",
+    "quantity": "Qty",
+    "sum": "Sum",
+    "total": "Total",
+    "offBalance": "off-balance",
+    "search": "Item name or code",
+    "empty": "No balance or movement in the period",
+    "allWarehouses": "All warehouses",
+    "allGroups": "All groups"
   }
 }

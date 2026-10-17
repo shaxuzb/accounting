@@ -259,6 +259,22 @@ export const menuPermissions: MainMenu = {
           },
         },
         {
+          code: "INVENTORY_CONVERSION_VIEW",
+          linkData: { path: "assemblies", title: "conversion.assembly.title" },
+        },
+        {
+          code: "INVENTORY_CONVERSION_VIEW",
+          linkData: { path: "regradings", title: "conversion.regrading.title" },
+        },
+        {
+          code: "INVENTORY_CONVERSION_VIEW",
+          linkData: { path: "account-transfers", title: "conversion.accounts.title" },
+        },
+        {
+          code: "WAREHOUSE_REPORT_STOCK_TURNOVER",
+          linkData: { path: "stock-turnover", title: "stockTurnover.title" },
+        },
+        {
           code: "PRICE_TYPE_VIEW",
           linkData: { path: "price-types", title: "priceType.title" },
         },

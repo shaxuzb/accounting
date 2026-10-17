@@ -15,6 +15,8 @@ const WarehouseTransferDetailPage = lazy(() => import("./pages/warehouse-transfe
 const WarehouseTransferListPage = lazy(() => import("./pages/warehouse-transfer/screens/WarehouseTransferListPage"));
 
 const PriceTypeListPage = lazy(() => import("../priceType/PriceTypeListPage"));
+const StockTurnoverPage = lazy(() => import("./pages/stock-turnover/StockTurnoverPage"));
+import { conversionRoute } from "../conversion/routes";
 const PriceSettingListPage = lazy(() =>
   import("../priceType/PriceSettingPages").then((m) => ({ default: m.PriceSettingListPage })),
 );
@@ -95,6 +97,16 @@ export const warehouseRoutes: RouteObject = {
           },
         },
       ],
+    },
+    // 1C «Комплектация номенклатуры», «Пересортица товаров», a transfer between stock accounts
+    conversionRoute("assembly", "assemblies"),
+    conversionRoute("regrading", "regradings"),
+    conversionRoute("accounts", "account-transfers"),
+    {
+      // 1C «Ведомость по товарам на складах»
+      path: "stock-turnover",
+      handle: { title: "stockTurnover.title" },
+      element: withPermission(<StockTurnoverPage />, "WAREHOUSE_REPORT_STOCK_TURNOVER"),
     },
     {
       // 1C «Типы цен номенклатуры»
