@@ -2042,13 +2042,15 @@
       "priceIncludesVat": "Narxlar QQS bilan",
       "paymentTermDays": "To'lov muddati, kun",
       "isDefault": "Asosiy shartnoma",
-      "priceType": "Narx turi"
+      "priceType": "Narx turi",
+      "isTaxAgentVat": "QQS bo'yicha soliq agenti"
     },
     "messages": {
       "priceIncludesVatHint": "Yoqilsa, shu shartnoma bo'yicha xaridda «Narx QQS bilan» o'zi yoqiladi (hujjatda o'zgartirish mumkin).",
       "paymentTermPlaceholder": "Muddat yo'q",
       "isDefaultHint": "Kontragent tanlanganda hujjatga shu shartnoma o'zi qo'yiladi (shu turdagi bittasi)",
-      "priceTypeHint": "Shu shartnoma bo'yicha sotuvlar narxi shu turdan olinadi"
+      "priceTypeHint": "Shu shartnoma bo'yicha sotuvlar narxi shu turdan olinadi",
+      "isTaxAgentVatHint": "O'zbekistonda QQS bo'yicha ro'yxatda bo'lmagan chet el yetkazib beruvchisi (SK 255-modda): xaridning QQSi yetkazib beruvchiga emas, budjetga — 6410.2 ga yoziladi. QQS to'lovchi uni 4410 orqali hisobga oladi, to'lovchi bo'lmagan tannarxga qo'shadi. Shartnoma ishlatilgandan keyin o'zgarmaydi."
     }
   },
   "products": {

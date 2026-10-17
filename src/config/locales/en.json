@@ -2042,13 +2042,15 @@
       "priceIncludesVat": "Prices include VAT",
       "paymentTermDays": "Payment term, days",
       "isDefault": "Main contract",
-      "priceType": "Price type"
+      "priceType": "Price type",
+      "isTaxAgentVat": "VAT tax agent"
     },
     "messages": {
       "priceIncludesVatHint": "When on, purchases under this contract start with «Price includes VAT» switched on (it can be changed on the document).",
       "paymentTermPlaceholder": "No term",
       "isDefaultHint": "Documents take it when the counterparty is picked (one per kind)",
-      "priceTypeHint": "Sales under the contract are priced by this type"
+      "priceTypeHint": "Sales under the contract are priced by this type",
+      "isTaxAgentVatHint": "A foreign supplier not registered for VAT in Uzbekistan (Tax Code art. 255): the purchase's VAT is owed to the budget on 6410.2, not to the supplier. A VAT payer recovers it via 4410, a non-payer adds it to the cost. Fixed once the contract is in use."
     }
   },
   "products": {

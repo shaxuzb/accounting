@@ -20,6 +20,7 @@ export interface ContractForm {
   paymentTermDays: number | null;
   /** 1C «Тип цен»: the type a customer's sales are priced by. */
   priceTypeId?: number | null;
+  isTaxAgentVat: boolean;
   stateId?: number | null;
 }
 

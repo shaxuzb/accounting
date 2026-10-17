@@ -21,6 +21,7 @@ export interface Contract {
   isDefault?: boolean;
   paymentTermDays?: number | null;
   priceTypeId?: number | null;
+  isTaxAgentVat?: boolean;
   currencyId?: number | null;
   currencyCode?: string | null;
 }

@@ -39,6 +39,7 @@ const createDefaultValues = (): ContractForm => ({
   isDefault: false,
   paymentTermDays: null,
   priceTypeId: null,
+  isTaxAgentVat: false,
   stateId: null,
 });
 
@@ -115,6 +116,8 @@ export default function ContractAddEditPage({
         paymentTermDays: values.paymentTermDays ?? null,
         // 1C «Тип цен»: only a customer's contract prices its sales
         priceTypeId: values.contractTypeId === 2 ? (values.priceTypeId ?? null) : null,
+        // Tax Code 255: only what we buy from a foreign supplier
+        isTaxAgentVat: values.contractTypeId === supplierContractTypeId && values.isTaxAgentVat,
       };
       try {
         if (isEdit && editId) {
@@ -155,6 +158,7 @@ export default function ContractAddEditPage({
         isDefault: Boolean(Contract.isDefault),
         paymentTermDays: Contract.paymentTermDays ?? null,
         priceTypeId: Contract.priceTypeId ?? null,
+        isTaxAgentVat: Boolean(Contract.isTaxAgentVat),
         stateId: Contract.stateId ?? null,
       });
     }
@@ -344,6 +348,17 @@ export default function ContractAddEditPage({
                   fieldName="priceIncludesVat"
                   label="contract.fields.priceIncludesVat"
                   description="contract.messages.priceIncludesVatHint"
+                  marginBottom="mb-2"
+                />
+              </Col>
+            )}
+            {formik.values.contractTypeId === supplierContractTypeId && (
+              <Col span={24}>
+                <SwitchField
+                  formik={formik}
+                  fieldName="isTaxAgentVat"
+                  label="contract.fields.isTaxAgentVat"
+                  description="contract.messages.isTaxAgentVatHint"
                   marginBottom="mb-2"
                 />
               </Col>
