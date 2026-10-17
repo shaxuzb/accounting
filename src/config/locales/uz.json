@@ -37,7 +37,9 @@
     },
     "effects": {
       "inStock": "Qoldiqdagi partiya",
-      "sold": "Sotilgan (9120)"
+      "sold": "Sotilgan (9120)",
+      "writtenOff": "Hisobdan chiqarilgan",
+      "repriced": "Sanadan keyin chiqqan — sotuv tannarxiga (ketma-ketlik)"
     },
     "reasons": {
       "price": "Narx kelishuvi",
@@ -269,7 +271,9 @@
     "effect": "Natija",
     "effects": {
       "inStock": "Omborda — tannarx oshdi",
-      "sold": "Sotilgan — 9120 ga"
+      "sold": "Sotilgan — 9120 ga",
+      "writtenOff": "Hisobdan chiqarilgan — o'sha hisobga",
+      "repriced": "Sanadan keyin chiqqan — sotuv tannarxiga (ketma-ketlik)"
     },
     "unitCostAdded": "Birlik tannarxiga qo'shildi",
     "amount": "Summa",

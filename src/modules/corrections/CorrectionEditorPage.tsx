@@ -9,6 +9,7 @@ import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import DocumentEsfButton from "@/modules/settings/pages/integrations/edo/components/DocumentEsfButton";
+import { effectTag } from "@/modules/extraCosts/constants";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
@@ -159,10 +160,10 @@ function CorrectionEditor({ kind, id, data }: { kind: CorrectionKind; id: number
       dataIndex: "kind",
       title: t("correction.effect"),
       render: (value: number) =>
-        value === 1 ? <Tag color="blue">{t("correction.effects.inStock")}</Tag> : <Tag color="orange">{t("correction.effects.sold")}</Tag>,
+        <Tag color={effectTag(value).color}>{t(`correction.effects.${effectTag(value).key}`)}</Tag>,
     },
     { dataIndex: "quantity", title: t("correction.quantity"), align: "right", width: 110 },
-    { dataIndex: "unitCostAdded", title: t("correction.unitCostAdded"), align: "right", width: 150, render: (value: number, row) => (row.kind === 1 ? money(value) : "-") },
+    { dataIndex: "unitCostAdded", title: t("correction.unitCostAdded"), align: "right", width: 150, render: (value: number, row) => (row.kind === 1 || row.kind === 4 ? money(value) : "-") },
     { dataIndex: "amount", title: t("correction.amount"), align: "right", width: 150, render: (value: number) => money(value) },
   ];
 

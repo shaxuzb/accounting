@@ -44,6 +44,7 @@ import {
 import {
   distributionMethod,
   effectKind,
+  effectTag,
   extraCostDocumentTypeId,
   extraCostPath,
   extraCostPermissions,
@@ -258,11 +259,7 @@ function ExtraCostEditor({
       dataIndex: "kind",
       title: t("extraCost.effect"),
       render: (value: number) =>
-        value === effectKind.inStock ? (
-          <Tag color="blue">{t("extraCost.effects.inStock")}</Tag>
-        ) : (
-          <Tag color="orange">{t("extraCost.effects.sold")}</Tag>
-        ),
+        <Tag color={effectTag(value).color}>{t(`extraCost.effects.${effectTag(value).key}`)}</Tag>,
     },
     {
       dataIndex: "quantity",
@@ -276,7 +273,7 @@ function ExtraCostEditor({
       align: "right",
       width: 150,
       render: (value: number, row) =>
-        row.kind === effectKind.inStock ? money(value) : "-",
+        row.kind === effectKind.inStock || row.kind === effectKind.repriced ? money(value) : "-",
     },
     {
       dataIndex: "amount",

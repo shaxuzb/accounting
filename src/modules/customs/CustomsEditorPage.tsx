@@ -11,7 +11,7 @@ import CounterpartySelect from "@/components/fields/CounterpartySelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import AccountingEntriesButton from "@/modules/accounting/components/AccountingEntriesButton";
 import type { ExtraCostEffect } from "@/modules/extraCosts/api";
-import { effectKind, money } from "@/modules/extraCosts/constants";
+import { effectKind, effectTag, money } from "@/modules/extraCosts/constants";
 import { ExtraCostStatusTag } from "@/modules/extraCosts/ExtraCostListPage";
 import { chartAccountSelectDisplayConfig } from "@/shared/constants/selectLists";
 import { useAppSelector } from "@/store/hooks";
@@ -251,11 +251,7 @@ function CustomsEditor({ id, data }: { id: number | null; data?: CustomsDocument
       dataIndex: "kind",
       title: t("extraCost.effect"),
       render: (value: number) =>
-        value === effectKind.inStock ? (
-          <Tag color="blue">{t("extraCost.effects.inStock")}</Tag>
-        ) : (
-          <Tag color="orange">{t("extraCost.effects.sold")}</Tag>
-        ),
+        <Tag color={effectTag(value).color}>{t(`extraCost.effects.${effectTag(value).key}`)}</Tag>,
     },
     { dataIndex: "quantity", title: t("customs.quantity"), align: "right", width: 110 },
     {
@@ -263,7 +259,8 @@ function CustomsEditor({ id, data }: { id: number | null; data?: CustomsDocument
       title: t("extraCost.unitCostAdded"),
       align: "right",
       width: 150,
-      render: (value: number, row) => (row.kind === effectKind.inStock ? money(value) : "-"),
+      render: (value: number, row) =>
+        row.kind === effectKind.inStock || row.kind === effectKind.repriced ? money(value) : "-",
     },
     { dataIndex: "amount", title: t("extraCost.amount"), align: "right", width: 150, render: (value: number) => money(value) },
   ];

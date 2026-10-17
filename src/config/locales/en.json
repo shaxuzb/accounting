@@ -37,7 +37,9 @@
     },
     "effects": {
       "inStock": "Batch in stock",
-      "sold": "Sold (9120)"
+      "sold": "Sold (9120)",
+      "writtenOff": "Written off",
+      "repriced": "Out after the date — to the sale's cost (sequence)"
     },
     "reasons": {
       "price": "Price agreed again",
@@ -269,7 +271,9 @@
     "effect": "Result",
     "effects": {
       "inStock": "In stock — cost raised",
-      "sold": "Sold — to 9120"
+      "sold": "Sold — to 9120",
+      "writtenOff": "Written off — to its account",
+      "repriced": "Out after the date — to the sale's cost (sequence)"
     },
     "unitCostAdded": "Added to unit cost",
     "amount": "Amount",
