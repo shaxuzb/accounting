@@ -5,6 +5,10 @@ import { purchasePermissions } from "./pages/purchase/constants/permissions";
 const PurchaseListPage = lazy(() => import("./pages/purchase/screens/PurchaseListPage"));
 const PurchaseDetailPage = lazy(() => import("./pages/purchase/screens/PurchaseDetailPage"));
 const ContractListPage = lazy(() => import("../contract/screens/ContractListPage"));
+const PowerOfAttorneyListPage = lazy(() => import("../powerOfAttorney/PowerOfAttorneyListPage"));
+const PowerOfAttorneyEditorPage = lazy(() => import("../powerOfAttorney/PowerOfAttorneyEditorPage"));
+const PowerOfAttorneyPrintPage = lazy(() => import("../powerOfAttorney/PowerOfAttorneyPrintPage"));
+import { powerOfAttorneyPermissions } from "../powerOfAttorney/api";
 import { contractPermissions } from "../contract/constants/permissions";
 import { returnRoute } from "../returns/routes";
 import { returnKind } from "../returns/constants";
@@ -84,6 +88,29 @@ export const purchaseRoutes: RouteObject = {
     correctionRoute("purchase", "corrections"),
     // customs declarations of imports (1C «Таможенная декларация (импорт)»)
     customsRoute("customs-declarations"),
+    {
+      // 1C «Доверенности» (NSBU 4 ch. 12)
+      path: "powers-of-attorney",
+      handle: { title: "powerOfAttorney.title" },
+      children: [
+        { index: true, element: withPermission(<PowerOfAttorneyListPage />, powerOfAttorneyPermissions.view) },
+        {
+          path: "new",
+          handle: { title: "powerOfAttorney.new", showBack: true, backTo: ".." },
+          element: withPermission(<PowerOfAttorneyEditorPage />, powerOfAttorneyPermissions.create),
+        },
+        {
+          path: ":id",
+          handle: { title: "powerOfAttorney.document", showBack: true, backTo: ".." },
+          element: withPermission(<PowerOfAttorneyEditorPage />, powerOfAttorneyPermissions.view),
+        },
+        {
+          path: ":id/print",
+          handle: { title: "powerOfAttorney.print", showBack: true, backTo: ".." },
+          element: withPermission(<PowerOfAttorneyPrintPage />, powerOfAttorneyPermissions.view),
+        },
+      ],
+    },
     {
       path: "contracts",
       handle: { title: "contract.purchaseTitle" },

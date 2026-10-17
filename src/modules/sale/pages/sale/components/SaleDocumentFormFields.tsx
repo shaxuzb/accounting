@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
+import InputText from "@/components/fields/InputText";
 import SettlementDocumentSelect from "@/components/fields/SettlementDocumentSelect";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAutoExchangeRate";
@@ -248,6 +249,22 @@ export default function SaleDocumentFormFields({
           currencyId={Number(formik.values.currencyId) || null}
           date={formik.values.docDate}
         />
+        {/* the buyer's agent's power (1C «Доверенность покупателя»): the ESF's empowerment */}
+        <Col span={24}>
+          <div className="mb-2 text-sm font-medium text-secondary-text">{t("sale.buyerPower.title")}</div>
+        </Col>
+        <Col span={24} sm={12} lg={6} xl={4}>
+          <InputText formik={formik} fieldName="buyerEmpowermentNumber" label="sale.buyerPower.number" />
+        </Col>
+        <Col span={24} sm={12} lg={6} xl={4}>
+          <SelectDate formik={formik} fieldName="buyerEmpowermentDate" label={t("sale.buyerPower.date")} valueFormat="YYYY-MM-DD" />
+        </Col>
+        <Col span={24} sm={12} lg={6} xl={8}>
+          <InputText formik={formik} fieldName="buyerAgentName" label="sale.buyerPower.agent" />
+        </Col>
+        <Col span={24} sm={12} lg={6} xl={4}>
+          <InputText formik={formik} fieldName="buyerAgentPinfl" label="sale.buyerPower.pinfl" />
+        </Col>
         <CounterpartyAddEditPage
           open={counterpartyCreateOpen}
           onClose={() => {

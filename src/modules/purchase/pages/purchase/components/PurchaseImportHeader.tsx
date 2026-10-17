@@ -23,6 +23,7 @@ import type { PurchaseMode } from "../types/type";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
 import { counterpartyPermissions } from "@/modules/settings/pages/counterparty/constants/permissions";
 import ContractAddEditPage from "@/modules/contract/screens/ContractAddEditPage";
+import PowerOfAttorneySelect from "@/modules/powerOfAttorney/PowerOfAttorneySelect";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 import type { Contract } from "@/modules/contract/types/type";
 import { purchaseDocumentTypeIds } from "../constants/endpoints";
@@ -161,6 +162,16 @@ export default function PurchaseImportHeader({
             />
           </Col>
 
+          {/* the power the goods were received by (NSBU 4 p. 100) */}
+          <Col span={24} sm={12} lg={8} xl={4}>
+            <PowerOfAttorneySelect
+              counterpartyId={formik.values.counterpartyId}
+              date={formik.values.docDate}
+              value={formik.values.powerOfAttorneyId}
+              onChange={(value) => formik.setFieldValue("powerOfAttorneyId", value, false)}
+              disabled={disabled}
+            />
+          </Col>
           <Col span={24} sm={12} lg={8} xl={4}>
             <SelectCustom
               path={selectListEndpoints.warehousesSelectList} createWith="warehouse"

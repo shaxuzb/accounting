@@ -6,6 +6,10 @@ export interface SaleDoc {
   counterpartyName: string;
   contractId?: number | null;
   priceTypeId?: number | null;
+  buyerEmpowermentNumber?: string | null;
+  buyerEmpowermentDate?: string | null;
+  buyerAgentName?: string | null;
+  buyerAgentPinfl?: string | null;
   advanceOffsetMode?: number;
   advanceDocumentId?: number | null;
   contractName?: string | null;

@@ -375,6 +375,7 @@ const toPurchaseDocumentPayload = (
   currencyId: values.currencyId ?? 0,
   exchangeRate: Number(values.exchangeRate) > 0 ? Number(values.exchangeRate) : 1,
   contractId: values.contractId,
+  powerOfAttorneyId: values.powerOfAttorneyId ?? null,
   advanceOffsetMode: values.advanceOffsetMode ?? 1,
   advanceDocumentId: values.advanceOffsetMode === 2 ? (values.advanceDocumentId ?? null) : null,
   supplierAccountId: values.supplierAccountId ?? 0,

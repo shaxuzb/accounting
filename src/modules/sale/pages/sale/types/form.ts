@@ -5,6 +5,11 @@ export interface SaleDocForm {
   contractId: number | null;
   /** The price type the sale is priced by (1C «Тип цен»); undefined — not chosen yet. */
   priceTypeId?: number | null;
+  /** The buyer's agent's power of attorney (1C «Доверенность покупателя»): the ESF's empowerment. */
+  buyerEmpowermentNumber?: string | null;
+  buyerEmpowermentDate?: string | null;
+  buyerAgentName?: string | null;
+  buyerAgentPinfl?: string | null;
   /** How the advances are offset (1C «Способ зачета аванса»): 1 automatic, 2 by document, 3 none. */
   advanceOffsetMode?: number;
   /** The advance offset when by document (a cmn_document_registry id). */
@@ -72,6 +77,11 @@ export interface SaleDocCreateForm {
   /** The invoice for payment the sale is made from (1C «на основании счета»). */
   saleInvoiceId?: number | null;
   priceTypeId?: number | null;
+  /** The buyer's agent's power of attorney (1C «Доверенность покупателя»): the ESF's empowerment. */
+  buyerEmpowermentNumber?: string | null;
+  buyerEmpowermentDate?: string | null;
+  buyerAgentName?: string | null;
+  buyerAgentPinfl?: string | null;
 }
 
 export interface SaleDocUpdateForm {
@@ -82,6 +92,11 @@ export interface SaleDocUpdateForm {
   currencyId: number;
   contractId: number | null;
   priceTypeId?: number | null;
+  /** The buyer's agent's power of attorney (1C «Доверенность покупателя»): the ESF's empowerment. */
+  buyerEmpowermentNumber?: string | null;
+  buyerEmpowermentDate?: string | null;
+  buyerAgentName?: string | null;
+  buyerAgentPinfl?: string | null;
   /** How the advances are offset (1C «Способ зачета аванса»): 1 automatic, 2 by document, 3 none. */
   advanceOffsetMode?: number;
   /** The advance offset when by document (a cmn_document_registry id). */

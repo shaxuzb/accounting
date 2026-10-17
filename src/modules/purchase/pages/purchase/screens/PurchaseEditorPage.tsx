@@ -561,6 +561,7 @@ export const PurchaseEditor = ({
               "contractId" in detailData
                 ? (detailData.contractId as number | null)
                 : null,
+            powerOfAttorneyId: (detailData as { powerOfAttorneyId?: number | null }).powerOfAttorneyId ?? null,
             advanceOffsetMode: Number((detailData as { advanceOffsetMode?: number }).advanceOffsetMode) || 1,
             advanceDocumentId: (detailData as { advanceDocumentId?: number | null }).advanceDocumentId ?? null,
             warehouseId: detailData.warehouseId ?? null,
@@ -785,6 +786,8 @@ export const PurchaseEditor = ({
             ...formik.values,
             counterpartyId: value,
             contractId: null,
+            // another supplier's power is no power of this purchase
+            powerOfAttorneyId: null,
           },
           shouldValidate,
         );

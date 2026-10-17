@@ -196,6 +196,10 @@ export const menuPermissions: MainMenu = {
           linkData: { path: "customs-declarations", title: "customs.title" },
         },
         {
+          code: "POWER_OF_ATTORNEY_VIEW",
+          linkData: { path: "powers-of-attorney", title: "powerOfAttorney.title" },
+        },
+        {
           code: contractPermissions.view,
           linkData: {
             path: "contracts",

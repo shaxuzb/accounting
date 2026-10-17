@@ -30,6 +30,8 @@ export interface PurchaseDocumentPayload {
   exchangeRate: number;
   comment: string | null;
   contractId: number | null;
+  /** The power of attorney the goods were received by (NSBU 4 p. 100). */
+  powerOfAttorneyId?: number | null;
   /** How the advances are offset (1C «Способ зачета аванса»): 1 automatic, 2 by document, 3 none. */
   advanceOffsetMode?: number;
   /** The advance offset when by document (a cmn_document_registry id). */
@@ -48,6 +50,8 @@ export interface PurchaseImportForm {
   currencyId: number | null;
   exchangeRate: number;
   contractId: number | null;
+  /** The power of attorney the goods were received by (NSBU 4 p. 100). */
+  powerOfAttorneyId?: number | null;
   /** How the advances are offset (1C «Способ зачета аванса»): 1 automatic, 2 by document, 3 none. */
   advanceOffsetMode?: number;
   /** The advance offset when by document (a cmn_document_registry id). */
