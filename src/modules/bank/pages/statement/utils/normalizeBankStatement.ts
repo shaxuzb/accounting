@@ -270,6 +270,8 @@ const normalizeCard = (
     totalCredit: getNumberByKeys(record, ["totalCredit"]),
     openingBalance: getNumberByKeys(record, ["openingBalance"]),
     closingBalance: getNumberByKeys(record, ["closingBalance"]),
+    ledgerOpeningBalance: getNumberByKeys(record, ["ledgerOpeningBalance"]),
+    ledgerClosingBalance: getNumberByKeys(record, ["ledgerClosingBalance"]),
     hasActivity: getByKeys(record, ["hasActivity"]) as boolean | undefined,
     periodFrom: getStringByKeys(record, ["periodFrom"]),
     periodTo: getStringByKeys(record, ["periodTo"]),

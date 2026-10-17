@@ -1,7 +1,10 @@
 import { Link } from "react-router";
 import { Button, Tooltip } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { FileUp, Plus, ReceiptText } from "lucide-react";
+import { FileDown, FileUp, Plus, ReceiptText } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { exportPaymentOrders } from "../../payment-order/api";
 import { useTranslation } from "react-i18next";
 import ActionColumn from "@/components/ui/table/actions/ActionColumns";
 import RestorableTable from "@/components/ui/table/RestorableTable";
@@ -32,6 +35,20 @@ export default function BankOperationListPage() {
   );
   const { data, isLoading, isFetching, refetch } =
     useGetBankOperations(queryParams);
+  // payments chosen to go to the bank client as 1C payment orders (1C «Выгрузка в банк»)
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [exporting, setExporting] = useState(false);
+  const exportSelected = async () => {
+    setExporting(true);
+    try {
+      await exportPaymentOrders(selectedIds);
+      toast.success(t("paymentOrder.exported", { count: selectedIds.length }));
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const tableColumns: TableColumnsType<BankOperationData> = [
     {
@@ -204,6 +221,15 @@ export default function BankOperationListPage() {
         }
         actions={
           <>
+            <Button
+              icon={<FileDown className="size-4" />}
+              disabled={!selectedIds.length}
+              loading={exporting}
+              onClick={() => void exportSelected()}
+            >
+              {t("paymentOrder.export1c")}
+              {selectedIds.length ? ` (${selectedIds.length})` : ""}
+            </Button>
             <PermissionCard permission={[bankPermissions.create, "ROLE_VIEW"]}>
               <Link to="add">
                 <Button type="primary" icon={<Plus className="size-4" />}>
@@ -232,6 +258,12 @@ export default function BankOperationListPage() {
           columns={columns}
           dataSource={withRowNumbers(data?.items)}
           rowKey="id"
+          rowSelection={{
+            selectedRowKeys: selectedIds,
+            onChange: (keys) => setSelectedIds(keys.map(Number)),
+            // only a payment (money out) is a payment order
+            getCheckboxProps: (record) => ({ disabled: record.directionId !== -1 }),
+          }}
           pagination={false}
           scroll={{ x: "max-content", y: "calc(100vh - 230px)" }}
           size="small"

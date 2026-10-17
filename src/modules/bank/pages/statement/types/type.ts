@@ -63,6 +63,9 @@ export interface BankStatementCardData {
   totalCredit?: number | null;
   openingBalance?: number | null;
   closingBalance?: number | null;
+  /** The books' balance before the statement's first day (1C compares it with the opening balance). */
+  ledgerOpeningBalance?: number | null;
+  ledgerClosingBalance?: number | null;
   hasActivity?: boolean;
   periodFrom?: string;
   periodTo?: string;

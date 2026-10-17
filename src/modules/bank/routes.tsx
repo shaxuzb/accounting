@@ -5,6 +5,7 @@ const BankOperationListPage = lazy(() => import("./pages/statement/screens/BankO
 const BankStatementImportPage = lazy(() => import("./pages/statement/screens/BankStatementImportPage"));
 const BankOperationAddEditPage = lazy(() => import("./pages/statement/screens/BankOperationAddEditPage"));
 const BankOperationDetailPage = lazy(() => import("./pages/statement/screens/BankOperationDetailPage"));
+const PaymentOrderPrintPage = lazy(() => import("./pages/payment-order/PaymentOrderPrintPage"));
 import { bankPermissions } from "./pages/statement/constants/permissions";
 import { contractPermissions } from "@/modules/contract/constants/permissions";
 const ContractListPage = lazy(() => import("../contract/screens/ContractListPage"));
@@ -70,6 +71,15 @@ export const bankRoutes: RouteObject = {
         showBack: true,
         backTo: "..",
       },
+    },
+    {
+      path: ":id/payment-order",
+      element: withPermission(<PaymentOrderPrintPage />, [
+        bankPermissions.detail,
+        bankPermissions.view,
+        "ROLE_VIEW",
+      ]),
+      handle: { title: "paymentOrder.print", showBack: true, backTo: ".." },
     },
     {
       path: ":id",

@@ -1966,7 +1966,7 @@
       "bankTypePlaceholder": "Select bank type",
       "bankTypeHint": "Select a bank type first. You can upload a file after that.",
       "uploadText": "Click to upload a file or drag it here",
-      "uploadHint": "XLSX, XLSM and XLS bank statements are supported.",
+      "uploadHint": "XLSX, XLSM and XLS bank statements and the bank client's 1C exchange file (1CClientBankExchange, .txt) are supported.",
       "statements": "Bank statements",
       "transactions": "Operations",
       "operationStatus": "Status",
@@ -1980,7 +1980,8 @@
       "readyToSave": "Ready to save",
       "assignMissingBankInfo": "Assign missing bank information",
       "assignMissingCounterparties": "Assign unmatched counterparties",
-      "missingSummary": "Not selected: {{bankAccounts}} bank accounts, {{offsetAccounts}} offset accounts, {{contracts}} contracts, {{counterpartyAccounts}} counterparty bank accounts"
+      "missingSummary": "Not selected: {{bankAccounts}} bank accounts, {{offsetAccounts}} offset accounts, {{contracts}} contracts, {{counterpartyAccounts}} counterparty bank accounts",
+      "ledgerOpeningMismatch": "Balance in the books: {{amount}} — differs from the statement"
     },
     "operation": {
       "title": "Bank operation",
@@ -5170,5 +5171,19 @@
     "closingOfDay": "Closing balance of the day",
     "checkedBy": "Checked the cash book entries and received {{receipts}} receipt and {{payments}} expense documents",
     "accountant": "Accountant"
+  },
+  "paymentOrder": {
+    "print": "Payment order",
+    "title": "PAYMENT ORDER No. {{number}}",
+    "payer": "Payer",
+    "payee": "Payee",
+    "account": "Account",
+    "inn": "TIN",
+    "bank": "Bank",
+    "mfo": "Bank code",
+    "purpose": "Purpose of payment",
+    "bankMark": "Bank's mark",
+    "export1c": "To bank client (1C format)",
+    "exported": "{{count}} payment orders exported (1c_to_kl.txt)"
   }
 }

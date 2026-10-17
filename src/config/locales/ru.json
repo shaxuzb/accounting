@@ -1968,7 +1968,7 @@
       "bankTypePlaceholder": "Выберите тип банка",
       "bankTypeHint": "Сначала выберите тип банка. После этого можно загрузить файл.",
       "uploadText": "Нажмите для загрузки файла или перетащите его сюда",
-      "uploadHint": "Поддерживаются банковские выписки в формате XLSX, XLSM или XLS.",
+      "uploadHint": "Поддерживаются банковские выписки в формате XLSX, XLSM, XLS и файл обмена с 1С из банк-клиента (1CClientBankExchange, .txt).",
       "statements": "Банковские выписки",
       "transactions": "Операции",
       "operationStatus": "Статус",
@@ -1982,7 +1982,8 @@
       "readyToSave": "Готово к сохранению",
       "assignMissingBankInfo": "Указать недостающие банковские данные",
       "assignMissingCounterparties": "Указать ненайденных контрагентов",
-      "missingSummary": "Не выбрано: банковских счетов — {{bankAccounts}}, корреспондирующих счетов — {{offsetAccounts}}, договоров — {{contracts}}, счетов контрагентов — {{counterpartyAccounts}}"
+      "missingSummary": "Не выбрано: банковских счетов — {{bankAccounts}}, корреспондирующих счетов — {{offsetAccounts}}, договоров — {{contracts}}, счетов контрагентов — {{counterpartyAccounts}}",
+      "ledgerOpeningMismatch": "Остаток в учете: {{amount}} — не совпадает с выпиской"
     },
     "operation": {
       "title": "Банковская операция",
@@ -5170,5 +5171,19 @@
     "closingOfDay": "Остаток на конец дня",
     "checkedBy": "Записи в кассовой книге проверил и документы в количестве {{receipts}} приходных и {{payments}} расходных получил",
     "accountant": "Бухгалтер"
+  },
+  "paymentOrder": {
+    "print": "Платежное поручение",
+    "title": "ПЛАТЕЖНОЕ ПОРУЧЕНИЕ № {{number}}",
+    "payer": "Плательщик",
+    "payee": "Получатель",
+    "account": "Счет",
+    "inn": "ИНН",
+    "bank": "Банк",
+    "mfo": "МФО",
+    "purpose": "Назначение платежа",
+    "bankMark": "Отметка банка",
+    "export1c": "В банк-клиент (формат 1С)",
+    "exported": "Выгружено платежных поручений: {{count}} (1c_to_kl.txt)"
   }
 }

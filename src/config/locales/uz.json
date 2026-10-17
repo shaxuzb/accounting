@@ -1968,7 +1968,7 @@
       "bankTypePlaceholder": "Bank turini tanlang",
       "bankTypeHint": "Avval bank turini tanlang. Shundan keyin fayl yuklash mumkin.",
       "uploadText": "Faylni yuklash uchun bosing yoki uni shu yerga olib keling",
-      "uploadHint": "XLSX, XLSM yoki XLS formatidagi bank ko'chirmalari qo'llab-quvvatlanadi.",
+      "uploadHint": "XLSX, XLSM, XLS formatidagi bank ko'chirmalari yoki bank-klientning 1C fayli (1CClientBankExchange, .txt) qo'llab-quvvatlanadi.",
       "statements": "Bank ko'chirmalari",
       "transactions": "Operatsiyalar",
       "operationStatus": "Holat",
@@ -1982,7 +1982,8 @@
       "readyToSave": "Saqlashga tayyor",
       "assignMissingBankInfo": "Yetishmayotgan bank ma'lumotlarini belgilash",
       "assignMissingCounterparties": "Topilmagan kontragentlarni belgilash",
-      "missingSummary": "Tanlanmagan: {{bankAccounts}} ta bank hisobvarag'i, {{offsetAccounts}} ta qarama-qarshi hisobvaraq, {{contracts}} ta shartnoma, {{counterpartyAccounts}} ta kontragent bank hisobi"
+      "missingSummary": "Tanlanmagan: {{bankAccounts}} ta bank hisobvarag'i, {{offsetAccounts}} ta qarama-qarshi hisobvaraq, {{contracts}} ta shartnoma, {{counterpartyAccounts}} ta kontragent bank hisobi",
+      "ledgerOpeningMismatch": "Hisobdagi qoldiq: {{amount}} — ko'chirma bilan mos emas"
     },
     "operation": {
       "title": "Bank operatsiyasi",
@@ -5170,5 +5171,19 @@
     "closingOfDay": "Kun oxiridagi qoldiq",
     "checkedBy": "Kassa kitobidagi yozuvlarni tekshirdim va {{receipts}} ta kirim, {{payments}} ta chiqim hujjatini oldim",
     "accountant": "Buxgalter"
+  },
+  "paymentOrder": {
+    "print": "To'lov topshiriqnomasi",
+    "title": "TO'LOV TOPSHIRIQNOMASI № {{number}}",
+    "payer": "To'lovchi",
+    "payee": "Oluvchi",
+    "account": "Hisob raqami",
+    "inn": "STIR",
+    "bank": "Bank",
+    "mfo": "MFO",
+    "purpose": "To'lov maqsadi",
+    "bankMark": "Bank belgisi",
+    "export1c": "Bank-klientga (1C formatida)",
+    "exported": "{{count}} ta to'lov topshiriqnomasi yuklab olindi (1c_to_kl.txt)"
   }
 }

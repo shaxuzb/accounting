@@ -459,6 +459,15 @@ function BankStatementCard({
             <div className="font-semibold">
               {numberSpacing(item.openingBalance ?? 0, undefined, true)}
             </div>
+            {/* 1C: «Остаток по выписке не совпадает с остатком в учете» */}
+            {item.ledgerOpeningBalance != null &&
+              Math.abs((item.openingBalance ?? 0) - item.ledgerOpeningBalance) >= 0.01 && (
+                <div className="text-xs text-danger">
+                  {t("bank.import.ledgerOpeningMismatch", {
+                    amount: numberSpacing(item.ledgerOpeningBalance, undefined, true),
+                  })}
+                </div>
+              )}
           </div>
           <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
             <div className="text-xs text-secondary-text">

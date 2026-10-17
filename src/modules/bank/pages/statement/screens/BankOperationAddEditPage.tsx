@@ -11,6 +11,7 @@ import {
   Info,
   Save,
   WalletCards,
+  Printer,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -809,6 +810,16 @@ export default function BankOperationAddEditPage() {
           </div>
 
           <div className="flex flex-wrap justify-end gap-3">
+            {/* a payment prints as its payment order (1C «Платежное поручение») */}
+            {!isCreate && formik.values.directionId === -1 && (
+              <Button
+                size="large"
+                icon={<Printer className="size-4" />}
+                onClick={() => navigate(`/main/bank/${id}/payment-order`)}
+              >
+                {t("paymentOrder.print")}
+              </Button>
+            )}
             <Button
               size="large"
               icon={<Save className="size-4" />}
