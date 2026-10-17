@@ -6,4 +6,6 @@ export const cashDocumentKeys = {
     ["cashDocuments", kind, "list", params] as const,
   detail: (kind: CashDocumentKind, id: string | number) =>
     ["cashDocuments", kind, "detail", id] as const,
+  print: (kind: CashDocumentKind, id: string | number) =>
+    ["cashDocuments", kind, "print", id] as const,
 } as const;

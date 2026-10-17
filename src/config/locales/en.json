@@ -1210,7 +1210,8 @@
       "legalAddress": "Legal address",
       "isMainAccount": "Main account",
       "isRetailStore": "Retail store — goods at sale prices (2920.2, markup 2980.2)",
-      "moneyChartAccount": "Money account (chart)"
+      "moneyChartAccount": "Money account (chart)",
+      "cashLimit": "Cash balance limit"
     },
     "form": {
       "createTitle": "Add new record",
@@ -4002,7 +4003,13 @@
       "openingBalance": "Opening balance",
       "totalIncome": "Total receipts",
       "totalExpense": "Total expenses",
-      "closingBalance": "Closing balance"
+      "closingBalance": "Closing balance",
+      "person": "Received from / paid to",
+      "correspondentAccount": "Corr. account",
+      "sheets": "Cash book sheets",
+      "cashLimit": "Cash limit",
+      "overLimit": "Closing balance exceeds the cash limit on: {{dates}}",
+      "noSheets": "No cash movements in the period"
     },
     "operation": {
       "documentInfo": "Document information"
@@ -5121,5 +5128,47 @@
     "automatic": "Automatic (by account)",
     "budgetPaymentKind": "Budget payment kind",
     "taxItself": "Tax (principal)"
+  },
+  "cashPrint": {
+    "print": "Print",
+    "draft": "The document is not posted",
+    "inn": "TIN",
+    "formKo1": "Form KO-1",
+    "formKo2": "Form KO-2",
+    "receiptOrder": "CASH RECEIPT ORDER",
+    "expenseOrder": "CASH EXPENSE ORDER",
+    "docNumber": "Document No.",
+    "date": "Date",
+    "debit": "Debit",
+    "credit": "Credit",
+    "amount": "Amount",
+    "sum": "Amount",
+    "amountInWords": "Amount in words",
+    "receivedFrom": "Received from",
+    "issueTo": "Pay to",
+    "basis": "Basis",
+    "attachment": "Attachment",
+    "director": "Director",
+    "chiefAccountant": "Chief accountant",
+    "cashier": "Cashier",
+    "receivedByCashier": "Received by cashier",
+    "issuedByCashier": "Paid by cashier",
+    "received": "Received",
+    "signature": "Signature",
+    "byDocument": "By document",
+    "receipt": "RECEIPT",
+    "toOrder": "To receipt order",
+    "stamp": "Seal",
+    "cashFor": "Cash for {{date}}",
+    "sheet": "Sheet {{number}}",
+    "fromOrTo": "Received from or paid to",
+    "corrAccount": "Corr. account",
+    "receiptCol": "Receipt",
+    "paymentCol": "Payment",
+    "openingOfDay": "Opening balance of the day",
+    "dayTotal": "Day total",
+    "closingOfDay": "Closing balance of the day",
+    "checkedBy": "Checked the cash book entries and received {{receipts}} receipt and {{payments}} expense documents",
+    "accountant": "Accountant"
   }
 }

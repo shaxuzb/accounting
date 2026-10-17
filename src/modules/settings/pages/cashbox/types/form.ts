@@ -10,4 +10,6 @@ export interface CashBoxForm {
   responsibleUserId?: number | null;
   /** The cash account the desk keeps its money on (5010.x / 5020), offered in its orders. */
   chartAccountId?: number | null;
+  /** The cash balance limit agreed with the bank (1C «Лимит остатка кассы»), empty when none. */
+  cashLimit?: number | null;
 }

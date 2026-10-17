@@ -11,6 +11,7 @@ export interface CashBox {
   isMain?: boolean;
   responsibleUserId?: number | null;
   chartAccountId?: number | null;
+  cashLimit?: number | null;
   stateId: number;
   stateName: string;
   createdDate: string;

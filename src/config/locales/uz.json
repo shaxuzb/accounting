@@ -1212,7 +1212,8 @@
       "legalAddress": "Yuridik manzil",
       "isMainAccount": "Asosiy hisob",
       "isRetailStore": "Chakana do'kon — tovar sotuv narxida (2920.2, ustama 2980.2)",
-      "moneyChartAccount": "Hisobvaraq (pul hisobi)"
+      "moneyChartAccount": "Hisobvaraq (pul hisobi)",
+      "cashLimit": "Kassa qoldig'i limiti (bank bilan kelishilgan)"
     },
     "form": {
       "createTitle": "Yangi ma'lumot qo'shish",
@@ -4002,7 +4003,13 @@
       "openingBalance": "Boshlang'ich qoldiq",
       "totalIncome": "Jami kirim",
       "totalExpense": "Jami chiqim",
-      "closingBalance": "Yakuniy qoldiq"
+      "closingBalance": "Yakuniy qoldiq",
+      "person": "Kimdan olindi / kimga berildi",
+      "correspondentAccount": "Korr. hisob",
+      "sheets": "Kassa kitobi varaqlari",
+      "cashLimit": "Kassa limiti",
+      "overLimit": "Kun oxiridagi qoldiq kassa limitidan oshgan kunlar: {{dates}}",
+      "noSheets": "Davrda kassa harakati yo'q"
     },
     "operation": {
       "documentInfo": "Hujjat ma'lumotlari"
@@ -5121,5 +5128,47 @@
     "automatic": "Avtomatik (hisobdan)",
     "budgetPaymentKind": "Byudjetga to'lov turi",
     "taxItself": "Soliq (asosiy qarz)"
+  },
+  "cashPrint": {
+    "print": "Chop etish",
+    "draft": "Hujjat hali o'tkazilmagan",
+    "inn": "STIR",
+    "formKo1": "KO-1 shakl",
+    "formKo2": "KO-2 shakl",
+    "receiptOrder": "KIRIM KASSA ORDERI",
+    "expenseOrder": "CHIQIM KASSA ORDERI",
+    "docNumber": "Hujjat raqami",
+    "date": "Sana",
+    "debit": "Debet",
+    "credit": "Kredit",
+    "amount": "Summa",
+    "sum": "Summa",
+    "amountInWords": "Summa yozuvda",
+    "receivedFrom": "Kimdan qabul qilindi",
+    "issueTo": "Berilsin",
+    "basis": "Asos",
+    "attachment": "Ilova",
+    "director": "Rahbar",
+    "chiefAccountant": "Bosh buxgalter",
+    "cashier": "Kassir",
+    "receivedByCashier": "Qabul qildi kassir",
+    "issuedByCashier": "Berdi kassir",
+    "received": "Oldim",
+    "signature": "Imzo",
+    "byDocument": "Hujjat bo'yicha",
+    "receipt": "KVITANSIYA",
+    "toOrder": "Kirim kassa orderiga",
+    "stamp": "M.O'.",
+    "cashFor": "Kassa {{date}}",
+    "sheet": "Varaq {{number}}",
+    "fromOrTo": "Kimdan olindi yoki kimga berildi",
+    "corrAccount": "Korr. hisob raqami",
+    "receiptCol": "Kirim",
+    "paymentCol": "Chiqim",
+    "openingOfDay": "Kun boshidagi qoldiq",
+    "dayTotal": "Kun bo'yicha jami",
+    "closingOfDay": "Kun oxiridagi qoldiq",
+    "checkedBy": "Kassa kitobidagi yozuvlarni tekshirdim va {{receipts}} ta kirim, {{payments}} ta chiqim hujjatini oldim",
+    "accountant": "Buxgalter"
   }
 }

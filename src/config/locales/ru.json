@@ -1479,7 +1479,8 @@
       "legalAddress": "Юридический адрес",
       "isMainAccount": "Основной счет",
       "isRetailStore": "Розничный магазин — товары по продажным ценам (2920.2, наценка 2980.2)",
-      "moneyChartAccount": "Счёт учёта денежных средств"
+      "moneyChartAccount": "Счёт учёта денежных средств",
+      "cashLimit": "Лимит остатка кассы"
     },
     "form": {
       "createTitle": "Добавить новую запись",
@@ -4002,7 +4003,13 @@
       "openingBalance": "Начальный остаток",
       "totalIncome": "Всего приход",
       "totalExpense": "Всего расход",
-      "closingBalance": "Конечный остаток"
+      "closingBalance": "Конечный остаток",
+      "person": "От кого получено / кому выдано",
+      "correspondentAccount": "Корр. счет",
+      "sheets": "Листы кассовой книги",
+      "cashLimit": "Лимит кассы",
+      "overLimit": "Остаток на конец дня превышает лимит кассы: {{dates}}",
+      "noSheets": "За период движений по кассе нет"
     },
     "operation": {
       "documentInfo": "Данные документа"
@@ -5121,5 +5128,47 @@
     "automatic": "Автоматически (по счету)",
     "budgetPaymentKind": "Вид платежа в бюджет",
     "taxItself": "Налог (основной долг)"
+  },
+  "cashPrint": {
+    "print": "Печать",
+    "draft": "Документ не проведен",
+    "inn": "ИНН",
+    "formKo1": "Форма КО-1",
+    "formKo2": "Форма КО-2",
+    "receiptOrder": "ПРИХОДНЫЙ КАССОВЫЙ ОРДЕР",
+    "expenseOrder": "РАСХОДНЫЙ КАССОВЫЙ ОРДЕР",
+    "docNumber": "Номер документа",
+    "date": "Дата",
+    "debit": "Дебет",
+    "credit": "Кредит",
+    "amount": "Сумма",
+    "sum": "Сумма",
+    "amountInWords": "Сумма прописью",
+    "receivedFrom": "Принято от",
+    "issueTo": "Выдать",
+    "basis": "Основание",
+    "attachment": "Приложение",
+    "director": "Руководитель",
+    "chiefAccountant": "Главный бухгалтер",
+    "cashier": "Кассир",
+    "receivedByCashier": "Получил кассир",
+    "issuedByCashier": "Выдал кассир",
+    "received": "Получил",
+    "signature": "Подпись",
+    "byDocument": "По документу",
+    "receipt": "КВИТАНЦИЯ",
+    "toOrder": "к приходному кассовому ордеру",
+    "stamp": "М.П.",
+    "cashFor": "Касса за {{date}}",
+    "sheet": "Лист {{number}}",
+    "fromOrTo": "От кого получено или кому выдано",
+    "corrAccount": "Номер корр. счета",
+    "receiptCol": "Приход",
+    "paymentCol": "Расход",
+    "openingOfDay": "Остаток на начало дня",
+    "dayTotal": "Итого за день",
+    "closingOfDay": "Остаток на конец дня",
+    "checkedBy": "Записи в кассовой книге проверил и документы в количестве {{receipts}} приходных и {{payments}} расходных получил",
+    "accountant": "Бухгалтер"
   }
 }

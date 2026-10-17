@@ -27,6 +27,12 @@ export interface CashBookEntry {
   receipt: number;
   payment: number;
   runningBalance: number;
+  documentTypeId?: number;
+  documentId?: number;
+  /** 1C «Номер корреспондирующего счета». */
+  correspondentAccount?: string | null;
+  /** A cash order's «Принято от» / «Выдать». */
+  personName?: string | null;
 }
 
 export interface CashBookReport {
@@ -45,4 +51,28 @@ export interface CashBookReport {
   hasPreviousPage: boolean;
   hasNextPage: boolean;
   items: CashBookEntry[];
+}
+
+/** One day of the cash book (1C «Вкладной лист кассовой книги» and «Отчет кассира»). */
+export interface CashBookSheet {
+  date: string;
+  sheetNumber: number;
+  openingBalance: number;
+  totalReceipt: number;
+  totalPayment: number;
+  closingBalance: number;
+  receiptCount: number;
+  paymentCount: number;
+  items: CashBookEntry[];
+}
+
+export interface CashBookSheets {
+  cashBoxId: number;
+  cashBoxName: string;
+  currencyCode?: string | null;
+  organizationName: string;
+  cashier?: string | null;
+  chiefAccountant?: string | null;
+  cashLimit?: number | null;
+  sheets: CashBookSheet[];
 }

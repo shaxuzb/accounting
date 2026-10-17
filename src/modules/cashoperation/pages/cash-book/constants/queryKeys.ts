@@ -3,4 +3,6 @@ export const cashBookKeys = {
   cashBoxes: (params?: unknown) => ["cashBook", "cashBoxes", params] as const,
   detail: (cashBoxId: string | number, params?: unknown) =>
     ["cashBook", "detail", cashBoxId, params] as const,
+  sheets: (cashBoxId: string | number, params?: unknown) =>
+    ["cashBook", "sheets", cashBoxId, params] as const,
 } as const;

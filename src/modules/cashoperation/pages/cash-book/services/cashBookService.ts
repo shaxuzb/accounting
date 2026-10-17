@@ -2,7 +2,11 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import type { Paginated } from "@/shared/types";
 import type { QueryParams } from "@/shared/types/api";
 import { cashBookEndpoints } from "../constants/endpoints";
-import type { CashBookCashBox, CashBookReport } from "../types/type";
+import type {
+  CashBookCashBox,
+  CashBookReport,
+  CashBookSheets,
+} from "../types/type";
 
 export const cashBookService = {
   cashBoxes: (params?: QueryParams) =>
@@ -12,6 +16,17 @@ export const cashBookService = {
   detail: (cashBoxId: string | number, params?: QueryParams) =>
     $axiosPrivate
       .get<CashBookReport>(cashBookEndpoints.detail, {
+        params: {
+          CashBoxId: cashBoxId,
+          ...(params instanceof URLSearchParams
+            ? Object.fromEntries(params.entries())
+            : params),
+        },
+      })
+      .then((res) => res.data),
+  sheets: (cashBoxId: string | number, params?: QueryParams) =>
+    $axiosPrivate
+      .get<CashBookSheets>(cashBookEndpoints.sheets, {
         params: {
           CashBoxId: cashBoxId,
           ...(params instanceof URLSearchParams

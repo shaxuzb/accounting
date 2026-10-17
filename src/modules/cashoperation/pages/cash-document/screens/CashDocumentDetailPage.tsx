@@ -9,6 +9,7 @@ import {
   CircleX,
   FileText,
   Info,
+  Printer,
   Save,
   WalletCards,
 } from "lucide-react";
@@ -347,6 +348,15 @@ export default function CashDocumentDetailPage() {
               </div>
 
               <div className="flex flex-wrap justify-end gap-3">
+                {!isCreate && (
+                  <Button
+                    size="large"
+                    icon={<Printer className="size-4" />}
+                    onClick={() => navigate("print")}
+                  >
+                    {t("cashPrint.print")}
+                  </Button>
+                )}
                 <Button
                   size="large"
                   icon={<Save className="size-4" />}
@@ -392,9 +402,16 @@ export default function CashDocumentDetailPage() {
           <div className="space-y-2">
             {/* a posted order is taken back by storno (1C «Отмена проведения»): its
                 entries, the money movement and the counterparty's debt or advance */}
+            <div className="flex justify-end gap-2">
+              <Button
+                icon={<Printer className="size-4" />}
+                onClick={() => navigate("print")}
+              >
+                {t("cashPrint.print")}
+              </Button>
             {record.statusId === 2 &&
               permissions.includes(cashDocumentPermissions.cancel) && (
-                <div className="flex justify-end">
+                <>
                   <Popconfirm
                     title={t("bank.actions.cancelPosted")}
                     description={
@@ -425,8 +442,9 @@ export default function CashDocumentDetailPage() {
                       {t("bank.actions.cancelPosted")}
                     </Button>
                   </Popconfirm>
-                </div>
+                </>
               )}
+            </div>
             <CashReadonlyDetailsCard record={record} />
           </div>
         )

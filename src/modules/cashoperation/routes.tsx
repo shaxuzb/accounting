@@ -12,6 +12,8 @@ const ExpenseReportsPage = lazy(() => import("./pages/expense-report/ExpenseRepo
 const ExpenseReportEditorPage = lazy(() => import("./pages/expense-report/ExpenseReportEditorPage"));
 const CashBookListPage = lazy(() => import("./pages/cash-book/screens/CashBookListPage"));
 const CashBookDetailPage = lazy(() => import("./pages/cash-book/screens/CashBookDetailPage"));
+const CashBookSheetsPage = lazy(() => import("./pages/cash-book/screens/CashBookSheetsPage"));
+const CashOrderPrintPage = lazy(() => import("./pages/cash-document/screens/CashOrderPrintPage"));
 const CashCollectionListPage = lazy(() => import("./pages/cash-collection/screens/CashCollectionListPage"));
 const CashCollectionDetailPage = lazy(() => import("./pages/cash-collection/screens/CashCollectionDetailPage"));
 import { cashCollectionPermissions } from "./pages/cash-collection/constants/permissions";
@@ -87,6 +89,14 @@ export const cashOperationRoutes: RouteObject = {
           },
         },
         {
+          path: ":id/print",
+          element: withPermission(
+            <CashOrderPrintPage />,
+            cashDocumentPermissions.detail,
+          ),
+          handle: { title: "cashPrint.print", showBack: true, backTo: ".." },
+        },
+        {
           path: ":id",
           element: withPermission(
             <CashDocumentDetailPage />,
@@ -121,6 +131,14 @@ export const cashOperationRoutes: RouteObject = {
             cashBookPermissions.detail,
           ),
           handle: { title: "app.menu.cashBook", showBack: true, backTo: ".." },
+        },
+        {
+          path: ":cashBoxId/sheets",
+          element: withPermission(
+            <CashBookSheetsPage />,
+            cashBookPermissions.detail,
+          ),
+          handle: { title: "cash.book.sheets", showBack: true, backTo: ".." },
         },
       ],
     },

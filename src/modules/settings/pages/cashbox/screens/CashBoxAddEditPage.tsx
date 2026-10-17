@@ -9,6 +9,7 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import type { CashBoxForm } from "../types/form";
 import InputText from "@/components/fields/InputText";
+import InputNumberFormat from "@/components/fields/InputNumber";
 import { cashBoxSchema } from "../types/schema";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import { cashDocumentAccountRoleCodes, cashDocumentTypeIds } from "@/modules/cashoperation/constants/documentAccount";
@@ -26,6 +27,7 @@ const defaultValues: CashBoxForm = {
   isMain: false,
   responsibleUserId: null,
   chartAccountId: null,
+  cashLimit: null,
 };
 
 interface CashBoxAddEditPageProps {
@@ -83,6 +85,7 @@ export default function CashBoxAddEditPage({
         isMain: CashBox.isMain ?? false,
         responsibleUserId: CashBox.responsibleUserId ?? null,
         chartAccountId: CashBox.chartAccountId ?? null,
+        cashLimit: CashBox.cashLimit ?? null,
       });
     }
     // formik is a new object every render: the values are set once per loaded record
@@ -142,6 +145,15 @@ export default function CashBoxAddEditPage({
                 label="settings.fields.moneyChartAccount"
                 documentTypeId={cashDocumentTypeIds.income}
                 documentRoleCode={cashDocumentAccountRoleCodes.cashAccount}
+              />
+            </Col>
+            <Col span={12}>
+              <InputNumberFormat
+                formik={formik}
+                fieldName="cashLimit"
+                label="settings.fields.cashLimit"
+                min={0}
+                precision={2}
               />
             </Col>
             <Col span={12}>

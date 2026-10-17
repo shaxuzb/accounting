@@ -13,4 +13,6 @@ export const cashDocumentEndpoints = {
     `cash-documents/${kind}/${id}/confirm`,
   cancel: (kind: CashDocumentKind, id: string | number) =>
     `cash-documents/${kind}/${id}/cancel`,
+  print: (kind: CashDocumentKind, id: string | number) =>
+    `cash-documents/${kind}/${id}/print`,
 } as const;
