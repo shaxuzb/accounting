@@ -1657,6 +1657,13 @@
         "title": "Other",
         "description": "Other settings"
       }
+    },
+    "stockPolicy": {
+      "title": "Writing off stock not on record",
+      "allow": "Allow",
+      "allowedHint": "A document may write off more than the records hold: the shortfall stands as a negative balance at the last known cost. The next receipt covers it and the sequence re-run gives the issue the receipt's real cost (as 1C does). Marked goods never go negative.",
+      "forbiddenHint": "A document may write off only the stock on record; short of it, it does not post.",
+      "saved": "Setting saved"
     }
   },
   "openingBalance": {

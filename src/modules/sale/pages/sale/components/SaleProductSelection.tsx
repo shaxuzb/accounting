@@ -56,6 +56,7 @@ import SaleLineAccountsDrawer, {
   type SaleLineAccountValues,
 } from "./SaleLineAccountsModal";
 import SaleMarkingModal from "./SaleMarkingModal";
+import { useGetStockPolicy } from "@/modules/settings/pages/accountingPolicy/hooks/useStockPolicy";
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -392,6 +393,9 @@ export default function SaleProductSelection({
   );
   const getLineStock = (line: SaleSelectedProduct) =>
     stockByProductId.get(line.productId) ?? line.availableQuantity;
+  // with the organization's leave goods kept by quantity may be sold beyond the stock (1C
+  // «Разрешить списание запасов при отсутствии остатков»); marked units never
+  const allowNegativeStock = useGetStockPolicy().data?.allowNegativeStock ?? false;
   const productById = useMemo(
     () =>
       new Map(
@@ -1341,7 +1345,7 @@ export default function SaleProductSelection({
             height={tableControlHeight}
             emptyZero
             min={0}
-            max={getLineStock(record)}
+            max={allowNegativeStock && !getLineIsPieceTracked(record) ? undefined : getLineStock(record)}
             precision={3}
             value={value}
             disabled={disabled || Boolean(record.priceLayers?.length)}

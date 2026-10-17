@@ -4,6 +4,7 @@ export const accountingPolicyEndpoints = {
   impact: "accounting-policies/impact",
   update: "accounting-policies",
   settlements: "accounting-policies/settlements",
+  stock: "accounting-policies/stock",
   taxTypes: "manuals/tax-types",
   vatRates: "manuals/vat-rates",
   taxRegimes: "payroll/tax-regimes",

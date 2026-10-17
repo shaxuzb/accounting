@@ -9,6 +9,7 @@ import {
 } from "../hooks";
 import CurrentPolicyTab from "../components/CurrentPolicyTab";
 import SettlementPolicyCard from "../components/SettlementPolicyCard";
+import StockPolicyCard from "../components/StockPolicyCard";
 import PolicyHistoryTab from "../components/PolicyHistoryTab";
 import AccountingPolicyAddEditPage from "./AccountingPolicyAddEditPage";
 
@@ -41,6 +42,7 @@ export default function AccountingPolicyPage() {
         children: (
           <div className="space-y-4">
             <SettlementPolicyCard />
+            <StockPolicyCard />
             <CurrentPolicyTab
               data={current.data}
               isLoading={current.isLoading}

@@ -1659,6 +1659,13 @@
         "title": "Boshqa",
         "description": "Boshqa sozlamalar"
       }
+    },
+    "stockPolicy": {
+      "title": "Qoldiq yo'qligida hisobdan chiqarish",
+      "allow": "Ruxsat berish",
+      "allowedHint": "Hujjat hisobdagi qoldiqdan ko'proq chiqara oladi: yetishmagan qism oxirgi ma'lum tannarxda manfiy qoldiq bo'lib turadi. Keyingi kirim uni yopadi, «Ketma-ketlikni tiklash» esa chiqimga kirimning haqiqiy tannarxini beradi (1C kabi). Markirovkali tovarlar manfiyga tushmaydi.",
+      "forbiddenHint": "Hujjat faqat ombordagi mavjud qoldiqni chiqara oladi; yetmasa o'tkazilmaydi.",
+      "saved": "Sozlama saqlandi"
     }
   },
   "openingBalance": {
