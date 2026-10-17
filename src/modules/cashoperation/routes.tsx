@@ -10,6 +10,7 @@ const CashDocumentListPage = lazy(() => import("./pages/cash-document/screens/Ca
 const CashDocumentDetailPage = lazy(() => import("./pages/cash-document/screens/CashDocumentDetailPage"));
 const ExpenseReportsPage = lazy(() => import("./pages/expense-report/ExpenseReportsPage"));
 const ExpenseReportEditorPage = lazy(() => import("./pages/expense-report/ExpenseReportEditorPage"));
+const ExpenseReportPrintPage = lazy(() => import("./pages/expense-report/ExpenseReportPrintPage"));
 const CashBookListPage = lazy(() => import("./pages/cash-book/screens/CashBookListPage"));
 const CashBookDetailPage = lazy(() => import("./pages/cash-book/screens/CashBookDetailPage"));
 const CashBookSheetsPage = lazy(() => import("./pages/cash-book/screens/CashBookSheetsPage"));
@@ -201,6 +202,11 @@ export const cashOperationRoutes: RouteObject = {
           path: "new",
           handle: { title: "expenseReport.new", showBack: true, backTo: ".." },
           element: withPermission(<ExpenseReportEditorPage />, "MANUAL_ENTRY_CREATE"),
+        },
+        {
+          path: ":id/print",
+          handle: { title: "cashPrint.print", showBack: true, backTo: ".." },
+          element: withPermission(<ExpenseReportPrintPage />, "MANUAL_ENTRY_VIEW"),
         },
         {
           path: ":id",

@@ -1,5 +1,5 @@
 import { Alert, Button, DatePicker, Input, Popconfirm, Space, Tag } from "antd";
-import { Ban, Plus, Save, Send, Trash2 } from "lucide-react";
+import { Ban, FileInput, FileOutput, Plus, Printer, Save, Send, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
@@ -37,6 +37,9 @@ import {
 } from "./constants";
 
 const UZS = 1;
+/** cmn_money_operation_kind: «Hisobdor shaxsdan qaytim», «Hisobdor shaxsga berish». */
+const ACCOUNTABLE_RETURN = 3;
+const ACCOUNTABLE_ISSUE = 23;
 const emptyLine = (): ManualEntryLine => ({
   debitAccountId: 0,
   debitSubkontos: [],
@@ -114,6 +117,18 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
     enabled: Boolean(employeeId && advanceAccountId),
   });
   const held = balance?.balance ?? 0;
+  // what the employee still holds today: a remainder already returned (or an overspend
+  // already paid) is not offered again
+  const { data: current } = useQuery({
+    queryKey: ["accountable-balance", employeeId, advanceAccountId, "now", statusId],
+    queryFn: () =>
+      getJson<{ balance: number }>("/manual-entries/accountable-balance", {
+        employeeId,
+        accountId: advanceAccountId,
+      }),
+    enabled: Boolean(id && employeeId && advanceAccountId && statusId === manualEntryStatus.posted),
+  });
+  const outstanding = current?.balance ?? 0;
   const left = statusId === manualEntryStatus.posted ? held : held - total;
 
   const update = (index: number, changes: Partial<ManualEntryLine>) =>
@@ -148,6 +163,22 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
     await confirm.mutateAsync(savedId);
     toast.success(t("manualEntries.posted"));
   };
+
+  const settle = (kind: "pko" | "rko", amount: number) =>
+    navigate(`/main/cash-operationses/cash-documents/${kind}/add`, {
+      state: {
+        prefill: {
+          operationKindId: kind === "pko" ? ACCOUNTABLE_RETURN : ACCOUNTABLE_ISSUE,
+          employeeId,
+          offsetAccountId: advanceAccountId,
+          amount: Math.round(amount * 100) / 100,
+          basis: t(kind === "pko" ? "expenseReport.basisRemainder" : "expenseReport.basisOverspend", {
+            number: data?.docNumber ?? "",
+            date: docDate.format("DD.MM.YYYY"),
+          }),
+        },
+      },
+    });
 
   const statusTag =
     statusId === manualEntryStatus.posted ? (
@@ -260,6 +291,32 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
                 <Button danger icon={<Trash2 className="size-4" />} />
               </Popconfirm>
             )}
+          {id && (
+            <Button
+              icon={<Printer className="size-4" />}
+              onClick={() => navigate(`${expenseReportsPath}/${id}/print`)}
+            >
+              {t("cashPrint.print")}
+            </Button>
+          )}
+          {/* 1C «Создать на основании»: the remainder comes back by a PKO, the overspend goes
+              out by an RKO, both settling with the employee on the advance account */}
+          {id && statusId === manualEntryStatus.posted && outstanding > 0.005 && (
+            <Button
+              icon={<FileInput className="size-4" />}
+              onClick={() => settle("pko", outstanding)}
+            >
+              {t("expenseReport.returnRemainder")}
+            </Button>
+          )}
+          {id && statusId === manualEntryStatus.posted && outstanding < -0.005 && (
+            <Button
+              icon={<FileOutput className="size-4" />}
+              onClick={() => settle("rko", -outstanding)}
+            >
+              {t("expenseReport.payOverspend")}
+            </Button>
+          )}
           {id &&
             statusId === manualEntryStatus.posted &&
             can(manualEntryPermissions.cancel) && (
@@ -286,7 +343,9 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
           type={left < 0 ? "warning" : "info"}
           message={
             statusId === manualEntryStatus.posted
-              ? t("expenseReport.balancePosted", { left: money(held) })
+              ? held < 0
+                ? t("expenseReport.balancePostedOverspend", { amount: money(-held) })
+                : t("expenseReport.balancePosted", { left: money(held) })
               : t("expenseReport.balance", {
                   held: money(held),
                   spent: money(total),

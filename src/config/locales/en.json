@@ -4515,7 +4515,21 @@
     "contentPlaceholder": "E.g. hotel, ticket, fuel",
     "balance": "Advance held: {{held}} · in this report: {{spent}} · left: {{left}} UZS",
     "balancePosted": "The report is posted. Advance still held: {{left}} UZS (the unspent part comes back by a PKO).",
-    "overspent": "More was spent than advanced: pay the difference by an RKO (Dt 4220 — Ct 5010)."
+    "overspent": "More was spent than advanced: pay the difference by an RKO (Dt 4220 — Ct 5010).",
+    "returnRemainder": "Return the remainder (receipt order)",
+    "payOverspend": "Pay out the overspend (expense order)",
+    "basisRemainder": "Advance remainder of expense report No. {{number}} of {{date}}",
+    "basisOverspend": "Overspend of expense report No. {{number}} of {{date}}",
+    "printTitle": "EXPENSE REPORT No. {{number}}",
+    "accountablePerson": "Accountable person",
+    "purposeOfAdvance": "Purpose of the advance",
+    "heldBefore": "Advance held before the report",
+    "spentTotal": "Spent (per the report)",
+    "remainder": "Remainder (to return)",
+    "overspend": "Overspend (to pay out)",
+    "document": "Document / expense",
+    "checkedBy": "Checked by (accountant)",
+    "balancePostedOverspend": "The report is posted. Overspend: {{amount}} UZS (paid to the employee by an expense order)."
   },
   "returnDoc": {
     "createFromBase": "Create return",

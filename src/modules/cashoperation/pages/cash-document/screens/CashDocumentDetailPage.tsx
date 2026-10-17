@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
@@ -91,6 +91,9 @@ export default function CashDocumentDetailPage() {
     createMutation.isPending ||
     updateMutation.isPending;
 
+  // a new order made from another document (1C «Создать на основании»), e.g. an expense report
+  const locationState = useLocation().state as { prefill?: Partial<CashDocumentForm> } | null;
+  const prefill = isCreate ? locationState?.prefill : undefined;
   const initialValues = useMemo<CashDocumentForm>(
     () => ({
       cashBoxId: record?.cashBoxId ?? createDefaultValues().cashBoxId,
@@ -130,7 +133,10 @@ export default function CashDocumentDetailPage() {
           idDocument: own?.idDocument ?? "",
         };
       })(),
+      ...(prefill ?? {}),
     }),
+    // the prefill is read once, when the new order opens
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [record],
   );
 
