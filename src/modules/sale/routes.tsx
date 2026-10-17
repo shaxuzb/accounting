@@ -10,6 +10,8 @@ import { contractPermissions } from "../contract/constants/permissions";
 import { returnRoute } from "../returns/routes";
 import { returnKind } from "../returns/constants";
 import { correctionRoute } from "../corrections/routes";
+import { commissionReportRoute } from "../commissionReport/routes";
+import { commissionReportKinds } from "../commissionReport/api";
 const RetailSaleDetailPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleDetailPage })));
 const RetailSaleEditorPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleEditorPage })));
 const RetailSaleListPage = lazy(() => import("./pages/retail-sale").then((m) => ({ default: m.RetailSaleListPage })));
@@ -82,6 +84,9 @@ export const saleRoutes: RouteObject = {
     returnRoute(returnKind.fromRetail, "retail-returns"),
     // the price of a posted sale agreed again, a discount after the sale (1C «Корректировка реализации»)
     correctionRoute("sale", "corrections"),
+    // our commission agents' fee (1C «Отчет комиссионера о продажах»); their sales are sales from
+    // the commission warehouse
+    commissionReportRoute(commissionReportKinds.fromAgent, "commission-reports"),
     {
       path: "contracts",
       handle: { title: "contract.saleTitle" },

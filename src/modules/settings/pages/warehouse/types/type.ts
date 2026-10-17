@@ -16,4 +16,8 @@ export interface Warehouse {
   isRetail?: boolean;
   retailStockAccountId?: number | null;
   markupAccountId?: number | null;
+  commissionKind?: number | null;
+  commissionCounterpartyId?: number | null;
+  commissionCounterpartyName?: string | null;
+  commissionContractId?: number | null;
 }

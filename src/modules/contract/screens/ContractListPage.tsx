@@ -134,12 +134,12 @@ export default function ContractListPage() {
         return formatDate(value);
       },
     },
-    // {
-    //   title: t("contract.fields.contractType"),
-    //   dataIndex: "contractTypeName",
-    //   render: (_, record) =>
-    //     record.contractTypeName || record.contractType || "-",
-    // },
+    {
+      title: t("contract.fields.contractType"),
+      dataIndex: "contractTypeName",
+      render: (_, record) =>
+        record.contractTypeName || record.contractType || "-",
+    },
     {
       title: t("contract.fields.comment"),
       dataIndex: "comment",

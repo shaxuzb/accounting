@@ -12,4 +12,8 @@ export interface WarehouseForm {
   isRetail?: boolean;
   retailStockAccountId?: number | null;
   markupAccountId?: number | null;
+  /** commission trade: 1 our goods at a commission agent (2960.1), 2 a committent's goods (004.01) */
+  commissionKind?: number | null;
+  commissionCounterpartyId?: number | null;
+  commissionContractId?: number | null;
 }

@@ -23,6 +23,7 @@ import { contractEndpoints } from "../constants/endpoints";
 import { contractPermissions } from "../constants/permissions";
 import ContractResponsiblePersonAddEditModal from "./ContractResponsiblePersonAddEditModal";
 import { usePriceTypes } from "@/modules/priceType/api";
+import { commissionTwinContractType } from "@/shared/constants/contractSelect";
 
 const createDefaultValues = (): ContractForm => ({
   organizationId: null,
@@ -206,7 +207,13 @@ export default function ContractAddEditPage({
                 fieldName="contractTypeId"
                 label="contract.fields.contractType"
                 path={selectListEndpoints.contractTypeSelectList}
-                allowedIds={contractTypeId ? [contractTypeId] : undefined}
+                allowedIds={
+                  contractTypeId
+                    ? [contractTypeId, commissionTwinContractType(contractTypeId)].filter(
+                        (value): value is number => Boolean(value),
+                      )
+                    : undefined
+                }
                 getFirst
               />
             </Col>

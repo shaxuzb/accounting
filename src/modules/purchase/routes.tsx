@@ -5,6 +5,8 @@ import { purchasePermissions } from "./pages/purchase/constants/permissions";
 const PurchaseListPage = lazy(() => import("./pages/purchase/screens/PurchaseListPage"));
 const PurchaseDetailPage = lazy(() => import("./pages/purchase/screens/PurchaseDetailPage"));
 const ContractListPage = lazy(() => import("../contract/screens/ContractListPage"));
+import { commissionReportRoute } from "../commissionReport/routes";
+import { commissionReportKinds } from "../commissionReport/api";
 const PowerOfAttorneyListPage = lazy(() => import("../powerOfAttorney/PowerOfAttorneyListPage"));
 const PowerOfAttorneyEditorPage = lazy(() => import("../powerOfAttorney/PowerOfAttorneyEditorPage"));
 const PowerOfAttorneyPrintPage = lazy(() => import("../powerOfAttorney/PowerOfAttorneyPrintPage"));
@@ -88,6 +90,8 @@ export const purchaseRoutes: RouteObject = {
     correctionRoute("purchase", "corrections"),
     // customs declarations of imports (1C «Таможенная декларация (импорт)»)
     customsRoute("customs-declarations"),
+    // our fee from committents (1C «Отчет комитенту о продажах»)
+    commissionReportRoute(commissionReportKinds.toCommittent, "committent-reports"),
     {
       // 1C «Доверенности» (NSBU 4 ch. 12)
       path: "powers-of-attorney",

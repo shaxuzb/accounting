@@ -1,12 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useFormik } from "formik";
-import { Alert, Button, Checkbox, Col, Form, Modal, Row, Spin } from "antd";
+import { Alert, Button, Checkbox, Col, Form, Modal, Row, Select, Spin } from "antd";
+import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import InputText from "@/components/fields/InputText";
+import ContractSelect from "@/components/fields/ContractSelect";
+import { contractTypeIds } from "@/shared/constants/contractSelect";
 import type { WarehouseForm } from "../types/form";
 import { useGetDetailWarehouses } from "../hooks/useGetDetailWarehouses";
 import { useCreateWarehouses } from "../hooks/useCreateWarehouses";
@@ -25,7 +28,13 @@ const defaultValues: WarehouseForm = {
   isRetail: false,
   retailStockAccountId: null,
   markupAccountId: null,
+  commissionKind: null,
+  commissionCounterpartyId: null,
+  commissionContractId: null,
 };
+
+/** inv_warehouse.commission_kind */
+const commissionKinds = { atAgent: 1, fromCommittent: 2 } as const;
 
 interface WarehouseAddEditPageProps {
   open: boolean;
@@ -90,6 +99,9 @@ export default function WarehouseAddEditPage({
         isRetail: Warehouses.isRetail ?? false,
         retailStockAccountId: Warehouses.retailStockAccountId ?? null,
         markupAccountId: Warehouses.markupAccountId ?? null,
+        commissionKind: Warehouses.commissionKind ?? null,
+        commissionCounterpartyId: Warehouses.commissionCounterpartyId ?? null,
+        commissionContractId: Warehouses.commissionContractId ?? null,
       });
     }
     // formik is a new object every render: the values are set once per loaded record
@@ -157,6 +169,7 @@ export default function WarehouseAddEditPage({
             <Col span={24}>
               <Checkbox
                 checked={Boolean(formik.values.isRetail)}
+                disabled={Boolean(formik.values.commissionKind)}
                 onChange={(event) => {
                   formik.setFieldValue("isRetail", event.target.checked);
                   if (!event.target.checked) {
@@ -176,6 +189,73 @@ export default function WarehouseAddEditPage({
                 />
               )}
             </Col>
+            {!formik.values.isRetail && (
+              <Col span={24}>
+                <Form.Item label={t("warehouseCommission.kind")} className="mb-2">
+                  <Select
+                    className="w-full"
+                    allowClear
+                    value={formik.values.commissionKind ?? null}
+                    placeholder={t("warehouseCommission.kindNone")}
+                    // as the other selects of the form (SelectCustom): no filled background
+                    style={{ backgroundColor: "transparent" }}
+                    onChange={(value?: number) => {
+                      formik.setFieldValue("commissionKind", value ?? null);
+                      formik.setFieldValue("commissionContractId", null);
+                      if (!value) formik.setFieldValue("commissionCounterpartyId", null);
+                    }}
+                    options={[
+                      { value: commissionKinds.atAgent, label: t("warehouseCommission.atAgent") },
+                      { value: commissionKinds.fromCommittent, label: t("warehouseCommission.fromCommittent") },
+                    ]}
+                  />
+                </Form.Item>
+              </Col>
+            )}
+            {Boolean(formik.values.commissionKind) && (
+              <>
+                <Col span={12}>
+                  <SelectCustom
+                    formik={formik}
+                    fieldName="commissionCounterpartyId"
+                    label={
+                      formik.values.commissionKind === commissionKinds.atAgent
+                        ? "warehouseCommission.agent"
+                        : "warehouseCommission.committent"
+                    }
+                    path={selectListEndpoints.counterpartiesSelectList}
+                    required
+                    onChange={() => formik.setFieldValue("commissionContractId", null)}
+                  />
+                </Col>
+                <Col span={12}>
+                  <ContractSelect
+                    formik={formik}
+                    fieldName="commissionContractId"
+                    label="purchase.fields.contract"
+                    counterpartyId={formik.values.commissionCounterpartyId}
+                    date={dayjs().format("YYYY-MM-DD")}
+                    contractTypeId={
+                      formik.values.commissionKind === commissionKinds.atAgent
+                        ? contractTypeIds.commissionAgent
+                        : contractTypeIds.committent
+                    }
+                  />
+                </Col>
+                <Col span={24}>
+                  <Alert
+                    className="mb-3"
+                    type="info"
+                    showIcon
+                    message={t(
+                      formik.values.commissionKind === commissionKinds.atAgent
+                        ? "warehouseCommission.atAgentHint"
+                        : "warehouseCommission.fromCommittentHint",
+                    )}
+                  />
+                </Col>
+              </>
+            )}
             {isEdit && (
               <Col span={12}>
                 <SelectCustom

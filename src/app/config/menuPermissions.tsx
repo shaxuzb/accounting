@@ -200,6 +200,10 @@ export const menuPermissions: MainMenu = {
           linkData: { path: "powers-of-attorney", title: "powerOfAttorney.title" },
         },
         {
+          code: "COMMISSION_REPORT_VIEW",
+          linkData: { path: "committent-reports", title: "commissionReport.toCommittentTitle" },
+        },
+        {
           code: contractPermissions.view,
           linkData: {
             path: "contracts",
@@ -646,6 +650,10 @@ export const menuPermissions: MainMenu = {
         {
           code: "CORRECTION_DOC_VIEW",
           linkData: { path: "corrections", title: "correction.sale.title" },
+        },
+        {
+          code: "COMMISSION_REPORT_VIEW",
+          linkData: { path: "commission-reports", title: "commissionReport.fromAgentTitle" },
         },
 
         {
