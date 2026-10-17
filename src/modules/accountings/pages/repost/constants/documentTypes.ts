@@ -19,6 +19,7 @@ export const documentTypes: { id: number; key: string }[] = [
   { id: 37, key: "repost.types.materialRequisition" },
   { id: 38, key: "repost.types.productionReport" },
   { id: 48, key: "repost.types.conversion" },
+  { id: 49, key: "repost.types.materialsInUse" },
   { id: 47, key: "repost.types.commissionReport" },
   { id: 13, key: "repost.types.faDepreciation" },
   { id: 14, key: "repost.types.faDisposal" },

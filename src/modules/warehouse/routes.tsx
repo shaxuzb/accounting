@@ -17,6 +17,7 @@ const WarehouseTransferListPage = lazy(() => import("./pages/warehouse-transfer/
 const PriceTypeListPage = lazy(() => import("../priceType/PriceTypeListPage"));
 const StockTurnoverPage = lazy(() => import("./pages/stock-turnover/StockTurnoverPage"));
 import { conversionRoute } from "../conversion/routes";
+import { materialsInUseBalanceRoute, materialsInUseRoute } from "../materials-in-use/routes";
 const PriceSettingListPage = lazy(() =>
   import("../priceType/PriceSettingPages").then((m) => ({ default: m.PriceSettingListPage })),
 );
@@ -102,6 +103,11 @@ export const warehouseRoutes: RouteObject = {
     conversionRoute("assembly", "assemblies"),
     conversionRoute("regrading", "regradings"),
     conversionRoute("accounts", "account-transfers"),
+    // 1C «Передача / Списание / Возврат материалов из эксплуатации», «Материалы в эксплуатации»
+    materialsInUseRoute(1, "materials-in-use"),
+    materialsInUseRoute(2, "materials-write-offs"),
+    materialsInUseRoute(3, "materials-returns"),
+    materialsInUseBalanceRoute("in-use-balance"),
     {
       // 1C «Ведомость по товарам на складах»
       path: "stock-turnover",

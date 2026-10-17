@@ -353,7 +353,8 @@
       "paymentAcceptancePoint": "Payment acceptance point",
       "rentalAccrual": "Rental accrual",
       "conversion": "Assembly and re-grading",
-      "commissionReport": "Commission report (fee)"
+      "commissionReport": "Commission report (fee)",
+      "materialsInUse": "Materials in use"
     },
     "date": "Date",
     "hint": "Posted documents of the range are posted again in date order with the current rules and account settings. Status and stock stay as they are; a closed month is never rewritten.",
@@ -5040,5 +5041,61 @@
     "empty": "No balance or movement in the period",
     "allWarehouses": "All warehouses",
     "allGroups": "All groups"
+  },
+  "materialsInUse": {
+    "titles": {
+      "1": "Materials into use",
+      "2": "Write-off from use",
+      "3": "Return from use"
+    },
+    "balanceTitle": "Materials in use",
+    "hints": {
+      "1": "Inventory, special clothing and equipment leave the warehouse at their batches' cost, which goes to the expense (or to 31xx deferred expenses): Dt expense Kt 1080. The items stay off-balance on 014.x by item, transfer and person (NSBU 4 pp. 68–69).",
+      "2": "Worn-out items leave the off-balance account 014.x (NSBU 4 p.78). Choose the batch in use (item, transfer, person).",
+      "3": "An item fit for use again comes back to the warehouse at its net realisable value as other operating income: Dt 1080 Kt 9390, and leaves 014.x (NSBU 4 p.75)."
+    },
+    "balanceHint": "From the general ledger: the items in use on the date — by 014.x account, item, transfer and person.",
+    "status": {
+      "1": "Draft",
+      "2": "Posted",
+      "3": "Cancelled"
+    },
+    "new": "New document",
+    "newNumber": "New",
+    "date": "Date",
+    "warehouse": "Warehouse",
+    "items": "Items",
+    "amount": "Amount",
+    "state": "State",
+    "empty": "No documents",
+    "product": "Item",
+    "productPlaceholder": "Choose an item",
+    "warehouseFirst": "Choose the warehouse first",
+    "quantity": "Quantity",
+    "employee": "Person",
+    "inUseAccount": "In-use account",
+    "stockAccount": "Stock account",
+    "inUse": "Batch in use",
+    "inUsePlaceholder": "Choose an item in use",
+    "realisableValue": "Net realisable value",
+    "inUseAmount": "Amount on 014",
+    "transfer": "Transfer",
+    "expenseAccount": "Expense account",
+    "incomeAccount": "Income account",
+    "comment": "Comment",
+    "lines": "Items",
+    "addLine": "Add a row",
+    "saveDraft": "Save",
+    "post": "Save and post",
+    "cancel": "Cancel posting",
+    "cancelConfirm": "Cancel the document's entries and movements?",
+    "deleteConfirm": "Delete the document?",
+    "saved": "Saved",
+    "posted": "The document is posted",
+    "cancelled": "Posting cancelled",
+    "entries": "Entries",
+    "search": "Item or person",
+    "balanceEmpty": "Nothing in use",
+    "total": "Total"
   }
 }

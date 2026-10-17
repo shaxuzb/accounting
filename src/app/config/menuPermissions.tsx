@@ -271,6 +271,22 @@ export const menuPermissions: MainMenu = {
           linkData: { path: "account-transfers", title: "conversion.accounts.title" },
         },
         {
+          code: "MATERIALS_IN_USE_VIEW",
+          linkData: { path: "materials-in-use", title: "materialsInUse.titles.1" },
+        },
+        {
+          code: "MATERIALS_IN_USE_VIEW",
+          linkData: { path: "materials-write-offs", title: "materialsInUse.titles.2" },
+        },
+        {
+          code: "MATERIALS_IN_USE_VIEW",
+          linkData: { path: "materials-returns", title: "materialsInUse.titles.3" },
+        },
+        {
+          code: "MATERIALS_IN_USE_VIEW",
+          linkData: { path: "in-use-balance", title: "materialsInUse.balanceTitle" },
+        },
+        {
           code: "WAREHOUSE_REPORT_STOCK_TURNOVER",
           linkData: { path: "stock-turnover", title: "stockTurnover.title" },
         },

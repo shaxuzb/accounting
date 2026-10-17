@@ -353,7 +353,8 @@
       "paymentAcceptancePoint": "To'lov qabul qilish nuqtasi",
       "rentalAccrual": "Ijara hisoblash",
       "conversion": "Komplektatsiya va qayta navlash",
-      "commissionReport": "Komissiya hisoboti (haq)"
+      "commissionReport": "Komissiya hisoboti (haq)",
+      "materialsInUse": "Foydalanishdagi materiallar"
     },
     "date": "Sana",
     "hint": "Tanlangan davrdagi o'tkazilgan hujjatlar sana tartibida joriy qoidalar va hisob sozlamalari bo'yicha qayta o'tkaziladi (1C «Перепроведение»). Hujjat holati va ombor qoldig'i o'zgarmaydi; yopilgan oy qayta yozilmaydi.",
@@ -5040,5 +5041,61 @@
     "empty": "Davrda harakat va qoldiq yo'q",
     "allWarehouses": "Barcha omborlar",
     "allGroups": "Barcha guruhlar"
+  },
+  "materialsInUse": {
+    "titles": {
+      "1": "Foydalanishga berish",
+      "2": "Foydalanishdan hisobdan chiqarish",
+      "3": "Foydalanishdan qaytarish"
+    },
+    "balanceTitle": "Foydalanishdagi materiallar",
+    "hints": {
+      "1": "Inventar, maxsus kiyim va jihozlar ombordan partiyalar tannarxida chiqadi, tannarx xarajatga (yoki 31xx kelgusi davr xarajatlariga) o'tadi: Dt xarajat Kt 1080. Buyumlar balansdan tashqari 014.x hisobida tovar, berish hujjati va xodim bo'yicha qoladi (BHMS 4, 68–69-bandlar).",
+      "2": "Yaroqsiz bo'lgan buyumlar balansdan tashqari 014.x hisobidan chiqariladi (BHMS 4, 78-band). Foydalanishdagi partiyani (tovar, berish hujjati, xodim) tanlang.",
+      "3": "Yana foydalanishga yaroqli buyum omborga sotish mumkin bo'lgan sof qiymatida boshqa operatsion daromad sifatida kirim qilinadi: Dt 1080 Kt 9390, va 014.x dan chiqariladi (BHMS 4, 75-band)."
+    },
+    "balanceHint": "Bosh kitobdan: tanlangan sanada foydalanishda turgan buyumlar — 014.x hisobi, tovar, berish hujjati va xodim bo'yicha.",
+    "status": {
+      "1": "Qoralama",
+      "2": "O'tkazilgan",
+      "3": "Bekor qilingan"
+    },
+    "new": "Yangi hujjat",
+    "newNumber": "Yangi",
+    "date": "Sana",
+    "warehouse": "Ombor",
+    "items": "Buyumlar",
+    "amount": "Summa",
+    "state": "Holati",
+    "empty": "Hujjat yo'q",
+    "product": "Buyum",
+    "productPlaceholder": "Buyumni tanlang",
+    "warehouseFirst": "Avval omborni tanlang",
+    "quantity": "Miqdor",
+    "employee": "Xodim",
+    "inUseAccount": "Foydalanishdagi hisob",
+    "stockAccount": "Ombor hisobi",
+    "inUse": "Foydalanishdagi partiya",
+    "inUsePlaceholder": "Foydalanishdagi buyumni tanlang",
+    "realisableValue": "Sof sotish qiymati",
+    "inUseAmount": "014 bo'yicha summa",
+    "transfer": "Berish hujjati",
+    "expenseAccount": "Xarajat hisobi",
+    "incomeAccount": "Daromad hisobi",
+    "comment": "Izoh",
+    "lines": "Buyumlar",
+    "addLine": "Qator qo'shish",
+    "saveDraft": "Saqlash",
+    "post": "Saqlash va o'tkazish",
+    "cancel": "O'tkazishni bekor qilish",
+    "cancelConfirm": "Hujjat provodkalari va ombor harakatlari bekor qilinsinmi?",
+    "deleteConfirm": "Hujjat o'chirilsinmi?",
+    "saved": "Saqlandi",
+    "posted": "Hujjat o'tkazildi",
+    "cancelled": "O'tkazish bekor qilindi",
+    "entries": "Provodkalar",
+    "search": "Buyum yoki xodim",
+    "balanceEmpty": "Foydalanishda buyum yo'q",
+    "total": "Jami"
   }
 }
