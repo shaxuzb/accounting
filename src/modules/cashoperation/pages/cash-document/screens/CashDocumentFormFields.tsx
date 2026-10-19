@@ -12,6 +12,7 @@ import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import SelectDate from "@/components/fields/SelectDate";
 import SettlementDocumentSelect from "@/components/fields/SettlementDocumentSelect";
+import MoneyOffsetAccountSelect from "@/shared/moneyOperationKinds/MoneyOffsetAccountSelect";
 import MoneyDocumentAnalytics from "@/components/fields/MoneyDocumentAnalytics";
 import InputText from "@/components/fields/InputText";
 import CounterpartyAddEditPage from "@/modules/settings/pages/counterparty/screens/CounterpartyAddEditPage";
@@ -139,20 +140,25 @@ export default function CashDocumentFormFields({
           />
         </Col>
         <Col span={4}>
-          <DocumentAccountSelect
-            key={isTransfer ? "transfer" : "settlement"}
-            formik={formik}
-            fieldName="offsetAccountId"
-            label="cash.fields.offsetAccount"
-            documentTypeId={documentTypeId}
+          {isTransfer ? (
             // a transfer lands on the receiving box's cash account
-            documentRoleCode={
-              isTransfer
-                ? cashDocumentAccountRoleCodes.cashAccount
-                : cashDocumentAccountRoleCodes.offsetAccount
-            }
-            getFirst
-          />
+            <DocumentAccountSelect
+              key="transfer"
+              formik={formik}
+              fieldName="offsetAccountId"
+              label="cash.fields.offsetAccount"
+              documentTypeId={documentTypeId}
+              documentRoleCode={cashDocumentAccountRoleCodes.cashAccount}
+              getFirst
+            />
+          ) : (
+            <MoneyOffsetAccountSelect
+              formik={formik}
+              fieldName="offsetAccountId"
+              label="cash.fields.offsetAccount"
+              kind={kind}
+            />
+          )}
         </Col>
         {isExpense && (
           <Col span={4}>

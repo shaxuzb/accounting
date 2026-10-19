@@ -21,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "@/config/dayjs";
 import Card from "@/components/ui/card/Card";
 import DocumentAccountSelect from "@/components/fields/DocumentAccountSelect";
+import MoneyOffsetAccountSelect from "@/shared/moneyOperationKinds/MoneyOffsetAccountSelect";
 import { useContractSettlementAccount } from "@/shared/hooks/useContractSettlementAccount";
 import { useMoneyCardAccount } from "@/shared/hooks/useMoneyCardAccount";
 import { MoneyOperationKindSelect, useMoneyOperationKinds } from "@/shared/moneyOperationKinds";
@@ -626,13 +627,11 @@ export default function BankOperationAddEditPage() {
               />
             </Col>
             <Col span={4}>
-              <DocumentAccountSelect
+              <MoneyOffsetAccountSelect
                 formik={formik}
                 fieldName="offsetAccountId"
                 label="bank.fields.offsetAccount"
-                documentTypeId={documentTypeId}
-                documentRoleCode={bankDocumentAccountRoleCodes.offsetAccount}
-                getFirst
+                kind={kind}
               />
             </Col>
             <Col span={4}>

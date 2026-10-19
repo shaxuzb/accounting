@@ -1,7 +1,7 @@
 import { Alert, Button, DatePicker, Input, Popconfirm, Space, Tag } from "antd";
 import { Ban, FileInput, FileOutput, Plus, Printer, Save, Send, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
@@ -122,7 +122,7 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
   const { data: current } = useQuery({
     queryKey: ["accountable-balance", employeeId, advanceAccountId, "now", statusId],
     queryFn: () =>
-      getJson<{ balance: number }>("/manual-entries/accountable-balance", {
+      getJson<{ balance: number; debtAccountId?: number | null }>("/manual-entries/accountable-balance", {
         employeeId,
         accountId: advanceAccountId,
       }),
@@ -151,8 +151,15 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
     })),
   });
 
+  const queryClient = useQueryClient();
   const saveDraft = async () => {
     const savedId = (await save.mutateAsync({ id, body: body() })) as number;
+    // an overspend brings 6970 into the chart on the first report: account lists reload
+    void queryClient.invalidateQueries({
+      predicate: (query) =>
+        query.queryKey[0] === "selectlist" &&
+        query.queryKey.includes(selectListEndpoints.chartAccountsSelectList),
+    });
     toast.success(t("manualEntries.saved"));
     if (!id) navigate(`${expenseReportsPath}/${savedId}`, { replace: true });
     return savedId;
@@ -170,7 +177,9 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
         prefill: {
           operationKindId: kind === "pko" ? ACCOUNTABLE_RETURN : ACCOUNTABLE_ISSUE,
           employeeId,
-          offsetAccountId: advanceAccountId,
+          // the remainder comes back to the advance account; an overspend is paid off 6970
+          offsetAccountId:
+            kind === "rko" ? (current?.debtAccountId ?? advanceAccountId) : advanceAccountId,
           amount: Math.round(amount * 100) / 100,
           basis: t(kind === "pko" ? "expenseReport.basisRemainder" : "expenseReport.basisOverspend", {
             number: data?.docNumber ?? "",
