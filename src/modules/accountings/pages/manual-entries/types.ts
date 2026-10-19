@@ -19,6 +19,8 @@ export interface ManualEntryLine {
   amount: number;
   currencyId: number;
   currencyAmount?: number | null;
+  /** An expense report's goods line: the quantity coming into the warehouse of its debit analytics. */
+  quantity?: number | null;
   content?: string | null;
 }
 
@@ -34,6 +36,8 @@ export interface ManualEntry {
   kind?: number;
   employeeId?: number | null;
   advanceAccountId?: number | null;
+  /** An expense report's currency (the advance's: 4225 ... in a foreign currency). */
+  currencyId?: number;
   lines: ManualEntryLine[];
 }
 

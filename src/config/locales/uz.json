@@ -4728,8 +4728,8 @@
     "expenseAccount": "Xarajat / to'lov hisobvarag'i",
     "commentPlaceholder": "Masalan: Toshkentga xizmat safari",
     "contentPlaceholder": "Masalan: mehmonxona, chipta, yoqilg'i",
-    "balance": "Xodimda bo'nak: {{held}} · hisobot bo'yicha: {{spent}} · qoladi: {{left}} so'm",
-    "balancePosted": "Hisobot o'tkazilgan. Xodimda qolgan bo'nak: {{left}} so'm (ortgani PKO bilan qaytariladi).",
+    "balance": "Xodimda bo'nak: {{held}} · hisobot bo'yicha: {{spent}} · qoladi: {{left}} {{unit}}",
+    "balancePosted": "Hisobot o'tkazilgan. Xodimda qolgan bo'nak: {{left}} {{unit}} (ortgani PKO bilan qaytariladi).",
     "overspent": "Sarflangani berilgan bo'nakdan ko'p: ortig'i xodimga qarz bo'ladi (Kt 6970), RKO bilan beriladi (Dt 6970 — Kt 5010).",
     "returnRemainder": "Qoldiqni qaytarish (PKO)",
     "payOverspend": "Ortiqcha sarfni berish (RKO)",
@@ -4744,7 +4744,11 @@
     "overspend": "Ortiqcha sarf (berilishi kerak)",
     "document": "Hujjat / xarajat",
     "checkedBy": "Tekshirdi (buxgalter)",
-    "balancePostedOverspend": "Hisobot o'tkazilgan. Ortiqcha sarf: {{amount}} so'm (xodimga RKO bilan beriladi)."
+    "balancePostedOverspend": "Hisobot o'tkazilgan. Ortiqcha sarf: {{amount}} {{unit}} (xodimga RKO bilan beriladi).",
+    "quantity": "Miqdor",
+    "goodsHint": "Tovar omborga kirim qilinadi (hisobot — partiya): tovar, ombor va miqdorni ko'rsating.",
+    "currencyHint": "Valyutadagi bo'nak: summalar valyutada kiritiladi, bo'nak hisobi valyuta hisobiga (4220 → 4225) almashadi, so'mdagi summa hisobot sanasidagi rasmiy kurs bo'yicha olinadi; ortiqcha sarf 6975 ga.",
+    "sum": "so'm"
   },
   "returnDoc": {
     "createFromBase": "Qaytarish yaratish",

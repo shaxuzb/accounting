@@ -17,6 +17,7 @@ import { useAppSelector } from "@/store/hooks";
 import { getJson } from "@/modules/accountings/services/request";
 import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeSelect";
 import AccountSide from "@/modules/accountings/pages/manual-entries/AccountSide";
+import { useAccountDefinitions } from "@/modules/accountings/pages/manual-entries/useAccountDefinitions";
 import {
   useCancelManualEntry,
   useConfirmManualEntry,
@@ -37,6 +38,10 @@ import {
 } from "./constants";
 
 const UZS = 1;
+/** acc_subkonto_type: «Nomenklatura», «Partiyalar», «Omborlar». */
+const SUBKONTO_ITEMS = 6;
+const SUBKONTO_BATCHES = 7;
+const SUBKONTO_WAREHOUSES = 8;
 /** cmn_money_operation_kind: «Hisobdor shaxsdan qaytim», «Hisobdor shaxsga berish». */
 const ACCOUNTABLE_RETURN = 3;
 const ACCOUNTABLE_ISSUE = 23;
@@ -49,7 +54,49 @@ const emptyLine = (): ManualEntryLine => ({
   currencyId: UZS,
   currencyAmount: null,
   content: null,
+  quantity: null,
 });
+
+/**
+ * The quantity of a goods line (1C «Авансовый отчет», «Товары»): a stock account (kept by
+ * quantity, item and warehouse — 2910, 1010 ...) brings the item into the warehouse of the
+ * line's analytics, as a batch of the report.
+ */
+function GoodsQuantity({
+  accountId,
+  value,
+  disabled,
+  onChange,
+}: {
+  accountId: number | null;
+  value?: number | null;
+  disabled: boolean;
+  onChange: (value: number | null) => void;
+}) {
+  const { t } = useTranslation();
+  const { account, definitions } = useAccountDefinitions(accountId);
+  const isStock =
+    Boolean(account?.isQuantity) &&
+    definitions.some((x) => x.id === SUBKONTO_ITEMS) &&
+    definitions.some((x) => x.id === SUBKONTO_WAREHOUSES);
+  if (!isStock) return null;
+  return (
+    <div>
+      <div className="mb-1 text-sm">
+        {t("expenseReport.quantity")} <span className="text-red-500">*</span>
+      </div>
+      <InputNumberFormat
+        standalone
+        min={0}
+        precision={3}
+        value={value || null}
+        disabled={disabled}
+        onValueChange={(next) => onChange(next == null ? null : Number(next))}
+      />
+      <div className="mt-1 text-xs text-secondary-text">{t("expenseReport.goodsHint")}</div>
+    </div>
+  );
+}
 
 const money = (value: number) =>
   value.toLocaleString("ru-RU", {
@@ -93,11 +140,30 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
   const [lines, setLines] = useState<ManualEntryLine[]>(() =>
     data?.lines.length ? data.lines : [emptyLine()],
   );
+  // an advance in a foreign currency (1C: the report in the advance's currency): the lines are
+  // entered in it, the advance account is its currency twin (4220 -> 4225), the sum is taken at
+  // the official rate of the report's date
+  const [currencyId, setCurrencyId] = useState<number>(data?.currencyId ?? UZS);
+  const foreign = currencyId !== UZS;
+  const { data: currencies } = useQuery({
+    queryKey: ["selectlist", selectListEndpoints.currenciesSelectList, "codes"],
+    queryFn: () =>
+      getJson<{ id: number; code: string }[]>(`/${selectListEndpoints.currenciesSelectList}`),
+    enabled: foreign,
+    staleTime: 5 * 60 * 1000,
+  });
+  const unit = foreign
+    ? (currencies?.find((x) => x.id === currencyId)?.code ?? "")
+    : t("expenseReport.sum");
 
   const statusId = data?.statusId ?? manualEntryStatus.draft;
   const readOnly =
     statusId !== manualEntryStatus.draft || !can(manualEntryPermissions.create);
-  const total = lines.reduce((sum, line) => sum + (Number(line.amount) || 0), 0);
+  const total = lines.reduce(
+    (sum, line) => sum + (Number(foreign ? line.currencyAmount : line.amount) || 0),
+    0,
+  );
+  const totalUzs = lines.reduce((sum, line) => sum + (Number(line.amount) || 0), 0);
 
   // what the employee holds of the advances on the account (a posted report is already in it)
   const { data: balance } = useQuery({
@@ -142,18 +208,30 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
     kind: EXPENSE_REPORT_KIND,
     employeeId,
     advanceAccountId,
+    currencyId,
     lines: lines.map((line) => ({
       ...line,
       // the credit is the advance account and the employee; the server sets it
       creditAccountId: advanceAccountId ?? 0,
       creditSubkontos: [],
-      amount: Number(line.amount) || 0,
+      // in a currency the server takes the sum at the rate of the report's date
+      amount: foreign ? 0 : Number(line.amount) || 0,
+      currencyId,
+      currencyAmount: foreign ? Number(line.currencyAmount) || 0 : null,
+      quantity: line.quantity ? Number(line.quantity) : null,
     })),
   });
 
   const queryClient = useQueryClient();
   const saveDraft = async () => {
     const savedId = (await save.mutateAsync({ id, body: body() })) as number;
+    // the server may have switched the advance account to its currency twin, and it has taken
+    // the sums at the rate: the report is read back
+    if (id && foreign) {
+      const saved = await getJson<ManualEntry>(`/manual-entries/${savedId}`);
+      setAdvanceAccountId(saved.advanceAccountId ?? null);
+      setLines(saved.lines);
+    }
     // an overspend brings 6970 into the chart on the first report: account lists reload
     void queryClient.invalidateQueries({
       predicate: (query) =>
@@ -233,6 +311,17 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
               value={employeeId}
               disabled={readOnly}
               onChange={setEmployeeId}
+            />
+          </div>
+          <div className="min-w-40">
+            <SelectCustom
+              label={t("manualEntries.currency")}
+              fieldName="report-currency"
+              path={selectListEndpoints.currenciesSelectList}
+              value={currencyId}
+              disabled={readOnly}
+              marginBottom="mb-0"
+              onChange={(value) => setCurrencyId(Number(value) || UZS)}
             />
           </div>
           <div className="min-w-56">
@@ -346,19 +435,25 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
         </Space>
       </Card>
 
-      {employeeId && advanceAccountId && (
+      {foreign && (
+        <Alert showIcon type="info" message={t("expenseReport.currencyHint")} />
+      )}
+
+      {/* a new report in a currency is counted against its currency account once saved */}
+      {employeeId && advanceAccountId && !(foreign && !id) && (
         <Alert
           showIcon
           type={left < 0 ? "warning" : "info"}
           message={
             statusId === manualEntryStatus.posted
               ? held < 0
-                ? t("expenseReport.balancePostedOverspend", { amount: money(-held) })
-                : t("expenseReport.balancePosted", { left: money(held) })
+                ? t("expenseReport.balancePostedOverspend", { amount: money(-held), unit })
+                : t("expenseReport.balancePosted", { left: money(held), unit })
               : t("expenseReport.balance", {
                   held: money(held),
                   spent: money(total),
                   left: money(left),
+                  unit,
                 })
           }
           description={left < 0 ? t("expenseReport.overspent") : undefined}
@@ -389,24 +484,52 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
                 accountId={line.debitAccountId || null}
                 subkontos={line.debitSubkontos}
                 disabled={readOnly}
+                hiddenTypeIds={[SUBKONTO_BATCHES]}
                 onAccountChange={(accountId) =>
-                  update(index, { debitAccountId: accountId ?? 0, debitSubkontos: [] })
+                  update(index, { debitAccountId: accountId ?? 0, debitSubkontos: [], quantity: null })
                 }
                 onSubkontosChange={(debitSubkontos) => update(index, { debitSubkontos })}
               />
             </div>
             <div className="space-y-3">
-              <div>
-                <div className="mb-1 text-sm">{t("manualEntries.amount")}</div>
-                <InputNumberFormat
-                  standalone
-                  min={0}
-                  precision={2}
-                  value={line.amount || null}
-                  disabled={readOnly}
-                  onValueChange={(value) => update(index, { amount: Number(value ?? 0) })}
-                />
-              </div>
+              <GoodsQuantity
+                accountId={line.debitAccountId || null}
+                value={line.quantity}
+                disabled={readOnly}
+                onChange={(quantity) => update(index, { quantity })}
+              />
+              {foreign ? (
+                <div>
+                  <div className="mb-1 text-sm">{t("manualEntries.currencyAmount")}</div>
+                  <InputNumberFormat
+                    standalone
+                    min={0}
+                    precision={2}
+                    value={line.currencyAmount || null}
+                    disabled={readOnly}
+                    onValueChange={(value) =>
+                      update(index, { currencyAmount: value == null ? null : Number(value) })
+                    }
+                  />
+                  {Number(line.amount) > 0 && (
+                    <div className="mt-1 text-xs text-secondary-text">
+                      {money(Number(line.amount))} UZS
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <div className="mb-1 text-sm">{t("manualEntries.amount")}</div>
+                  <InputNumberFormat
+                    standalone
+                    min={0}
+                    precision={2}
+                    value={line.amount || null}
+                    disabled={readOnly}
+                    onValueChange={(value) => update(index, { amount: Number(value ?? 0) })}
+                  />
+                </div>
+              )}
               <div>
                 <div className="mb-1 text-sm">{t("manualEntries.content")}</div>
                 <Input
@@ -433,7 +556,11 @@ function ExpenseReportEditor({ id, data }: { id: number | null; data?: ManualEnt
           <span />
         )}
         <span className="text-base">
-          {t("manualEntries.total")}: <b>{money(total)}</b> UZS
+          {t("manualEntries.total")}: <b>{money(total)}</b>
+          {foreign ? "" : " UZS"}
+          {foreign && totalUzs > 0 && (
+            <span className="ml-2 text-secondary-text">({money(totalUzs)} UZS)</span>
+          )}
         </span>
       </div>
     </div>

@@ -4728,8 +4728,8 @@
     "expenseAccount": "Expense / payment account",
     "commentPlaceholder": "E.g. business trip to Tashkent",
     "contentPlaceholder": "E.g. hotel, ticket, fuel",
-    "balance": "Advance held: {{held}} · in this report: {{spent}} · left: {{left}} UZS",
-    "balancePosted": "The report is posted. Advance still held: {{left}} UZS (the unspent part comes back by a PKO).",
+    "balance": "Advance held: {{held}} · in this report: {{spent}} · left: {{left}} {{unit}}",
+    "balancePosted": "The report is posted. Advance still held: {{left}} {{unit}} (the unspent part comes back by a PKO).",
     "overspent": "More was spent than advanced: the overspend is owed to the employee (Ct 6970) and paid by an RKO (Dt 6970 — Ct 5010).",
     "returnRemainder": "Return the remainder (receipt order)",
     "payOverspend": "Pay out the overspend (expense order)",
@@ -4744,7 +4744,11 @@
     "overspend": "Overspend (to pay out)",
     "document": "Document / expense",
     "checkedBy": "Checked by (accountant)",
-    "balancePostedOverspend": "The report is posted. Overspend: {{amount}} UZS (paid to the employee by an expense order)."
+    "balancePostedOverspend": "The report is posted. Overspend: {{amount}} {{unit}} (paid to the employee by an expense order).",
+    "quantity": "Quantity",
+    "goodsHint": "The goods come into the warehouse (the report is their batch): give the item, the warehouse and the quantity.",
+    "currencyHint": "An advance in a currency: the amounts are entered in it, the advance account becomes its currency twin (4220 → 4225), the sum is taken at the official rate of the report's date; an overspend goes to 6975.",
+    "sum": "UZS"
   },
   "returnDoc": {
     "createFromBase": "Create return",

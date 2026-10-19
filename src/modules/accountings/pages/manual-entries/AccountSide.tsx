@@ -14,6 +14,8 @@ interface Props {
   disabled?: boolean;
   onAccountChange: (accountId: number | null) => void;
   onSubkontosChange: (subkontos: ManualEntrySubkonto[]) => void;
+  /** Analytics not asked for on this side (an expense report's goods open their own batch). */
+  hiddenTypeIds?: number[];
 }
 
 /** One side (Dt or Kt) of a manual entry line: the account and its analytics. */
@@ -24,8 +26,10 @@ export default function AccountSide({
   disabled,
   onAccountChange,
   onSubkontosChange,
+  hiddenTypeIds,
 }: Props) {
-  const { definitions } = useAccountDefinitions(accountId);
+  const { definitions: all } = useAccountDefinitions(accountId);
+  const definitions = hiddenTypeIds?.length ? all.filter((x) => !hiddenTypeIds.includes(x.id)) : all;
 
   return (
     <div className="min-w-0 space-y-2">
