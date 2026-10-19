@@ -2802,6 +2802,42 @@
       "completed": "Tugallangan",
       "noData": "Ma'lumot yo'q",
       "notFound": "Topilmadi"
+    },
+    "analyticReports": {
+      "title": "Tahliliy hisobotlar",
+      "kinds": {
+        "subkonto-balance": "Hisob OSV (analitika bo'yicha)",
+        "account-analysis": "Hisob tahlili",
+        "subkonto-card": "Analitika kartochkasi",
+        "general-ledger": "Bosh kitob (oylar bo'yicha)",
+        "chess-sheet": "Shaxmat vedomosti"
+      },
+      "opening": "Davr boshiga qoldiq",
+      "turnover": "Davr aylanmasi",
+      "closing": "Davr oxiriga qoldiq",
+      "debit": "Debet",
+      "credit": "Kredit",
+      "total": "Jami",
+      "correspondent": "Kor. hisob",
+      "accountName": "Hisob nomi",
+      "account": "Hisob",
+      "period": "Davr",
+      "date": "Sana",
+      "document": "Hujjat",
+      "content": "Mazmuni",
+      "debitAccount": "Dt hisob",
+      "creditAccount": "Kt hisob",
+      "balance": "Qoldiq",
+      "subkontoKind": "Analitika turi",
+      "value": "Analitika qiymati",
+      "anyAccount": "Barcha hisoblar",
+      "detailed": "Subhisoblar bo'yicha",
+      "offBalance": "balansdan tashqari",
+      "pickAccountAndKind": "Hisob va analitika turini tanlang",
+      "pickAccount": "Hisobni tanlang",
+      "pickValue": "Analitika turi va qiymatini tanlang",
+      "noKinds": "Bu hisob provodkalarida analitika yo'q",
+      "truncated": "Yozuvlar ko'p — faqat birinchi 5 000 tasi ko'rsatildi; davrni qisqartiring."
     }
   },
   "hr": {

@@ -16,6 +16,7 @@ const tabs = [
   },
   { key: "journal", labelKey: "app.reports.journal.title" },
   { key: "account-card", labelKey: "app.reports.card.title" },
+  { key: "analysis", labelKey: "app.analyticReports.title" },
 ];
 
 export default function AccountingReportTabs() {

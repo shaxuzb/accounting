@@ -26,6 +26,7 @@ const RegulatedBalancePage = lazy(() => import("./pages/regulated-forms/Regulate
 const RegulatedResultsPage = lazy(() => import("./pages/regulated-forms/RegulatedResultsPage"));
 const ExpressCheckPage = lazy(() => import("./pages/regulated-forms/ExpressCheckPage"));
 const RegulatedCashFlowPage = lazy(() => import("./pages/regulated-forms/RegulatedCashFlowPage"));
+const AnalyticReportsPage = lazy(() => import("./pages/analytic-reports/AnalyticReportsPage"));
 const VatReturnPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.VatReturnPage })));
 const TurnoverTaxPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.TurnoverTaxPage })));
 const ProfitTaxPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.ProfitTaxPage })));
@@ -76,6 +77,11 @@ export const accountingsRoutes: RouteObject = {
           path: "form-2",
           handle: { title: "app.regulatedForms.form2" },
           element: withAccess(<RegulatedResultsPage />, accountingReportPermissions.incomeStatement),
+        },
+        {
+          path: "analysis",
+          handle: { title: "app.analyticReports.title" },
+          element: withAccess(<AnalyticReportsPage />, accountingReportPermissions.accountTurnover),
         },
         {
           path: "form-4",

@@ -2802,6 +2802,42 @@
       "completed": "Completed",
       "noData": "No data",
       "notFound": "Not found"
+    },
+    "analyticReports": {
+      "title": "Analytic reports",
+      "kinds": {
+        "subkonto-balance": "Account trial balance by analytics",
+        "account-analysis": "Account analysis",
+        "subkonto-card": "Analytics card",
+        "general-ledger": "General ledger",
+        "chess-sheet": "Chess sheet"
+      },
+      "opening": "Opening balance",
+      "turnover": "Turnover",
+      "closing": "Closing balance",
+      "debit": "Debit",
+      "credit": "Credit",
+      "total": "Total",
+      "correspondent": "Corr. account",
+      "accountName": "Account name",
+      "account": "Account",
+      "period": "Period",
+      "date": "Date",
+      "document": "Document",
+      "content": "Content",
+      "debitAccount": "Dt account",
+      "creditAccount": "Ct account",
+      "balance": "Balance",
+      "subkontoKind": "Analytics kind",
+      "value": "Analytics value",
+      "anyAccount": "All accounts",
+      "detailed": "By subaccounts",
+      "offBalance": "off-balance",
+      "pickAccountAndKind": "Choose an account and an analytics kind",
+      "pickAccount": "Choose an account",
+      "pickValue": "Choose an analytics kind and value",
+      "noKinds": "The account's entries carry no analytics",
+      "truncated": "Too many entries — the first 5 000 are shown; narrow the period."
     }
   },
   "hr": {
