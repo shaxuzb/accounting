@@ -2495,7 +2495,9 @@
       "taxBase": "Tax base",
       "rateColumn": "Rate",
       "taxAmount": "Tax",
-      "total": "Total"
+      "total": "Total",
+      "payrollTax": "Income and social tax",
+      "payrollTaxTitle": "Personal income tax and social tax return"
     },
     "regulatedForms": {
       "form1": "Form 1 (balance sheet)",
@@ -2892,7 +2894,8 @@
         "UNEXCUSED_ABSENCE": "Unexcused absence",
         "MATERNITY_LEAVE": "Maternity leave",
         "STUDY_LEAVE": "Study leave",
-        "OTHER_ABSENCE": "Other absence"
+        "OTHER_ABSENCE": "Other absence",
+        "BUSINESS_TRIP": "Business trip"
       },
       "statusShort": {
         "CHILD_CARE_LEAVE": "Child",
@@ -2906,7 +2909,8 @@
         "UNEXCUSED_ABSENCE": "Absent",
         "MATERNITY_LEAVE": "Maternity",
         "STUDY_LEAVE": "Study",
-        "OTHER_ABSENCE": "Other"
+        "OTHER_ABSENCE": "Other",
+        "BUSINESS_TRIP": "Trip"
       }
     },
     "fields": {
@@ -3682,6 +3686,13 @@
       "editTitle": "Edit employment",
       "createHint": "Enter the employee's position, department, and employment terms.",
       "add": "Add workplace"
+    },
+    "deposit": {
+      "title": "Deposit (pay not taken)",
+      "hint": "Mark the employees who did not take the pay: it is left out of the cash paid and deposited on posting, Dt 6710 Cr 6720 by employee; paid out later by «Deposited pay paid out» (Dt 6720).",
+      "notTaken": "Not taken",
+      "save": "Save marks",
+      "saved": "Deposit marks saved"
     }
   },
   "openingInventory": {

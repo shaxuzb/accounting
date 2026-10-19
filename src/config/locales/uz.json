@@ -2495,7 +2495,9 @@
       "taxBase": "Soliq bazasi",
       "rateColumn": "Stavka",
       "taxAmount": "Soliq summasi",
-      "total": "Jami"
+      "total": "Jami",
+      "payrollTax": "JShDS va ijtimoiy soliq",
+      "payrollTaxTitle": "Jismoniy shaxslardan olinadigan daromad solig'i va ijtimoiy soliq bo'yicha hisob-kitob"
     },
     "regulatedForms": {
       "form1": "1-shakl (balans)",
@@ -2892,7 +2894,8 @@
         "UNEXCUSED_ABSENCE": "Sababsiz yo'qlik",
         "MATERNITY_LEAVE": "Dekret ta'tili",
         "STUDY_LEAVE": "O'quv ta'tili",
-        "OTHER_ABSENCE": "Boshqa yo'qlik"
+        "OTHER_ABSENCE": "Boshqa yo'qlik",
+        "BUSINESS_TRIP": "Xizmat safari"
       },
       "statusShort": {
         "CHILD_CARE_LEAVE": "Bola",
@@ -2906,7 +2909,8 @@
         "UNEXCUSED_ABSENCE": "Sababsiz",
         "MATERNITY_LEAVE": "Dekret",
         "STUDY_LEAVE": "O'quv",
-        "OTHER_ABSENCE": "Boshqa"
+        "OTHER_ABSENCE": "Boshqa",
+        "BUSINESS_TRIP": "Safar"
       }
     },
     "fields": {
@@ -3682,6 +3686,13 @@
       "editTitle": "Bandlik ma'lumotlarini tahrirlash",
       "createHint": "Xodimning lavozimi, bo'limi va ish shartlarini kiriting.",
       "add": "Ish joyini qo'shish"
+    },
+    "deposit": {
+      "title": "Deponentlash (berilmagan ish haqi)",
+      "hint": "Kassadan olmagan xodimlarni belgilang: ularning summasi kassa chiqimiga kirmaydi va o'tkazishda Dt 6710 Kt 6720 (xodim bo'yicha) deponentlanadi. Keyin kassada «Deponentlangan ish haqini berish» bilan beriladi (Dt 6720).",
+      "notTaken": "Olmadi",
+      "save": "Belgilashni saqlash",
+      "saved": "Deponentlash belgilari saqlandi"
     }
   },
   "openingInventory": {

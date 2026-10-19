@@ -28,6 +28,7 @@ const ExpressCheckPage = lazy(() => import("./pages/regulated-forms/ExpressCheck
 const VatReturnPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.VatReturnPage })));
 const TurnoverTaxPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.TurnoverTaxPage })));
 const ProfitTaxPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.ProfitTaxPage })));
+const PayrollTaxReturnPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.PayrollTaxReturnPage })));
 const VatRegisterPage = lazy(() => import("./pages/tax-reports/VatRegisterPage"));
 const PropertyTaxPage = lazy(() => import("./pages/tax-reports/PropertyTaxPage"));
 const ManualEntriesPage = lazy(() => import("./pages/manual-entries/ManualEntriesPage"));
@@ -137,6 +138,7 @@ export const accountingsRoutes: RouteObject = {
         { path: "vat-register", handle: { title: "app.taxReports.vatRegister" }, element: withAccess(<VatRegisterPage />, accountingReportPermissions.incomeStatement) },
         { path: "turnover-tax", handle: { title: "app.taxReports.turnoverTax" }, element: withAccess(<TurnoverTaxPage />, accountingReportPermissions.incomeStatement) },
         { path: "profit-tax", handle: { title: "app.taxReports.profitTax" }, element: withAccess(<ProfitTaxPage />, accountingReportPermissions.incomeStatement) },
+        { path: "payroll-tax", handle: { title: "app.taxReports.payrollTax" }, element: withAccess(<PayrollTaxReturnPage />, accountingReportPermissions.incomeStatement) },
         { path: "property-tax", handle: { title: "app.taxReports.propertyTax" }, element: withAccess(<PropertyTaxPage />, accountingReportPermissions.incomeStatement) },
       ],
     },

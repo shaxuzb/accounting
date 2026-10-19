@@ -21,6 +21,7 @@ const statusColors: Record<HrCalendarStatusCode, string> = {
   MATERNITY_LEAVE: "purple",
   STUDY_LEAVE: "geekblue",
   CHILD_CARE_LEAVE: "magenta",
+  BUSINESS_TRIP: "lime",
 };
 
 export default function EmployeeCalendarPanel({ employeeId }: Props) {

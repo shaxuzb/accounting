@@ -20,6 +20,7 @@ const tabs = [
   { key: "vat-register", labelKey: "app.taxReports.vatRegister" },
   { key: "turnover-tax", labelKey: "app.taxReports.turnoverTax" },
   { key: "profit-tax", labelKey: "app.taxReports.profitTax" },
+  { key: "payroll-tax", labelKey: "app.taxReports.payrollTax" },
   { key: "property-tax", labelKey: "app.taxReports.propertyTax" },
 ];
 
@@ -121,7 +122,7 @@ export function TaxHeader({ header, title, period }: { header?: TaxFormHeader; t
 /** A sheet of a tax form: code, name and its own value columns. */
 export function TaxSheet({ sheet }: { sheet: TaxFormSheet }) {
   const { t } = useTranslation();
-  const valueKeys = ["value1", "value2", "value3", "value4"] as const;
+  const valueKeys = ["value1", "value2", "value3", "value4", "value5", "value6"] as const;
   const columns: ColumnsType<TaxFormLine> = [
     {
       title: t("app.regulatedForms.indicator"),
@@ -138,7 +139,7 @@ export function TaxSheet({ sheet }: { sheet: TaxFormSheet }) {
       width: 170,
       align: "right" as const,
       render: (_: unknown, row: TaxFormLine) => {
-        const value = row[valueKeys[index]];
+        const value = row[valueKeys[index]] ?? null;
         return value === null ? <span className="text-secondary-text">x</span> : <span className={`tabular-nums ${row.isTotal ? "font-semibold" : ""}`}>{taxAmount(value)}</span>;
       },
     })),
@@ -218,7 +219,7 @@ export const exportTaxForm = (fileName: string, title: string, form: TaxForm) =>
         line.name,
         line.code,
         ...sheet.columns.map((_, i) => {
-          const value = [line.value1, line.value2, line.value3, line.value4][i];
+          const value = [line.value1, line.value2, line.value3, line.value4, line.value5 ?? null, line.value6 ?? null][i];
           return value === null ? "x" : value;
         }),
       ]),

@@ -8,7 +8,8 @@ export type HrCalendarStatusCode =
   | "UNEXCUSED_ABSENCE"
   | "MATERNITY_LEAVE"
   | "STUDY_LEAVE"
-  | "CHILD_CARE_LEAVE";
+  | "CHILD_CARE_LEAVE"
+  | "BUSINESS_TRIP";
 
 export interface HrWorkScheduleDay {
   dayOfWeek: number;

@@ -20,6 +20,8 @@ export interface TaxFormLine {
   value2: number | null;
   value3: number | null;
   value4: number | null;
+  value5?: number | null;
+  value6?: number | null;
 }
 
 export interface TaxFormSheet {
@@ -139,6 +141,14 @@ export const useTurnoverTax = (params: { year: number; month: number }) =>
   useQuery({
     queryKey: ["tax-reports", "turnover-tax", params],
     queryFn: () => getJson<TaxForm>(`${base}/turnover-tax`, params),
+    placeholderData: keepPreviousData,
+  });
+
+/** The personal income tax and social tax return (resolution 3221, annex 4), from the payroll. */
+export const usePayrollTaxReturn = (params: { year: number; month: number }) =>
+  useQuery({
+    queryKey: ["tax-reports", "payroll-tax", params],
+    queryFn: () => getJson<TaxForm>("/payroll/reports/tax-return", params),
     placeholderData: keepPreviousData,
   });
 

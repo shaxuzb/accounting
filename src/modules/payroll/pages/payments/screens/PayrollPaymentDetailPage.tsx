@@ -46,6 +46,7 @@ import { Link, useNavigate, useParams } from "react-router";
 const CASH_EXPENSE_DOCUMENT_TYPE_ID = 8;
 const BANK_EXPENSE_DOCUMENT_TYPE_ID = 6;
 import PaymentLinesEditor from "../components/PaymentLinesEditor";
+import PaymentDepositCard from "../components/PaymentDepositCard";
 import {
   useCancelPayrollPayment,
   useConfirmPayrollPayment,
@@ -489,6 +490,10 @@ export default function PayrollPaymentDetailPage() {
         payrollDocument={payrollDocument}
         currencyName={record?.currencyName}
       />
+
+      {!isCreate && record && record.sourceType === "CASH" && !isCancelled && (
+        <PaymentDepositCard record={record} canEdit={canConfirm} />
+      )}
 
       {(isCreate || canSave || canConfirm || canCancel || record?.payrollDocId) && (
         <Card className="sticky bottom-0 z-20 border border-border bg-primary-bg/95 px-4 py-3 shadow-sm backdrop-blur sm:px-5">

@@ -2,7 +2,7 @@ import { Spin } from "antd";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
-import { useProfitTax, useTurnoverTax, useVatReturn, type TaxForm } from "./api";
+import { usePayrollTaxReturn, useProfitTax, useTurnoverTax, useVatReturn, type TaxForm } from "./api";
 import { exportTaxForm, PeriodBar, TaxChecks, TaxHeader, TaxReportShell, TaxSheet } from "./shared";
 
 function FormBody({ form, title }: { form?: TaxForm; title: string }) {
@@ -42,6 +42,30 @@ export function VatReturnPage() {
         loading={query.isFetching}
         onRefresh={() => void query.refetch()}
         onExport={query.data ? () => exportTaxForm(`QQS-${state.year}-${String(state.month).padStart(2, "0")}.xlsx`, title, query.data!) : undefined}
+      />
+      <Spin spinning={query.isFetching}>
+        <FormBody form={query.data} title={title} />
+      </Spin>
+    </TaxReportShell>
+  );
+}
+
+/** The personal income tax and social tax return (annex 4), from the month's payroll. */
+export function PayrollTaxReturnPage() {
+  const { t } = useTranslation();
+  const [state, setState] = useMonthState("tax-payroll");
+  const query = usePayrollTaxReturn(state);
+  const title = t("app.taxReports.payrollTaxTitle");
+  return (
+    <TaxReportShell>
+      <PeriodBar
+        year={state.year}
+        onYear={(year) => setState({ ...state, year })}
+        month={state.month}
+        onMonth={(month) => setState({ ...state, month })}
+        loading={query.isFetching}
+        onRefresh={() => void query.refetch()}
+        onExport={query.data ? () => exportTaxForm(`JShDS-ijtimoiy-${state.year}-${String(state.month).padStart(2, "0")}.xlsx`, title, query.data!) : undefined}
       />
       <Spin spinning={query.isFetching}>
         <FormBody form={query.data} title={title} />

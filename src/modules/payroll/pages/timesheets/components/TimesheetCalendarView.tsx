@@ -56,6 +56,7 @@ const STATUS_ORDER: PayrollTimesheetAttendanceStatus[] = [
   "MATERNITY_LEAVE",
   "STUDY_LEAVE",
   "CHILD_CARE_LEAVE",
+  "BUSINESS_TRIP",
   "OTHER_ABSENCE",
 ];
 
@@ -110,6 +111,11 @@ const STATUS_STYLES: Record<
   OTHER_ABSENCE: {
     cell: "border-gray-200 bg-gray-50 text-gray-700",
     dot: "bg-gray-500",
+  },
+  // a business trip is a worked day away (Cabinet resolution No. 424, item 12)
+  BUSINESS_TRIP: {
+    cell: "border-lime-200 bg-lime-50 text-lime-700",
+    dot: "bg-lime-500",
   },
 };
 
@@ -175,7 +181,7 @@ const AttendanceCell = ({
     attendance.statusName,
   );
   const hours =
-    attendance.statusCode === "WORKED"
+    attendance.statusCode === "WORKED" || attendance.statusCode === "BUSINESS_TRIP"
       ? attendance.workedHours
       : attendance.plannedHours;
 

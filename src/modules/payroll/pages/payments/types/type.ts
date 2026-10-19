@@ -15,6 +15,8 @@ export interface PayrollPaymentLine {
   paidAmount?: number | null;
   amount: number;
   note?: string | null;
+  /** Not taken from the cash statement: deposited to 6720. */
+  isDeposited?: boolean;
 }
 
 export interface PayrollPayment {
