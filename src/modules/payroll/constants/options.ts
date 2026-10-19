@@ -293,6 +293,30 @@ export const incomeTaxPrivilegeOptions: readonly StaticOption[] = [
   { value: "DISABLED", label: "payroll.enums.incomeTaxPrivilege.DISABLED" },
 ] as const;
 
+/** Xodim jinsi (1C «Пол»): statistika shakllarida ayollar alohida. */
+export const genderOptions: readonly StaticOption[] = [
+  { value: "M", label: "payroll.enums.gender.M" },
+  { value: "F", label: "payroll.enums.gender.F" },
+] as const;
+
+/** Lavozim toifasi (1-mehnat, 102–106-satrlar). */
+export const staffCategoryOptions: readonly StaticOption[] = [
+  { value: "MANAGER", label: "payroll.enums.staffCategory.MANAGER" },
+  { value: "SPECIALIST", label: "payroll.enums.staffCategory.SPECIALIST" },
+  { value: "TECHNICAL", label: "payroll.enums.staffCategory.TECHNICAL" },
+  { value: "SERVICE", label: "payroll.enums.staffCategory.SERVICE" },
+  { value: "PRODUCTION", label: "payroll.enums.staffCategory.PRODUCTION" },
+] as const;
+
+/** Hisoblash turining statistika guruhi (1C «Учет в статистических формах»; 1-mehnat 402–405). */
+export const statCategoryOptions: readonly StaticOption[] = [
+  { value: "WORK", label: "payroll.enums.statCategory.WORK" },
+  { value: "INCENTIVE", label: "payroll.enums.statCategory.INCENTIVE" },
+  { value: "COMPENSATION", label: "payroll.enums.statCategory.COMPENSATION" },
+  { value: "UNWORKED", label: "payroll.enums.statCategory.UNWORKED" },
+  { value: "NONE", label: "payroll.enums.statCategory.NONE" },
+] as const;
+
 /** Soliq solinmaydigan daromad turi (Soliq kodeksi 378-m.). */
 export const taxExemptKindOptions: readonly StaticOption[] = [
   { value: "MATERIAL_AID", label: "payroll.enums.taxExemptKind.MATERIAL_AID" },

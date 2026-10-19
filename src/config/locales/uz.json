@@ -2972,7 +2972,7 @@
   },
   "payroll": {
     "stats": {
-      "title": "1-T (mehnat)",
+      "title": "Oylik mehnat ko'rsatkichlari",
       "hint": "O'rtacha ro'yxatdagi soni — har kungi ro'yxat / oy kunlari (dekret va bola parvarishidagilarsiz); ish haqi fondi — mehnatga haq.",
       "listedAtEnd": "Oy oxirida ro'yxatda",
       "averageListed": "O'rtacha ro'yxatdagi",
@@ -2980,7 +2980,12 @@
       "hired": "Qabul qilingan",
       "dismissed": "Bo'shagan",
       "wageFund": "Ish haqi fondi",
-      "averageWage": "O'rtacha ish haqi"
+      "averageWage": "O'rtacha ish haqi",
+      "quarterlyTitle": "4-mehnat (choraklik)",
+      "annualTitle": "1-mehnat (yillik)",
+      "quarter": "{{quarter}}-chorak",
+      "quarterlyHint": "Statistika agentligi direktorining 15.10.2024 10-mb-son buyrug'i, 31-ilova. Keyingi oyning 6-sanasigacha e-Stat orqali. Ish haqi fondi o'tkazilgan hisoblashlardan, soatlar tasdiqlangan tabeldan, xodimlar soni har kalendar kuni bo'yicha. «—» — tizimda yuritilmaydi, qo'lda to'ldiriladi.",
+      "annualHint": "Statistika agentligi direktorining 15.10.2024 10-mb-son buyrug'i, 30-ilova. Keyingi yilning 1-fevraligacha e-Stat orqali. Toifalar lavozim kartochkasidan, ayollar xodim jinsidan, yosh tug'ilgan sanadan. «—» — qo'lda."
     },
     "taxReports": {
       "title": "Soliq va statistika hisobotlari",
@@ -3302,7 +3307,11 @@
       "cashOperation": "Kassa operatsiyasi",
       "cashOperationIncome": "Kassa kirimi",
       "cashOperationExpense": "Kassa chiqimi",
-      "quantity": "Miqdor"
+      "quantity": "Miqdor",
+      "gender": "Jinsi",
+      "staffCategory": "Xodimlar toifasi (statistika)",
+      "statCategory": "Statistika guruhi",
+      "statCategoryHint": "1-mehnat 402–405-satrlar uchun. Bo'sh — hisoblash usulidan: maosh/soatbay — bajarilgan ish, ortiqcha/tungi/bayram — kompensatsiya, ta'til — ishlanmagan vaqt, boshqalar — rag'batlantirish."
     },
     "enums": {
       "taxExemptKind": {
@@ -3432,6 +3441,24 @@
         "BANK_HINT": "Bank hisobidan o'tkaziladi",
         "CASH": "Kassa",
         "CASH_HINT": "Kassadan naqd beriladi"
+      },
+      "gender": {
+        "M": "Erkak",
+        "F": "Ayol"
+      },
+      "staffCategory": {
+        "MANAGER": "Rahbarlar",
+        "SPECIALIST": "Mutaxassislar",
+        "TECHNICAL": "Texnik xodimlar",
+        "SERVICE": "Xizmat ko'rsatuvchi xodimlar",
+        "PRODUCTION": "Ishlab chiqarish xodimlari"
+      },
+      "statCategory": {
+        "WORK": "Bajarilgan ish uchun (ishbay, tarif, oklad)",
+        "INCENTIVE": "Rag'batlantirish to'lovlari",
+        "COMPENSATION": "Kompensatsiya to'lovlari",
+        "UNWORKED": "Ishlanmagan vaqt uchun",
+        "NONE": "Mehnatga haq emas"
       }
     },
     "employees": {

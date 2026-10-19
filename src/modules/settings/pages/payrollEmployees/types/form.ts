@@ -6,6 +6,8 @@ export interface PayrollEmployeeMainForm {
   lastName: string;
   middleName: string | null;
   birthDate: string | null;
+  /** M or F (1C «Пол»); empty — from the PINFL. */
+  gender: string | null;
   phoneNumber: string | null;
   email: string | null;
   bankAccountNumber: string | null;

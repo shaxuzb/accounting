@@ -2972,7 +2972,7 @@
   },
   "payroll": {
     "stats": {
-      "title": "1-T (labour)",
+      "title": "Monthly labour figures",
       "hint": "Average listed number: each day's list over the days of the month (without maternity and child care leave); wage fund: pay for labour.",
       "listedAtEnd": "Listed at month end",
       "averageListed": "Average listed",
@@ -2980,7 +2980,12 @@
       "hired": "Hired",
       "dismissed": "Left",
       "wageFund": "Wage fund",
-      "averageWage": "Average wage"
+      "averageWage": "Average wage",
+      "quarterlyTitle": "4-mehnat (quarterly)",
+      "annualTitle": "1-mehnat (annual)",
+      "quarter": "Q{{quarter}}",
+      "quarterlyHint": "Statistics Agency order 10-mb of 15.10.2024, annex 31. By the 6th of the next month via e-Stat. «—» is not kept in the system — fill by hand.",
+      "annualHint": "Statistics Agency order 10-mb of 15.10.2024, annex 30. By 1 February of the next year via e-Stat. «—» — by hand."
     },
     "taxReports": {
       "title": "Tax and statistics reports",
@@ -3302,7 +3307,11 @@
       "cashOperation": "Cash operation",
       "cashOperationIncome": "Cash receipt",
       "cashOperationExpense": "Cash expense",
-      "quantity": "Quantity"
+      "quantity": "Quantity",
+      "gender": "Sex",
+      "staffCategory": "Staff category (statistics)",
+      "statCategory": "Statistics group",
+      "statCategoryHint": "For lines 402–405 of 1-mehnat. Empty — by the method: salary/hourly — work done, overtime/night/holiday — compensation, leave — time not worked, others — incentive."
     },
     "enums": {
       "taxExemptKind": {
@@ -3432,6 +3441,24 @@
         "BANK_HINT": "Transferred from a bank account",
         "CASH": "Cash",
         "CASH_HINT": "Paid out in cash"
+      },
+      "gender": {
+        "M": "Male",
+        "F": "Female"
+      },
+      "staffCategory": {
+        "MANAGER": "Managers",
+        "SPECIALIST": "Specialists",
+        "TECHNICAL": "Technical staff",
+        "SERVICE": "Service staff",
+        "PRODUCTION": "Production staff"
+      },
+      "statCategory": {
+        "WORK": "Work done (piece, tariff, salary)",
+        "INCENTIVE": "Incentive payments",
+        "COMPENSATION": "Compensation payments",
+        "UNWORKED": "Time not worked",
+        "NONE": "Not pay for labour"
       }
     },
     "employees": {

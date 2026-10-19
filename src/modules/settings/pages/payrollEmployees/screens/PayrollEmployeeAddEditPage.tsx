@@ -4,7 +4,7 @@ import InputText from "@/components/fields/InputText";
 import SearchInnField from "@/components/fields/SearchInnField";
 import SelectDate from "@/components/fields/SelectDate";
 import SelectStatic from "@/components/fields/SelectStatic";
-import { incomeTaxPrivilegeOptions } from "@/modules/payroll/constants/options";
+import { genderOptions, incomeTaxPrivilegeOptions } from "@/modules/payroll/constants/options";
 import SwitchField from "@/components/fields/SwitchField";
 import { emptyToNull, normalizePhone } from "@/modules/payroll/utils/format";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
@@ -35,6 +35,7 @@ const defaultValues: PayrollEmployeeForm = {
   lastName: "",
   middleName: null,
   birthDate: null,
+  gender: null,
   phoneNumber: null,
   email: null,
   bankAccountNumber: null,
@@ -99,6 +100,7 @@ export default function PayrollEmployeeAddEditPage({
         lastName: values.lastName.trim(),
         middleName: emptyToNull(values.middleName),
         birthDate: values.birthDate || null,
+        gender: values.gender || null,
         phoneNumber: normalizePhone(values.phoneNumber),
         email: emptyToNull(values.email),
         bankAccountNumber: emptyToNull(values.bankAccountNumber),
@@ -150,6 +152,7 @@ export default function PayrollEmployeeAddEditPage({
         lastName: employee.lastName ?? "",
         middleName: employee.middleName ?? null,
         birthDate: employee.birthDate ?? null,
+        gender: employee.gender ?? null,
         phoneNumber: employee.phoneNumber ?? null,
         email: employee.email ?? null,
         bankAccountNumber: employee.bankAccountNumber ?? null,
@@ -290,6 +293,15 @@ export default function PayrollEmployeeAddEditPage({
                 fieldName="birthDate"
                 label="payroll.fields.birthDate"
                 valueFormat="YYYY-MM-DD"
+                clearable
+              />
+            </Col>
+            <Col xs={24} md={8}>
+              <SelectStatic
+                formik={formik}
+                fieldName="gender"
+                label="payroll.fields.gender"
+                options={genderOptions}
                 clearable
               />
             </Col>

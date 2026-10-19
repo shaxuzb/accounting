@@ -4,6 +4,7 @@ export interface Positions {
   organizationName: string;
   code: string;
   name: string;
+  staffCategory?: string | null;
   stateId: number;
   stateName: string;
   createdDate: string;

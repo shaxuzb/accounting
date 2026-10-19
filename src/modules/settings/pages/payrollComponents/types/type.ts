@@ -24,6 +24,7 @@ export interface PayrollComponent {
   isWageIncome?: boolean;
   deductionLimit?: string;
   taxExemptKind?: string | null;
+  statCategory?: string | null;
   isMandatory: boolean;
   expenseAccountId?: number | null;
   expenseAccountName?: string | null;

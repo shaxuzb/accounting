@@ -9,6 +9,7 @@ import * as XLSX from "xlsx";
 import Card from "@/components/ui/card/Card";
 import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeSelect";
 import { $axiosPrivate } from "@/services/AxiosService";
+import StatisticsFormTab from "../components/StatisticsFormTab";
 
 interface TaxRow {
   employeeId: number;
@@ -321,6 +322,8 @@ export default function PayrollTaxReportsPage() {
         items={[
           { key: "tax", label: t("payroll.taxReports.calculationTitle"), children: <TaxCalculationTab /> },
           { key: "statement", label: t("payroll.taxReports.statementTitle"), children: <IncomeStatementTab /> },
+          { key: "quarterly", label: t("payroll.stats.quarterlyTitle"), children: <StatisticsFormTab kind="quarterly" /> },
+          { key: "annual", label: t("payroll.stats.annualTitle"), children: <StatisticsFormTab kind="annual" /> },
           { key: "stats", label: t("payroll.stats.title"), children: <LaborStatisticsTab /> },
         ]}
       />

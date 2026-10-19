@@ -7,6 +7,8 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import InputText from "@/components/fields/InputText";
+import SelectStatic from "@/components/fields/SelectStatic";
+import { staffCategoryOptions } from "@/modules/payroll/constants/options";
 import type { PositionsForm } from "../types/form";
 import { useGetDetailPositions } from "../hooks";
 import { useCreatePositions } from "../hooks";
@@ -19,6 +21,7 @@ const defaultValues: PositionsForm = {
   organizationId: null,
   code: "",
   name: "",
+  staffCategory: null,
   stateId: null,
 };
 
@@ -77,6 +80,7 @@ export default function PositionAddEditPage({
         organizationId: Positions.organizationId ?? null,
         code: Positions.code ?? "",
         name: Positions.name ?? "",
+        staffCategory: Positions.staffCategory ?? null,
         stateId: Positions.stateId ?? null,
       });
     }
@@ -108,6 +112,13 @@ export default function PositionAddEditPage({
 
           <InputText formik={formik} fieldName="code" label="settings.fields.code" />
           <InputText formik={formik} fieldName="name" label="settings.fields.name" />
+          <SelectStatic
+            formik={formik}
+            fieldName="staffCategory"
+            label="payroll.fields.staffCategory"
+            options={staffCategoryOptions}
+            clearable
+          />
 
           {isEdit && (
             <SelectCustom

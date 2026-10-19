@@ -15,6 +15,7 @@ import {
   prorationBasisOptions,
   deductionLimitOptions,
   taxExemptKindOptions,
+  statCategoryOptions,
 } from "@/modules/payroll/constants/options";
 import {
   chartAccountSelectDisplayConfig,
@@ -62,6 +63,7 @@ const defaultValues: PayrollComponentForm = {
   isWageIncome: true,
   deductionLimit: "GENERAL",
   taxExemptKind: null,
+  statCategory: null,
   isMandatory: false,
   expenseAccountId: null,
   liabilityAccountId: null,
@@ -144,6 +146,7 @@ export default function PayrollComponentAddEditPage({
         isWageIncome: component.isWageIncome ?? true,
         deductionLimit: component.deductionLimit ?? "GENERAL",
         taxExemptKind: component.taxExemptKind ?? null,
+        statCategory: component.statCategory ?? null,
         isMandatory: Boolean(component.isMandatory),
         expenseAccountId: component.expenseAccountId ?? null,
         liabilityAccountId: component.liabilityAccountId ?? null,
@@ -441,6 +444,19 @@ export default function PayrollComponentAddEditPage({
                   marginBottom="mb-1"
                 />
                 <div className="mb-4 text-xs text-secondary-text">{t("payroll.fields.taxExemptKindHint")}</div>
+              </Col>
+            )}
+            {componentType === "EARNING" && (
+              <Col xs={24} md={12}>
+                <SelectStatic
+                  formik={formik}
+                  fieldName="statCategory"
+                  label="payroll.fields.statCategory"
+                  options={statCategoryOptions}
+                  clearable
+                  marginBottom="mb-1"
+                />
+                <div className="mb-4 text-xs text-secondary-text">{t("payroll.fields.statCategoryHint")}</div>
               </Col>
             )}
           </Row>
