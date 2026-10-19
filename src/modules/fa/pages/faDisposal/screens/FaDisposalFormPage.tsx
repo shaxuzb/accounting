@@ -59,7 +59,9 @@ const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => {
   // a sale has a buyer, a price and output VAT; a gratuitous transfer a recipient and a value
   const isSale = Number(values.disposalTypeId) === faDisposalTypeIds.sale;
   const isGratuitous = Number(values.disposalTypeId) === faDisposalTypeIds.gratuitous;
-  const valued = isSale || isGratuitous;
+  // handed over under a financial lease: a lessee and the receivable, no VAT
+  const isLeaseOut = Number(values.disposalTypeId) === faDisposalTypeIds.leaseOut;
+  const valued = isSale || isGratuitous || isLeaseOut;
   return {
     disposalDate: values.disposalDate,
     assetKindId: values.assetKindId,
@@ -70,14 +72,14 @@ const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => {
     inventoryDocId: values.inventoryDocId ?? null,
     stateId: values.stateId ?? faDocumentStatusIds.draft,
     disposalAccountId: accountOrNull(values.disposalAccountId),
-    customerAccountId: isSale ? accountOrNull(values.customerAccountId) : null,
-    vatAccountId: valued ? (values.vatAccountId ?? null) : null,
+    customerAccountId: isSale || isLeaseOut ? accountOrNull(values.customerAccountId) : null,
+    vatAccountId: isSale || isGratuitous ? (values.vatAccountId ?? null) : null,
     gainAccountId: accountOrNull(values.gainAccountId),
     lossAccountId: accountOrNull(values.lossAccountId),
     lines: values.lines.map((line) => ({
       faAssetId: Number(line.faAssetId),
       saleAmount: valued ? Number(line.saleAmount || 0) : 0,
-      vatRateId: valued ? (line.vatRateId ?? null) : null,
+      vatRateId: isSale || isGratuitous ? (line.vatRateId ?? null) : null,
       partPercent: line.partPercent ? Number(line.partPercent) : null,
       note: line.note || "",
     })),

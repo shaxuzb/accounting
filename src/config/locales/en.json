@@ -840,7 +840,12 @@
       "recipient": "Recipient",
       "partPercent": "Part, %",
       "partPercentWhole": "whole asset",
-      "leaseObligationAccount": "Lease obligation account"
+      "leaseObligationAccount": "Lease obligation account",
+      "lessee": "Lessee",
+      "leaseReceivableAmount": "Lease receivable",
+      "leaseReceivableAccount": "Lease receivable account",
+      "leaseDeferredIncomeAccount": "Deferred income account",
+      "leaseDeferredExpenseAccount": "Deferred expense account"
     },
     "form": {
       "create": "Create fixed asset document",
@@ -1074,7 +1079,15 @@
       "payment": "Payment",
       "interest": "Interest (9610/6920)",
       "principal": "Principal (7910/6950)",
-      "balance": "Obligation left"
+      "balance": "Obligation left",
+      "lessorHint": "The lessor's schedule (NSBU 6, 38–42): the month close books the interest Dt 4830 Kt 9530, the part falling due Dt 4810 Kt 0920 and an equal share of the deferred difference (income Dt 7230 Kt 9390 or expense Dt 9430 Kt 0990). The lessee's money comes in as «Lease payment received».",
+      "receivable": "Receivable",
+      "deferredIncome": "Deferred income",
+      "deferredExpense": "Deferred expense",
+      "lessorInterest": "Interest income (4830/9530)",
+      "lessorPrincipal": "Receivable due (4810/0920)",
+      "lessorBalance": "Receivable left",
+      "deferredShare": "Deferred difference share"
     },
     "propertyTax": {
       "title": "Property tax",
@@ -4702,8 +4715,8 @@
       "addUser": "Add a user",
       "saved": "The edit lock is saved"
     },
-    "stepLease": "Lease schedule (interest Dt 9610 — Cr 6920; current part Dt 7910 — Cr 6950)",
-    "leaseReceipt": "FA receipt · lessor",
+    "stepLease": "Lease schedules (lessee: interest Dt 9610 — Cr 6920, current part Dt 7910 — Cr 6950; lessor: interest Dt 4830 — Cr 9530, current part Dt 4810 — Cr 0920)",
+    "leaseReceipt": "Document — lease party",
     "leaseInterest": "Interest",
     "leasePrincipal": "Current part"
   },

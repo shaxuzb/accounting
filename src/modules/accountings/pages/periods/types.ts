@@ -82,7 +82,11 @@ export interface MonthCloseCheck {
 }
 
 export interface MonthCloseLeaseLine {
+  /** The lessee's receipt (0 for the lessor's). */
   receiptDocId: number;
+  /** The lessor's disposal: interest Dt 4830 Kt 9530, the receivable due Dt 4810 Kt 0920. */
+  disposalDocId?: number | null;
+  isLessor?: boolean;
   receiptNumber: string;
   lessor?: string | null;
   lineNo: number;
@@ -91,6 +95,8 @@ export interface MonthCloseLeaseLine {
   interest: number;
   principal: number;
   balance: number;
+  /** The lessor's deferred difference taken this month: + income to 9390, − expense to 9430. */
+  deferred?: number;
 }
 
 export interface MonthCloseDeferredLine {

@@ -589,7 +589,7 @@ function CloseMonthModal({
             <>
               <div className="font-semibold">{t("periods.stepLease")}</div>
               <Table<MonthCloseLeaseLine>
-                rowKey={(line) => `${line.receiptDocId}-${line.lineNo}`}
+                rowKey={(line) => `${line.receiptDocId}-${line.disposalDocId ?? 0}-${line.lineNo}`}
                 size="small"
                 dataSource={check.leaseLines}
                 pagination={false}
@@ -599,7 +599,13 @@ function CloseMonthModal({
                     key: "receipt",
                     title: t("periods.leaseReceipt"),
                     render: (_, line) => (
-                      <Link to={`/main/fa/receipts/edit/${line.receiptDocId}`}>
+                      <Link
+                        to={
+                          line.isLessor
+                            ? `/main/fa/disposals/${line.disposalDocId}`
+                            : `/main/fa/receipts/edit/${line.receiptDocId}`
+                        }
+                      >
                         № {line.receiptNumber}
                         {line.lessor ? ` · ${line.lessor}` : ""}
                       </Link>
@@ -609,6 +615,16 @@ function CloseMonthModal({
                   { key: "interest", title: t("periods.leaseInterest"), align: "right", render: (_, line) => money(line.interest) },
                   { key: "principal", title: t("periods.leasePrincipal"), align: "right", render: (_, line) => money(line.principal) },
                   { key: "balance", title: t("fa.lease.balance"), align: "right", render: (_, line) => money(line.balance) },
+                  ...(check.leaseLines?.some((line) => Number(line.deferred ?? 0) !== 0)
+                    ? [
+                        {
+                          key: "deferred",
+                          title: t("fa.lease.deferredShare"),
+                          align: "right" as const,
+                          render: (_: unknown, line: MonthCloseLeaseLine) => money(line.deferred ?? 0),
+                        },
+                      ]
+                    : []),
                 ]}
               />
             </>

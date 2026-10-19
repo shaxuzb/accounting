@@ -19,6 +19,7 @@ import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAc
 import { faKindLabel, faKindRole, type FaAssetKindId } from "../../../shared/constants/assetKinds";
 import FaAssetKindSwitch from "../../../shared/components/FaAssetKindSwitch";
 import useIntangibleSetup from "../../../shared/hooks/useIntangibleSetup";
+import useLeaseSetup from "../../../shared/hooks/useLeaseSetup";
 import { faDisposalTypeIds } from "../constants/disposalTypes";
 import type {
   FaDisposalFormValues,
@@ -60,13 +61,17 @@ export default function FaDisposalFormFields({
   const isShortage = Number(formik.values.disposalTypeId) === faDisposalTypeIds.shortage;
   // a gratuitous transfer (NSBU 5, 53): a recipient, and output VAT on the value only where a rate is named
   const isGratuitous = Number(formik.values.disposalTypeId) === faDisposalTypeIds.gratuitous;
-  const valued = isSale || isGratuitous;
+  // handed over under a financial lease (NSBU 6, 38–42): a lessee, the receivable on 0920 and
+  // the difference with the residual value deferred; no VAT is charged by the handover itself
+  const isLeaseOut = Number(formik.values.disposalTypeId) === faDisposalTypeIds.leaseOut;
+  const valued = isSale || isGratuitous || isLeaseOut;
   const fromInventory = Boolean(formik.values.inventoryDocId);
-  const chargesVat = valued && vatPayer.isVatPayer;
+  const chargesVat = (isSale || isGratuitous) && vatPayer.isVatPayer;
   const counterpartyId = formik.values.counterpartyId;
   const assetKindId = formik.values.assetKindId;
   const kindReady = useIntangibleSetup(assetKindId);
-  const accountsEnabled = Boolean(documentTypeId) && kindReady;
+  const lessorReady = useLeaseSetup(isLeaseOut, "fa/disposals/lease-setup");
+  const accountsEnabled = Boolean(documentTypeId) && kindReady && lessorReady;
   // another kind takes other assets and accounts
   const handleKindChange = (kind: FaAssetKindId) => {
     void formik.setFieldValue("assetKindId", kind);
@@ -147,7 +152,9 @@ export default function FaDisposalFormFields({
               title: t(
                 isGratuitous
                   ? "fa.fields.gratuitousValue"
-                  : chargesVat
+                  : isLeaseOut
+                    ? "fa.fields.leaseReceivableAmount"
+                    : chargesVat
                     ? "fa.fields.saleAmountWithVat"
                     : "fa.fields.saleAmount",
               ),
@@ -160,7 +167,7 @@ export default function FaDisposalFormFields({
                     fieldName={`lines[${row.index}].saleAmount`}
                     min={0}
                     emptyZero
-                    required={isSale}
+                    required={isSale || isLeaseOut}
                   />
                 </div>
               ),
@@ -237,7 +244,7 @@ export default function FaDisposalFormFields({
           ) : null,
       },
     ],
-    [assetKindId, chargesVat, formik, handleRemoveLine, isDraft, isGratuitous, isShortage, isSale, t, valued],
+    [assetKindId, chargesVat, formik, handleRemoveLine, isDraft, isGratuitous, isLeaseOut, isShortage, isSale, t, valued],
   );
 
   return (
@@ -273,9 +280,15 @@ export default function FaDisposalFormFields({
               required
               disabled={fromInventory}
               onChange={(value) => {
-                // a shortage goes to 5910, any other loss to 9430: the account is taken again
+                // a shortage goes to 5910, a lease's to 0920 / 7230 / 0990, any other loss to 9430:
+                // the accounts are taken again
                 const shortageNow = Number(value) === faDisposalTypeIds.shortage;
-                if (shortageNow !== isShortage) void formik.setFieldValue("lossAccountId", null);
+                const leaseNow = Number(value) === faDisposalTypeIds.leaseOut;
+                if (shortageNow !== isShortage || leaseNow !== isLeaseOut) void formik.setFieldValue("lossAccountId", null);
+                if (leaseNow !== isLeaseOut) {
+                  void formik.setFieldValue("customerAccountId", null);
+                  void formik.setFieldValue("gainAccountId", null);
+                }
               }}
             />
           </Col>
@@ -295,8 +308,8 @@ export default function FaDisposalFormFields({
                   kind="client"
                   formik={formik}
                   fieldName="counterpartyId"
-                  label={isGratuitous ? "fa.fields.recipient" : "fa.fields.buyer"}
-                  required={isSale}
+                  label={isGratuitous ? "fa.fields.recipient" : isLeaseOut ? "fa.fields.lessee" : "fa.fields.buyer"}
+                  required={isSale || isLeaseOut}
                   autoSelectSingle={false}
                   onChange={(value) => {
                     if (Number(value) !== Number(formik.values.counterpartyId))
@@ -321,12 +334,18 @@ export default function FaDisposalFormFields({
           {(
             [
               ["disposalAccountId", "fa.fields.disposalAccount", faDocumentAccountRoleCodes.disposal, true],
-              ["customerAccountId", "fa.fields.customerAccount", faDocumentAccountRoleCodes.customerSettlement, isSale],
+              isLeaseOut
+                ? (["customerAccountId", "fa.fields.leaseReceivableAccount", faDocumentAccountRoleCodes.leaseReceivable, true] as const)
+                : (["customerAccountId", "fa.fields.customerAccount", faDocumentAccountRoleCodes.customerSettlement, isSale] as const),
               ["vatAccountId", "fa.fields.vatAccount", faDocumentAccountRoleCodes.saleVat, chargesVat],
-              ["gainAccountId", "fa.fields.gainAccount", faDocumentAccountRoleCodes.disposalGain, isSale],
+              isLeaseOut
+                ? (["gainAccountId", "fa.fields.leaseDeferredIncomeAccount", faDocumentAccountRoleCodes.leaseDeferredIncome, true] as const)
+                : (["gainAccountId", "fa.fields.gainAccount", faDocumentAccountRoleCodes.disposalGain, isSale] as const),
               isShortage
                 ? (["lossAccountId", "fa.fields.shortageAccount", faDocumentAccountRoleCodes.inventoryShortage, true] as const)
-                : (["lossAccountId", "fa.fields.lossAccount", faDocumentAccountRoleCodes.disposalLoss, true] as const),
+                : isLeaseOut
+                  ? (["lossAccountId", "fa.fields.leaseDeferredExpenseAccount", faDocumentAccountRoleCodes.leaseDeferredExpense, true] as const)
+                  : (["lossAccountId", "fa.fields.lossAccount", faDocumentAccountRoleCodes.disposalLoss, true] as const),
             ] as const
           )
             .filter(([, , , shown]) => shown)
@@ -383,9 +402,9 @@ export default function FaDisposalFormFields({
               count: formik.values.lines.length,
             })}
           </span>
-          {isSale && (
+          {(isSale || isLeaseOut) && (
             <span className="font-semibold tabular-nums text-text">
-              {t("fa.sections.totalSaleAmount")}: {numberSpacing(totalSaleAmount)}
+              {t(isLeaseOut ? "fa.fields.leaseReceivableAmount" : "fa.sections.totalSaleAmount")}: {numberSpacing(totalSaleAmount)}
             </span>
           )}
         </div>

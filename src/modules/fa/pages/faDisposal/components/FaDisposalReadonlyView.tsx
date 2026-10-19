@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import InventoryShortageSettlement from "@/modules/warehouse/pages/inventory-adjustment/components/InventoryShortageSettlement";
 import { faDisposalTypeIds } from "../constants/disposalTypes";
+import FaLeaseScheduleCard from "../../faReceipt/components/readonly/FaLeaseScheduleCard";
 import Card from "@/components/ui/card/Card";
 import {
   DocumentSummary,
@@ -108,6 +109,8 @@ export default function FaDisposalReadonlyView({
   const hasVat = rows.some((row) => row.vatAmount !== 0);
   // only a sale has a price
   const isSale = record.disposalTypeId === faDisposalTypeIds.sale;
+  // handed over under a financial lease: the receivable and the deferred difference
+  const isLeaseOut = record.disposalTypeId === faDisposalTypeIds.leaseOut;
   const hasReserve = rows.some((row) => row.reserveTransfer !== 0);
 
   const accountItems = [
@@ -118,7 +121,7 @@ export default function FaDisposalReadonlyView({
         lookups.accountLabel(record.disposalAccountId),
     },
     {
-      label: t("fa.fields.customerAccount"),
+      label: t(isLeaseOut ? "fa.fields.leaseReceivableAccount" : "fa.fields.customerAccount"),
       value:
         joinAccount(record.customerAccountNumber, record.customerAccountName) ||
         lookups.accountLabel(record.customerAccountId),
@@ -130,13 +133,19 @@ export default function FaDisposalReadonlyView({
         lookups.accountLabel(record.vatAccountId),
     },
     {
-      label: t("fa.fields.gainAccount"),
+      label: t(isLeaseOut ? "fa.fields.leaseDeferredIncomeAccount" : "fa.fields.gainAccount"),
       value:
         joinAccount(record.gainAccountNumber, record.gainAccountName) ||
         lookups.accountLabel(record.gainAccountId),
     },
     {
-      label: t(record.disposalTypeId === faDisposalTypeIds.shortage ? "fa.fields.shortageAccount" : "fa.fields.lossAccount"),
+      label: t(
+        record.disposalTypeId === faDisposalTypeIds.shortage
+          ? "fa.fields.shortageAccount"
+          : isLeaseOut
+            ? "fa.fields.leaseDeferredExpenseAccount"
+            : "fa.fields.lossAccount",
+      ),
       value:
         joinAccount(record.lossAccountNumber, record.lossAccountName) ||
         lookups.accountLabel(record.lossAccountId),
@@ -185,10 +194,16 @@ export default function FaDisposalReadonlyView({
           },
         ]
       : []),
-    ...(isSale || record.disposalTypeId === faDisposalTypeIds.gratuitous
+    ...(isSale || isLeaseOut || record.disposalTypeId === faDisposalTypeIds.gratuitous
       ? [
           {
-            title: t(record.disposalTypeId === faDisposalTypeIds.gratuitous ? "fa.fields.gratuitousValue" : "fa.fields.saleAmount"),
+            title: t(
+              record.disposalTypeId === faDisposalTypeIds.gratuitous
+                ? "fa.fields.gratuitousValue"
+                : isLeaseOut
+                  ? "fa.fields.leaseReceivableAmount"
+                  : "fa.fields.saleAmount",
+            ),
             dataIndex: "saleAmount",
             align: "center" as const,
             minWidth: 170,
@@ -310,7 +325,7 @@ export default function FaDisposalReadonlyView({
           {record.counterpartyName && (
             <div className="min-w-40">
               <div className="text-xs text-secondary-text">
-                {t("fa.fields.buyer")}
+                {t(isLeaseOut ? "fa.fields.lessee" : "fa.fields.buyer")}
               </div>
               <div className="mt-0.5 text-sm font-semibold text-text">
                 {record.counterpartyName}
@@ -375,6 +390,8 @@ export default function FaDisposalReadonlyView({
           />
         </div>
       )}
+
+      {isLeaseOut && record.statusId === 2 && <FaLeaseScheduleCard disposalId={record.id} />}
 
       {action && <div className="flex justify-end">{action}</div>}
     </div>

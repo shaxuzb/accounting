@@ -842,7 +842,12 @@
       "recipient": "Oluvchi",
       "partPercent": "Qism, %",
       "partPercentWhole": "butun vosita",
-      "leaseObligationAccount": "Lizing majburiyati hisobi"
+      "leaseObligationAccount": "Lizing majburiyati hisobi",
+      "lessee": "Lizing oluvchi (ijarachi)",
+      "leaseReceivableAmount": "Lizing debitorligi (shartnoma qiymati)",
+      "leaseReceivableAccount": "Lizing debitorligi hisobi",
+      "leaseDeferredIncomeAccount": "Kechiktirilgan daromad hisobi",
+      "leaseDeferredExpenseAccount": "Kechiktirilgan xarajat hisobi"
     },
     "form": {
       "create": "Asosiy vosita yaratish",
@@ -1076,7 +1081,15 @@
       "payment": "To'lov",
       "interest": "Foiz (9610/6920)",
       "principal": "Asosiy qarz (7910/6950)",
-      "balance": "Qolgan majburiyat"
+      "balance": "Qolgan majburiyat",
+      "lessorHint": "Ijara beruvchi jadvali (BHMS 6, 38–42): oy yopishda har oy foiz Dt 4830 Kt 9530, muddati kelgan qism Dt 4810 Kt 0920 va kechiktirilgan farqning teng ulushi (daromad Dt 7230 Kt 9390 yoki xarajat Dt 9430 Kt 0990) o'tkaziladi. Ijarachidan pul «Lizing to'lovini olish» bilan olinadi.",
+      "receivable": "Lizing debitorligi",
+      "deferredIncome": "Kechiktirilgan daromad",
+      "deferredExpense": "Kechiktirilgan xarajat",
+      "lessorInterest": "Foiz daromadi (4830/9530)",
+      "lessorPrincipal": "Debitorlik qismi (4810/0920)",
+      "lessorBalance": "Qolgan debitorlik",
+      "deferredShare": "Kechiktirilgan farq ulushi"
     },
     "propertyTax": {
       "title": "Mol-mulk solig'i",
@@ -4702,8 +4715,8 @@
       "addUser": "Foydalanuvchi qo'shish",
       "saved": "Tahrir taqiqi saqlandi"
     },
-    "stepLease": "Lizing jadvali (foiz Dt 9610 — Kt 6920; joriy qism Dt 7910 — Kt 6950)",
-    "leaseReceipt": "AV kirimi · lizing beruvchi",
+    "stepLease": "Lizing jadvallari (ijaraga oluvchi: foiz Dt 9610 — Kt 6920, joriy qism Dt 7910 — Kt 6950; ijara beruvchi: foiz Dt 4830 — Kt 9530, joriy qism Dt 4810 — Kt 0920)",
+    "leaseReceipt": "Hujjat — lizing tarafi",
     "leaseInterest": "Foiz",
     "leasePrincipal": "Joriy qism"
   },

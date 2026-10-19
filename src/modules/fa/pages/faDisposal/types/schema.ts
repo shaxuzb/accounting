@@ -55,7 +55,8 @@ export const faDisposalSchema = (t: TFunction) => Yup.object().shape({
       t("fa.validation.saleAmountForSaleRequired"),
       function validateSaleAmount(lines) {
         const disposalTypeId = Number(this.parent.disposalTypeId);
-        if (disposalTypeId !== 1) return true;
+        // a sale (1) and a lease handed over (6) have a price / a receivable
+        if (disposalTypeId !== 1 && disposalTypeId !== 6) return true;
         return (lines ?? []).some((line) => Number(line?.saleAmount) > 0);
       },
     ),

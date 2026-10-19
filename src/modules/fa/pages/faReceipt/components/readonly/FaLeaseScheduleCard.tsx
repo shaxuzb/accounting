@@ -11,6 +11,7 @@ import { $axiosPrivate } from "@/services/AxiosService";
 import { useAppSelector } from "@/store/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { faReceiptPermissions } from "../../constants/permissions";
+import { faDisposalPermissions } from "../../../faDisposal/constants/permissions";
 import { formatReceiptAmount } from "./faReceiptReadonlyUtils";
 
 interface LeasePayment {
@@ -24,7 +25,11 @@ interface LeasePayment {
 
 interface Lease {
   exists: boolean;
+  isLessor?: boolean;
   amount: number;
+  currencyCode?: string | null;
+  /** The lessor's deferred difference (NSBU 6, 42): + income, − expense, over the term. */
+  deferredAmount?: number;
   annualRate: number;
   termMonths: number;
   firstPaymentDate: string;
@@ -43,21 +48,24 @@ interface Terms {
 }
 
 /**
- * The payment schedule of an asset received under a financial lease (NSBU 6, 29–30): equal
- * payments, the interest at a constant rate on the obligation left. The month close books each
- * month's row: the interest Dt 9610 Kt 6920, the principal falling due Dt 7910 Kt 6950.
+ * The payment schedule of a financial lease (NSBU 6): equal payments, the interest at a constant
+ * rate on what is left. The lessee's, kept by the receipt (29–30): the month close books the
+ * interest Dt 9610 Kt 6920 and the principal falling due Dt 7910 Kt 6950, a lease in a foreign
+ * currency in it. The lessor's, kept by the disposal (38–42): the interest Dt 4830 Kt 9530, the
+ * receivable falling due Dt 4810 Kt 0920 and the month's share of the deferred difference.
  */
-export default function FaLeaseScheduleCard({ receiptId }: { receiptId: number }) {
+export default function FaLeaseScheduleCard({ receiptId, disposalId }: { receiptId?: number; disposalId?: number }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const permissions = useAppSelector((state) => state.auth.user?.user.permissions ?? []);
-  const canChange = permissions.includes(faReceiptPermissions.confirm);
-  const path = `fa-receipts/${receiptId}/lease`;
+  const canChange = permissions.includes(disposalId ? faDisposalPermissions.confirm : faReceiptPermissions.confirm);
+  const path = disposalId ? `fa/disposals/${disposalId}/lease` : `fa-receipts/${receiptId}/lease`;
+  const queryKey = disposalId ? ["fa-disposal-lease", disposalId] : ["fa-receipt-lease", receiptId];
   const [terms, setTerms] = useState<Terms | null>(null);
   const [preview, setPreview] = useState<Lease | null>(null);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["fa-receipt-lease", receiptId],
+    queryKey,
     queryFn: () => $axiosPrivate.get<Lease>(path).then((res) => res.data),
   });
   useEffect(() => {
@@ -79,7 +87,7 @@ export default function FaLeaseScheduleCard({ receiptId }: { receiptId: number }
       buyoutAmount: terms.buyoutAmount,
     };
   const onError = (error: unknown) => errorHandlers(error);
-  const refresh = () => void queryClient.invalidateQueries({ queryKey: ["fa-receipt-lease", receiptId] });
+  const refresh = () => void queryClient.invalidateQueries({ queryKey });
 
   const calculate = useMutation({
     mutationFn: () => $axiosPrivate.post<Lease>(`${path}/preview`, body()).then((res) => res.data),
@@ -101,6 +109,7 @@ export default function FaLeaseScheduleCard({ receiptId }: { receiptId: number }
   });
 
   const shown = preview ?? (data?.exists ? data : null);
+  const deferred = data?.isLessor ? Number(data.deferredAmount ?? 0) : 0;
   const update = (patch: Partial<Terms>) => {
     setTerms((current) => (current ? { ...current, ...patch } : current));
     setPreview(null);
@@ -114,14 +123,23 @@ export default function FaLeaseScheduleCard({ receiptId }: { receiptId: number }
             {t("fa.lease.title")}{" "}
             {data && !data.exists && <Tag color="orange">{t("fa.lease.notSet")}</Tag>}
           </div>
-          <div className="max-w-3xl text-sm text-secondary-text">{t("fa.lease.hint")}</div>
+          <div className="max-w-3xl text-sm text-secondary-text">{t(data?.isLessor ? "fa.lease.lessorHint" : "fa.lease.hint")}</div>
         </div>
         {data && (
           <div className="text-right">
             <div className="text-xs text-secondary-text">
-              {t("fa.lease.obligation")} {data.longTermAccountNumber ? `(${data.longTermAccountNumber})` : ""}
+              {t(data.isLessor ? "fa.lease.receivable" : "fa.lease.obligation")}{" "}
+              {data.longTermAccountNumber ? `(${data.longTermAccountNumber})` : ""}
             </div>
-            <div className="text-base font-bold tabular-nums">{formatReceiptAmount(data.amount)}</div>
+            <div className="text-base font-bold tabular-nums">
+              {formatReceiptAmount(data.amount)} {data.currencyCode ?? ""}
+            </div>
+            {data.isLessor && Number(data.deferredAmount ?? 0) !== 0 && (
+              <div className="text-xs text-secondary-text">
+                {t(Number(data.deferredAmount) > 0 ? "fa.lease.deferredIncome" : "fa.lease.deferredExpense")}:{" "}
+                <b className="tabular-nums">{formatReceiptAmount(Math.abs(Number(data.deferredAmount)))}</b>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -207,9 +225,39 @@ export default function FaLeaseScheduleCard({ receiptId }: { receiptId: number }
             render: (value: string) => dayjs(value).format("DD.MM.YYYY"),
           },
           { title: t("fa.lease.payment"), dataIndex: "payment", align: "right", render: formatReceiptAmount },
-          { title: t("fa.lease.interest"), dataIndex: "interest", align: "right", render: formatReceiptAmount },
-          { title: t("fa.lease.principal"), dataIndex: "principal", align: "right", render: formatReceiptAmount },
-          { title: t("fa.lease.balance"), dataIndex: "balance", align: "right", render: formatReceiptAmount },
+          {
+            title: t(data?.isLessor ? "fa.lease.lessorInterest" : "fa.lease.interest"),
+            dataIndex: "interest",
+            align: "right",
+            render: formatReceiptAmount,
+          },
+          {
+            title: t(data?.isLessor ? "fa.lease.lessorPrincipal" : "fa.lease.principal"),
+            dataIndex: "principal",
+            align: "right",
+            render: formatReceiptAmount,
+          },
+          {
+            title: t(data?.isLessor ? "fa.lease.lessorBalance" : "fa.lease.balance"),
+            dataIndex: "balance",
+            align: "right",
+            render: formatReceiptAmount,
+          },
+          // the lessor's deferred difference, equal over the rows, the last taking what is left
+          ...(deferred !== 0
+            ? [
+                {
+                  title: t("fa.lease.deferredShare"),
+                  key: "deferred",
+                  align: "right" as const,
+                  render: (_: unknown, row: LeasePayment) => {
+                    const count = shown?.payments.length ?? 0;
+                    const share = Math.round((deferred / count) * 100) / 100;
+                    return formatReceiptAmount(row.lineNo === count ? deferred - share * (count - 1) : share);
+                  },
+                },
+              ]
+            : []),
         ]}
       />
     </Card>

@@ -25,4 +25,8 @@ export const faDocumentAccountRoleCodes = {
   inventorySurplus: "inventory_surplus",
   /** The lessor's long-term obligation a financial lease is received to (7910). */
   leaseObligation: "lease_obligation",
+  /** The lessor's lease receivable (0920) and its deferred difference: income (7230), expense (0990). */
+  leaseReceivable: "lease_receivable",
+  leaseDeferredIncome: "lease_deferred_income",
+  leaseDeferredExpense: "lease_deferred_expense",
 } as const;
