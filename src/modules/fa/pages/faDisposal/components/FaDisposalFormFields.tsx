@@ -58,8 +58,11 @@ export default function FaDisposalFormFields({
   // a write-off has neither
   const isSale = Number(formik.values.disposalTypeId) === faDisposalTypeIds.sale;
   const isShortage = Number(formik.values.disposalTypeId) === faDisposalTypeIds.shortage;
+  // a gratuitous transfer (NSBU 5, 53): a recipient, and output VAT on the value only where a rate is named
+  const isGratuitous = Number(formik.values.disposalTypeId) === faDisposalTypeIds.gratuitous;
+  const valued = isSale || isGratuitous;
   const fromInventory = Boolean(formik.values.inventoryDocId);
-  const chargesVat = isSale && vatPayer.isVatPayer;
+  const chargesVat = valued && vatPayer.isVatPayer;
   const counterpartyId = formik.values.counterpartyId;
   const assetKindId = formik.values.assetKindId;
   const kindReady = useIntangibleSetup(assetKindId);
@@ -138,10 +141,16 @@ export default function FaDisposalFormFields({
           </div>
         ),
       },
-      ...(isSale
+      ...(valued
         ? [
             {
-              title: t(chargesVat ? "fa.fields.saleAmountWithVat" : "fa.fields.saleAmount"),
+              title: t(
+                isGratuitous
+                  ? "fa.fields.gratuitousValue"
+                  : chargesVat
+                    ? "fa.fields.saleAmountWithVat"
+                    : "fa.fields.saleAmount",
+              ),
               dataIndex: "saleAmount",
               minWidth: 170,
               render: (_: unknown, row: DisposalLineRow) => (
@@ -151,7 +160,7 @@ export default function FaDisposalFormFields({
                     fieldName={`lines[${row.index}].saleAmount`}
                     min={0}
                     emptyZero
-                    required
+                    required={isSale}
                   />
                 </div>
               ),
@@ -170,10 +179,32 @@ export default function FaDisposalFormFields({
                     path={selectListEndpoints.vatRatesSelectList}
                     formik={formik}
                     fieldName={`lines[${row.index}].vatRateId`}
-                    // the standard rate, as a sale of goods starts from
-                    autoSelectValue="vat_12"
+                    // the standard rate, as a sale of goods starts from; a gratuitous transfer names one itself
+                    autoSelectValue={isSale ? "vat_12" : undefined}
                     autoSelectKeys={["code"]}
+                    clearable={isGratuitous}
                     marginBottom="mb-0"
+                  />
+                </div>
+              ),
+            },
+          ]
+        : []),
+      ...(!isShortage
+        ? [
+            {
+              title: t("fa.fields.partPercent"),
+              dataIndex: "partPercent",
+              minWidth: 130,
+              render: (_: unknown, row: DisposalLineRow) => (
+                <div className="[&_.ant-form-item]:mb-0!">
+                  <InputNumber
+                    formik={formik}
+                    fieldName={`lines[${row.index}].partPercent`}
+                    min={0}
+                    max={99.9999}
+                    precision={4}
+                    placeholder={t("fa.fields.partPercentWhole")}
                   />
                 </div>
               ),
@@ -206,7 +237,7 @@ export default function FaDisposalFormFields({
           ) : null,
       },
     ],
-    [assetKindId, chargesVat, formik, handleRemoveLine, isDraft, isSale, t],
+    [assetKindId, chargesVat, formik, handleRemoveLine, isDraft, isGratuitous, isShortage, isSale, t, valued],
   );
 
   return (
@@ -257,15 +288,15 @@ export default function FaDisposalFormFields({
             />
           </Col>
 
-          {isSale && (
+          {valued && (
             <>
               <Col span={6}>
                 <CounterpartySelect
                   kind="client"
                   formik={formik}
                   fieldName="counterpartyId"
-                  label="fa.fields.buyer"
-                  required
+                  label={isGratuitous ? "fa.fields.recipient" : "fa.fields.buyer"}
+                  required={isSale}
                   autoSelectSingle={false}
                   onChange={(value) => {
                     if (Number(value) !== Number(formik.values.counterpartyId))

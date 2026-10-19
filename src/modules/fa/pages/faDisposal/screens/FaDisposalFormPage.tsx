@@ -56,26 +56,29 @@ const createDefaultValues = (): FaDisposalFormValues => ({
 const accountOrNull = (value: number | string | null | undefined) => (value ? Number(value) : null);
 
 const toPayload = (values: FaDisposalFormValues): FaDisposalPayload => {
-  // only a sale has a buyer, a price and output VAT
+  // a sale has a buyer, a price and output VAT; a gratuitous transfer a recipient and a value
   const isSale = Number(values.disposalTypeId) === faDisposalTypeIds.sale;
+  const isGratuitous = Number(values.disposalTypeId) === faDisposalTypeIds.gratuitous;
+  const valued = isSale || isGratuitous;
   return {
     disposalDate: values.disposalDate,
     assetKindId: values.assetKindId,
     disposalTypeId: Number(values.disposalTypeId),
     reason: values.reason || "",
-    counterpartyId: isSale ? (values.counterpartyId ?? null) : null,
-    contractId: isSale ? (values.contractId ?? null) : null,
+    counterpartyId: valued ? (values.counterpartyId ?? null) : null,
+    contractId: valued ? (values.contractId ?? null) : null,
     inventoryDocId: values.inventoryDocId ?? null,
     stateId: values.stateId ?? faDocumentStatusIds.draft,
     disposalAccountId: accountOrNull(values.disposalAccountId),
     customerAccountId: isSale ? accountOrNull(values.customerAccountId) : null,
-    vatAccountId: isSale ? (values.vatAccountId ?? null) : null,
+    vatAccountId: valued ? (values.vatAccountId ?? null) : null,
     gainAccountId: accountOrNull(values.gainAccountId),
     lossAccountId: accountOrNull(values.lossAccountId),
     lines: values.lines.map((line) => ({
       faAssetId: Number(line.faAssetId),
-      saleAmount: isSale ? Number(line.saleAmount) : 0,
-      vatRateId: isSale ? (line.vatRateId ?? null) : null,
+      saleAmount: valued ? Number(line.saleAmount || 0) : 0,
+      vatRateId: valued ? (line.vatRateId ?? null) : null,
+      partPercent: line.partPercent ? Number(line.partPercent) : null,
       note: line.note || "",
     })),
   };
@@ -143,6 +146,7 @@ export default function FaDisposalFormPage() {
             faAssetId: line.faAssetId,
             saleAmount: line.saleAmount ?? 0,
             vatRateId: line.vatRateId ?? null,
+            partPercent: line.partPercent ?? null,
             note: line.note ?? "",
           }))
         : inventory

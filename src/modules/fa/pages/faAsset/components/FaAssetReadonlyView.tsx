@@ -16,6 +16,7 @@ import { useAppSelector } from "@/store/hooks";
 import { customDate, numberSpacing } from "@/utils/utils";
 import type { FaAsset } from "../types/type";
 import useFaAssetLookups from "./useFaAssetLookups";
+import FaAssetConservationCard from "./FaAssetConservationCard";
 
 interface DetailItem {
   label: string;
@@ -206,6 +207,8 @@ export default function FaAssetReadonlyView({
           },
         ]}
       />
+
+      <FaAssetConservationCard assetId={record.id} statusId={record.statusId} />
 
       {action && <div className="flex justify-end">{action}</div>}
     </div>

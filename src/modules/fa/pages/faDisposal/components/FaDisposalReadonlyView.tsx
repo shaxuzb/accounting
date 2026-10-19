@@ -32,6 +32,10 @@ interface DisposalReadonlyRow {
   saleAmount: number;
   vatAmount: number;
   reserveTransfer: number;
+  /** A part liquidated (NSBU 5, 54), with the cost and depreciation it took out. */
+  partPercent: number | null;
+  partCost: number;
+  depreciationWrittenOff: number;
   assetAccount: string;
   accumulatedDepreciationAccount: string;
   note: string;
@@ -82,6 +86,9 @@ export default function FaDisposalReadonlyView({
         saleAmount: Number(line.saleAmount ?? 0),
         vatAmount: Number(line.vatAmount ?? 0),
         reserveTransfer: Number(line.reserveTransfer ?? 0),
+        partPercent: line.partPercent ?? null,
+        partCost: Number((line as { partCost?: number }).partCost ?? 0),
+        depreciationWrittenOff: Number((line as { depreciationWrittenOff?: number }).depreciationWrittenOff ?? 0),
         assetAccount:
           joinAccount(line.assetAccountNumber, line.assetAccountName) ||
           lookups.accountLabel(line.assetAccountId),
@@ -161,10 +168,28 @@ export default function FaDisposalReadonlyView({
         <span className="font-medium text-text">{value}</span>
       ),
     },
-    ...(isSale
+    ...(rows.some((row) => row.partPercent)
       ? [
           {
-            title: t("fa.fields.saleAmount"),
+            title: t("fa.fields.partPercent"),
+            dataIndex: "partPercent",
+            align: "center" as const,
+            minWidth: 200,
+            render: (value: number | null, row: DisposalReadonlyRow) =>
+              value ? (
+                <span className="tabular-nums">
+                  {value}% — {numberSpacing(row.partCost)} / {numberSpacing(row.depreciationWrittenOff)}
+                </span>
+              ) : (
+                t("fa.fields.partPercentWhole")
+              ),
+          },
+        ]
+      : []),
+    ...(isSale || record.disposalTypeId === faDisposalTypeIds.gratuitous
+      ? [
+          {
+            title: t(record.disposalTypeId === faDisposalTypeIds.gratuitous ? "fa.fields.gratuitousValue" : "fa.fields.saleAmount"),
             dataIndex: "saleAmount",
             align: "center" as const,
             minWidth: 170,

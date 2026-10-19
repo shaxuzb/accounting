@@ -1,4 +1,6 @@
 export interface FaDisposalLineItem {
+  /** A part liquidated, in percent (NSBU 5, 54); empty: the whole asset. */
+  partPercent?: number | null;
   faAssetId: number;
   saleAmount: number;
   /** Output VAT rate of a sale; the sale amount includes the VAT. */

@@ -835,7 +835,11 @@
       "saleAmountWithVat": "Sale amount (VAT included)",
       "vatAmount": "VAT amount",
       "reserveTransfer": "Revaluation reserve (to 8710)",
-      "contractId": "Contract"
+      "contractId": "Contract",
+      "gratuitousValue": "Value (VAT base)",
+      "recipient": "Recipient",
+      "partPercent": "Part, %",
+      "partPercentWhole": "whole asset"
     },
     "form": {
       "create": "Create fixed asset document",
@@ -1033,6 +1037,20 @@
       "active": "Active",
       "conservation": "Conservation",
       "disposed": "Disposed"
+    },
+    "conservation": {
+      "title": "Conservation",
+      "hint": "No depreciation while conserved, and the useful life is not used up (NSBU 5, 35, 38-g)",
+      "inConservation": "conserved",
+      "start": "Conserve",
+      "end": "End conservation",
+      "started": "The asset is conserved",
+      "ended": "The conservation ended",
+      "basis": "Basis (order)",
+      "startDate": "Start",
+      "endDate": "End",
+      "none": "No conservation",
+      "deleteConfirm": "Delete the conservation period?"
     }
   },
   "settings": {

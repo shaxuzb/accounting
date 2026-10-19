@@ -837,7 +837,11 @@
       "saleAmountWithVat": "Sotish summasi (QQS bilan)",
       "vatAmount": "QQS summasi",
       "reserveTransfer": "Qayta baholash zaxirasi (8710 ga)",
-      "contractId": "Shartnoma"
+      "contractId": "Shartnoma",
+      "gratuitousValue": "Qiymati (QQS bazasi)",
+      "recipient": "Oluvchi",
+      "partPercent": "Qism, %",
+      "partPercentWhole": "butun vosita"
     },
     "form": {
       "create": "Asosiy vosita yaratish",
@@ -1035,6 +1039,20 @@
       "active": "Faol",
       "conservation": "Konservatsiyada",
       "disposed": "Hisobdan chiqarilgan"
+    },
+    "conservation": {
+      "title": "Konservatsiya",
+      "hint": "Konservatsiya davrida amortizatsiya hisoblanmaydi va xizmat muddati sarflanmaydi (BHMS 5, 35, 38-g bandlar)",
+      "inConservation": "konservatsiyada",
+      "start": "Konservatsiyaga o'tkazish",
+      "end": "Konservatsiyadan chiqarish",
+      "started": "Vosita konservatsiyaga o'tkazildi",
+      "ended": "Konservatsiya tugatildi",
+      "basis": "Asos (buyruq)",
+      "startDate": "Boshlanishi",
+      "endDate": "Tugashi",
+      "none": "Konservatsiya bo'lmagan",
+      "deleteConfirm": "Konservatsiya davrini o'chirasizmi?"
     }
   },
   "settings": {
