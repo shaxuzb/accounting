@@ -94,6 +94,34 @@ export interface ChessSheet {
   total: number;
 }
 
+export interface ReconciliationActRow {
+  date: string;
+  documentTypeId: number;
+  documentId: number;
+  documentType: string | null;
+  number: string | null;
+  debit: number;
+  credit: number;
+}
+
+export interface ReconciliationAct {
+  organizationName: string;
+  organizationInn: string | null;
+  director: string | null;
+  chiefAccountant: string | null;
+  counterpartyName: string;
+  counterpartyInn: string | null;
+  contractName: string | null;
+  dateFrom: string;
+  dateTo: string;
+  /** Positive when the counterparty owes the organization. */
+  openingBalance: number;
+  rows: ReconciliationActRow[];
+  totalDebit: number;
+  totalCredit: number;
+  closingBalance: number;
+}
+
 export interface SubkontoTypeOption {
   id: number;
   name: string;
@@ -125,6 +153,11 @@ export const useGeneralLedger = (params: { dateFrom: string; dateTo: string; det
 
 export const useChessSheet = (params: { dateFrom: string; dateTo: string; detailed: boolean }, enabled: boolean) =>
   useReport<ChessSheet>("chess-sheet", params, enabled);
+
+export const useReconciliationAct = (
+  params: { counterpartyId: number | null; contractId: number | null; dateFrom: string; dateTo: string },
+  enabled: boolean,
+) => useReport<ReconciliationAct>("reconciliation-act", params, enabled && Boolean(params.counterpartyId));
 
 export const useAccountSubkontoTypes = (accountId: number | null) =>
   useQuery({

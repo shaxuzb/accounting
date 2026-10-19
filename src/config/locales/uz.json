@@ -2810,7 +2810,8 @@
         "account-analysis": "Hisob tahlili",
         "subkonto-card": "Analitika kartochkasi",
         "general-ledger": "Bosh kitob (oylar bo'yicha)",
-        "chess-sheet": "Shaxmat vedomosti"
+        "chess-sheet": "Shaxmat vedomosti",
+        "reconciliation-act": "Solishtirish dalolatnomasi"
       },
       "opening": "Davr boshiga qoldiq",
       "turnover": "Davr aylanmasi",
@@ -2837,7 +2838,22 @@
       "pickAccount": "Hisobni tanlang",
       "pickValue": "Analitika turi va qiymatini tanlang",
       "noKinds": "Bu hisob provodkalarida analitika yo'q",
-      "truncated": "Yozuvlar ko'p — faqat birinchi 5 000 tasi ko'rsatildi; davrni qisqartiring."
+      "truncated": "Yozuvlar ko'p — faqat birinchi 5 000 tasi ko'rsatildi; davrni qisqartiring.",
+      "print": "Chop etish",
+      "reconciliation": {
+        "counterparty": "Kontragent",
+        "allContracts": "Barcha shartnomalar",
+        "contract": "Shartnoma",
+        "pickCounterparty": "Kontragentni tanlang",
+        "between": "{{org}} va {{cp}} o'rtasidagi o'zaro hisob-kitoblar",
+        "ourData": "{{name}} ma'lumotlari bo'yicha",
+        "theirData": "{{name}} ma'lumotlari bo'yicha",
+        "noDebt": "{{date}} holatiga o'zaro qarzdorlik yo'q.",
+        "debtInFavour": "{{date}} holatiga qarzdorlik {{name}} foydasiga: {{amount}} so'm.",
+        "director": "Rahbar",
+        "chiefAccountant": "Bosh hisobchi",
+        "stamp": "M.O'."
+      }
     }
   },
   "hr": {

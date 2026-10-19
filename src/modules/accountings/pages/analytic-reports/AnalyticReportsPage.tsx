@@ -1,10 +1,16 @@
 import { Alert, Button, DatePicker, Empty, Segmented, Select, Spin, Switch, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs, { type Dayjs } from "dayjs";
-import { FileSpreadsheet, RefreshCw } from "lucide-react";
+import { FileSpreadsheet, Printer, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import ContractSelect from "@/components/fields/ContractSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
-import { chartAccountOptionLabel, chartAccountSelectedLabel, selectListEndpoints } from "@/shared/constants/selectLists";
+import {
+  chartAccountOptionLabel,
+  chartAccountSelectedLabel,
+  counterpartySelectDisplayConfig,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import { numberSpacing } from "@/utils/utils";
 import AccountingReportPageShell from "../accounting-report/components/AccountingReportPageShell";
@@ -14,16 +20,19 @@ import {
   useAccountSubkontoTypes,
   useChessSheet,
   useGeneralLedger,
+  useReconciliationAct,
   useSubkontoBalance,
   useSubkontoCard,
   type AccountAnalysisRow,
   type AnalyticBalance,
   type GeneralLedgerAccount,
+  type ReconciliationAct,
+  type ReconciliationActRow,
   type SubkontoBalanceRow,
   type SubkontoCardRow,
 } from "./api";
 
-type ReportKind = "subkonto-balance" | "account-analysis" | "subkonto-card" | "general-ledger" | "chess-sheet";
+type ReportKind = "subkonto-balance" | "account-analysis" | "subkonto-card" | "general-ledger" | "chess-sheet" | "reconciliation-act";
 
 interface State {
   report: ReportKind;
@@ -33,6 +42,8 @@ interface State {
   subkontoTypeId: number | null;
   entityId: number | null;
   detailed: boolean;
+  counterpartyId?: number | null;
+  contractId?: number | null;
 }
 
 const money = (value: number | null | undefined) => (value ? numberSpacing(value, undefined, true) : "");
@@ -72,6 +83,54 @@ const balanceColumns = <T,>(t: (key: string) => string, get: (row: T) => Analyti
     ],
   },
 ];
+
+const escapeHtml = (value: string | null | undefined) =>
+  (value ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
+
+/**
+ * The act as 1C prints «Акт сверки взаиморасчетов»: the organization's data on the left, the
+ * counterparty's columns left empty for it to fill, the balance in favour of whom, the signatures.
+ */
+const printReconciliation = (d: ReconciliationAct, t: (key: string, options?: Record<string, unknown>) => string) => {
+  const f = (v: number) => (v ? numberSpacing(v, undefined, true) : "");
+  const period = `${dayjs(d.dateFrom).format("DD.MM.YYYY")} — ${dayjs(d.dateTo).format("DD.MM.YYYY")}`;
+  const side = (v: number) => (v > 0 ? [f(v), ""] : [" ", f(-v)]);
+  const [od, oc] = side(d.openingBalance);
+  const [cd, cc] = side(d.closingBalance);
+  const conclusion =
+    d.closingBalance === 0
+      ? t("app.analyticReports.reconciliation.noDebt", { date: dayjs(d.dateTo).format("DD.MM.YYYY") })
+      : t("app.analyticReports.reconciliation.debtInFavour", {
+          date: dayjs(d.dateTo).format("DD.MM.YYYY"),
+          name: d.closingBalance > 0 ? d.organizationName : d.counterpartyName,
+          amount: f(Math.abs(d.closingBalance)),
+        });
+  const rows = d.rows
+    .map(
+      (r) =>
+        `<tr><td>${dayjs(r.date).format("DD.MM.YYYY")}</td><td>${escapeHtml(r.documentType)} №${escapeHtml(r.number ?? String(r.documentId))}</td><td class="n">${f(r.debit)}</td><td class="n">${f(r.credit)}</td><td></td><td></td><td></td><td></td></tr>`,
+    )
+    .join("");
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(t("app.analyticReports.kinds.reconciliation-act"))}</title>
+<style>body{font-family:Arial,sans-serif;font-size:12px;margin:24px}h2{text-align:center;margin:0 0 4px}p{margin:4px 0}table{border-collapse:collapse;width:100%;margin-top:10px}td,th{border:1px solid #000;padding:3px 5px}th{background:#eee}.n{text-align:right;white-space:nowrap}.b{font-weight:bold}.sig{display:flex;justify-content:space-between;margin-top:28px}.sig div{width:45%}</style></head><body>
+<h2>${escapeHtml(t("app.analyticReports.kinds.reconciliation-act"))}</h2>
+<p style="text-align:center">${escapeHtml(t("app.analyticReports.reconciliation.between", { org: d.organizationName, cp: d.counterpartyName }))}</p>
+<p style="text-align:center">${escapeHtml(period)}${d.contractName ? ` · ${escapeHtml(t("app.analyticReports.reconciliation.contract"))}: ${escapeHtml(d.contractName)}` : ""}</p>
+<table><thead><tr><th colspan="4">${escapeHtml(t("app.analyticReports.reconciliation.ourData", { name: d.organizationName }))}</th><th colspan="4">${escapeHtml(t("app.analyticReports.reconciliation.theirData", { name: d.counterpartyName }))}</th></tr>
+<tr><th>${t("app.analyticReports.date")}</th><th>${t("app.analyticReports.document")}</th><th>${t("app.analyticReports.debit")}</th><th>${t("app.analyticReports.credit")}</th><th>${t("app.analyticReports.date")}</th><th>${t("app.analyticReports.document")}</th><th>${t("app.analyticReports.debit")}</th><th>${t("app.analyticReports.credit")}</th></tr></thead>
+<tbody><tr class="b"><td colspan="2">${t("app.analyticReports.opening")}</td><td class="n">${od}</td><td class="n">${oc}</td><td colspan="2"></td><td></td><td></td></tr>
+${rows}
+<tr class="b"><td colspan="2">${t("app.analyticReports.turnover")}</td><td class="n">${f(d.totalDebit)}</td><td class="n">${f(d.totalCredit)}</td><td colspan="2"></td><td></td><td></td></tr>
+<tr class="b"><td colspan="2">${t("app.analyticReports.closing")}</td><td class="n">${cd}</td><td class="n">${cc}</td><td colspan="2"></td><td></td><td></td></tr></tbody></table>
+<p class="b" style="margin-top:12px">${escapeHtml(conclusion)}</p>
+<div class="sig"><div><p class="b">${escapeHtml(d.organizationName)}</p><p>${escapeHtml(t("app.analyticReports.reconciliation.director"))}: ____________ ${escapeHtml(d.director)}</p><p>${escapeHtml(t("app.analyticReports.reconciliation.chiefAccountant"))}: ____________ ${escapeHtml(d.chiefAccountant)}</p><p>${escapeHtml(t("app.analyticReports.reconciliation.stamp"))}</p></div>
+<div><p class="b">${escapeHtml(d.counterpartyName)}</p><p>${escapeHtml(t("app.analyticReports.reconciliation.director"))}: ____________</p><p>${escapeHtml(t("app.analyticReports.reconciliation.chiefAccountant"))}: ____________</p><p>${escapeHtml(t("app.analyticReports.reconciliation.stamp"))}</p></div></div>
+<script>window.onload=()=>window.print()</script></body></html>`;
+  const win = window.open("", "_blank");
+  if (!win) return;
+  win.document.write(html);
+  win.document.close();
+};
 
 const balanceCells = (b: AnalyticBalance) => [b.openingDebit, b.openingCredit, b.debit, b.credit, b.closingDebit, b.closingCredit];
 
@@ -119,7 +178,18 @@ export default function AnalyticReportsPage() {
   );
   const ledger = useGeneralLedger({ ...period, detailed: state.detailed }, state.report === "general-ledger");
   const chess = useChessSheet({ ...period, detailed: state.detailed }, state.report === "chess-sheet");
-  const active = { "subkonto-balance": balance, "account-analysis": analysis, "subkonto-card": card, "general-ledger": ledger, "chess-sheet": chess }[state.report];
+  const reconciliation = useReconciliationAct(
+    { ...period, counterpartyId: state.counterpartyId ?? null, contractId: state.contractId ?? null },
+    state.report === "reconciliation-act",
+  );
+  const active = {
+    "subkonto-balance": balance,
+    "account-analysis": analysis,
+    "subkonto-card": card,
+    "general-ledger": ledger,
+    "chess-sheet": chess,
+    "reconciliation-act": reconciliation,
+  }[state.report];
   const periodText = `${dayjs(state.dateFrom).format("DD.MM.YYYY")} — ${dayjs(state.dateTo).format("DD.MM.YYYY")}`;
 
   const balanceHeaders = [
@@ -178,6 +248,19 @@ export default function AnalyticReportsPage() {
         ]),
         [t("app.analyticReports.total"), "", ...balanceCells(d.total)],
       ]);
+    } else if (state.report === "reconciliation-act" && reconciliation.data) {
+      const d = reconciliation.data;
+      exportForm(
+        file,
+        [title, `${d.organizationName} — ${d.counterpartyName}`, periodText, d.contractName ?? ""],
+        [t("app.analyticReports.date"), t("app.analyticReports.document"), t("app.analyticReports.debit"), t("app.analyticReports.credit")],
+        [
+          [t("app.analyticReports.opening"), "", d.openingBalance > 0 ? d.openingBalance : null, d.openingBalance < 0 ? -d.openingBalance : null],
+          ...d.rows.map((x) => [dayjs(x.date).format("DD.MM.YYYY"), `${x.documentType ?? ""} №${x.number ?? x.documentId}`, x.debit || null, x.credit || null]),
+          [t("app.analyticReports.turnover"), "", d.totalDebit, d.totalCredit],
+          [t("app.analyticReports.closing"), "", d.closingBalance > 0 ? d.closingBalance : null, d.closingBalance < 0 ? -d.closingBalance : null],
+        ],
+      );
     } else if (state.report === "chess-sheet" && chess.data) {
       const d = chess.data;
       const cell = new Map(d.cells.map((c) => [`${c.debit}|${c.credit}`, c.amount]));
@@ -209,6 +292,63 @@ export default function AnalyticReportsPage() {
   );
 
   const renderReport = () => {
+    if (state.report === "reconciliation-act") {
+      const d = reconciliation.data;
+      if (!state.counterpartyId) return <Empty description={t("app.analyticReports.reconciliation.pickCounterparty")} />;
+      const sideValues = (v: number) => [v > 0 ? v : null, v < 0 ? -v : null];
+      const columns: ColumnsType<ReconciliationActRow> = [
+        { title: t("app.analyticReports.date"), width: 110, render: (_, row) => dayjs(row.date).format("DD.MM.YYYY") },
+        { title: t("app.analyticReports.document"), render: (_, row) => `${row.documentType ?? ""} №${row.number ?? row.documentId}` },
+        { title: t("app.analyticReports.debit"), width: 160, align: "right", render: (_, row) => num(row.debit) },
+        { title: t("app.analyticReports.credit"), width: 160, align: "right", render: (_, row) => num(row.credit) },
+      ];
+      return (
+        <div className="space-y-3">
+          {d && (
+            <div className="text-center text-sm">
+              <div>{t("app.analyticReports.reconciliation.between", { org: d.organizationName, cp: d.counterpartyName })}</div>
+              {d.contractName && (
+                <div className="text-secondary-text">
+                  {t("app.analyticReports.reconciliation.contract")}: {d.contractName}
+                </div>
+              )}
+            </div>
+          )}
+          <Table<ReconciliationActRow>
+            size="small"
+            bordered
+            pagination={false}
+            rowKey={(row) => `${row.documentTypeId}-${row.documentId}`}
+            columns={columns}
+            dataSource={d?.rows ?? []}
+            summary={() =>
+              d && (
+                <>
+                  <TotalRow label={t("app.analyticReports.opening")} values={sideValues(d.openingBalance)} offset={2} />
+                  <TotalRow label={t("app.analyticReports.turnover")} values={[d.totalDebit, d.totalCredit]} offset={2} />
+                  <TotalRow label={t("app.analyticReports.closing")} values={sideValues(d.closingBalance)} offset={2} />
+                </>
+              )
+            }
+          />
+          {d && (
+            <Alert
+              type={d.closingBalance === 0 ? "success" : "info"}
+              showIcon
+              message={
+                d.closingBalance === 0
+                  ? t("app.analyticReports.reconciliation.noDebt", { date: dayjs(d.dateTo).format("DD.MM.YYYY") })
+                  : t("app.analyticReports.reconciliation.debtInFavour", {
+                      date: dayjs(d.dateTo).format("DD.MM.YYYY"),
+                      name: d.closingBalance > 0 ? d.organizationName : d.counterpartyName,
+                      amount: money(Math.abs(d.closingBalance)),
+                    })
+              }
+            />
+          )}
+        </div>
+      );
+    }
     if (state.report === "subkonto-balance") {
       const d = balance.data;
       if (!state.accountId || !state.subkontoTypeId) return <Empty description={t("app.analyticReports.pickAccountAndKind")} />;
@@ -386,7 +526,7 @@ export default function AnalyticReportsPage() {
         <Segmented<ReportKind>
           value={state.report}
           onChange={(report) => set({ report })}
-          options={(["subkonto-balance", "account-analysis", "subkonto-card", "general-ledger", "chess-sheet"] as ReportKind[]).map((value) => ({
+          options={(["subkonto-balance", "account-analysis", "subkonto-card", "general-ledger", "chess-sheet", "reconciliation-act"] as ReportKind[]).map((value) => ({
             value,
             label: t(`app.analyticReports.kinds.${value}`),
           }))}
@@ -445,6 +585,34 @@ export default function AnalyticReportsPage() {
               {accountSelect(true)}
             </>
           )}
+          {state.report === "reconciliation-act" && (
+            <>
+              <div className="w-72">
+                <SelectCustom
+                  placeholder="app.analyticReports.reconciliation.counterparty"
+                  value={state.counterpartyId ?? undefined}
+                  path={selectListEndpoints.counterpartiesSelectList}
+                  displayConfig={counterpartySelectDisplayConfig}
+                  search
+                  clearable
+                  marginBottom="0"
+                  onChange={(value) => set({ counterpartyId: typeof value === "number" ? value : null, contractId: null })}
+                />
+              </div>
+              <div className="w-60">
+                <ContractSelect
+                  placeholder="app.analyticReports.reconciliation.allContracts"
+                  counterpartyId={state.counterpartyId}
+                  date={null}
+                  allowCreate={false}
+                  value={state.contractId ?? undefined}
+                  clearable
+                  marginBottom="0"
+                  onChange={(value) => set({ contractId: typeof value === "number" ? value : null })}
+                />
+              </div>
+            </>
+          )}
           {(state.report === "general-ledger" || state.report === "chess-sheet") && (
             <label className="flex items-center gap-2 text-sm">
               <Switch size="small" checked={state.detailed} onChange={(detailed) => set({ detailed })} />
@@ -453,6 +621,11 @@ export default function AnalyticReportsPage() {
           )}
           <div className="ml-auto flex gap-2">
             <Button icon={<RefreshCw className="size-4" />} onClick={() => void active.refetch()} loading={active.isFetching} />
+            {state.report === "reconciliation-act" && (
+              <Button icon={<Printer className="size-4" />} disabled={!reconciliation.data} onClick={() => reconciliation.data && printReconciliation(reconciliation.data, t)}>
+                {t("app.analyticReports.print")}
+              </Button>
+            )}
             <Button icon={<FileSpreadsheet className="size-4" />} onClick={handleExport} disabled={!active.data}>
               Excel
             </Button>

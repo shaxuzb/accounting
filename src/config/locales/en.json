@@ -2810,7 +2810,8 @@
         "account-analysis": "Account analysis",
         "subkonto-card": "Analytics card",
         "general-ledger": "General ledger",
-        "chess-sheet": "Chess sheet"
+        "chess-sheet": "Chess sheet",
+        "reconciliation-act": "Reconciliation statement"
       },
       "opening": "Opening balance",
       "turnover": "Turnover",
@@ -2837,7 +2838,22 @@
       "pickAccount": "Choose an account",
       "pickValue": "Choose an analytics kind and value",
       "noKinds": "The account's entries carry no analytics",
-      "truncated": "Too many entries — the first 5 000 are shown; narrow the period."
+      "truncated": "Too many entries — the first 5 000 are shown; narrow the period.",
+      "print": "Print",
+      "reconciliation": {
+        "counterparty": "Counterparty",
+        "allContracts": "All contracts",
+        "contract": "Contract",
+        "pickCounterparty": "Choose a counterparty",
+        "between": "of the settlements between {{org}} and {{cp}}",
+        "ourData": "According to {{name}}",
+        "theirData": "According to {{name}}",
+        "noDebt": "As of {{date}} there is no debt.",
+        "debtInFavour": "As of {{date}} the debt in favour of {{name}}: {{amount}} UZS.",
+        "director": "Director",
+        "chiefAccountant": "Chief accountant",
+        "stamp": "Seal"
+      }
     }
   },
   "hr": {
