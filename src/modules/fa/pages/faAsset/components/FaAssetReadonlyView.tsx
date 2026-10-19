@@ -1,10 +1,11 @@
+import { Link } from "react-router";
+import { Button } from "antd";
 import type { ReactNode } from "react";
 import {
   Barcode,
   Building2,
   CalendarDays,
-  CircleDollarSign,
-} from "lucide-react";
+  CircleDollarSign, Printer } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/card/Card";
 import {
@@ -75,6 +76,11 @@ export default function FaAssetReadonlyView({
 
   return (
     <div className="min-w-0 space-y-2">
+      <div className="flex justify-end print:hidden">
+        <Link to="print">
+          <Button icon={<Printer className="size-4" />}>{t("faPrint.printOs6")}</Button>
+        </Link>
+      </div>
       <DocumentSummary>
         <DocumentSummaryItem
           icon={<Building2 size={24} strokeWidth={1.8} />}

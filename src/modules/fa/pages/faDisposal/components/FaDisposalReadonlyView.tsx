@@ -1,13 +1,12 @@
 import type { ReactNode } from "react";
-import { Table } from "antd";
+import { Table, Button } from "antd";
 import type { TableColumnsType } from "antd";
 import {
   Boxes,
   Building2,
   CalendarDays,
   CircleDollarSign,
-  FileText,
-} from "lucide-react";
+  FileText, Printer } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import InventoryShortageSettlement from "@/modules/warehouse/pages/inventory-adjustment/components/InventoryShortageSettlement";
@@ -249,6 +248,11 @@ export default function FaDisposalReadonlyView({
 
   return (
     <div className="min-w-0 space-y-4">
+      <div className="flex justify-end print:hidden">
+        <Link to="print">
+          <Button icon={<Printer className="size-4" />}>{t("faPrint.printOs4")}</Button>
+        </Link>
+      </div>
       <DocumentSummary>
         <DocumentSummaryItem
           icon={<Building2 size={24} strokeWidth={1.8} />}

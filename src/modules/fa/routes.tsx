@@ -29,6 +29,9 @@ const FaModernizationListPage = lazy(() => import("./pages/faModernization/FaMod
 const FaModernizationEditorPage = lazy(() => import("./pages/faModernization/FaModernizationEditorPage"));
 const FaInventoryListPage = lazy(() => import("./pages/faInventory/FaInventoryListPage"));
 const FaInventoryEditorPage = lazy(() => import("./pages/faInventory/FaInventoryEditorPage"));
+const FaCommissioningActPage = lazy(() => import("./pages/print/FaPrintPages").then((m) => ({ default: m.FaCommissioningActPage })));
+const FaDisposalActPage = lazy(() => import("./pages/print/FaPrintPages").then((m) => ({ default: m.FaDisposalActPage })));
+const FaAssetCardPage = lazy(() => import("./pages/print/FaPrintPages").then((m) => ({ default: m.FaAssetCardPage })));
 
 const withPermission = (
   element: React.ReactElement,
@@ -56,6 +59,11 @@ export const faRoutes: RouteObject = {
         {
           index: true,
           element: withPermission(<FaAssetListPage />, faAssetPermissions.view),
+        },
+        {
+          path: ":id/print",
+          element: withPermission(<FaAssetCardPage />, faAssetPermissions.detail),
+          handle: { title: "faPrint.formOs6", showBack: true, backTo: ".." },
         },
         {
           path: ":id",
@@ -150,6 +158,11 @@ export const faRoutes: RouteObject = {
             faCommissioningPermissions.create,
           ),
           handle: { title: "fa.form.commissioningCreate", showBack: true, backTo: ".." },
+        },
+        {
+          path: ":id/print",
+          element: withPermission(<FaCommissioningActPage />, faAssetPermissions.detail),
+          handle: { title: "faPrint.formOs1", showBack: true, backTo: ".." },
         },
         {
           path: ":id",
@@ -330,6 +343,11 @@ export const faRoutes: RouteObject = {
             showBack: true,
             backTo: "..",
           },
+        },
+        {
+          path: ":id/print",
+          element: withPermission(<FaDisposalActPage />, faAssetPermissions.detail),
+          handle: { title: "faPrint.formOs4", showBack: true, backTo: ".." },
         },
         {
           path: ":id",
