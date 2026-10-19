@@ -25,6 +25,7 @@ const TrialBalancePage = lazy(() => import("./pages/trial-balance/screens/TrialB
 const RegulatedBalancePage = lazy(() => import("./pages/regulated-forms/RegulatedBalancePage"));
 const RegulatedResultsPage = lazy(() => import("./pages/regulated-forms/RegulatedResultsPage"));
 const ExpressCheckPage = lazy(() => import("./pages/regulated-forms/ExpressCheckPage"));
+const RegulatedCashFlowPage = lazy(() => import("./pages/regulated-forms/RegulatedCashFlowPage"));
 const VatReturnPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.VatReturnPage })));
 const TurnoverTaxPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.TurnoverTaxPage })));
 const ProfitTaxPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.ProfitTaxPage })));
@@ -75,6 +76,11 @@ export const accountingsRoutes: RouteObject = {
           path: "form-2",
           handle: { title: "app.regulatedForms.form2" },
           element: withAccess(<RegulatedResultsPage />, accountingReportPermissions.incomeStatement),
+        },
+        {
+          path: "form-4",
+          handle: { title: "app.regulatedForms.form4" },
+          element: withAccess(<RegulatedCashFlowPage />, accountingReportPermissions.cashFlow),
         },
         {
           path: "express-check",

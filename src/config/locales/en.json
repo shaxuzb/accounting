@@ -2533,7 +2533,21 @@
       "checkSummary": "{{total}} checks: {{errors}} errors, {{warnings}} warnings",
       "status": {"OK": "OK", "WARNING": "Warning", "ERROR": "Error"},
       "director": "Director",
-      "chiefAccountant": "Chief accountant"
+      "chiefAccountant": "Chief accountant",
+      "form4": "Form 4 (cash flows)",
+      "cashFlowTitle": "Cash flow statement",
+      "inflow": "Receipts",
+      "outflow": "Payments",
+      "amount": "Amount",
+      "currencyMovement": "Movement of the foreign currency money",
+      "cashFlowItems": "Cash flow items",
+      "cashFlowItem": "Cash flow item",
+      "cashFlowLine": "Line of form 4",
+      "cashFlowByAccount": "By the correspondent account",
+      "cashFlowInternal": "Between own money accounts (no flow)",
+      "cashFlowItemsHint": "The cash flow item of a bank or cash document decides the line of the statement (1C «Вид движения»). Money with no item, or an item with no line, goes by the correspondent account; a tax paid on 6430 is line 190.",
+      "cashFlowNotBalanced": "The money at the end differs from the ledger: some item may wrongly be set to «between own accounts».",
+      "cashFlowWithoutItem": "{{amount}} moved with no item — placed by the correspondent account."
     },
     "accounting": {
       "title": "Accounting",
@@ -2645,7 +2659,9 @@
         "outflow": "Outflow",
         "net": "Net change",
         "runningBalance": "Running balance",
-        "value": "Value"
+        "value": "Value",
+        "cashFlowItem": "Cash flow item",
+        "formLine": "Form 4 line"
       },
       "summary": {
         "totalCount": "Total records",

@@ -1,4 +1,5 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { $axiosPrivate } from "@/services/AxiosService";
 import { getJson } from "../../services/request";
 
 export interface RegulatedFormHeader {
@@ -58,6 +59,43 @@ export interface RegulatedResults {
   lines: RegulatedResultLine[];
 }
 
+export interface RegulatedCashFlowLine {
+  code: string;
+  name: string;
+  level: number;
+  isTotal: boolean;
+  isSection: boolean;
+  inflow: number | null;
+  outflow: number | null;
+}
+
+export interface RegulatedCurrencyLine {
+  code: string;
+  name: string;
+  level: number;
+  amount: number;
+}
+
+export interface RegulatedCashFlow {
+  header: RegulatedFormHeader;
+  dateFrom: string;
+  dateTo: string;
+  unit: number;
+  lines: RegulatedCashFlowLine[];
+  currencyLines: RegulatedCurrencyLine[];
+  /** 240 = 230 + 220 ± 221 against the ledger, checked by the server. */
+  isBalanced: boolean;
+  /** The money moved with no cash flow item, placed by the correspondent account. */
+  withoutItem: number;
+}
+
+export interface CashFlowItem {
+  id: number;
+  name: string;
+  /** The line of form 4 (1C «Вид движения»): 010–200, "000" a transfer between own accounts, null by the account. */
+  line: string | null;
+}
+
 export type ExpressCheckStatus = "OK" | "WARNING" | "ERROR";
 
 export interface ExpressCheckItem {
@@ -80,6 +118,8 @@ const endpoints = {
   balance: "/reports/regulated/balance",
   results: "/reports/regulated/results",
   expressCheck: "/reports/regulated/express-check",
+  cashFlow: "/reports/regulated/cash-flow",
+  cashFlowItems: "/reports/regulated/cash-flow-items",
 } as const;
 
 export const useRegulatedBalance = (params: { dateTo: string; unit: number }) =>
@@ -96,6 +136,32 @@ export const useRegulatedResults = (params: { year: number; monthTo: number; uni
     queryFn: () => getJson<RegulatedResults>(endpoints.results, params),
     placeholderData: keepPreviousData,
   });
+
+export const useRegulatedCashFlow = (params: { year: number; monthTo: number; unit: number }) =>
+  useQuery({
+    queryKey: ["regulated-forms", "cash-flow", params],
+    queryFn: () => getJson<RegulatedCashFlow>(endpoints.cashFlow, params),
+    placeholderData: keepPreviousData,
+  });
+
+export const useCashFlowItems = (enabled: boolean) =>
+  useQuery({
+    queryKey: ["regulated-forms", "cash-flow-items"],
+    queryFn: () => getJson<CashFlowItem[]>(endpoints.cashFlowItems),
+    enabled,
+  });
+
+export const useSetCashFlowItemLine = () => {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, line }: { id: number; line: string | null }) =>
+      $axiosPrivate.put(`${endpoints.cashFlowItems}/${id}`, { line }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ["regulated-forms", "cash-flow-items"] });
+      void client.invalidateQueries({ queryKey: ["regulated-forms", "cash-flow"] });
+    },
+  });
+};
 
 export const useExpressCheck = (params: { dateTo: string }) =>
   useQuery({

@@ -53,6 +53,18 @@ export default function CashFlowPage() {
         width: 280,
       },
       {
+        title: t("app.reports.fields.cashFlowItem"),
+        dataIndex: "cashFlowItemName",
+        width: 240,
+        render: (value: string | null) => value || "—",
+      },
+      {
+        title: t("app.reports.fields.formLine"),
+        dataIndex: "formLine",
+        width: 90,
+        align: "center",
+      },
+      {
         title: t("app.reports.fields.inflow"),
         dataIndex: "inflow",
         align: "right",

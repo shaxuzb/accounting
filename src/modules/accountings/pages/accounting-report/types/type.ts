@@ -66,6 +66,9 @@ export interface IncomeStatementResponse {
 export interface CashFlowRow {
   counterpartAccountCode: string | null;
   counterpartAccountName: string;
+  /** The cash flow item of the money side (1C «Статья ДДС») and the line of form 4 the row goes to. */
+  cashFlowItemName?: string | null;
+  formLine?: string | null;
   inflow: number;
   outflow: number;
   net: number;

@@ -2533,7 +2533,21 @@
       "checkSummary": "{{total}} ta tekshiruv: xato {{errors}}, ogohlantirish {{warnings}}",
       "status": {"OK": "To'g'ri", "WARNING": "Ogohlantirish", "ERROR": "Xato"},
       "director": "Rahbar",
-      "chiefAccountant": "Bosh hisobchi"
+      "chiefAccountant": "Bosh hisobchi",
+      "form4": "4-shakl (pul oqimlari)",
+      "cashFlowTitle": "Pul oqimlari to'g'risida hisobot",
+      "inflow": "Kirim",
+      "outflow": "Chiqim",
+      "amount": "Miqdori",
+      "currencyMovement": "Chet el valyutasidagi pul mablag'larining harakati to'g'risida ma'lumot",
+      "cashFlowItems": "DDS moddalari",
+      "cashFlowItem": "Pul oqimi moddasi",
+      "cashFlowLine": "4-shakl satri",
+      "cashFlowByAccount": "Korrespondent hisob bo'yicha",
+      "cashFlowInternal": "O'z pul hisoblari orasida (oqim emas)",
+      "cashFlowItemsHint": "Bank va kassa hujjatidagi «Pul oqimi moddasi» hisobotning qaysi satriga tushishini belgilaydi (1C «Вид движения»). Moddasiz yoki satri belgilanmagan pul korrespondent hisob bo'yicha joylanadi; 6430 orqali to'langan soliq — 190-satr.",
+      "cashFlowNotBalanced": "Yil oxiridagi pul mablag'lari bosh kitobdagi qoldiqqa teng emas: biror moddaga noto'g'ri «o'z hisoblari orasida» satri berilgan bo'lishi mumkin.",
+      "cashFlowWithoutItem": "{{amount}} pul moddasiz — korrespondent hisob bo'yicha joylandi."
     },
     "accounting": {
       "title": "Buxgalteriya",
@@ -2645,7 +2659,9 @@
         "outflow": "Chiqim",
         "net": "Sof o'zgarish",
         "runningBalance": "Joriy qoldiq",
-        "value": "Qiymat"
+        "value": "Qiymat",
+        "cashFlowItem": "Pul oqimi moddasi",
+        "formLine": "4-shakl satri"
       },
       "summary": {
         "totalCount": "Jami yozuvlar",
