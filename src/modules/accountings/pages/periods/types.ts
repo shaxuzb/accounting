@@ -38,6 +38,12 @@ export interface MonthCloseCheck {
   sequenceBoundary?: string | null;
   entriesMissingAnalytics?: number;
   rentAwaitingAccrual?: number;
+  /** The month's rent accruals still in draft: the close posts them. */
+  rentDraftCount?: number;
+  /** The close accrues and posts the month's rent itself. */
+  rentAccruedOnClose?: boolean;
+  /** The close restores the stock sequence itself (1C «Корректировка стоимости номенклатуры»). */
+  sequenceRestoredOnClose?: boolean;
   revaluationLineCount: number;
   revaluationDifference: number;
   revaluationError?: string | null;

@@ -491,10 +491,12 @@ function CloseMonthModal({
                 ? t("periods.check.accountsPresent")
                 : t("periods.check.accountsMissing", { accounts: check.missingAccounts.join(", ") })}
             </CheckItem>
-            <CheckItem ok={!check.sequenceBoundary}>
+            <CheckItem ok={!check.sequenceBoundary} step={Boolean(check.sequenceBoundary && check.sequenceRestoredOnClose)}>
               {check.sequenceBoundary ? (
                 <>
-                  {t("periods.check.sequenceBroken", { date: dayjs(check.sequenceBoundary).format("DD.MM.YYYY HH:mm") })}{" "}
+                  {check.sequenceRestoredOnClose
+                    ? t("periods.check.sequenceOnClose", { date: dayjs(check.sequenceBoundary).format("DD.MM.YYYY HH:mm") })
+                    : t("periods.check.sequenceBroken", { date: dayjs(check.sequenceBoundary).format("DD.MM.YYYY HH:mm") })}{" "}
                   <Button
                     size="small"
                     type="link"
@@ -528,11 +530,19 @@ function CloseMonthModal({
                 ? t("periods.check.noDrafts")
                 : t("periods.check.drafts", { count: check.draftDocumentCount })}
             </CheckItem>
-            <CheckItem ok={(check.rentAwaitingAccrual ?? 0) === 0} warning>
-              {(check.rentAwaitingAccrual ?? 0) === 0
-                ? t("periods.check.rentAccrued")
-                : t("periods.check.rentMissing", { count: check.rentAwaitingAccrual })}
-            </CheckItem>
+            {check.rentAccruedOnClose ? (
+              <CheckItem ok step={(check.rentAwaitingAccrual ?? 0) + (check.rentDraftCount ?? 0) > 0}>
+                {(check.rentAwaitingAccrual ?? 0) + (check.rentDraftCount ?? 0) === 0
+                  ? t("periods.check.rentAccrued")
+                  : t("periods.check.rentOnClose", { count: check.rentAwaitingAccrual ?? 0, drafts: check.rentDraftCount ?? 0 })}
+              </CheckItem>
+            ) : (
+              <CheckItem ok={(check.rentAwaitingAccrual ?? 0) === 0} warning>
+                {(check.rentAwaitingAccrual ?? 0) === 0
+                  ? t("periods.check.rentAccrued")
+                  : t("periods.check.rentMissing", { count: check.rentAwaitingAccrual })}
+              </CheckItem>
+            )}
             <CheckItem ok={(check.deferredWithoutSchedule ?? 0) === 0} warning>
               {(check.deferredWithoutSchedule ?? 0) === 0 ? (
                 t("periods.check.deferredScheduled")

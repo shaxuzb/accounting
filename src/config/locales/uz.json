@@ -4660,7 +4660,9 @@
       "analyticsMissing": "{{count}} ta provodkada analitika (kontragent, modda va h.k.) to'ldirilmagan — hisobotlarda ular «bo'sh» chiqadi (ogohlantirish)",
       "drafts": "{{count}} ta hujjat o'tkazilmagan — ular buxgalteriyaga kirmaydi (ogohlantirish).",
       "openingOffsetZero": "Boshlang'ich qoldiqlar teng (0000 = 0)",
-      "openingOffsetNotZero": "0000 da {{amount}} qoldiq: boshlang'ich qoldiqlar teng emas"
+      "openingOffsetNotZero": "0000 da {{amount}} qoldiq: boshlang'ich qoldiqlar teng emas",
+      "sequenceOnClose": "Tovar ketma-ketligi {{date}} dan buzilgan — yopishda birinchi qadam sifatida tiklanadi (1C «Корректировка стоимости номенклатуры»): chiqimlar hisob siyosatidagi usulda qayta hisoblanadi.",
+      "rentOnClose": "Yopishda ijara: {{count}} ta obyekt uchun shu oy hisoblanadi, {{drafts}} ta qoralama hisoblash hujjati o'tkaziladi."
     },
     "monthNames": {
       "1": "Yanvar",

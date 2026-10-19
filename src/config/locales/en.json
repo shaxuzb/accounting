@@ -4660,7 +4660,9 @@
       "analyticsMissing": "{{count}} entries have empty analytics (counterparty, item, etc.) — they show as blank in reports (warning)",
       "drafts": "{{count}} documents are not posted — they are not in the books (warning).",
       "openingOffsetZero": "Opening balances agree (0000 = 0)",
-      "openingOffsetNotZero": "0000 holds {{amount}}: the opening balances do not agree"
+      "openingOffsetNotZero": "0000 holds {{amount}}: the opening balances do not agree",
+      "sequenceOnClose": "The stock sequence is broken from {{date}} — the close restores it first (1C «Корректировка стоимости номенклатуры»): the issues are valued again by the policy's method.",
+      "rentOnClose": "On closing, the rent: the month accrued for {{count}} objects, {{drafts}} draft accruals posted."
     },
     "monthNames": {
       "1": "January",

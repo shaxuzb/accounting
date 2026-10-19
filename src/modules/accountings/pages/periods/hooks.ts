@@ -68,6 +68,8 @@ const usePeriodMutation = <T,>(action: (id: number) => Promise<T>) => {
       void queryClient.invalidateQueries({ queryKey: ["accounting-periods"] });
       void queryClient.invalidateQueries({ queryKey: ["accounting-period-close-check"] });
       void queryClient.invalidateQueries({ queryKey: ["accounting-period-reopen-preview"] });
+      // the close restores the stock sequence itself
+      void queryClient.invalidateQueries({ queryKey: ["inventory-sequence"] });
     },
   });
 };
