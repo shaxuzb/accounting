@@ -85,7 +85,41 @@ export interface VatRegister {
   salesPeriod: VatRegisterTotal;
 }
 
+export interface PropertyTaxRow {
+  assetId: number;
+  inventoryNumber: string;
+  name: string;
+  accountNumber?: string | null;
+  /** The residual value at the end of each month from January. */
+  monthValues: number[];
+  averageValue: number;
+  areaSqm?: number | null;
+  minValuePerSqm?: number | null;
+  minimumValue: number;
+  minimumApplied: boolean;
+  base: number;
+  rate: number;
+  tax: number;
+}
+
+export interface PropertyTaxReport {
+  header: TaxFormHeader;
+  year: number;
+  month: number;
+  rows: PropertyTaxRow[];
+  totalBase: number;
+  totalTax: number;
+  warnings: string[];
+}
+
 const base = "/reports/tax";
+
+export const usePropertyTax = (params: { year: number; month: number }) =>
+  useQuery({
+    queryKey: ["tax-reports", "property-tax", params],
+    queryFn: () => getJson<PropertyTaxReport>(`${base}/property-tax`, params),
+    placeholderData: keepPreviousData,
+  });
 
 export const useVatReturn = (params: { year: number; month: number }) =>
   useQuery({

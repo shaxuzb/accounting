@@ -20,6 +20,7 @@ const tabs = [
   { key: "vat-register", labelKey: "app.taxReports.vatRegister" },
   { key: "turnover-tax", labelKey: "app.taxReports.turnoverTax" },
   { key: "profit-tax", labelKey: "app.taxReports.profitTax" },
+  { key: "property-tax", labelKey: "app.taxReports.propertyTax" },
 ];
 
 /** The tax reports section with its tabs. */

@@ -18,6 +18,7 @@ import { customDate, numberSpacing } from "@/utils/utils";
 import type { FaAsset } from "../types/type";
 import useFaAssetLookups from "./useFaAssetLookups";
 import FaAssetConservationCard from "./FaAssetConservationCard";
+import FaAssetPropertyTaxCard from "./FaAssetPropertyTaxCard";
 
 interface DetailItem {
   label: string;
@@ -215,6 +216,8 @@ export default function FaAssetReadonlyView({
       />
 
       <FaAssetConservationCard assetId={record.id} statusId={record.statusId} />
+
+      {(record.assetKindId ?? 1) === 1 && <FaAssetPropertyTaxCard assetId={record.id} />}
 
       {action && <div className="flex justify-end">{action}</div>}
     </div>

@@ -1077,6 +1077,25 @@
       "interest": "Foiz (9610/6920)",
       "principal": "Asosiy qarz (7910/6950)",
       "balance": "Qolgan majburiyat"
+    },
+    "propertyTax": {
+      "title": "Mol-mulk solig'i",
+      "hint": "SK 411–415-moddalar: obyekt — ko'chmas mulk (bino va inshootlar, tugallanmagan qurilish, quvur va liniyalar). Odatda 0120 hisobidagi vositalar obyekt, stavka 1,5 %. Maydon va 1 kv. m eng kam qiymati binolar uchun (412-modda).",
+      "object": "soliq obyekti",
+      "notObject": "obyekt emas",
+      "byDefault": "odatiy sozlama",
+      "isObject": "Soliq obyekti",
+      "rate": "Stavka",
+      "areaSqm": "Maydon",
+      "minValuePerSqm": "1 kv. m eng kam qiymati (2026)",
+      "locations": {
+        "tashkent": "Toshkent shahri",
+        "regionalCentre": "Nukus va viloyat markazlari",
+        "other": "Boshqa shahar va qishloqlar"
+      },
+      "note": "Izoh (imtiyoz asosi va h.k.)",
+      "save": "Saqlash",
+      "saved": "Mol-mulk solig'i sozlamasi saqlandi"
     }
   },
   "settings": {
@@ -2463,7 +2482,20 @@
       "periodTotal": "Soliq davri bo'yicha jami",
       "yearTotal": "Yil boshidan jami",
       "return": "qaytarish",
-      "noEsf": "ESF yo'q"
+      "noEsf": "ESF yo'q",
+      "propertyTax": "Mol-mulk solig'i",
+      "propertyTaxTitle": "Yuridik shaxslarning mol-mulkiga solinadigan soliq hisob-kitobi",
+      "propertyTaxPeriod": "{{year}} yil yanvar — {{month}} (o'sib boruvchi yakun)",
+      "propertyTaxHint": "SK 412–413-moddalar: baza — har bir obyektning o'rtacha yillik qoldiq qiymati (har oy oxiridagi qoldiq qiymatlar yig'indisining 1/12 qismi, o'sib boruvchi yakun). Bino 1 kv. m qiymati eng kam qiymatdan past bo'lsa, hisobda turgan oylar eng kam qiymat bilan olinadi. Obyekt, stavka va maydon AV kartochkasida («Mol-mulk solig'i»). Hisobot yiliga keyingi yil 1-martgacha; bo'nak — har oy 10-sanagacha 1/12 (aylanma solig'i to'lovchilar — chorakda 1/4).",
+      "propertyTaxNone": "Mol-mulk solig'i obyektlari yo'q (0120 hisobidagi binolar yoki kartochkada belgilanganlar)",
+      "propertyObject": "Obyekt",
+      "averageValue": "O'rtacha yillik qoldiq qiymat",
+      "minimumValue": "Eng kam qiymat (maydon × 1 kv. m)",
+      "minimumApplied": "qo'llandi",
+      "taxBase": "Soliq bazasi",
+      "rateColumn": "Stavka",
+      "taxAmount": "Soliq summasi",
+      "total": "Jami"
     },
     "regulatedForms": {
       "form1": "1-shakl (balans)",

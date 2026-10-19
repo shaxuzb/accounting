@@ -1075,6 +1075,25 @@
       "interest": "Interest (9610/6920)",
       "principal": "Principal (7910/6950)",
       "balance": "Obligation left"
+    },
+    "propertyTax": {
+      "title": "Property tax",
+      "hint": "Tax Code arts. 411–415: the object is immovable property (buildings, structures, unfinished construction, pipelines and lines). By default assets on 0120 are objects at 1.5 %. The area and the minimum value of a square metre are for buildings (art. 412).",
+      "object": "taxable",
+      "notObject": "not taxable",
+      "byDefault": "default",
+      "isObject": "Taxable object",
+      "rate": "Rate",
+      "areaSqm": "Area",
+      "minValuePerSqm": "Minimum value of m² (2026)",
+      "locations": {
+        "tashkent": "Tashkent city",
+        "regionalCentre": "Nukus and regional centres",
+        "other": "Other towns and rural areas"
+      },
+      "note": "Note (exemption basis etc.)",
+      "save": "Save",
+      "saved": "Property tax setting saved"
     }
   },
   "settings": {
@@ -2463,7 +2482,20 @@
       "periodTotal": "Total for the period",
       "yearTotal": "Total from the start of the year",
       "return": "return",
-      "noEsf": "no e-invoice"
+      "noEsf": "no e-invoice",
+      "propertyTax": "Property tax",
+      "propertyTaxTitle": "Property tax of legal entities",
+      "propertyTaxPeriod": "{{year}}, January — {{month}} (cumulative)",
+      "propertyTaxHint": "Tax Code arts. 412–413: the base is each object's average annual residual value (1/12 of the month-end residual values, cumulative). A building below the minimum value of a square metre is taken at the minimum for the months it is on the books. Object, rate and area are set on the asset card («Property tax»). The annual report is due by 1 March of the next year; advances by the 10th, 1/12 a month (turnover tax payers 1/4 a quarter).",
+      "propertyTaxNone": "No property tax objects (buildings on 0120 or marked on the card)",
+      "propertyObject": "Object",
+      "averageValue": "Average annual residual value",
+      "minimumValue": "Minimum (area × m²)",
+      "minimumApplied": "applied",
+      "taxBase": "Tax base",
+      "rateColumn": "Rate",
+      "taxAmount": "Tax",
+      "total": "Total"
     },
     "regulatedForms": {
       "form1": "Form 1 (balance sheet)",
