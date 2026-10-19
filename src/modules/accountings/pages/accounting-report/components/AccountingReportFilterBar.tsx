@@ -1,6 +1,6 @@
 import { Button } from "antd";
 import type { FormikProps } from "formik";
-import { RefreshCw } from "lucide-react";
+import { FileSpreadsheet, Printer, RefreshCw } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import SelectFromToDate from "@/components/fields/SelectFromToDate";
@@ -14,6 +14,10 @@ interface Props<T extends object> {
   refreshDisabled?: boolean;
   children?: ReactNode;
   afterDate?: ReactNode;
+  /** Excel and print of what the report shows; the buttons show when given. */
+  onExcel?: () => void;
+  onPrint?: () => void;
+  outputDisabled?: boolean;
 }
 
 export default function AccountingReportFilterBar<T extends object>({
@@ -24,6 +28,9 @@ export default function AccountingReportFilterBar<T extends object>({
   refreshDisabled = false,
   children,
   afterDate,
+  onExcel,
+  onPrint,
+  outputDisabled = false,
 }: Props<T>) {
   const { t } = useTranslation();
 
@@ -47,6 +54,17 @@ export default function AccountingReportFilterBar<T extends object>({
           {afterDate}
         </div>
 
+        <div className="flex shrink-0 gap-2">
+          {onPrint && (
+            <Button icon={<Printer className="size-4" />} disabled={outputDisabled} onClick={onPrint}>
+              {t("app.reports.print")}
+            </Button>
+          )}
+          {onExcel && (
+            <Button icon={<FileSpreadsheet className="size-4" />} disabled={outputDisabled} onClick={onExcel}>
+              Excel
+            </Button>
+          )}
         <Button
           icon={<RefreshCw className="size-4" />}
           loading={loading}
@@ -55,6 +73,7 @@ export default function AccountingReportFilterBar<T extends object>({
           aria-label={t("common.refresh")}
           className="shrink-0"
         />
+        </div>
       </div>
     </Card>
   );

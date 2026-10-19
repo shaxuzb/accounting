@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { numberSpacing } from "@/utils/utils";
 import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
+import { exportReportTable, printReportTable, reportPeriodText, type ReportTable } from "../utils/reportOutput";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
 import AccountingReportSummaryGrid from "../components/AccountingReportSummaryGrid";
@@ -106,6 +107,37 @@ export default function CashFlowPage() {
     FINANCING: t("app.reports.cashFlow.financing"),
     EXCHANGE_EFFECT: t("app.reports.cashFlow.exchangeEffect"),
   };
+  const outputTable = (): ReportTable | null => {
+    if (!data) return null;
+    const rows: (string | number | null)[][] = [];
+    const boldRows: number[] = [];
+    boldRows.push(rows.length);
+    rows.push([t("app.reports.summary.openingCashBalance"), "", "", null, null, data.openingCashBalance]);
+    for (const section of data.sections) {
+      boldRows.push(rows.length);
+      rows.push([sectionTitles[section.code] ?? section.name, "", "", section.inflow ?? 0, section.outflow ?? 0, (section.inflow ?? 0) - (section.outflow ?? 0)]);
+      section.rows.forEach((row) =>
+        rows.push([row.counterpartAccountCode ?? "", row.counterpartAccountName, row.cashFlowItemName ?? "", row.inflow, row.outflow, row.net]),
+      );
+    }
+    boldRows.push(rows.length);
+    rows.push([t("app.reports.summary.closingCashBalance"), "", "", totalInflow, totalOutflow, data.closingCashBalance]);
+    return {
+      fileName: `pul-oqimi-${filters.dateFrom ?? ""}-${filters.dateTo ?? ""}.xlsx`,
+      title: t("app.reports.cashFlow.title"),
+      headerLines: [reportPeriodText(data.dateFrom, data.dateTo)],
+      columns: [
+        t("app.reports.fields.counterpartAccount"),
+        t("app.reports.fields.accountName"),
+        t("app.reports.fields.cashFlowItem"),
+        t("app.reports.fields.inflow"),
+        t("app.reports.fields.outflow"),
+        t("app.reports.fields.net"),
+      ],
+      rows,
+      boldRows,
+    };
+  };
 
   return (
     <AccountingReportPageShell>
@@ -114,6 +146,9 @@ export default function CashFlowPage() {
         loading={query.isFetching}
         onDateChange={(dateFrom, dateTo) => setFilters({ dateFrom, dateTo })}
         onRefresh={() => void query.refetch()}
+        outputDisabled={!data}
+        onExcel={() => { const table = outputTable(); if (table) exportReportTable(table); }}
+        onPrint={() => { const table = outputTable(); if (table) printReportTable(table); }}
       />
 
       {data && (

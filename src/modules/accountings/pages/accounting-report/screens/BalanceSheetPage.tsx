@@ -10,6 +10,7 @@ import {
   useScopedStorageKey,
 } from "@/shared/persistence/usePersistedState";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
+import { exportReportTable, printReportTable, reportPeriodText, type ReportTable } from "../utils/reportOutput";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
 import AccountingReportSummaryGrid from "../components/AccountingReportSummaryGrid";
@@ -73,6 +74,34 @@ export default function BalanceSheetPage() {
   const difference = data?.difference ?? 0;
   const isBalanced = data?.isBalanced ?? true;
 
+  const sectionNames: Record<string, string> = {
+    ASSETS: t("app.reports.balance.assets"),
+    LIABILITIES: t("app.reports.balance.liabilities"),
+    EQUITY: t("app.reports.balance.equity"),
+  };
+  const outputTable = (): ReportTable | null => {
+    if (!data) return null;
+    const rows: (string | number | null)[][] = [];
+    const boldRows: number[] = [];
+    for (const section of data.sections) {
+      boldRows.push(rows.length);
+      rows.push([sectionNames[section.code] ?? section.name, "", section.total ?? section.rows.reduce((s, r) => s + r.balance, 0)]);
+      section.rows.forEach((row) => rows.push([row.accountNumber, row.accountName, row.balance]));
+    }
+    boldRows.push(rows.length);
+    rows.push([t("app.reports.summary.totalAssets"), "", data.totalAssets]);
+    boldRows.push(rows.length);
+    rows.push([t("app.reports.summary.liabilitiesAndEquity"), "", data.totalLiabilitiesAndEquity]);
+    return {
+      fileName: `balans-${filters.dateTo ?? ""}.xlsx`,
+      title: t("app.reports.balance.title"),
+      headerLines: [reportPeriodText(data.dateFrom, data.dateTo)],
+      columns: [t("app.reports.fields.account"), t("app.reports.fields.accountName"), t("app.reports.fields.balance")],
+      rows,
+      boldRows,
+    };
+  };
+
   return (
     <AccountingReportPageShell>
       <AccountingReportFilterBar
@@ -80,6 +109,9 @@ export default function BalanceSheetPage() {
         loading={query.isFetching}
         onDateChange={(dateFrom, dateTo) => setFilters({ dateFrom, dateTo })}
         onRefresh={() => void query.refetch()}
+        outputDisabled={!data}
+        onExcel={() => { const table = outputTable(); if (table) exportReportTable(table); }}
+        onPrint={() => { const table = outputTable(); if (table) printReportTable(table); }}
       />
 
       {data && (

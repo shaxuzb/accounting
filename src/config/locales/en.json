@@ -2692,7 +2692,8 @@
       },
       "actions": {
         "show": "Show report"
-      }
+      },
+      "print": "Print"
     },
     "trial": {
       "title": "Trial balance",

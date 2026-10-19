@@ -2692,7 +2692,8 @@
       },
       "actions": {
         "show": "Hisobotni ko'rsat"
-      }
+      },
+      "print": "Chop etish"
     },
     "trial": {
       "title": "Sinov balansi",

@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { numberSpacing } from "@/utils/utils";
 import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
+import { exportReportTable, printReportTable, reportPeriodText, type ReportTable } from "../utils/reportOutput";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
 import AccountingReportSummaryGrid from "../components/AccountingReportSummaryGrid";
@@ -90,6 +91,36 @@ export default function IncomeStatementPage() {
     EXTRAORDINARY: t("app.reports.income.extraordinary"),
     INCOME_TAX: t("app.reports.income.incomeTax"),
   };
+  const outputTable = (): ReportTable | null => {
+    if (!data) return null;
+    const rows: (string | number | null)[][] = [];
+    const boldRows: number[] = [];
+    for (const section of data.sections) {
+      boldRows.push(rows.length);
+      rows.push([sectionTitles[section.code] ?? section.name, "", section.total ?? section.rows.reduce((s, r) => s + r.amount, 0)]);
+      section.rows.forEach((row) => rows.push([row.accountNumber ?? row.accountCode ?? "", row.accountName, row.amount]));
+    }
+    const totals: [string, number | undefined][] = [
+      [t("app.reports.summary.grossProfit"), data.grossProfit],
+      [t("app.reports.summary.operatingProfit"), data.operatingProfit],
+      [t("app.reports.summary.generalActivityProfit"), data.generalActivityProfit],
+      [t("app.reports.summary.profitBeforeTax"), data.profitBeforeTax],
+      [t("app.reports.summary.netProfit"), data.netProfit],
+    ];
+    for (const [label, value] of totals) {
+      if (value === undefined || value === null) continue;
+      boldRows.push(rows.length);
+      rows.push([label, "", value]);
+    }
+    return {
+      fileName: `foyda-zarar-${filters.dateFrom ?? ""}-${filters.dateTo ?? ""}.xlsx`,
+      title: t("app.reports.income.title"),
+      headerLines: [reportPeriodText(data.dateFrom, data.dateTo)],
+      columns: [t("app.reports.fields.account"), t("app.reports.fields.accountName"), t("app.reports.fields.amount")],
+      rows,
+      boldRows,
+    };
+  };
 
   return (
     <AccountingReportPageShell>
@@ -98,6 +129,9 @@ export default function IncomeStatementPage() {
         loading={query.isFetching}
         onDateChange={(dateFrom, dateTo) => setFilters({ dateFrom, dateTo })}
         onRefresh={() => void query.refetch()}
+        outputDisabled={!data}
+        onExcel={() => { const table = outputTable(); if (table) exportReportTable(table); }}
+        onPrint={() => { const table = outputTable(); if (table) printReportTable(table); }}
       />
 
       {data && (

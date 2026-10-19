@@ -18,6 +18,8 @@ import {
 import { customDate, numberSpacing } from "@/utils/utils";
 import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
+import { exportReportTable, printReportTable, reportPeriodText, type ReportTable } from "../utils/reportOutput";
+import { accountingReportService } from "../api";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
 import AccountingReportSummaryGrid from "../components/AccountingReportSummaryGrid";
@@ -150,6 +152,41 @@ export default function AccountCardPage() {
 
   const data = query.data;
 
+  /** The whole card, not only the page shown: every entry of the period. */
+  const outputTable = async (): Promise<ReportTable | null> => {
+    if (!data || !filters.accountId) return null;
+    const all = await accountingReportService.accountCard({ ...filters, page: 1, pageSize: 100000 });
+    const rows: (string | number | null)[][] = [
+      [t("app.reports.summary.openingBalance"), "", "", "", null, null, all.openingBalance],
+      ...all.transactions.map((x) => [
+        customDate(x.postingDate),
+        `${x.documentType ?? ""} ${x.documentNumber ?? x.journalNumber ?? ""}`.trim(),
+        x.description ?? "",
+        x.counterparty ?? "",
+        x.debit,
+        x.credit,
+        x.runningBalance,
+      ]),
+      [t("app.reports.summary.closingBalance"), "", "", "", all.totalDebit, all.totalCredit, all.closingBalance],
+    ];
+    return {
+      fileName: `kartochka-${all.accountCode ?? ""}-${filters.dateFrom ?? ""}-${filters.dateTo ?? ""}.xlsx`,
+      title: `${t("app.reports.card.title")}: ${all.accountCode ?? ""} ${all.accountName}`,
+      headerLines: [reportPeriodText(all.dateFrom, all.dateTo)],
+      columns: [
+        t("app.reports.fields.postingDate"),
+        t("app.reports.fields.documentNumber"),
+        t("app.reports.fields.description"),
+        t("app.reports.fields.counterparty"),
+        t("app.analyticReports.debit"),
+        t("app.analyticReports.credit"),
+        t("app.reports.fields.runningBalance"),
+      ],
+      rows,
+      boldRows: [0, rows.length - 1],
+    };
+  };
+
   return (
     <AccountingReportPageShell>
       <AccountingReportFilterBar 
@@ -163,6 +200,9 @@ export default function AccountCardPage() {
           }
         }}
         onRefresh={() => void query.refetch()}
+        outputDisabled={!data}
+        onExcel={() => void outputTable().then((table) => table && exportReportTable(table))}
+        onPrint={() => void outputTable().then((table) => table && printReportTable(table))}
       >
         <div>
           <SelectCustom
