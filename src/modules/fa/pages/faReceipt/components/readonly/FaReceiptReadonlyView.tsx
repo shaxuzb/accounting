@@ -18,6 +18,9 @@ import { FaAssetKindField } from "../../../../shared/components/FaAssetKindTag";
 import { customDate } from "@/utils/utils";
 import type { FaReceiptResponse } from "../../types/type";
 import FaReceiptAssetsTable from "./FaReceiptAssetsTable";
+import FaLeaseScheduleCard from "./FaLeaseScheduleCard";
+import { faLeaseReceiptTypeId } from "../../../../shared/constants/receiptTypes";
+import { faDocumentStatusIds } from "../../../../shared/constants/statuses";
 import useFaReceiptLookups from "./useFaReceiptLookups";
 import { formatReceiptAmount, getApiText } from "./faReceiptReadonlyUtils";
 
@@ -212,7 +215,7 @@ export default function FaReceiptReadonlyView({
                   </div>
                   <div>
                     <div className="text-xs text-secondary-text">
-                      {t("fa.fields.supplierAccount")}
+                      {t(record.receiptTypeId === faLeaseReceiptTypeId ? "fa.fields.leaseObligationAccount" : "fa.fields.supplierAccount")}
                     </div>
                     <div className="mt-0.5 text-sm font-semibold text-text">
                       {lookups.accountLabel(record.supplierAccountId)}
@@ -224,6 +227,10 @@ export default function FaReceiptReadonlyView({
           })}
         </div>
       </Card>
+
+      {record.receiptTypeId === faLeaseReceiptTypeId && record.statusId === faDocumentStatusIds.posted && (
+        <FaLeaseScheduleCard receiptId={record.id} />
+      )}
 
       {action && <div className="flex justify-end">{action}</div>}
     </div>

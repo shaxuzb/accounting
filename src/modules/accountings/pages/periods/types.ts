@@ -65,12 +65,26 @@ export interface MonthCloseCheck {
   deferredLines?: MonthCloseDeferredLine[];
   /** 31xx balances with no write-off schedule (a warning). */
   deferredWithoutSchedule?: number;
+  /** Financial lease rows the close books: interest Dt 9610 Kt 6920, principal Dt 7910 Kt 6950. */
+  leaseLines?: MonthCloseLeaseLine[];
   /** 20/23/25/26 balances carried to 9130 (amount: debit balance). */
   costLines: MonthCloseLine[];
   lines: MonthCloseLine[];
   result: number;
   yearResult?: number | null;
   canClose: boolean;
+}
+
+export interface MonthCloseLeaseLine {
+  receiptDocId: number;
+  receiptNumber: string;
+  lessor?: string | null;
+  lineNo: number;
+  paymentDate: string;
+  payment: number;
+  interest: number;
+  principal: number;
+  balance: number;
 }
 
 export interface MonthCloseDeferredLine {

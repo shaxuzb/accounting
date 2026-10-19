@@ -839,7 +839,8 @@
       "gratuitousValue": "Value (VAT base)",
       "recipient": "Recipient",
       "partPercent": "Part, %",
-      "partPercentWhole": "whole asset"
+      "partPercentWhole": "whole asset",
+      "leaseObligationAccount": "Lease obligation account"
     },
     "form": {
       "create": "Create fixed asset document",
@@ -1051,6 +1052,29 @@
       "endDate": "End",
       "none": "No conservation",
       "deleteConfirm": "Delete the conservation period?"
+    },
+    "lease": {
+      "title": "Lease payment schedule",
+      "hint": "NSBU 6, 29–30: equal payments, interest at a constant rate on the obligation left. The month close books the month's row: interest Dt 9610 Cr 6920, current part Dt 7910 Cr 6950. The lessor is paid by a bank/cash «Lease payment» (Dt 6950/6920).",
+      "notSet": "no schedule yet",
+      "obligation": "Obligation",
+      "annualRate": "Annual interest rate",
+      "termMonths": "Term (months)",
+      "firstPaymentDate": "First payment date",
+      "buyoutAmount": "Buyout price",
+      "calculate": "Calculate",
+      "save": "Save schedule",
+      "saved": "Lease schedule saved",
+      "deleteConfirm": "Delete the lease schedule?",
+      "previewTag": "calculation (not saved)",
+      "totalPayments": "Total payments",
+      "totalInterest": "Total interest",
+      "none": "No schedule — enter the terms and press «Calculate»",
+      "paymentDate": "Payment date",
+      "payment": "Payment",
+      "interest": "Interest (9610/6920)",
+      "principal": "Principal (7910/6950)",
+      "balance": "Obligation left"
     }
   },
   "settings": {
@@ -4522,7 +4546,11 @@
       "unlimited": "Unlimited",
       "addUser": "Add a user",
       "saved": "The edit lock is saved"
-    }
+    },
+    "stepLease": "Lease schedule (interest Dt 9610 — Cr 6920; current part Dt 7910 — Cr 6950)",
+    "leaseReceipt": "FA receipt · lessor",
+    "leaseInterest": "Interest",
+    "leasePrincipal": "Current part"
   },
   "expenseReport": {
     "title": "Expense reports",

@@ -23,6 +23,8 @@ import { faDocumentAccountRoleCodes } from "../../../shared/constants/documentAc
 import { faAssetKinds, faKindLabel, faKindRole, type FaAssetKindId } from "../../../shared/constants/assetKinds";
 import FaAssetKindSwitch from "../../../shared/components/FaAssetKindSwitch";
 import useIntangibleSetup from "../../../shared/hooks/useIntangibleSetup";
+import useLeaseSetup from "../../../shared/hooks/useLeaseSetup";
+import { faLeaseReceiptTypeId } from "../../../shared/constants/receiptTypes";
 import { $axiosPrivate } from "@/services/AxiosService";
 import {
   documentAccountChartAccountsPath,
@@ -72,6 +74,9 @@ export default function FaReceiptFormFields({
   const assetKindId = formik.values.assetKindId;
   // a surplus found at an inventory: no supplier and no VAT, credited to other income (9390)
   const isSurplus = Number(formik.values.receiptTypeId) === 4;
+  // received under a financial lease: credited to the lessor's obligation 7910 (NSBU 6, 25)
+  const isLease = Number(formik.values.receiptTypeId) === faLeaseReceiptTypeId;
+  const leaseReady = useLeaseSetup(isLease);
   const fromInventory = Boolean(formik.values.inventoryDocId);
   // the contract brings its «Narx QQS bilan» and settlement currency, as on a purchase (1C)
   useContractPriceIncludesVatDefault(formik, !isSurplus);
@@ -534,9 +539,11 @@ export default function FaReceiptFormFields({
               required
               disabled={fromInventory}
               onChange={(value) => {
-                // the credit account follows the type: the supplier's 6010 or other income 9390
+                // the credit account follows the type: the supplier's 6010, other income 9390
+                // or the lease obligation 7910
                 const surplusNow = Number(value) === 4;
-                if (surplusNow !== isSurplus) {
+                const leaseNow = Number(value) === faLeaseReceiptTypeId;
+                if (surplusNow !== isSurplus || leaseNow !== isLease) {
                   void formik.setFieldValue("supplierAccountId", null);
                   if (surplusNow) {
                     void formik.setFieldValue("counterpartyId", null);
@@ -555,20 +562,22 @@ export default function FaReceiptFormFields({
               required
             />
           </Col>
-          <Col span={6} key={isSurplus ? "surplus" : "supplier"}>
+          <Col span={6} key={isSurplus ? "surplus" : isLease ? `lease-${leaseReady}` : "supplier"}>
             <DocumentAccountSelect
               documentTypeId={documentTypeId ?? 0}
               documentRoleCode={
                 isSurplus
                   ? faDocumentAccountRoleCodes.inventorySurplus
-                  : faDocumentAccountRoleCodes.supplierSettlement
+                  : isLease
+                    ? faDocumentAccountRoleCodes.leaseObligation
+                    : faDocumentAccountRoleCodes.supplierSettlement
               }
               formik={formik}
               fieldName="supplierAccountId"
-              label={isSurplus ? "fa.fields.surplusAccount" : "fa.fields.supplierAccount"}
+              label={isSurplus ? "fa.fields.surplusAccount" : isLease ? "fa.fields.leaseObligationAccount" : "fa.fields.supplierAccount"}
               search
               required
-              enabled={Boolean(documentTypeId)}
+              enabled={Boolean(documentTypeId) && leaseReady}
             />
           </Col>
           {!isSurplus && (

@@ -23,4 +23,6 @@ export const faDocumentAccountRoleCodes = {
   /** The results of an inventory: a shortage's residual value (5910), a surplus's market value (9390). */
   inventoryShortage: "inventory_shortage",
   inventorySurplus: "inventory_surplus",
+  /** The lessor's long-term obligation a financial lease is received to (7910). */
+  leaseObligation: "lease_obligation",
 } as const;

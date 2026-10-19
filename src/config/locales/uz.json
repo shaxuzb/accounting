@@ -841,7 +841,8 @@
       "gratuitousValue": "Qiymati (QQS bazasi)",
       "recipient": "Oluvchi",
       "partPercent": "Qism, %",
-      "partPercentWhole": "butun vosita"
+      "partPercentWhole": "butun vosita",
+      "leaseObligationAccount": "Lizing majburiyati hisobi"
     },
     "form": {
       "create": "Asosiy vosita yaratish",
@@ -1053,6 +1054,29 @@
       "endDate": "Tugashi",
       "none": "Konservatsiya bo'lmagan",
       "deleteConfirm": "Konservatsiya davrini o'chirasizmi?"
+    },
+    "lease": {
+      "title": "Lizing to'lovlari jadvali",
+      "hint": "BHMS 6, 29–30-band: teng to'lovlar, foiz qolgan majburiyatga doimiy stavkada. Oy yopilganda shu oy qatori o'tkaziladi: foiz Dt 9610 Kt 6920, joriy qism Dt 7910 Kt 6950. Lizing beruvchiga to'lov — bank/kassada «Lizing to'lovi» (Dt 6950/6920).",
+      "notSet": "jadval tuzilmagan",
+      "obligation": "Majburiyat",
+      "annualRate": "Yillik foiz stavkasi",
+      "termMonths": "Muddat (oy)",
+      "firstPaymentDate": "Birinchi to'lov sanasi",
+      "buyoutAmount": "Sotib olish summasi",
+      "calculate": "Hisoblash",
+      "save": "Jadvalni saqlash",
+      "saved": "Lizing jadvali saqlandi",
+      "deleteConfirm": "Lizing jadvali o'chirilsinmi?",
+      "previewTag": "hisob-kitob (saqlanmagan)",
+      "totalPayments": "Jami to'lovlar",
+      "totalInterest": "Jami foiz",
+      "none": "Jadval yo'q — shartlarni kiritib «Hisoblash» ni bosing",
+      "paymentDate": "To'lov sanasi",
+      "payment": "To'lov",
+      "interest": "Foiz (9610/6920)",
+      "principal": "Asosiy qarz (7910/6950)",
+      "balance": "Qolgan majburiyat"
     }
   },
   "settings": {
@@ -4522,7 +4546,11 @@
       "unlimited": "Cheklovsiz",
       "addUser": "Foydalanuvchi qo'shish",
       "saved": "Tahrir taqiqi saqlandi"
-    }
+    },
+    "stepLease": "Lizing jadvali (foiz Dt 9610 — Kt 6920; joriy qism Dt 7910 — Kt 6950)",
+    "leaseReceipt": "AV kirimi · lizing beruvchi",
+    "leaseInterest": "Foiz",
+    "leasePrincipal": "Joriy qism"
   },
   "expenseReport": {
     "title": "Bo'nak hisobotlari",

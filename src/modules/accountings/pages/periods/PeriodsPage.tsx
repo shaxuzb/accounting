@@ -34,6 +34,7 @@ import type {
   AccountingPeriod,
   AccountingPeriodMonth,
   MonthCloseDeferredLine,
+  MonthCloseLeaseLine,
   MonthCloseLine,
 } from "./types";
 
@@ -573,6 +574,35 @@ function CloseMonthModal({
             scroll={{ y: 200 }}
             locale={{ emptyText: t("periods.noDeferred") }}
           />
+
+          {(check.leaseLines?.length ?? 0) > 0 && (
+            <>
+              <div className="font-semibold">{t("periods.stepLease")}</div>
+              <Table<MonthCloseLeaseLine>
+                rowKey={(line) => `${line.receiptDocId}-${line.lineNo}`}
+                size="small"
+                dataSource={check.leaseLines}
+                pagination={false}
+                scroll={{ y: 200 }}
+                columns={[
+                  {
+                    key: "receipt",
+                    title: t("periods.leaseReceipt"),
+                    render: (_, line) => (
+                      <Link to={`/main/fa/receipts/edit/${line.receiptDocId}`}>
+                        № {line.receiptNumber}
+                        {line.lessor ? ` · ${line.lessor}` : ""}
+                      </Link>
+                    ),
+                  },
+                  { key: "row", title: "№", width: 56, render: (_, line) => line.lineNo },
+                  { key: "interest", title: t("periods.leaseInterest"), align: "right", render: (_, line) => money(line.interest) },
+                  { key: "principal", title: t("periods.leasePrincipal"), align: "right", render: (_, line) => money(line.principal) },
+                  { key: "balance", title: t("fa.lease.balance"), align: "right", render: (_, line) => money(line.balance) },
+                ]}
+              />
+            </>
+          )}
 
           <div className="font-semibold">{t("periods.stepCosts")}</div>
           <Table<MonthCloseLine>
