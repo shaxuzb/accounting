@@ -4,7 +4,8 @@ import SelectStatic from "@/components/fields/SelectStatic";
 import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeSelect";
 import { displayDate } from "@/modules/payroll/utils/format";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
-import { Button, Form, List, Modal, Spin, Upload, type UploadFile } from "antd";
+import { Alert, Button, Form, List, Modal, Spin, Upload, type UploadFile } from "antd";
+import { AxiosError } from "axios";
 import { useFormik } from "formik";
 import { Download, FileText, Trash2, UploadCloud } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -45,6 +46,8 @@ export default function HrAbsenceFormModal({ open, id, onClose }: Props) {
   const saveMutation = useSaveHrAbsence();
   const deleteAttachment = useDeleteHrAbsenceAttachment(id ?? 0);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  // the server's refusal stays in the form (a posted timesheet, an overlapping absence ...)
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const formik = useFormik<HrAbsenceForm>({
     initialValues: createEmptyValues(),
@@ -53,6 +56,7 @@ export default function HrAbsenceFormModal({ open, id, onClose }: Props) {
       const files = fileList.flatMap((item) =>
         item.originFileObj ? [item.originFileObj] : [],
       );
+      setSubmitError(null);
       try {
         await saveMutation.mutateAsync({ id, payload: values, files });
         toast.success(
@@ -66,6 +70,8 @@ export default function HrAbsenceFormModal({ open, id, onClose }: Props) {
         setFileList([]);
         onClose();
       } catch (error) {
+        if (error instanceof AxiosError && error.response?.data?.detail)
+          setSubmitError(String(error.response.data.detail));
         errorHandlers(error);
       }
     },
@@ -91,6 +97,7 @@ export default function HrAbsenceFormModal({ open, id, onClose }: Props) {
 
   const handleClose = () => {
     setFileList([]);
+    setSubmitError(null);
     resetForm({ values: createEmptyValues() });
     onClose();
   };
@@ -131,6 +138,9 @@ export default function HrAbsenceFormModal({ open, id, onClose }: Props) {
     >
       <Spin spinning={isEdit && isFetching}>
         <Form layout="vertical" onFinish={formik.handleSubmit}>
+          {submitError && (
+            <Alert className="mb-4" type="error" showIcon message={submitError} closable onClose={() => setSubmitError(null)} />
+          )}
           <div className="grid gap-x-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <Form.Item
