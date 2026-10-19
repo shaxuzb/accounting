@@ -438,6 +438,13 @@ export const menuPermissions: MainMenu = {
           },
         },
         {
+          code: accountingReportPermissions.journal,
+          linkData: {
+            path: "document-journal",
+            title: "app.documentJournal.title",
+          },
+        },
+        {
           code: trialBalancePermissions.view,
           linkData: {
             path: "trial-balance",

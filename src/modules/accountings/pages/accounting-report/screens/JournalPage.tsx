@@ -5,6 +5,13 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import { customDate, numberSpacing } from "@/utils/utils";
+import SelectCustom from "@/components/fields/SelectCustom";
+import {
+  chartAccountOptionLabel,
+  chartAccountSelectedLabel,
+  counterpartySelectDisplayConfig,
+  selectListEndpoints,
+} from "@/shared/constants/selectLists";
 import AccountingReportFilterBar from "../components/AccountingReportFilterBar";
 import AccountingReportPageShell from "../components/AccountingReportPageShell";
 import AccountingReportSectionCard from "../components/AccountingReportSectionCard";
@@ -129,6 +136,39 @@ export default function JournalPage() {
           }))
         }
         onRefresh={() => void query.refetch()}
+        afterDate={
+          <>
+            <div className="w-64 [&_.ant-form-item]:mb-0!">
+              <SelectCustom
+                placeholder="app.reports.fields.account"
+                value={filters.accountId ?? undefined}
+                path={selectListEndpoints.chartAccountsSelectList}
+                clearable
+                search
+                marginBottom="0"
+                optionLabel={chartAccountOptionLabel}
+                selectedLabel={chartAccountSelectedLabel}
+                onChange={(value) =>
+                  setFilters((current) => ({ ...current, accountId: typeof value === "number" ? value : null, page: 1 }))
+                }
+              />
+            </div>
+            <div className="w-64 [&_.ant-form-item]:mb-0!">
+              <SelectCustom
+                placeholder="app.reports.fields.counterparty"
+                value={filters.counterpartyId ?? undefined}
+                path={selectListEndpoints.counterpartiesSelectList}
+                displayConfig={counterpartySelectDisplayConfig}
+                clearable
+                search
+                marginBottom="0"
+                onChange={(value) =>
+                  setFilters((current) => ({ ...current, counterpartyId: typeof value === "number" ? value : null, page: 1 }))
+                }
+              />
+            </div>
+          </>
+        }
       />
 
       {data && (

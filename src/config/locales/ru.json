@@ -2855,6 +2855,17 @@
         "chiefAccountant": "Главный бухгалтер",
         "stamp": "М.П."
       }
+    },
+    "documentJournal": {
+      "title": "Журнал документов",
+      "date": "Дата",
+      "type": "Вид документа",
+      "number": "Номер",
+      "amount": "Сумма",
+      "status": "Статус",
+      "allTypes": "Все виды",
+      "searchNumber": "Поиск по номеру",
+      "count": "Документов: {{count}}"
     }
   },
   "hr": {

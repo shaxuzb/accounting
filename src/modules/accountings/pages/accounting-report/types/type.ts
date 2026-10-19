@@ -126,6 +126,10 @@ export interface AccountTurnoverQuery {
 
 export interface JournalQuery extends AccountingReportQueryBase {
   documentTypeId?: number | null;
+  /** Only the entries on this account (either side), a group with its subaccounts. */
+  accountId?: number | null;
+  /** Only the entries of this counterparty. */
+  counterpartyId?: number | null;
   page?: number | null;
   pageSize?: number | null;
 }

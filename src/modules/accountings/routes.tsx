@@ -27,6 +27,7 @@ const RegulatedResultsPage = lazy(() => import("./pages/regulated-forms/Regulate
 const ExpressCheckPage = lazy(() => import("./pages/regulated-forms/ExpressCheckPage"));
 const RegulatedCashFlowPage = lazy(() => import("./pages/regulated-forms/RegulatedCashFlowPage"));
 const AnalyticReportsPage = lazy(() => import("./pages/analytic-reports/AnalyticReportsPage"));
+const DocumentJournalPage = lazy(() => import("./pages/document-journal/DocumentJournalPage"));
 const VatReturnPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.VatReturnPage })));
 const TurnoverTaxPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.TurnoverTaxPage })));
 const ProfitTaxPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.ProfitTaxPage })));
@@ -139,6 +140,11 @@ export const accountingsRoutes: RouteObject = {
       path: "ledger",
       handle: { title: "app.accounting.ledger" },
       element: withAccess(<LedgerPage />, ledgerPermissions.view),
+    },
+    {
+      path: "document-journal",
+      handle: { title: "app.documentJournal.title" },
+      element: withAccess(<DocumentJournalPage />, accountingReportPermissions.journal),
     },
     {
       path: "tax-reports",

@@ -2855,6 +2855,17 @@
         "chiefAccountant": "Bosh hisobchi",
         "stamp": "M.O'."
       }
+    },
+    "documentJournal": {
+      "title": "Hujjatlar jurnali",
+      "date": "Sana",
+      "type": "Hujjat turi",
+      "number": "Raqami",
+      "amount": "Summa",
+      "status": "Holati",
+      "allTypes": "Barcha turlar",
+      "searchNumber": "Raqam bo'yicha qidirish",
+      "count": "{{count}} ta hujjat"
     }
   },
   "hr": {

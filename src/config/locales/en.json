@@ -2855,6 +2855,17 @@
         "chiefAccountant": "Chief accountant",
         "stamp": "Seal"
       }
+    },
+    "documentJournal": {
+      "title": "Documents journal",
+      "date": "Date",
+      "type": "Document kind",
+      "number": "Number",
+      "amount": "Amount",
+      "status": "Status",
+      "allTypes": "All kinds",
+      "searchNumber": "Search by number",
+      "count": "{{count}} documents"
     }
   },
   "hr": {
