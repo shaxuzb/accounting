@@ -39,6 +39,7 @@ import type {
 import {
   isCompletePurchaseLine,
   isStartedIncompletePurchaseLine,
+  isUnresolvedPurchaseLine,
 } from "../types/schema";
 import {
   createPurchaseValidationSchema,
@@ -609,6 +610,16 @@ export const PurchaseEditor = ({
       if (Object.keys(errors).length > 0) {
         formik.setTouched(buildTouched());
         toast.error(t("purchase.messages.fillRequired"));
+        return false;
+      }
+
+      // a row whose MXIK found no product (the red cell) is never dropped quietly either:
+      // its product is chosen or created, or the row removed
+      const unresolvedRows = values.lines
+        .map((line, index) => (isUnresolvedPurchaseLine(line) ? index + 1 : 0))
+        .filter((row) => row > 0);
+      if (unresolvedRows.length > 0) {
+        toast.error(t("purchase.messages.unresolvedRows", { rows: unresolvedRows.join(", ") }), { duration: 10000 });
         return false;
       }
 
@@ -1327,6 +1338,11 @@ export const PurchaseEditor = ({
     [data, productByMxik],
   );
 
+  const isMxikAmbiguous = useCallback(
+    (value: unknown) => ambiguousMxiks.has(String(value ?? "").trim()),
+    [ambiguousMxiks],
+  );
+
   const vatPayer = useVatPayer(formik.values.docDate);
   const tableColumns = usePurchaseImportColumns({
     columnConfig,
@@ -1337,6 +1353,7 @@ export const PurchaseEditor = ({
     handleRowValueChange,
     isLoading,
     isMxikValid,
+    isMxikAmbiguous,
     itemOptions,
     openAccountModal,
     openMarkingModal,

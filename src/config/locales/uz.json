@@ -1913,7 +1913,10 @@
       "unmarkedLine": "Markirovkasiz (miqdor qo'lda kiritiladi). Markirovka kiritish uchun bosing.",
       "priceIncludesVatOn": "QQS summadan ajratiladi",
       "priceIncludesVatOff": "QQS narx ustiga qo'shiladi",
-      "linesEmpty": "Xarid qilingan mahsulotlar topilmadi"
+      "linesEmpty": "Xarid qilingan mahsulotlar topilmadi",
+      "unresolvedRows": "{{rows}}-qator(lar)da MXIK bo'yicha nomenklaturadan tovar topilmadi (qizil katak). Tovarni tanlang, «Topilmagan MXIK kodlarini belgilash» bilan yarating yoki qatorni o'chiring — bunday qator saqlanmaydi.",
+      "mxikNotFoundHint": "Bu MXIK bilan nomenklaturada tovar yo'q. Tovarni tanlang yoki yarating — aks holda qator saqlanmaydi.",
+      "mxikAmbiguousHint": "Bu MXIK nomenklaturada bir nechta tovarda bor — qaysi biri ekanini «Tovar» ustunida tanlang."
     },
     "import": {
       "nonSerial": "Seriyasiz",

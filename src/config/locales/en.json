@@ -1911,7 +1911,10 @@
       "unmarkedLine": "Unmarked (quantity entered by hand). Click to enter markings.",
       "priceIncludesVatOn": "VAT is extracted from the amount",
       "priceIncludesVatOff": "VAT is added on top of the price",
-      "linesEmpty": "No purchased products found"
+      "linesEmpty": "No purchased products found",
+      "unresolvedRows": "Row(s) {{rows}}: no product of the catalog has this MXIK (the red cell). Choose the product, create it with «Mark missing MXIK codes» or remove the row — such a row is not saved.",
+      "mxikNotFoundHint": "No product of the catalog has this MXIK. Choose or create the product — otherwise the row is not saved.",
+      "mxikAmbiguousHint": "Several products of the catalog have this MXIK — choose the right one in the «Product» column."
     },
     "import": {
       "nonSerial": "Non-serial",

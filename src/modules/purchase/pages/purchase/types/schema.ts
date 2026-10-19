@@ -14,6 +14,18 @@ export const isCompletePurchaseLine = (line: PurchaseImportRow) => {
 export const isStartedIncompletePurchaseLine = (line: PurchaseImportRow) =>
   Boolean(line.productId) && !isCompletePurchaseLineWithAccounts(line);
 
+/**
+ * A row with something in it (an MXIK, a name, a price) but no product: its MXIK found no
+ * product of the catalog, or several. It is not saved, so the save stops on it.
+ */
+export const isUnresolvedPurchaseLine = (line: PurchaseImportRow) =>
+  !line.productId &&
+  Boolean(
+    String(line.mxik ?? line.sapCode ?? "").trim() ||
+      String(line.productName ?? line.name ?? "").trim() ||
+      Number(line.price ?? line.pricePerUom ?? 0) > 0,
+  );
+
 export const isCompletePurchaseLineWithAccounts = (
   line: PurchaseImportRow,
 ) =>

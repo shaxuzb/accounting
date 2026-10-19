@@ -41,6 +41,8 @@ interface UsePurchaseImportColumnsParams {
   ) => void;
   isLoading: boolean;
   isMxikValid: (value: unknown) => boolean;
+  /** The MXIK is on several products of the catalog: the product has to be chosen by hand. */
+  isMxikAmbiguous?: (value: unknown) => boolean;
   itemOptions: ProductSelectOption[];
   openMarkingModal: (rowIndex: number) => void;
   openAccountModal: (rowIndex: number) => void;
@@ -64,6 +66,7 @@ export const usePurchaseImportColumns = ({
   handleRowValueChange,
   isLoading,
   isMxikValid,
+  isMxikAmbiguous,
   itemOptions,
   openMarkingModal,
   openAccountModal,
@@ -205,10 +208,12 @@ export const usePurchaseImportColumns = ({
         ) => {
           const isMxikCell = col.code === "mxik";
           const hasMxikValue = String(value ?? "").trim().length > 0;
+          // red: the row's MXIK found no product of the catalog (a row with its product
+          // chosen is resolved, whatever the MXIK); such a row cannot be saved
           const invalidMxik =
-            isMxikCell && hasMxikValue && !isMxikValid(value);
+            isMxikCell && hasMxikValue && !record.productId && !isMxikValid(value);
 
-          return (
+          const cell = (
             <PurchaseImportEditableCell
               value={value}
               dataIndex={String(col.dataIndex)}
@@ -217,6 +222,19 @@ export const usePurchaseImportColumns = ({
               isInvalid={invalidMxik}
               disabled={readOnlyValues || (isMxikCell && Boolean(record.productId))}
             />
+          );
+          return invalidMxik ? (
+            <Tooltip
+              title={t(
+                isMxikAmbiguous?.(value)
+                  ? "purchase.messages.mxikAmbiguousHint"
+                  : "purchase.messages.mxikNotFoundHint",
+              )}
+            >
+              <div>{cell}</div>
+            </Tooltip>
+          ) : (
+            cell
           );
         },
       };
@@ -426,6 +444,7 @@ export const usePurchaseImportColumns = ({
     handleRowValueChange,
     isLoading,
     isMxikValid,
+    isMxikAmbiguous,
     itemOptions,
     openAccountModal,
     openMarkingModal,
