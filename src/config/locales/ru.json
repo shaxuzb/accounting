@@ -4163,7 +4163,8 @@
       "exchangeRate": "Курс валюты",
       "dateFrom": "С даты",
       "dateTo": "По дату",
-      "calculationMonth": "Расчетный месяц"
+      "calculationMonth": "Расчетный месяц",
+      "objectValue": "Стоимость по договору (001)"
     },
     "period": {
       "month": "Месяц",

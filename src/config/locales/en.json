@@ -4163,7 +4163,8 @@
       "exchangeRate": "Exchange rate",
       "dateFrom": "From date",
       "dateTo": "To date",
-      "calculationMonth": "Calculation month"
+      "calculationMonth": "Calculation month",
+      "objectValue": "Contract value (001)"
     },
     "period": {
       "month": "Month",

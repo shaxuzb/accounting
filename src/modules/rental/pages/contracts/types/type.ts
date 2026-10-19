@@ -40,6 +40,7 @@ export interface RentalContractObject {
   contractTaxBaseAmount?: number | null;
   contractTaxAmount?: number | null;
   taxBaseAmount: number;
+  objectValue?: number | null;
   taxRate: number;
   expenseAccountId?: number | null;
   expenseAccountNumber?: string | number | null;

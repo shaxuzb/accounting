@@ -33,6 +33,8 @@ export interface RentalContractObjectForm {
   periodUnit: "DAY" | "MONTH";
   periodAmount: number | null;
   taxBaseAmount: number | null;
+  /** NSBU 6, 46: the contract value of the object, kept off the balance sheet on 001. */
+  objectValue: number | null;
   taxRate: number | null;
   expenseAccountId: number | null;
   utilities: RentalUtilityForm[];

@@ -4163,7 +4163,8 @@
       "exchangeRate": "Valyuta kursi",
       "dateFrom": "Sanadan",
       "dateTo": "Shu sanagacha",
-      "calculationMonth": "Hisoblash oyi"
+      "calculationMonth": "Hisoblash oyi",
+      "objectValue": "Shartnoma bo'yicha qiymati (001)"
     },
     "period": {
       "month": "Oy",

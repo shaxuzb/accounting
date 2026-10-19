@@ -147,6 +147,15 @@ export default function ContractObjectTable({
         <Col span={4}>
           <InputNumber
             formik={formik}
+            fieldName={`objects[${objectIndex}].objectValue`}
+            label="rental.fields.objectValue"
+            min={0}
+            disabled={disabled}
+          />
+        </Col>
+        <Col span={4}>
+          <InputNumber
+            formik={formik}
             fieldName={`objects[${objectIndex}].taxBaseAmount`}
             label="rental.fields.taxBaseAmount"
             min={0}

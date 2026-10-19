@@ -49,6 +49,7 @@ export const mapRentalContractToForm = (
     periodUnit: object.periodUnit === "DAY" ? "DAY" : "MONTH",
     periodAmount: object.periodAmount,
     taxBaseAmount: object.taxBaseAmount,
+    objectValue: object.objectValue ?? null,
     taxRate: object.taxRate,
     expenseAccountId: object.expenseAccountId ?? null,
     utilities: (object.utilities ?? []).map((utility) => ({

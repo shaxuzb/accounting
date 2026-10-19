@@ -24,6 +24,7 @@ export const emptyObject = (startDate = "", endDate = "") => ({
   periodUnit: "MONTH" as const,
   periodAmount: null,
   taxBaseAmount: null,
+  objectValue: null,
   taxRate: null,
   expenseAccountId: null,
     utilities: [],
