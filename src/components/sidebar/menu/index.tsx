@@ -8,7 +8,7 @@ import { Badge, Menu } from "antd";
 import type { MenuProps } from "antd/lib/menu";
 import dayjs from "dayjs";
 import { ChevronDown, Pin } from "lucide-react";
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
@@ -20,6 +20,15 @@ interface LevelKeysProps {
   children?: LevelKeysProps[];
 }
 type MenuItem = Required<MenuProps>["items"][number];
+
+/** A path is the key's page or one under it — by whole segments (purchase-returns is not under purchase). */
+const isUnder = (pathname: string, key: string) =>
+  pathname === key || pathname.startsWith(`${key}/`);
+
+/** Pages outside the menu that belong to an item of it (the trial balance's drill-down). */
+const selectedAliases: Record<string, string> = {
+  "main/accountings/account-analysis": "main/accountings/trial-balance",
+};
 
 const menuClassName = cn(
   "sidebar-menu border-e-0! bg-transparent! px-0!",
@@ -37,12 +46,11 @@ const menuItemClassName = cn(
   "[&.ant-menu-item-selected_.ant-menu-item-icon]:!text-[#1554d1]",
 );
 
+// a section is marked when one of its pages is open, not merely because it is expanded
 const dropdownClassName = cn(
   "[&>.ant-menu-submenu-title]:!mx-3 [&>.ant-menu-submenu-title]:!my-1 [&>.ant-menu-submenu-title]:!h-11 [&>.ant-menu-submenu-title]:!w-[calc(100%-24px)] [&>.ant-menu-submenu-title]:!rounded-lg [&>.ant-menu-submenu-title]:!leading-[44px] [&>.ant-menu-submenu-title]:!text-muted-second",
   "[&>.ant-menu-submenu-title:hover]:!bg-surface-hover [&>.ant-menu-submenu-title:hover]:!text-primary",
-  "[&.ant-menu-submenu-open>.ant-menu-submenu-title]:!bg-surface-hover [&.ant-menu-submenu-open>.ant-menu-submenu-title]:!text-primary",
   "[&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!bg-surface-hover [&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!font-bold [&.ant-menu-submenu-selected>.ant-menu-submenu-title]:!text-primary",
-  "[&.ant-menu-submenu-open>.ant-menu-submenu-title_.ant-menu-item-icon]:!text-[#1554d1] [&.ant-menu-submenu-open>.ant-menu-submenu-title_.sidebar-menu-arrow]:!text-[#1554d1]",
   "[&.ant-menu-submenu-selected>.ant-menu-submenu-title_.ant-menu-item-icon]:!text-[#1554d1] [&.ant-menu-submenu-selected>.ant-menu-submenu-title_.sidebar-menu-arrow]:!text-[#1554d1]",
 );
 
@@ -66,26 +74,41 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
   const navigate = useNavigate();
   const sidebarInline = useAppSelector((state) => state.sidebar);
   const { pinWorkspace, unpinWorkspace } = useWorkspaceNavigation();
+  /**
+   * The menu item of a page: the item whose path the page is (or is under), the longest when
+   * several fit; a page of a group the menu shows by one of its pages ("reports/…",
+   * "tax-reports/…") selects that item; a section's own page ("" path) takes the rest of it.
+   */
   const getSelectedKey = (pathname: string) => {
+    for (const [from, to] of Object.entries(selectedAliases))
+      if (isUnder(pathname, from)) return to;
     for (const item of route) {
-      const basePath = item.linkData?.path;
-
-      if (item.dropdown && item.items?.length) {
-        for (const subItem of item.items) {
-          const fullPath = `main/${basePath}/${subItem.linkData?.path}`;
-          // a section's own page ("" path) is selected on the section and its pages no other item has
-          if (!subItem.linkData?.path) {
-            if (pathname === `main/${basePath}` || pathname.startsWith(fullPath)) return fullPath;
-            continue;
-          }
-          if (pathname.startsWith(fullPath)) {
-            return fullPath;
-          }
+      const sectionKey = `main/${item.linkData?.path}`;
+      if (!(item.dropdown && item.items?.length)) {
+        if (isUnder(pathname, sectionKey)) return sectionKey;
+        continue;
+      }
+      if (!isUnder(pathname, sectionKey)) continue;
+      let best: string | null = null;
+      let groupFallback: string | null = null;
+      let sectionFallback: string | null = null;
+      for (const subItem of item.items) {
+        const subPath = subItem.linkData?.path ?? "";
+        const childKey = `${sectionKey}/${subPath}`;
+        if (!subPath) {
+          sectionFallback ??= childKey;
+          continue;
         }
+        if (isUnder(pathname, childKey)) {
+          if (!best || childKey.length > best.length) best = childKey;
+          continue;
+        }
+        const slash = subPath.lastIndexOf("/");
+        if (slash > 0 && isUnder(pathname, `${sectionKey}/${subPath.slice(0, slash)}`))
+          groupFallback ??= childKey;
       }
-      if (pathname.startsWith(basePath)) {
-        return basePath;
-      }
+      const found = best ?? groupFallback ?? sectionFallback;
+      if (found) return found;
     }
     if (pathname.startsWith("main/settings")) {
       return "main/settings";
@@ -94,13 +117,22 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
   };
   const currentPath = location.pathname.slice(1);
   const selectedKey = getSelectedKey(currentPath);
+  // the section of the page, open whether or not one of its items is the page
   const selectedParentKey = route.find(
     (item) =>
-      item.dropdown && selectedKey.startsWith(`main/${item.linkData?.path}/`),
+      item.dropdown &&
+      (selectedKey.startsWith(`main/${item.linkData?.path}/`) ||
+        isUnder(currentPath, `main/${item.linkData?.path}`)),
   )?.linkData?.path;
   const [stateOpenKeys, setStateOpenKeys] = useState<string[]>(() =>
     selectedParentKey ? [`main/${selectedParentKey}`] : [],
   );
+  // a page opened from a tab or a link opens its section (the others close, as on a click)
+  useEffect(() => {
+    if (!selectedParentKey || sidebarInline.sidebar) return;
+    const sectionKey = `main/${selectedParentKey}`;
+    setStateOpenKeys((current) => (current.includes(sectionKey) ? current : [sectionKey]));
+  }, [selectedParentKey, sidebarInline.sidebar]);
   const renderPinButton = (tab: TabItem) => {
     const isPinned = pinnedTabs.some(
       (pinnedTab) => pinnedTab.key === tab.key && pinnedTab.isPinned === true,
