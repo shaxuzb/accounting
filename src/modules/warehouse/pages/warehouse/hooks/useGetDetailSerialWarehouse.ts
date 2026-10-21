@@ -9,6 +9,8 @@ export interface Params {
   page?: number;
   pageSize?: number;
   warehouseId?: number | null;
+  /** Only the goods below the minimum stock of their card. */
+  belowMinimum?: boolean;
 }
 
 export const useGetDetailSerialWarehouse = (params?: Params) =>

@@ -7,6 +7,7 @@ import ReceivablesPayablesWidget from "../../../components/ReceivablesPayablesWi
 import RelationshipsWidget from "../../../components/RelationshipsWidget";
 import TaxSummaryWidget from "../../../components/TaxSummaryWidget";
 import UnavailableWidget from "../../../components/UnavailableWidget";
+import LowStockAlert from "../../../components/LowStockAlert";
 import { useDashboard } from "../../../hooks/useDashboard";
 
 function DashboardSkeleton() {
@@ -56,6 +57,7 @@ export default function DashboardPage() {
 
       {data ? (
         <div className="space-y-5">
+          <LowStockAlert />
           <CashSummaryWidget summary={data.cash} />
           <div className="grid gap-5 xl:grid-cols-2">
             <RelationshipsWidget summary={data.relationships} />

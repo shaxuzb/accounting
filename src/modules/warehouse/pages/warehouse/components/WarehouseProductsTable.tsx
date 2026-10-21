@@ -151,7 +151,18 @@ export default function WarehouseProductsTable({
       dataIndex: "quantity",
       title: t("app.reports.fields.balance"),
       align: "center",
-      render: (value: number) => numberSpacing(value, undefined, true),
+      // below the card's minimum: red, with the minimum beside it
+      render: (value: number, record: ProductStock) =>
+        record.minStock && value < record.minStock ? (
+          <span className="font-semibold text-danger" title={t("warehouse.belowMinimumHint")}>
+            {numberSpacing(value, undefined, true)}
+            <span className="ml-1 text-xs font-normal">
+              (min {numberSpacing(record.minStock, undefined, true)})
+            </span>
+          </span>
+        ) : (
+          numberSpacing(value, undefined, true)
+        ),
     },
     {
       dataIndex: "unitName",

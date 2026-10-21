@@ -1,4 +1,4 @@
-import { Button, DatePicker, Select, Space, Table, Tooltip } from "antd";
+import { Button, DatePicker, Select, Space, Switch, Table, Tooltip } from "antd";
 import dayjs from "dayjs";
 import type { TableColumnsType } from "antd";
 import { RefreshCw } from "lucide-react";
@@ -19,6 +19,8 @@ import { useAppSelector } from "@/store/hooks";
 import { generateKeyTable, numberSpacing } from "@/utils/utils";
 import { useGetListWarehouse } from "../hooks/useGetListWarehouse";
 import GroupStockProductsRow from "../components/GroupStockProductsRow";
+import WarehouseProductsTable from "../components/WarehouseProductsTable";
+import { warehouseService } from "../api";
 import type { ProductStockGroup } from "../types/type";
 import { useTranslation } from "react-i18next";
 
@@ -52,6 +54,20 @@ export default function ProductSummaryListPage() {
   // 1C «Остатки товаров на дату»: the stock and its book value as they stood then
   const onDate = searchParams.get("onDate") || undefined;
   const onDateParam = onDate ? `${onDate}T23:59:59` : undefined;
+  // the goods below the minimum of their card, all groups together (and those not in stock)
+  const belowMin = searchParams.get("belowMin") === "1";
+  const lowStock = useQuery({
+    queryKey: ["warehouse", "below-minimum", selectedWarehouseId ?? null, search ?? null],
+    queryFn: () =>
+      warehouseService.products({
+        belowMinimum: true,
+        warehouseId: selectedWarehouseId ?? null,
+        search,
+        page: 1,
+        pageSize: 1000,
+      }),
+    enabled: belowMin,
+  });
 
   // Group rows open onto their products. While searching, the groups found open by
   // themselves and show only the matching products; with no search they start closed.
@@ -131,6 +147,19 @@ export default function ProductSummaryListPage() {
           <SearchFilter />
         </div>
         <Space>
+          <span className="flex items-center gap-2 text-sm">
+            <Switch
+              size="small"
+              checked={belowMin}
+              onChange={(checked) => {
+                const next = new URLSearchParams(searchParams);
+                if (checked) next.set("belowMin", "1");
+                else next.delete("belowMin");
+                setSearchParams(next, { replace: true });
+              }}
+            />
+            {t("warehouse.belowMinimum")}
+          </span>
           <Tooltip title={t("warehouse.stockOnDateHint")}>
             <DatePicker
               allowClear
@@ -164,6 +193,17 @@ export default function ProductSummaryListPage() {
           />
         </Space>
       </div>
+      {belowMin ? (
+        <Card className="overflow-hidden border border-border">
+          <WarehouseProductsTable
+            items={lowStock.data?.items ?? []}
+            loading={lowStock.isLoading || lowStock.isFetching}
+            warehouseId={selectedWarehouseId ?? null}
+            highlight={search}
+            showGroup
+          />
+        </Card>
+      ) : (
       <Card className="overflow-hidden border border-border">
         <Table<ProductStockGroup>
           loading={isLoading || isFetching}
@@ -187,6 +227,7 @@ export default function ProductSummaryListPage() {
           scroll={{ x: "max-content", y: "calc(100vh - 260px)" }}
         />
       </Card>
+      )}
     </div>
   );
 }

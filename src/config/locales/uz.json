@@ -572,7 +572,9 @@
     "tasks": {
       "title": "Vazifalar kalendari",
       "description": "Umumiy vazifalar jadvali backend’da hali mavjud emas."
-    }
+    },
+    "lowStock": "Minimal qoldiqdan kam tovarlar: {{count}} ta",
+    "lowStockOpen": "Ko'rish"
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -4062,7 +4064,9 @@
       "settled": "Kamomad yopildi, qo'lda provodka yaratib o'tkazildi"
     },
     "stockOnDate": "Sanaga",
-    "stockOnDateHint": "Qoldiq va uning qiymati shu kun oxiridagi holatda (bosh kitob bo'yicha)"
+    "stockOnDateHint": "Qoldiq va uning qiymati shu kun oxiridagi holatda (bosh kitob bo'yicha)",
+    "belowMinimum": "Minimaldan kam",
+    "belowMinimumHint": "Qoldiq mahsulot kartasidagi minimal qoldiqdan kam — buyurtma qilish kerak"
   },
   "notifications": {
     "title": "Bildirishnomalar",

@@ -570,7 +570,9 @@
     "tasks": {
       "title": "Task calendar",
       "description": "The generic task table is not available in the backend yet."
-    }
+    },
+    "lowStock": "{{count}} items below the minimum stock",
+    "lowStockOpen": "Show"
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -4062,7 +4064,9 @@
       "settled": "Shortage settled, a manual entry was created and posted"
     },
     "stockOnDate": "On date",
-    "stockOnDateHint": "The stock and its book value at the end of that day (from the ledger)"
+    "stockOnDateHint": "The stock and its book value at the end of that day (from the ledger)",
+    "belowMinimum": "Below minimum",
+    "belowMinimumHint": "The stock is below the minimum on the product card: order more"
   },
   "notifications": {
     "title": "Notifications",

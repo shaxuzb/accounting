@@ -44,6 +44,8 @@ export interface ProductStock {
   /** Kept unit by unit with a marking code. */
   isPieceTracked?: boolean;
   productGroupName?: string;
+  /** The minimum stock of the product's card: below it the goods are to be ordered. */
+  minStock?: number | null;
   quantity: number;
   /** What may be taken: today's free stock, or on a date what later issues left of it. */
   availableQuantity?: number;
