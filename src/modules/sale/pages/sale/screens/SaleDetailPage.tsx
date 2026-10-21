@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import type { ReactNode } from "react";
 import { useAppSelector } from "@/store/hooks";
 import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
+import TradePrintButton from "@/modules/documentPrint/TradePrintButton";
 import CreateReturnButton from "@/modules/returns/CreateReturnButton";
 import CreateCorrectionButton from "@/modules/corrections/CreateCorrectionButton";
 import DocumentEsfButton from "@/modules/settings/pages/integrations/edo/components/DocumentEsfButton";
@@ -61,6 +62,7 @@ export default function SaleDetailPage() {
         {document.statusId === 2 && (
           <DocumentEsfButton kind="sale" documentId={Number(document.id)} />
         )}
+        <TradePrintButton source="sale" documentId={Number(document.id)} />
         <DocumentContractButton
           kind="sale"
           documentId={document.id}

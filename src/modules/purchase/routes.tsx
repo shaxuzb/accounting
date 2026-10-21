@@ -4,6 +4,7 @@ import PermissionCard from "@/components/ui/card/PermissionCard";
 import { purchasePermissions } from "./pages/purchase/constants/permissions";
 const PurchaseListPage = lazy(() => import("./pages/purchase/screens/PurchaseListPage"));
 const PurchaseDetailPage = lazy(() => import("./pages/purchase/screens/PurchaseDetailPage"));
+const TradeDocumentPrintPage = lazy(() => import("../documentPrint/TradeDocumentPrintPage"));
 const ContractListPage = lazy(() => import("../contract/screens/ContractListPage"));
 import { commissionReportRoute } from "../commissionReport/routes";
 import { commissionReportKinds } from "../commissionReport/api";
@@ -66,6 +67,12 @@ export const purchaseRoutes: RouteObject = {
             backTo: "..",
             tabSuffix: "docNumber",
           },
+        },
+        {
+          // the receipt of the goods (1C «Приходная накладная»)
+          path: ":id/print/:form",
+          element: withPermission(<TradeDocumentPrintPage source="purchase" />, purchasePermissions.detail),
+          handle: { title: "tradePrint.print", showBack: true, backTo: "../../.." },
         },
         {
           path: ":id",

@@ -4,6 +4,7 @@ import PermissionCard from "@/components/ui/card/PermissionCard";
 const SaleAddEditPage = lazy(() => import("./pages/sale/screens/SaleAddEditPage"));
 const SaleDetailPage = lazy(() => import("./pages/sale/screens/SaleDetailPage"));
 const SaleListPage = lazy(() => import("./pages/sale/screens/SaleListPage"));
+const TradeDocumentPrintPage = lazy(() => import("../documentPrint/TradeDocumentPrintPage"));
 import { salePermissions } from "./pages/sale/constants/permissions";
 const ContractListPage = lazy(() => import("../contract/screens/ContractListPage"));
 import { contractPermissions } from "../contract/constants/permissions";
@@ -53,6 +54,12 @@ export const saleRoutes: RouteObject = {
           path: ":id",
           element: withPermission(<SaleDetailPage />, salePermissions.detail),
           handle: { title: "sale.document", showBack: true, backTo: ".." },
+        },
+        {
+          // the waybill of the goods, the act of the services (1C «Печать»)
+          path: ":id/print/:form",
+          element: withPermission(<TradeDocumentPrintPage source="sale" />, salePermissions.detail),
+          handle: { title: "tradePrint.print", showBack: true, backTo: "../../.." },
         },
       ],
     },

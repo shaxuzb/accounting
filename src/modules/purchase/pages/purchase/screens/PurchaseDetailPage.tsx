@@ -40,6 +40,7 @@ import LineClampCell from "@/components/widget/text/LineClampCell";
 import PurchaseEditor from "./PurchaseEditorPage";
 import { useAppSelector } from "@/store/hooks";
 import DocumentContractButton from "@/modules/settings/pages/contractTemplates/components/DocumentContractButton";
+import TradePrintButton from "@/modules/documentPrint/TradePrintButton";
 import {
   DocumentSummary,
   DocumentSummaryItem,
@@ -298,6 +299,7 @@ const PurchaseDetailPage = () => {
               statusName={data?.statusName}
             />
             <div className="ml-auto flex items-center gap-2">
+              {data && <TradePrintButton source="purchase" documentId={Number(data.id)} />}
               {data && (
                 <DocumentContractButton
                   kind="purchase"
