@@ -33,6 +33,19 @@ export const counterpartySchema = (isEdit = false) =>
           ? schema
           : schema.matches(/^\d{14}$/, { message: tMessage("settings.validation.pinfl14"), excludeEmptyString: true }),
       ),
+    // a resident VAT payer's registration code (12 digits) and the activity code (5)
+    vatRegistrationCode: Yup.string()
+      .nullable()
+      .when(["isResident", "isVatPayer"], ([isResident, isVatPayer], schema) =>
+        isResident && isVatPayer
+          ? schema.matches(/^\d{12}$/, { message: tMessage("settings.validation.vatCode12"), excludeEmptyString: true })
+          : schema,
+      ),
+    oked: Yup.string()
+      .nullable()
+      .when(["isResident"], ([isResident], schema) =>
+        isResident ? schema.matches(/^\d{5}$/, { message: tMessage("settings.validation.oked5"), excludeEmptyString: true }) : schema,
+      ),
     phoneNumber: requiredPhone(),
     regionId: requiredNumber("settings.fields.region"),
     districtId: requiredNumber("settings.fields.district"),

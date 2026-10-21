@@ -3,6 +3,7 @@ import {
   editStateSchema,
   requiredNumber,
   requiredString,
+  tMessage,
 } from "../../../shared/validation";
 
 export const counterpartybankaccountSchema = (isEdit = false) =>
@@ -11,7 +12,7 @@ export const counterpartybankaccountSchema = (isEdit = false) =>
     counterpartyId: requiredNumber("settings.fields.counterparty"),
     bankId: requiredNumber("settings.fields.bank"),
     bankBranchId: Yup.number().nullable(),
-    accountNumber: requiredString("settings.fields.accountNumber"),
+    accountNumber: requiredString("settings.fields.accountNumber").matches(/^\d{20}$/, tMessage("settings.validation.account20")),
     currencyId: requiredNumber("settings.fields.currency"),
     isMain: Yup.boolean(),
     stateId: editStateSchema(isEdit),

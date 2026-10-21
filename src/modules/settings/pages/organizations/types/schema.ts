@@ -22,7 +22,10 @@ export const organizationsSchema = (isEdit = false) =>
       ),
     vatRegistrationCode: Yup.string()
       .nullable()
-      .matches(/^\d*$/, { message: tMessage("settings.validation.digitsOnly"), excludeEmptyString: true }),
+      .matches(/^\d{12}$/, { message: tMessage("settings.validation.vatCode12"), excludeEmptyString: true }),
+    oked: Yup.string()
+      .nullable()
+      .matches(/^\d{5}$/, { message: tMessage("settings.validation.oked5"), excludeEmptyString: true }),
     phoneNumber: requiredPhone(),
     regionId: requiredNumber("settings.fields.region"),
     defaultLanguageId: requiredNumber("settings.fields.language"),

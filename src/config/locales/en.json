@@ -1342,7 +1342,11 @@
       "pinfl14": "The PINFL must be 14 digits",
       "innOrPinfl": "Enter the TIN or PINFL",
       "account20": "The account number must be 20 digits",
-      "digitsOnly": "Digits only"
+      "digitsOnly": "Digits only",
+      "vatCode12": "The VAT registration code is 12 digits",
+      "oked5": "The OKED code is 5 digits",
+      "mfo5": "The MFO is 5 digits",
+      "cardOrAccount": "A card number is 16 digits, an account 20"
     },
     "role": {
       "selectAll": "Select all",

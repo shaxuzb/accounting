@@ -1344,7 +1344,11 @@
       "pinfl14": "JShShIR 14 ta raqamdan iborat bo'lishi kerak",
       "innOrPinfl": "STIR yoki JShShIR kiriting",
       "account20": "Hisob raqami 20 ta raqamdan iborat bo'lishi kerak",
-      "digitsOnly": "Faqat raqamlar"
+      "digitsOnly": "Faqat raqamlar",
+      "vatCode12": "QQS to'lovchisining ro'yxatdan o'tish kodi 12 ta raqamdan iborat bo'lishi kerak",
+      "oked5": "IFUT (OKED) kodi 5 ta raqamdan iborat bo'lishi kerak",
+      "mfo5": "MFO 5 ta raqamdan iborat bo'lishi kerak",
+      "cardOrAccount": "Karta raqami 16 ta yoki hisob raqami 20 ta raqam bo'lishi kerak"
     },
     "role": {
       "selectAll": "Hammasini belgilash",
