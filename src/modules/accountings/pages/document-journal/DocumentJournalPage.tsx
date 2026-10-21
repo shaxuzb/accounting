@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { usePersistedState, useScopedStorageKey } from "@/shared/persistence/usePersistedState";
 import { numberSpacing } from "@/utils/utils";
+import { documentRoute } from "@/shared/constants/documentRoutes";
 import { getJson } from "../../services/request";
 
 interface RegistryDocument {
@@ -24,18 +25,6 @@ interface RegistryDocument {
   statusCode: string | null;
   statusName: string | null;
 }
-
-/** Where a document of a kind opens; the kinds without a page of their own are listed without a link. */
-const documentPath: Record<number, (id: number) => string> = {
-  1: (id) => `/main/purchases/purchase/${id}`,
-  2: (id) => `/main/sales/sale/${id}`,
-  3: (id) => `/main/bank/${id}`,
-  4: (id) => `/main/cash-operationses/cash-operations/${id}`,
-  5: (id) => `/main/payroll/documents/${id}`,
-  11: (id) => `/main/fa/receipts/${id}`,
-  21: (id) => `/main/payroll/payments/${id}`,
-  26: (id) => `/main/rentals/accruals/${id}`,
-};
 
 const statusColor: Record<string, string> = { posted: "green", draft: "default", cancelled: "red" };
 
@@ -79,8 +68,8 @@ export default function DocumentJournalPage() {
       title: t("app.documentJournal.number"),
       width: 140,
       render: (_, row) => {
-        const path = documentPath[row.documentTypeId];
-        return path ? <Link to={path(row.documentId)}>{row.docNumber}</Link> : row.docNumber;
+        const path = documentRoute(row.documentTypeId, row.documentId);
+        return path ? <Link to={path}>{row.docNumber}</Link> : row.docNumber;
       },
     },
     {

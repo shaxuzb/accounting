@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
+import { documentRoute } from "@/shared/constants/documentRoutes";
 import SelectCustom from "@/components/fields/SelectCustom";
 import {
   chartAccountOptionLabel,
@@ -68,7 +70,10 @@ export default function AccountCardPage() {
         title: t("app.reports.fields.documentType"),
         dataIndex: "documentType",
         width: 190,
-        render: (value) => value || "-",
+        render: (value, record) => {
+          const path = record.documentTypeId && record.documentId ? documentRoute(record.documentTypeId, record.documentId) : null;
+          return path && value ? <Link to={path}>{value}</Link> : value || "-";
+        },
       },
       {
         title: t("app.reports.fields.description"),

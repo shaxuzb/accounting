@@ -27,6 +27,7 @@ const RegulatedResultsPage = lazy(() => import("./pages/regulated-forms/Regulate
 const ExpressCheckPage = lazy(() => import("./pages/regulated-forms/ExpressCheckPage"));
 const RegulatedCashFlowPage = lazy(() => import("./pages/regulated-forms/RegulatedCashFlowPage"));
 const AnalyticReportsPage = lazy(() => import("./pages/analytic-reports/AnalyticReportsPage"));
+const AccountAnalysisPage = lazy(() => import("./pages/account-analysis/AccountAnalysisPage"));
 const DocumentJournalPage = lazy(() => import("./pages/document-journal/DocumentJournalPage"));
 const VatReturnPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.VatReturnPage })));
 const TurnoverTaxPage = lazy(() => import("./pages/tax-reports/TaxFormPages").then((m) => ({ default: m.TurnoverTaxPage })));
@@ -164,6 +165,12 @@ export const accountingsRoutes: RouteObject = {
       path: "trial-balance",
       handle: { title: "app.accounting.trialBalance" },
       element: withAccess(<TrialBalancePage />, trialBalancePermissions.view),
+    },
+    {
+      // the trial balance's drill-down on a page of its own
+      path: "account-analysis",
+      handle: { title: "app.accountDrill.title" },
+      element: withAccess(<AccountAnalysisPage />, trialBalancePermissions.view),
     },
     {
       path: "manual-entries",

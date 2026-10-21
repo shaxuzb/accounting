@@ -5,6 +5,8 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 import Card from "@/components/ui/card/Card";
+import AccountDrillPanel, { type DrillTarget } from "../../account-analysis/AccountDrillPanel";
+import type { DrillSide } from "../../account-analysis/api";
 import {
   usePersistedState,
   useScopedStorageKey,
@@ -42,6 +44,10 @@ const financialColumnKeys: FinancialColumnKey[] = [
 ];
 
 const money = (value: number) => numberSpacing(value, undefined, true);
+/** The side a turnover cell opens; a balance cell opens the whole account. */
+const sideOf = (key: FinancialColumnKey): DrillSide | null =>
+  key === "periodDebit" ? "debit" : key === "periodCredit" ? "credit" : null;
+const drillCell = "cursor-pointer hover:bg-primary/5";
 
 type TreeRow = TrialBalanceItem & { children?: TreeRow[] };
 const exportDate = (value?: string | null) => value?.split("T")[0] ?? "all";
@@ -65,6 +71,11 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
   });
   // 1C «Развернуть по субсчетам»: a group's subaccounts under it, all open at first
   const [collapsed, setCollapsed] = useState<number[] | null>(null);
+  // 1C: a double click on a line opens the account's card and analysis — here a click on the
+  // account or on any of its sums opens them on a panel (a turnover cell — that side only)
+  const [drill, setDrill] = useState<DrillTarget | null>(null);
+  const openDrill = (item: TrialBalanceItem, side: DrillSide | null = null) =>
+    setDrill({ accountId: item.accountId, label: `${item.accountNumber} ${item.accountName}`, side });
   const visibleFinancialColumns = financialColumnKeys.filter((key) =>
     visibleColumns.includes(key),
   );
@@ -207,8 +218,9 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
         dataIndex: "accountNumber",
         fixed: "left",
         width: 145,
+        onCell: (record) => ({ onClick: () => openDrill(record), className: drillCell }),
         render: (value, record) => (
-          <span className="font-medium text-text">
+          <span className="font-medium text-primary">
             {record.accountNumber || value || "-"}
           </span>
         ),
@@ -220,14 +232,19 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
               dataIndex: "accountName",
               fixed: "left" as const,
               width: 260,
+              onCell: (record: TreeRow) => ({ onClick: () => openDrill(record), className: drillCell }),
               render: (value: string) => value || "-",
             },
           ]
         : []),
       ...financialColumnKeys
         .filter((key) => visibleFinancialColumns.includes(key))
-        .map((key) => financialColumns[key]),
+        .map((key) => ({
+          ...financialColumns[key],
+          onCell: (record: TreeRow) => ({ onClick: () => openDrill(record, sideOf(key)), className: drillCell }),
+        })),
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [financialColumns, t, visibleColumns, visibleFinancialColumns, search, rowNumbers],
   );
 
@@ -278,6 +295,7 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
           <div className="text-xs text-secondary-text">
             {t("app.reports.turnover.accountsCount", { count: rows.length })}
           </div>
+          <div className="text-xs text-secondary-text">{t("app.accountDrill.trialHint")}</div>
         </div>
 
         <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center lg:w-auto">
@@ -398,7 +416,9 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
                 className={item.isGroup ? "font-semibold" : undefined}
               >
                 <Table.Summary.Cell index={0} colSpan={baseColumnCount}>
-                  {item.accountNumber} {item.accountName}
+                  <button type="button" className="text-left text-primary hover:underline" onClick={() => openDrill(item)}>
+                    {item.accountNumber} {item.accountName}
+                  </button>
                 </Table.Summary.Cell>
                 {visibleTotalKeys.map((key, index) => (
                   <Table.Summary.Cell
@@ -406,7 +426,9 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
                     index={index + baseColumnCount}
                     align="right"
                   >
-                    <span className="tabular-nums">{item[key] ? money(item[key]) : ""}</span>
+                    <button type="button" className="tabular-nums hover:underline" onClick={() => openDrill(item, sideOf(key))}>
+                      {item[key] ? money(item[key]) : ""}
+                    </button>
                   </Table.Summary.Cell>
                 ))}
               </Table.Summary.Row>
@@ -414,6 +436,12 @@ export default function TrialBalanceTable({ result, filters, loading }: Props) {
             </>
           ) : null
         }
+      />
+      <AccountDrillPanel
+        target={drill}
+        dateFrom={filters.dateFrom}
+        dateTo={filters.dateTo}
+        onClose={() => setDrill(null)}
       />
     </Card>
   );

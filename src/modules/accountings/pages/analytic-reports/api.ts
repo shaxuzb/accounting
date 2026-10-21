@@ -27,6 +27,8 @@ export interface SubkontoBalance {
 }
 
 export interface AccountAnalysisRow {
+  /** The correspondent account (none for an off-balance entry). */
+  accountId: number | null;
   accountNumber: string;
   accountName: string;
   debit: number;

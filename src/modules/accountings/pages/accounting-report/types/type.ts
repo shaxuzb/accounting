@@ -189,6 +189,8 @@ export interface AccountCardTransaction {
   journalNumber: string | null;
   documentNumber: string | null;
   documentTypeId: number | null;
+  /** The document of the entry, to open it. */
+  documentId?: number | null;
   documentType: string | null;
   reference: string | null;
   description: string | null;

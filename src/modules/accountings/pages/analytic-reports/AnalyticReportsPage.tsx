@@ -3,6 +3,8 @@ import type { ColumnsType } from "antd/es/table";
 import dayjs, { type Dayjs } from "dayjs";
 import { FileSpreadsheet, Printer, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
+import { documentRoute } from "@/shared/constants/documentRoutes";
 import ContractSelect from "@/components/fields/ContractSelect";
 import SelectCustom from "@/components/fields/SelectCustom";
 import {
@@ -403,7 +405,15 @@ export default function AnalyticReportsPage() {
       if (!state.subkontoTypeId || !state.entityId) return <Empty description={t("app.analyticReports.pickValue")} />;
       const columns: ColumnsType<SubkontoCardRow> = [
         { title: t("app.analyticReports.date"), width: 105, render: (_, row) => dayjs(row.date).format("DD.MM.YYYY") },
-        { title: t("app.analyticReports.document"), width: 220, render: (_, row) => `${row.documentType ?? ""} №${row.number ?? row.documentId}` },
+        {
+          title: t("app.analyticReports.document"),
+          width: 220,
+          render: (_, row) => {
+            const label = `${row.documentType ?? ""} №${row.number ?? row.documentId}`;
+            const path = documentRoute(row.documentTypeId, row.documentId);
+            return path ? <Link to={path}>{label}</Link> : label;
+          },
+        },
         { title: t("app.analyticReports.content"), dataIndex: "content", width: 200 },
         { title: t("app.analyticReports.debitAccount"), dataIndex: "debitAccount", width: 90, align: "center" },
         { title: t("app.analyticReports.creditAccount"), dataIndex: "creditAccount", width: 90, align: "center" },
