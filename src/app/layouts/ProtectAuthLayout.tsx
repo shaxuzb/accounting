@@ -9,6 +9,7 @@ import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import {
   isLoading,
   logout,
+  setPermissions,
   setSessionChecked,
 } from "@/store/features/authSlice";
 import { authService } from "@/services/authService";
@@ -82,9 +83,11 @@ const ProtectAuthLayout = () => {
     const validateSession = async () => {
       try {
         dispatch(isLoading(true));
-        await authService.authCheck();
+        const response = await authService.authCheck();
 
         if (active) {
+          const permissions = response?.data?.permissions;
+          if (Array.isArray(permissions)) dispatch(setPermissions(permissions));
           dispatch(setSessionChecked(true));
         }
       } catch (err: unknown) {

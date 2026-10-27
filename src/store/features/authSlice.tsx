@@ -40,6 +40,17 @@ const authSlice = createSlice({
       localStorage.setItem("login", JSON.stringify(action.payload));
     },
 
+    // the role's permissions as the server reads them now (the session check returns them):
+    // a role changed since sign-in reaches the menu without signing in again
+    setPermissions: (state, action: PayloadAction<string[]>) => {
+      if (!state.user?.user) return;
+      const current = state.user.user.permissions ?? [];
+      const next = action.payload;
+      if (current.length === next.length && next.every((code) => current.includes(code))) return;
+      state.user.user.permissions = next;
+      localStorage.setItem("login", JSON.stringify(state.user));
+    },
+
     isLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
@@ -78,6 +89,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout, isLoading, setSessionChecked } =
+export const { login, logout, isLoading, setPermissions, setSessionChecked } =
   authSlice.actions;
 export default authSlice.reducer;
