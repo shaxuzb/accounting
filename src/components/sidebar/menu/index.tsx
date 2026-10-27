@@ -82,6 +82,9 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
   const getSelectedKey = (pathname: string) => {
     for (const [from, to] of Object.entries(selectedAliases))
       if (isUnder(pathname, from)) return to;
+    // the intangibles item opens the assets list filtered to them
+    if (isUnder(pathname, "main/fa/assets") && new URLSearchParams(location.search).get("assetKindId") === "2")
+      return "main/fa/intangibles";
     for (const item of route) {
       const sectionKey = `main/${item.linkData?.path}`;
       if (!(item.dropdown && item.items?.length)) {
@@ -229,7 +232,8 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
               )
               ?.map((item) => {
                 const childKey = `main/${itemParent.linkData.path}/${item.linkData?.path}`;
-                const childPath = `/${childKey}`;
+                // a section's own page ("" path) is the section's address, without a trailing slash
+                const childPath = item.linkData?.path ? `/${childKey}` : `/main/${itemParent.linkData.path}`;
                 const isSelected = selectedKey === childKey;
 
                 return {
@@ -256,8 +260,9 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
                     </div>
                   ),
                   onClick: () => {
-                    if (currentPath !== childKey) {
-                      navigate(`/${childKey}`);
+                    // the same page with a filter (the intangibles of the assets list) is left too
+                    if (`/${currentPath}${location.search}` !== childPath) {
+                      navigate(childPath);
                     }
                   },
                   icon: (

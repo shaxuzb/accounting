@@ -82,6 +82,11 @@ const AccountingPolicyPage = lazy(() => import("./pages/accountingPolicy/screens
 import { accountingPolicyPermissions } from "./pages/accountingPolicy/constants/permissions";
 
 const settingsPermissions = [
+  // the cards of document numbers, units, product accounts and FA groups
+  "ORGANIZATION_UPDATE",
+  "PRODUCT_VIEW",
+  "DOCUMENT_ACCOUNT_SETTING_VIEW",
+  "FA_ASSET_VIEW",
   contractTemplatePermissions.view,
   rolePermissions.view,
   userPermissions.view,

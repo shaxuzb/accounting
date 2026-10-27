@@ -120,6 +120,11 @@ export const settingsViewPermissions = [
   "DEPARTMENT_VIEW",
   "BRANCH_VIEW",
   "CHART_ACCOUNT_VIEW",
+  // the settings cards of document numbers, units, product accounts and FA groups
+  "ORGANIZATION_UPDATE",
+  "PRODUCT_VIEW",
+  "DOCUMENT_ACCOUNT_SETTING_VIEW",
+  "FA_ASSET_VIEW",
   settingsBankPermissions.view,
   bankPermissions.view,
   "COUNTERPARTY_BANK_ACCOUNT_VIEW",
@@ -207,7 +212,7 @@ export const menuPermissions: MainMenu = {
           code: contractPermissions.view,
           linkData: {
             path: "contracts",
-            title: "contract.title",
+            title: "contract.purchaseTitle",
           },
         },
       ],
@@ -224,7 +229,8 @@ export const menuPermissions: MainMenu = {
       },
       items: [
         {
-          code: productPermissions.view,
+          // the stock list (the route asks for the stock summary, not the products' view)
+          code: "PRODUCT_STOCK_GET_PRODUCT_SUMMARY",
           linkData: {
             path: "warehouse",
             title: "app.menu.warehouse",
@@ -344,7 +350,7 @@ export const menuPermissions: MainMenu = {
         },
         {
           // the bank operations are the section's own page (/main/bank)
-          code: "ROLE_VIEW",
+          code: "BANK_OPERATION_VIEW",
           linkData: { path: "", title: "bank.operationsTitle" },
         },
       ],
@@ -699,7 +705,7 @@ export const menuPermissions: MainMenu = {
           code: contractPermissions.view,
           linkData: {
             path: "contracts",
-            title: "contract.title",
+            title: "contract.saleTitle",
           },
         },
       ],

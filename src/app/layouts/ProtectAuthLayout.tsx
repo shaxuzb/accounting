@@ -137,6 +137,24 @@ const ProtectAuthLayout = () => {
       return;
     }
 
+    // a section of the menu opened by its own address (a back link, a typed URL) has no page
+    // of its own: its first page the user may see opens
+    const section = menuPermissions.TOP.find(
+      (item) =>
+        item.dropdown &&
+        item.items?.length &&
+        !item.items.some((subItem) => !subItem.linkData?.path) &&
+        pathname.replace(/\/+$/, "") === `/main/${item.linkData.path}`,
+    );
+    if (section) {
+      const permissions = user.user?.permissions ?? [];
+      const first = section.items?.find((subItem) => subItem.code && permissions.includes(subItem.code));
+      if (first) {
+        navigate(`/main/${section.linkData.path}/${first.linkData?.path}`, { replace: true });
+        return;
+      }
+    }
+
     if (isMainPage) return;
 
     const firstAllowedPath = getFirstAllowedPath();

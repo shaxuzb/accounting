@@ -185,7 +185,8 @@ export const accountingsRoutes: RouteObject = {
     {
       path: "periods",
       handle: { title: "periods.title" },
-      element: <PeriodsPage />,
+      // as the menu shows it: to whoever closes the months
+      element: withAccess(<PeriodsPage />, "ACCOUNTING_PERIOD_CLOSE"),
     },
     {
       path: "deferred-expenses",

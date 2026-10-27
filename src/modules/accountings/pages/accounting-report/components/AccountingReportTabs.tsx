@@ -1,28 +1,30 @@
 import { Tabs } from "antd";
 import { useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import { useAppSelector } from "@/store/hooks";
+import { accountingReportPermissions as p } from "../constants/permissions";
 
+// each report with the permission its route asks for: a tab the user may not open is not shown
 const tabs = [
-  { key: "form-1", labelKey: "app.regulatedForms.form1" },
-  { key: "form-2", labelKey: "app.regulatedForms.form2" },
-  { key: "form-4", labelKey: "app.regulatedForms.form4" },
-  { key: "express-check", labelKey: "app.regulatedForms.expressCheck" },
-  { key: "balance-sheet", labelKey: "app.reports.balance.title" },
-  { key: "income-statement", labelKey: "app.reports.income.title" },
-  { key: "cash-flow", labelKey: "app.reports.cashFlow.title" },
-  {
-    key: "account-turnover",
-    labelKey: "app.reports.turnover.title",
-  },
-  { key: "journal", labelKey: "app.reports.journal.title" },
-  { key: "account-card", labelKey: "app.reports.card.title" },
-  { key: "analysis", labelKey: "app.analyticReports.title" },
+  { key: "form-1", labelKey: "app.regulatedForms.form1", permission: p.balanceSheet },
+  { key: "form-2", labelKey: "app.regulatedForms.form2", permission: p.incomeStatement },
+  { key: "form-4", labelKey: "app.regulatedForms.form4", permission: p.cashFlow },
+  { key: "express-check", labelKey: "app.regulatedForms.expressCheck", permission: p.balanceSheet },
+  { key: "balance-sheet", labelKey: "app.reports.balance.title", permission: p.balanceSheet },
+  { key: "income-statement", labelKey: "app.reports.income.title", permission: p.incomeStatement },
+  { key: "cash-flow", labelKey: "app.reports.cashFlow.title", permission: p.cashFlow },
+  { key: "account-turnover", labelKey: "app.reports.turnover.title", permission: p.accountTurnover },
+  { key: "journal", labelKey: "app.reports.journal.title", permission: p.journal },
+  { key: "account-card", labelKey: "app.reports.card.title", permission: p.accountCard },
+  { key: "analysis", labelKey: "app.analyticReports.title", permission: p.accountTurnover },
 ];
 
 export default function AccountingReportTabs() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const permissions = useAppSelector((state) => state.auth.user?.user.permissions);
+  const visible = permissions ? tabs.filter((tab) => permissions.includes(tab.permission)) : tabs;
   const activeKey =
     tabs.find((tab) => location.pathname.endsWith(`/${tab.key}`))?.key ??
     tabs[0].key;
@@ -33,7 +35,7 @@ export default function AccountingReportTabs() {
       type="card"
       activeKey={activeKey}
       onChange={(key) => navigate(`${reportsPath}/${key}`)}
-      items={tabs.map((tab) => ({
+      items={visible.map((tab) => ({
         key: tab.key,
         label: t(tab.labelKey),
       }))}

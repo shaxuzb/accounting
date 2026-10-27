@@ -3,7 +3,7 @@ import MenuCustom from "@/components/sidebar/menu";
 import ProfileSide from "@/components/sidebar/ProfileSide";
 import { useAppSelector } from "@/store/hooks";
 import { useMemo } from "react";
-import { menuPermissions } from "../config/menuPermissions";
+import { menuPermissions, settingsViewPermissions } from "../config/menuPermissions";
 import { logout } from "@/store/features/authSlice";
 import { useDispatch } from "react-redux";
 const Sidebar = () => {
@@ -16,12 +16,15 @@ const Sidebar = () => {
       for (let index = 0; index < menuPermissions.TOP.length; index++) {
         if (!user?.user?.permissions) {
           dispatch(logout());
+          return { TOP: [] };
         }
         if (
           user.user.permissions.find(
             (item) => item === menuPermissions.TOP[index].code,
           ) ||
-          menuPermissions.TOP[index].code === "SETTINGS" ||
+          // settings: to whoever may see one of its cards (as the route lets in)
+          (menuPermissions.TOP[index].code === "SETTINGS" &&
+            settingsViewPermissions.some((permission) => user.user.permissions.includes(permission))) ||
           // open to every user: the manual
           menuPermissions.TOP[index].code === "PUBLIC" ||
           (menuPermissions.TOP[index].code === "DROPDOWN" &&

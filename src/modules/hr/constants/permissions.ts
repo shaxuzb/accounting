@@ -23,6 +23,8 @@ export const hrOrderPermissions = {
 } as const;
 
 export const hrViewPermissions = [
+  // the vacations page of the HR section is the payroll documents' (the menu shows it by that)
+  "PAYROLL_DOCUMENT_VIEW",
   hrEmployeePermissions.view,
   hrAbsencePermissions.view,
   hrOrderPermissions.view,
