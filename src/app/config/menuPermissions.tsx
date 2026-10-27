@@ -41,6 +41,8 @@ import {
   Ruler,
   Printer,
   ListTree,
+  Activity,
+  ScrollText,
 } from "lucide-react";
 import { productionDocs } from "@/modules/production/constants";
 import { salePermissions } from "@/modules/sale";
@@ -115,6 +117,8 @@ interface MainMenu {
 export const settingsViewPermissions = [
   "ROLE_VIEW",
   "USER_VIEW",
+  "USER_ACTIVITY_VIEW",
+  "AUDIT_LOG_VIEW",
   "ORGANIZATION_VIEW",
   "COUNTERPARTY_CARD_VIEW",
   "DEPARTMENT_VIEW",
@@ -891,6 +895,24 @@ export const menuPermissions: MainMenu = {
         title: "settings.entities.users",
         // img: role,
         description: "settings.descriptions.users",
+      },
+    },
+    {
+      code: "USER_ACTIVITY_VIEW",
+      iconName: <Activity className="size-5" />,
+      linkData: {
+        path: "user-activity",
+        title: "activity.title",
+        description: "activity.description",
+      },
+    },
+    {
+      code: "AUDIT_LOG_VIEW",
+      iconName: <ScrollText className="size-5" />,
+      linkData: {
+        path: "audit-journal",
+        title: "audit.journal.title",
+        description: "audit.journal.description",
       },
     },
     {

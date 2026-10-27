@@ -95,7 +95,7 @@ interface SettingsGroupDefinition {
 /** The settings sections grouped by subject, the way 1C groups its «Администрирование» and «Справочники». */
 export const settingsGroupDefinitions: SettingsGroupDefinition[] = [
   { key: "organization", icon: Building2, tone: "blue", paths: ["organizations", "branches", "departments", "positions"] },
-  { key: "access", icon: ShieldCheck, tone: "emerald", paths: ["users", "role"] },
+  { key: "access", icon: ShieldCheck, tone: "emerald", paths: ["users", "role", "user-activity", "audit-journal"] },
   {
     key: "accounting",
     icon: ReceiptText,

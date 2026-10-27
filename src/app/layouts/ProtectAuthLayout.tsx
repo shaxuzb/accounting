@@ -13,6 +13,7 @@ import {
   setSessionChecked,
 } from "@/store/features/authSlice";
 import { authService } from "@/services/authService";
+import { startPresence } from "@/services/presence";
 import {
   canSeeMenuItem, menuPermissions,
   settingsViewPermissions,
@@ -118,6 +119,11 @@ const ProtectAuthLayout = () => {
       active = false;
     };
   }, [dispatch, redirectToLogin, sessionChecked, token]);
+
+  // the presence socket: while a page of the signed-in app is open, the user is online
+  useEffect(() => {
+    if (token && sessionChecked) startPresence(token);
+  }, [sessionChecked, token]);
 
   useEffect(() => {
     if (isCheckingSession) return;

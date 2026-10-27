@@ -1,4 +1,5 @@
 import { Outlet, useLocation } from "react-router";
+import RecordHistoryDrawer from "@/components/audit/RecordHistoryDrawer";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import WorkspaceTabs from "./WorkspaceTabs";
@@ -47,6 +48,7 @@ const MainLayout = () => {
         </div>
       </div>
       {/* <SettingSystem ref={containerRef} /> */}
+      <RecordHistoryDrawer />
     </motion.div>
   );
 };

@@ -1,7 +1,9 @@
 import React from "react";
 import { Dropdown, Button, App } from "antd";
 import type { MenuProps } from "antd";
-import { EllipsisVertical, Pencil, Trash } from "lucide-react";
+import { EllipsisVertical, History, Pencil, Trash } from "lucide-react";
+import { canSeeRecordHistory } from "@/components/audit/permissions";
+import { openRecordHistory } from "@/components/audit/recordHistory";
 import { $axiosPrivate } from "@/services/AxiosService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
@@ -126,6 +128,17 @@ const ActionColumn: React.FC<Props> = ({
           onOk: () => handleDelete(record.id),
         });
       },
+    });
+  }
+
+  // who entered the row and who changed what: read by the list's API resource
+  if (canSeeRecordHistory(permissions)) {
+    actions.push({
+      key: "history",
+      label: t("audit.history.title"),
+      icon: <History className="size-4" />,
+      onClick: () =>
+        openRecordHistory({ resource: deletePath.split("?")[0], id: record.id }),
     });
   }
 

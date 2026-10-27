@@ -8,6 +8,8 @@ import { groupKeyByPath, settingsGroupDefinitions } from "./catalog";
 const RoleListPage = lazy(() => import("./pages/role/screens/RoleListPage"));
 const RoleAddEditPage = lazy(() => import("./pages/role/screens/RoleAddEditPage"));
 const UserListPage = lazy(() => import("./pages/users/screens/UserListPage"));
+const UserActivityPage = lazy(() => import("./pages/activity/UserActivityPage"));
+const AuditJournalPage = lazy(() => import("./pages/activity/AuditJournalPage"));
 const OrganizationListPage = lazy(() => import("./pages/organizations/screens/OrganizationListPage"));
 const CounterpartyListPage = lazy(() => import("./pages/counterparty/screens/CounterpartyListPage"));
 const DepartmentListPage = lazy(() => import("./pages/departments/screens/DepartmentListPage"));
@@ -82,6 +84,8 @@ const AccountingPolicyPage = lazy(() => import("./pages/accountingPolicy/screens
 import { accountingPolicyPermissions } from "./pages/accountingPolicy/constants/permissions";
 
 const settingsPermissions = [
+  "USER_ACTIVITY_VIEW",
+  "AUDIT_LOG_VIEW",
   // the cards of document numbers, units, product accounts and FA groups
   "ORGANIZATION_UPDATE",
   "PRODUCT_VIEW",
@@ -242,6 +246,24 @@ const sectionRoutes: RouteObject[] = [
         backTo: "..",
       },
       element: withPermission(<UserListPage />, userPermissions.view),
+    },
+    {
+      path: "user-activity",
+      handle: {
+        title: "activity.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(<UserActivityPage />, "USER_ACTIVITY_VIEW"),
+    },
+    {
+      path: "audit-journal",
+      handle: {
+        title: "audit.journal.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(<AuditJournalPage />, "AUDIT_LOG_VIEW"),
     },
     {
       path: "role",
