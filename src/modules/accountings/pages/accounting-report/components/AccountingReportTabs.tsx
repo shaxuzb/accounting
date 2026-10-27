@@ -1,5 +1,5 @@
 import { Tabs } from "antd";
-import { useLocation, useNavigate } from "react-router";
+import { Navigate, useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/store/hooks";
 import { accountingReportPermissions as p } from "../constants/permissions";
@@ -18,6 +18,15 @@ const tabs = [
   { key: "account-card", labelKey: "app.reports.card.title", permission: p.accountCard },
   { key: "analysis", labelKey: "app.analyticReports.title", permission: p.accountTurnover },
 ];
+
+/** The first report the user may open: the reports' menu item opens it. */
+export function FirstAllowedReport() {
+  const permissions = useAppSelector((state) => state.auth.user?.user.permissions);
+  const first = ["balance-sheet", ...tabs.map((tab) => tab.key)]
+    .map((key) => tabs.find((tab) => tab.key === key)!)
+    .find((tab) => !permissions || permissions.includes(tab.permission));
+  return <Navigate to={first?.key ?? "balance-sheet"} replace />;
+}
 
 export default function AccountingReportTabs() {
   const { t } = useTranslation();

@@ -3,7 +3,7 @@ import MenuCustom from "@/components/sidebar/menu";
 import ProfileSide from "@/components/sidebar/ProfileSide";
 import { useAppSelector } from "@/store/hooks";
 import { useMemo } from "react";
-import { menuPermissions, settingsViewPermissions } from "../config/menuPermissions";
+import { canSeeMenuItem, menuPermissions, settingsViewPermissions } from "../config/menuPermissions";
 import { logout } from "@/store/features/authSlice";
 import { useDispatch } from "react-redux";
 const Sidebar = () => {
@@ -29,7 +29,7 @@ const Sidebar = () => {
           menuPermissions.TOP[index].code === "PUBLIC" ||
           (menuPermissions.TOP[index].code === "DROPDOWN" &&
             menuPermissions.TOP[index].items?.some((item) =>
-              user.user.permissions.find((item2) => item2 === item.code),
+              canSeeMenuItem(item, user.user.permissions),
             ))
         ) {
           topMenus.push({

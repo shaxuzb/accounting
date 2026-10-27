@@ -75,6 +75,8 @@ export interface MenuRole {
 }
 export interface SideBarItems {
   code?: string;
+  /** Shown to whoever holds any of these (an item opening several pages, each with its own permission). */
+  codes?: string[];
   tabCode?: string;
   dropdown?: boolean;
   linkData?: {

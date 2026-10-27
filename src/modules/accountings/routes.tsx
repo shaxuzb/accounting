@@ -2,6 +2,7 @@ import { lazy } from "react";
 import type { ReactElement } from "react";
 import type { RouteObject } from "react-router";
 import { Navigate, Outlet } from "react-router";
+import { FirstAllowedReport } from "./pages/accounting-report/components/AccountingReportTabs";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import { ledgerPermissions } from "./pages/ledger/constants/permissions";
 import { trialBalancePermissions } from "./pages/trial-balance/constants/permissions";
@@ -59,8 +60,9 @@ export const accountingsRoutes: RouteObject = {
       element: <Outlet />,
       children: [
         {
+          // the menu item opens the reports: the first one the user may see
           index: true,
-          element: <Navigate to="balance-sheet" replace />,
+          element: <FirstAllowedReport />,
         },
         {
           path: "balance-sheet",

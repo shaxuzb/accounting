@@ -1,6 +1,7 @@
 // import LineClampAnimation from "@/components/widget/text/LineClampAnimation";
 import type { AuthToken, MenuRole } from "@/shared/types";
 import { useWorkspaceNavigation } from "@/app/navigation/useWorkspaceNavigation";
+import { canSeeMenuItem } from "@/app/config/menuPermissions";
 import type { TabItem } from "@/store/features/tabListSlice";
 import { useAppSelector } from "@/store/hooks";
 import { cn } from "@/utils/utils";
@@ -228,7 +229,7 @@ const MenuCustom: FC<LinkProps> = ({ route }) => {
               ?.filter(
                 (item) =>
                   !user?.user?.permissions?.length ||
-                  user.user?.permissions?.some((perm) => perm === item.code),
+                  canSeeMenuItem(item, user.user?.permissions ?? []),
               )
               ?.map((item) => {
                 const childKey = `main/${itemParent.linkData.path}/${item.linkData?.path}`;

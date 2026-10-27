@@ -149,6 +149,10 @@ export const settingsViewPermissions = [
   contractTemplatePermissions.view,
 ] as const;
 
+/** Whether a menu item is shown: by its permission, or any of its permissions. */
+export const canSeeMenuItem = (item: { code?: string; codes?: string[] }, permissions: readonly string[]) =>
+  (item.codes ?? (item.code ? [item.code] : [])).some((code) => permissions.includes(code));
+
 export const menuPermissions: MainMenu = {
   TOP: [
     {
@@ -430,9 +434,11 @@ export const menuPermissions: MainMenu = {
       },
       items: [
         {
+          // every accounting report has its own permission: the item opens the first one allowed
           code: accountingReportPermissions.balanceSheet,
+          codes: Object.values(accountingReportPermissions),
           linkData: {
-            path: "reports/balance-sheet",
+            path: "reports",
             title: "app.accounting.reports",
           },
         },

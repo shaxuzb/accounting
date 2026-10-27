@@ -13,7 +13,7 @@ import {
 } from "@/store/features/authSlice";
 import { authService } from "@/services/authService";
 import {
-  menuPermissions,
+  canSeeMenuItem, menuPermissions,
   settingsViewPermissions,
 } from "../config/menuPermissions";
 
@@ -52,7 +52,7 @@ const ProtectAuthLayout = () => {
 
       if (item.dropdown && item.items?.length) {
         return item.items.some(
-          (subItem) => subItem.code && permissions.includes(subItem.code),
+          (subItem) => canSeeMenuItem(subItem, permissions),
         );
       }
 
@@ -63,7 +63,7 @@ const ProtectAuthLayout = () => {
 
     if (allowedMenu.items?.length) {
       const allowedSubItem = allowedMenu.items.find(
-        (subItem) => subItem.code && permissions.includes(subItem.code),
+        (subItem) => canSeeMenuItem(subItem, permissions),
       );
 
       if (!allowedSubItem?.linkData?.path) return null;
@@ -148,7 +148,7 @@ const ProtectAuthLayout = () => {
     );
     if (section) {
       const permissions = user.user?.permissions ?? [];
-      const first = section.items?.find((subItem) => subItem.code && permissions.includes(subItem.code));
+      const first = section.items?.find((subItem) => canSeeMenuItem(subItem, permissions));
       if (first) {
         navigate(`/main/${section.linkData.path}/${first.linkData?.path}`, { replace: true });
         return;
