@@ -5,15 +5,17 @@ import { Download, KeyRound, Plus, Power, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import Card from "@/components/ui/card/Card";
 import { formatDate } from "@/utils/utils";
 import {
   ACTIVE_RUN_STATUSES,
+  OPEN_RUN_STATUSES,
   downloadOneCFile,
   errorText,
   useCancelOneCRun,
   useCreateOneCConnection,
-  useCreateOneCRun,
+  useLoadOneC,
   useNewOneCPairingCode,
   useOneCConnections,
   useOneCRunIssues,
@@ -24,7 +26,6 @@ import {
   type OneCPairingCode,
   type OneCProgressPart,
   type OneCRun,
-  type OneCRunKind,
 } from "./api";
 
 const T = "settings.integrations.onec";
@@ -91,14 +92,18 @@ function Ago({ seconds }: { seconds: number | null }) {
 }
 
 /** The run's bar: the stage it is in, how far, and whether anyone is on it. */
-function RunProgress({ run }: { run: OneCRun }) {
+export function RunProgress({ run }: { run: OneCRun }) {
   const { t } = useTranslation();
   const stage =
     run.status === "QUEUED" || run.status === "EXTRACTING"
       ? t(`${T}.progress.stageExtract`)
-      : run.status === "RECEIVED" || run.status === "IMPORTING"
-        ? t(`${T}.progress.stageImport`)
-        : null;
+      : run.status === "RECEIVED" || run.status === "ANALYZING"
+        ? t(`${T}.progress.stageAnalyze`)
+        : run.status === "PREVIEW"
+          ? t(`${T}.progress.stagePreview`)
+          : run.status === "IMPORT_QUEUED" || run.status === "IMPORTING"
+            ? t(`${T}.progress.stageImport`)
+            : null;
   const failed = run.status === "FAILED" || run.liveness === "STALLED";
   return (
     <div className="min-w-56">
@@ -208,23 +213,19 @@ function ConnectionRuns({ connection }: { connection: OneCConnection }) {
   const runs = useOneCRuns(connection.id);
   const lastRun = runs.data?.[0];
   const stats = useOneCStats(connection.id, lastRun ? `${lastRun.id}:${lastRun.status}` : undefined);
-  const createRun = useCreateOneCRun();
+  const navigate = useNavigate();
+  const load = useLoadOneC();
   const cancelRun = useCancelOneCRun();
-  const [openingDate, setOpeningDate] = useState<Dayjs>(dayjs().startOf("year"));
   const [period, setPeriod] = useState<[Dayjs, Dayjs]>([dayjs().startOf("year"), dayjs()]);
-  const busy = runs.data?.some((run) => ACTIVE_RUN_STATUSES.includes(run.status)) ?? false;
-  const canRun = connection.status === "ACTIVE" && !busy;
+  const open = runs.data?.find((run) => OPEN_RUN_STATUSES.includes(run.status));
+  const canRun = connection.status === "ACTIVE" && !open;
 
-  const start = (kind: OneCRunKind, dateFrom?: Dayjs, dateTo?: Dayjs) =>
-    createRun.mutate(
+  // «Yuklash»: the base for the period is read and analysed, the preview opens by itself
+  const start = () =>
+    load.mutate(
+      { connectionId: connection.id, dateFrom: period[0].format("YYYY-MM-DD"), dateTo: period[1].format("YYYY-MM-DD") },
       {
-        connectionId: connection.id,
-        kind,
-        dateFrom: dateFrom?.format("YYYY-MM-DD"),
-        dateTo: dateTo?.format("YYYY-MM-DD"),
-      },
-      {
-        onSuccess: () => toast.success(t(`${T}.runs.queued`)),
+        onSuccess: (result) => navigate(`runs/${result.id}`),
         onError: (error) => toast.error(errorText(error, t(`${T}.error`))),
       },
     );
@@ -271,46 +272,56 @@ function ConnectionRuns({ connection }: { connection: OneCConnection }) {
     { title: t(`${T}.runs.requestedBy`), dataIndex: "requestedByName", render: (name: string | null) => name ?? t(`${T}.runs.schedule`) },
     { title: t(`${T}.runs.created`), dataIndex: "createdDate", width: 150, render: (value: string) => formatDate(value) },
     {
-      width: 110,
-      render: (_, run) =>
-        ["QUEUED", "EXTRACTING", "RECEIVED"].includes(run.status) && (
-          <Popconfirm title={t(`${T}.runs.cancelConfirm`)} onConfirm={() => cancelRun.mutate(run.id)}>
-            <Button size="small" danger>
-              {t(`${T}.runs.cancel`)}
+      width: 220,
+      render: (_, run) => (
+        <div className="flex gap-2">
+          {run.kind === "LOAD" && !["QUEUED", "EXTRACTING"].includes(run.status) && (
+            <Button size="small" type={run.status === "PREVIEW" ? "primary" : "default"} onClick={() => navigate(`runs/${run.id}`)}>
+              {t(`${T}.runs.open`)}
             </Button>
-          </Popconfirm>
-        ),
+          )}
+          {["QUEUED", "EXTRACTING", "RECEIVED", "ANALYZING", "PREVIEW", "IMPORT_QUEUED"].includes(run.status) && (
+            <Popconfirm title={t(`${T}.runs.cancelConfirm`)} onConfirm={() => cancelRun.mutate(run.id)}>
+              <Button size="small" danger>
+                {t(`${T}.runs.cancel`)}
+              </Button>
+            </Popconfirm>
+          )}
+        </div>
+      ),
     },
   ];
 
   return (
     <div className="space-y-3">
       {connection.status !== "ACTIVE" && <Alert type="info" showIcon message={t(`${T}.runs.notPaired`)} />}
-      {busy && <Alert type="warning" showIcon message={t(`${T}.runs.busy`)} />}
+      {open && (
+        <Alert
+          type={open.status === "PREVIEW" ? "info" : "warning"}
+          showIcon
+          message={open.status === "PREVIEW" ? t(`${T}.runs.previewWaiting`) : t(`${T}.runs.busy`)}
+          action={
+            open.kind === "LOAD" &&
+            !["QUEUED", "EXTRACTING"].includes(open.status) && (
+              <Button size="small" type="primary" onClick={() => navigate(`runs/${open.id}`)}>
+                {t(`${T}.runs.open`)}
+              </Button>
+            )
+          }
+        />
+      )}
       <div className="flex flex-wrap items-center gap-2">
-        <Button disabled={!canRun} onClick={() => start("METADATA")}>
-          {t(`${T}.kinds.METADATA`)}
+        <span className="text-sm">{t(`${T}.load.period`)}</span>
+        <DatePicker.RangePicker
+          value={period}
+          format="DD.MM.YYYY"
+          allowClear={false}
+          onChange={(value) => value?.[0] && value[1] && setPeriod([value[0], value[1]])}
+        />
+        <Button type="primary" disabled={!canRun} loading={load.isPending} onClick={start}>
+          {t(`${T}.load.button`)}
         </Button>
-        <Button disabled={!canRun} onClick={() => start("CATALOGS")}>
-          {t(`${T}.kinds.CATALOGS`)}
-        </Button>
-        <span className="ml-2 flex items-center gap-1">
-          <DatePicker value={openingDate} format="DD.MM.YYYY" allowClear={false} onChange={(value) => value && setOpeningDate(value)} />
-          <Button disabled={!canRun} onClick={() => start("OPENING", openingDate)}>
-            {t(`${T}.kinds.OPENING`)}
-          </Button>
-        </span>
-        <span className="ml-2 flex items-center gap-1">
-          <DatePicker.RangePicker
-            value={period}
-            format="DD.MM.YYYY"
-            allowClear={false}
-            onChange={(value) => value?.[0] && value[1] && setPeriod([value[0], value[1]])}
-          />
-          <Button disabled={!canRun} onClick={() => start("DOCUMENTS", period[0], period[1])}>
-            {t(`${T}.kinds.DOCUMENTS`)}
-          </Button>
-        </span>
+        <span className="text-xs text-secondary-text">{t(`${T}.load.hint`)}</span>
       </div>
       <Table
         rowKey="id"

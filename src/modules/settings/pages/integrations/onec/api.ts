@@ -2,15 +2,21 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { $axiosPrivate } from "@/services/AxiosService";
 
 export type OneCConnectionStatus = "PENDING" | "ACTIVE" | "REVOKED";
-export type OneCRunKind = "METADATA" | "CATALOGS" | "OPENING" | "DOCUMENTS" | "SYNC" | "OSV";
+export type OneCRunKind = "LOAD" | "METADATA" | "CATALOGS" | "OPENING" | "DOCUMENTS" | "SYNC" | "OSV";
 export type OneCRunStatus =
   | "QUEUED"
   | "EXTRACTING"
   | "RECEIVED"
+  | "ANALYZING"
+  | "PREVIEW"
+  | "IMPORT_QUEUED"
   | "IMPORTING"
   | "DONE"
   | "FAILED"
   | "CANCELLED";
+
+/** What the analysis says the import would do with an object. */
+export type OneCPreviewStatus = "NEW_ENTITY" | "MATCHED" | "NEEDS_MAPPING" | "INVALID" | "UNSUPPORTED" | "SKIP";
 
 export interface OneCConnection {
   id: number;
@@ -97,7 +103,92 @@ export interface OneCObjectStat {
   count: number;
 }
 
-export const ACTIVE_RUN_STATUSES: OneCRunStatus[] = ["QUEUED", "EXTRACTING", "RECEIVED", "IMPORTING"];
+/** Someone (the 1C side or the server) is working on the run: its counts move. */
+export const ACTIVE_RUN_STATUSES: OneCRunStatus[] = ["QUEUED", "EXTRACTING", "RECEIVED", "ANALYZING", "IMPORT_QUEUED", "IMPORTING"];
+
+/** The run holds the connection: a new «Yuklash» waits until it is imported or cancelled. */
+export const OPEN_RUN_STATUSES: OneCRunStatus[] = [...ACTIVE_RUN_STATUSES, "PREVIEW"];
+
+export interface OneCPreviewSection {
+  kind: string;
+  typeName: string;
+  synonym: string | null;
+  total: number;
+  selected: number;
+  newEntity: number;
+  matched: number;
+  needsMapping: number;
+  invalid: number;
+  unsupported: number;
+  skip: number;
+  imported: number;
+  failed: number;
+}
+
+export interface OneCPreviewObject {
+  id: number;
+  kind: string;
+  typeName: string;
+  ref: string;
+  presentation: string | null;
+  docNumber: string | null;
+  docDate: string | null;
+  counterpartyName: string | null;
+  amount: number | null;
+  isDeleted: boolean;
+  selected: boolean;
+  previewStatus: OneCPreviewStatus | null;
+  previewNote: string | null;
+  status: string;
+  error: string | null;
+  hasOverrides: boolean;
+}
+
+export interface OneCObjectDetail {
+  row: OneCPreviewObject;
+  runId: number | null;
+  payload: OneCPayload;
+  overrides: { fields?: Record<string, unknown> } | null;
+}
+
+/** A 1C object as the 1C side sent it. */
+export interface OneCPayload {
+  kind: string;
+  type: string;
+  ref: string;
+  presentation?: string;
+  number?: string;
+  date?: string;
+  posted?: boolean;
+  deleted?: boolean;
+  fields?: Record<string, unknown>;
+  tables?: Record<string, Record<string, unknown>[]>;
+  entries?: Record<string, unknown>[];
+}
+
+export interface OneCAccountRow {
+  code: string;
+  name: string | null;
+  uses: number;
+  accountId: number | null;
+  accountCode: string | null;
+  accountName: string | null;
+  isMapped: boolean;
+}
+
+export interface OneCTargetAccount {
+  id: number;
+  number: string;
+  name: string;
+}
+
+export interface OneCPreviewFilter {
+  typeName?: string;
+  previewStatus?: string;
+  search?: string;
+  page: number;
+  pageSize: number;
+}
 
 const keys = {
   all: ["onec"] as const,
@@ -154,6 +245,100 @@ export const useOneCRunIssues = (runId: number, enabled: boolean) =>
     queryFn: () => $axiosPrivate.get<OneCObjectIssue[]>(`/onec/runs/${runId}/issues`).then((response) => response.data),
     enabled,
   });
+
+export const useOneCRun = (runId: number) =>
+  useQuery({
+    queryKey: [...keys.all, "run", runId],
+    queryFn: () => $axiosPrivate.get<OneCRun>(`/onec/runs/${runId}`).then((response) => response.data),
+    refetchInterval: (query) => (query.state.data && ACTIVE_RUN_STATUSES.includes(query.state.data.status) ? 2_000 : false),
+  });
+
+/** The preview's sections; read again when the run moves (an analysis redone, the import's counts). */
+export const useOneCPreview = (runId: number, version: string) =>
+  useQuery({
+    queryKey: [...keys.all, "preview", runId, version],
+    queryFn: () => $axiosPrivate.get<OneCPreviewSection[]>(`/onec/runs/${runId}/preview`).then((response) => response.data),
+    placeholderData: (previous) => previous,
+  });
+
+export const useOneCPreviewObjects = (runId: number, filter: OneCPreviewFilter, version: string, enabled: boolean) =>
+  useQuery({
+    queryKey: [...keys.all, "preview-objects", runId, filter, version],
+    queryFn: () =>
+      $axiosPrivate
+        .get<{ items: OneCPreviewObject[]; totalCount: number }>(`/onec/runs/${runId}/preview/objects`, { params: filter })
+        .then((response) => response.data),
+    enabled,
+    placeholderData: (previous) => previous,
+  });
+
+export const useOneCObject = (objectId: number | null) =>
+  useQuery({
+    queryKey: [...keys.all, "object", objectId],
+    queryFn: () => $axiosPrivate.get<OneCObjectDetail>(`/onec/objects/${objectId}`).then((response) => response.data),
+    enabled: objectId !== null,
+  });
+
+export const useOneCRunAccounts = (runId: number, version: string, enabled: boolean) =>
+  useQuery({
+    queryKey: [...keys.all, "accounts", runId, version],
+    queryFn: () => $axiosPrivate.get<OneCAccountRow[]>(`/onec/runs/${runId}/accounts`).then((response) => response.data),
+    enabled,
+  });
+
+export const useOneCOurAccounts = (enabled: boolean) =>
+  useQuery({
+    queryKey: [...keys.all, "our-accounts"],
+    queryFn: () => $axiosPrivate.get<OneCTargetAccount[]>("/onec/our-accounts").then((response) => response.data),
+    enabled,
+    staleTime: 60_000,
+  });
+
+export const useLoadOneC = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: ({ connectionId, dateFrom, dateTo }: { connectionId: number; dateFrom: string; dateTo: string }) =>
+      $axiosPrivate
+        .post<{ id: number }>(`/onec/connections/${connectionId}/load`, { dateFrom, dateTo })
+        .then((response) => response.data),
+    onSuccess: invalidate,
+  });
+};
+
+export const useUpdateOneCObject = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: ({ id, ...body }: { id: number; selected?: boolean; overrides?: { fields: Record<string, unknown> } }) =>
+      $axiosPrivate.patch<OneCObjectDetail>(`/onec/objects/${id}`, body).then((response) => response.data),
+    onSuccess: invalidate,
+  });
+};
+
+export const useSelectOneC = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: ({ runId, ...body }: { runId: number; typeName?: string; previewStatus?: string; selected: boolean }) =>
+      $axiosPrivate.post<{ count: number }>(`/onec/runs/${runId}/preview/select`, body).then((response) => response.data),
+    onSuccess: invalidate,
+  });
+};
+
+export const useSaveOneCAccounts = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: ({ runId, items }: { runId: number; items: { code: string; accountId: number | null }[] }) =>
+      $axiosPrivate.put(`/onec/runs/${runId}/accounts`, { items }),
+    onSuccess: invalidate,
+  });
+};
+
+export const useStartOneCImport = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: (runId: number) => $axiosPrivate.post(`/onec/runs/${runId}/import`),
+    onSuccess: invalidate,
+  });
+};
 
 export const useCreateOneCConnection = () => {
   const invalidate = useInvalidate();
