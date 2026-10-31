@@ -1,4 +1,4 @@
-import { Alert, Button, DatePicker, Input, Modal, Popconfirm, Table, Tag, Tooltip } from "antd";
+import { Alert, Button, DatePicker, Input, Modal, Popconfirm, Progress, Table, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import dayjs, { type Dayjs } from "dayjs";
 import { Download, KeyRound, Plus, Power, RefreshCw } from "lucide-react";
@@ -16,11 +16,13 @@ import {
   useCreateOneCRun,
   useNewOneCPairingCode,
   useOneCConnections,
+  useOneCRunIssues,
   useOneCRuns,
   useOneCStats,
   useRevokeOneCConnection,
   type OneCConnection,
   type OneCPairingCode,
+  type OneCProgressPart,
   type OneCRun,
   type OneCRunKind,
 } from "./api";
@@ -70,6 +72,136 @@ function PairingCodeModal({ code, onClose }: { code: OneCPairingCode | null; onC
   );
 }
 
+const livenessColor: Record<string, string> = {
+  WORKING: "green",
+  WAITING: "blue",
+  CLIENT_OFFLINE: "orange",
+  STALLED: "red",
+};
+
+/** «12 s ago», «4 min ago»: how long since the run last reported. */
+function Ago({ seconds }: { seconds: number | null }) {
+  const { t } = useTranslation();
+  if (seconds === null) return null;
+  return (
+    <span className="text-xs text-secondary-text">
+      {seconds < 60 ? t(`${T}.progress.secondsAgo`, { n: seconds }) : t(`${T}.progress.minutesAgo`, { n: Math.floor(seconds / 60) })}
+    </span>
+  );
+}
+
+/** The run's bar: the stage it is in, how far, and whether anyone is on it. */
+function RunProgress({ run }: { run: OneCRun }) {
+  const { t } = useTranslation();
+  const stage =
+    run.status === "QUEUED" || run.status === "EXTRACTING"
+      ? t(`${T}.progress.stageExtract`)
+      : run.status === "RECEIVED" || run.status === "IMPORTING"
+        ? t(`${T}.progress.stageImport`)
+        : null;
+  const failed = run.status === "FAILED" || run.liveness === "STALLED";
+  return (
+    <div className="min-w-56">
+      <div className="flex items-center justify-between gap-2 text-xs">
+        <span>{stage}</span>
+        {run.liveness && (
+          <Tooltip title={t(`${T}.liveness.${run.liveness}Hint`)}>
+            <Tag className="m-0!" color={livenessColor[run.liveness]}>
+              {t(`${T}.liveness.${run.liveness}`)}
+            </Tag>
+          </Tooltip>
+        )}
+      </div>
+      <Progress
+        size="small"
+        percent={run.percent}
+        status={failed ? "exception" : run.status === "DONE" ? "success" : run.liveness === "WORKING" ? "active" : "normal"}
+      />
+      {run.liveness && <Ago seconds={run.secondsSinceHeartbeat} />}
+    </div>
+  );
+}
+
+/** Each part of a run (a 1C type or register): reading it, then importing it. */
+function RunDetails({ run }: { run: OneCRun }) {
+  const { t } = useTranslation();
+  const finished = !ACTIVE_RUN_STATUSES.includes(run.status);
+  const issues = useOneCRunIssues(run.id, run.skippedCount + run.failedCount > 0 && finished);
+  const percent = (part: OneCProgressPart) => (part.total > 0 ? Math.floor((Math.min(part.done, part.total) * 100) / part.total) : 0);
+
+  const partColumns = (withResult: boolean): TableColumnsType<OneCProgressPart> => [
+    { title: t(`${T}.stats.type`), dataIndex: "key" },
+    {
+      title: t(`${T}.progress.done`),
+      width: 260,
+      render: (_, part) => (
+        <div className="flex items-center gap-2">
+          <Progress className="m-0! flex-1" size="small" percent={percent(part)} />
+          <span className="whitespace-nowrap text-xs">
+            {part.done} / {part.total}
+          </span>
+        </div>
+      ),
+    },
+    ...(withResult
+      ? [
+          { title: t(`${T}.objectStatuses.IMPORTED`), dataIndex: "imported", width: 110, align: "right" as const },
+          { title: t(`${T}.objectStatuses.SKIPPED`), dataIndex: "skipped", width: 120, align: "right" as const },
+          {
+            title: t(`${T}.objectStatuses.ERROR`),
+            dataIndex: "failed",
+            width: 80,
+            align: "right" as const,
+            render: (value: number) => (value > 0 ? <span className="font-medium text-red-600">{value}</span> : value),
+          },
+        ]
+      : []),
+  ];
+
+  return (
+    <div className="space-y-3 py-1">
+      {run.errorMessage && <Alert type="error" showIcon message={run.errorMessage} />}
+      {run.liveness === "STALLED" && <Alert type="warning" showIcon message={t(`${T}.liveness.STALLEDHint`)} />}
+      {run.extractProgress.length > 0 && (
+        <div>
+          <div className="mb-1 text-sm font-medium">{t(`${T}.progress.stageExtract`)}</div>
+          <Table rowKey="key" size="small" pagination={false} columns={partColumns(false)} dataSource={run.extractProgress} />
+        </div>
+      )}
+      {run.importProgress.length > 0 && (
+        <div>
+          <div className="mb-1 text-sm font-medium">{t(`${T}.progress.stageImport`)}</div>
+          <Table rowKey="key" size="small" pagination={false} columns={partColumns(true)} dataSource={run.importProgress} />
+        </div>
+      )}
+      {!!issues.data?.length && (
+        <div>
+          <div className="mb-1 text-sm font-medium">{t(`${T}.progress.issues`)}</div>
+          <Table
+            rowKey="id"
+            size="small"
+            pagination={{ pageSize: 20, hideOnSinglePage: true }}
+            dataSource={issues.data}
+            columns={[
+              { title: t(`${T}.stats.type`), dataIndex: "typeName", width: 260 },
+              { title: t(`${T}.progress.object`), render: (_, issue) => issue.presentation ?? issue.ref },
+              {
+                title: t(`${T}.stats.status`),
+                dataIndex: "status",
+                width: 130,
+                render: (status: string) => (
+                  <Tag color={status === "ERROR" ? "red" : "default"}>{t(`${T}.objectStatuses.${status}`)}</Tag>
+                ),
+              },
+              { title: t(`${T}.progress.reason`), dataIndex: "error" },
+            ]}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** What can be asked of the 1C side, and the runs it did. */
 function ConnectionRuns({ connection }: { connection: OneCConnection }) {
   const { t } = useTranslation();
@@ -112,13 +244,30 @@ function ConnectionRuns({ connection }: { connection: OneCConnection }) {
     {
       title: t(`${T}.runs.status`),
       dataIndex: "status",
+      width: 140,
       render: (status: string, run) => (
         <Tooltip title={run.errorMessage}>
           <Tag color={runStatusColor[status]}>{t(`${T}.statuses.${status}`)}</Tag>
         </Tooltip>
       ),
     },
-    { title: t(`${T}.runs.objects`), dataIndex: "objectCount", align: "right", width: 100 },
+    { title: t(`${T}.progress.title`), width: 280, render: (_, run) => <RunProgress run={run} /> },
+    {
+      title: t(`${T}.runs.objects`),
+      align: "right",
+      width: 150,
+      render: (_, run) => (
+        <div className="text-xs leading-5">
+          <div>{run.objectCount}</div>
+          {run.importedCount + run.skippedCount + run.failedCount > 0 && (
+            <div className="text-secondary-text">
+              <span className="text-green-600">{run.importedCount}</span> / {run.skippedCount} /{" "}
+              <span className={run.failedCount > 0 ? "text-red-600" : undefined}>{run.failedCount}</span>
+            </div>
+          )}
+        </div>
+      ),
+    },
     { title: t(`${T}.runs.requestedBy`), dataIndex: "requestedByName", render: (name: string | null) => name ?? t(`${T}.runs.schedule`) },
     { title: t(`${T}.runs.created`), dataIndex: "createdDate", width: 150, render: (value: string) => formatDate(value) },
     {
@@ -163,7 +312,18 @@ function ConnectionRuns({ connection }: { connection: OneCConnection }) {
           </Button>
         </span>
       </div>
-      <Table rowKey="id" size="small" loading={runs.isLoading} columns={columns} dataSource={runs.data ?? []} pagination={false} />
+      <Table
+        rowKey="id"
+        size="small"
+        loading={runs.isLoading}
+        columns={columns}
+        dataSource={runs.data ?? []}
+        pagination={false}
+        expandable={{
+          expandedRowRender: (run) => <RunDetails run={run} />,
+          rowExpandable: (run) => run.extractProgress.length + run.importProgress.length > 0 || !!run.errorMessage,
+        }}
+      />
       {!!stats.data?.length && (
         <div>
           <div className="mb-1 text-sm font-medium">{t(`${T}.stats.title`)}</div>

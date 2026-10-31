@@ -1403,6 +1403,27 @@
         "error": "E-IMZO error"
       },
       "onec": {
+        "progress": {
+          "title": "Progress",
+          "stageExtract": "Reading 1C",
+          "stageImport": "Import",
+          "done": "Done",
+          "issues": "Skipped and failed objects",
+          "object": "Object",
+          "reason": "Reason",
+          "secondsAgo": "last report {{n}} s ago",
+          "minutesAgo": "last report {{n}} min ago"
+        },
+        "liveness": {
+          "WORKING": "Working",
+          "WORKINGHint": "The run keeps reporting.",
+          "WAITING": "Waiting",
+          "WAITINGHint": "Queued: the program takes it within seconds.",
+          "CLIENT_OFFLINE": "Agent offline",
+          "CLIENT_OFFLINEHint": "The agent or the processing on the 1C computer is not running: the computer is off, offline, or the program is closed. The run goes on by itself once it starts.",
+          "STALLED": "Stalled",
+          "STALLEDHint": "No report for a long time: the program on the 1C computer was closed, the network dropped or 1C hung. A restarted agent goes on with the run; otherwise cancel it and start again."
+        },
         "title": "Move from 1C",
         "intro": "Your 1C base stays on your computer: a program there reads it and sends the data here. What is brought over is controlled from this page.",
         "ways": {

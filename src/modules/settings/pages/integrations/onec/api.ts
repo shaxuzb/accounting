@@ -60,6 +60,34 @@ export interface OneCRun {
   failedCount: number;
   errorCode: string | null;
   errorMessage: string | null;
+  extractProgress: OneCProgressPart[];
+  importProgress: OneCProgressPart[];
+  /** 0–100 for the stage the run is in: reading 1C, then the import here. */
+  percent: number;
+  heartbeatAt: string | null;
+  secondsSinceHeartbeat: number | null;
+  /** Is anyone on the run: null once it is finished. */
+  liveness: "WORKING" | "WAITING" | "CLIENT_OFFLINE" | "STALLED" | null;
+}
+
+export interface OneCProgressPart {
+  key: string;
+  kind: string | null;
+  total: number;
+  done: number;
+  imported: number;
+  skipped: number;
+  failed: number;
+}
+
+export interface OneCObjectIssue {
+  id: number;
+  kind: string;
+  typeName: string;
+  ref: string;
+  presentation: string | null;
+  status: string;
+  error: string | null;
 }
 
 export interface OneCObjectStat {
@@ -98,9 +126,10 @@ export const useOneCRuns = (connectionId: number | undefined) =>
     queryFn: () =>
       $axiosPrivate.get<OneCRun[]>(`/onec/connections/${connectionId}/runs`).then((response) => response.data),
     enabled: !!connectionId,
-    // while a run is under way its counts move: follow them
+    // while a run is under way its counts move: follow them; a run queued elsewhere (the sync
+    // schedule, another tab) still shows up
     refetchInterval: (query) =>
-      query.state.data?.some((run) => ACTIVE_RUN_STATUSES.includes(run.status)) ? 3_000 : false,
+      query.state.data?.some((run) => ACTIVE_RUN_STATUSES.includes(run.status)) ? 3_000 : 10_000,
   });
 
 export const useOneCStats = (connectionId: number | undefined, refreshKey?: string) =>
@@ -117,6 +146,14 @@ const useInvalidate = () => {
   const queryClient = useQueryClient();
   return () => void queryClient.invalidateQueries({ queryKey: keys.all });
 };
+
+/** The objects of a run the import skipped or failed on, with why. */
+export const useOneCRunIssues = (runId: number, enabled: boolean) =>
+  useQuery({
+    queryKey: [...keys.all, "issues", runId],
+    queryFn: () => $axiosPrivate.get<OneCObjectIssue[]>(`/onec/runs/${runId}/issues`).then((response) => response.data),
+    enabled,
+  });
 
 export const useCreateOneCConnection = () => {
   const invalidate = useInvalidate();

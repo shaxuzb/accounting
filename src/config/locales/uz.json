@@ -1405,6 +1405,27 @@
         "error": "E-IMZO bilan ishlashda xatolik"
       },
       "onec": {
+        "progress": {
+          "title": "Jarayon",
+          "stageExtract": "1C dan o'qish",
+          "stageImport": "Import",
+          "done": "Bajarildi",
+          "issues": "O'tkazib yuborilgan va xato obyektlar",
+          "object": "Obyekt",
+          "reason": "Sabab",
+          "secondsAgo": "oxirgi xabar {{n}} soniya oldin",
+          "minutesAgo": "oxirgi xabar {{n}} daqiqa oldin"
+        },
+        "liveness": {
+          "WORKING": "Ishlayapti",
+          "WORKINGHint": "Jarayon xabar berib turibdi.",
+          "WAITING": "Kutilmoqda",
+          "WAITINGHint": "Navbatda: dastur uni yaqin soniyalarda oladi.",
+          "CLIENT_OFFLINE": "Agent aloqada emas",
+          "CLIENT_OFFLINEHint": "1C kompyuteridagi agent yoki obrabotka ishlamayapti: kompyuter o'chiq, internet yo'q yoki dastur yopilgan. Ishga tushirilgach vazifa o'zi davom etadi.",
+          "STALLED": "Uzilib qoldi",
+          "STALLEDHint": "Uzoq vaqtdan beri xabar yo'q: 1C kompyuterida dastur yopilgan, internet uzilgan yoki 1C qotib qolgan. Agent qayta ishga tushsa vazifani davom ettiradi; bo'lmasa vazifani bekor qilib, qaytadan boshlang."
+        },
         "title": "1C dan ko'chirish",
         "intro": "1C bazangiz o'z kompyuteringizda qoladi: u yerda ishlaydigan dastur bazani o'qib, ma'lumotni shu yerga yuboradi. Nima olib kelinishini shu sahifadan boshqarasiz.",
         "ways": {
