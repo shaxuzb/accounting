@@ -11,4 +11,12 @@ export const integrationDefinitions: IntegrationDefinition[] = [
     logoClassName: "bg-blue-600 text-white",
     logo: "EDO",
   },
+  {
+    code: "ONEC",
+    nameKey: "settings.integrations.items.onec.name",
+    descriptionKey: "settings.integrations.items.onec.description",
+    domain: "1C:Enterprise 8.3",
+    logoClassName: "bg-amber-400 text-red-700",
+    logo: "1C",
+  },
 ];

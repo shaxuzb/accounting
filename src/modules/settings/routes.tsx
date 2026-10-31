@@ -69,6 +69,7 @@ import { contractPermissions } from "@/modules/contract/constants/permissions";
 import { payrollComponentPermissions } from "./pages/payrollComponents/constants/permissions";
 import { payrollTaxDefinitionPermissions } from "./pages/payrollTaxDefinitions/constants/permissions";
 const EdoWorkspacePage = lazy(() => import("./pages/integrations/edo/screens/EdoWorkspacePage"));
+const OneCPage = lazy(() => import("./pages/integrations/onec/OneCPage"));
 const EdoInboxPage = lazy(() => import("./pages/integrations/edo/screens/EdoInboxPage"));
 const EdoOutboxCreatePage = lazy(() => import("./pages/integrations/edo/screens/EdoOutboxCreatePage"));
 const EdoOutboxDetailPage = lazy(() => import("./pages/integrations/edo/screens/EdoOutboxDetailPage"));
@@ -165,6 +166,15 @@ const sectionRoutes: RouteObject[] = [
         withEimzo(withEdoSession(<IntegrationsPage />)),
         integrationPermissions.view,
       ),
+    },
+    {
+      path: "integrations/onec",
+      handle: {
+        title: "settings.integrations.onec.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(<OneCPage />, integrationPermissions.onecImport),
     },
     {
       path: "integrations/edo",

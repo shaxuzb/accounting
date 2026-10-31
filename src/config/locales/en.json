@@ -1402,7 +1402,100 @@
         "selectCertificate": "Select a certificate to connect",
         "error": "E-IMZO error"
       },
+      "onec": {
+        "title": "Move from 1C",
+        "intro": "Your 1C base stays on your computer: a program there reads it and sends the data here. What is brought over is controlled from this page.",
+        "ways": {
+          "agent": "Agent (.exe) — installed once on the 1C computer, runs in the background and keeps bringing new documents.",
+          "epf": "Processing (.epf) — nothing to install: opened in 1C with File → Open, works while it is open."
+        },
+        "downloadAgent": "Download the agent (.exe)",
+        "downloadEpf": "Download the processing (.epf)",
+        "downloadNotReady": "The file is not published on the server yet.",
+        "error": "The action failed.",
+        "close": "Close",
+        "code": {
+          "title": "Pairing code",
+          "expiresIn": "The code is valid for {{time}}",
+          "expired": "The code expired — get a new one."
+        },
+        "steps": {
+          "download": "Download the agent or the processing.",
+          "open": "Start the agent on the 1C computer, or open the processing in 1C, and choose the base.",
+          "enter": "Enter this code — the connection turns «Connected» in this list."
+        },
+        "connection": {
+          "create": "New connection",
+          "createOk": "Get a code",
+          "name": "Name",
+          "namePlaceholder": "E.g. Main 1C base",
+          "status": "Status",
+          "client": "Program",
+          "base": "1C base",
+          "lastSeen": "Last contact",
+          "newCode": "New code",
+          "revoke": "Revoke",
+          "revokeConfirm": "Revoke the connection? The program on the computer will no longer connect.",
+          "pending": "Waiting for the code",
+          "online": "Connected",
+          "offline": "Not in contact",
+          "revoked": "Revoked",
+          "empty": "No connection yet. Click «New connection»."
+        },
+        "clientKinds": {
+          "AGENT": "Agent",
+          "EPF": "Processing"
+        },
+        "kinds": {
+          "METADATA": "Read the base structure",
+          "CATALOGS": "Catalogs",
+          "OPENING": "Balances (at a date)",
+          "DOCUMENTS": "Documents (period)",
+          "SYNC": "Sync",
+          "OSV": "Trial balance check"
+        },
+        "statuses": {
+          "QUEUED": "Queued",
+          "EXTRACTING": "Reading 1C",
+          "RECEIVED": "Received",
+          "IMPORTING": "Importing",
+          "DONE": "Done",
+          "FAILED": "Failed",
+          "CANCELLED": "Cancelled"
+        },
+        "objectStatuses": {
+          "NEW": "Waiting",
+          "IMPORTED": "Imported",
+          "SKIPPED": "Skipped",
+          "ERROR": "Error",
+          "CONFLICT": "Conflict"
+        },
+        "runs": {
+          "kind": "Run",
+          "period": "Period",
+          "status": "Status",
+          "objects": "Objects",
+          "requestedBy": "Started by",
+          "schedule": "By schedule",
+          "created": "Created",
+          "cancel": "Cancel",
+          "cancelConfirm": "Cancel the run?",
+          "queued": "The run is queued: the program on the 1C side will take it.",
+          "notPaired": "The program is not paired yet: enter the code in the agent or the processing.",
+          "busy": "A run is under way — start the next one when it ends."
+        },
+        "stats": {
+          "title": "Data from 1C",
+          "type": "1C object",
+          "status": "Status",
+          "count": "Count"
+        }
+      },
       "items": {
+        "onec": {
+          "name": "1C:Enterprise",
+          "description": "Bring catalogs, balances and documents over from a 1C base and work alongside 1C during the switch."
+        },
         "telegram": {
           "name": "Telegram",
           "description": "Send notifications and messages through Telegram."

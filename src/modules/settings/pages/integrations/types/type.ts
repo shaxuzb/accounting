@@ -1,5 +1,6 @@
 /** Only integrations that really work are listed; EDO signs in with its own session. */
-export type IntegrationCode = "EDO";
+/** ONEC: the 1C connector (an agent or a processing on the client's 1C computer pushes the base here). */
+export type IntegrationCode = "EDO" | "ONEC";
 
 export type IntegrationStatus =
   | "DISCONNECTED"
