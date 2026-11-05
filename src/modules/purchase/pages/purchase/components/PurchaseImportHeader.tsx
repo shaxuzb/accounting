@@ -8,7 +8,9 @@ import type { FormikProps } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
 import SelectDate from "@/components/fields/SelectDate";
 import SettlementDocumentSelect from "@/components/fields/SettlementDocumentSelect";
-import SelectCustom from "@/components/fields/SelectCustom";
+import SelectCustom, {
+  type SelectCustomDisplayConfig,
+} from "@/components/fields/SelectCustom";
 import InputNumberFormat from "@/components/fields/InputNumber";
 import { useAutoExchangeRate } from "@/modules/accountings/pages/currency/useAutoExchangeRate";
 import SwitchField from "@/components/fields/SwitchField";
@@ -43,6 +45,17 @@ interface PurchaseImportHeaderProps {
   disabled?: boolean;
 }
 
+// a contract is known by its number; its supplier is shown beside it, since the list
+// holds every supplier's contracts until one is chosen
+const contractDisplayConfig: SelectCustomDisplayConfig = {
+  optionLabel: (item) => {
+    const counterpartyName = item.counterpartyName as string | undefined;
+    return counterpartyName ? `${item.name ?? ""} — ${counterpartyName}` : item.name;
+  },
+  selectedLabel: (item) => item.name,
+  searchFields: ["name", "counterpartyName", "counterpartyInn"],
+};
+
 export default function PurchaseImportHeader({
   formik,
   purchaseMode,
@@ -68,17 +81,26 @@ export default function PurchaseImportHeader({
   // a purchase in another currency is posted at this rate (CBU on the date, editable)
   const rate = useAutoExchangeRate(formik);
 
-  const clearContract = () => {
-    if (formik.values.contractId !== null) {
-      formik.setFieldValue("contractId", null, false);
-    }
-    // another supplier's (or contract's) advance is no advance of this purchase
+  // another supplier's (or contract's) advance is no advance of this purchase
+  const clearAdvance = () => {
     if (formik.values.advanceDocumentId) {
       formik.setFieldValue("advanceDocumentId", null, false);
     }
   };
 
+  const clearContract = () => {
+    if (formik.values.contractId !== null) {
+      formik.setFieldValue("contractId", null, false);
+    }
+    clearAdvance();
+  };
+
   const handleContractCreated = (contract: Contract) => {
+    // a contract created before any supplier was chosen brings its supplier
+    if (contract.counterpartyId && contract.counterpartyId !== formik.values.counterpartyId) {
+      formik.setFieldValue("counterpartyId", contract.counterpartyId, true);
+      clearAdvance();
+    }
     formik.setFieldValue("contractId", contract.id, true);
     invalidateSelectListQuery(
       queryClient,
@@ -145,12 +167,21 @@ export default function PurchaseImportHeader({
                 // a purchase is entered under a contract with a supplier (1C «Вид договора»)
                 [filterIds.contractType]: contractTypeIds.supplier,
               }}
-              enabled={hasCounterparty}
-              disabled={!hasCounterparty || disabled}
+              // with no supplier yet every supplier contract is listed: picking one by its
+              // number (the paper in hand) fills the supplier from the contract
+              search
+              displayConfig={contractDisplayConfig}
+              popupWidth={380}
+              getFieldNames={["counterpartyId"]}
+              onChange={disabled ? undefined : clearAdvance}
+              disabled={disabled}
               label="purchase.fields.contract"
               fieldName="contractId"
               formik={formik}
-              getFirstWhen={allowCreateOptions ? takeMainOrOnlyContract : undefined}
+              // the main contract is taken only for a chosen supplier, never across all of them
+              getFirstWhen={
+                allowCreateOptions && hasCounterparty ? takeMainOrOnlyContract : undefined
+              }
               required
               addOption={{
                 bool: allowCreateOptions,

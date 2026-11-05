@@ -83,6 +83,8 @@ interface SelectCustomProps {
   filterOption?: (item: SelectOptionItem) => boolean;
   onChange?: (value: unknown) => void;
   height?: string;
+  /** Width of the open list in px when its options are longer than the field. */
+  popupWidth?: number;
 }
 
 const normalizeText = (text: unknown): string =>
@@ -383,6 +385,7 @@ const SelectCustom: React.FC<SelectCustomProps> = (props) => {
         open={readOnly ? false : undefined}
         loading={isFetching || isLoading}
         showSearch={searchConfig}
+        popupMatchSelectWidth={props.popupWidth ?? true}
         allowClear={clearable}
         // searchValue={searchValue}
         // onSearch={(value) => {
