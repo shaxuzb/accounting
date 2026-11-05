@@ -1,4 +1,5 @@
 import type { ManualArticle } from "../../types";
+import { bankStatementImportArticle } from "./bank-statement-import";
 import { purchaseArticle } from "./purchases-purchase";
 import { contractsArticle } from "./purchases-contracts";
 import { customsArticle } from "./purchases-customs";
@@ -30,4 +31,5 @@ export const manualArticles: Record<string, ManualArticle> = {
   [customerReturnArticle.id]: customerReturnArticle,
   [retailArticle.id]: retailArticle,
   [retailReturnArticle.id]: retailReturnArticle,
+  [bankStatementImportArticle.id]: bankStatementImportArticle,
 };
