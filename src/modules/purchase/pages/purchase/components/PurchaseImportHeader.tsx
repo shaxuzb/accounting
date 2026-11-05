@@ -145,6 +145,8 @@ export default function PurchaseImportHeader({
               }
               formik={formik}
               disabled={disabled}
+              // cleared, the contract list shows every supplier's contracts again
+              clearable={!disabled}
               onChange={disabled ? undefined : clearContract}
               addOption={{
                 bool: allowCreateOptions,
@@ -172,6 +174,7 @@ export default function PurchaseImportHeader({
               search
               displayConfig={contractDisplayConfig}
               popupWidth={380}
+              clearable={!disabled}
               getFieldNames={["counterpartyId"]}
               onChange={disabled ? undefined : clearAdvance}
               disabled={disabled}
