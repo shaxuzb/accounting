@@ -2206,6 +2206,7 @@
     },
     "messages": {
       "imported": "Bank ko'chirmasi import qilindi",
+      "nothingRecognized": "Faylda bu bankning ko'chirmasi topilmadi. Bank to'g'ri tanlanganini tekshiring.",
       "saved": "Bank operatsiyalari saqlandi",
       "existingSkipped": "{{count}} ta mavjud operatsiya o'tkazib yuborildi",
       "partialSaved": "{{saved}} ta operatsiya saqlandi; to'ldirilmagan {{skipped}} tasi ekranda qoldi — to'ldirib, qayta saqlang",
@@ -2249,7 +2250,7 @@
       "bankTypePlaceholder": "Bank turini tanlang",
       "bankTypeHint": "Avval bank turini tanlang. Shundan keyin fayl yuklash mumkin.",
       "uploadText": "Faylni yuklash uchun bosing yoki uni shu yerga olib keling",
-      "uploadHint": "XLSX, XLSM, XLS formatidagi bank ko'chirmalari yoki bank-klientning 1C fayli (1CClientBankExchange, .txt) qo'llab-quvvatlanadi.",
+      "uploadHint": "XLSX, XLSM formatidagi bank ko'chirmalari yoki bank-klientning 1C fayli (1CClientBankExchange, .txt) qo'llab-quvvatlanadi. Eski XLS faylni Excel'da XLSX qilib saqlang.",
       "statements": "Bank ko'chirmalari",
       "transactions": "Operatsiyalar",
       "operationStatus": "Holat",

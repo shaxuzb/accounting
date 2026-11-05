@@ -2204,6 +2204,7 @@
     },
     "messages": {
       "imported": "Bank statement imported",
+      "nothingRecognized": "No statement of this bank was found in the file. Check that the right bank is selected.",
       "saved": "Bank operations saved",
       "existingSkipped": "{{count}} existing operations skipped",
       "partialSaved": "{{saved}} operations saved; {{skipped}} incomplete ones stay on the screen — complete and save them",
@@ -2247,7 +2248,7 @@
       "bankTypePlaceholder": "Select bank type",
       "bankTypeHint": "Select a bank type first. You can upload a file after that.",
       "uploadText": "Click to upload a file or drag it here",
-      "uploadHint": "XLSX, XLSM and XLS bank statements and the bank client's 1C exchange file (1CClientBankExchange, .txt) are supported.",
+      "uploadHint": "XLSX and XLSM bank statements and the bank client's 1C exchange file (1CClientBankExchange, .txt) are supported. Save an old XLS file as XLSX in Excel first.",
       "statements": "Bank statements",
       "transactions": "Operations",
       "operationStatus": "Status",

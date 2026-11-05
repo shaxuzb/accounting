@@ -533,6 +533,10 @@ export default function BankStatementImportPage() {
         {
           onSuccess: async (response) => {
             const parsedCards = normalizeBankStatements(response, file.name);
+            if (parsedCards.length === 0) {
+              toast.error(t("bank.messages.nothingRecognized"));
+              return;
+            }
             let bankAccounts = organizationBankAccounts?.items ?? [];
 
             if (!areOrganizationBankAccountsFetched) {

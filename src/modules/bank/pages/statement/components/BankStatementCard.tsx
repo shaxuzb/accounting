@@ -4,6 +4,9 @@ import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import clsx from "clsx";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import { $axiosPrivate } from "@/services/AxiosService";
+import type { SelectData } from "@/shared/types";
 import Card from "@/components/ui/card/Card";
 import type {
   BankChartAccountOption,
@@ -13,6 +16,8 @@ import type {
 import {
   chartAccountOptionLabel,
   chartAccountSelectedLabel,
+  selectListEndpoints,
+  selectListKeys,
 } from "@/shared/constants/selectLists";
 import { customDate, customDate2, numberSpacing } from "@/utils/utils";
 import BankTransactionContractSelect from "./BankTransactionContractSelect";
@@ -110,10 +115,26 @@ function BankStatementCard({
       0,
     );
   const hasBankAccount = Boolean(item.bankAccountId);
+  const { data: currencies } = useQuery({
+    queryKey: [selectListKeys.currency],
+    queryFn: async () =>
+      (
+        await $axiosPrivate.get<SelectData[]>(
+          selectListEndpoints.currenciesSelectList,
+        )
+      ).data,
+    staleTime: 10 * 60 * 1000,
+  });
+  // the statement names the currency by id only: show its code (UZS, USD) from the list
+  const currency = currencies?.find(
+    (option) => option.id === Number(item.currencyId),
+  );
   const currencyName =
     item.currencyName ??
     item.transactions.find((transaction) => transaction.currencyName)
-      ?.currencyName;
+      ?.currencyName ??
+    currency?.code ??
+    currency?.name;
   const newOperationCount = item.transactions.filter(
     (transaction) => !isExistingBankOperation(transaction),
   ).length;
@@ -443,14 +464,8 @@ function BankStatementCard({
                 {t("settings.fields.currency")}
               </div>
               <div className="font-semibold">
-                {currencyName ?? item.currencyId ?? "-"}
+                {currencyName ?? "-"}
               </div>
-          </div>
-          <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
-            <div className="text-xs text-secondary-text">
-              {t("bank.fields.operationType")}
-            </div>
-            <div className="font-semibold">{item.operationTypeId ?? "-"}</div>
           </div>
           <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
             <div className="text-xs text-secondary-text">

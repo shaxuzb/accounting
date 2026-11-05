@@ -478,9 +478,19 @@ export const bankStatementImportArticle: ManualArticle = {
       fix: "Yuqoridagi tashkilot tanlovidan ko'chirma egasini tanlang yoki to'g'ri faylni yuklang.",
     },
     {
-      message: "Eski .xls formati o'qilmaydi: faylni Excel'da ochib, .xlsx qilib saqlang va qayta yuklang.",
-      cause: "Bank faylni eski Excel formatida bergan.",
-      fix: "Faylni Excel'da oching → «Saqlash boshqacha» → .xlsx → qayta yuklang.",
+      message: "Eski XLS formatidagi fayl o'qilmaydi. Faylni Excel'da ochib, «Saqlash» → XLSX qilib saqlang va qayta yuklang.",
+      cause: "Bank faylni eski Excel (XLS) formatida bergan.",
+      fix: "Faylni Excel'da oching → «Saqlash boshqacha» → XLSX → qayta yuklang.",
+    },
+    {
+      message: "Faylni o'qib bo'lmadi: u buzilgan yoki Excel (XLSX, XLSM) fayli emas.",
+      cause: "Fayl to'liq yuklab olinmagan, buzilgan yoki kengaytmasi o'zgartirilgan.",
+      fix: "Ko'chirmani bank-klientdan qayta yuklab oling va shu faylni yuklang.",
+    },
+    {
+      message: "Bu turdagi fayl qabul qilinmaydi.",
+      cause: "Fayl Excel ham, 1C almashinuv fayli ham emas (masalan, PDF yoki rasm).",
+      fix: "Bank-klientdan ko'chirmani Excel (XLSX) yoki «1C ga eksport» (.txt) ko'rinishida oling.",
     },
     {
       message: "Excel fayl hajmi 5 MB dan oshmasligi kerak",
@@ -488,9 +498,9 @@ export const bankStatementImportArticle: ManualArticle = {
       fix: "Bankdan ko'chirmani qisqaroq davrlarga (masalan, oyma-oy) bo'lib oling.",
     },
     {
-      message: "Fayl yuklandi, lekin hech qanday operatsiya chiqmadi",
-      cause: "Fayl tanlangan bankning shabloniga mos kelmadi — ko'pincha boshqa bank tanlangan.",
-      fix: "Bank turini tekshiring va faylni qayta yuklang. Bank formatini o'zgartirgan bo'lsa, faylni qo'llab-quvvatlash xizmatiga yuboring — shablon yangilanadi.",
+      message: "Fayl … ko'chirmasi shakliga mos kelmadi. Bank to'g'ri tanlanganini tekshiring.",
+      cause: "Tanlangan bank faylni bergan bank emas yoki bank ko'chirma shaklini o'zgartirgan.",
+      fix: "Yuqoridagi bank turini tekshirib, faylni qayta yuklang. Bank to'g'ri bo'lsa, faylni qo'llab-quvvatlash xizmatiga yuboring — shakl qo'shiladi.",
     },
     {
       message: "Fayl 1C almashinuv fayli emas (1CClientBankExchange).",
