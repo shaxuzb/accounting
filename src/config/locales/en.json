@@ -1849,7 +1849,10 @@
       "accountWithId": "Account #{{id}}"
     },
     "openingBalance": {
-      "subkontoItem": {"title": "New item: {{name}}", "name": "Name"},
+      "subkontoItem": {
+        "title": "New item: {{name}}",
+        "name": "Name"
+      },
       "noSubkontoRequired": "No subaccount is required for this account"
     },
     "settlementPolicy": {
@@ -2297,6 +2300,65 @@
     },
     "actions": {
       "cancelPosted": "Cancel document"
+    },
+    "importColumns": {
+      "date": {
+        "title": "Date",
+        "hint": "The day the payment went through the bank."
+      },
+      "documentNumber": {
+        "title": "Payment document №",
+        "hint": "The bank's payment order number. With the date and amount it keeps an operation from being entered twice."
+      },
+      "statementAccount": {
+        "title": "Account (from the statement)",
+        "hint": "The bank account of whoever sent or received the money, as the statement shows it. Read only."
+      },
+      "statementCounterparty": {
+        "title": "Payer / payee (from the statement)",
+        "hint": "The name in the statement. The counterparty is found by taxpayer number or account; if not, create it with «Mark missing counterparties»."
+      },
+      "counterpartyAccount": {
+        "title": "Counterparty account (ours)",
+        "hint": "Which account on the counterparty's card the statement's account is. A matching one is picked by itself; otherwise add it with «+»."
+      },
+      "classification": {
+        "title": "Operation type",
+        "hint": "What the payment is: a counterparty settlement, a bank fee, a tax, cash collection, etc. Picked by the bank's rules; a red row needs checking. The offset account follows from it."
+      },
+      "relatedDocument": {
+        "title": "For which document",
+        "hint": "The document the payment settles (a purchase, a sale). If none is chosen, the oldest debt is settled and the rest becomes an advance."
+      },
+      "purpose": {
+        "title": "Payment purpose",
+        "hint": "The payment purpose text from the statement, as the bank wrote it."
+      },
+      "contract": {
+        "title": "Contract",
+        "hint": "The contract with the counterparty the payment is under. Debt and advances are kept by it."
+      },
+      "outflow": {
+        "title": "Out (Cr 5110)",
+        "hint": "Money that left the account — the credit of the bank ledger account. The bank's own statement shows it under «Debit»."
+      },
+      "inflow": {
+        "title": "In (Dr 5110)",
+        "hint": "Money that came into the account — the debit of the bank ledger account. Note: the bank's own statement shows this amount under «Credit»."
+      },
+      "offsetAccount": {
+        "title": "Offset account",
+        "hint": "The other side of the entry. In: Dr bank account (5110) — Cr this account; out: Dr this account — Cr 5110. Set from the operation type."
+      }
+    },
+    "importCard": {
+      "openingBalance": "Opening balance",
+      "closingBalance": "Closing balance",
+      "totalOutflow": "Total out (Cr 5110)",
+      "totalInflow": "Total in (Dr 5110)",
+      "period": "Statement period",
+      "bankChartAccount": "Bank ledger account",
+      "bankChartAccountHint": "The ledger account the money is kept on (usually 5110, the current account). It is the bank side of every entry."
     }
   },
   "contract": {
@@ -2752,7 +2814,11 @@
       "runCheck": "Check",
       "entries": "entries",
       "checkSummary": "{{total}} checks: {{errors}} errors, {{warnings}} warnings",
-      "status": {"OK": "OK", "WARNING": "Warning", "ERROR": "Error"},
+      "status": {
+        "OK": "OK",
+        "WARNING": "Warning",
+        "ERROR": "Error"
+      },
       "director": "Director",
       "chiefAccountant": "Chief accountant",
       "form4": "Form 4 (cash flows)",
@@ -3131,7 +3197,10 @@
       "add": "Add accrual",
       "empty": "No planned accruals",
       "action": "Action",
-      "actions": {"ASSIGN": "Assign", "END": "End"},
+      "actions": {
+        "ASSIGN": "Assign",
+        "END": "End"
+      },
       "byMethod": "By the calculation type's value",
       "componentRequired": "Choose a calculation type on every line"
     },
@@ -3417,7 +3486,10 @@
       "noMonths": "No month worked in the averaging period",
       "dailyAverage": "Average daily earnings",
       "dailyFormula": "= earnings / days (a full month 25.3 days, art. 257)",
-      "basis": {"SALARY": "From the salary", "MINIMUM_WAGE": "Raised to the minimum wage"},
+      "basis": {
+        "SALARY": "From the salary",
+        "MINIMUM_WAGE": "Raised to the minimum wage"
+      },
       "dismissalDate": "Dismissal date",
       "noRecovery": "Do not recover leave taken in advance (art. 269 part 3)",
       "unusedDays": "Unused days",
@@ -4855,7 +4927,16 @@
     "recloseGo": "Go to that year",
     "reclosedMessage": "Months closed again: {{closed}}",
     "recloseStopped": "Closed: {{closed}}. {{month}} was not closed: {{reasons}}",
-    "stopReasons": {"TAX_RATE_MISSING": "the tax system has no rate", "MONTH_NOT_OVER": "the month is not over", "REVALUATION_REQUIRED": "a currency revaluation is required", "DEPRECIATION_REQUIRED": "depreciation of fixed assets is not posted", "ACCOUNTS_MISSING": "accounts are missing from the chart", "OPENING_OFFSET": "account 0000 has a balance", "PREVIOUS_OPEN": "the previous month is open", "CHECK_FAILED": "the closing check failed"},
+    "stopReasons": {
+      "TAX_RATE_MISSING": "the tax system has no rate",
+      "MONTH_NOT_OVER": "the month is not over",
+      "REVALUATION_REQUIRED": "a currency revaluation is required",
+      "DEPRECIATION_REQUIRED": "depreciation of fixed assets is not posted",
+      "ACCOUNTS_MISSING": "accounts are missing from the chart",
+      "OPENING_OFFSET": "account 0000 has a balance",
+      "PREVIOUS_OPEN": "the previous month is open",
+      "CHECK_FAILED": "the closing check failed"
+    },
     "title": "Accounting periods",
     "month": "Month",
     "status": "Status",

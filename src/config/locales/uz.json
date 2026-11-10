@@ -1851,7 +1851,10 @@
       "accountWithId": "Hisobvaraq #{{id}}"
     },
     "openingBalance": {
-      "subkontoItem": {"title": "Yangi element: {{name}}", "name": "Nomi"},
+      "subkontoItem": {
+        "title": "Yangi element: {{name}}",
+        "name": "Nomi"
+      },
       "noSubkontoRequired": "Bu hisobvaraq uchun subkonto talab qilinmaydi"
     },
     "settlementPolicy": {
@@ -2297,6 +2300,65 @@
     },
     "actions": {
       "cancelPosted": "Hujjatni bekor qilish"
+    },
+    "importColumns": {
+      "date": {
+        "title": "Sana",
+        "hint": "To'lov bankda o'tgan kun."
+      },
+      "documentNumber": {
+        "title": "To'lov hujjati №",
+        "hint": "Bankdagi to'lov topshiriqnomasining raqami. Shu raqam, sana va summa bo'yicha operatsiya ikki marta kiritilmaydi."
+      },
+      "statementAccount": {
+        "title": "Hisob raqami (ko'chirmadan)",
+        "hint": "Pulni yuborgan yoki qabul qilgan tomonning bank hisob raqami — bank ko'chirmasida qanday yozilgan bo'lsa. Faqat ko'rsatiladi."
+      },
+      "statementCounterparty": {
+        "title": "To'lovchi / oluvchi (ko'chirmadan)",
+        "hint": "Ko'chirmadagi nom. Tizim STIR yoki hisob raqami bo'yicha kontragentni topadi; topilmasa, «Topilmagan kontragentlarni belgilash» tugmasi bilan yarating."
+      },
+      "counterpartyAccount": {
+        "title": "Kontragent hisob raqami (bizda)",
+        "hint": "Ko'chirmadagi hisob raqami kontragent kartasidagi qaysi hisob raqamiga to'g'ri keladi. Mos raqam bo'lsa o'zi tanlanadi; bo'lmasa «+» bilan kartaga qo'shing."
+      },
+      "classification": {
+        "title": "Operatsiya turi",
+        "hint": "To'lov nima ekani: kontragent bilan hisob-kitob, bank komissiyasi, soliq, inkassatsiya va h.k. Bank qoidalari bo'yicha o'zi tanlanadi; qizil qator — qo'lda tekshiring. Qarama-qarshi hisobvaraq shundan kelib chiqadi."
+      },
+      "relatedDocument": {
+        "title": "Qaysi hujjat uchun",
+        "hint": "To'lov yopadigan hujjat (xarid, sotuv). Tanlanmasa, to'lov eng eski qarzni yopadi, ortig'i avans bo'ladi."
+      },
+      "purpose": {
+        "title": "To'lov maqsadi",
+        "hint": "Ko'chirmadagi to'lov maqsadi matni — bank qanday yozgan bo'lsa."
+      },
+      "contract": {
+        "title": "Shartnoma",
+        "hint": "Kontragent bilan qaysi shartnoma bo'yicha to'lov. Qarz va avans shu shartnoma bo'yicha yuritiladi."
+      },
+      "outflow": {
+        "title": "Chiqim (Kt 5110)",
+        "hint": "Hisobdan chiqqan summa — provodkada bank hisobvarag'ining krediti. Bankning o'z ko'chirmasida bu summa «Debet» ustunida turadi."
+      },
+      "inflow": {
+        "title": "Kirim (Dt 5110)",
+        "hint": "Hisobga tushgan summa — provodkada bank hisobvarag'ining debeti. E'tibor bering: bankning o'z ko'chirmasida bu summa «Kredit» ustunida turadi."
+      },
+      "offsetAccount": {
+        "title": "Qarama-qarshi hisobvaraq",
+        "hint": "Provodkaning ikkinchi tomoni. Kirimda: Dt bank hisobvarag'i (5110) — Kt shu hisobvaraq; chiqimda: Dt shu hisobvaraq — Kt 5110. Operatsiya turidan o'zi qo'yiladi."
+      }
+    },
+    "importCard": {
+      "openingBalance": "Boshlang'ich qoldiq",
+      "closingBalance": "Yakuniy qoldiq",
+      "totalOutflow": "Jami chiqim (Kt 5110)",
+      "totalInflow": "Jami kirim (Dt 5110)",
+      "period": "Ko'chirma davri",
+      "bankChartAccount": "Bank hisobvarag'i",
+      "bankChartAccountHint": "Pul qaysi buxgalteriya hisobvarag'ida yuritiladi (odatda 5110 — hisob-kitob schyoti). Hamma operatsiyalar provodkasining bank tomoni shu hisobvaraq bo'ladi."
     }
   },
   "contract": {
@@ -2752,7 +2814,11 @@
       "runCheck": "Tekshirish",
       "entries": "ta yozuv",
       "checkSummary": "{{total}} ta tekshiruv: xato {{errors}}, ogohlantirish {{warnings}}",
-      "status": {"OK": "To'g'ri", "WARNING": "Ogohlantirish", "ERROR": "Xato"},
+      "status": {
+        "OK": "To'g'ri",
+        "WARNING": "Ogohlantirish",
+        "ERROR": "Xato"
+      },
       "director": "Rahbar",
       "chiefAccountant": "Bosh hisobchi",
       "form4": "4-shakl (pul oqimlari)",
@@ -3131,7 +3197,10 @@
       "add": "Hisoblash qo'shish",
       "empty": "Rejali hisoblash yo'q",
       "action": "Amal",
-      "actions": {"ASSIGN": "Tayinlash", "END": "To'xtatish"},
+      "actions": {
+        "ASSIGN": "Tayinlash",
+        "END": "To'xtatish"
+      },
       "byMethod": "Hisoblash turidagi qiymat bo'yicha",
       "componentRequired": "Har bir qatorda hisoblash turini tanlang"
     },
@@ -3417,7 +3486,10 @@
       "noMonths": "Hisob davrida ishlangan oy yo'q",
       "dailyAverage": "O'rtacha kunlik ish haqi",
       "dailyFormula": "= ish haqi / kunlar (to'liq oy 25,3 kun, MK 257-modda)",
-      "basis": {"SALARY": "Oylik maoshdan", "MINIMUM_WAGE": "Eng kam ish haqiga ko'tarilgan"},
+      "basis": {
+        "SALARY": "Oylik maoshdan",
+        "MINIMUM_WAGE": "Eng kam ish haqiga ko'tarilgan"
+      },
       "dismissalDate": "Bo'shatish sanasi",
       "noRecovery": "Avansga olingan ta'til uchun ushlab qolinmaydi (MK 269-m. 3-q.)",
       "unusedDays": "Foydalanilmagan kunlar",
@@ -4855,7 +4927,16 @@
     "recloseGo": "O'sha yilga o'tish",
     "reclosedMessage": "Oylar qayta yopildi: {{closed}}",
     "recloseStopped": "Yopildi: {{closed}}. {{month}} yopilmadi: {{reasons}}",
-    "stopReasons": {"TAX_RATE_MISSING": "soliq tizimi stavkasi kiritilmagan", "MONTH_NOT_OVER": "oy hali tugamagan", "REVALUATION_REQUIRED": "valyuta qayta baholanishi kerak", "DEPRECIATION_REQUIRED": "asosiy vositalar amortizatsiyasi hisoblanmagan", "ACCOUNTS_MISSING": "hisoblar rejasida kerakli hisoblar yo'q", "OPENING_OFFSET": "0000 hisobida qoldiq bor", "PREVIOUS_OPEN": "oldingi oy yopilmagan", "CHECK_FAILED": "yopish tekshiruvi o'tmadi"},
+    "stopReasons": {
+      "TAX_RATE_MISSING": "soliq tizimi stavkasi kiritilmagan",
+      "MONTH_NOT_OVER": "oy hali tugamagan",
+      "REVALUATION_REQUIRED": "valyuta qayta baholanishi kerak",
+      "DEPRECIATION_REQUIRED": "asosiy vositalar amortizatsiyasi hisoblanmagan",
+      "ACCOUNTS_MISSING": "hisoblar rejasida kerakli hisoblar yo'q",
+      "OPENING_OFFSET": "0000 hisobida qoldiq bor",
+      "PREVIOUS_OPEN": "oldingi oy yopilmagan",
+      "CHECK_FAILED": "yopish tekshiruvi o'tmadi"
+    },
     "title": "Hisob davrlari",
     "month": "Oy",
     "status": "Holati",

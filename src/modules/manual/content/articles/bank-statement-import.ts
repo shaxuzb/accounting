@@ -254,9 +254,9 @@ export const bankStatementImportArticle: ManualArticle = {
         },
         {
           n: 13,
-          name: "Sana · Valyuta · Boshlang'ich balans · Yakuniy qoldiq · Debet · Kredit",
+          name: "Ko'chirma davri · Valyuta · Boshlang'ich qoldiq · Yakuniy qoldiq · Jami kirim · Jami chiqim",
           enter:
-            "Ko'chirmaning o'zidan: davr, valyuta, davr boshi va oxiridagi qoldiq, kirimlar (Debet) va chiqimlar (Kredit) jami. O'zgartirilmaydi.",
+            "Ko'chirmaning o'zidan: davr, valyuta, davr boshi va oxiridagi qoldiq, kirimlar (Dt 5110) va chiqimlar (Kt 5110) jami. O'zgartirilmaydi.",
           affects:
             "Hisobdagi qoldiq ko'chirmaning boshlang'ich balansidan farq qilsa, qizil yozuv chiqadi: «Hisobdagi qoldiq: … — ko'chirma bilan mos emas». Bu oldingi davr operatsiyalari to'liq kiritilmaganini bildiradi.",
         },
@@ -279,7 +279,7 @@ export const bankStatementImportArticle: ManualArticle = {
       title: "Operatsiyalar jadvali",
       fields: [
         {
-          name: "Sana · Bank hujjat raqami",
+          name: "Sana · To'lov hujjati №",
           enter: "Ko'chirmadan. O'zgartirilmaydi.",
           affects: "Bank hujjati shu sana bilan yoziladi; hujjat raqami takroriy kiritishni aniqlashda ishlatiladi.",
         },
@@ -290,20 +290,20 @@ export const bankStatementImportArticle: ManualArticle = {
         },
         {
           n: 17,
-          name: "Kontragent",
+          name: "To'lovchi / oluvchi (ko'chirmadan)",
           enter: "Ko'chirmadagi nom. Tizim kontragentni STIR bo'yicha topadi; topilmasa — «Topilmagan kontragentlarni belgilash» orqali yarating.",
           affects: "Hisob-kitob shu kontragent bo'yicha yuritiladi (4010 / 6010 analitikasi).",
         },
         {
           n: 18,
-          name: "Hisob raqami (kontragentniki)",
+          name: "Kontragent hisob raqami (bizda)",
           enter:
             "Kontragentning tizimda saqlangan bank hisoblaridan biri. Yo'q bo'lsa, «+» bilan ko'chirmadagi raqamni kontragentga qo'shing — u shu kontragentning shu raqamli barcha qatorlariga qo'yiladi.",
           affects: "Majburiy emas; hujjatda kontragent hisobi sifatida ko'rinadi.",
         },
         {
           n: 19,
-          name: "Tasniflash",
+          name: "Operatsiya turi",
           required: true,
           enter:
             "Operatsiya turi: Kontragent, Bank komissiyasi, Bank xizmati, Terminal / ekvayring, Inkassatsiya, Ustav kapitaliga badal, Jismoniy shaxs kartasi. Bank qoidalari bo'yicha o'zi tanlanadi; hech bir qoidaga tushmasa — «Tekshirish talab etiladi» (qator qizil).",
@@ -313,7 +313,7 @@ export const bankStatementImportArticle: ManualArticle = {
         },
         {
           n: 20,
-          name: "Bog'langan hujjat",
+          name: "Qaysi hujjat uchun",
           enter:
             "Ixtiyoriy: to'lov qaysi hujjat uchun ekanini ko'rsatish — tushumda sotuv, to'lovda xarid hujjati; inkassatsiyada inkassatsiya hujjati.",
           affects: "To'lov aynan shu hujjatni yopadi; bir inkassatsiyani ikki marta bog'lab bo'lmaydi.",
@@ -326,7 +326,7 @@ export const bankStatementImportArticle: ManualArticle = {
         },
         {
           n: 22,
-          name: "Izoh",
+          name: "To'lov maqsadi",
           enter: "To'lov maqsadi, ko'chirmadagidek. Ustiga borsangiz to'liq matn chiqadi.",
           affects: "Saqlangan bank hujjatining izohiga yoziladi.",
         },
@@ -340,8 +340,8 @@ export const bankStatementImportArticle: ManualArticle = {
         },
         {
           n: 24,
-          name: "Debet · Kredit",
-          enter: "Summa: Debet — hisobga tushgan pul, Kredit — hisobdan chiqqan pul. O'zgartirilmaydi.",
+          name: "Kirim (Dt 5110) · Chiqim (Kt 5110)",
+          enter: "Summa: Kirim — hisobga tushgan pul (5110 debeti), Chiqim — hisobdan chiqqan pul (5110 krediti). Bankning o'z ko'chirmasida bular teskari nomlanadi: tushum «Kredit», chiqim «Debet». O'zgartirilmaydi.",
         },
         {
           n: 25,

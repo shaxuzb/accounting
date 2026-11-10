@@ -1,6 +1,6 @@
 import { Button, Modal, Select, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Info, Trash2 } from "lucide-react";
 import clsx from "clsx";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
@@ -36,6 +36,16 @@ const stringifyValue = (value: unknown) => {
 };
 
 const VIRTUAL_ROW_THRESHOLD = 30;
+
+/** A column title that says where its value comes from: the hint opens on the ⓘ. */
+const ColumnTitle = ({ title, hint }: { title: string; hint: string }) => (
+  <Tooltip title={hint}>
+    <span className="inline-flex cursor-help items-center gap-1">
+      {title}
+      <Info className="size-3.5 shrink-0 text-secondary-text" />
+    </span>
+  </Tooltip>
+);
 const TABLE_SCROLL_X = 2200;
 const TABLE_SCROLL_Y = 560;
 
@@ -182,6 +192,13 @@ function BankStatementCard({
       .map((transaction) => transaction.date)
       .find(Boolean);
 
+  const columnTitle = (key: string) => (
+    <ColumnTitle
+      title={t(`bank.importColumns.${key}.title`)}
+      hint={t(`bank.importColumns.${key}.hint`)}
+    />
+  );
+
   const columns: ColumnsType<BankStatementTransaction> = [
     // {
     //   title: t("bank.fields.operationType"),
@@ -195,32 +212,32 @@ function BankStatementCard({
     //         : stringifyValue(record.direction),
     // },
     {
-      title: t("bank.fields.date"),
+      title: columnTitle("date"),
       dataIndex: "date",
       width: 100,
       align: "center",
       render: (_, record) => customDate2(record.date),
     },
     {
-      title: t("bank.fields.bankDocumentNumber"),
+      title: columnTitle("documentNumber"),
       dataIndex: "bankDocumentNumber",
       width: 160,
       render: (value) => stringifyValue(value),
     },
     {
-      title: t("bank.fields.accountNumber"),
+      title: columnTitle("statementAccount"),
       dataIndex: "counterpartyAccount",
       width: 200,
       render: (value) => stringifyValue(value),
     },
     {
-      title: t("bank.fields.counterparty"),
+      title: columnTitle("statementCounterparty"),
       dataIndex: "counterpartyName",
       width: 200,
       render: (value) => stringifyValue(value),
     },
     {
-      title: t("settings.fields.accountNumber"),
+      title: columnTitle("counterpartyAccount"),
       dataIndex: "counterpartyBankAccountId",
       width: 240,
       render: (_, record, index) => {
@@ -244,7 +261,7 @@ function BankStatementCard({
     },
 
     {
-      title: t("bank.fields.classification"),
+      title: columnTitle("classification"),
       dataIndex: "classificationCategoryId",
       width: 240,
       align: "center",
@@ -271,7 +288,7 @@ function BankStatementCard({
       ),
     },
     {
-      title: t("documents.relatedDocument"),
+      title: columnTitle("relatedDocument"),
       dataIndex: "relatedDocumentId",
       width: 260,
       render: (_, record, index) => (
@@ -292,7 +309,7 @@ function BankStatementCard({
       ),
     },
     {
-      title: t("bank.fields.comment"),
+      title: columnTitle("purpose"),
       dataIndex: "purpose",
       width: 300,
       align: "center",
@@ -320,7 +337,7 @@ function BankStatementCard({
     //   ),
     // },
     {
-      title: t("purchase.fields.contract"),
+      title: columnTitle("contract"),
       dataIndex: "contractId",
       width: 220,
       render: (_, record, index) => {
@@ -341,21 +358,21 @@ function BankStatementCard({
       },
     },
     {
-      title: t("bank.fields.debit"),
+      title: columnTitle("inflow"),
       dataIndex: "debit",
       align: "center",
       width: 120,
       render: (value) => numberSpacing(value),
     },
     {
-      title: t("bank.fields.credit"),
+      title: columnTitle("outflow"),
       dataIndex: "credit",
       width: 120,
       align: "center",
       render: (value) => numberSpacing(value),
     },
     {
-      title: t("bank.fields.offsetAccount"),
+      title: columnTitle("offsetAccount"),
       dataIndex: "offsetAccountId",
       width: 220,
       render: (_, record, index) => (
@@ -452,7 +469,7 @@ function BankStatementCard({
         <div className="flex flex-wrap items-center gap-2">
           <div className="rounded-lg bg-surface-muted px-3 py-2">
             <div className="text-xs text-secondary-text">
-              {t("bank.fields.date")}
+              {t("bank.importCard.period")}
             </div>
             <div className="font-semibold">
               {customDate(dateFrom)}
@@ -469,7 +486,7 @@ function BankStatementCard({
           </div>
           <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
             <div className="text-xs text-secondary-text">
-              {t("openingBalance.title")}
+              {t("bank.importCard.openingBalance")}
             </div>
             <div className="font-semibold">
               {numberSpacing(item.openingBalance ?? 0, undefined, true)}
@@ -486,7 +503,7 @@ function BankStatementCard({
           </div>
           <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
             <div className="text-xs text-secondary-text">
-              {t("bank.fields.closingBalance")}
+              {t("bank.importCard.closingBalance")}
             </div>
             <div className="font-semibold">
               {numberSpacing(item.closingBalance ?? 0)}
@@ -494,23 +511,23 @@ function BankStatementCard({
           </div>
           <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
             <div className="text-xs text-secondary-text">
-              {t("bank.fields.debit")}
+              {t("bank.importCard.totalInflow")}
             </div>
             <div className="font-semibold">{numberSpacing(totalDebit)}</div>
           </div>
           <div className="rounded-lg bg-surface-muted px-3 py-2 text-right">
             <div className="text-xs text-secondary-text">
-              {t("bank.fields.credit")}
+              {t("bank.importCard.totalOutflow")}
             </div>
             <div className="font-semibold">{numberSpacing(totalCredit)}</div>
           </div>
-          <Button
-            danger
-            icon={<Trash2 className="size-4" />}
-            onClick={onDelete}
-          >
-            {t("common.delete")}
-          </Button>
+          <div className="rounded-lg bg-surface-muted px-3 py-2">
+            <div className="mb-1 text-xs text-secondary-text">
+              <ColumnTitle
+                title={t("bank.importCard.bankChartAccount")}
+                hint={t("bank.importCard.bankChartAccountHint")}
+              />
+            </div>
           <Select
             className="w-60"
             value={item.bankChartAccountId ?? undefined}
@@ -532,6 +549,14 @@ function BankStatementCard({
             onClear={() => onBankChartAccountChange(null)}
             disabled={chartAccountLoading || newOperationCount === 0}
           />
+          </div>
+          <Button
+            danger
+            icon={<Trash2 className="size-4" />}
+            onClick={onDelete}
+          >
+            {t("common.delete")}
+          </Button>
         </div>
       </div>
 
