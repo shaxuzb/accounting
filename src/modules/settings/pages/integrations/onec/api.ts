@@ -395,13 +395,13 @@ export const useCancelOneCRun = () => {
   });
 };
 
-/** The agent (.exe) or the processing (.epf), saved under its own name. */
-export const downloadOneCFile = async (kind: "agent" | "epf") => {
+/** The agent (.exe), saved under its own name. */
+export const downloadOneCFile = async (kind: "agent") => {
   const response = await $axiosPrivate.get<Blob>(`/onec/downloads/${kind}`, { responseType: "blob" });
   const url = URL.createObjectURL(response.data);
   const link = document.createElement("a");
   link.href = url;
-  link.download = kind === "agent" ? "HisobKitob1CAgent.exe" : "HisobKitob1C.epf";
+  link.download = "HisobKitob1CAgent.exe";
   link.click();
   URL.revokeObjectURL(url);
 };

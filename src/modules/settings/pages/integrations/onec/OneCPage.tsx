@@ -376,7 +376,7 @@ export default function OneCPage() {
     if (firstActive && expanded.length === 0) setExpanded([firstActive]);
   }, [firstActive, expanded.length]);
 
-  const download = (kind: "agent" | "epf") =>
+  const download = (kind: "agent") =>
     downloadOneCFile(kind).catch(() => toast.error(t(`${T}.downloadNotReady`)));
 
   const create = () =>
@@ -464,17 +464,11 @@ export default function OneCPage() {
         <div className="space-y-1 text-sm">
           <div className="text-base font-semibold">{t(`${T}.title`)}</div>
           <p className="text-secondary-text">{t(`${T}.intro`)}</p>
-          <ul className="list-disc pl-5 text-secondary-text">
-            <li>{t(`${T}.ways.agent`)}</li>
-            <li>{t(`${T}.ways.epf`)}</li>
-          </ul>
+          <p className="text-secondary-text">{t(`${T}.ways.agent`)}</p>
         </div>
         <div className="flex flex-col gap-2">
           <Button icon={<Download className="size-4" />} onClick={() => void download("agent")}>
             {t(`${T}.downloadAgent`)}
-          </Button>
-          <Button icon={<Download className="size-4" />} onClick={() => void download("epf")}>
-            {t(`${T}.downloadEpf`)}
           </Button>
         </div>
       </div>

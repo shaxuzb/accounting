@@ -1500,18 +1500,16 @@
           "WAITING": "Kutilmoqda",
           "WAITINGHint": "Navbatda: dastur uni yaqin soniyalarda oladi.",
           "CLIENT_OFFLINE": "Agent aloqada emas",
-          "CLIENT_OFFLINEHint": "1C kompyuteridagi agent yoki obrabotka ishlamayapti: kompyuter o'chiq, internet yo'q yoki dastur yopilgan. Ishga tushirilgach vazifa o'zi davom etadi.",
+          "CLIENT_OFFLINEHint": "1C kompyuteridagi agent ishlamayapti: kompyuter o'chiq, internet yo'q yoki agent yopilgan. Ishga tushirilgach vazifa o'zi davom etadi.",
           "STALLED": "Uzilib qoldi",
           "STALLEDHint": "Uzoq vaqtdan beri xabar yo'q: 1C kompyuterida dastur yopilgan, internet uzilgan yoki 1C qotib qolgan. Agent qayta ishga tushsa vazifani davom ettiradi; bo'lmasa vazifani bekor qilib, qaytadan boshlang."
         },
         "title": "1C dan ko'chirish",
         "intro": "1C bazangiz o'z kompyuteringizda qoladi: u yerda ishlaydigan dastur bazani o'qib, ma'lumotni shu yerga yuboradi. Nima olib kelinishini shu sahifadan boshqarasiz.",
         "ways": {
-          "agent": "Agent (.exe) — 1C o'rnatilgan kompyuterga bir marta o'rnatiladi va fonda ishlaydi: yangi hujjatlarni o'zi olib kelib turadi.",
-          "epf": "Obrabotka (.epf) — hech narsa o'rnatilmaydi: 1C da «Файл → Открыть» bilan ochiladi va ochiq turganda ishlaydi."
+          "agent": "Agent (.exe) 1C o'rnatilgan kompyuterga bir marta o'rnatiladi va fonda ishlaydi: 1C ni faqat o'qiydi, unga hech narsa yozmaydi. 1C ning COM ulagichi ro'yxatdan o'tmagan bo'lsa, agent buni o'zi tuzatadi (Windows bir marta administrator ruxsatini so'raydi)."
         },
         "downloadAgent": "Agentni yuklab olish (.exe)",
-        "downloadEpf": "Obrabotkani yuklab olish (.epf)",
         "downloadNotReady": "Fayl hali serverga joylanmagan.",
         "error": "Amal bajarilmadi.",
         "close": "Yopish",
@@ -1521,8 +1519,8 @@
           "expired": "Kod muddati o'tdi — yangi kod oling."
         },
         "steps": {
-          "download": "Agent yoki obrabotkani yuklab oling.",
-          "open": "Agentni 1C kompyuterida ishga tushiring yoki obrabotkani 1C da oching va bazani tanlang.",
+          "download": "Agentni yuklab oling.",
+          "open": "Agentni 1C kompyuterida ishga tushiring, 1C bazasini tanlang va 1C foydalanuvchisi bilan parolini kiriting.",
           "enter": "Shu kodni kiriting — ulanish shu ro'yxatda «Ulangan» bo'ladi."
         },
         "connection": {
@@ -1588,7 +1586,7 @@
           "cancel": "Bekor qilish",
           "cancelConfirm": "Vazifa bekor qilinsinmi?",
           "queued": "Vazifa navbatga qo'yildi: 1C tomonidagi dastur uni olib bajaradi.",
-          "notPaired": "Dastur hali ulanmagan: kompyuterdagi agent yoki obrabotkada ulanish kodini kiriting.",
+          "notPaired": "Agent hali ulanmagan: kompyuterdagi agentda ulanish kodini kiriting.",
           "busy": "Vazifa bajarilmoqda — tugagach keyingisini boshlash mumkin."
         },
         "stats": {
