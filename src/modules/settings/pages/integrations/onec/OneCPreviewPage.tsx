@@ -18,6 +18,7 @@ import {
   useOneCRunAccounts,
   useAutoMapOneCAccounts,
   useCreateOneCSubAccount,
+  useReanalyzeOneCRun,
   useOneCOurGroups,
   useSaveOneCAccounts,
   useSelectOneC,
@@ -610,6 +611,7 @@ export default function OneCPreviewPage() {
   const preview = useOneCPreview(runId, version);
   const select = useSelectOneC();
   const startImport = useStartOneCImport();
+  const reanalyze = useReanalyzeOneCRun();
   const [section, setSection] = useState<OneCPreviewSection | null>(null);
   const [tab, setTab] = useState<string | null>(null);
   // an object opened from the comparison (its own drawer: the sections keep theirs)
@@ -714,6 +716,25 @@ export default function OneCPreviewPage() {
         <div className="w-72">
           <RunProgress run={run.data} />
         </div>
+        {(editableRun || run.data.status === "DONE" || run.data.status === "FAILED") && (
+          <Popconfirm
+            title={editableRun ? t(`${P}.reanalyze`) : t(`${P}.reanalyzeFailed`)}
+            description={<div className="max-w-sm">{editableRun ? t(`${P}.reanalyzeConfirm`) : t(`${P}.reanalyzeFailedConfirm`)}</div>}
+            onConfirm={() =>
+              reanalyze.mutate(runId, {
+                onSuccess: () => {
+                  setTab(null);
+                  toast.success(t(`${P}.reanalyzeStarted`));
+                },
+                onError: (error) => toast.error(errorText(error, t(`${T}.error`))),
+              })
+            }
+          >
+            <Button size="large" icon={<RotateCcw className="size-4" />} loading={reanalyze.isPending}>
+              {editableRun ? t(`${P}.reanalyze`) : t(`${P}.reanalyzeFailed`)}
+            </Button>
+          </Popconfirm>
+        )}
         {editableRun && (
           <Popconfirm
             disabled={unresolved > 0}

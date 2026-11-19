@@ -1681,7 +1681,12 @@
           "subAccountHint": "Bu schyot namunaviy rejada ham yo'q (1C da qo'lda ochilgan). Uni bizda qaysi guruh ostida ochishni tanlang: turi va analitikasi guruhdagi schyotlardan olinadi, 1C dagi schyot unga moslanadi.",
           "subAccountParent": "Guruh",
           "subAccountCreate": "Ochish",
-          "subAccountDone": "{{number}} schyoti ochildi va moslandi."
+          "subAccountDone": "{{number}} schyoti ochildi va moslandi.",
+          "reanalyze": "Qayta tahlil",
+          "reanalyzeConfirm": "Hali import qilinmagan barcha obyektlar hozirgi holat bo'yicha (bazadagi ma'lumotnomalar, sozlamalar, schyotlar moslashi) qaytadan tahlil qilinadi. Tanlovlaringiz va «Importdan chiqarish»lar saqlanadi.",
+          "reanalyzeFailed": "Xatolilarni qayta tahlil qilish",
+          "reanalyzeFailedConfirm": "Import bo'lmagan obyektlar (xato berganlar, chiqarib qo'yilganlar) ko'rib chiqishga qaytadi va qaytadan tahlil qilinadi; import bo'lganlariga tegilmaydi. Tuzatib bo'lgach «Import» faqat qolganlarini import qiladi.",
+          "reanalyzeStarted": "Qayta tahlil boshlandi."
         },
         "progress": {
           "stageAnalyze": "Tahlil",

@@ -532,6 +532,15 @@ export const useAutoMapOneCAccounts = () => {
   });
 };
 
+/** The run's objects not imported looked over again as things stand now (the import's done ones kept). */
+export const useReanalyzeOneCRun = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: (runId: number) => $axiosPrivate.post(`/onec/runs/${runId}/reanalyze`),
+    onSuccess: invalidate,
+  });
+};
+
 export const useStartOneCImport = () => {
   const invalidate = useInvalidate();
   return useMutation({

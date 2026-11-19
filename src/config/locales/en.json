@@ -1679,7 +1679,12 @@
           "subAccountHint": "This account is not in the standard chart either (opened by hand in 1C). Choose the group to open it under here: its kind and analytics come from the group's accounts, and the 1C account is mapped to it.",
           "subAccountParent": "Group",
           "subAccountCreate": "Open",
-          "subAccountDone": "Account {{number}} opened and mapped."
+          "subAccountDone": "Account {{number}} opened and mapped.",
+          "reanalyze": "Analyse again",
+          "reanalyzeConfirm": "Every object not yet imported is analysed again as things stand now (catalogs in the base, settings, account mapping). Your choices and exclusions stay.",
+          "reanalyzeFailed": "Analyse the failed ones again",
+          "reanalyzeFailedConfirm": "The objects not imported (failed, left out) go back to the preview and are analysed again; the imported ones are not touched. Once fixed, «Import» brings in only the rest.",
+          "reanalyzeStarted": "Analysis started again."
         },
         "progress": {
           "stageAnalyze": "Analysis",
