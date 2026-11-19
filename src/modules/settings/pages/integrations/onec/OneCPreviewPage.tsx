@@ -1,6 +1,6 @@
-import { Alert, Button, Checkbox, Drawer, Empty, Input, Popconfirm, Select, Space, Switch, Table, Tabs, Tag, Tooltip } from "antd";
+import { Alert, Button, Checkbox, Drawer, Empty, Input, Modal, Popconfirm, Select, Space, Switch, Table, Tabs, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
-import { ArrowLeft, Pencil, RotateCcw, Upload } from "lucide-react";
+import { ArrowLeft, FolderPlus, Pencil, RotateCcw, Upload } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -17,6 +17,8 @@ import {
   useOneCRun,
   useOneCRunAccounts,
   useAutoMapOneCAccounts,
+  useCreateOneCSubAccount,
+  useOneCOurGroups,
   useSaveOneCAccounts,
   useSelectOneC,
   useStartOneCImport,
@@ -410,10 +412,20 @@ function AccountsTab({ runId, version, editableRun }: { runId: number; version: 
   const ours = useOneCOurAccounts(true);
   const save = useSaveOneCAccounts();
   const autoMap = useAutoMapOneCAccounts();
+  const groups = useOneCOurGroups(editableRun);
+  const createSub = useCreateOneCSubAccount();
   const [changes, setChanges] = useState<Record<string, number | null>>({});
   const [autoMapped, setAutoMapped] = useState<string[] | null>(null);
-  // only the used ones hold documents back; 1C's unused rest needs nothing
-  const unmappedUsed = (accounts.data ?? []).filter((row) => row.accountId == null && row.uses > 0).length;
+  // the 1C sub-account being opened here, and the group it goes under
+  const [sub, setSub] = useState<{ row: OneCAccountRow; parentId: number | null } | null>(null);
+  // only the used ones hold documents back; 1C's unused rest needs nothing, the standard chart's are added
+  const unmappedUsed = (accounts.data ?? []).filter((row) => row.accountId == null && row.uses > 0 && !row.fromPreset).length;
+
+  // a sub-account goes under ours numbered as its head (2920.2 → 2920) unless another group is picked
+  const openSub = (row: OneCAccountRow) => {
+    const head = row.code.includes(".") ? row.code.slice(0, row.code.lastIndexOf(".")) : null;
+    setSub({ row, parentId: (groups.data ?? []).find((group) => group.number === head)?.id ?? null });
+  };
 
   const options = (ours.data ?? []).map((account) => ({ value: account.id, label: `${account.number} ${account.name}` }));
   const columns: TableColumnsType<OneCAccountRow> = [
@@ -430,7 +442,7 @@ function AccountsTab({ runId, version, editableRun }: { runId: number; version: 
           allowClear
           disabled={!editableRun}
           optionFilterProp="label"
-          status={(changes[row.code] ?? row.accountId) == null ? "error" : undefined}
+          status={(changes[row.code] ?? row.accountId) == null && row.uses > 0 && !row.fromPreset ? "error" : undefined}
           placeholder={t(`${P}.chooseAccount`)}
           value={row.code in changes ? changes[row.code] ?? undefined : row.accountId ?? undefined}
           options={options}
@@ -440,10 +452,23 @@ function AccountsTab({ runId, version, editableRun }: { runId: number; version: 
     },
     {
       title: t(`${P}.state`),
-      width: 150,
+      width: 210,
       render: (_, row) =>
         row.code in changes ? (
           <Tag color="processing">{t(`${P}.changed`)}</Tag>
+        ) : row.fromPreset ? (
+          <Tooltip title={t(`${P}.fromPresetHint`)}>
+            <Tag color="green">{t(`${P}.fromPreset`)}</Tag>
+          </Tooltip>
+        ) : row.accountId == null && row.uses > 0 ? (
+          <Space size={4} wrap>
+            <Tag color="red">{t(`${P}.notMapped`)}</Tag>
+            {editableRun && (
+              <Button size="small" icon={<FolderPlus className="size-3.5" />} onClick={() => openSub(row)}>
+                {t(`${P}.subAccount`)}
+              </Button>
+            )}
+          </Space>
         ) : row.accountId == null && row.uses === 0 ? (
           <Tooltip title={t(`${P}.notNeededHint`)}>
             <Tag>{t(`${P}.notNeeded`)}</Tag>
@@ -527,6 +552,45 @@ function AccountsTab({ runId, version, editableRun }: { runId: number; version: 
         pagination={{ pageSize: 50, hideOnSinglePage: true }}
         locale={{ emptyText: <Empty description={t(`${P}.noAccounts`)} /> }}
       />
+      <Modal
+        open={sub !== null}
+        title={t(`${P}.subAccountTitle`, { code: sub?.row.code ?? "" })}
+        okText={t(`${P}.subAccountCreate`)}
+        okButtonProps={{ disabled: sub?.parentId == null }}
+        confirmLoading={createSub.isPending}
+        onCancel={() => setSub(null)}
+        onOk={() =>
+          sub &&
+          createSub.mutate(
+            { runId, code: sub.row.code, parentAccountId: sub.parentId },
+            {
+              onSuccess: (account) => {
+                setSub(null);
+                toast.success(t(`${P}.subAccountDone`, { number: account.number }));
+              },
+              onError: (error) => toast.error(errorText(error, t(`${T}.error`))),
+            },
+          )
+        }
+      >
+        {sub && (
+          <div className="space-y-3">
+            <div>
+              <span className="font-mono">{sub.row.code}</span> {sub.row.name ?? ""}
+            </div>
+            <div className="text-sm text-secondary-text">{t(`${P}.subAccountHint`)}</div>
+            <Select
+              className="w-full"
+              showSearch
+              optionFilterProp="label"
+              placeholder={t(`${P}.subAccountParent`)}
+              value={sub.parentId ?? undefined}
+              options={(groups.data ?? []).map((group) => ({ value: group.id, label: `${group.number} ${group.name}` }))}
+              onChange={(value) => setSub({ ...sub, parentId: value ?? null })}
+            />
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

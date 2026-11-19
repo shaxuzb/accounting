@@ -174,6 +174,8 @@ export interface OneCAccountRow {
   accountCode: string | null;
   accountName: string | null;
   isMapped: boolean;
+  /** None here, the standard chart has it and the import uses it: added when the import starts. */
+  fromPreset: boolean;
 }
 
 export interface OneCTargetAccount {
@@ -495,6 +497,27 @@ export const useSaveOneCAccounts = () => {
   return useMutation({
     mutationFn: ({ runId, items }: { runId: number; items: { code: string; accountId: number | null }[] }) =>
       $axiosPrivate.put(`/onec/runs/${runId}/accounts`, { items }),
+    onSuccess: invalidate,
+  });
+};
+
+/** The organization's group accounts: a 1C sub-account is opened under one of them. */
+export const useOneCOurGroups = (enabled: boolean) =>
+  useQuery({
+    queryKey: [...keys.all, "our-account-groups"],
+    queryFn: () => $axiosPrivate.get<OneCTargetAccount[]>("/onec/our-account-groups").then((response) => response.data),
+    enabled,
+    staleTime: 60_000,
+  });
+
+/** A 1C sub-account neither here nor in the standard chart, opened here under a group and mapped to. */
+export const useCreateOneCSubAccount = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: ({ runId, code, parentAccountId }: { runId: number; code: string; parentAccountId: number | null }) =>
+      $axiosPrivate
+        .post<OneCTargetAccount>(`/onec/runs/${runId}/accounts/sub`, { code, parentAccountId })
+        .then((response) => response.data),
     onSuccess: invalidate,
   });
 };

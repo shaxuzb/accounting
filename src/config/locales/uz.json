@@ -1673,7 +1673,15 @@
           "sameCode": "Bir xil raqam",
           "saveAccounts": "Saqlash ({{count}})",
           "accountsSaved": "Saqlandi: ta'sir qilgan obyektlar qayta tekshirilmoqda.",
-          "noAccounts": "Bu yuklashda 1C schyotlari yo'q."
+          "noAccounts": "Bu yuklashda 1C schyotlari yo'q.",
+          "fromPreset": "Namunaviy rejadan qo'shiladi",
+          "fromPresetHint": "Bizning rejada yo'q, namunaviy hisoblar rejasida bor: import boshlanganda guruhi va analitikasi bilan tashkilot rejasiga o'zi qo'shiladi. Hujjatlar to'xtamaydi.",
+          "subAccount": "Subschyot qo'shish",
+          "subAccountTitle": "{{code}} ni subschyot qilib ochish",
+          "subAccountHint": "Bu schyot namunaviy rejada ham yo'q (1C da qo'lda ochilgan). Uni bizda qaysi guruh ostida ochishni tanlang: turi va analitikasi guruhdagi schyotlardan olinadi, 1C dagi schyot unga moslanadi.",
+          "subAccountParent": "Guruh",
+          "subAccountCreate": "Ochish",
+          "subAccountDone": "{{number}} schyoti ochildi va moslandi."
         },
         "progress": {
           "stageAnalyze": "Tahlil",

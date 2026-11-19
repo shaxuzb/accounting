@@ -1671,7 +1671,15 @@
           "sameCode": "Same number",
           "saveAccounts": "Save ({{count}})",
           "accountsSaved": "Saved: the objects concerned are being checked again.",
-          "noAccounts": "No 1C accounts in this load."
+          "noAccounts": "No 1C accounts in this load.",
+          "fromPreset": "Added from the standard chart",
+          "fromPresetHint": "Not in our chart but in the standard chart of accounts: when the import starts it is added to the organization's chart with its group and analytics. Documents are not held back.",
+          "subAccount": "Add sub-account",
+          "subAccountTitle": "Open {{code}} as a sub-account",
+          "subAccountHint": "This account is not in the standard chart either (opened by hand in 1C). Choose the group to open it under here: its kind and analytics come from the group's accounts, and the 1C account is mapped to it.",
+          "subAccountParent": "Group",
+          "subAccountCreate": "Open",
+          "subAccountDone": "Account {{number}} opened and mapped."
         },
         "progress": {
           "stageAnalyze": "Analysis",
