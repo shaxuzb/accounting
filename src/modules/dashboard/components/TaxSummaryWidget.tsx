@@ -1,4 +1,4 @@
-import { BadgePercent, CheckCircle2, CircleHelp } from "lucide-react";
+import { BadgePercent, Landmark, ShoppingCart, Store } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { TaxSummary } from "../types/type";
 import {
@@ -8,68 +8,59 @@ import {
 import DashboardSection from "./DashboardSection";
 import MetricCard from "./MetricCard";
 
+/**
+ * VAT of the period from the ledger: charged on sales (Kt 6410), recoverable on purchases (Dt 4410)
+ * and their difference — payable to the budget, or an excess carried to the next period.
+ */
 export default function TaxSummaryWidget({ summary }: { summary: TaxSummary }) {
   const { t } = useTranslation();
+  const sale = summary.items.find((item) => item.documentType === "SALE");
+  const purchase = summary.items.find((item) => item.documentType === "PURCHASE");
+  const payable = summary.total;
+
+  const documents = (count?: number) =>
+    t("dashboard.tax.documentCount", { count: formatDashboardCount(count ?? 0) });
+
+  const description =
+    summary.isVatPayer === false
+      ? t("dashboard.tax.notVatPayer")
+      : t("dashboard.tax.description");
 
   return (
     <DashboardSection
       title={t("dashboard.tax.title")}
-      description={t("dashboard.tax.description")}
+      description={description}
       icon={<BadgePercent className="size-5" />}
       status={summary.sourceStatus}
     >
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-3">
         <MetricCard
-          label={t("dashboard.tax.total")}
-          value={formatDashboardAmount(summary.total, "")}
-          icon={<BadgePercent className="size-4" />}
+          label={t("dashboard.tax.saleVat")}
+          value={formatDashboardAmount(sale?.vatAmount ?? 0, "UZS")}
+          hint={documents(sale?.count)}
+          icon={<Store className="size-4" />}
+          tone="blue"
+        />
+        <MetricCard
+          label={t("dashboard.tax.purchaseVat")}
+          value={formatDashboardAmount(purchase?.vatAmount ?? 0, "UZS")}
+          hint={documents(purchase?.count)}
+          icon={<ShoppingCart className="size-4" />}
           tone="purple"
         />
-        <div className="rounded-xl border border-border bg-(--theme-bg-muted) p-4">
-          <span className="text-sm text-(--theme-text-secondary)">
-            {t("dashboard.tax.vatPayer")}
-          </span>
-          <div className="mt-3 flex items-center gap-2 text-xl font-semibold text-heading">
-            {summary.isVatPayer === null ? (
-              <CircleHelp className="size-5 text-amber-500" />
-            ) : (
-              <CheckCircle2 className="size-5 text-emerald-500" />
-            )}
-            {summary.isVatPayer === null
-              ? t("dashboard.notAvailable")
-              : summary.isVatPayer
-                ? t("dashboard.tax.yes")
-                : t("dashboard.tax.no")}
-          </div>
-        </div>
-      </div>
-      <div className="mt-5 space-y-3">
-        {summary.items.length ? (
-          summary.items.map((item) => (
-            <div
-              key={item.documentType + "-" + item.currencyId}
-              className="flex items-center justify-between gap-3 rounded-lg bg-(--theme-bg-muted) px-3 py-2.5 text-sm"
-            >
-              <span className="text-(--theme-text-secondary)">
-                {t(
-                  item.documentType === "SALE"
-                    ? "dashboard.tax.charged"
-                    : item.documentType === "PURCHASE"
-                      ? "dashboard.tax.recoverable"
-                      : item.documentType || "—",
-                )}{" "}
-                · {formatDashboardCount(item.count)} {t("dashboard.tax.documents")}
-              </span>
-              <span className="font-medium text-heading">
-                {formatDashboardAmount(item.vatAmount, "")}
-              </span>
-            </div>
-          ))
-        ) : (
-          <p className="py-3 text-center text-sm text-(--theme-text-secondary)">
-            {t("dashboard.tax.empty")}
-          </p>
-        )}
+        <MetricCard
+          label={
+            payable >= 0 ? t("dashboard.tax.payable") : t("dashboard.tax.excess")
+          }
+          value={formatDashboardAmount(Math.abs(payable), "UZS")}
+          hint={
+            payable >= 0
+              ? t("dashboard.tax.payableHint")
+              : t("dashboard.tax.excessHint")
+          }
+          icon={<Landmark className="size-4" />}
+          tone={payable > 0 ? "red" : "green"}
+        />
       </div>
     </DashboardSection>
   );

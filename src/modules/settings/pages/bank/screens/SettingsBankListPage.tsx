@@ -1,106 +1,99 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
-import { Button, Space, Table } from "antd";
-import type { TableColumnType, TableColumnsType } from "antd";
-import { Plus, RefreshCw } from "lucide-react";
-import ActionColumn from "@/components/ui/table/actions/ActionColumns";
+import { Button, Popconfirm, Space, Table, Tag } from "antd";
+import type { TableColumnsType } from "antd";
+import toast from "react-hot-toast";
+import { Plus, RefreshCw, Trash2 } from "lucide-react";
 import Card from "@/components/ui/card/Card";
 import PermissionCard from "@/components/ui/card/PermissionCard";
 import SearchFilter from "@/components/ui/filters/SearchFilter";
-import { useAppSelector } from "@/store/hooks";
 import { stateStatus } from "@/utils/helpers/statusHelper";
-import { customDate, generateKeyTable } from "@/utils/utils";
+import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import { settingsBankPermissions } from "../constants/permissions";
-import { useGetListSettingsBank } from "../hooks";
+import { useDetachBank, useGetOrganizationBanks } from "../hooks";
 import type { SettingsBank } from "../types/type";
-import SettingsBankAddEditPage from "./SettingsBankAddEditPage";
+import BankPickerModal from "./BankPickerModal";
 
+/**
+ * The organization's banks, as 1C «Банки»: not typed in but picked from the common directory
+ * (the Central Bank's register). A bank its bank accounts use is on the list by itself.
+ */
 export default function SettingsBankListPage() {
   const { t } = useTranslation();
-  const { user } = useAppSelector((state) => state.auth);
   const [searchParams] = useSearchParams();
+  const search = searchParams.get("search") ?? undefined;
   const { data, refetch, isLoading, isFetching } =
-    useGetListSettingsBank(searchParams);
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
+    useGetOrganizationBanks(search);
+  const detach = useDetachBank();
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
-  const tableColumns: TableColumnsType<SettingsBank> = [
+  const handleDetach = (bank: SettingsBank) =>
+    detach.mutate(bank.id, {
+      onSuccess: () => toast.success(t("settings.orgBanks.detached")),
+      onError: errorHandlers,
+    });
+
+  const columns: TableColumnsType<SettingsBank> = [
     {
-      dataIndex: "indexId",
+      key: "index",
       title: t("common.rowNumber"),
       align: "center",
       width: 70,
+      render: (_value, _record, index) => index + 1,
     },
-    {
-      dataIndex: "code",
-      title: t("settings.fields.code"),
-      width: 140,
-    },
-    {
-      dataIndex: "name",
-      title: t("settings.fields.name"),
-      minWidth: 220,
-    },
+    { dataIndex: "name", title: t("settings.fields.name"), minWidth: 260 },
     {
       dataIndex: "mfo",
       title: t("settings.fields.mfo"),
-      width: 140,
+      width: 120,
       render: (value: string | null) => value || "-",
     },
-
     {
-      dataIndex: "createdDate",
-      title: t("settings.fields.createdDate"),
-      align: "center",
-      width: 180,
-      render: customDate,
+      dataIndex: "inn",
+      title: t("settings.orgBanks.inn"),
+      width: 130,
+      render: (value: string | null) => value || "-",
+    },
+    {
+      key: "used",
+      width: 150,
+      render: (_value, record) =>
+        record.isUsed ? (
+          <Tag color="blue">{t("settings.orgBanks.used")}</Tag>
+        ) : null,
     },
     {
       dataIndex: "stateId",
       title: t("settings.fields.status"),
       align: "center",
       width: 120,
-      render: (_, record) => stateStatus(record.stateId, record.stateName),
+      render: (_value, record) => stateStatus(record.stateId, record.stateName),
+    },
+    {
+      key: "actions",
+      title: t("common.actions"),
+      align: "center",
+      width: 90,
+      fixed: "right",
+      render: (_value, record) =>
+        record.isPicked && !record.isUsed ? (
+          <PermissionCard permission={settingsBankPermissions.delete}>
+            <Popconfirm
+              title={t("settings.orgBanks.detachConfirm")}
+              onConfirm={() => handleDetach(record)}
+            >
+              <Button
+                type="text"
+                danger
+                title={t("settings.orgBanks.detach")}
+                icon={<Trash2 className="size-4" />}
+              />
+            </Popconfirm>
+          </PermissionCard>
+        ) : null,
     },
   ];
-
-  const permissions = user?.user.permissions ?? [];
-  const hasActions =
-    permissions.includes(settingsBankPermissions.update) ||
-    permissions.includes(settingsBankPermissions.delete);
-
-  const columns: TableColumnType<SettingsBank>[] = hasActions
-    ? [
-        ...tableColumns,
-        {
-          dataIndex: "actions",
-          title: t("common.actions"),
-          align: "center",
-          width: 100,
-          fixed: "right",
-          render: (_, record) => (
-            <ActionColumn
-              deletePath="banks"
-              customPath={`/main/settings/banks/edit/${record.id}`}
-              record={record}
-              permissions={permissions}
-              permissionsCode={{
-                deleteCode: settingsBankPermissions.delete,
-                editCode: settingsBankPermissions.update,
-              }}
-              refetch={refetch}
-              editModal={{
-                isModal: true,
-                setOpenEditModal: setIsAddOpen,
-                setEditData: (value: unknown) =>
-                  setEditId((value as SettingsBank)?.id ?? null),
-              }}
-            />
-          ),
-        },
-      ]
-    : tableColumns;
 
   return (
     <div className="w-full">
@@ -115,7 +108,7 @@ export default function SettingsBankListPage() {
             <Button
               type="primary"
               icon={<Plus className="size-4" />}
-              onClick={() => setIsAddOpen(true)}
+              onClick={() => setIsPickerOpen(true)}
             >
               {t("common.add")}
             </Button>
@@ -125,24 +118,20 @@ export default function SettingsBankListPage() {
 
       <Card className="overflow-hidden border border-border">
         <Table<SettingsBank>
-          loading={isLoading || isFetching}
+          rowKey="id"
+          loading={isLoading || isFetching || detach.isPending}
           columns={columns}
-          scroll={{
-            x: "max-content",
-            y: "calc(100vh - 350px)",
-          }}
-          dataSource={generateKeyTable(data?.items ?? [], "id")}
+          scroll={{ x: "max-content", y: "calc(100vh - 350px)" }}
+          dataSource={data ?? []}
           pagination={false}
+          locale={{ emptyText: t("settings.orgBanks.empty") }}
         />
       </Card>
 
-      <SettingsBankAddEditPage
-        open={isAddOpen}
-        onClose={() => {
-          setIsAddOpen(false);
-          setEditId(null);
-        }}
-        id={editId}
+      <BankPickerModal
+        open={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        attachedIds={(data ?? []).map((bank) => bank.id)}
       />
     </div>
   );

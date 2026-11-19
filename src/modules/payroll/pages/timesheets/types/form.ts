@@ -1,5 +1,8 @@
 export interface PayrollTimesheetLineForm {
   employeeId: number | null;
+  /** the job of the row (its hire interval): a main and a part-time job are two rows */
+  employmentId?: number | null;
+  employmentType?: string | null;
   employeeName?: string | null;
   employeeNumber?: string | null;
   departmentName?: string | null;

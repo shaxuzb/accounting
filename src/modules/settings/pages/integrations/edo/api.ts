@@ -123,12 +123,20 @@ export const edoService = {
       .post<EdoInboxRejectDto>(edoEndpoints.inboxReject(id), payload)
       .then((response) => response.data),
 
-  downloadFile: async (id: string | number): Promise<EdoDownloadedFile> => {
+  /** By our record's id, or — for a listed document not stored here — by its id at the operator. */
+  downloadFile: async (
+    id: string | number | { providerDocumentId: string; documentType?: string },
+  ): Promise<EdoDownloadedFile> => {
     try {
-      const response = await $axiosPrivate.get<Blob>(edoEndpoints.file(id), {
+      const byProvider = typeof id === "object";
+      const response = await $axiosPrivate.get<Blob>(
+        byProvider ? edoEndpoints.providerFile(id.providerDocumentId) : edoEndpoints.file(id),
+        {
+        params: byProvider ? { documentType: id.documentType } : undefined,
         responseType: "blob",
         headers: { Accept: "application/pdf, application/octet-stream" },
-      });
+        },
+      );
       const fileName = getFileName(response.headers["content-disposition"]);
       const contentType = String(
         response.headers["content-type"] || response.data.type || "application/octet-stream",

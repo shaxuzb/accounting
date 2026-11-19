@@ -1,7 +1,7 @@
-import { Alert, Button, DatePicker, Input, Modal, Popconfirm, Progress, Table, Tag, Tooltip } from "antd";
+import { Alert, Button, DatePicker, Modal, Popconfirm, Progress, Table, Tag, Tooltip } from "antd";
 import type { TableColumnsType } from "antd";
 import dayjs, { type Dayjs } from "dayjs";
-import { Download, KeyRound, Plus, Power, RefreshCw } from "lucide-react";
+import { Download, Eraser, KeyRound, Plus, Power, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -22,6 +22,7 @@ import {
   useOneCRuns,
   useOneCStats,
   useRevokeOneCConnection,
+  useCleanupOneCConnection,
   type OneCConnection,
   type OneCPairingCode,
   type OneCProgressPart,
@@ -365,9 +366,8 @@ export default function OneCPage() {
   const createConnection = useCreateOneCConnection();
   const newCode = useNewOneCPairingCode();
   const revoke = useRevokeOneCConnection();
+  const cleanup = useCleanupOneCConnection();
   const [code, setCode] = useState<OneCPairingCode | null>(null);
-  const [naming, setNaming] = useState(false);
-  const [name, setName] = useState("");
   const [expanded, setExpanded] = useState<number[]>([]);
 
   // the newest live connection is opened by itself
@@ -379,11 +379,11 @@ export default function OneCPage() {
   const download = (kind: "agent") =>
     downloadOneCFile(kind).catch(() => toast.error(t(`${T}.downloadNotReady`)));
 
+  // one connection per organization: connecting again gives it a new code
+  const live = connections.data?.find((connection) => connection.status !== "REVOKED");
   const create = () =>
-    createConnection.mutate(name.trim(), {
+    createConnection.mutate(undefined, {
       onSuccess: (result) => {
-        setNaming(false);
-        setName("");
         setCode(result);
         setExpanded([result.connectionId]);
       },
@@ -432,7 +432,7 @@ export default function OneCPage() {
     },
     { title: t(`${T}.connection.lastSeen`), dataIndex: "lastSeenAt", width: 150, render: (value: string | null) => formatDate(value ?? undefined) },
     {
-      width: 220,
+      width: 320,
       render: (_, connection) =>
         connection.status !== "REVOKED" && (
           <div className="flex gap-2">
@@ -448,6 +448,19 @@ export default function OneCPage() {
             >
               {t(`${T}.connection.newCode`)}
             </Button>
+            <Popconfirm
+              title={<div className="max-w-80">{t(`${T}.connection.cleanupConfirm`)}</div>}
+              onConfirm={() =>
+                cleanup.mutate(connection.id, {
+                  onSuccess: () => toast.success(t(`${T}.connection.cleaned`)),
+                  onError: (error) => toast.error(errorText(error, t(`${T}.error`))),
+                })
+              }
+            >
+              <Button size="small" icon={<Eraser className="size-3.5" />} loading={cleanup.isPending}>
+                {t(`${T}.connection.cleanup`)}
+              </Button>
+            </Popconfirm>
             <Popconfirm title={t(`${T}.connection.revokeConfirm`)} onConfirm={() => revoke.mutate(connection.id)}>
               <Button size="small" danger icon={<Power className="size-3.5" />}>
                 {t(`${T}.connection.revoke`)}
@@ -474,9 +487,11 @@ export default function OneCPage() {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button type="primary" icon={<Plus className="size-4" />} onClick={() => setNaming(true)}>
-          {t(`${T}.connection.create`)}
-        </Button>
+        {!live && (
+          <Button type="primary" icon={<Plus className="size-4" />} loading={createConnection.isPending} onClick={create}>
+            {t(`${T}.connection.create`)}
+          </Button>
+        )}
         <Button icon={<RefreshCw className="size-4" />} onClick={() => void connections.refetch()} />
       </div>
 
@@ -496,23 +511,6 @@ export default function OneCPage() {
         }}
       />
 
-      <Modal
-        open={naming}
-        title={t(`${T}.connection.create`)}
-        okText={t(`${T}.connection.createOk`)}
-        confirmLoading={createConnection.isPending}
-        onOk={create}
-        onCancel={() => setNaming(false)}
-      >
-        <Input
-          autoFocus
-          value={name}
-          maxLength={200}
-          placeholder={t(`${T}.connection.namePlaceholder`)}
-          onChange={(event) => setName(event.target.value)}
-          onPressEnter={create}
-        />
-      </Modal>
       <PairingCodeModal code={code} onClose={() => setCode(null)} />
     </Card>
   );

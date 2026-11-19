@@ -2,7 +2,7 @@ import Messages from "@/components/navbar/messages";
 import OrgSwitcher from "@/components/navbar/org-switcher";
 import ThemeToggle from "@/components/navbar/theme";
 import LanguageSwitcher from "@/components/navbar/language";
-import ManualSearch from "@/modules/manual/components/ManualSearch";
+import OrganizationRatingBadge from "@/components/navbar/rating";
 import RecordHistoryButton from "@/components/audit/RecordHistoryButton";
 import { useWorkspaceNavigation } from "@/app/navigation/useWorkspaceNavigation";
 import { setClose } from "@/store/features/sidebarCloseSlice";
@@ -64,11 +64,11 @@ const Navbar = () => {
           <RecordHistoryButton title={typeof titleText === "string" ? titleText : undefined} />
         </div>
         <div className="flex gap-2 items-center grow justify-end">
-          <ManualSearch />
+          <OrganizationRatingBadge />
           <OrgSwitcher />
           <ThemeToggle />
-          <LanguageSwitcher />
           <Messages />
+          <LanguageSwitcher />
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { payrollPeriodText } from "../../../utils/format";
+import { timesheetRowKey } from "../utils/timesheet";
 import SectionCard from "@/components/ui/card/SectionCard";
 import { Empty, Table, Tag } from "antd";
 import type { TableColumnsType } from "antd";
@@ -38,6 +39,8 @@ type SummaryKey =
 interface CalendarRow {
   key: number;
   employeeId: number;
+  /** PRIMARY / PART_TIME / CONTRACT: a main and a part-time job are two rows */
+  employmentType?: string | null;
   employeeName?: string | null;
   employeeNumber?: string | null;
   summary?: PayrollTimesheetMonthlySummary;
@@ -253,12 +256,13 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
   );
 
   const { rows, dates, statusCodes } = useMemo(() => {
+    // rows by job (timesheetRowKey): an employee with a main and a part-time job has two
     const summaryByEmployee = new Map(
-      summaries.map((summary) => [summary.employeeId, summary]),
+      summaries.map((summary) => [timesheetRowKey(summary), summary]),
     );
     const employeeInfo = new Map<
       number,
-      { employeeName?: string | null; employeeNumber?: string | null }
+      { employeeId: number; employeeName?: string | null; employeeNumber?: string | null; employmentType?: string | null }
     >();
     const attendanceByEmployee = new Map<
       number,
@@ -267,39 +271,45 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
     const statusSet = new Set<PayrollTimesheetAttendanceStatus>();
 
     summaries.forEach((summary) => {
-      employeeInfo.set(summary.employeeId, {
+      employeeInfo.set(timesheetRowKey(summary), {
+        employeeId: summary.employeeId,
         employeeName: summary.employeeName,
         employeeNumber: summary.employeeNumber,
+        employmentType: summary.employmentType,
       });
     });
 
     attendance.forEach((day) => {
       day.employees.forEach((employee) => {
         statusSet.add(employee.statusCode);
-        if (!employeeInfo.has(employee.employeeId)) {
-          employeeInfo.set(employee.employeeId, {
+        const rowKey = timesheetRowKey(employee);
+        if (!employeeInfo.has(rowKey)) {
+          employeeInfo.set(rowKey, {
+            employeeId: employee.employeeId,
             employeeName: employee.employeeName,
             employeeNumber: employee.employeeNumber,
+            employmentType: employee.employmentType,
           });
         }
         const employeeAttendance =
-          attendanceByEmployee.get(employee.employeeId) ??
+          attendanceByEmployee.get(rowKey) ??
           new Map<string, PayrollTimesheetDailyEmployee>();
         employeeAttendance.set(day.date, employee);
-        attendanceByEmployee.set(employee.employeeId, employeeAttendance);
+        attendanceByEmployee.set(rowKey, employeeAttendance);
       });
     });
 
     const employeeIds = Array.from(employeeInfo.keys());
 
     return {
-      rows: employeeIds.map((employeeId) => ({
-        key: employeeId,
-        employeeId,
-        employeeName: employeeInfo.get(employeeId)?.employeeName,
-        employeeNumber: employeeInfo.get(employeeId)?.employeeNumber,
-        summary: summaryByEmployee.get(employeeId),
-        attendance: attendanceByEmployee.get(employeeId) ?? new Map(),
+      rows: employeeIds.map((rowKey) => ({
+        key: rowKey,
+        employeeId: employeeInfo.get(rowKey)?.employeeId ?? 0,
+        employeeName: employeeInfo.get(rowKey)?.employeeName,
+        employeeNumber: employeeInfo.get(rowKey)?.employeeNumber,
+        employmentType: employeeInfo.get(rowKey)?.employmentType,
+        summary: summaryByEmployee.get(rowKey),
+        attendance: attendanceByEmployee.get(rowKey) ?? new Map(),
       })),
       dates: attendance,
       statusCodes: Array.from(statusSet),
@@ -346,6 +356,11 @@ export default function TimesheetCalendarView({ calendar, actions }: Props) {
           <div className="min-w-0 py-0.5">
             <div className="truncate font-medium text-text text-xs!">
               {row.employeeName ?? "-"}
+              {row.employmentType && row.employmentType !== "PRIMARY" && (
+                <Tag className="m-0! ml-1! px-1! text-[10px]!" color="orange">
+                  {t(`payroll.fields.jobShort.${row.employmentType}`)}
+                </Tag>
+              )}
             </div>
             {/* {row.employeeNumber && (
               <div className="text-xs text-secondary-text">

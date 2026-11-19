@@ -1,8 +1,12 @@
 import { Alert, Button, Empty, Select, Spin } from "antd";
-import { CheckCircle2, KeyRound, RefreshCw, ShieldCheck } from "lucide-react";
+import { CheckCircle2, KeyRound, LogOut, RefreshCw, ShieldCheck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useEimzo, type ICertificate } from "@/features/eimzo";
+import { useQuery } from "@tanstack/react-query";
+import { $axiosPrivate } from "@/services/AxiosService";
+import { useAppSelector } from "@/store/hooks";
+import { organizationService } from "@/modules/settings/pages/organizations/api";
 import toast from "react-hot-toast";
 import { isAxiosError } from "axios";
 import Card from "@/components/ui/card/Card";
@@ -16,11 +20,15 @@ import {
 } from "../hooks";
 import { hasSupportedCapability } from "../utils/capabilities";
 import {
+  clearEdoAuthSession,
   isEdoAuthSessionActive,
   saveEdoAuthSession,
 } from "../utils/authSession";
 import { createEimzoSignature } from "../utils/eimzoSignature";
 import { getEimzoSigningDataBase64 } from "../utils/signingPayload";
+
+// outside the component: the clock is read when signing, not while rendering
+const isExpired = (at: string) => new Date(at).getTime() <= Date.now();
 
 const getOwner = (certificate: ICertificate) =>
   certificate.ownerName || certificate.CN || certificate.name;
@@ -48,6 +56,7 @@ export default function EdoAuthenticationPanel({
   const provider = activeProviderQuery.data;
   const capabilitiesQuery = useEdoCapabilities(provider?.code);
   const session = useEdoAuthSession(provider?.code);
+  const sessionActive = isEdoAuthSessionActive(session);
   const certificates = useMemo(
     () => keyList.filter((certificate) => !certificate.expired),
     [keyList],
@@ -55,6 +64,23 @@ export default function EdoAuthenticationPanel({
   const selectedCertificate = certificates.find(
     (certificate) => certificate.serialNumber === selectedSerial,
   );
+  // the operator signs in the organization by its INN: a key of another taxpayer is refused (Didox: 422)
+  const organizationId = useAppSelector((state) => state.organization.id);
+  const organizationQuery = useQuery({
+    queryKey: ["organization-detail", organizationId],
+    queryFn: () => organizationService.detail(organizationId),
+    enabled: Boolean(organizationId),
+    staleTime: 5 * 60 * 1000,
+  });
+  const organizationInn = organizationQuery.data?.inn?.trim() || undefined;
+  const organizationPinfl = (organizationQuery.data as { pinfl?: string | null } | undefined)?.pinfl?.trim() || undefined;
+  const keyMismatch =
+    selectedCertificate && organizationInn
+      ? !(
+          (selectedCertificate.TIN && selectedCertificate.TIN === organizationInn) ||
+          (selectedCertificate.PINFL && organizationPinfl && selectedCertificate.PINFL === organizationPinfl)
+        )
+      : false;
   const isFaktura = provider?.code === "FAKTURA";
   const authAvailable =
     Boolean(provider) &&
@@ -80,6 +106,15 @@ export default function EdoAuthenticationPanel({
   const authenticate = async () => {
     if (!provider || !selectedCertificate || !authAvailable) return;
     setLocalError(undefined);
+    if (keyMismatch) {
+      setLocalError(
+        t("settings.integrations.edo.errors.keyOrganizationMismatch", {
+          keyInn: selectedCertificate.TIN || selectedCertificate.PINFL,
+          orgInn: organizationInn,
+        }),
+      );
+      return;
+    }
     try {
       if (isFaktura) {
         const preparedPkcs7 = await signAsync({
@@ -99,6 +134,8 @@ export default function EdoAuthenticationPanel({
           throw new Error(t("settings.integrations.edo.errors.authRejected"));
         }
         saveEdoAuthSession(provider.code, response);
+      // with the session open the invoices are compared with the books at once, not at the next round
+      void $axiosPrivate.post("/organization-health/run").catch(() => undefined);
         toast.success(t("settings.integrations.edo.messages.authenticated"));
         onAuthenticated?.();
         return;
@@ -112,7 +149,7 @@ export default function EdoAuthenticationPanel({
         certificateSerialNumber,
         authMode: "EImzo",
       });
-      if (new Date(challenge.expiresAt).getTime() <= Date.now()) {
+      if (isExpired(challenge.expiresAt)) {
         throw new Error(t("settings.integrations.edo.errors.challengeExpired"));
       }
 
@@ -122,7 +159,7 @@ export default function EdoAuthenticationPanel({
         getEimzoSigningDataBase64(challenge.payload, challenge.payloadFormat),
       );
 
-      if (new Date(challenge.expiresAt).getTime() <= Date.now()) {
+      if (isExpired(challenge.expiresAt)) {
         throw new Error(t("settings.integrations.edo.errors.challengeExpired"));
       }
       const response = await completeMutation.mutateAsync({
@@ -141,6 +178,8 @@ export default function EdoAuthenticationPanel({
         throw new Error(t("settings.integrations.edo.errors.authRejected"));
       }
       saveEdoAuthSession(provider.code, response);
+      // with the session open the invoices are compared with the books at once, not at the next round
+      void $axiosPrivate.post("/organization-health/run").catch(() => undefined);
       toast.success(t("settings.integrations.edo.messages.authenticated"));
       onAuthenticated?.();
     } catch (cause) {
@@ -187,11 +226,22 @@ export default function EdoAuthenticationPanel({
           message={t("settings.integrations.edo.auth.unavailable")}
         />
       )}
-      {isEdoAuthSessionActive(session) && (
+      {sessionActive && (
         <Alert
           type="success"
           showIcon
           icon={<CheckCircle2 className="size-4" />}
+          action={
+            provider ? (
+              <Button
+                size="small"
+                icon={<LogOut className="size-4" />}
+                onClick={() => clearEdoAuthSession(provider.code)}
+              >
+                {t("settings.integrations.edo.auth.signOut")}
+              </Button>
+            ) : undefined
+          }
           message={t("settings.integrations.edo.auth.authenticated", {
             provider: provider?.name,
           })}
@@ -205,7 +255,7 @@ export default function EdoAuthenticationPanel({
           className="mb-4! border-emerald-200! bg-emerald-50! text-emerald-700! dark:border-emerald-800! dark:bg-emerald-950/60! dark:text-emerald-300!"
         />
       )}
-      {(!isInstalled || error) && (
+      {!sessionActive && (!isInstalled || error) && (
         <Alert
           type="warning"
           showIcon
@@ -226,7 +276,8 @@ export default function EdoAuthenticationPanel({
         />
       )}
 
-      {isLoading ? (
+      {/* a live session is kept until it ends or the user signs out: no key is asked for again */}
+      {sessionActive ? null : isLoading ? (
         <div className="flex min-h-28 items-center justify-center">
           <Spin />
         </div>
@@ -254,6 +305,17 @@ export default function EdoAuthenticationPanel({
               showSearch
               optionFilterProp="label"
             />
+            {keyMismatch && (
+              <Alert
+                className="mt-2"
+                type="warning"
+                showIcon
+                message={t("settings.integrations.edo.errors.keyOrganizationMismatch", {
+                  keyInn: selectedCertificate?.TIN || selectedCertificate?.PINFL,
+                  orgInn: organizationInn,
+                })}
+              />
+            )}
           </div>
           <Button
             icon={<RefreshCw className="size-4" />}

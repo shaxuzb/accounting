@@ -12,7 +12,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { PayrollTimesheetForm, PayrollTimesheetLineForm, PayrollTimesheetDayForm } from "../types/form";
 import type { PayrollAttendanceStatusOption } from "../types/type";
-import { calculateLineFromDays, createTimesheetLine, mapCalendarSummaryToTimesheetLine, mapCalendarToTimesheetLine, replaceLineDayStatus, replaceLineWorkedHours } from "../utils/timesheet";
+import { calculateLineFromDays, createTimesheetLine, mapCalendarSummaryToTimesheetLine, mapCalendarToTimesheetLine, replaceLineDayStatus, replaceLineWorkedHours, timesheetRowKey } from "../utils/timesheet";
 import TimesheetStatusPicker from "./TimesheetStatusPicker";
 
 interface Props {
@@ -79,13 +79,14 @@ export default function TimesheetLinesEditor({ formik, disabled = false, normWor
     try {
       const calendar = await payrollTimesheetService.calendarTable(periodId);
       const currentLines = formik.values.lines;
-      const currentEmployeeIds = new Set(
+      // a row per job: an employee with a main and a part-time job comes twice
+      const currentRows = new Set(
         currentLines
-          .map((line) => line.employeeId)
-          .filter((employeeId): employeeId is number => employeeId != null),
+          .filter((line) => line.employeeId != null)
+          .map((line) => timesheetRowKey(line)),
       );
       const linesToAdd = (calendar.monthlySummary ?? [])
-        .filter((summary) => !currentEmployeeIds.has(summary.employeeId))
+        .filter((summary) => !currentRows.has(timesheetRowKey(summary)))
         .map((summary) => {
           const employee = employeeById.get(summary.employeeId);
           return createTimesheetLine({
@@ -105,7 +106,7 @@ export default function TimesheetLinesEditor({ formik, disabled = false, normWor
   const lineDay = (line: LineRow, date: string): PayrollTimesheetDayForm | undefined => line.days.find((day) => day.date === date);
   const columns: TableColumnsType<LineRow> = [
     { title: t("common.rowNumber"), width: 48, fixed: "left", align: "center", render: (_, record) => record.rowIndex + 1 },
-    { title: t("payroll.fields.employee"), width: 220, fixed: "left", render: (_, record) => <PayrollEmployeeSelect standalone value={record.employeeId} excludeIds={selectedIds.filter((id) => id !== record.employeeId)} disabled={editorDisabled || !periodId} onChange={(value) => { const employee = (employees ?? []).find((item) => item.id === value); const patch = { employeeId: value, employeeName: employee?.label ?? null, employeeNumber: employee?.employeeNumber ?? null, departmentName: employee?.departmentName ?? null }; if (value) void syncEmployee(record.rowIndex, value, patch); else patchLine(record.rowIndex, patch); }} /> },
+    { title: t("payroll.fields.employee"), width: 220, fixed: "left", render: (_, record) => <div className="flex items-center gap-1"><div className="min-w-0 flex-1"><PayrollEmployeeSelect standalone value={record.employeeId} excludeIds={selectedIds.filter((id) => id !== record.employeeId)} disabled={editorDisabled || !periodId} onChange={(value) => { const employee = (employees ?? []).find((item) => item.id === value); const patch = { employeeId: value, employeeName: employee?.label ?? null, employeeNumber: employee?.employeeNumber ?? null, departmentName: employee?.departmentName ?? null }; if (value) void syncEmployee(record.rowIndex, value, patch); else patchLine(record.rowIndex, patch); }} /></div>{record.employmentType && record.employmentType !== "PRIMARY" && <Tag className="m-0! shrink-0" color="orange">{t(`payroll.fields.jobShort.${record.employmentType}`)}</Tag>}</div> },
     ...dates.map((date) => ({ key: date, title: <div className="text-center text-[10px]"><div>{dayjs(date).format("DD")}</div><div className="text-[9px] text-secondary-text">{dayjs(date).format("ddd")}</div></div>, width: 112, align: "center" as const, render: (_: unknown, record: LineRow) => { const day = lineDay(record, date); if (!day) return <span className="text-secondary-text">-</span>; return <TimesheetStatusPicker day={day} options={statusOptions} dailyWorkHours={dailyWorkHours ?? 0} disabled={editorDisabled || !statusOptions.length || syncingEmployeeIds.includes(record.employeeId ?? 0)} onChange={(option) => { const nextDays = replaceLineDayStatus(record.days, date, option, dailyWorkHours ?? 0); patchLine(record.rowIndex, { days: nextDays, ...calculateLineFromDays(nextDays, dailyWorkHours ?? 0) }); }} onWorkedHoursChange={(hours) => { const nextDays = replaceLineWorkedHours(record.days, date, hours); patchLine(record.rowIndex, { days: nextDays, ...calculateLineFromDays(nextDays, dailyWorkHours ?? 0) }); }} onSpecialHoursChange={(field, hours) => { const nextDays = record.days.map((item) => item.date === date ? { ...item, [field]: hours } : item); patchLine(record.rowIndex, { days: nextDays, ...calculateLineFromDays(nextDays, dailyWorkHours ?? 0) }); }} />; } })),
     { title: t("payroll.fields.normWorkDays"), width: 88, align: "center", render: (_, record) => record.normWorkDays ?? 0 },
     { title: t("payroll.fields.normWorkHours"), width: 88, align: "center", render: (_, record) => record.normWorkHours ?? 0 },

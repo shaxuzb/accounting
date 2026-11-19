@@ -1,5 +1,5 @@
 import { Button, Card as AntCard, Statistic, Tooltip } from "antd";
-import { DatabaseZap, Inbox } from "lucide-react";
+import { DatabaseZap, GitCompareArrows, Inbox } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import EdoProviderPanel from "../components/EdoProviderPanel";
@@ -72,6 +72,12 @@ export default function EdoWorkspacePage() {
               </Button>
             </span>
           </Tooltip>
+          <Button
+            icon={<GitCompareArrows className="size-4" />}
+            onClick={() => navigate("reconciliation")}
+          >
+            {t("esfReconciliation.title")}
+          </Button>
           <Button
             icon={<DatabaseZap className="size-4" />}
             onClick={() => navigate("import")}

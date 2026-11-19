@@ -59,14 +59,21 @@ export default function PayrollEmployeeDetailPage() {
   const employments = employee?.employments ?? [];
   const employmentHistory = history ?? employments;
   const components = employee?.components ?? [];
+  // the open jobs: a main job and a part-time one (1C «внутреннее совместительство»), the main first
+  const openJobs = employments
+    .filter((item) => !item.endDate)
+    .sort((a, b) => Number(b.employmentType === "PRIMARY") - Number(a.employmentType === "PRIMARY"));
   const activeContract =
+    openJobs[0] ??
     employments.find((item) => item.isActive) ??
-    employments.find((item) => !item.endDate) ??
     employments[0];
   // 1C: the personnel changes are documents — the card only opens a new HR order
-  const isEmployed = employments.some((item) => !item.endDate);
-  const openOrder = (type: string) =>
-    navigate(`/main/hr/orders/add?type=${type}&employeeId=${id}`);
+  const isEmployed = openJobs.length > 0;
+  const openOrder = (type: string, extra = "") =>
+    navigate(`/main/hr/orders/add?type=${type}&employeeId=${id}${extra}`);
+  const jobOrder = (type: string, job: PayrollEmployment) =>
+    openOrder(type, `&employmentId=${job.jobId ?? job.id}`);
+  const severalJobs = openJobs.length > 1;
 
   const employmentColumns: TableColumnsType<PayrollEmployment> = [
     {
@@ -142,6 +149,34 @@ export default function PayrollEmployeeDetailPage() {
       align: "center",
       render: (_: number | null, record) => record.advanceValue == null ? "—" : `${record.advanceValue} ${record.advanceMethod === "PERCENT" ? "%" : record.currencyName ?? ""}`,
     },
+  ];
+
+  const jobColumns: TableColumnsType<PayrollEmployment> = [
+    employmentColumns[2],
+    employmentColumns[3],
+    employmentColumns[4],
+    employmentColumns[5],
+    employmentColumns[6],
+    {
+      dataIndex: "startDate",
+      title: t("payroll.fields.startDate"),
+      align: "center",
+      render: (value: string) => displayDate(value),
+    },
+    ...(canOrder
+      ? [{
+          key: "actions",
+          title: "",
+          align: "right" as const,
+          render: (_: unknown, job: PayrollEmployment) => (
+            <div className="flex flex-wrap justify-end gap-1">
+              <Button size="small" onClick={() => jobOrder("TRANSFER", job)}>{t("payroll.employees.orderTransfer")}</Button>
+              <Button size="small" onClick={() => jobOrder("PAY_CHANGE", job)}>{t("payroll.employees.orderPayChange")}</Button>
+              <Button size="small" danger onClick={() => jobOrder("DISMISSAL", job)}>{t("payroll.employees.orderDismissal")}</Button>
+            </div>
+          ),
+        }]
+      : []),
   ];
 
   const componentColumns: TableColumnsType<PayrollEmployeeComponent> = [
@@ -296,22 +331,39 @@ export default function PayrollEmployeeDetailPage() {
                 {t("payroll.employees.orderHire")}
               </Button>
             )}
-            {canOrder && isEmployed && (
+            {canOrder && isEmployed && !severalJobs && (
               <>
-                <Button icon={<FilePlus2 className="size-4" />} onClick={() => openOrder("TRANSFER")}>
+                <Button icon={<FilePlus2 className="size-4" />} onClick={() => jobOrder("TRANSFER", openJobs[0])}>
                   {t("payroll.employees.orderTransfer")}
                 </Button>
-                <Button icon={<FilePlus2 className="size-4" />} onClick={() => openOrder("PAY_CHANGE")}>
+                <Button icon={<FilePlus2 className="size-4" />} onClick={() => jobOrder("PAY_CHANGE", openJobs[0])}>
                   {t("payroll.employees.orderPayChange")}
                 </Button>
-                <Button danger icon={<FilePlus2 className="size-4" />} onClick={() => openOrder("DISMISSAL")}>
+                <Button danger icon={<FilePlus2 className="size-4" />} onClick={() => jobOrder("DISMISSAL", openJobs[0])}>
                   {t("payroll.employees.orderDismissal")}
                 </Button>
               </>
             )}
+            {canOrder && isEmployed && (
+              <Button icon={<FilePlus2 className="size-4" />} onClick={() => openOrder("HIRE", "&employmentType=PART_TIME")}>
+                {t("payroll.employees.orderPartTime")}
+              </Button>
+            )}
           </div>
         }
       >
+        {severalJobs && (
+          <div className="border-b border-border">
+            <div className="px-4 pt-3 text-sm font-medium text-text">{t("payroll.employees.currentJobs")}</div>
+            <Table<PayrollEmployment>
+              columns={jobColumns}
+              dataSource={openJobs.map((item) => ({ ...item, key: `job-${item.id}` }))}
+              pagination={false}
+              size="small"
+              scroll={{ x: "max-content" }}
+            />
+          </div>
+        )}
         <Table<PayrollEmployment>
           columns={employmentColumns}
           dataSource={employmentHistory.map((item) => ({ ...item, key: item.id }))}

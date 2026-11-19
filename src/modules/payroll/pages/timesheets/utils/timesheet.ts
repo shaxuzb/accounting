@@ -26,7 +26,7 @@ export const createTimesheetLine = (overrides: Partial<PayrollTimesheetLineForm>
 
 export const createDefaultTimesheetForm = (periodId: number | null = null): PayrollTimesheetForm => ({ periodId, docDate: dayjs().format(DATE_TIME_FORMAT), note: null, lines: [] });
 
-export const mapTimesheetToForm = (record?: PayrollTimesheet | null): PayrollTimesheetForm => !record ? createDefaultTimesheetForm() : ({ periodId: record.periodId ?? null, docDate: record.docDate ?? dayjs().format(DATE_TIME_FORMAT), note: record.note ?? null, lines: (record.lines ?? []).map((line) => createTimesheetLine({ employeeId: line.employeeId, employeeName: line.employeeName, employeeNumber: line.employeeNumber, normWorkDays: line.normWorkDays ?? record.normWorkDays ?? 0, normWorkHours: line.normWorkHours ?? record.normWorkHours ?? 0, workedDays: line.workedDays ?? 0, workedHours: line.workedHours ?? 0, leaveDays: line.leaveDays ?? 0, sickDays: line.sickDays ?? 0, absentDays: line.absentDays ?? 0, overtimeHours: line.overtimeHours ?? 0, nightHours: line.nightHours ?? 0, holidayHours: line.holidayHours ?? 0, weekendHours: line.weekendHours ?? 0, note: line.note ?? null, isLegacy: line.isLegacy, days: (line.days ?? []).map(toDayForm) })) });
+export const mapTimesheetToForm = (record?: PayrollTimesheet | null): PayrollTimesheetForm => !record ? createDefaultTimesheetForm() : ({ periodId: record.periodId ?? null, docDate: record.docDate ?? dayjs().format(DATE_TIME_FORMAT), note: record.note ?? null, lines: (record.lines ?? []).map((line) => createTimesheetLine({ employeeId: line.employeeId, employmentId: line.employmentId ?? null, employmentType: line.employmentType ?? null, employeeName: line.employeeName, employeeNumber: line.employeeNumber, normWorkDays: line.normWorkDays ?? record.normWorkDays ?? 0, normWorkHours: line.normWorkHours ?? record.normWorkHours ?? 0, workedDays: line.workedDays ?? 0, workedHours: line.workedHours ?? 0, leaveDays: line.leaveDays ?? 0, sickDays: line.sickDays ?? 0, absentDays: line.absentDays ?? 0, overtimeHours: line.overtimeHours ?? 0, nightHours: line.nightHours ?? 0, holidayHours: line.holidayHours ?? 0, weekendHours: line.weekendHours ?? 0, note: line.note ?? null, isLegacy: line.isLegacy, days: (line.days ?? []).map(toDayForm) })) });
 
 export const summarizeTimesheet = (lines: PayrollTimesheetLineForm[], dailyWorkHours = 0) => lines.reduce((total, line) => {
   const derived = line.days.length ? calculateLineFromDays(line.days, dailyWorkHours) : line;
@@ -41,7 +41,11 @@ export const mapCalendarToTimesheetLine = (calendar: PayrollTimesheetCalendar, d
 
 export const mapEmployeeCalendarToTimesheetCalendar = (calendar: PayrollTimesheetCalendar, periodId: number, periodName?: string | null): PayrollTimesheetCalendar => ({ ...calendar, periodId, periodName: calendar.periodName ?? periodName });
 
-export const mapMonthlySummaryToTimesheetLine = (summary: PayrollTimesheetMonthlySummary): Partial<PayrollTimesheetLineForm> => ({ employeeId: summary.employeeId, employeeName: summary.employeeName ?? null, employeeNumber: summary.employeeNumber ?? null, normWorkDays: summary.normWorkDays ?? 0, normWorkHours: summary.normWorkHours ?? 0, workedDays: summary.workedDays ?? 0, workedHours: summary.workedHours ?? 0, leaveDays: summary.leaveDays ?? 0, sickDays: summary.sickDays ?? 0, absentDays: summary.absentDays ?? 0, overtimeHours: summary.overtimeHours ?? 0, nightHours: summary.nightHours ?? 0, holidayHours: summary.holidayHours ?? 0, weekendHours: summary.weekendHours ?? 0, note: summary.note ?? null, isLegacy: summary.isLegacy, days: (summary.days ?? []).map(toDayForm) });
+export const mapMonthlySummaryToTimesheetLine = (summary: PayrollTimesheetMonthlySummary): Partial<PayrollTimesheetLineForm> => ({ employeeId: summary.employeeId, employmentId: summary.employmentId ?? null, employmentType: summary.employmentType ?? null, employeeName: summary.employeeName ?? null, employeeNumber: summary.employeeNumber ?? null, normWorkDays: summary.normWorkDays ?? 0, normWorkHours: summary.normWorkHours ?? 0, workedDays: summary.workedDays ?? 0, workedHours: summary.workedHours ?? 0, leaveDays: summary.leaveDays ?? 0, sickDays: summary.sickDays ?? 0, absentDays: summary.absentDays ?? 0, overtimeHours: summary.overtimeHours ?? 0, nightHours: summary.nightHours ?? 0, holidayHours: summary.holidayHours ?? 0, weekendHours: summary.weekendHours ?? 0, note: summary.note ?? null, isLegacy: summary.isLegacy, days: (summary.days ?? []).map(toDayForm) });
+
+/** A timesheet row: the job (a main and a part-time job of one employee are two rows), else the employee. */
+export const timesheetRowKey = (row: { employeeId?: number | null; employmentId?: number | null }) =>
+  row.employmentId ?? -(row.employeeId ?? 0);
 
 export const mapCalendarSummaryToTimesheetLine = (
   calendar: PayrollTimesheetCalendar,
@@ -51,7 +55,7 @@ export const mapCalendarSummaryToTimesheetLine = (
     ? summary.days.map(toDayForm)
     : (calendar.dailyAttendance ?? []).flatMap((attendance) => {
         const employee = attendance.employees.find(
-          (item) => item.employeeId === summary.employeeId,
+          (item) => timesheetRowKey(item) === timesheetRowKey(summary),
         );
         if (!employee) return [];
         return [{
@@ -88,6 +92,7 @@ export const toTimesheetSavePayload = (form: PayrollTimesheetForm) => ({
   note: form.note,
     lines: form.lines.map((line) => ({
     employeeId: line.employeeId,
+    employmentId: line.employmentId ?? null,
     overtimeHours: line.overtimeHours ?? 0,
     note: line.note,
     days: line.days.map((day) => ({

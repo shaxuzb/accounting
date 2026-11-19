@@ -1,5 +1,5 @@
 export const queryKeys = {
   all: ["settings", "banks"] as const,
-  list: (params?: unknown) => ["settings", "banks", "list", params] as const,
-  detail: (id: string | number) => ["settings", "banks", "detail", id] as const,
+  mine: (search?: string) => ["settings", "banks", "mine", search] as const,
+  directory: (search?: string) => ["settings", "banks", "directory", search] as const,
 };

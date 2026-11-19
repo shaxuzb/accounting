@@ -7,3 +7,6 @@ export { mergeLookupValues } from "./utils/mergeLookupValues";
 export { normalizeLookupPhone } from "./utils/normalizeLookupPhone";
 export { parsePinflBirthDate } from "./utils/parsePinflBirthDate";
 export { resolveTaxpayerLocation } from "./utils/resolveTaxpayerLocation";
+export { resolveTaxpayerAccounts } from "./accounts";
+export type { ResolvedBankAccount } from "./accounts";
+export { default as TaxpayerAccountsPicker } from "./TaxpayerAccountsPicker";

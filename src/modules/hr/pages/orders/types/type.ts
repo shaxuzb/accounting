@@ -44,6 +44,8 @@ export interface PayrollHrOrder {
   advanceMethod?: PayrollAdvanceMethod | null;
   advanceValue?: number | null;
   employmentId?: number | null;
+  /** TRANSFER / PAY_CHANGE / DISMISSAL: the job the order is about (its jobId) */
+  targetEmploymentId?: number | null;
   components?: PayrollHrOrderComponent[];
   createdDate?: string | null;
   updatedDate?: string | null;

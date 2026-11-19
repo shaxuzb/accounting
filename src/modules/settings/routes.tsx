@@ -72,6 +72,7 @@ const EdoWorkspacePage = lazy(() => import("./pages/integrations/edo/screens/Edo
 const OneCPage = lazy(() => import("./pages/integrations/onec/OneCPage"));
 const OneCPreviewPage = lazy(() => import("./pages/integrations/onec/OneCPreviewPage"));
 const EdoInboxPage = lazy(() => import("./pages/integrations/edo/screens/EdoInboxPage"));
+const EsfReconciliationPage = lazy(() => import("./pages/integrations/edo/screens/EsfReconciliationPage"));
 const EdoOutboxCreatePage = lazy(() => import("./pages/integrations/edo/screens/EdoOutboxCreatePage"));
 const EdoOutboxDetailPage = lazy(() => import("./pages/integrations/edo/screens/EdoOutboxDetailPage"));
 const EdoSessionGuard = lazy(() => import("./pages/integrations/edo/components/EdoSessionGuard"));
@@ -185,6 +186,18 @@ const sectionRoutes: RouteObject[] = [
         backTo: "../..",
       },
       element: withPermission(<OneCPreviewPage />, integrationPermissions.onecImport),
+    },
+    {
+      path: "integrations/edo/reconciliation",
+      handle: {
+        title: "esfReconciliation.title",
+        showBack: true,
+        backTo: "..",
+      },
+      element: withPermission(
+        withEimzo(withEdoSession(<EsfReconciliationPage />, true)),
+        integrationPermissions.view,
+      ),
     },
     {
       path: "integrations/edo",

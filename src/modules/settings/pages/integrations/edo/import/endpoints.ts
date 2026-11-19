@@ -2,6 +2,7 @@ const edoImportsBase = "purchase-docs/edo-imports";
 
 export const edoImportEndpoints = {
   preflight: `${edoImportsBase}/preflight`,
+  active: `${edoImportsBase}/active`,
   job: (jobId: string | number) => `${edoImportsBase}/${jobId}`,
   cancelJob: (jobId: string | number) =>
     `${edoImportsBase}/${jobId}/cancel`,

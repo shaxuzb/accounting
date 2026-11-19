@@ -38,6 +38,8 @@ export interface AverageEarnings {
 
 export interface VacationRequest {
   employeeId: number;
+  /** the job (its jobId) when the employee holds a main and a part-time job; null — the main one */
+  employmentId?: number | null;
   leaveStart: string;
   calendarDays: number;
   docDate?: string | null;
@@ -64,6 +66,8 @@ export interface VacationPreview {
 
 export interface SettlementRequest {
   employeeId: number;
+  /** the job that ends (its jobId); null — the one the dismissal order ended */
+  employmentId?: number | null;
   dismissalDate?: string | null;
   /** null: by the dismissal ground (MK 269 part 3) */
   noRecovery?: boolean | null;

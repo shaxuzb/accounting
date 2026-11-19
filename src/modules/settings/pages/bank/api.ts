@@ -1,42 +1,26 @@
 import { $axiosPrivate } from "@/services/AxiosService";
 import type { Paginated } from "@/shared/types";
-import type { QueryParams } from "@/shared/types/api";
 import { endpoints } from "./constants/endpoints";
-import type {
-  SettingsBank,
-  SettingsBankCreate,
-  SettingsBankDetail,
-  SettingsBankUpdate,
-} from "./types/type";
+import type { DirectoryBank, SettingsBank } from "./types/type";
 
 export const settingsBankService = {
-  list: async (searchParams?: QueryParams) => {
-    const { data } = await $axiosPrivate.get<Paginated<SettingsBank>>(
-      endpoints.list,
-      {
-        params: searchParams,
-      },
+  mine: async (search?: string) => {
+    const { data } = await $axiosPrivate.get<SettingsBank[]>(endpoints.mine, {
+      params: { search: search || undefined },
+    });
+    return data;
+  },
+  directory: async (search?: string) => {
+    const { data } = await $axiosPrivate.get<Paginated<DirectoryBank>>(
+      endpoints.directory,
+      { params: { search: search || undefined, stateId: 1, pageSize: 500 } },
     );
     return data;
   },
-  detail: async (id: string | number) => {
-    const { data } = await $axiosPrivate.get<SettingsBankDetail>(
-      endpoints.detail(id),
-    );
-    return data;
+  attach: async (bankIds: number[]) => {
+    await $axiosPrivate.post(endpoints.mine, { bankIds });
   },
-  create: async (payload: SettingsBankCreate) => {
-    const { data } = await $axiosPrivate.post<SettingsBank>(
-      endpoints.create,
-      payload,
-    );
-    return data;
-  },
-  update: async (id: string | number, payload: SettingsBankUpdate) => {
-    const { data } = await $axiosPrivate.put<SettingsBank>(
-      endpoints.update(id),
-      payload,
-    );
-    return data;
+  detach: async (bankId: number) => {
+    await $axiosPrivate.delete(endpoints.detach(bankId));
   },
 };

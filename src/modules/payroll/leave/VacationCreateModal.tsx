@@ -7,6 +7,8 @@ import toast from "react-hot-toast";
 import type { Dayjs } from "dayjs";
 import dayjs from "@/config/dayjs";
 import PayrollEmployeeSelect from "@/modules/payroll/components/PayrollEmployeeSelect";
+import SelectStatic from "@/components/fields/SelectStatic";
+import { useGetDetailPayrollEmployee } from "@/modules/settings/pages/payrollEmployees/hooks";
 import { errorHandlers } from "@/utils/helpers/errorHandlers";
 import LeaveAverageTable from "./LeaveAverageTable";
 import { days, leaveApi, money } from "./api";
@@ -29,11 +31,24 @@ export default function VacationCreateModal({ open, onClose, employeeId: initial
   const [start, setStart] = useState<Dayjs | null>(null);
   const [calendarDays, setCalendarDays] = useState<number | null>(21);
   const [docDate, setDocDate] = useState<Dayjs>(dayjs());
+  // the job of the leave when the employee holds a main and a part-time job (1C: per «Сотрудник»)
+  const [jobId, setJobId] = useState<number | null>(null);
+  const { data: employee } = useGetDetailPayrollEmployee(employeeId);
+  const openJobs = (employee?.employments ?? [])
+    .filter((job) => !job.endDate)
+    .sort((a, b) => Number(b.employmentType === "PRIMARY") - Number(a.employmentType === "PRIMARY"));
+  const jobOptions = openJobs.map((job) => ({
+    value: job.jobId ?? job.id,
+    label: `${t(`payroll.enums.employmentType.${job.employmentType}`)} — ${job.positionName ?? job.departmentName ?? ""}`,
+  }));
+  // what the field shows is what is sent: the main job until another is chosen
+  const selectedJob = jobOptions.length > 1 ? jobId ?? jobOptions[0].value : null;
 
   const request =
     employeeId && start && calendarDays && calendarDays > 0
       ? {
           employeeId,
+          employmentId: selectedJob,
           leaveStart: start.format("YYYY-MM-DD"),
           calendarDays,
           docDate: docDate.format("YYYY-MM-DD"),
@@ -81,11 +96,22 @@ export default function VacationCreateModal({ open, onClose, employeeId: initial
             standalone
             label="payroll.fields.employee"
             value={employeeId}
-            onChange={setEmployeeId}
+            onChange={(value) => { setEmployeeId(value); setJobId(null); }}
             required
             marginBottom="mb-0"
           />
         </div>
+        {jobOptions.length > 1 && (
+          <div className="sm:col-span-2">
+            <SelectStatic
+              label="payroll.fields.job"
+              options={jobOptions}
+              value={selectedJob}
+              onChange={(value) => setJobId(value == null ? null : Number(value))}
+              marginBottom="mb-0"
+            />
+          </div>
+        )}
         <div>
           <div className="mb-1 text-sm">{t("payroll.leave.start")}</div>
           <DatePicker className="w-full" format="DD.MM.YYYY" value={start} onChange={setStart} />

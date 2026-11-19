@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormik } from "formik";
 import { Button, Checkbox, Col, Form, Modal, Row, Select, Spin } from "antd";
 import toast from "react-hot-toast";
@@ -16,7 +16,12 @@ import SelectCustom from "@/components/fields/SelectCustom";
 import { selectListEndpoints } from "@/shared/constants/selectLists";
 import DistrictSelect from "@/components/fields/DistrictSelect";
 import SearchInnField from "@/components/fields/SearchInnField";
-import { mergeLookupValues } from "@/modules/settings/shared/taxpayerLookup";
+import {
+  mergeLookupValues,
+  TaxpayerAccountsPicker,
+} from "@/modules/settings/shared/taxpayerLookup";
+import type { ResolvedBankAccount } from "@/modules/settings/shared/taxpayerLookup";
+import { counterpartybankaccountService } from "@/modules/settings/pages/counterpartybankaccount/api";
 import { useLookupCounterparty } from "../hooks/useLookupCounterparty";
 import { counterpartyService } from "../api";
 import { normalizeLookupPhone } from "@/modules/settings/shared/taxpayerLookup/utils/normalizeLookupPhone";
@@ -78,6 +83,41 @@ export default function CounterpartyAddEditPage({
   const updateMutation = useUpdateCounteryParty();
   const lookupMutation = useLookupCounterparty();
   const previousLookupValues = useRef<Partial<CounterpartyForm>>({});
+  // bank accounts found by INN, saved with a new card (as 1C fills «Банковские счета» by INN)
+  const [foundAccounts, setFoundAccounts] = useState<ResolvedBankAccount[]>([]);
+  const [pickedAccounts, setPickedAccounts] = useState<string[]>([]);
+
+  const clearFoundAccounts = () => {
+    setFoundAccounts([]);
+    setPickedAccounts([]);
+  };
+
+  const saveFoundAccounts = async (counterpartyId: number) => {
+    const accounts = foundAccounts.filter(
+      (account) =>
+        account.isResolved && pickedAccounts.includes(account.accountNumber),
+    );
+    let saved = 0;
+    for (const account of accounts) {
+      try {
+        await counterpartybankaccountService.create({
+          counterpartyId,
+          bankId: account.bankId!,
+          bankBranchId: account.bankBranchId,
+          accountNumber: account.accountNumber,
+          currencyId: account.currencyId!,
+          isMain: account.isMain,
+        });
+        saved += 1;
+      } catch (err: unknown) {
+        toast.error(
+          t("settings.lookup.accountsFailed", { account: account.accountNumber }),
+        );
+        errorHandlers(err);
+      }
+    }
+    if (saved > 0) toast.success(t("settings.lookup.accountsSaved", { count: saved }));
+  };
 
   const formik = useFormik<CounterpartyForm>({
     initialValues: defaultValues,
@@ -91,11 +131,13 @@ export default function CounterpartyAddEditPage({
           toast.success(t("settings.messages.updated"));
         } else {
           const createdCounterparty = await createMutation.mutateAsync(values);
+          await saveFoundAccounts(createdCounterparty.id);
           onCreated?.(createdCounterparty);
           toast.success(t("settings.messages.created"));
         }
         previousLookupValues.current = {};
         lookupMutation.reset();
+        clearFoundAccounts();
         onClose();
         formik.resetForm();
       } catch (err: unknown) {
@@ -161,6 +203,7 @@ export default function CounterpartyAddEditPage({
   }
 
   const handleLookupIdentifierChange = (value: string) => {
+    clearFoundAccounts();
     if (Object.keys(previousLookupValues.current).length > 0) {
       const clearedValues = mergeLookupValues(
         formik.values,
@@ -194,6 +237,12 @@ export default function CounterpartyAddEditPage({
         false,
       );
       previousLookupValues.current = result.values;
+      setFoundAccounts(result.accounts);
+      setPickedAccounts(
+        result.accounts
+          .filter((account) => account.isResolved)
+          .map((account) => account.accountNumber),
+      );
       toast.success(t("settings.lookup.counterpartySuccess"));
     } catch (error: unknown) {
       errorHandlers(error);
@@ -203,6 +252,7 @@ export default function CounterpartyAddEditPage({
   const handleClose = () => {
     previousLookupValues.current = {};
     lookupMutation.reset();
+    clearFoundAccounts();
     formik.resetForm();
     onClose();
   };
@@ -373,6 +423,13 @@ export default function CounterpartyAddEditPage({
               </Col>
             )}
           </Row>
+          {!isEdit && (
+            <TaxpayerAccountsPicker
+              accounts={foundAccounts}
+              selected={pickedAccounts}
+              onChange={setPickedAccounts}
+            />
+          )}
           <Button
             type="primary"
             htmlType="submit"

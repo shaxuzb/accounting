@@ -7,6 +7,8 @@ import type {
 
 export interface PayrollEmployment {
   id: number;
+  /** the job the interval belongs to (its hire interval): a main and a part-time job differ */
+  jobId?: number | null;
   employeeId?: number | null;
   departmentId?: number | null;
   departmentName?: string | null;

@@ -10,11 +10,13 @@ import { formatDate } from "@/utils/utils";
 import {
   errorText,
   useOneCObject,
+  useOneCPreflight,
   useOneCOurAccounts,
   useOneCPreview,
   useOneCPreviewObjects,
   useOneCRun,
   useOneCRunAccounts,
+  useAutoMapOneCAccounts,
   useSaveOneCAccounts,
   useSelectOneC,
   useStartOneCImport,
@@ -24,6 +26,8 @@ import {
   type OneCPreviewSection,
   type OneCPreviewStatus,
 } from "./api";
+import { CompareTab, PostingsCompare } from "./OneCComparePanel";
+import { PreflightTab } from "./OneCPreflightPanel";
 import { RunProgress } from "./OneCPage";
 
 const T = "settings.integrations.onec";
@@ -252,6 +256,8 @@ function ObjectDrawer({ objectId, editableRun, onClose }: { objectId: number | n
               <RowsTable rows={entries} />
             </div>
           )}
+
+          {data.row.status === "IMPORTED" && <PostingsCompare objectId={objectId} />}
         </div>
       )}
     </Drawer>
@@ -403,7 +409,11 @@ function AccountsTab({ runId, version, editableRun }: { runId: number; version: 
   const accounts = useOneCRunAccounts(runId, version, true);
   const ours = useOneCOurAccounts(true);
   const save = useSaveOneCAccounts();
+  const autoMap = useAutoMapOneCAccounts();
   const [changes, setChanges] = useState<Record<string, number | null>>({});
+  const [autoMapped, setAutoMapped] = useState<string[] | null>(null);
+  // only the used ones hold documents back; 1C's unused rest needs nothing
+  const unmappedUsed = (accounts.data ?? []).filter((row) => row.accountId == null && row.uses > 0).length;
 
   const options = (ours.data ?? []).map((account) => ({ value: account.id, label: `${account.number} ${account.name}` }));
   const columns: TableColumnsType<OneCAccountRow> = [
@@ -434,6 +444,10 @@ function AccountsTab({ runId, version, editableRun }: { runId: number; version: 
       render: (_, row) =>
         row.code in changes ? (
           <Tag color="processing">{t(`${P}.changed`)}</Tag>
+        ) : row.accountId == null && row.uses === 0 ? (
+          <Tooltip title={t(`${P}.notNeededHint`)}>
+            <Tag>{t(`${P}.notNeeded`)}</Tag>
+          </Tooltip>
         ) : row.accountId == null ? (
           <Tag color="red">{t(`${P}.notMapped`)}</Tag>
         ) : row.isMapped ? (
@@ -447,26 +461,62 @@ function AccountsTab({ runId, version, editableRun }: { runId: number; version: 
   return (
     <div className="space-y-3">
       <Alert showIcon type="info" message={t(`${P}.accountsHint`)} />
-      {editableRun && (
-        <Button
-          type="primary"
-          disabled={Object.keys(changes).length === 0}
-          loading={save.isPending}
-          onClick={() =>
-            save.mutate(
-              { runId, items: Object.entries(changes).map(([code, accountId]) => ({ code, accountId })) },
-              {
-                onSuccess: () => {
-                  setChanges({});
-                  toast.success(t(`${P}.accountsSaved`));
-                },
-                onError: (error) => toast.error(errorText(error, t(`${T}.error`))),
-              },
-            )
+      {autoMapped && (
+        <Alert
+          showIcon
+          closable
+          type={autoMapped.length > 0 ? "success" : "info"}
+          message={autoMapped.length > 0 ? t(`${P}.autoMapDone`, { count: autoMapped.length }) : t(`${P}.autoMapNothing`)}
+          description={
+            autoMapped.length > 0 ? (
+              <ul className="list-disc pl-5">
+                {autoMapped.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            ) : undefined
           }
-        >
-          {t(`${P}.saveAccounts`, { count: Object.keys(changes).length })}
-        </Button>
+          onClose={() => setAutoMapped(null)}
+        />
+      )}
+      {editableRun && (
+        <Space wrap>
+          <Popconfirm
+            title={t(`${P}.autoMap`)}
+            description={<div className="max-w-sm">{t(`${P}.autoMapConfirm`)}</div>}
+            disabled={unmappedUsed === 0}
+            onConfirm={() =>
+              autoMap.mutate(runId, {
+                onSuccess: (done) => setAutoMapped(done),
+                onError: (error) => toast.error(errorText(error, t(`${T}.error`))),
+              })
+            }
+          >
+            <Button disabled={unmappedUsed === 0} loading={autoMap.isPending}>
+              {t(`${P}.autoMap`)}
+              {unmappedUsed > 0 ? ` (${unmappedUsed})` : ""}
+            </Button>
+          </Popconfirm>
+          <Button
+            type="primary"
+            disabled={Object.keys(changes).length === 0}
+            loading={save.isPending}
+            onClick={() =>
+              save.mutate(
+                { runId, items: Object.entries(changes).map(([code, accountId]) => ({ code, accountId })) },
+                {
+                  onSuccess: () => {
+                    setChanges({});
+                    toast.success(t(`${P}.accountsSaved`));
+                  },
+                  onError: (error) => toast.error(errorText(error, t(`${T}.error`))),
+                },
+              )
+            }
+          >
+            {t(`${P}.saveAccounts`, { count: Object.keys(changes).length })}
+          </Button>
+        </Space>
       )}
       <Table
         rowKey="code"
@@ -497,9 +547,15 @@ export default function OneCPreviewPage() {
   const select = useSelectOneC();
   const startImport = useStartOneCImport();
   const [section, setSection] = useState<OneCPreviewSection | null>(null);
-  const [tab, setTab] = useState("sections");
+  const [tab, setTab] = useState<string | null>(null);
+  // an object opened from the comparison (its own drawer: the sections keep theirs)
+  const [compared, setCompared] = useState<number | null>(null);
 
   const editableRun = run.data?.status === "PREVIEW";
+  const preflight = useOneCPreflight(runId, version, !!run.data);
+  const unresolved = preflight.data?.unresolved ?? 0;
+  // in the preview what holds the import back comes first
+  const activeTab = tab ?? (editableRun && unresolved > 0 ? "preflight" : "sections");
   const sections = preview.data ?? [];
   const selectedTotal = sections.reduce((sum, item) => sum + item.selected, 0);
   const heldBack = sections.reduce((sum, item) => sum + item.needsMapping + item.invalid, 0);
@@ -596,6 +652,7 @@ export default function OneCPreviewPage() {
         </div>
         {editableRun && (
           <Popconfirm
+            disabled={unresolved > 0}
             title={t(`${P}.importConfirm`, { count: selectedTotal })}
             description={heldBack > 0 ? t(`${P}.importHeldBack`, { count: heldBack }) : undefined}
             onConfirm={() =>
@@ -605,9 +662,11 @@ export default function OneCPreviewPage() {
               })
             }
           >
-            <Button type="primary" size="large" icon={<Upload className="size-4" />} disabled={selectedTotal === 0}>
-              {t(`${P}.import`, { count: selectedTotal })}
-            </Button>
+            <Tooltip title={unresolved > 0 ? t(`${T}.preflight.importBlocked`, { count: unresolved }) : undefined}>
+              <Button type="primary" size="large" icon={<Upload className="size-4" />} disabled={selectedTotal === 0 || unresolved > 0}>
+                {t(`${P}.import`, { count: selectedTotal })}
+              </Button>
+            </Tooltip>
           </Popconfirm>
         )}
       </div>
@@ -620,9 +679,29 @@ export default function OneCPreviewPage() {
       {editableRun && heldBack > 0 && <Alert showIcon type="warning" message={t(`${P}.heldBack`, { count: heldBack })} />}
 
       <Tabs
-        activeKey={tab}
+        activeKey={activeTab}
         onChange={setTab}
         items={[
+          ...((preflight.data?.items.length ?? 0) > 0 || editableRun
+            ? [
+                {
+                  key: "preflight",
+                  label: (
+                    <span>
+                      {t(`${T}.preflight.tab`)}
+                      {unresolved > 0 && (
+                        <Tag color="red" className="ml-2!">
+                          {unresolved}
+                        </Tag>
+                      )}
+                    </span>
+                  ),
+                  children: (
+                    <PreflightTab runId={runId} version={version} editable={editableRun} onOpen={setCompared} />
+                  ),
+                },
+              ]
+            : []),
           {
             key: "sections",
             label: t(`${P}.sections`),
@@ -646,8 +725,18 @@ export default function OneCPreviewPage() {
             label: t(`${P}.accounts`),
             children: <AccountsTab runId={runId} version={version} editableRun={editableRun} />,
           },
+          ...(["DONE", "FAILED", "IMPORTING"].includes(run.data.status)
+            ? [
+                {
+                  key: "compare",
+                  label: t(`${T}.compare.tab`),
+                  children: <CompareTab runId={runId} version={version} onOpen={setCompared} />,
+                },
+              ]
+            : []),
         ]}
       />
+      <ObjectDrawer objectId={compared} editableRun={false} onClose={() => setCompared(null)} />
     </Card>
   );
 }

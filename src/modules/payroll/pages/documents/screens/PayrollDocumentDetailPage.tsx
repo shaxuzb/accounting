@@ -156,7 +156,12 @@ export default function PayrollDocumentDetailPage() {
       fixed: "left",
       render: (value: string | null, employee) => (
         <div className="flex flex-col">
-          <span className="font-medium">{value ?? employee.employeeId}</span>
+          <span className="font-medium">
+            {value ?? employee.employeeId}
+            {employee.employmentType && employee.employmentType !== "PRIMARY" && (
+              <Tag className="m-0! ml-1!" color="orange">{t(`payroll.fields.jobShort.${employee.employmentType}`)}</Tag>
+            )}
+          </span>
           <span className="text-xs text-secondary-text">
             {[employee.employeeNumber, employee.departmentName]
               .filter(Boolean)

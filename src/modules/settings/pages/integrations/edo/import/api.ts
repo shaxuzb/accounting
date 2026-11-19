@@ -40,6 +40,11 @@ export const edoImportService = {
       .post<EdoImportJobDto>(edoImportEndpoints.preflight, payload)
       .then((response) => response.data),
 
+  /** The import still under way on the server (204 — none). */
+  activeJob: () =>
+    $axiosPrivate
+      .get<EdoImportJobDto | "">(edoImportEndpoints.active)
+      .then((response) => (response.status === 204 || !response.data ? null : response.data)),
   job: (jobId: string | number) =>
     $axiosPrivate
       .get<EdoImportJobDto>(edoImportEndpoints.job(jobId))

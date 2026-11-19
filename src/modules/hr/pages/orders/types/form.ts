@@ -16,6 +16,8 @@ export interface PayrollHrOrderForm {
   orderDate: string;
   orderType: PayrollHrOrderType;
   employeeId: number | null;
+  /** TRANSFER / PAY_CHANGE / DISMISSAL: the job (jobId) when the employee holds a main and a part-time job */
+  targetEmploymentId: number | null;
   effectiveDate: string;
   basis: string | null;
   note: string | null;

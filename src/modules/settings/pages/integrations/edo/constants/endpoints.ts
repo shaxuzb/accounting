@@ -13,6 +13,7 @@ export const edoEndpoints = {
   inboxSummary: "/edo/inbox/summary",
   inboxReject: (id: string | number) => `/edo/inbox/${id}/reject`,
   file: (id: string | number) => `/edo/files/${id}`,
+  providerFile: (providerDocumentId: string) => `/edo/files/provider/${encodeURIComponent(providerDocumentId)}`,
   outboxStatus: (id: string | number) => `/edo/outbox/${id}/status`,
   remoteOutboxStatus: "/edo/outbox/status",
   inboxStatus: (id: string | number) => `/edo/inbox/${id}/status`,

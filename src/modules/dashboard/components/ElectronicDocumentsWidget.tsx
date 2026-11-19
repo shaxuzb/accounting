@@ -1,5 +1,5 @@
 import { Segmented } from "antd";
-import { ArrowDownToLine, ArrowUpFromLine, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type {
@@ -200,87 +200,6 @@ function VerticalStatusBars({
   );
 }
 
-function TypeCard({
-  code,
-  item,
-  directionCounts,
-  canUseDirectionCounts,
-  directionFilter,
-}: {
-  code: string;
-  item: StatusCount | undefined;
-  directionCounts: StatusCount[];
-  canUseDirectionCounts: boolean;
-  directionFilter: DirectionFilter;
-}) {
-  const { t } = useTranslation();
-  const incoming =
-    directionCounts.find((direction) => direction.status === "INBOX")?.count ??
-    0;
-  const outgoing =
-    directionCounts.find((direction) => direction.status === "OUTBOX")?.count ??
-    0;
-  const directionCount = directionFilter === "INBOX" ? incoming : outgoing;
-  const count =
-    directionFilter === "ALL"
-      ? (item?.count ?? 0)
-      : canUseDirectionCounts && item?.count
-        ? directionCount
-        : 0;
-  const normalizedCode = code.toUpperCase();
-
-  return (
-    <div className="min-w-0 rounded-xl border border-blue-200/80 bg-blue-50/60 p-4 dark:border-blue-900/80 dark:bg-blue-950/30">
-      <div className="flex items-center gap-2 text-sm text-(--theme-text-secondary)">
-        <FileText className="size-4 text-(--theme-brand)" />
-        <span className="truncate">
-          {t(`dashboard.documents.typeLabels.${normalizedCode}`, {
-            defaultValue: getDashboardDocumentLabel(code),
-          })}
-        </span>
-      </div>
-      <p className="mt-3 text-2xl font-semibold leading-none text-heading">
-        {formatDashboardCount(count)}{" "}
-        <span className="text-sm font-normal">
-          {t("dashboard.documents.count")}
-        </span>
-      </p>
-      <p className="mt-2 truncate text-xs text-(--theme-text-secondary)">
-        {item?.amount === null || item === undefined
-          ? t("dashboard.documents.amountMissing")
-          : item.amount}
-      </p>
-      {directionFilter === "ALL" ? (
-        <div className="mt-4 flex items-center gap-4 text-xs text-(--theme-text-secondary)">
-          <span className="flex items-center gap-1.5">
-            <ArrowDownToLine className="size-3.5 text-emerald-600" />
-            {canUseDirectionCounts && count > 0
-              ? formatDashboardCount(incoming)
-              : "—"}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <ArrowUpFromLine className="size-3.5 text-blue-600" />
-            {canUseDirectionCounts && count > 0
-              ? formatDashboardCount(outgoing)
-              : "—"}
-          </span>
-        </div>
-      ) : (
-        <div className="mt-4 flex items-center gap-1.5 text-xs text-(--theme-text-secondary)">
-          {directionFilter === "INBOX" ? (
-            <ArrowDownToLine className="size-3.5 text-emerald-600" />
-          ) : (
-            <ArrowUpFromLine className="size-3.5 text-blue-600" />
-          )}
-          {canUseDirectionCounts && count > 0
-            ? formatDashboardCount(directionCount)
-            : "—"}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function TypeAnalyticsCard({
   code,
   count,
@@ -380,24 +299,18 @@ export default function ElectronicDocumentsWidget({
     [summary.statusCounts],
   );
   const actualTypeItems = summary.typeCounts.filter((item) => item.count > 0);
-  const canUseDirectionCounts = actualTypeItems.length <= 1;
-  const total = summary.typeCounts.reduce((sum, item) => sum + item.count, 0);
   const hasAmountData =
     summary.amountSeries.length > 0 || summary.currencyTotals.length > 0;
   const directionTotal = getDirectionTotal(
     summary.directionCounts,
     directionFilter,
   );
-  const displayedTotal = directionFilter === "ALL" ? total : directionTotal;
   const directionStatusItems =
     directionFilter === "INBOX"
       ? getStatusItems(relationships.incoming.statusCounts)
       : getStatusItems(relationships.outgoing.statusCounts);
   const displayedStatusItems =
     directionFilter === "ALL" ? statusItems : directionStatusItems;
-  const filteredDirectionCounts = summary.directionCounts.filter(
-    (item) => directionFilter === "ALL" || item.status === directionFilter,
-  );
 
   return (
     <DashboardSection
@@ -410,48 +323,7 @@ export default function ElectronicDocumentsWidget({
         />
       }
     >
-      <div className="mb-5 flex items-end justify-between gap-3">
-        <div>
-          <p className="text-xs text-(--theme-text-secondary)">
-            {t("dashboard.documents.total")}
-          </p>
-          <p className="mt-1 text-2xl font-semibold leading-none text-heading">
-            {formatDashboardCount(displayedTotal)}{" "}
-            <span className="text-sm font-normal text-(--theme-text-secondary)">
-              {t("dashboard.documents.count")}
-            </span>
-          </p>
-        </div>
-        {filteredDirectionCounts.length ? (
-          <p className="text-xs text-(--theme-text-secondary)">
-            {filteredDirectionCounts
-              .map(
-                (item) =>
-                  `${item.status === "INBOX" ? t("dashboard.documents.incoming") : t("dashboard.documents.outgoing")}: ${formatDashboardCount(item.count)}`,
-              )
-              .join(" · ")}
-          </p>
-        ) : null}
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {documentTypeDefinitions.map((definition) => (
-          <TypeCard
-            key={definition.code}
-            code={definition.code}
-            item={summary.typeCounts.find((item) =>
-              definition.aliases.some(
-                (alias) => alias === item.status.toUpperCase(),
-              ),
-            )}
-            directionCounts={summary.directionCounts}
-            canUseDirectionCounts={canUseDirectionCounts}
-            directionFilter={directionFilter}
-          />
-        ))}
-      </div>
-
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {documentTypeDefinitions.map((definition) => {
           const item = summary.typeCounts.find((typeItem) =>
             definition.aliases.some(

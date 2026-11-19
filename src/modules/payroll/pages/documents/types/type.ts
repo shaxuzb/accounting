@@ -65,6 +65,9 @@ export interface PayrollLineSegment {
 export interface PayrollDocumentLine {
   id?: number;
   employeeId: number;
+  /** the job of the line (its hire interval) and its kind: a main and a part-time job are two lines */
+  jobId?: number | null;
+  employmentType?: string | null;
   employeeName?: string | null;
   employeeNumber?: string | null;
   departmentName?: string | null;

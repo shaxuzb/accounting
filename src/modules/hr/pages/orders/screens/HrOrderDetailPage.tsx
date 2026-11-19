@@ -28,30 +28,36 @@ import { useCancelHrOrder, useConfirmHrOrder, useCreateHrOrder, useDeleteHrOrder
 import type { PayrollHrOrderForm } from "../types/form";
 import { hrOrderSchema } from "../types/schema";
 import HrOrderComponentLines from "./HrOrderComponentLines";
+import { useGetDetailPayrollEmployee } from "@/modules/settings/pages/payrollEmployees/hooks";
 
 const LIST_PATH = "/main/hr/orders";
 const ORDER_TYPES = ["HIRE", "TRANSFER", "PAY_CHANGE", "DISMISSAL"] as const;
 // the employee card opens a new order with its type and employee (1C: documents from the card)
-const createDefaultValues = (params?: URLSearchParams): PayrollHrOrderForm => ({
+// a part-time job is hired from the card with its kind; a job's order names the job
+const createDefaultValues = (params?: URLSearchParams): PayrollHrOrderForm => {
+  const partTime = params?.get("employmentType") === "PART_TIME";
+  return {
   orderDate: dayjs().format("YYYY-MM-DD"),
   orderType: ORDER_TYPES.find((type) => type === params?.get("type")) ?? "HIRE",
   employeeId: Number(params?.get("employeeId")) || null,
+  targetEmploymentId: Number(params?.get("employmentId")) || null,
   effectiveDate: dayjs().format("YYYY-MM-DD"),
   basis: null,
   note: null,
   dismissalGround: null,
   departmentId: null,
   positionId: null,
-  employmentType: "PRIMARY",
+  employmentType: partTime ? "PART_TIME" : "PRIMARY",
   monthlySalary: null,
-  employmentRate: 1,
-  weeklyHours: 40,
+  employmentRate: partTime ? 0.5 : 1,
+  weeklyHours: partTime ? 20 : 40,
   currencyId: null,
   expenseAccountId: null,
   advanceMethod: "PERCENT",
   advanceValue: 0,
   components: [],
-});
+  };
+};
 
 const toPayload = (values: PayrollHrOrderForm): PayrollHrOrderForm => {
   const base = {
@@ -59,6 +65,7 @@ const toPayload = (values: PayrollHrOrderForm): PayrollHrOrderForm => {
     basis: values.basis || null,
     note: values.note || null,
     dismissalGround: values.orderType === "DISMISSAL" ? values.dismissalGround || null : null,
+    targetEmploymentId: values.orderType === "HIRE" ? null : values.targetEmploymentId || null,
     // a dismissal ends the planned accruals by itself
     components: values.orderType === "DISMISSAL" ? [] : values.components,
   };
@@ -93,6 +100,7 @@ export default function HrOrderDetailPage() {
       orderDate: record.orderDate,
       orderType: record.orderType,
       employeeId: record.employeeId,
+      targetEmploymentId: record.targetEmploymentId ?? null,
       effectiveDate: record.effectiveDate,
       basis: record.basis ?? null,
       note: record.note ?? null,
@@ -136,6 +144,24 @@ export default function HrOrderDetailPage() {
       } catch (error) { errorHandlers(error); }
     },
   });
+  const { data: orderEmployee } = useGetDetailPayrollEmployee(formik.values.employeeId);
+
+  // the employee's open jobs: an order other than a hire names one when there are more (main and part-time)
+  const employeeJobs = orderEmployee?.employments ?? [];
+  const openJobs = employeeJobs.filter((job) => !job.endDate);
+  // the open jobs to choose from, and the job a saved order names even once it has ended
+  const jobLatest = new Map<number, (typeof employeeJobs)[number]>();
+  employeeJobs.forEach((job) => {
+    const key = job.jobId ?? job.id;
+    const known = jobLatest.get(key);
+    if (!known || job.startDate > known.startDate) jobLatest.set(key, job);
+  });
+  const jobOptions = Array.from(jobLatest.entries())
+    .filter(([key, job]) => !job.endDate || key === formik.values.targetEmploymentId)
+    .map(([key, job]) => ({
+      value: key,
+      label: `${t(`payroll.enums.employmentType.${job.employmentType}`)} — ${job.positionName ?? job.departmentName ?? ""} (${money(job.monthlySalary)}, ${job.employmentRate})${job.endDate ? ` · ${displayDate(job.endDate)}` : ""}`,
+    }));
 
   if (!isCreate && isLoading) return <div className="flex justify-center p-10"><Spin /></div>;
   if (!isCreate && !record) return <Alert type="error" message={t("payroll.hrOrders.notFound", { defaultValue: "Buyruq topilmadi" })} />;
@@ -161,6 +187,7 @@ export default function HrOrderDetailPage() {
           <Row gutter={[16, 0]}>
             <Col xs={24} md={8}><SelectStatic formik={formik} fieldName="orderType" label="payroll.fields.orderType" options={hrOrderTypeOptions} required disabled={readOnly} resetFields={["departmentId", "positionId", "employmentType", "monthlySalary", "employmentRate", "weeklyHours", "currencyId", "expenseAccountId", "advanceValue"]} /></Col>
             <Col xs={24} md={8}><PayrollEmployeeSelect formik={formik} fieldName="employeeId" label="payroll.fields.employee" required disabled={readOnly} /></Col>
+            {formik.values.orderType !== "HIRE" && (openJobs.length > 1 || formik.values.targetEmploymentId != null) && <Col xs={24} md={8}><SelectStatic formik={formik} fieldName="targetEmploymentId" label="payroll.fields.job" options={jobOptions} required={openJobs.length > 1} disabled={readOnly} marginBottom="mb-4" /></Col>}
             <Col xs={24} md={4}><SelectDate formik={formik} fieldName="orderDate" label="payroll.fields.orderDate" valueFormat="YYYY-MM-DD" required disabled={readOnly} /></Col>
             <Col xs={24} md={4}><SelectDate formik={formik} fieldName="effectiveDate" label="payroll.fields.effectiveDate" valueFormat="YYYY-MM-DD" required disabled={readOnly} /></Col>
             {fields.showDepartment && <Col xs={24} md={6}><SelectCustom formik={formik} fieldName="departmentId" label="payroll.fields.department" path={selectListEndpoints.departmentsSelectList} createWith="department" search clearable disabled={readOnly} marginBottom="mb-4" /></Col>}
@@ -195,7 +222,7 @@ export default function HrOrderDetailPage() {
         </Form>
       </SectionCard>
       {!isCreate && record && <Card className="sticky bottom-0 z-20 border border-border bg-primary-bg/95 px-4 py-3 shadow-sm"><div className="flex flex-wrap justify-end gap-2">{isDraft && permissions.includes(hrOrderPermissions.confirm) && <Button type="primary" icon={<CheckCircle2 className="size-4" />} loading={confirmMutation.isPending} disabled={isBusy} onClick={() => ask(t("payroll.hrOrders.confirmTitle", { defaultValue: "Buyruqni tasdiqlaysizmi?" }), () => confirmMutation.mutateAsync(id), "payroll.messages.hrOrderConfirmed")}>{t("payroll.actions.confirm")}</Button>}{isDraft && permissions.includes(hrOrderPermissions.delete) && <Button danger icon={<Trash2 className="size-4" />} loading={deleteMutation.isPending} disabled={isBusy} onClick={() => ask(t("payroll.hrOrders.deleteTitle", { defaultValue: "Buyruqni o'chirasizmi?" }), () => deleteMutation.mutateAsync(id), "payroll.messages.hrOrderDeleted", true)}>{t("common.delete")}</Button>}{!isDraft && permissions.includes(hrOrderPermissions.view) && <Button icon={<Printer className="size-4" />} onClick={() => setPrintOpen(true)}>{t("payroll.hrOrders.print", { defaultValue: "Chop etish" })}</Button>}{statusId === 2 && record?.orderType === "DISMISSAL" && permissions.includes(payrollDocumentPermissions.calculate) && <Button icon={<HandCoins className="size-4" />} onClick={() => setSettlementOpen(true)}>{t("payroll.leave.settlement")}</Button>}{statusId === 2 && permissions.includes(hrOrderPermissions.cancel) && <Button danger icon={<CircleX className="size-4" />} loading={cancelMutation.isPending} disabled={isBusy} onClick={() => ask(t("payroll.hrOrders.cancelTitle", { defaultValue: "Buyruqni bekor qilasizmi?" }), () => cancelMutation.mutateAsync(id), "payroll.messages.hrOrderCancelled")}>{t("payroll.actions.cancel")}</Button>}</div></Card>}
-      {settlementOpen && record && <SettlementModal open employeeId={record.employeeId} employeeName={record.employeeName} dismissalDate={record.effectiveDate} onClose={() => setSettlementOpen(false)} />}
+      {settlementOpen && record && <SettlementModal open employeeId={record.employeeId} employeeName={record.employeeName} dismissalDate={record.effectiveDate} employmentId={record.targetEmploymentId} onClose={() => setSettlementOpen(false)} />}
       <Modal open={printOpen} onCancel={() => setPrintOpen(false)} footer={<Button onClick={() => window.print()} icon={<Printer className="size-4" />}>{t("payroll.hrOrders.print", { defaultValue: "Chop etish" })}</Button>} title={t("payroll.hrOrders.printTitle", { defaultValue: "Kadr buyrug'i" })} width={760}>
         <Spin spinning={isPrintFetching}>{printData ? <div className="space-y-4 text-sm"><div className="text-center text-lg font-semibold">{printData.organizationName}</div><div className="grid grid-cols-2 gap-2"><span>{t("payroll.fields.orderNumber", { defaultValue: "Buyruq raqami" })}: <b>{printData.orderNumber}</b></span><span>{t("payroll.fields.orderDate", { defaultValue: "Buyruq sanasi" })}: <b>{displayDate(printData.orderDate)}</b></span><span>{t("payroll.fields.employee")}: <b>{printData.employeeName}</b></span><span>{t("payroll.fields.effectiveDate", { defaultValue: "Amal qilish sanasi" })}: <b>{displayDate(printData.effectiveDate)}</b></span></div>{printData.dismissalGround && <div>{t("hr.fields.dismissalGround")}: <b>{t(`hr.dismissalGrounds.${printData.dismissalGround}`)}</b> (Mehnat kodeksi {dismissalGroundArticle(printData.dismissalGround)})</div>}{printData.basis && <div>{t("payroll.fields.basis")}: {printData.basis}</div>}<Table pagination={false} size="small" dataSource={[{ key: 1, label: t("payroll.hrOrders.from", { defaultValue: "Eski" }), department: printData.fromDepartmentName ?? "—", position: printData.fromPositionName ?? "—", salary: printData.fromMonthlySalary }, { key: 2, label: t("payroll.hrOrders.to", { defaultValue: "Yangi" }), department: printData.toDepartmentName ?? "—", position: printData.toPositionName ?? "—", salary: printData.toMonthlySalary }]} columns={[{ title: "", dataIndex: "label" }, { title: t("payroll.fields.department"), dataIndex: "department" }, { title: t("payroll.fields.position"), dataIndex: "position" }, { title: t("payroll.fields.monthlySalary"), dataIndex: "salary", render: (value: number | null) => value == null ? "—" : money(value) }]} /></div> : <Alert type="info" message={t("payroll.hrOrders.printUnavailable", { defaultValue: "Bosma ma'lumotlari mavjud emas" })} />}</Spin>
       </Modal>

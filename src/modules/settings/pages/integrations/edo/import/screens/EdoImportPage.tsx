@@ -7,7 +7,9 @@ import EdoImportResolutionPanel from "../components/EdoImportResolutionPanel";
 import EdoImportWorkflowRail, {
   type EdoImportSection,
 } from "../components/EdoImportWorkflowRail";
+import { useQuery } from "@tanstack/react-query";
 import { useEdoImportJob } from "../hooks";
+import { edoImportService } from "../api";
 import type { EdoImportJobDto } from "../types";
 import { getImportErrorMessage } from "../components/presentation";
 import { getActiveEdoImportJobId } from "@/store/middleware/edoImportLogoutCleanup";
@@ -23,10 +25,17 @@ export default function EdoImportPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const rawJobId = Number(searchParams.get("jobId"));
-  const jobId =
+  const knownJobId =
     Number.isInteger(rawJobId) && rawJobId > 0
       ? rawJobId
       : getActiveEdoImportJobId();
+  // the server's import under way, when this browser does not know it (another browser, a cleared one)
+  const activeJobQuery = useQuery({
+    queryKey: ["edo-import", "active"],
+    queryFn: edoImportService.activeJob,
+    enabled: !knownJobId,
+  });
+  const jobId = knownJobId || activeJobQuery.data?.id || 0;
   const rawSection = searchParams.get("stage") as EdoImportSection | null;
   const activeSection =
     rawSection && sections.has(rawSection) ? rawSection : "DISCOVERY";

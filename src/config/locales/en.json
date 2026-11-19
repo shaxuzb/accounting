@@ -517,9 +517,58 @@
       "unknownCounterparty": "Unknown counterparty",
       "empty": "No debt data available"
     },
+    "health": {
+      "esfTitle": "Tax office comparison (ESF VAT / books VAT)",
+      "esfPurchases": "Purchases",
+      "esfSales": "Sales",
+      "regime": "Tax regime",
+      "regimeUnset": "not set",
+      "vatPayer": "VAT payer",
+      "notVatPayer": "Not a VAT payer",
+      "threshold": "VAT threshold (income since January)",
+      "soum": "UZS",
+      "thresholdHint": "Passing it makes VAT and profit tax mandatory. A notice at 70%, a warning at 90%.",
+      "title": "Organization health",
+      "description": "Every morning the system checks the organization: months, taxes, data.",
+      "checkedAt": "Last check: {{at}}",
+      "run": "Check now",
+      "checked": "Checked: new {{created}}, resolved {{resolved}}",
+      "errors": "Errors: {{count}}",
+      "warnings": "Warnings: {{count}}",
+      "allGood": "No problems found",
+      "notChecked": "Not checked yet — press «Check now»",
+      "categories": {
+        "TAX": "Tax",
+        "VAT": "VAT",
+        "EDO": "EDO",
+        "ACCOUNTING": "Accounting",
+        "DATA": "Data",
+        "POLICY": "Accounting policy"
+      }
+    },
+    "benefits": {
+      "title": "Benefits and laws for you",
+      "description": "Picked by your tax regime, VAT, OKED, legal form and special statuses. Check the source before applying them.",
+      "statuses": "Special statuses",
+      "empty": "No benefit or law matches your organization. Mark its special statuses.",
+      "benefit": "Benefit",
+      "law": "Law",
+      "validTo": "Valid until {{date}}",
+      "statusesTitle": "The organization's special statuses",
+      "statusesHint": "Mark the statuses your organization holds; benefits are shown by them.",
+      "statusesSaved": "Statuses saved"
+    },
     "tax": {
       "title": "Tax indicators",
-      "description": "From the general ledger: VAT charged and recoverable (retail, returns, customs, corrections included).",
+      "notVatPayer": "The organization is not a VAT payer: the figures are for reference only.",
+      "saleVat": "VAT on sales",
+      "purchaseVat": "VAT on purchases",
+      "payable": "VAT payable to the budget",
+      "payableHint": "VAT on sales − VAT on purchases",
+      "excess": "Excess VAT (carried forward)",
+      "excessHint": "VAT on purchases exceeds VAT on sales: the difference is offset in later periods",
+      "documentCount": "{{count}} documents",
+      "description": "For the period, from the ledger: VAT charged on sales (6410) and recoverable on purchases (4410), with returns, customs and corrections.",
       "total": "VAT payable",
       "vatPayer": "VAT payer",
       "yes": "Yes",
@@ -1120,7 +1169,33 @@
       "personWarning": "The entered TIN belongs to an individual. Organization fields were not filled automatically.",
       "success": "Organization data found",
       "mismatch": "The lookup response does not match the entered number",
-      "counterpartySuccess": "Counterparty data found"
+      "counterpartySuccess": "Counterparty data found",
+      "accountsTitle": "Bank accounts (from the tax data)",
+      "accountsHint": "Ticked accounts are added to the counterparty on save; the bank and branch were found by the MFO.",
+      "accountUnresolved": "No bank for this MFO or no currency — add this account by hand.",
+      "mainAccount": "Main",
+      "accountsSaved": "Bank accounts added: {{count}}",
+      "accountsFailed": "Bank account {{account}} was not added",
+      "orgAccountsButton": "Fill in by INN",
+      "orgAccountsTitle": "Add bank accounts by INN",
+      "orgAccountsLoading": "Getting the bank accounts from the tax data…",
+      "orgAccountsNone": "The tax data has no bank accounts of the organization; add them with «Add».",
+      "orgAccountsAllAdded": "All bank accounts from the tax data are already added.",
+      "orgAccountsFailed": "The tax data could not be got (Faktura did not answer). Try later or add them with «Add».",
+      "orgNoInn": "The organization card has no INN."
+    },
+    "orgBanks": {
+      "pickTitle": "Pick from the list of banks",
+      "pickHint": "The list comes from the Central Bank's register. Tick the banks you need and press «Attach».",
+      "attach": "Attach",
+      "attached": "Attached",
+      "attachedCount": "{{count}} bank(s) attached",
+      "used": "In bank accounts",
+      "detach": "Take off the list",
+      "detachConfirm": "Take the bank off the organization's list?",
+      "detached": "The bank was taken off the list",
+      "inn": "INN",
+      "empty": "No banks yet. Press «Add» and pick from the list; a bank also appears once a bank account uses it."
     },
     "entities": {
       "openingAssets": "Fixed and intangible asset opening balances",
@@ -1403,6 +1478,119 @@
         "error": "E-IMZO error"
       },
       "onec": {
+        "preflight": {
+          "tab": "To settle",
+          "blocking": "Settle {{count}} issue(s) before the import.",
+          "allSettled": "Nothing left to settle — the import may start.",
+          "recheck": "Check again",
+          "empty": "No issues.",
+          "settled": "Settled",
+          "settledAt": "Settled: {{date}}",
+          "settledList": "Settled ({{count}})",
+          "chooseAccount": "Choose our account",
+          "chooseBank": "Choose the bank branch (MFO)",
+          "chooseGround": "Choose the dismissal ground",
+          "apply": "Apply",
+          "exclude": "Leave out of the import ({{count}})",
+          "excludeConfirm": "Leave {{count}} document(s) out of the import? They will not come over.",
+          "importBlocked": "First settle {{count}} issue(s) in «To settle».",
+          "grounds": {
+            "AGREEMENT": "Соглашение сторон (ст.155 ч.1 п.1)",
+            "CONTRACT_EXPIRY": "Истечение срочного договора (ст.155 ч.1 п.2)",
+            "EMPLOYEE_INITIATIVE": "По инициативе работника (ст.155 ч.1 п.3)",
+            "LIQUIDATION": "Ликвидация организации (ст.161 ч.2 п.1)",
+            "STAFF_REDUCTION": "Сокращение штата (ст.161 ч.2 п.2)",
+            "INSUFFICIENT_QUALIFICATION": "Недостаточная квалификация (ст.161 ч.2 п.3)",
+            "SYSTEMATIC_BREACH": "Систематическое нарушение (ст.161 ч.2 п.4)",
+            "GROSS_BREACH": "Однократное грубое нарушение (ст.161 ч.2 п.5)",
+            "EMPLOYER_OTHER": "Иное основание работодателя (ст.161 ч.2 п.6)",
+            "OWNER_CHANGE_REFUSAL": "Отказ при смене собственника (ст.155 ч.1 п.5)",
+            "NEW_CONDITIONS_REFUSAL": "Отказ от новых условий (ст.155 ч.1 п.6)",
+            "RELOCATION_REFUSAL": "Отказ от перевода в другую местность (ст.155 ч.1 п.7)",
+            "MEDICAL_TRANSFER_REFUSAL": "Отказ от перевода по медпоказаниям (ст.155 ч.1 п.8)",
+            "MILITARY_SERVICE": "Призыв на военную службу (ст.168 ч.1 п.1)",
+            "PREDECESSOR_REINSTATED": "Восстановление прежнего работника (ст.168 ч.1 п.2)",
+            "COURT_SENTENCE": "Приговор суда (ст.168 ч.1 п.3)",
+            "HIRING_RULES_BREACH": "Нарушение правил приёма (ст.168 ч.1 п.4)",
+            "LEGAL_IMPEDIMENT": "Законное препятствие (ст.168 ч.1 п.5)",
+            "COURT_LIQUIDATION": "Ликвидация по решению суда (ст.168 ч.1 п.6)",
+            "REINSTATEMENT_REVERSED": "Отмена восстановления (ст.168 ч.1 п.7)"
+          }
+        },
+        "compare": {
+          "tab": "Compare with 1C",
+          "run": "Compare",
+          "again": "Compare again",
+          "done": "Comparison finished",
+          "comparedAt": "Last compared: {{date}}",
+          "never": "Not compared yet",
+          "empty": "The import has not been compared with 1C yet. Press «Compare».",
+          "findings": "Findings ({{count}})",
+          "byAccounts": "By account",
+          "noFindings": "No differences",
+          "verdict": "Whose",
+          "document": "Document",
+          "category": "Kind",
+          "finding": "Finding",
+          "amount": "Amount",
+          "date": "Date",
+          "account": "Account",
+          "item": "Item",
+          "quantity": "Qty",
+          "balance": "Balance",
+          "note": "Note",
+          "content": "Content",
+          "search": "Search by document or finding",
+          "postings": "Entries: 1C ↔ ours",
+          "ours": "Ours",
+          "oneCAccount": "1C account",
+          "ourAccount": "Ours",
+          "oneCDebit": "1C debit",
+          "ourDebit": "Our debit",
+          "oneCCredit": "1C credit",
+          "ourCredit": "Our credit",
+          "notImported": "Not imported (balance)",
+          "saldoDifference": "Balance difference",
+          "unexplained": "Difference beyond not imported",
+          "accountsHint": "The entries of all documents 1C posted are compared with ours, account by account. «Not imported» is the share of 1C documents that did not come over; the settlement and cost findings explain the rest.",
+          "check": {
+            "MATCH": "Matches 1C",
+            "DIFF": "Differs from 1C"
+          },
+          "verdicts": {
+            "ONEC_ERROR": "1C error",
+            "MAPPING": "Mapping needed",
+            "OURS": "Fix here",
+            "METHOD": "Method difference",
+            "UNEXPLAINED": "Cause not found"
+          },
+          "verdictHints": {
+            "ONEC_ERROR": "An error proven by 1C's own entries",
+            "MAPPING": "Map an account or a catalog",
+            "OURS": "An earlier document missing or different here",
+            "METHOD": "Rounding and the like, nothing to fix",
+            "UNEXPLAINED": "No proof found — check by hand"
+          },
+          "categories": {
+            "BANK_BALANCE": "Bank balance",
+            "STOCK_BALANCE": "Stock balance",
+            "SETTLEMENT": "Debt / advance",
+            "COST": "Cost (batches)",
+            "ANALYTICS": "Account analytics",
+            "SERVICE_ON_STOCK": "Service on a stock account",
+            "NO_ENTRIES": "Document without entries",
+            "CLASSIFIER": "Classifier",
+            "MAPPING": "Mapping",
+            "ROUNDING": "Rounding",
+            "OTHER": "Other",
+            "CHAIN": "Linked document",
+            "DISMISSAL_GROUND": "Dismissal ground",
+            "PAYROLL_NOT_POSTED": "Payroll not posted",
+            "DOUBLE_HIRE": "Hired twice",
+            "CHOSEN_ACCOUNT": "Chosen account",
+            "CONCURRENT_JOBS": "Two jobs at once"
+          }
+        },
         "load": {
           "period": "Period:",
           "button": "Load",
@@ -1473,6 +1661,12 @@
           "chooseAccount": "Choose the account",
           "changed": "Changed",
           "notMapped": "Not mapped",
+          "notNeeded": "Not needed",
+          "notNeededHint": "This 1C account is not used by the selected documents, so it needs no mapping.",
+          "autoMap": "Map automatically",
+          "autoMapConfirm": "Used but unmapped 1C accounts are mapped automatically: to the first sub-account of a group here, to the main account when it is not split here, otherwise an account is added from the standard chart. You can change the result afterwards.",
+          "autoMapDone": "{{count}} accounts mapped, the affected objects are being checked again",
+          "autoMapNothing": "No accounts left to map",
           "chosen": "Chosen",
           "sameCode": "Same number",
           "saveAccounts": "Save ({{count}})",
@@ -1522,7 +1716,7 @@
           "enter": "Enter this code — the connection turns «Connected» in this list."
         },
         "connection": {
-          "create": "New connection",
+          "create": "Connect 1C",
           "createOk": "Get a code",
           "name": "Name",
           "namePlaceholder": "E.g. Main 1C base",
@@ -1537,7 +1731,10 @@
           "online": "Connected",
           "offline": "Not in contact",
           "revoked": "Revoked",
-          "empty": "No connection yet. Click «New connection»."
+          "empty": "No connection yet. Click «Connect 1C» — a code appears; enter it in the agent on the computer.",
+          "cleanup": "Clean up",
+          "cleanupConfirm": "Delete the copy loaded from 1C (objects, load history)? The connection, mappings and imported documents stay. The next load fetches the 1C data in full again.",
+          "cleaned": "The copy loaded from 1C was cleaned up."
         },
         "clientKinds": {
           "AGENT": "Agent",
@@ -1688,6 +1885,7 @@
           "notConfigured": "Provider credentials are not configured"
         },
         "auth": {
+          "signOut": "Sign out",
           "title": "E-IMZO authentication",
           "description": "Open an organization session for the selected provider.",
           "selectProvider": "Select an active provider first",
@@ -1815,6 +2013,7 @@
           "downloaded": "File downloaded"
         },
         "errors": {
+          "keyOrganizationMismatch": "The chosen key belongs to INN {{keyInn}}, the open organization's INN is {{orgInn}}. The operator signs in by the organization's INN — open the organization with that INN or use its key.",
           "providers": "Could not load providers",
           "capabilitiesLoad": "Could not load provider capabilities",
           "fileLoad": "Could not load the document file",
@@ -3716,7 +3915,13 @@
       "gender": "Sex",
       "staffCategory": "Staff category (statistics)",
       "statCategory": "Statistics group",
-      "statCategoryHint": "For lines 402–405 of 1-mehnat. Empty — by the method: salary/hourly — work done, overtime/night/holiday — compensation, leave — time not worked, others — incentive."
+      "statCategoryHint": "For lines 402–405 of 1-mehnat. Empty — by the method: salary/hourly — work done, overtime/night/holiday — compensation, leave — time not worked, others — incentive.",
+      "job": "Job",
+      "jobShort": {
+        "PRIMARY": "main",
+        "PART_TIME": "part-time",
+        "CONTRACT": "contract"
+      }
     },
     "enums": {
       "taxExemptKind": {
@@ -3888,7 +4093,9 @@
       "notFound": "Employee not found",
       "deactivate": "Deactivate",
       "deactivateTitle": "Deactivate this employee?",
-      "deactivateText": "The employee is not deleted; only marked passive."
+      "deactivateText": "The employee is not deleted; only marked passive.",
+      "orderPartTime": "Hire part-time",
+      "currentJobs": "Current jobs (main and part-time)"
     },
     "components": {
       "title": "Calculation types (accruals and deductions)",
@@ -4338,6 +4545,21 @@
     "belowMinimumHint": "The stock is below the minimum on the product card: order more"
   },
   "notifications": {
+    "all": "All",
+    "unread": "Unread",
+    "allTypes": "All kinds",
+    "open": "Open",
+    "types": {
+      "info": "Info",
+      "success": "Success",
+      "warning": "Warning",
+      "error": "Error",
+      "tax": "Tax",
+      "news": "News",
+      "health": "Organization health",
+      "doc_approved": "Document approved",
+      "payment_due": "Payment due"
+    },
     "title": "Notifications",
     "markAll": "Mark all read",
     "empty": "No notifications",
@@ -6048,6 +6270,63 @@
       "stateId": {
         "1": "Active",
         "2": "Deleted"
+      }
+    }
+  },
+  "rating": {
+    "title": "Rating",
+    "score": "{{score}} points of 100",
+    "source": "Chamber of Commerce contractor rating (chamber.uz). Click to open the site."
+  },
+  "esfReconciliation": {
+    "title": "ESF reconciliation (with the tax office)",
+    "hint": "The month's electronic invoices at the EDO operator (what the tax office sees) are compared with our purchases and sales. Invoices from other operators reach yours by roaming.",
+    "run": "Compare",
+    "onlyProblems": "Differences only",
+    "all": "All",
+    "failed": "Could not compare: check the EDO sign-in and that the operator is up.",
+    "purchases": "Purchases (incoming ESF)",
+    "sales": "Sales (outgoing ESF)",
+    "purchasesEsfVat": "VAT in incoming ESF",
+    "purchasesBooksVat": "VAT in our purchases",
+    "salesEsfVat": "VAT in outgoing ESF",
+    "salesBooksVat": "VAT in our sales",
+    "vatGap": "Difference (books − ESF)",
+    "status": "Status",
+    "partner": "Counterparty",
+    "esf": "ESF",
+    "esfVat": "ESF VAT",
+    "document": "Our document",
+    "docVat": "Document VAT",
+    "difference": "VAT difference",
+    "noProblems": "No differences",
+    "statuses": {
+      "MATCHED": "Matches",
+      "AMOUNT_DIFF": "Amount differs",
+      "ONLY_IN_EDO": "Not in books",
+      "ONLY_IN_BOOKS": "No ESF",
+      "REJECTED": "ESF rejected",
+      "PENDING": "Not accepted"
+    },
+    "openEsf": "Open the ESF file",
+    "openDocument": "Open the document",
+    "fileFailed": "Could not get the ESF file",
+    "consequences": {
+      "purchases": {
+        "ONLY_IN_EDO": "The supplier sent an ESF, the purchase is not entered. Result: the VAT is not credited (tax overpaid), costs and payables understated. Enter it via «EDO import».",
+        "ONLY_IN_BOOKS": "The purchase is in the books, the operator has no ESF. Result: the VAT is not credited and an audit removes it. Ask for the ESF or check the date/amount.",
+        "AMOUNT_DIFF": "The purchase amount or VAT differs from the ESF. Only the ESF's VAT is credited — fix the document.",
+        "REJECTED": "The ESF was rejected or cancelled, the purchase is posted. Fix the document or ask for a new ESF.",
+        "PENDING": "The incoming ESF is not accepted. Until signed the VAT is not credited — accept it in EDO.",
+        "MATCHED": "The ESF and the document agree."
+      },
+      "sales": {
+        "ONLY_IN_EDO": "You issued the ESF, the sale is not entered. Result: income and VAT are understated — the tax office sees it, fines and penalties may follow.",
+        "ONLY_IN_BOOKS": "No ESF was issued for the sale. Result: the buyer cannot credit the VAT and your reported turnover exceeds the ESF the tax office sees. Send the ESF from the sale.",
+        "AMOUNT_DIFF": "The sale amount or VAT differs from the ESF — fix the ESF or the document.",
+        "REJECTED": "The buyer rejected or cancelled the ESF, the sale is posted. Fix the document or send a new ESF.",
+        "PENDING": "The ESF awaits the buyer's signature.",
+        "MATCHED": "The ESF and the document agree."
       }
     }
   }

@@ -190,6 +190,110 @@ export interface OneCPreviewFilter {
   pageSize: number;
 }
 
+export type OneCVerdict = "ONEC_ERROR" | "MAPPING" | "METHOD" | "OURS" | "UNEXPLAINED";
+
+export interface OneCEvidenceRow {
+  date: string | null;
+  document: string | null;
+  account: string | null;
+  item: string | null;
+  amount: number | null;
+  quantity: number | null;
+  balance: number | null;
+  note: string | null;
+  objectId: number | null;
+}
+
+export interface OneCFinding {
+  id: number;
+  objectId: number | null;
+  typeName: string | null;
+  docNumber: string | null;
+  docDate: string | null;
+  presentation: string | null;
+  verdict: OneCVerdict;
+  category: string;
+  title: string;
+  explanation: string | null;
+  amount: number | null;
+  evidence: OneCEvidenceRow[];
+  related: number[];
+}
+
+export interface OneCAccountCompare {
+  oneCCode: string;
+  ourNumber: string | null;
+  oneCDebit: number;
+  oneCCredit: number;
+  ourDebit: number;
+  ourCredit: number;
+  notImportedDebit: number;
+  notImportedCredit: number;
+  saldoDifference: number;
+  unexplained: number;
+}
+
+export interface OneCComparison {
+  comparedAt: string | null;
+  summary: { verdict: OneCVerdict; count: number; amount: number }[];
+  findings: OneCFinding[];
+  total: number;
+  accounts: OneCAccountCompare[];
+}
+
+export interface OneCComparisonFilter {
+  verdict?: string;
+  category?: string;
+  search?: string;
+  page: number;
+  pageSize: number;
+}
+
+export interface OneCPostingLine {
+  debit: string | null;
+  credit: string | null;
+  amount: number;
+  content: string | null;
+}
+
+export interface OneCPostings {
+  oneC: OneCPostingLine[];
+  ours: OneCPostingLine[];
+  checkStatus: "MATCH" | "DIFF" | null;
+  checkNote: string | null;
+}
+
+export interface OneCPreflightItem {
+  id: number;
+  objectId: number | null;
+  presentation: string | null;
+  category: string;
+  verdict: OneCVerdict;
+  title: string;
+  explanation: string | null;
+  amount: number | null;
+  subject: string | null;
+  blocking: boolean;
+  evidence: OneCEvidenceRow[];
+  related: number[];
+  resolution: string | null;
+  resolvedAt: string | null;
+}
+
+export interface OneCPreflight {
+  unresolved: number;
+  items: OneCPreflightItem[];
+}
+
+export type OneCPreflightAction = "MAP_ACCOUNT" | "EXCLUDE" | "PICK_BANK" | "PICK_ACCOUNT" | "PICK_GROUND";
+
+export interface BankBranchOption {
+  id: number;
+  name: string;
+  bankId: number;
+  mfo: string;
+}
+
 const keys = {
   all: ["onec"] as const,
   connections: () => [...keys.all, "connections"] as const,
@@ -294,6 +398,69 @@ export const useOneCOurAccounts = (enabled: boolean) =>
     staleTime: 60_000,
   });
 
+/** «1C bilan taqqoslash»: why objects failed or differ from 1C, with the proof. */
+export const useOneCComparison = (runId: number, filter: OneCComparisonFilter, version: string, enabled: boolean) =>
+  useQuery({
+    queryKey: [...keys.all, "compare", runId, filter, version],
+    queryFn: () =>
+      $axiosPrivate
+        .get<OneCComparison>(`/onec/runs/${runId}/compare`, { params: filter })
+        .then((response) => response.data),
+    enabled,
+    placeholderData: (previous) => previous,
+  });
+
+export const useCompareOneC = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: (runId: number) => $axiosPrivate.post(`/onec/runs/${runId}/compare`),
+    onSuccess: invalidate,
+  });
+};
+
+/** «Hal qilish kerak»: what must be settled before the import. */
+export const useOneCPreflight = (runId: number, version: string, enabled: boolean) =>
+  useQuery({
+    queryKey: [...keys.all, "preflight", runId, version],
+    queryFn: () => $axiosPrivate.get<OneCPreflight>(`/onec/runs/${runId}/preflight`).then((response) => response.data),
+    enabled,
+    placeholderData: (previous) => previous,
+  });
+
+export const useCheckOneCPreflight = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: (runId: number) => $axiosPrivate.post(`/onec/runs/${runId}/preflight`),
+    onSuccess: invalidate,
+  });
+};
+
+export const useResolveOneCPreflight = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: ({ runId, findingId, action, value }: { runId: number; findingId: number; action: OneCPreflightAction; value?: string }) =>
+      $axiosPrivate.post(`/onec/runs/${runId}/preflight/${findingId}/resolve`, { action, value }),
+    onSuccess: invalidate,
+  });
+};
+
+export const useBankBranches = (enabled: boolean) =>
+  useQuery({
+    queryKey: [...keys.all, "bank-branches"],
+    queryFn: () => $axiosPrivate.get<BankBranchOption[]>("/manuals/bank-branches").then((response) => response.data),
+    enabled,
+    staleTime: 300_000,
+  });
+
+/** A document's entries in 1C and ours, side by side. */
+export const useOneCPostings = (objectId: number | null, enabled: boolean) =>
+  useQuery({
+    queryKey: [...keys.all, "postings", objectId],
+    queryFn: () =>
+      $axiosPrivate.get<OneCPostings>(`/onec/objects/${objectId}/postings`).then((response) => response.data),
+    enabled: enabled && objectId !== null,
+  });
+
 export const useLoadOneC = () => {
   const invalidate = useInvalidate();
   return useMutation({
@@ -332,6 +499,16 @@ export const useSaveOneCAccounts = () => {
   });
 };
 
+/** Maps by itself the used 1C accounts with none here; what it did, account by account. */
+export const useAutoMapOneCAccounts = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: (runId: number) =>
+      $axiosPrivate.post<string[]>(`/onec/runs/${runId}/accounts/auto`).then((response) => response.data),
+    onSuccess: invalidate,
+  });
+};
+
 export const useStartOneCImport = () => {
   const invalidate = useInvalidate();
   return useMutation({
@@ -340,11 +517,20 @@ export const useStartOneCImport = () => {
   });
 };
 
+/** The organization's one connection: made the first time, given a new code (or opened again) after. */
 export const useCreateOneCConnection = () => {
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (name: string) =>
-      $axiosPrivate.post<OneCPairingCode>("/onec/connections", { name }).then((response) => response.data),
+    mutationFn: () => $axiosPrivate.post<OneCPairingCode>("/onec/connections", {}).then((response) => response.data),
+    onSuccess: invalidate,
+  });
+};
+
+/** Drops what 1C sent through the connection; the connection and what was imported stay. */
+export const useCleanupOneCConnection = () => {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: (connectionId: number) => $axiosPrivate.delete(`/onec/connections/${connectionId}/data`),
     onSuccess: invalidate,
   });
 };

@@ -364,9 +364,16 @@ export default function EdoInboxPage() {
   );
 
   const download = useCallback(async (document: EdoDocumentDto) => {
-    if (document.id == null) return;
+    // a listed document not stored here yet is fetched by its id at the operator
+    const source =
+      document.id != null
+        ? document.id
+        : document.providerDocumentId
+          ? { providerDocumentId: document.providerDocumentId, documentType: document.documentType }
+          : null;
+    if (source == null) return;
     try {
-      const file = await downloadMutation.mutateAsync(document.id);
+      const file = await downloadMutation.mutateAsync(source);
       saveDownloadedEdoFile(file);
       toast.success(t("settings.integrations.edo.messages.downloaded"));
     } catch (error) {
@@ -445,7 +452,7 @@ export default function EdoInboxPage() {
               <Button
                 type="text"
                 icon={<Download className="size-4" />}
-                disabled={!canDownload || record.id == null || downloadMutation.isPending}
+                disabled={!canDownload || (record.id == null && !record.providerDocumentId) || downloadMutation.isPending}
                 onClick={() => void download(record)}
               />
             </Tooltip>

@@ -519,9 +519,58 @@
       "unknownCounterparty": "Noma'lum kontragent",
       "empty": "Qarzdorlik ma'lumotlari mavjud emas"
     },
+    "health": {
+      "esfTitle": "Soliq bilan solishtirish (ESF'dagi QQS / hisobdagi QQS)",
+      "esfPurchases": "Xaridlar",
+      "esfSales": "Sotuvlar",
+      "regime": "Soliq rejimi",
+      "regimeUnset": "tanlanmagan",
+      "vatPayer": "QQS to'lovchi",
+      "notVatPayer": "QQS to'lovchi emas",
+      "threshold": "QQSga o'tish chegarasi (yil boshidan daromad)",
+      "soum": "so'm",
+      "thresholdHint": "Chegaradan oshsa, QQS va foyda solig'iga o'tish majburiy. 70% da eslatma, 90% da ogohlantirish beriladi.",
+      "title": "Tashkilot holati",
+      "description": "Tizim har kuni ertalab tashkilotni tekshiradi: oylar, soliqlar, ma'lumotlar.",
+      "checkedAt": "Oxirgi tekshiruv: {{at}}",
+      "run": "Hozir tekshirish",
+      "checked": "Tekshirildi: yangi — {{created}}, hal bo'lgan — {{resolved}}",
+      "errors": "Xato: {{count}}",
+      "warnings": "Ogohlantirish: {{count}}",
+      "allGood": "Muammo topilmadi",
+      "notChecked": "Hali tekshirilmagan — «Hozir tekshirish»ni bosing",
+      "categories": {
+        "TAX": "Soliq",
+        "VAT": "QQS",
+        "EDO": "EDO",
+        "ACCOUNTING": "Buxgalteriya",
+        "DATA": "Ma'lumotlar",
+        "POLICY": "Hisob siyosati"
+      }
+    },
+    "benefits": {
+      "title": "Sizga tegishli imtiyoz va qonunlar",
+      "description": "Soliq rejimi, QQS, OKED, huquqiy shakl va maxsus maqomingiz bo'yicha tanlandi. Qo'llashdan oldin manbadan tekshiring.",
+      "statuses": "Maxsus maqomlar",
+      "empty": "Tashkilotingizga mos imtiyoz yoki qonun topilmadi. Maxsus maqomlaringizni belgilang.",
+      "benefit": "Imtiyoz",
+      "law": "Qonun",
+      "validTo": "{{date}} gacha amal qiladi",
+      "statusesTitle": "Tashkilotning maxsus maqomlari",
+      "statusesHint": "Tashkilotingizga tegishli maqomlarni belgilang — ular bo'yicha imtiyozlar ko'rsatiladi.",
+      "statusesSaved": "Maqomlar saqlandi"
+    },
     "tax": {
       "title": "Soliq ko'rsatkichlari",
-      "description": "Bosh kitobdan: hisoblangan va hisobga olinadigan QQS (chakana, qaytarish, bojxona, tuzatish bilan).",
+      "notVatPayer": "Tashkilot QQS to'lovchisi emas: ko'rsatkichlar faqat ma'lumot uchun.",
+      "saleVat": "Sotuvdagi QQS",
+      "purchaseVat": "Xariddagi QQS",
+      "payable": "Byudjetga to'lanadigan QQS",
+      "payableHint": "Sotuvdagi QQS − xariddagi QQS",
+      "excess": "Ortiqcha QQS (keyingi davrga)",
+      "excessHint": "Xariddagi QQS sotuvdagidan ko'p: farq keyingi davrlarda hisobga olinadi",
+      "documentCount": "{{count}} ta hujjat",
+      "description": "Tanlangan davr bo'yicha, bosh kitobdan: sotuvda hisoblangan (6410) va xaridda hisobga olinadigan (4410) QQS — qaytarish, bojxona va tuzatishlar bilan.",
       "total": "To'lanadigan QQS",
       "vatPayer": "VAT to'lovchisi",
       "yes": "Ha",
@@ -1122,7 +1171,33 @@
       "personWarning": "Kiritilgan INN jismoniy shaxsga tegishli. Tashkilot ma'lumotlari avtomatik to'ldirilmadi.",
       "success": "Tashkilot ma'lumotlari topildi",
       "mismatch": "Qidiruv javobi kiritilgan raqamga mos kelmadi",
-      "counterpartySuccess": "Kontragent ma'lumotlari topildi"
+      "counterpartySuccess": "Kontragent ma'lumotlari topildi",
+      "accountsTitle": "Hisob raqamlari (soliq ma'lumotidan)",
+      "accountsHint": "Belgilanganlari saqlashda kontragentga qo'shiladi; bank va filial MFO bo'yicha o'zi aniqlandi.",
+      "accountUnresolved": "MFO yoki valyuta bo'yicha bank topilmadi — bu raqamni qo'lda qo'shing.",
+      "mainAccount": "Asosiy",
+      "accountsSaved": "Hisob raqamlari qo'shildi: {{count}}",
+      "accountsFailed": "Hisob raqami {{account}} qo'shilmadi",
+      "orgAccountsButton": "INN bo'yicha to'ldirish",
+      "orgAccountsTitle": "Hisob raqamlarini INN bo'yicha qo'shish",
+      "orgAccountsLoading": "Soliq ma'lumotidan hisob raqamlari olinmoqda…",
+      "orgAccountsNone": "Soliq ma'lumotida tashkilotning hisob raqamlari topilmadi — ularni «Qo'shish» orqali kiriting.",
+      "orgAccountsAllAdded": "Soliq ma'lumotidagi barcha hisob raqamlari allaqachon qo'shilgan.",
+      "orgAccountsFailed": "Soliq ma'lumoti olinmadi (Faktura javob bermadi). Keyinroq urinib ko'ring yoki «Qo'shish» orqali kiriting.",
+      "orgNoInn": "Tashkilot kartasida STIR yo'q."
+    },
+    "orgBanks": {
+      "pickTitle": "Banklar ro'yxatidan tanlash",
+      "pickHint": "Ro'yxat Markaziy bank reyestridan olingan. Kerakli banklarni belgilab, «Biriktirish»ni bosing.",
+      "attach": "Biriktirish",
+      "attached": "Biriktirilgan",
+      "attachedCount": "{{count}} ta bank biriktirildi",
+      "used": "Hisob raqamlarda",
+      "detach": "Ro'yxatdan olish",
+      "detachConfirm": "Bank tashkilot ro'yxatidan olinsinmi?",
+      "detached": "Bank ro'yxatdan olindi",
+      "inn": "STIR",
+      "empty": "Hali bank yo'q. «Qo'shish»ni bosib ro'yxatdan tanlang — hisob raqam qo'shilganda bank o'zi ham chiqadi."
     },
     "entities": {
       "openingAssets": "AV va NMA boshlang'ich qoldig'i",
@@ -1405,6 +1480,119 @@
         "error": "E-IMZO bilan ishlashda xatolik"
       },
       "onec": {
+        "preflight": {
+          "tab": "Hal qilish kerak",
+          "blocking": "Import qilishdan oldin {{count}} ta masalani hal qiling.",
+          "allSettled": "Hal qilinmagan masala yo'q — import qilish mumkin.",
+          "recheck": "Qayta tekshirish",
+          "empty": "Masala topilmadi.",
+          "settled": "Hal qilindi",
+          "settledAt": "Hal qilindi: {{date}}",
+          "settledList": "Hal qilinganlar ({{count}})",
+          "chooseAccount": "Bizdagi schyotni tanlang",
+          "chooseBank": "Bank filialini tanlang (MFO)",
+          "chooseGround": "Bo'shatish asosini tanlang",
+          "apply": "Qo'llash",
+          "exclude": "Importdan chiqarish ({{count}})",
+          "excludeConfirm": "{{count}} ta hujjat importdan chiqarilsinmi? Ular bizga ko'chmaydi.",
+          "importBlocked": "Avval «Hal qilish kerak» dagi {{count}} ta masalani hal qiling.",
+          "grounds": {
+            "AGREEMENT": "Tomonlar kelishuvi (155-m. 1-q. 1-b.)",
+            "CONTRACT_EXPIRY": "Muddatli shartnoma tugashi (155-m. 1-q. 2-b.)",
+            "EMPLOYEE_INITIATIVE": "Xodim tashabbusi (155-m. 1-q. 3-b.)",
+            "LIQUIDATION": "Tashkilot tugatilishi (161-m. 2-q. 1-b.)",
+            "STAFF_REDUCTION": "Shtat qisqarishi (161-m. 2-q. 2-b.)",
+            "INSUFFICIENT_QUALIFICATION": "Malaka yetarli emasligi (161-m. 2-q. 3-b.)",
+            "SYSTEMATIC_BREACH": "Muntazam intizom buzilishi (161-m. 2-q. 4-b.)",
+            "GROSS_BREACH": "Bir martalik qo'pol buzilish (161-m. 2-q. 5-b.)",
+            "EMPLOYER_OTHER": "Ish beruvchining boshqa asosi (161-m. 2-q. 6-b.)",
+            "OWNER_CHANGE_REFUSAL": "Mulkdor almashganda rad etish (155-m. 1-q. 5-b.)",
+            "NEW_CONDITIONS_REFUSAL": "Yangi shartlardan bosh tortish (155-m. 1-q. 6-b.)",
+            "RELOCATION_REFUSAL": "Boshqa joyga ko'chishdan bosh tortish (155-m. 1-q. 7-b.)",
+            "MEDICAL_TRANSFER_REFUSAL": "Tibbiy o'tkazishdan bosh tortish (155-m. 1-q. 8-b.)",
+            "MILITARY_SERVICE": "Harbiy xizmatga chaqiruv (168-m. 1-q. 1-b.)",
+            "PREDECESSOR_REINSTATED": "Avvalgi xodim tiklanishi (168-m. 1-q. 2-b.)",
+            "COURT_SENTENCE": "Sud hukmi (168-m. 1-q. 3-b.)",
+            "HIRING_RULES_BREACH": "Ishga qabul qoidasi buzilgan (168-m. 1-q. 4-b.)",
+            "LEGAL_IMPEDIMENT": "Qonuniy to'siq (168-m. 1-q. 5-b.)",
+            "COURT_LIQUIDATION": "Sud qarori bilan tugatish (168-m. 1-q. 6-b.)",
+            "REINSTATEMENT_REVERSED": "Tiklash bekor qilingan (168-m. 1-q. 7-b.)"
+          }
+        },
+        "compare": {
+          "tab": "1C bilan taqqoslash",
+          "run": "Taqqoslash",
+          "again": "Qayta taqqoslash",
+          "done": "Taqqoslash tugadi",
+          "comparedAt": "Oxirgi taqqoslash: {{date}}",
+          "never": "Hali taqqoslanmagan",
+          "empty": "Import natijasi 1C bilan hali taqqoslanmagan. «Taqqoslash» tugmasini bosing.",
+          "findings": "Topilmalar ({{count}})",
+          "byAccounts": "Schyotlar bo'yicha",
+          "noFindings": "Farq topilmadi",
+          "verdict": "Kimniki",
+          "document": "Hujjat",
+          "category": "Turi",
+          "finding": "Topilma",
+          "amount": "Summa",
+          "date": "Sana",
+          "account": "Schyot",
+          "item": "Obyekt",
+          "quantity": "Miqdor",
+          "balance": "Qoldiq",
+          "note": "Izoh",
+          "content": "Mazmuni",
+          "search": "Hujjat yoki topilma bo'yicha qidirish",
+          "postings": "Provodkalar: 1C ↔ bizda",
+          "ours": "Bizda",
+          "oneCAccount": "1C schyoti",
+          "ourAccount": "Bizdagi",
+          "oneCDebit": "1C debet",
+          "ourDebit": "Bizda debet",
+          "oneCCredit": "1C kredit",
+          "ourCredit": "Bizda kredit",
+          "notImported": "Import qilinmaganlar (saldo)",
+          "saldoDifference": "Saldo farqi",
+          "unexplained": "Import qilinmaganlardan tashqari farq",
+          "accountsHint": "1C dagi barcha o'tkazilgan hujjatlar provodkasi bizdagi provodkalar bilan schyot bo'yicha solishtiriladi. «Import qilinmaganlar» — bizga tushmagan 1C hujjatlarining ulushi; qolgan farqni «Topilmalar» dagi hisob-kitob va tannarx topilmalari izohlaydi.",
+          "check": {
+            "MATCH": "1C bilan mos",
+            "DIFF": "1C dan farq qiladi"
+          },
+          "verdicts": {
+            "ONEC_ERROR": "1C xatosi",
+            "MAPPING": "Moslash kerak",
+            "OURS": "Bizda tuzatish kerak",
+            "METHOD": "Hisob usuli farqi",
+            "UNEXPLAINED": "Sabab aniqlanmadi"
+          },
+          "verdictHints": {
+            "ONEC_ERROR": "1C ning o'z provodkalari bilan isbotlangan xato",
+            "MAPPING": "Schyot yoki spravochnikni moslash",
+            "OURS": "Oldingi hujjat bizda tushmagan yoki farqli",
+            "METHOD": "Yaxlitlash va shu kabi, tuzatish shart emas",
+            "UNEXPLAINED": "Isbot topilmadi — qo'lda ko'ring"
+          },
+          "categories": {
+            "BANK_BALANCE": "Bank qoldig'i",
+            "STOCK_BALANCE": "Tovar qoldig'i",
+            "SETTLEMENT": "Qarz / avans",
+            "COST": "Tannarx (partiya)",
+            "ANALYTICS": "Schyot analitikasi",
+            "SERVICE_ON_STOCK": "Xizmat ombor schyotida",
+            "NO_ENTRIES": "Provodkasiz hujjat",
+            "CLASSIFIER": "Klassifikator",
+            "MAPPING": "Moslash",
+            "ROUNDING": "Yaxlitlash",
+            "OTHER": "Boshqa",
+            "CHAIN": "Bog'liq hujjat",
+            "DISMISSAL_GROUND": "Bo'shatish asosi",
+            "PAYROLL_NOT_POSTED": "Ish haqi aks ettirilmagan",
+            "DOUBLE_HIRE": "Ikki marta qabul",
+            "CHOSEN_ACCOUNT": "Tanlangan schyot",
+            "CONCURRENT_JOBS": "Bir vaqtda ikki ish"
+          }
+        },
         "load": {
           "period": "Davr:",
           "button": "Yuklash",
@@ -1475,6 +1663,12 @@
           "chooseAccount": "Schyotni tanlang",
           "changed": "O'zgartirildi",
           "notMapped": "Moslanmagan",
+          "notNeeded": "Kerak emas",
+          "notNeededHint": "Bu 1C schyoti tanlangan hujjatlarda ishlatilmagan, shuning uchun moslash shart emas.",
+          "autoMap": "Avtomatik moslash",
+          "autoMapConfirm": "Ishlatilgan, lekin moslanmagan 1C schyotlari o'zi moslanadi: bizda guruh bo'lsa — uning birinchi subschyotiga, bizda subschyotlarga bo'linmagan bo'lsa — asosiy schyotga, aks holda namunaviy rejadan schyot qo'shiladi. Natijani keyin o'zgartirish mumkin.",
+          "autoMapDone": "{{count}} ta schyot moslandi, ta'sir qilgan obyektlar qayta tekshirilmoqda",
+          "autoMapNothing": "Moslash kerak bo'lgan schyot qolmagan",
           "chosen": "Tanlangan",
           "sameCode": "Bir xil raqam",
           "saveAccounts": "Saqlash ({{count}})",
@@ -1524,7 +1718,7 @@
           "enter": "Shu kodni kiriting — ulanish shu ro'yxatda «Ulangan» bo'ladi."
         },
         "connection": {
-          "create": "Yangi ulanish",
+          "create": "1C ga ulash",
           "createOk": "Kod olish",
           "name": "Nomi",
           "namePlaceholder": "Masalan: Asosiy 1C baza",
@@ -1539,7 +1733,10 @@
           "online": "Ulangan",
           "offline": "Aloqada emas",
           "revoked": "O'chirilgan",
-          "empty": "Hali ulanish yo'q. «Yangi ulanish» ni bosing."
+          "empty": "Hali ulanish yo'q. «1C ga ulash» ni bosing — kod chiqadi, uni kompyuterdagi agentga kiriting.",
+          "cleanup": "Tozalash",
+          "cleanupConfirm": "1C dan yuklangan nusxa (obyektlar, yuklashlar tarixi) o'chirilsinmi? Ulanish, moslashtirishlar va import qilingan hujjatlar qoladi. Keyingi yuklashda 1C ma'lumoti to'liq qayta olinadi.",
+          "cleaned": "1C dan yuklangan nusxa tozalandi."
         },
         "clientKinds": {
           "AGENT": "Agent",
@@ -1690,6 +1887,7 @@
           "notConfigured": "Provider rekvizitlari sozlanmagan"
         },
         "auth": {
+          "signOut": "Chiqish",
           "title": "E-IMZO autentifikatsiyasi",
           "description": "Tanlangan provider uchun tashkilot sessiyasini sertifikat bilan oching.",
           "selectProvider": "Avval faol providerni tanlang",
@@ -1817,6 +2015,7 @@
           "downloaded": "Fayl yuklab olindi"
         },
         "errors": {
+          "keyOrganizationMismatch": "Tanlangan kalit STIR {{keyInn}} ga tegishli, ochiq tashkilotning STIR'i esa {{orgInn}}. Operator tashkilotni STIR'i bo'yicha kiritadi — shu STIR'li tashkilotni tanlang yoki uning kalitini ishlating.",
           "providers": "Providerlarni yuklab bo‘lmadi",
           "capabilitiesLoad": "Provider imkoniyatlarini yuklab bo‘lmadi",
           "fileLoad": "Hujjat faylini yuklab bo‘lmadi",
@@ -3716,7 +3915,13 @@
       "gender": "Jinsi",
       "staffCategory": "Xodimlar toifasi (statistika)",
       "statCategory": "Statistika guruhi",
-      "statCategoryHint": "1-mehnat 402–405-satrlar uchun. Bo'sh — hisoblash usulidan: maosh/soatbay — bajarilgan ish, ortiqcha/tungi/bayram — kompensatsiya, ta'til — ishlanmagan vaqt, boshqalar — rag'batlantirish."
+      "statCategoryHint": "1-mehnat 402–405-satrlar uchun. Bo'sh — hisoblash usulidan: maosh/soatbay — bajarilgan ish, ortiqcha/tungi/bayram — kompensatsiya, ta'til — ishlanmagan vaqt, boshqalar — rag'batlantirish.",
+      "job": "Ish",
+      "jobShort": {
+        "PRIMARY": "asosiy",
+        "PART_TIME": "o'rindosh",
+        "CONTRACT": "shartnoma"
+      }
     },
     "enums": {
       "taxExemptKind": {
@@ -3888,7 +4093,9 @@
       "notFound": "Xodim topilmadi",
       "deactivate": "Faolsizlantirish",
       "deactivateTitle": "Xodimni faolsizlantirasizmi?",
-      "deactivateText": "Xodim o'chirilmaydi, faqat passiv holatga o'tkaziladi."
+      "deactivateText": "Xodim o'chirilmaydi, faqat passiv holatga o'tkaziladi.",
+      "orderPartTime": "O'rindoshlikka qabul",
+      "currentJobs": "Joriy ishlar (asosiy va o'rindoshlik)"
     },
     "components": {
       "title": "Hisoblash va ushlanma turlari",
@@ -4338,6 +4545,21 @@
     "belowMinimumHint": "Qoldiq mahsulot kartasidagi minimal qoldiqdan kam — buyurtma qilish kerak"
   },
   "notifications": {
+    "all": "Hammasi",
+    "unread": "O'qilmagan",
+    "allTypes": "Barcha turlar",
+    "open": "Ochish",
+    "types": {
+      "info": "Ma'lumot",
+      "success": "Muvaffaqiyat",
+      "warning": "Ogohlantirish",
+      "error": "Xato",
+      "tax": "Soliq",
+      "news": "Yangilik",
+      "health": "Tashkilot holati",
+      "doc_approved": "Hujjat tasdiqlandi",
+      "payment_due": "To'lov muddati"
+    },
     "title": "Bildirishnomalar",
     "markAll": "Hammasini o'qildi",
     "empty": "Bildirishnoma yo'q",
@@ -6048,6 +6270,63 @@
       "stateId": {
         "1": "Faol",
         "2": "O'chirilgan"
+      }
+    }
+  },
+  "rating": {
+    "title": "Reyting",
+    "score": "{{score}} ball (100 dan)",
+    "source": "Savdo-sanoat palatasi pudratchilar reytingi (chamber.uz). Bosilsa, sayt ochiladi."
+  },
+  "esfReconciliation": {
+    "title": "ESF solishtirish (soliq bilan)",
+    "hint": "Tanlangan oy uchun EDO operatoridagi elektron hisob-fakturalar (soliq organi ko'radigan ma'lumot) hisobimizdagi xarid va sotuvlar bilan solishtiriladi. Boshqa operatorlardan kelgan ESF ham rouming orqali operatoringizda bo'ladi.",
+    "run": "Solishtirish",
+    "onlyProblems": "Faqat farqlar",
+    "all": "Hammasi",
+    "failed": "Solishtirib bo'lmadi: EDO'ga kirilganini va operator ishlayotganini tekshiring.",
+    "purchases": "Xaridlar (kiruvchi ESF)",
+    "sales": "Sotuvlar (chiquvchi ESF)",
+    "purchasesEsfVat": "Kiruvchi ESF'lardagi QQS",
+    "purchasesBooksVat": "Xaridlarimizdagi QQS",
+    "salesEsfVat": "Chiquvchi ESF'lardagi QQS",
+    "salesBooksVat": "Sotuvlarimizdagi QQS",
+    "vatGap": "Farq (hisob − ESF)",
+    "status": "Holat",
+    "partner": "Kontragent",
+    "esf": "ESF",
+    "esfVat": "ESF QQS",
+    "document": "Bizdagi hujjat",
+    "docVat": "Hujjat QQS",
+    "difference": "QQS farqi",
+    "noProblems": "Farq topilmadi",
+    "statuses": {
+      "MATCHED": "Mos",
+      "AMOUNT_DIFF": "Summa farqi",
+      "ONLY_IN_EDO": "Hisobda yo'q",
+      "ONLY_IN_BOOKS": "ESF yo'q",
+      "REJECTED": "ESF rad etilgan",
+      "PENDING": "Qabul qilinmagan"
+    },
+    "openEsf": "ESF faylini ochish",
+    "openDocument": "Hujjatni ochish",
+    "fileFailed": "ESF faylini olib bo'lmadi",
+    "consequences": {
+      "purchases": {
+        "ONLY_IN_EDO": "Yetkazib beruvchi ESF yuborgan, xarid hisobga kiritilmagan. Oqibati: bu QQS hisobga olinmaydi (ortiqcha soliq to'lanadi), xarajat va kreditorlik kam ko'rsatiladi. Xaridni «EDO Import» orqali kiriting.",
+        "ONLY_IN_BOOKS": "Xarid hisobda bor, lekin operatorda ESF yo'q. Oqibati: QQS hisobga olinmaydi va soliq tekshiruvida chiqarib tashlanadi. Yetkazib beruvchidan ESF so'rang yoki sana/summani tekshiring.",
+        "AMOUNT_DIFF": "Xarid summasi yoki QQSi ESF'dan farq qiladi. Hisobga faqat ESF'dagi QQS olinadi — hujjatni ESF bo'yicha tuzating.",
+        "REJECTED": "ESF rad etilgan yoki bekor qilingan, xarid esa o'tkazilgan. Hujjatni tuzating yoki yangi ESF so'rang.",
+        "PENDING": "Kiruvchi ESF hali qabul qilinmagan. Imzolanmaguncha QQS hisobga olinmaydi — EDO'da qabul qiling.",
+        "MATCHED": "ESF va hujjat mos keladi."
+      },
+      "sales": {
+        "ONLY_IN_EDO": "Siz ESF chiqargansiz, sotuv hisobga kiritilmagan. Oqibati: daromad va QQS hisobotda kam ko'rsatiladi — soliq organi farqni ko'radi, jarima va penya xavfi.",
+        "ONLY_IN_BOOKS": "Sotuvga ESF chiqarilmagan. Oqibati: xaridor QQSni hisobga ololmaydi, hisobotdagi aylanma soliq organi ko'rgan ESF'lardan ko'p bo'ladi. ESF'ni sotuv hujjatidan yuboring.",
+        "AMOUNT_DIFF": "Sotuv summasi yoki QQSi ESF'dan farq qiladi — ESF'ni yoki hujjatni tuzating.",
+        "REJECTED": "ESF xaridor tomonidan rad etilgan yoki bekor qilingan, sotuv esa o'tkazilgan. Hujjatni tuzating yoki yangi ESF yuboring.",
+        "PENDING": "ESF xaridor imzosini kutmoqda.",
+        "MATCHED": "ESF va hujjat mos keladi."
       }
     }
   }

@@ -6,6 +6,8 @@ import ElectronicDocumentsWidget from "../../../components/ElectronicDocumentsWi
 import ReceivablesPayablesWidget from "../../../components/ReceivablesPayablesWidget";
 import RelationshipsWidget from "../../../components/RelationshipsWidget";
 import TaxSummaryWidget from "../../../components/TaxSummaryWidget";
+import TaxBenefitsWidget from "../../../components/TaxBenefitsWidget";
+import OrganizationHealthWidget from "../../../components/OrganizationHealthWidget";
 import UnavailableWidget from "../../../components/UnavailableWidget";
 import LowStockAlert from "../../../components/LowStockAlert";
 import { useDashboard } from "../../../hooks/useDashboard";
@@ -58,11 +60,11 @@ export default function DashboardPage() {
       {data ? (
         <div className="space-y-5">
           <LowStockAlert />
+          <OrganizationHealthWidget />
+          <TaxSummaryWidget summary={data.tax} />
+          <TaxBenefitsWidget />
           <CashSummaryWidget summary={data.cash} />
-          <div className="grid gap-5 xl:grid-cols-2">
-            <RelationshipsWidget summary={data.relationships} />
-            <TaxSummaryWidget summary={data.tax} />
-          </div>
+          <RelationshipsWidget summary={data.relationships} />
           <ReceivablesPayablesWidget
             receivables={data.receivables}
             payables={data.payables}

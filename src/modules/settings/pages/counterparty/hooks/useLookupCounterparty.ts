@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   isLookupResponseForIdentifier,
+  resolveTaxpayerAccounts,
   resolveTaxpayerLocation,
   taxpayerLookupService,
 } from "@/modules/settings/shared/taxpayerLookup";
@@ -13,15 +14,20 @@ export const useLookupCounterparty = () => {
     mutationFn: async (identifier: string) => {
       const taxpayer = await taxpayerLookupService.lookup(identifier);
       if (!isLookupResponseForIdentifier(identifier, taxpayer)) {
-        return { taxpayer, isMatch: false, values: {} };
+        return { taxpayer, isMatch: false, values: {}, accounts: [] };
       }
 
-      const location = await resolveTaxpayerLocation(queryClient, taxpayer);
+      const [location, accounts] = await Promise.all([
+        resolveTaxpayerLocation(queryClient, taxpayer),
+        // the bank accounts are a convenience: the card is filled without them
+        resolveTaxpayerAccounts(taxpayer).catch(() => []),
+      ]);
 
       return {
         taxpayer,
         isMatch: true,
         values: mapTaxpayerToCounterparty(taxpayer, location),
+        accounts,
       };
     },
   });

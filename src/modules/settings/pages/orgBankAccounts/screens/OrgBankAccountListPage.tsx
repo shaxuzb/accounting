@@ -1,6 +1,6 @@
 import { Button, Space, Table } from "antd";
 import type { TableColumnType, TableColumnsType } from "antd";
-import { Plus, RefreshCw } from "lucide-react";
+import { FileSearch, Plus, RefreshCw } from "lucide-react";
 import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { generateKeyTable } from "@/utils/utils";
@@ -15,6 +15,7 @@ import type { OrgBankAccounts } from "../types/type";
 import { useGetListOrgBankAccounts } from "../hooks";
 import { orgBankAccountsPermissions } from "../constants/permissions";
 import OrgBankAccountAddEditPage from "./OrgBankAccountAddEditPage";
+import OrgBankAccountsFromInnModal from "./OrgBankAccountsFromInnModal";
 
 export default function OrgBankAccountListPage() {
   const { t } = useTranslation();
@@ -98,6 +99,7 @@ export default function OrgBankAccountListPage() {
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
+  const [isFromInnOpen, setIsFromInnOpen] = useState(false);
 
   return (
     <div className="w-full">
@@ -110,6 +112,14 @@ export default function OrgBankAccountListPage() {
             icon={<RefreshCw className="size-4" />}
             onClick={() => refetch()}
           />
+          <PermissionCard permission={orgBankAccountsPermissions.create}>
+            <Button
+              icon={<FileSearch className="size-4" />}
+              onClick={() => setIsFromInnOpen(true)}
+            >
+              {t("settings.lookup.orgAccountsButton")}
+            </Button>
+          </PermissionCard>
           <PermissionCard
             permission={orgBankAccountsPermissions.create}
           >
@@ -133,6 +143,13 @@ export default function OrgBankAccountListPage() {
           pagination={false}
         />
       </Card>
+      {isFromInnOpen && (
+        <OrgBankAccountsFromInnModal
+          open
+          onClose={() => setIsFromInnOpen(false)}
+          existingNumbers={(data?.items ?? []).map((item) => item.accountNumber)}
+        />
+      )}
       <OrgBankAccountAddEditPage
         open={isAddOpen}
         onClose={() => {

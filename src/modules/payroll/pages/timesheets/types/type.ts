@@ -1,6 +1,8 @@
 export interface PayrollTimesheetLine {
   id?: number;
   employeeId: number;
+  employmentId?: number | null;
+  employmentType?: string | null;
   employeeName?: string | null;
   employeeNumber?: string | null;
   departmentName?: string | null;
@@ -80,6 +82,8 @@ export interface PayrollTimesheetCalendarDay {
 
 export interface PayrollTimesheetDailyEmployee {
   employeeId: number;
+  employmentId?: number | null;
+  employmentType?: string | null;
   employeeNumber?: string | null;
   employeeName?: string | null;
   statusCode: PayrollTimesheetAttendanceStatus;
@@ -113,6 +117,8 @@ export interface PayrollTimesheetDailyAttendance {
 export interface PayrollTimesheetMonthlySummary {
   timesheetLineId?: number | null;
   employeeId: number;
+  employmentId?: number | null;
+  employmentType?: string | null;
   employeeNumber?: string | null;
   employeeName?: string | null;
   isIncludedInDocument?: boolean;

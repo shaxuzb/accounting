@@ -16,6 +16,8 @@ interface Props {
   employeeId: number;
   employeeName?: string | null;
   dismissalDate?: string | null;
+  /** the job the dismissal ended (its jobId) */
+  employmentId?: number | null;
 }
 
 /**
@@ -23,7 +25,7 @@ interface Props {
  * paid) or the leave taken in advance recovered (art. 269) unless the ground frees the employee
  * from it (part 3), and the severance pay the dismissal ground grants (art. 173).
  */
-export default function SettlementModal({ open, onClose, employeeId, employeeName, dismissalDate }: Props) {
+export default function SettlementModal({ open, onClose, employeeId, employeeName, dismissalDate, employmentId }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [date, setDate] = useState<Dayjs | null>(dismissalDate ? dayjs(dismissalDate) : null);
@@ -36,6 +38,7 @@ export default function SettlementModal({ open, onClose, employeeId, employeeNam
 
   const request = {
     employeeId,
+    employmentId: employmentId ?? null,
     dismissalDate: date ? date.format("YYYY-MM-DD") : null,
     noRecovery,
     paySeverance,
